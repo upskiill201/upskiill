@@ -89,12 +89,16 @@ Runs at: http://localhost:3001
 
 | Doc | Description |
 |-----|-------------|
-| [Architecture](./docs/01-architecture.md) | Tech stack & system design |
-| [Pages & Components Guide](./docs/02-pages-and-components.md) | How to create pages & components |
-| [Phase 1 — MVP](./docs/03-phase1-mvp.md) | Features to build in Months 1-3 |
-| [Phase 2 — AI Features](./docs/04-phase2-ai.md) | AI features to build in Months 4-6 |
+| [Architecture](./docs/01-architecture.md) | Tech stack, system design, database schema |
+| [Pages & Components](./docs/02-pages-and-components.md) | How to create pages & components |
+| [**🎨 Color System**](./docs/08-color-system.md) | Brand colors, CSS variables, usage rules |
+| [**📋 MVP Full Spec**](./docs/09-mvp-complete-spec.md) | All 14 pillars — every feature listed |
+| [**📄 All Pages (49)**](./docs/10-all-pages.md) | Complete numbered page list with file paths |
+| [**🔨 Build Workflow**](./docs/11-build-workflow.md) | UI design → code → PR → deploy process |
+| [Phase 1 — MVP](./docs/03-phase1-mvp.md) | Phase 1 features with build order |
+| [Phase 2 — AI Features](./docs/04-phase2-ai.md) | AI features in Months 4-6 |
 | [Phase 3 — Marketplace](./docs/05-phase3-marketplace.md) | Marketplace features in Months 7-9 |
-| [Phase 4 — Scale](./docs/06-phase4-scale.md) | Optimization & scaling in Months 10-12 |
+| [Phase 4 — Scale](./docs/06-phase4-scale.md) | Optimization in Months 10-12 |
 | [Git Workflow](./docs/07-git-workflow.md) | Team git workflow & PR process |
 
 ---
