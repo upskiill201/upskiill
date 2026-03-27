@@ -99,6 +99,7 @@ Runs at: http://localhost:3001
 | [Phase 2 — AI Features](./docs/04-phase2-ai.md) | AI features in Months 4-6 |
 | [Phase 3 — Marketplace](./docs/05-phase3-marketplace.md) | Marketplace features in Months 7-9 |
 | [Phase 4 — Scale](./docs/06-phase4-scale.md) | Optimization in Months 10-12 |
+| [**💰 Launch & Costs**](./docs/12-launch-and-costs.md) | Phase-by-phase costs, free alternatives, launch checklist |
 | [Git Workflow](./docs/07-git-workflow.md) | Team git workflow & PR process |
 
 ---
