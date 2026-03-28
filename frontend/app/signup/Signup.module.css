@@ -73,6 +73,11 @@
   right: 14px;
   color: var(--text-muted);
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 .inputWrapper input {
@@ -152,6 +157,15 @@
 
 .submitBtn:hover {
   background-color: var(--brand-blue-hover);
+}
+
+.submitBtn:focus-visible,
+.socialBtn:focus-visible,
+.footerLinks a:focus-visible,
+.checkboxGroup input:focus-visible,
+.eyeIcon:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
 }
 
 .divider {
@@ -261,10 +275,10 @@
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   box-shadow: 0 40px 80px rgba(0,0,0,0.3), inset 0 0 50px rgba(255,255,255,0.4);
   backdrop-filter: blur(10px);
-  animation: pulseShape 8s ease-in-out infinite;
+  animation: pulse-shape 8s ease-in-out infinite;
 }
 
-@keyframes pulseShape {
+@keyframes pulse-shape {
   0% { transform: scale(1) rotate(0deg); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
   50% { transform: scale(1.05) rotate(5deg); border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
   100% { transform: scale(1) rotate(0deg); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
@@ -318,21 +332,21 @@
 .floatFast {
   top: 40px;
   left: 0;
-  animation: floatUp 4s ease-in-out infinite;
+  animation: float-up 4s ease-in-out infinite;
 }
 
 .floatSlow {
   bottom: 60px;
   right: -20px;
-  animation: floatDown 6s ease-in-out infinite;
+  animation: float-down 6s ease-in-out infinite;
 }
 
-@keyframes floatUp {
+@keyframes float-up {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
 }
 
-@keyframes floatDown {
+@keyframes float-down {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(15px); }
 }

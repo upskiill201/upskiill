@@ -1,9 +1,14 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, Mail, Lock, Eye } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import styles from './Signup.module.css';
 
 export default function Signup() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={styles.splitContainer}>
       {/* Left Panel: Form */}
@@ -18,27 +23,34 @@ export default function Signup() {
 
           <form className={styles.form}>
             <div className={styles.inputGroup}>
-              <label>Full Name</label>
+              <label htmlFor="fullName">Full Name</label>
               <div className={styles.inputWrapper}>
                 <User size={18} className={styles.inputIcon} />
-                <input type="text" placeholder="John Doe" />
+                <input id="fullName" name="fullName" type="text" placeholder="John Doe" autoComplete="name" />
               </div>
             </div>
 
             <div className={styles.inputGroup}>
-              <label>Email</label>
+              <label htmlFor="email">Email</label>
               <div className={styles.inputWrapper}>
                 <Mail size={18} className={styles.inputIcon} />
-                <input type="email" placeholder="Enter your email" />
+                <input id="email" name="email" type="email" placeholder="Enter your email" autoComplete="email" />
               </div>
             </div>
 
             <div className={styles.inputGroup}>
-              <label>Password</label>
+              <label htmlFor="password">Password</label>
               <div className={styles.inputWrapper}>
                 <Lock size={18} className={styles.inputIcon} />
-                <input type="password" placeholder="Create a password" />
-                <Eye size={18} className={styles.eyeIcon} />
+                <input id="password" name="password" type={showPassword ? "text" : "password"} placeholder="Create a password" autoComplete="new-password" />
+                <button 
+                  type="button" 
+                  className={styles.eyeIcon} 
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
               <div className={styles.passwordStrength}>
                 <div className={styles.strengthBars}>
@@ -74,7 +86,7 @@ export default function Signup() {
           </div>
 
           <div className={styles.footerLinks}>
-            <span className={styles.copyright}>© 2024 Upskiill Inc.</span>
+            <span className={styles.copyright}>© {new Date().getFullYear()} Upskiill Inc.</span>
             <p>Already have an account? <Link href="/login">Log in</Link></p>
           </div>
         </div>
