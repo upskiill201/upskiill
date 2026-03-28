@@ -8,7 +8,11 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.container}>
         {/* Mobile Only: Menu Button */}
-        <button className={styles.mobileMenuBtn}>
+        <button 
+          type="button"
+          className={styles.mobileMenuBtn}
+          aria-label="Open navigation menu"
+        >
           <Menu size={24} />
         </button>
 
@@ -45,11 +49,19 @@ export default function Header() {
         {/* Right Section: Actions */}
         <div className={styles.rightSection}>
           {/* Mobile Only: Search Icon */}
-          <button className={styles.mobileSearchBtn}>
+          <button 
+            type="button"
+            className={styles.mobileSearchBtn}
+            aria-label="Open search"
+          >
             <Search size={22} />
           </button>
 
-          <button className={styles.cartBtn}>
+          <button 
+            type="button"
+            className={styles.cartBtn}
+            aria-label="View shopping cart"
+          >
             <ShoppingCart size={24} />
             <span className={styles.cartBadge}>0</span>
           </button>
