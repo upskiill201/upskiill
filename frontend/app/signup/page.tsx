@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, GraduationCap, TrendingUp, Video, Award } from 'lucide-react';
 import { useState } from 'react';
 import styles from './Signup.module.css';
 
@@ -102,7 +102,7 @@ export default function Signup() {
              
              {/* Floating Glass Card 1 */}
              <div className={`${styles.glassCard} ${styles.floatFast}`}>
-               <div className={styles.iconCircle}>🎓</div>
+               <div className={styles.iconCircle}><GraduationCap size={16} color="white" /></div>
                <div className={styles.cardLines}>
                  <div className={styles.lineLong}></div>
                  <div className={styles.lineShort}></div>
@@ -111,7 +111,7 @@ export default function Signup() {
 
              {/* Floating Glass Card 2 */}
              <div className={`${styles.glassCard} ${styles.floatSlow}`}>
-               <div className={styles.iconCircle}>📈</div>
+               <div className={styles.iconCircle}><TrendingUp size={16} color="white" /></div>
                <div className={styles.cardLines}>
                  <div className={styles.lineLong}></div>
                  <div className={styles.lineShort}></div>
@@ -126,11 +126,11 @@ export default function Signup() {
 
           <div className={styles.statsContainer}>
             <div className={styles.statCard}>
-              <div className={styles.statIcon}>📹</div>
+              <div className={styles.statIcon}><Video size={16} color="white" /></div>
               <span>1000+ Courses</span>
             </div>
             <div className={styles.statCard}>
-              <div className={styles.statIcon}>🎖️</div>
+              <div className={styles.statIcon}><Award size={16} color="white" /></div>
               <span>Certifications</span>
             </div>
           </div>
