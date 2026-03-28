@@ -151,17 +151,18 @@
 .loginBtn {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--brand-blue);
   text-decoration: none;
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--brand-blue);
   transition: all 0.2s;
 }
 
 .loginBtn:hover {
-  background-color: var(--bg-section);
-  border-color: var(--text-primary);
+  background-color: var(--light-blue-bg);
+  border-color: var(--brand-blue-hover);
+  color: var(--brand-blue-hover);
 }
 
 .signupBtn {
