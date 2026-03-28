@@ -168,13 +168,15 @@
   font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  transition: all 0.2s;
 }
 
 .loginBtn:hover {
   background-color: var(--bg-section);
+  border-color: var(--text-primary);
 }
 
 .signupBtn {
