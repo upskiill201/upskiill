@@ -17,8 +17,8 @@ export default function Login() {
       <div className={styles.leftPanel}>
         <div className={styles.formContainer}>
           <div className={styles.header}>
-            <Image src="/logo.png" alt="Upskiill Logo" width={32} height={32} />
-            <span className={styles.brandName}>Upskiill</span>
+            <Image src="/logo.png" alt="Upskiill Logo" width={60} height={46} style={{ width: 'auto', height: 'auto' }} />
+            {/* <span className={styles.brandName}>Upskiill</span> */}
           </div>
 
           <div className={styles.welcomeText}>
@@ -84,14 +84,15 @@ export default function Login() {
           </div>
 
           <div className={styles.footerLinks}>
-            <p>Don&apos;t have an account? <Link href="/signup">Sign up</Link></p>
+            <p>Don&apos;t have an account?</p>
+            <Link href="/signup" className={styles.signupLink}>Sign up</Link>
           </div>
+        </div>
 
-          <div className={styles.bottomLegal}>
-            <Link href="/privacy">Privacy Policy</Link>
-            <span> • </span>
-            <Link href="/terms">Terms of Service</Link>
-          </div>
+        <div className={styles.bottomLegal}>
+          <Link href="/privacy">Privacy Policy</Link>
+          <span> • </span>
+          <Link href="/terms">Terms of Service</Link>
         </div>
       </div>
 
@@ -130,7 +131,7 @@ export default function Login() {
 
           <div className={styles.rightTextContent}>
             <h2>Elevate your skills<br/>to the next level</h2>
-            <p>Join thousands of professionals who are transforming their careers with our cutting-edge learning platform.</p>
+            <p>Join hundreds of professionals who are transforming their careers with our cutting-edge learning platform.</p>
           </div>
 
           <div className={styles.testimonialCard}>
