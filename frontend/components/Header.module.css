@@ -34,22 +34,6 @@
   text-decoration: none;
 }
 
-.iconWrapper {
-  background-color: var(--brand-blue);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brandName {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
 .exploreBtn {
   display: flex;
   align-items: center;
