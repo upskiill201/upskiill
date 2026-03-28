@@ -21,7 +21,7 @@ These GitHub checkboxes are interactive. You can check them off directly in the 
 - [x] Connect Frontend Auth to Backend API
 
 ## 🎓 Phase 1C: Core Platform (UI + Data)
-- [x] Deep-build completely responsive `/` Homepage (hero, features, call-to-actions)
+- [ ] Deep-build completely responsive `/` Homepage (hero, features, call-to-actions)
 - [ ] Build `/courses` Browse UI (Grid, search, filters)
 - [ ] Build `/courses/[id]` Course Detail UI
 - [ ] Build `/learn/[id]` Video Player UI (Sidebar, basic video container)

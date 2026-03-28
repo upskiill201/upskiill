@@ -16,6 +16,7 @@ async function bootstrap() {
     whitelist: true,
   }));
 
-  await app.listen(3001);
+  // Bind to Render.com's dynamic port variable and open all proxy interfaces
+  await app.listen(process.env.PORT || 3001, '0.0.0.0');
 }
 bootstrap();
