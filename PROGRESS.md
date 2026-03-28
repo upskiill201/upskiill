@@ -15,9 +15,9 @@ These GitHub checkboxes are interactive. You can check them off directly in the 
 
 ## 🔐 Phase 1B: Authentication UI & Setup
 - [x] Build highly polished `/signup` layout (Split-screen, wow-factor cards)
-- [ ] Build `/login` layout (Split-screen adaptation)
-- [ ] Setup Supabase PostgreSQL Project
-- [ ] Initialize Prisma ORM in `backend/` and push User schema
+- [x] Build `/login` layout (Split-screen adaptation)
+- [x] Setup Supabase PostgreSQL Project
+- [x] Initialize Prisma ORM in `backend/` and push User schema
 - [ ] Connect Frontend Auth to Backend API
 
 ## 🎓 Phase 1C: Core Platform (UI + Data)
