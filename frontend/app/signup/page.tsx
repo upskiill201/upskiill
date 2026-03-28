@@ -107,8 +107,15 @@ export default function Signup() {
         <div className={styles.wowContent}>
           
           <div className={styles.floatingGraphic}>
-             {/* Central Graphic Placeholder */}
-             <div className={styles.placeholderGraphic}></div>
+             {/* Official 3D Hero Graphic */}
+             <Image 
+               src="/hero-graphic.png" 
+               alt="Master new skills" 
+               width={400} 
+               height={400} 
+               className={styles.heroGraphicImage}
+               priority
+             />
              
              {/* Floating Glass Card 1 */}
              <div className={`${styles.glassCard} ${styles.floatFast}`}>

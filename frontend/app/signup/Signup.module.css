@@ -270,21 +270,19 @@
   justify-content: center;
 }
 
-/* Base glowing shape placeholder to ask user to replace with real Figma export */
-.placeholderGraphic {
-  width: 200px;
-  height: 250px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.01) 100%);
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.3), inset 0 0 50px rgba(255,255,255,0.4);
-  backdrop-filter: blur(10px);
-  animation: pulse-shape 8s ease-in-out infinite;
+/* Real 3D Graphic */
+.heroGraphicImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.95;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.4));
+  animation: float-hero 8s ease-in-out infinite;
 }
 
-@keyframes pulse-shape {
-  0% { transform: scale(1) rotate(0deg); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-  50% { transform: scale(1.05) rotate(5deg); border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
-  100% { transform: scale(1) rotate(0deg); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+@keyframes float-hero {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
 }
 
 .glassCard {
