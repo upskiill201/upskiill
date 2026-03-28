@@ -13,10 +13,10 @@ export default function Header() {
             <Image 
               src="/logo.png" 
               alt="Upskiill Logo" 
-              width={120} 
-              height={36} 
+              width={140} 
+              height={40} 
               priority
-              className="object-contain"
+              style={{ width: 'auto', height: '36px' }}
             />
           </Link>
           
