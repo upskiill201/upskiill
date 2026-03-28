@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 :root {
   /* Backgrounds */
   --bg-page:        #FFFFFF;
@@ -35,7 +33,7 @@
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
