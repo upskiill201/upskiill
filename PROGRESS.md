@@ -18,7 +18,7 @@ These GitHub checkboxes are interactive. You can check them off directly in the 
 - [x] Build `/login` layout (Split-screen adaptation)
 - [x] Setup Supabase PostgreSQL Project
 - [x] Initialize Prisma ORM in `backend/` and push User schema
-- [ ] Connect Frontend Auth to Backend API
+- [x] Connect Frontend Auth to Backend API
 
 ## 🎓 Phase 1C: Core Platform (UI + Data)
 - [ ] Deep-build completely responsive `/` Homepage (hero, features, call-to-actions)

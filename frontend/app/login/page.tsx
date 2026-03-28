@@ -6,19 +6,50 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { FaChartLine, FaCheck, FaApple, FaLinkedin, FaFacebook, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('http://localhost:4000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
+        throw new Error(errMsg || 'Login failed');
+      }
+
+      localStorage.setItem('access_token', data.access_token);
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.splitContainer}>
-      {/* Left Panel: Form */}
       <div className={styles.leftPanel}>
         <div className={styles.formContainer}>
           <div className={styles.header}>
             <Image src="/logo.png" alt="Upskiill Logo" width={60} height={46} style={{ width: 'auto', height: 'auto' }} />
-            {/* <span className={styles.brandName}>Upskiill</span> */}
           </div>
 
           <div className={styles.welcomeText}>
@@ -26,12 +57,23 @@ export default function Login() {
             <p>Please enter your details to sign in.</p>
           </div>
 
-          <form className={styles.form}>
+          {error && <div style={{ color: 'red', marginBottom: '16px', fontSize: '14px', fontWeight: '500' }}>{error}</div>}
+
+          <form className={styles.form} onSubmit={handleLogin}>
             <div className={styles.inputGroup}>
               <label htmlFor="email">Email</label>
               <div className={styles.inputWrapper}>
                 <Mail size={18} className={styles.inputIcon} />
-                <input id="email" name="email" type="email" placeholder="Enter your email" autoComplete="email" />
+                <input 
+                  id="email" 
+                  name="email" 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                />
               </div>
             </div>
 
@@ -39,7 +81,16 @@ export default function Login() {
               <label htmlFor="password">Password</label>
               <div className={styles.inputWrapper}>
                 <Lock size={18} className={styles.inputIcon} />
-                <input id="password" name="password" type={showPassword ? "text" : "password"} placeholder="Create a password" autoComplete="current-password" />
+                <input 
+                  id="password" 
+                  name="password" 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="Create a password" 
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required 
+                />
                 <button 
                   type="button" 
                   className={styles.eyeIcon} 
@@ -59,8 +110,8 @@ export default function Login() {
               <Link href="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
             </div>
 
-            <button type="submit" className={styles.submitBtn}>
-              Log In
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
+              {loading ? 'Logging in...' : 'Log In'}
             </button>
           </form>
 
@@ -96,7 +147,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Panel: Wow Factor */}
       <div className={styles.rightPanel}>
         <div className={styles.wowContent}>
           
@@ -110,7 +160,6 @@ export default function Login() {
                priority
              />
              
-             {/* Floating Glass Card 1 */}
              <div className={`${styles.glassCard} ${styles.floatFast}`}>
                <div className={styles.iconCircle}><FaChartLine size={16} color="white" /></div>
                <div className={styles.cardLines}>
@@ -119,7 +168,6 @@ export default function Login() {
                </div>
              </div>
 
-             {/* Floating Glass Card 2 */}
              <div className={`${styles.glassCard} ${styles.floatSlow}`}>
                <div className={styles.iconCircle}><FaCheck size={16} color="white" /></div>
                <div className={styles.cardLines}>
