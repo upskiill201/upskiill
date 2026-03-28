@@ -1,12 +1,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, Search, ShoppingCart } from 'lucide-react';
+import { ChevronDown, Search, ShoppingCart, Menu } from 'lucide-react';
 import styles from './Header.module.css';
 
 export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
+        {/* Mobile Only: Menu Button */}
+        <button className={styles.mobileMenuBtn}>
+          <Menu size={24} />
+        </button>
+
         {/* Left Section: Logo & Explore */}
         <div className={styles.leftSection}>
           <Link href="/" className={styles.logo}>
@@ -39,8 +44,13 @@ export default function Header() {
 
         {/* Right Section: Actions */}
         <div className={styles.rightSection}>
+          {/* Mobile Only: Search Icon */}
+          <button className={styles.mobileSearchBtn}>
+            <Search size={22} />
+          </button>
+
           <button className={styles.cartBtn}>
-            <ShoppingCart size={20} />
+            <ShoppingCart size={24} />
             <span className={styles.cartBadge}>0</span>
           </button>
           

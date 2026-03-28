@@ -180,8 +180,56 @@
   background-color: var(--brand-blue-hover);
 }
 
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 4px;
+}
+
+.mobileSearchBtn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 4px;
+}
+
 @media (max-width: 1024px) {
   .searchSection, .teachLink, .exploreBtn, .authButtons {
     display: none;
   }
+
+  .mobileMenuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobileSearchBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    padding: 0 16px;
+    position: relative;
+    justify-content: space-between;
+  }
+
+  .leftSection {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 0;
+  }
+
+  .rightSection {
+    gap: 16px;
+  }
 }
+
