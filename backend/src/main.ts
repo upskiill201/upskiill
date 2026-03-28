@@ -5,9 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Enable CORS so the React Frontend running on localhost:3000 can communicate with us
+  // Enable CORS dynamically to support both localhost dev and Vercel prod preview links
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: true,
     credentials: true,
   });
 
@@ -16,6 +16,6 @@ async function bootstrap() {
     whitelist: true,
   }));
 
-  await app.listen(4000);
+  await app.listen(3001);
 }
 bootstrap();
