@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { BookOpen, ChevronDown, Search, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
+import { ChevronDown, Search, ShoppingCart } from 'lucide-react';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -9,10 +10,14 @@ export default function Header() {
         {/* Left Section: Logo & Explore */}
         <div className={styles.leftSection}>
           <Link href="/" className={styles.logo}>
-            <div className={styles.iconWrapper}>
-              <BookOpen size={20} color="white" />
-            </div>
-            <span className={styles.brandName}>Upskiill.</span>
+            <Image 
+              src="/logo.png" 
+              alt="Upskiill Logo" 
+              width={140} 
+              height={40} 
+              priority
+              style={{ width: 'auto', height: '36px' }}
+            />
           </Link>
           
           <button className={styles.exploreBtn}>

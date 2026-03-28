@@ -2,6 +2,7 @@
   width: 100%;
   background-color: var(--bg-nav);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -32,22 +33,6 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
-}
-
-.iconWrapper {
-  background-color: var(--brand-blue);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brandName {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
 }
 
 .exploreBtn {
@@ -168,13 +153,15 @@
   font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  transition: all 0.2s;
 }
 
 .loginBtn:hover {
   background-color: var(--bg-section);
+  border-color: var(--text-primary);
 }
 
 .signupBtn {
