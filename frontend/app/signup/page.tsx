@@ -6,14 +6,47 @@ import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { FaGraduationCap, FaRocket, FaVideo, FaAward, FaApple, FaLinkedin, FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './Signup.module.css';
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('http://localhost:4000/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
+        throw new Error(errMsg || 'Signup failed');
+      }
+
+      localStorage.setItem('access_token', data.access_token);
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={styles.splitContainer}>
-      {/* Left Panel: Form */}
       <div className={styles.leftPanel}>
         <div className={styles.formContainer}>
           <Link href="/" className={styles.logo}>
@@ -23,12 +56,23 @@ export default function Signup() {
           <h1 className={styles.title}>Start your journey</h1>
           <p className={styles.subtitle}>Create your account and unlock your potential.</p>
 
-          <form className={styles.form}>
+          {error && <div style={{ color: 'red', marginBottom: '16px', fontSize: '14px', fontWeight: '500' }}>{error}</div>}
+
+          <form className={styles.form} onSubmit={handleSignup}>
             <div className={styles.inputGroup}>
               <label htmlFor="fullName">Full Name</label>
               <div className={styles.inputWrapper}>
                 <User size={18} className={styles.inputIcon} />
-                <input id="fullName" name="fullName" type="text" placeholder="John Doe" autoComplete="name" />
+                <input 
+                  id="fullName" 
+                  name="fullName" 
+                  type="text" 
+                  placeholder="John Doe" 
+                  autoComplete="name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required 
+                />
               </div>
             </div>
 
@@ -36,7 +80,16 @@ export default function Signup() {
               <label htmlFor="email">Email</label>
               <div className={styles.inputWrapper}>
                 <Mail size={18} className={styles.inputIcon} />
-                <input id="email" name="email" type="email" placeholder="Enter your email" autoComplete="email" />
+                <input 
+                  id="email" 
+                  name="email" 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  autoComplete="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                />
               </div>
             </div>
 
@@ -44,7 +97,16 @@ export default function Signup() {
               <label htmlFor="password">Password</label>
               <div className={styles.inputWrapper}>
                 <Lock size={18} className={styles.inputIcon} />
-                <input id="password" name="password" type={showPassword ? "text" : "password"} placeholder="Create a password" autoComplete="new-password" />
+                <input 
+                  id="password" 
+                  name="password" 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="Create a password" 
+                  autoComplete="new-password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required 
+                />
                 <button 
                   type="button" 
                   className={styles.eyeIcon} 
@@ -69,11 +131,13 @@ export default function Signup() {
             </div>
 
             <div className={styles.checkboxGroup}>
-              <input type="checkbox" id="terms" />
+              <input type="checkbox" id="terms" required />
               <label htmlFor="terms">I agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link></label>
             </div>
 
-            <button type="button" className={styles.submitBtn}>Create Account</button>
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
           </form>
 
           <div className={styles.divider}>
@@ -102,12 +166,10 @@ export default function Signup() {
         </div>
       </div>
 
-      {/* Right Panel: Wow Factor */}
       <div className={styles.rightPanel}>
         <div className={styles.wowContent}>
           
           <div className={styles.floatingGraphic}>
-             {/* Official 3D Hero Graphic */}
              <Image 
                src="/hero-graphic.png" 
                alt="Master new skills" 
@@ -117,7 +179,6 @@ export default function Signup() {
                priority
              />
              
-             {/* Floating Glass Card 1 */}
              <div className={`${styles.glassCard} ${styles.floatFast}`}>
                <div className={styles.iconCircle}><FaGraduationCap size={16} color="white" /></div>
                <div className={styles.cardLines}>
@@ -126,7 +187,6 @@ export default function Signup() {
                </div>
              </div>
 
-             {/* Floating Glass Card 2 */}
              <div className={`${styles.glassCard} ${styles.floatSlow}`}>
                <div className={styles.iconCircle}><FaRocket size={16} color="white" /></div>
                <div className={styles.cardLines}>
