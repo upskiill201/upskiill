@@ -1,5 +1,5 @@
 # Upskiill — Session Handoff
-> Last updated: 2026-03-29 02:28 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-03-29 02:54 WAT · Keep this file current at the end of every session.
 
 ---
 
@@ -36,6 +36,7 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] CORS configured to allow `*.vercel.app` and `localhost:*`
 - [x] Binds to `process.env.PORT ?? 3001` for Render compatibility
 - [x] `render.yaml` at repo root for Render deploy config
+- [x] Production DB connectivity via Supabase Connection Pooler (P1001 fix)
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
@@ -45,67 +46,32 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Global header component
 - [x] `NEXT_PUBLIC_API_URL` env var used for all API calls (falls back to `http://localhost:3001`)
 
-### Auth Flow (local dev — working ✅)
-- Signup → POST `/auth/signup` → returns `{ access_token, user }`
-- Login → POST `/auth/login` → returns `{ access_token, user }`
-- Token stored in `localStorage` as `access_token`
-- On success → redirects to `/dashboard` (page not built yet)
+### Auth Flow (Local & Live — working ✅)
+- [x] Signup → POST `/auth/signup` → returns `{ access_token, user }`
+- [x] Login → POST `/auth/login` → returns `{ access_token, user }`
+- [x] Token stored in `localStorage` as `access_token`
+- [x] Redirects to `/dashboard` (page currently 404)
+- [x] Live Vercel frontend communicates correctly with Live Render backend
 
 ---
 
-## 🔴 Current Blocker (as of 2026-03-29 02:28 WAT)
+## 🟢 Current Status (2026-03-29 02:54 WAT)
 
-### Render backend crashes at startup — missing environment variables
+### Authentication: ✅ Working (Local & Live)
+The authentication flow is fully operational end-to-end. Connection issues with Supabase on Render have been resolved by using Connection Pooler URLs.
 
-**Build now succeeds ✅** (PR #29 fixed the devDependencies issue).
-
-**Runtime crash — error from Render logs:**
-```
-PrismaClientInitializationError: Can't reach database server at
-`db.iobdpmczxikgocvfzouo.supabase.co:5432`  errorCode: P1001
-```
-
-**Root cause:** `DATABASE_URL`, `DIRECT_URL`, and `JWT_SECRET` are **not set in
-the Render dashboard**. The `render.yaml` uses `sync: false` which means
-"add these manually in the UI" — they are NOT auto-populated from the file.
-
-**Fix (user must do this in Render dashboard):**
-
-Go to → https://dashboard.render.com → `upskiill-backend` service → **Environment** tab → add:
-
-| Key | Value |
-|---|---|
-| `DATABASE_URL` | `postgresql://postgres:rA1Qfvk5FX4ywuLo@db.iobdpmczxikgocvfzouo.supabase.co:5432/postgres` |
-| `DIRECT_URL` | `postgresql://postgres:rA1Qfvk5FX4ywuLo@db.iobdpmczxikgocvfzouo.supabase.co:5432/postgres` |
-| `JWT_SECRET` | `super-secret-upskiill-key-2024` |
-
-After saving → Render will auto-redeploy. The backend will start successfully.
-
-**Vercel also needs this env var (if not already set):**
-
-Go to → Vercel dashboard → Project → Settings → Environment Variables:
-
-| Key | Value |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | `https://upskiill-backend.onrender.com` |
-
-After adding on Vercel → go to Deployments tab → click **Redeploy**.
-
-> ⚠️ Free tier note: Render free tier spins down after 15 min inactivity.
-> First request after sleep takes ~50s. This is expected, NOT a bug.
-> Once the server is awake, all requests are fast.
+**Next Immediate Goal:** Build the `/dashboard` page to handle successful logins without showing a 404.
 
 ---
 
 ## 📋 What's Next (Priority Order)
 
-1. **[ ] Verify live auth works** — after above steps are done, test signup/login on Vercel URL
-2. **[ ] Build `/dashboard` page** — currently login redirects there but page doesn't exist (shows 404)
-3. **[ ] Persist auth state** — move token from `localStorage` to `httpOnly` cookie or add a `/auth/me` endpoint for session hydration
-4. **[ ] Protected routes** — middleware to redirect unauthenticated users away from `/dashboard`
-5. **[ ] User profile** — avatar, name, role display in header once logged in
-6. **[ ] Course listing page** — core product feature
-7. **[ ] Forgot password flow**
+1. **[ ] Build `/dashboard` page** — currently login redirects there but page doesn't exist (shows 404)
+2. **[ ] Persist auth state** — move token from `localStorage` to `httpOnly` cookie or add a `/auth/me` endpoint for session hydration
+3. **[ ] Protected routes** — middleware to redirect unauthenticated users away from `/dashboard`
+4. **[ ] User profile** — avatar, name, role display in header once logged in
+5. **[ ] Course listing page** — core product feature
+6. **[ ] Forgot password flow**
 
 ---
 
@@ -120,6 +86,7 @@ After adding on Vercel → go to Deployments tab → click **Redeploy**.
 | `npm install --include=dev` on Render build | Build tools (`@nestjs/cli`, `tsc`) are devDeps but needed to compile |
 | `render.yaml` at repo root | Render auto-detects it; `rootDir: backend` scopes it to the backend folder |
 | `NEXT_PUBLIC_API_URL` env var | Allows same frontend code to target local or production backend without code changes |
+| Supabase Pooler URLs | Fixes P1001 error and connection instability from cloud providers like Render |
 
 ---
 
@@ -170,7 +137,7 @@ Both must be running simultaneously for local auth to work.
 ---
 
 ## 🔗 Live URLs
-- **Frontend:** https://upskiill.vercel.app *(or check Vercel dashboard for exact URL)*
+- **Frontend:** https://upskiill.vercel.app
 - **Backend:** https://upskiill-backend.onrender.com
 - **Render health check:** https://upskiill-backend.onrender.com/ → should return `{ "message": "Hello World!" }`
 - **GitHub:** https://github.com/upskiill201/upskiill
