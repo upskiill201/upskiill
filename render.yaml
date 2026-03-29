@@ -5,7 +5,7 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: DATABASE_URL
@@ -14,5 +14,3 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: NODE_ENV
-        value: production
