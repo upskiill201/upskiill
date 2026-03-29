@@ -1,5 +1,5 @@
 # Upskiill — Session Handoff
-> Last updated: 2026-03-29 · Keep this file current at the end of every session.
+> Last updated: 2026-03-29 02:28 WAT · Keep this file current at the end of every session.
 
 ---
 
@@ -53,33 +53,47 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ---
 
-## 🔴 Current Blocker (as of this session)
+## 🔴 Current Blocker (as of 2026-03-29 02:28 WAT)
 
-### Live version not working yet
+### Render backend crashes at startup — missing environment variables
 
-Two PRs merged to fix production deploy:
-1. **PR #28** `fix/production-backend-connection` — added `render.yaml`, fixed CORS, added `frontend/.env.example`
-2. **PR pending** `fix/render-build-deps` — fixes the actual deploy failure:
-   - `NODE_ENV=production` was causing `npm install` to skip devDependencies (`@nestjs/cli`, `typescript`, `prisma` CLI) → build failed
-   - `@prisma/client` was in `devDependencies` → moved to `dependencies`
-   - `render.yaml` now uses `npm install --include=dev && npm run build`
+**Build now succeeds ✅** (PR #29 fixed the devDependencies issue).
 
-**Status:** `fix/render-build-deps` is pushed, PR needs to be merged → https://github.com/upskiill201/upskiill/pull/new/fix/render-build-deps
-
-### After merging, two manual steps still needed:
-
-**Render dashboard** → `upskiill-backend` → Environment tab → Add:
+**Runtime crash — error from Render logs:**
 ```
-DATABASE_URL = postgresql://postgres:rA1Qfvk5FX4ywuLo@db.iobdpmczxikgocvfzouo.supabase.co:5432/postgres
-DIRECT_URL   = (same as above)
-JWT_SECRET   = super-secret-upskiill-key-2024
+PrismaClientInitializationError: Can't reach database server at
+`db.iobdpmczxikgocvfzouo.supabase.co:5432`  errorCode: P1001
 ```
 
-**Vercel dashboard** → Project → Settings → Environment Variables → Add:
-```
-NEXT_PUBLIC_API_URL = https://upskiill-backend.onrender.com
-```
-Then trigger a redeploy on Vercel.
+**Root cause:** `DATABASE_URL`, `DIRECT_URL`, and `JWT_SECRET` are **not set in
+the Render dashboard**. The `render.yaml` uses `sync: false` which means
+"add these manually in the UI" — they are NOT auto-populated from the file.
+
+**Fix (user must do this in Render dashboard):**
+
+Go to → https://dashboard.render.com → `upskiill-backend` service → **Environment** tab → add:
+
+| Key | Value |
+|---|---|
+| `DATABASE_URL` | `postgresql://postgres:rA1Qfvk5FX4ywuLo@db.iobdpmczxikgocvfzouo.supabase.co:5432/postgres` |
+| `DIRECT_URL` | `postgresql://postgres:rA1Qfvk5FX4ywuLo@db.iobdpmczxikgocvfzouo.supabase.co:5432/postgres` |
+| `JWT_SECRET` | `super-secret-upskiill-key-2024` |
+
+After saving → Render will auto-redeploy. The backend will start successfully.
+
+**Vercel also needs this env var (if not already set):**
+
+Go to → Vercel dashboard → Project → Settings → Environment Variables:
+
+| Key | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | `https://upskiill-backend.onrender.com` |
+
+After adding on Vercel → go to Deployments tab → click **Redeploy**.
+
+> ⚠️ Free tier note: Render free tier spins down after 15 min inactivity.
+> First request after sleep takes ~50s. This is expected, NOT a bug.
+> Once the server is awake, all requests are fast.
 
 ---
 
