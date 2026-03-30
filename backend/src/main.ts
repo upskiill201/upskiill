@@ -4,19 +4,37 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
-  // Enable CORS dynamically to support both localhost dev and Vercel prod preview links
+
+  // Allow Vercel (any subdomain) and localhost (any port) — blocks everything else
+  const allowedOrigins: RegExp[] = [
+    /^https:\/\/.*\.vercel\.app$/,
+    /^http:\/\/localhost:\d+$/,
+  ];
+
   app.enableCors({
-    origin: true,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      const allowed = allowedOrigins.some((pattern) => pattern.test(origin));
+      callback(allowed ? null : new Error(`CORS blocked: ${origin}`), allowed);
+    },
     credentials: true,
   });
 
-  // Enable Validation Pipes to parse and scrub incoming DTO JSON streams
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-  }));
+  // Validate and strip unknown fields from incoming request bodies
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
-  // Bind to Render.com's dynamic port variable and open all proxy interfaces
-  await app.listen(process.env.PORT || 3001, '0.0.0.0');
+  // Render.com sets PORT dynamically; fallback to 3001 for local dev
+  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }
-bootstrap();
+
+void bootstrap();
