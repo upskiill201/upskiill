@@ -231,10 +231,15 @@
   50%       { transform: translateY(-10px); }
 }
 
-/* FA icon sizing inside badges */
-.badge i {
+/* FA icon sizing inside badges and cards */
+.badge i, 
+.iconCircle i {
   font-size: 24px;
   line-height: 1;
+}
+
+.iconCircle i {
+  color: #3D5AFE;             /* Primary Brand Blue */
 }
 .iconChart   { color: #3B82F6; }
 .iconShield  { color: #22C55E; }
@@ -403,7 +408,7 @@
    ============================================================ */
 .whySection {
   background: #F8F9FF;
-  padding: 72px 40px;
+  padding: 80px 40px;         /* 80px vertical padding (py-20) */
 }
 .whyInner {
   max-width: 1280px;
@@ -415,10 +420,10 @@
 }
 .whyTitle {
   font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
-  font-size: 36px;
+  font-size: 30px;            /* text-3xl */
   font-weight: 700;
   color: #1F2A44;
-  margin: 0 0 14px;
+  margin: 0 0 16px;           /* mb-4 */
 }
 .whySubtitle {
   font-family: var(--font-inter), 'Inter', sans-serif;
@@ -431,43 +436,44 @@
 .whyGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 32px;                  /* gap-8 */
 }
 .whyCard {
   position: relative;
   background: #ffffff;
-  border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  padding: 28px;
+  border: 1px solid #F3F4F6;  /* border-gray-100 */
+  border-radius: 12px;        /* rounded-xl */
+  padding: 32px;              /* p-8 */
+  text-align: center;         /* text-center */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-sm */
   transition: transform 200ms ease-out, box-shadow 200ms ease-out;
 }
 .whyCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md on hover */
 }
 .iconCircle {
-  width: 48px;
-  height: 48px;
-  background: #EEF2FF;
+  width: 64px;                /* w-16 */
+  height: 64px;               /* h-16 */
+  background: #EEF2FF;        /* Brand Light Blue */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  margin-bottom: 16px;
+  margin: 0 auto 24px;        /* centered horizontally, mb-6 */
 }
 .whyCardTitle {
   font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
-  font-size: 17px;
+  font-size: 20px;            /* text-xl */
   font-weight: 700;
   color: #1F2A44;
-  margin: 0 0 10px;
+  margin: 0 0 12px;           /* mb-3 */
 }
 .whyCardBody {
   font-family: var(--font-inter), 'Inter', sans-serif;
-  font-size: 14px;
-  color: #4B5563;
-  line-height: 1.7;
+  font-size: 14px;            /* text-sm */
+  color: #4B5563;             /* Slate Gray */
+  line-height: 1.6;
   margin: 0;
 }
 .comingSoonBadge {

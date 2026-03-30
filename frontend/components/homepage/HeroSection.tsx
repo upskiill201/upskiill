@@ -30,18 +30,18 @@ const TOTAL_GROUPS = Math.ceil(CATEGORIES.length / CARDS_PER_SLIDE); // 4
    WHY LEARN DATA — 12 feature cards
 ───────────────────────────────────────────── */
 const WHY_FEATURES = [
-  { icon: '🎓', title: '500+ courses across every skill',  body: 'Tech, business, design, music, health, language — if you want to learn it, we have it. Taught by real-world experts.', soon: false },
-  { icon: '⏱',  title: 'Learn at your own pace',           body: 'Lifetime access to every course you buy. Learn on your lunch break, late at night, or all weekend — no deadlines.',    soon: false },
-  { icon: '🏆', title: 'Earn verified certificates',        body: 'Get a certificate when you complete a course. Download as PDF, share on LinkedIn, and verify with a unique ID.',       soon: false },
-  { icon: '📊', title: 'Track your progress',               body: "Your dashboard shows every course you're in, visual progress bars, and a Resume Learning button so you never lose your place.", soon: false },
-  { icon: '👨‍🏫', title: 'Vetted, expert instructors',      body: 'Every course is reviewed before it goes live. You learn from professionals with real experience — not just theory.',   soon: false },
-  { icon: '💳', title: 'Pay your way',                      body: 'Card, PayPal, MTN Mobile Money, or Orange Money — we support the payment methods that work for you, wherever you are.', soon: false },
-  { icon: '🤖', title: 'AI Tutor — available 24/7',         body: "Stuck on something? Ask your personal AI tutor. It reads your course content and answers your questions instantly, any time.", soon: true },
-  { icon: '🗺️', title: 'Your personal learning path',      body: 'Set your career goal and our AI builds a custom course sequence for you, adjusting as you progress and improve.',     soon: true },
-  { icon: '🔍', title: 'Skill Gap Analyzer',                body: "Upload your CV, pick your target job, and see exactly which skills you're missing. We map the gap and recommend the right courses.", soon: true },
-  { icon: '🎮', title: 'Earn XP, badges & streaks',         body: 'Level up as you learn. Earn XP for every lesson, unlock achievement badges, keep your daily streak alive, and climb the leaderboard.', soon: true },
-  { icon: '🔔', title: 'Smart learning reminders',          body: "Haven't studied in a few days? We'll nudge you via email or WhatsApp with a spaced-repetition reminder to get back on track.", soon: true },
-  { icon: '📥', title: 'Learn offline, anywhere',           body: 'Download your lessons and watch them without internet. Your progress automatically syncs when you\'re back online.',    soon: true },
+  { icon: <i className="fa-solid fa-laptop-code"></i>,    title: '500+ courses across every skill',  body: 'Tech, business, design, music, health, language — if you want to learn it, we have it. Taught by real-world experts.', soon: false },
+  { icon: <i className="fa-solid fa-clock"></i>,          title: 'Learn at your own pace',           body: 'Lifetime access to every course you buy. Learn on your lunch break, late at night, or all weekend — no deadlines.', soon: false },
+  { icon: <i className="fa-solid fa-certificate"></i>,    title: 'Earn verified certificates',        body: 'Get a certificate when you complete a course. Download as PDF, share on LinkedIn, and verify with a unique ID.', soon: false },
+  { icon: <i className="fa-solid fa-chart-line"></i>,     title: 'Track your progress',    body: "Your dashboard shows every course you're in, visual progress bars, and high-impact study statistics.", soon: false },
+  { icon: <i className="fa-solid fa-chalkboard-user"></i>, title: 'Vetted instructors',     body: 'Every course is reviewed before it goes live. You learn from professionals with real industry experience.', soon: false },
+  { icon: <i className="fa-solid fa-credit-card"></i>,     title: 'Pay your way',          body: 'We support the payment methods that work for you, including Mobile Money and local bank transfers.', soon: false },
+  { icon: <i className="fa-solid fa-robot"></i>,           title: 'AI Tutor — 24/7',       body: "Stuck on something? Ask your personal AI tutor. It reads your course content and answers instantly.", soon: true },
+  { icon: <i className="fa-solid fa-map-location-dot"></i>, title: 'Your learning path',   body: 'Set your career goal and our AI builds a custom course sequence for you, adjusting as you progress.', soon: true },
+  { icon: <i className="fa-solid fa-magnifying-glass"></i>, title: 'Skill Gap Analyzer',   body: "Upload your CV, pick your target job, and see exactly which skills you're missing. We map the gap.", soon: true },
+  { icon: <i className="fa-solid fa-gamepad"></i>,         title: 'Earn XP & badges',      body: 'Level up as you learn. Earn XP for every lesson, unlock achievement badges, and climb the leaderboard.', soon: true },
+  { icon: <i className="fa-solid fa-bell"></i>,            title: 'Smart reminders',       body: "Haven't studied in a few days? We'll nudge you via email or WhatsApp with a spaced-repetition reminder.", soon: true },
+  { icon: <i className="fa-solid fa-download"></i>,        title: 'Learn offline',         body: 'Download your lessons and watch them without internet. Your progress automatically syncs when online.', soon: true },
 ];
 
 /* ─────────────────────────────────────────────
