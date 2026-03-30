@@ -40,12 +40,15 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
-- [x] **Premium Homepage UI** — Pixel-perfect implementation of the landing page.
+- [ ] **Homepage UI (Partial)** — Implementing section-by-section.
     - [x] **100vh Hero Fold**: Captures the entire user viewport for maximum immersion.
     - [x] **3D Breakout Effect**: Instructor image extends physically above the banner top.
     - [x] **Floating Badges**: Staggered icon boxes (Shield, Chart, Sparkles) with vertical float animations.
     - [x] **Category Slider**: Multi-group carousel (12 categories) with auto-play and hover-pause logic.
-    - [x] **Feature Grid**: "Why learn with Upskiill?" section with 12 interactive cards (6 live features, 6 AI "Coming Soon" features).
+    - [x] **Why Learn with Upskiill?**: 12 interactive cards (6 live features, 6 AI "Coming Soon" features).
+    - [ ] **Top Courses**: Dynamic list of high-performing courses (Next Step).
+    - [ ] **Become an Instructor Banner**: Call-to-action for educators.
+    - [ ] **Homepage Footer**: Site-wide links and brand info.
 - [x] Login page (`/login`) — split-panel UI, form with validation, JWT stored in localStorage
 - [x] Signup page (`/signup`) — matching split-panel UI
 - [x] Global header component with search and navigation
@@ -63,10 +66,10 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ## 🟢 Current Status (2026-03-30 01:45 WAT)
 
-### Homepage UI: ✅ Complete & Pixel-Perfect
-The homepage is fully implemented and follows strict UI specifications for spacing, typography (Plus Jakarta Sans/Inter), and absolute positioning. The hero section uses `100vh` to fill the first fold and features a perfectly balanced instructor breakout.
+### Homepage Sections: 🟡 Ongoing (2/5 Complete)
+The Hero (with Category Slider) and the "Why Learn" section are finished and follow strict pixel-perfect specifications. The remaining homepage sections (Top Courses, Instructor CTA, Footer) are still pending.
 
-**Next Immediate Goal:** Build the `/dashboard` page to handle successful logins and implement protected routes.
+**Next Immediate Goal:** Continue building the next homepage section or the `/dashboard` page.
 
 ---
 
