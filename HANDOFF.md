@@ -45,8 +45,9 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
     - [x] **3D Breakout Effect**: Instructor image extends physically above the banner top.
     - [x] **Floating Badges**: Staggered icon boxes (Shield, Chart, Sparkles) with vertical float animations.
     - [x] **Category Slider**: Multi-group carousel (12 categories) with auto-play and hover-pause logic.
-    - [x] **Why Learn with Upskiill?**: 12 interactive cards (6 live features, 6 AI "Coming Soon" features).
-    - [ ] **Top Courses**: Dynamic list of high-performing courses (Next Step).
+    - [x] **Why Learn with Upskiill?**: 12 interactive cards with premium 64px circular icon backgrounds and FA6 iconography.
+    - [ ] **Top Categories**: Grid for browsing by subject (Next Step).
+    - [ ] **Top Courses**: Dynamic list of high-performing courses.
     - [ ] **Become an Instructor Banner**: Call-to-action for educators.
     - [ ] **Homepage Footer**: Site-wide links and brand info.
 - [x] Login page (`/login`) — split-panel UI, form with validation, JWT stored in localStorage
@@ -96,7 +97,8 @@ The Hero (with Category Slider) and the "Why Learn" section are finished and fol
 | **100vh Hero Fold** | Enforces a high-converting, immersive landing page experience common in premium LMS sites. |
 | **3D Breakout Effect** | Uses `overflow: visible` and `height: 110%` to create a modern, deep visual aesthetic. |
 | **FA6 CDN Integration** | Rapid access to professional icons without increasing component bundle size via inline SVGs. |
-| **Image Optimization** | Added refined `sizes` prop (`calc(100vw - 40px)`, etc.) to accurately match CSS padding/flex distribution for zero console warnings and optimal LCP. |
+| **Image Optimization** | Added refined `sizes` prop (`calc(100vw - 40px)`, etc.) to accurately match CSS padding/flex distribution. |
+| **Feature Card Design** | Defined brand-specific 64x64px circular icon containers with `#EEF2FF` backdrop and `#3D5AFE` icons for consistency. |
 
 ---
 
