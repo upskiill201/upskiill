@@ -96,7 +96,7 @@ The Hero (with Category Slider) and the "Why Learn" section are finished and fol
 | **100vh Hero Fold** | Enforces a high-converting, immersive landing page experience common in premium LMS sites. |
 | **3D Breakout Effect** | Uses `overflow: visible` and `height: 110%` to create a modern, deep visual aesthetic. |
 | **FA6 CDN Integration** | Rapid access to professional icons without increasing component bundle size via inline SVGs. |
-| **Image Optimization** | Added `sizes` prop to instructor image with responsive viewport values to resolve Next.js warnings and improve LCP performance. |
+| **Image Optimization** | Added refined `sizes` prop (`calc(100vw - 40px)`, etc.) to accurately match CSS padding/flex distribution for zero console warnings and optimal LCP. |
 
 ---
 
