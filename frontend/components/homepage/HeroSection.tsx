@@ -135,6 +135,7 @@ export default function HeroSection() {
                 src="/homepage/instructor.png"
                 alt="Upskiill expert instructor"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 440px"
                 className={styles.instructorImg}
                 priority
               />
