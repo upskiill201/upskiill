@@ -1,5 +1,5 @@
 # Upskiill — Session Handoff
-> Last updated: 2026-03-29 02:54 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-03-30 01:45 WAT · Keep this file current at the end of every session.
 
 ---
 
@@ -40,11 +40,17 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
-- [x] Landing/home page (`/`) — premium design with hero section
+- [x] **Premium Homepage UI** — Pixel-perfect implementation of the landing page.
+    - [x] **100vh Hero Fold**: Captures the entire user viewport for maximum immersion.
+    - [x] **3D Breakout Effect**: Instructor image extends physically above the banner top.
+    - [x] **Floating Badges**: Staggered icon boxes (Shield, Chart, Sparkles) with vertical float animations.
+    - [x] **Category Slider**: Multi-group carousel (12 categories) with auto-play and hover-pause logic.
+    - [x] **Feature Grid**: "Why learn with Upskiill?" section with 12 interactive cards (6 live features, 6 AI "Coming Soon" features).
 - [x] Login page (`/login`) — split-panel UI, form with validation, JWT stored in localStorage
 - [x] Signup page (`/signup`) — matching split-panel UI
-- [x] Global header component
+- [x] Global header component with search and navigation
 - [x] `NEXT_PUBLIC_API_URL` env var used for all API calls (falls back to `http://localhost:3001`)
+- [x] Font Awesome 6 (Solid) integrated via CDN for lightweight iconography.
 
 ### Auth Flow (Local & Live — working ✅)
 - [x] Signup → POST `/auth/signup` → returns `{ access_token, user }`
@@ -55,12 +61,12 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ---
 
-## 🟢 Current Status (2026-03-29 02:54 WAT)
+## 🟢 Current Status (2026-03-30 01:45 WAT)
 
-### Authentication: ✅ Working (Local & Live)
-The authentication flow is fully operational end-to-end. Connection issues with Supabase on Render have been resolved by using Connection Pooler URLs.
+### Homepage UI: ✅ Complete & Pixel-Perfect
+The homepage is fully implemented and follows strict UI specifications for spacing, typography (Plus Jakarta Sans/Inter), and absolute positioning. The hero section uses `100vh` to fill the first fold and features a perfectly balanced instructor breakout.
 
-**Next Immediate Goal:** Build the `/dashboard` page to handle successful logins without showing a 404.
+**Next Immediate Goal:** Build the `/dashboard` page to handle successful logins and implement protected routes.
 
 ---
 
@@ -83,10 +89,10 @@ The authentication flow is fully operational end-to-end. Connection issues with 
 | JWT in localStorage | Simple for now; plan to move to httpOnly cookies later |
 | `origin: true` → explicit regex CORS | Locked down to `*.vercel.app` only, avoids open CORS |
 | Prisma in `dependencies` (not dev) | Required at runtime for Prisma Client; must be present in production install |
-| `npm install --include=dev` on Render build | Build tools (`@nestjs/cli`, `tsc`) are devDeps but needed to compile |
-| `render.yaml` at repo root | Render auto-detects it; `rootDir: backend` scopes it to the backend folder |
-| `NEXT_PUBLIC_API_URL` env var | Allows same frontend code to target local or production backend without code changes |
-| Supabase Pooler URLs | Fixes P1001 error and connection instability from cloud providers like Render |
+| Supabase Pooler URLs | Fixes P1001 error and connection instability |
+| **100vh Hero Fold** | Enforces a high-converting, immersive landing page experience common in premium LMS sites. |
+| **3D Breakout Effect** | Uses `overflow: visible` and `height: 110%` to create a modern, deep visual aesthetic. |
+| **FA6 CDN Integration** | Rapid access to professional icons without increasing component bundle size via inline SVGs. |
 
 ---
 
@@ -94,30 +100,26 @@ The authentication flow is fully operational end-to-end. Connection issues with 
 
 ```
 upskiill/
-├── render.yaml                          # Render deploy config (rootDir: backend)
-├── .gitignore                           # Ignores .env, .env.local, node_modules, dist
+├── render.yaml                          # Render deploy config
 ├── backend/
-│   ├── .env                             # LOCAL ONLY — never committed
 │   ├── src/
 │   │   ├── main.ts                      # Entry: CORS, ValidationPipe, port binding
-│   │   ├── app.module.ts                # Root module: PrismaModule + AuthModule
-│   │   ├── auth/
-│   │   │   ├── auth.controller.ts       # POST /auth/signup, POST /auth/login
-│   │   │   ├── auth.service.ts          # Business logic: hash, compare, sign JWT
-│   │   │   ├── auth.module.ts           # JwtModule, PassportModule, JwtStrategy
-│   │   │   ├── dto/signup.dto.ts
-│   │   │   └── dto/login.dto.ts
-│   │   └── prisma/
-│   │       ├── prisma.module.ts
-│   │       └── prisma.service.ts
+│   │   ├── auth/                        # Signup, Login, JWT logic
 │   └── prisma/schema.prisma             # User model definition
 └── frontend/
-    ├── .env.local                       # LOCAL ONLY — NEXT_PUBLIC_API_URL=http://localhost:3001
-    ├── .env.example                     # Committed template for Vercel setup
-    └── app/
-        ├── page.tsx                     # Landing page
-        ├── login/page.tsx               # Login form + split UI
-        └── signup/page.tsx              # Signup form + split UI
+    ├── app/
+    │   ├── page.tsx                     # Landing page (homepage)
+    │   ├── layout.tsx                   # Root layout (Fonts, FA6 CDN)
+    │   ├── globals.css                  # Design system variables
+    │   ├── login/page.tsx               # Login UI
+    │   └── signup/page.tsx              # Signup UI
+    ├── components/
+    │   ├── Header.tsx                   # Sticky nav with search
+    │   └── homepage/
+    │       ├── HeroSection.tsx          # Banner, Slider, Features combined
+    │       └── HeroSection.module.css   # Pixel-perfect absolute styles
+    └── public/
+        └── homepage/                    # instructor.png and all cat-*.png assets
 ```
 
 ---
@@ -132,12 +134,10 @@ cd frontend && npm run dev
 cd backend && npm run start:dev
 ```
 
-Both must be running simultaneously for local auth to work.
-
 ---
 
 ## 🔗 Live URLs
 - **Frontend:** https://upskiill.vercel.app
 - **Backend:** https://upskiill-backend.onrender.com
-- **Render health check:** https://upskiill-backend.onrender.com/ → should return `{ "message": "Hello World!" }`
 - **GitHub:** https://github.com/upskiill201/upskiill
+- **PR for Latest UI:** https://github.com/upskiill201/upskiill/pull/31

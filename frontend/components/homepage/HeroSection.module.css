@@ -1,0 +1,522 @@
+/* ============================================================
+   HeroSection.module.css — Pixel-perfect to design spec
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────
+   BANNER — exactly 260px, overflow visible for head breakout
+────────────────────────────────────────────────────────── */
+.heroContainer {
+  height: calc(100vh - 72px); /* Fill the fold precisely */
+  display: flex;
+  flex-direction: column;
+  overflow: visible;          
+}
+
+/* ──────────────────────────────────────────────────────────
+   BANNER — Taller to fill the majority of the fold
+────────────────────────────────────────────────────────── */
+.banner {
+  background-color: #3D5AFE;
+  flex: 1.2;                  /* Takes more space than slider */
+  position: relative;
+  overflow: visible;          
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Wave SVG — absolutely behind everything at 40% opacity */
+.bannerWave {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.bannerWave svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+/* Inner wrapper — max 1280px, flex row, items-center */
+.bannerInner {
+  max-width: 1280px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+/* ──────────────────────────────────────────────────────────
+   LEFT CARD — 40% width, 40px left margin, white, 28px pad
+────────────────────────────────────────────────────────── */
+.contentCard {
+  width: 40%;
+  margin-left: 40px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1F2A44;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+.cardDesc {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4B5563;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.btnRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Primary — filled brand blue, exactly 40px */
+.btnPrimary {
+  height: 40px;
+  padding: 0 20px;
+  background: #3D5AFE;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  transition: background 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+.btnPrimary:hover {
+  background: #2D4AEE;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(61, 90, 254, 0.35);
+}
+
+/* Secondary — white bg, 1.5px blue border, exactly 40px */
+.btnSecondary {
+  height: 40px;
+  padding: 0 20px;
+  background: #ffffff;
+  color: #3D5AFE;
+  border: 1.5px solid #3D5AFE;
+  border-radius: 4px;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  transition: background 200ms ease-out;
+}
+.btnSecondary:hover {
+  background: #EEF2FF;
+}
+
+/* ──────────────────────────────────────────────────────────
+   RIGHT SIDE — relative container, max-width 400px
+   Instructor absolutely placed at bottom:0, height:110%
+   so head breaks OUT above the 260px banner
+────────────────────────────────────────────────────────── */
+.visualArea {
+  position: relative;
+  height: 100%;               
+  max-width: 600px;
+  flex: 1;
+  overflow: visible;          
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.instructorWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;               /* fill content area */
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.instructorImg {
+  position: absolute !important;
+  bottom: 0 !important;
+  top: auto !important;
+  left: 52% !important;      /* shift slightly right to be between icons */
+  transform: translateX(-50%) !important;
+  height: 110% !important;   /* the 3D breakout height */
+  width: auto !important;
+  max-width: 440px !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  display: block;
+}
+
+/* ── Floating icon badges ── */
+.badge {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  font-size: 0;               /* hides any text, icons handle size */
+}
+
+/* Badge 1 — Chart, top-right */
+.badge1 {
+  top: 15%;
+  right: 24%;
+  animation: floatA 3s ease-in-out infinite;
+  z-index: 20;
+}
+
+/* Badge 2 — Shield, mid-left */
+.badge2 {
+  top: 45%;
+  left: 22%;
+  animation: floatB 4s ease-in-out 1s infinite;
+  z-index: 20;
+}
+
+/* Badge 3 — Sparkles, bottom-right */
+.badge3 {
+  bottom: 15%;
+  right: 22%;
+  animation: floatC 3.5s ease-in-out 0.5s infinite;
+  z-index: 20;
+}
+
+@keyframes floatA {
+  0%, 100% { transform: translateY(0);     }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes floatB {
+  0%, 100% { transform: translateY(0);     }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes floatC {
+  0%, 100% { transform: translateY(0);     }
+  50%       { transform: translateY(-10px); }
+}
+
+/* FA icon sizing inside badges */
+.badge i {
+  font-size: 24px;
+  line-height: 1;
+}
+.iconChart   { color: #3B82F6; }
+.iconShield  { color: #22C55E; }
+.iconSparkle { color: #A855F7; }
+
+/* ============================================================
+   CATEGORY SLIDER
+   ============================================================ */
+.sliderSection {
+  background: #ffffff;
+  padding: 36px 0 20px;
+  flex: 0 0 auto;             /* Keeps its fixed content but sits on the fold bottom */
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.sliderInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: flex-start;
+  gap: 36px;
+}
+
+/* Left — static text block */
+.sliderLeft {
+  flex: 0 0 250px;
+  padding-top: 4px;
+}
+
+.sliderHeadline {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #1F2A44;
+  line-height: 1.3;
+  margin: 0 0 12px;
+}
+.sliderHeadline em {
+  font-style: italic;
+  font-weight: 800;
+}
+
+.sliderSubtext {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 14px;
+  color: #3D5AFE;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Right carousel viewport */
+.carouselWrap {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sliding track */
+.carouselTrack {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+}
+
+/* Each card — 1/3 of viewport, minus gaps */
+.categoryCard {
+  flex: 0 0 calc((100% - 32px) / 3);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+.categoryCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+.categoryCard:hover .cardArrow {
+  transform: translateX(4px);
+}
+
+.cardImage {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #fff;
+}
+
+.cardName {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1F2A44;
+}
+
+.cardArrow {
+  font-size: 16px;
+  color: #4B5563;
+  transition: transform 200ms ease-out;
+}
+
+/* Dot + chevron nav */
+.sliderNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.navBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #E5E7EB;
+  background: #F9FAFB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #4B5563;
+  padding: 0;
+  line-height: 1;
+  transition: background 200ms ease-out, color 200ms ease-out;
+}
+.navBtn:hover {
+  background: #EEF2FF;
+  color: #3D5AFE;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #D1D5DB;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background 300ms ease-in-out;
+  flex-shrink: 0;
+}
+.dotActive {
+  background: #3D5AFE;
+}
+
+/* ============================================================
+   WHY LEARN SECTION
+   ============================================================ */
+.whySection {
+  background: #F8F9FF;
+  padding: 72px 40px;
+}
+.whyInner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.whyHeader {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.whyTitle {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0 0 14px;
+}
+.whySubtitle {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 16px;
+  color: #4B5563;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.whyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.whyCard {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 28px;
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+.whyCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.iconCircle {
+  width: 48px;
+  height: 48px;
+  background: #EEF2FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+.whyCardTitle {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0 0 10px;
+}
+.whyCardBody {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 14px;
+  color: #4B5563;
+  line-height: 1.7;
+  margin: 0;
+}
+.comingSoonBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #EEF2FF;
+  color: #3D5AFE;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .contentCard { width: 44%; margin-left: 20px; }
+  .whyGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  /* Banner stacks */
+  .banner { height: auto; min-height: 400px; overflow: hidden; }
+  .bannerInner {
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+    gap: 24px;
+    height: auto;
+  }
+  .contentCard { width: 100%; margin-left: 0; }
+  .visualArea { height: 220px; width: 100%; overflow: hidden; }
+  .instructorImg { height: 100%; position: relative; left: auto; transform: none; }
+  .badge1 { top: 8px;  right: 8px; }
+  .badge2 { top: 40%;  left: 4px; }
+  .badge3 { bottom: 8px; right: 4px; }
+
+  /* Slider */
+  .sliderInner { flex-direction: column; gap: 20px; padding: 0 20px; }
+  .sliderLeft { flex: none; width: 100%; }
+  .sliderHeadline { font-size: 24px; }
+  .categoryCard { flex: 0 0 75vw; }
+
+  /* Why */
+  .whySection { padding: 48px 20px; }
+  .whyTitle { font-size: 28px; }
+  .whyGrid { grid-template-columns: 1fr; }
+}

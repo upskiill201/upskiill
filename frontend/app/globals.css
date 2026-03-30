@@ -39,6 +39,11 @@ body {
   box-sizing: border-box;
 }
 
+/* Make Plus Jakarta Sans available globally */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+}
+
 *, *::before, *::after {
   box-sizing: inherit;
 }
