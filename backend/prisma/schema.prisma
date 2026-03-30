@@ -9,36 +9,28 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  fullName  String
-  password  String   // Hashed string
-  role      Role     @default(STUDENT)
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id          String       @id @default(uuid())
+  email       String       @unique
+  fullName    String
+  password    String
+  role        Role         @default(STUDENT)
+  avatarUrl   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   enrollments Enrollment[]
 }
 
-enum Role {
-  STUDENT
-  INSTRUCTOR
-  ADMIN
-}
-
 model Course {
-  id           String   @id @default(uuid())
+  id           String       @id @default(uuid())
   title        String
   description  String
   thumbnailUrl String?
   price        Float
   instructorId String
-  published    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  enrollments Enrollment[]
+  published    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  enrollments  Enrollment[]
 }
 
 model Enrollment {
@@ -47,9 +39,14 @@ model Enrollment {
   courseId  String
   progress  Int      @default(0)
   createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
 }
