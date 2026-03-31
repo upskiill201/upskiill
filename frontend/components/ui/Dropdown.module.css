@@ -1,0 +1,108 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F2A44;
+}
+
+.triggerBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background-color: transparent;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1F2A44;
+  transition: all 0.2s ease;
+}
+
+.triggerBtn:hover {
+  border-color: #CBD5E1;
+}
+
+.triggerBtn:focus {
+  outline: none;
+  border-color: #3D5AFE;
+  box-shadow: 0 0 0 3px rgba(61,90,254,0.1);
+}
+
+.placeholder {
+  color: #94A3B8;
+}
+
+.selectedText {
+  color: #1F2A44;
+  font-weight: 500;
+}
+
+.icon {
+  color: #64748B;
+  transition: transform 0.2s ease;
+}
+
+.iconOpen {
+  transform: rotate(180deg);
+}
+
+.panelContainer {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  animation: slideDown 0.15s ease forwards;
+}
+
+.panel {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #F1F5F9;
+}
+
+.option {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1F2A44;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.option:hover {
+  background-color: #F5F7FB;
+}
+
+.option.active {
+  background-color: #EEF2FF;
+  color: #3D5AFE;
+  font-weight: 500;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

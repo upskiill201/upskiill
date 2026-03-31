@@ -1,0 +1,225 @@
+.footer {
+  background-color: #1F2A44;
+  color: #ffffff;
+  padding: 64px 32px 32px;
+  font-family: inherit;
+  margin-top: auto;
+}
+
+.topContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 1024px) {
+  .topContainer {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    row-gap: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topContainer {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 48px;
+  }
+}
+
+@media (max-width: 576px) {
+  .topContainer {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+.brandCol {
+  padding-right: 48px;
+}
+
+.logo {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.logo :global(img) {
+  filter: brightness(0) invert(1);
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.socials {
+  display: flex;
+  gap: 16px;
+}
+
+.socials a {
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+}
+
+.socials a:hover {
+  color: #3D5AFE;
+  transform: translateY(-2px);
+}
+
+.linkCol h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.linkCol ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.linkCol a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.linkCol a:hover {
+  color: #3D5AFE;
+}
+
+.divider {
+  max-width: 1200px;
+  margin: 48px auto;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bottomContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.paymentMethods {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.paymentMethods span {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.paymentIconsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paymentBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.appLinks {
+  display: flex;
+  gap: 16px;
+}
+
+.appStoreBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.appStoreBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.appBtnText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.appBtnSmall {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.appBtnBig {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-top: 1px;
+}
+
+.languageSelect {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  font-family: inherit;
+  min-width: 140px;
+}
+
+.languageSelect option {
+  background-color: #1F2A44;
+  color: #ffffff;
+}
+
+.copyrightRow {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+}

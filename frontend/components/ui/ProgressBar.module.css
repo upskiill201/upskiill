@@ -1,0 +1,64 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1F2A44;
+}
+
+.percentage {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.track {
+  width: 100%;
+  background-color: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sizes */
+.sm {
+  height: 4px;
+}
+
+.md {
+  height: 8px;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Colors */
+.blue {
+  background: linear-gradient(90deg, #3D5AFE, #7B61FF);
+}
+
+.green {
+  background: #22C55E;
+}
+
+.purple {
+  background: #9333EA;
+}

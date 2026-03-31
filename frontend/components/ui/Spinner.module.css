@@ -1,0 +1,69 @@
+/* ─── BASE SPINNER ────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border-style: solid;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ─── SIZES ───────────────────────────────────────────────── */
+.xs {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.md {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+/* ─── COLORS ──────────────────────────────────────────────── */
+
+/* Blue — default, on white backgrounds */
+.blue {
+  border-color: #DBEAFE;
+  border-top-color: #3D5AFE;
+}
+
+/* White — inside blue/dark buttons or dark backgrounds */
+.white {
+  border-color: rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+}
+
+/* Grey — neutral, on light grey backgrounds */
+.grey {
+  border-color: #E2E8F0;
+  border-top-color: #64748B;
+}
+
+/* ─── CENTERED WRAPPER ────────────────────────────────────── */
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 24px 0;
+}
+
+/* ─── ANIMATION ───────────────────────────────────────────── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

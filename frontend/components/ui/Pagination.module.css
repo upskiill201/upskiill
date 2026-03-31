@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background-color: #ffffff;
+  color: #1F2A44;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  font-family: inherit;
+}
+
+.pageBtn:not(:disabled):hover {
+  background-color: #F5F7FB;
+  border-color: #CBD5E1;
+}
+
+.pageBtn.active {
+  background-color: #3D5AFE;
+  border-color: #3D5AFE;
+  color: #ffffff;
+}
+
+.navBtn {
+  color: #64748B;
+}
+
+.navBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.pageCount {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.bold {
+  font-weight: 600;
+  color: #1F2A44;
+}

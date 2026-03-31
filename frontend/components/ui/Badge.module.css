@@ -1,0 +1,75 @@
+/* ─── BASE BADGE ──────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ─── SIZES ───────────────────────────────────────────────── */
+.sm {
+  padding: 3px 8px;
+  font-size: 10px;
+}
+
+.md {
+  padding: 5px 12px;
+  font-size: 11px;
+}
+
+/* ─── ICON ────────────────────────────────────────────────── */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ─── VARIANTS ────────────────────────────────────────────── */
+
+/* Blue — default, category labels */
+.blue {
+  background-color: #EEF2FF;
+  color: #3D5AFE;
+}
+
+/* Yellow — Bestseller */
+.yellow {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+/* Green — New, Free */
+.green {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+/* Red — Hot, Limited */
+.red {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+/* Grey — Neutral, level labels */
+.grey {
+  background-color: #F1F5F9;
+  color: #64748B;
+}
+
+/* Purple — Pro, Premium */
+.purple {
+  background-color: #F3E8FF;
+  color: #6D28D9;
+}
+
+/* Dark — inverse, on dark sections */
+.dark {
+  background-color: #1F2A44;
+  color: #FFFFFF;
+}

@@ -1,0 +1,145 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+/* Sizes */
+.md .searchForm {
+  height: 44px;
+}
+
+.lg .searchForm {
+  height: 56px;
+}
+
+.searchForm {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+}
+
+.inputWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid #E2E8F0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+  padding-left: 16px;
+}
+
+.inputWrapper:focus-within {
+  border-color: #3D5AFE;
+}
+
+.icon {
+  color: #94A3B8;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1F2A44;
+}
+
+.lg .input {
+  font-size: 16px;
+}
+
+.input::placeholder {
+  color: #94A3B8;
+}
+
+.submitBtn {
+  background-color: #3D5AFE;
+  color: #ffffff;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  padding: 0 24px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lg .submitBtn {
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+.submitBtn:hover {
+  background-color: #2D4AEE;
+}
+
+.submitBtn:focus {
+  outline: none;
+  background-color: #2D4AEE;
+  box-shadow: 0 0 0 3px rgba(61,90,254,0.3);
+}
+
+.suggestionsContainer {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #F1F5F9;
+  padding: 8px;
+  animation: slideDown 0.15s ease forwards;
+}
+
+.suggestionsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.suggestionItem {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #1F2A44;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.suggestionItem:hover {
+  background-color: #F5F7FB;
+}
+
+.suggestionIcon {
+  color: #94A3B8;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
