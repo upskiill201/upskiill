@@ -96,9 +96,56 @@ The Hero (with Category Slider) and the "Why Learn" section are finished and fol
 | Supabase Pooler URLs | Fixes P1001 error and connection instability |
 | **100vh Hero Fold** | Enforces a high-converting, immersive landing page experience common in premium LMS sites. |
 | **3D Breakout Effect** | Uses `overflow: visible` and `height: 110%` to create a modern, deep visual aesthetic. |
-| **FA6 CDN Integration** | Rapid access to professional icons without increasing component bundle size via inline SVGs. |
 | **Image Optimization** | Added refined `sizes` prop (`calc(100vw - 40px)`, etc.) to accurately match CSS padding/flex distribution. |
 | **Feature Card Design** | Defined brand-specific 64x64px circular icon containers with `#EEF2FF` backdrop and `#3D5AFE` icons for consistency. |
+| **Icon System — TWO libraries only** | `lucide-react` for all UI/form icons. `react-icons/fa` (FA6) for feature, brand & social icons. NO other icon libraries. NO emojis as icons in components. Established 2026-03-31. |
+| **Component Preview Strategy** | Every newly built component MUST be immediately showcased on the `/components` route for visual review and interaction testing. |
+
+---
+
+## 🎨 Icon System — Project Standard (Agreed 2026-03-31)
+
+> **Rule:** Only TWO icon libraries are used across the entire Upskiill codebase. No exceptions.
+
+| Library | Package | Use Case | Example Icons |
+|---|---|---|---|
+| **Lucide React** | `lucide-react` | All UI & form icons — inputs, navigation, actions | `Search`, `Mail`, `Lock`, `Eye`, `EyeOff`, `User`, `ArrowRight`, `ChevronRight`, `Plus`, `X`, `Check`, `BookOpen` |
+| **React Icons FA6** | `react-icons/fa` or `react-icons/fa6` | Feature icons, brand icons, social buttons | `FaGraduationCap`, `FaRocket`, `FaVideo`, `FaAward`, `FaApple`, `FaLinkedin`, `FaFacebook`, `FaTrash` |
+| **React Icons FC** | `react-icons/fc` | Google colored icon ONLY | `FcGoogle` |
+
+### ❌ What is NOT allowed:
+- Emojis used as icons inside components
+- Installing any other icon library (Heroicons, Material Icons, Phosphor, etc.)
+- Inline SVGs unless absolutely no alternative exists
+- Font Awesome CDN in new components (only kept in existing HeroSection for now)
+
+### ✅ Import Pattern:
+```tsx
+// UI icons — use lucide-react
+import { Search, Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react';
+
+// Feature/brand icons — use react-icons/fa
+import { FaGraduationCap, FaRocket, FaVideo, FaTrash } from 'react-icons/fa';
+
+// Google icon only
+import { FcGoogle } from 'react-icons/fc';
+```
+
+---
+
+## 🧩 Component Library Status
+
+> Full build plan: `docs/design/COMPONENT_BUILD_PLAN.md`
+> Live preview page: `http://localhost:3000/components`
+
+| Phase | Description | Status |
+|---|---|---|
+| Phase 1 — Shared UI | Button, Input, Badge, Avatar, StarRating, etc. (16 components) | 🟢 Complete (16/16 done) |
+| Phase 2 — Layout | Footer, Sidebar | 🟡 In Progress (1/2 done) |
+| Phase 3 — Features | CourseCard ⭐, ReviewCard, LessonItem, etc. (8 components) | 🔴 Not started |
+| Phase 4 — Homepage | CategoryGrid, TopCourses, StatsBanner, etc. (6 components) | 🔴 Not started |
+
+**Components built so far:** Header ✅ | HeroSection ✅ | Button ✅ | Badge ✅ | Spinner ✅ | Avatar ✅ | Input ✅ | Textarea ✅ | StarRating ✅ | ProgressBar ✅ | Modal ✅ | Tabs ✅ | Dropdown ✅ | SearchBar ✅ | Toast ✅ | Tooltip ✅ | Pagination ✅ | EmptyState ✅ | Footer ✅
 
 ---
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
+import Footer from "../components/layout/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -36,6 +37,7 @@ export default function RootLayout({
         <main className="flex-1" style={{ overflow: 'visible' }}>
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );

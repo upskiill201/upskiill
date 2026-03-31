@@ -1,0 +1,67 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.starsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #E2E8F0;
+  transition: transform 0.15s ease-in-out;
+}
+
+.starBtn.interactive {
+  cursor: pointer;
+}
+
+.starBtn.interactive:hover {
+  transform: scale(1.15);
+}
+
+.filled {
+  color: #F59E0B;
+}
+
+.empty {
+  color: #E2E8F0;
+}
+
+/* Context sizes base on icon font-size */
+.sm .starBtn {
+  font-size: 14px;
+}
+.md .starBtn {
+  font-size: 16px;
+}
+.lg .starBtn {
+  font-size: 20px;
+}
+
+.reviewCount {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 400;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.lg .reviewCount {
+  font-size: 14px;
+}
+
+.sm .reviewCount {
+  font-size: 12px;
+}

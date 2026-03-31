@@ -42,4 +42,4 @@ _Track the individual reusable generic UI components here as they are built:_
 - [x] Animated floating Glass Cards
 - [ ] Shared Loading Spinners
 - [ ] Course Cards (Thumbnail, title, instructor, price)
-- [ ] Rating Stars component 
+- [x] Rating Stars component 
