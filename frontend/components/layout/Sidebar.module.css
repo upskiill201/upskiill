@@ -1,0 +1,255 @@
+.sidebar {
+  width: 280px;
+  height: 100%;
+  min-height: 600px;
+  background-color: #ffffff;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 40;
+  transition: transform 0.3s ease;
+}
+
+.backdrop {
+  display: none;
+}
+
+.header {
+  padding: 24px;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2A44;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.closeBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Dashboard Nav */
+.dashboardNav {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  text-decoration: none;
+  color: #64748B;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.navItem:hover {
+  background-color: #F8FAFC;
+  color: #1F2A44;
+}
+
+.navItem.active {
+  background-color: #EEF2FF;
+  border-left-color: #3D5AFE;
+  color: #3D5AFE;
+  font-weight: 600;
+}
+
+.navIcon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.navItem.active .navIcon {
+  color: #3D5AFE;
+}
+
+.divider {
+  height: 1px;
+  background-color: #F1F5F9;
+  margin: 16px 24px;
+}
+
+.logoutBtn {
+  color: #EF4444;
+}
+
+.logoutBtn:hover {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
+
+/* Player Nav */
+.playerNav {
+  display: flex;
+  flex-direction: column;
+}
+
+.progressContainer {
+  padding: 24px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.courseTitle {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1F2A44;
+  line-height: 1.4;
+}
+
+.accordionContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background-color: #F8FAFC;
+  border: none;
+  cursor: pointer;
+  color: #1F2A44;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.lessonItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 24px;
+  width: 100%;
+  border: none;
+  border-left: 3px solid transparent;
+  background-color: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.lessonItem:hover:not(.lessonLocked) {
+  background-color: #F8FAFC;
+}
+
+.lessonActive {
+  background-color: #EEF2FF;
+  border-left-color: #3D5AFE;
+}
+
+.lessonLocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lessonIcon {
+  margin-top: 2px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+}
+
+.checkIcon { color: #22C55E; }
+.playIcon { color: #94A3B8; }
+.lessonActive .playIcon { color: #3D5AFE; }
+.lockIcon { color: #CBD5E1; }
+
+.lessonDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lessonTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1F2A44;
+  line-height: 1.4;
+}
+
+.lessonActive .lessonTitle {
+  color: #3D5AFE;
+  font-weight: 600;
+}
+
+.lessonTime {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+  }
+
+  .closeBtn {
+    display: block;
+  }
+}

@@ -52,6 +52,9 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
     - [ ] **Homepage Footer**: Site-wide links and brand info.
 - [x] Login page (`/login`) — split-panel UI, form with validation, JWT stored in localStorage
 - [x] Signup page (`/signup`) — matching split-panel UI
+- [x] Shared Loading Spinners
+- [x] Course Cards (Thumbnail, title, instructor, price)
+- [x] Rating Stars component
 - [x] Global header component with search and navigation
 - [x] `NEXT_PUBLIC_API_URL` env var used for all API calls (falls back to `http://localhost:3001`)
 - [x] Font Awesome 6 (Solid) integrated via CDN for lightweight iconography.
@@ -141,11 +144,11 @@ import { FcGoogle } from 'react-icons/fc';
 | Phase | Description | Status |
 |---|---|---|
 | Phase 1 — Shared UI | Button, Input, Badge, Avatar, StarRating, etc. (16 components) | 🟢 Complete (16/16 done) |
-| Phase 2 — Layout | Footer, Sidebar | 🟡 In Progress (1/2 done) |
-| Phase 3 — Features | CourseCard ⭐, ReviewCard, LessonItem, etc. (8 components) | 🔴 Not started |
+| Phase 2 — Layout | Footer, Sidebar | 🟢 Complete (2/2 done) |
+| Phase 3 — Features | CourseCard ⭐, CoursePlayerLayout, etc. | 🟡 In Progress (3/10 done) |
 | Phase 4 — Homepage | CategoryGrid, TopCourses, StatsBanner, etc. (6 components) | 🔴 Not started |
 
-**Components built so far:** Header ✅ | HeroSection ✅ | Button ✅ | Badge ✅ | Spinner ✅ | Avatar ✅ | Input ✅ | Textarea ✅ | StarRating ✅ | ProgressBar ✅ | Modal ✅ | Tabs ✅ | Dropdown ✅ | SearchBar ✅ | Toast ✅ | Tooltip ✅ | Pagination ✅ | EmptyState ✅ | Footer ✅
+**Components built so far:** Header ✅ | HeroSection ✅ | Button ✅ | Badge ✅ | Spinner ✅ | Avatar ✅ | Input ✅ | Textarea ✅ | StarRating ✅ | ProgressBar ✅ | Modal ✅ | Tabs ✅ | Dropdown ✅ | SearchBar ✅ | Toast ✅ | Tooltip ✅ | Pagination ✅ | EmptyState ✅ | Footer ✅ | Sidebar ✅ | CoursePlayerLayout ✅ | CourseCard ✅ | CourseCardHorizontal (Next 🚀)
 
 ---
 

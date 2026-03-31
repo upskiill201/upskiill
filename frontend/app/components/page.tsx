@@ -17,8 +17,11 @@ import { Toast } from "@/components/ui/Toast";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Pagination } from "@/components/ui/Pagination";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { CoursePlayerLayout } from "@/components/features/CoursePlayerLayout";
+import { CourseCard } from "@/components/features/CourseCard";
 // ✅ PROJECT ICON STANDARD: lucide-react for UI icons, react-icons/fa for feature/brand icons
-import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye } from 'lucide-react';
+import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye, User, Heart, Award, Settings } from 'lucide-react';
 import { FaTrash, FaRocket, FaGraduationCap } from 'react-icons/fa';
 
 export default function ComponentsPreviewPage() {
@@ -443,6 +446,89 @@ export default function ComponentsPreviewPage() {
           </Group>
         </Section>
 
+        {/* ─── SIDEBAR COMPONENT ────────────────────────────── */}
+        <Section title="Sidebar" file="components/layout/Sidebar.tsx" status="done">
+          <Group label="Dashboard Mode">
+            <div style={{ width: "100%" }}>
+              <SidebarDashboardDemo />
+            </div>
+          </Group>
+          <Group label="Course Player Mode">
+            <div style={{ width: "100%" }}>
+              <SidebarPlayerDemo />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── COURSE PLAYER LAYOUT ────────────────────────────── */}
+        <Section title="Course Player UI" file="components/features/CoursePlayerLayout.tsx" status="done">
+          <Group label="Full Video/Lesson Interface (All 8 Items)">
+            <div style={{ width: "100%" }}>
+              <CoursePlayerLayout />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── COURSE CARD ────────────────────────────── */}
+        <Section title="CourseCard" file="components/features/CourseCard.tsx" status="done">
+          <Group label="Standard Course Cards">
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+              <CourseCard 
+                id="react-101"
+                title="Complete React Developer in 2026 (w/ Redux, Hooks, GraphQL)"
+                thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=600&auto=format&fit=crop"
+                instructorName="Andrei Neagoie"
+                instructorAvatar="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop"
+                rating={4.8}
+                reviewCount={32450}
+                studentsCount={124500}
+                totalHours={38}
+                totalLessons={420}
+                price={49.99}
+                originalPrice={129.99}
+                discountPercentage={61}
+                isBestseller
+                level="All Levels"
+                category="Web Development"
+                shortDescription="Master the React ecosystem from scratch. Build massive, scalable applications using Redux Toolkit, Context API, Hooks, and Next.js 14 in this comprehensive bootcamp."
+              />
+              <CourseCard 
+                id="design-basics"
+                title="Figma UI/UX Design Essentials"
+                thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop"
+                instructorName="Daniel Scott"
+                instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                rating={4.7}
+                reviewCount={11200}
+                totalHours={12}
+                totalLessons={115}
+                price={19.99}
+                isNew
+                level="Beginner"
+                category="Design"
+              />
+            </div>
+          </Group>
+          <Group label="Enrolled / Progress State">
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+              <CourseCard 
+                id="python-bootcamp"
+                title="100 Days of Code: The Complete Python Pro Bootcamp"
+                thumbnail="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?q=80&w=600&auto=format&fit=crop"
+                instructorName="Dr. Angela Yu"
+                instructorAvatar="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                rating={4.9}
+                reviewCount={95000}
+                totalHours={60}
+                totalLessons={630}
+                price={89.99}
+                isEnrolled
+                progress={34}
+              />
+            </div>
+          </Group>
+        </Section>
+
       </div>
     </div>
   );
@@ -544,6 +630,67 @@ function PaginationDemo() {
       onPageChange={setPage} 
       showPageCount 
     />
+  );
+}
+
+
+function SidebarDashboardDemo() {
+  const links = [
+    { id: '1', label: 'My Courses', href: '#', icon: <BookOpen size={18} /> },
+    { id: '2', label: 'Profile', href: '#', icon: <User size={18} /> },
+    { id: '3', label: 'Wishlist', href: '#', icon: <Heart size={18} /> },
+    { id: '4', label: 'Certificates', href: '#', icon: <Award size={18} /> },
+    { id: '5', label: 'Settings', href: '#', icon: <Settings size={18} /> },
+  ];
+  return (
+    <div style={{ height: '600px', display: 'flex', border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden' }}>
+      <Sidebar mode="dashboard" dashboardLinks={links} activeLinkId="1" />
+      <div style={{ padding: '24px', flex: 1, backgroundColor: '#F8FAFC' }}>
+        <h3>Dashboard Content Area</h3>
+        <p>This is where the dashboard content goes.</p>
+      </div>
+    </div>
+  );
+}
+
+function SidebarPlayerDemo() {
+  const [activeLesson, setActiveLesson] = useState('l1');
+  const courseSections = [
+    {
+      id: 's1',
+      title: 'Section 1: Introduction',
+      lessons: [
+        { id: 'l1', title: 'Welcome to the Course', duration: '2:30', isCompleted: true, isLocked: false },
+        { id: 'l2', title: 'What you will learn', duration: '5:15', isCompleted: false, isLocked: false },
+      ]
+    },
+    {
+      id: 's2',
+      title: 'Section 2: Deep Dive',
+      lessons: [
+        { id: 'l3', title: 'Core Concepts', duration: '12:45', isCompleted: false, isLocked: true },
+        { id: 'l4', title: 'Advanced Techniques', duration: '18:20', isCompleted: false, isLocked: true },
+      ]
+    }
+  ];
+
+  return (
+    <div style={{ height: '600px', display: 'flex', border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden' }}>
+      <Sidebar 
+        mode="coursePlayer" 
+        courseTitle="Complete React Developer Bootcamp"
+        courseProgress={35}
+        courseSections={courseSections} 
+        activeLessonId={activeLesson}
+        onLessonClick={setActiveLesson}
+      />
+      <div style={{ padding: '24px', flex: 1, backgroundColor: '#111827', color: 'white' }}>
+        <h3>Video Player Area</h3>
+        <div style={{ width: '100%', height: '300px', backgroundColor: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          Video Player Placeholder
+        </div>
+      </div>
+    </div>
   );
 }
 
