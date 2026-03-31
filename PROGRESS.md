@@ -40,6 +40,8 @@ _Track the individual reusable generic UI components here as they are built:_
 - [x] Social Auth Buttons (Google, LinkedIn, Apple, Facebook)
 - [x] Form Inputs (w/ icons)
 - [x] Animated floating Glass Cards
-- [ ] Shared Loading Spinners
-- [ ] Course Cards (Thumbnail, title, instructor, price)
+- [x] Shared Loading Spinners
+- [x] Course Cards (Thumbnail, title, instructor, price)
 - [x] Rating Stars component 
+- [ ] Course Card Horizontal (Next 🚀)
+- [ ] Review Card

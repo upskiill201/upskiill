@@ -1,0 +1,7 @@
+{
+  "name": "Upskiill",
+  "short_name": "Upskiill",
+  "description": "Learn Anything with AI Support",
+  "start_url": "/",
+  "display": "standalone"
+}
