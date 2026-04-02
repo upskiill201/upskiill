@@ -1,10 +1,15 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaApple, FaGooglePlay, FaTiktok, FaYoutube, FaCreditCard, FaBuildingColumns } from 'react-icons/fa6';
 import styles from './Footer.module.css';
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/dashboard')) return null;
   return (
     <footer className={styles.footer}>
       <div className={styles.topContainer}>

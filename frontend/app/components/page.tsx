@@ -20,8 +20,12 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { CoursePlayerLayout } from "@/components/features/CoursePlayerLayout";
 import { CourseCard } from "@/components/features/CourseCard";
+import { CourseCardHorizontal } from "@/components/features/CourseCardHorizontal";
+import { ReviewCard } from "@/components/features/ReviewCard";
+import { CategoryCard } from "@/components/features/CategoryCard";
+import { InstructorCard } from "@/components/features/InstructorCard";
 // ✅ PROJECT ICON STANDARD: lucide-react for UI icons, react-icons/fa for feature/brand icons
-import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye, User, Heart, Award, Settings } from 'lucide-react';
+import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye, User, Heart, Award, Settings, Code, Database, Palette, ShieldCheck, Cpu, TrendingUp, ExternalLink, PlayCircle } from 'lucide-react';
 import { FaTrash, FaRocket, FaGraduationCap } from 'react-icons/fa';
 
 export default function ComponentsPreviewPage() {
@@ -471,7 +475,7 @@ export default function ComponentsPreviewPage() {
 
         {/* ─── COURSE CARD ────────────────────────────── */}
         <Section title="CourseCard" file="components/features/CourseCard.tsx" status="done">
-          <Group label="Standard Course Cards">
+          <Group label="Vertical Variant (Grid View)">
             <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
               <CourseCard 
                 id="react-101"
@@ -509,21 +513,165 @@ export default function ComponentsPreviewPage() {
               />
             </div>
           </Group>
-          <Group label="Enrolled / Progress State">
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-              <CourseCard 
-                id="python-bootcamp"
-                title="100 Days of Code: The Complete Python Pro Bootcamp"
-                thumbnail="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?q=80&w=600&auto=format&fit=crop"
-                instructorName="Dr. Angela Yu"
-                instructorAvatar="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+          <Group label="Horizontal Variant (List View)">
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <CourseCardHorizontal 
+                   id="nextjs-ninja"
+                   title="Next.js 15 Masterclass: Become a Ninja with Server Components"
+                   thumbnail="https://images.unsplash.com/photo-1618477388954-7852f32655ec?q=80&w=600&auto=format&fit=crop"
+                   instructorName="Kyle Diggs"
+                   instructorAvatar="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=100&h=100&fit=crop"
+                   rating={4.9}
+                   reviewCount={5400}
+                   studentsCount={22300}
+                   totalHours={45}
+                   totalLessons={320}
+                   price={84.99}
+                   originalPrice={149.99}
+                   discountPercentage={43}
+                   isBestseller
+                   level="Intermediate"
+                   category="Next.js"
+                   shortDescription="Stop struggling with Server Components and Hydration errors. Learn the industry-standard architecture for high-performance Next.js apps with real-world projects."
+                />
+                <CourseCardHorizontal 
+                   id="python-enrolled"
+                   title="Advanced Python for Data Science"
+                   thumbnail="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop"
+                   instructorName="Dr. Sarah Johnson"
+                   instructorAvatar="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop"
+                   rating={4.8}
+                   reviewCount={1200}
+                   studentsCount={8900}
+                   totalHours={18}
+                   totalLessons={140}
+                   price={0}
+                   isEnrolled
+                   progress={75}
+                   category="Data Science"
+                   shortDescription="Unlock the full power of Python for complex data analysis, machine learning algorithms, and high-level statistical modeling."
+                />
+             </div>
+          </Group>
+        </Section>
+
+        {/* ─── REVIEW CARD ────────────────────────────── */}
+        <Section title="ReviewCard" file="components/features/ReviewCard.tsx" status="done">
+          <Group label="Standard Review with Helpful Feedback">
+            <ReviewCard 
+              userName="Jessica Taylor"
+              userAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+              rating={5.0}
+              date="Published 3 days ago"
+              comment="The best React course on the platform. The project-based approach really helped me understand the complexity of Server Components and how they differ from Client Components. Highly recommended for any serious developer."
+              helpfulCount={42}
+            />
+          </Group>
+          <Group label="Review with Instructor Response">
+            <ReviewCard 
+              userName="Alex Rivera"
+              userAvatar="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop"
+              rating={4.5}
+              date="Published 1 week ago"
+              comment="Great content! I only wish there was a bit more depth on state management beyond Redux. Maybe some Zustand or Jotai examples would be great for the next update."
+              helpfulCount={15}
+              isInstructorResponse
+              instructorName="Andrei Neagoie"
+              instructorAvatar="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+              instructorComment="Thanks for the feedback, Alex! We're actually drafting a new section on lightweight state management right now. Stay tuned!"
+            />
+          </Group>
+        </Section>
+
+        {/* ─── CATEGORY CARD ────────────────────────────── */}
+        <Section title="CategoryCard" file="components/features/CategoryCard.tsx" status="done">
+          <Group label="Subject Grids (Horizontal Layouts)">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', width: '100%' }}>
+              <CategoryCard 
+                name="Generative AI"
+                icon={Cpu}
+                image="/homepage/cat-generative-ai.png"
+                courseCount={480}
+                studentCount={210000}
+                href="/courses?cat=ai"
+                color="#FF6D00"
+              />
+              <CategoryCard 
+                name="Data Science"
+                icon={Database}
+                image="/homepage/cat-data-science.png"
+                courseCount={840}
+                studentCount={125000}
+                href="/courses?cat=data-science"
+                color="#00C853"
+              />
+              <CategoryCard 
+                name="IT Certifications"
+                icon={ShieldCheck}
+                image="/homepage/cat-it-certs.png"
+                courseCount={310}
+                studentCount={45000}
+                href="/courses?cat=it-certs"
+                color="#D50000"
+              />
+              <CategoryCard 
+                name="UI Design"
+                icon={Palette}
+                image="/homepage/cat-ui-design.png"
+                courseCount={620}
+                studentCount={89000}
+                href="/courses?cat=ui-design"
+                color="#AA00FF"
+              />
+              <CategoryCard 
+                name="Development"
+                icon={Code}
+                image="/homepage/cat-prompt-eng.png" /* Reusing prompt eng for generic dev */
+                courseCount={1245}
+                studentCount={340000}
+                href="/courses?cat=development"
+                color="#3D5AFE"
+              />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── INSTRUCTOR CARD ────────────────────────────── */}
+        <Section title="InstructorCard" file="components/features/InstructorCard.tsx" status="done">
+          <Group label="Expert Profile Showcase Grid">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', width: '100%' }}>
+              <InstructorCard 
+                id="andrei"
+                name="Andrei Neagoie"
+                avatar="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop"
+                professionalTitle="Senior Software Engineer & Academy Founder"
                 rating={4.9}
-                reviewCount={95000}
-                totalHours={60}
-                totalLessons={630}
-                price={89.99}
-                isEnrolled
-                progress={34}
+                studentsCount={850000}
+                coursesCount={12}
+                bioSnippet="Andrei has taught over 850,000 students at Zero To Mastery and worked for top tech firms in Silicon Valley and Toronto."
+                socialLinks={{ linkedin: 'https://linkedin.com' }}
+              />
+              <InstructorCard 
+                id="angela"
+                name="Dr. Angela Yu"
+                avatar="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop"
+                professionalTitle="Lead Developer & Medical Professional"
+                rating={4.9}
+                studentsCount={1200000}
+                coursesCount={8}
+                bioSnippet="Angela is the world's most popular female coding instructor, known for her high-impact Python and Web Development bootcamps."
+                socialLinks={{ linkedin: 'https://linkedin.com' }}
+              />
+              <InstructorCard 
+                id="sarah"
+                name="Dr. Sarah Johnson"
+                avatar="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop"
+                professionalTitle="Data Science Lead & AI Researcher"
+                rating={4.8}
+                studentsCount={124000}
+                coursesCount={5}
+                bioSnippet="Sarah combines ivory-tower academic research with real-world enterprise data engineering to help students break into AI."
+                socialLinks={{ linkedin: 'https://linkedin.com' }}
               />
             </div>
           </Group>

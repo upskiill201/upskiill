@@ -1,0 +1,350 @@
+.cardWrapper {
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  background-color: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  font-family: var(--font-jakarta), inherit;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px rgba(31, 42, 68, 0.04);
+  height: 220px;
+  position: relative;
+}
+
+.card:hover {
+  border-color: #3D5AFE;
+  box-shadow: 0 30px 60px rgba(31, 42, 68, 0.1);
+  transform: translateY(-6px);
+}
+
+/* THUMBNAIL (Left) */
+.thumbnailWrapper {
+  flex-shrink: 0;
+  width: 300px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #F1F5F9;
+}
+
+.thumbnail {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .thumbnail {
+  transform: scale(1.05);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.card:hover .imageOverlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 1;
+}
+
+.playIcon {
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(61, 90, 254, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.card:hover .playIcon {
+  transform: scale(1);
+}
+
+.topBadges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+/* CONTENT (Center) */
+.content {
+  flex: 1;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid #F1F5F9;
+}
+
+.categoryTitleRow {
+  margin-bottom: 8px;
+}
+
+.category {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #3D5AFE;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1F2A44;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card:hover .title {
+  color: #3D5AFE;
+}
+
+.instructor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.instructorName {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.ratingBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ratingNumber {
+  font-size: 14px;
+  font-weight: 800;
+  color: #B45309;
+}
+
+.reviewCount {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.studentsCount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #94A3B8;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon {
+  color: #CBD5E1;
+}
+
+.description {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progressArea {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressLabelRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+.progressVal {
+  color: #22C55E;
+}
+
+/* ACTION SECTION (Right) */
+.actionSection {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #FBFDFE;
+  text-align: right;
+}
+
+.pricing {
+  margin-bottom: 24px;
+}
+
+.price {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1F2A44;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.priceFree {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #22C55E;
+}
+
+.oldPriceBox {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.originalPrice {
+  font-size: 14px;
+  color: #94A3B8;
+  text-decoration: line-through;
+}
+
+.discountTag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #EF4444;
+  padding: 2px 6px;
+  background-color: #FEF2F2;
+  border-radius: 4px;
+}
+
+.actionBtns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wishlistBtn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px;
+}
+
+.wishlistBtn:hover {
+  color: #EF4444;
+}
+
+.wishlistBtn.active {
+  color: #EF4444;
+}
+
+.enrolledAction {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ctaBtn {
+  box-shadow: 0 6px 15px rgba(61, 90, 254, 0.15);
+  padding: 18px 48px !important;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.lastAccessed {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    height: auto;
+  }
+  .thumbnailWrapper {
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  .actionSection {
+    width: 100%;
+    border-top: 1px solid #F1F5F9;
+    text-align: left;
+    background-color: white;
+  }
+  .oldPriceBox {
+    justify-content: flex-start;
+  }
+}

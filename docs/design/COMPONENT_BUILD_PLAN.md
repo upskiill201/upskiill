@@ -801,33 +801,34 @@ _Build these first. Used on every single page._
 - [x] `Pagination` — `components/ui/Pagination.tsx`
 - [x] `EmptyState` — `components/ui/EmptyState.tsx`
 
-**Phase 1 Progress: 6 / 16 done**
+**Phase 1 Progress: 16 / 16 done** (🟢 Complete)
 
 ---
 
 ### 🟧 Phase 2 — Layout Components (2 total)
 _Build after Phase 1 is complete._
 
-- [ ] `Footer` — `components/layout/Footer.tsx`
-- [ ] `Sidebar` — `components/layout/Sidebar.tsx`
+- [x] `Footer` — `components/layout/Footer.tsx`
+- [x] `Sidebar` — `components/layout/Sidebar.tsx`
 
-**Phase 2 Progress: 0 / 2 done**
+**Phase 2 Progress: 2 / 2 done** (🟢 Complete)
 
 ---
 
 ### 🟨 Phase 3 — Feature Components (8 total)
 _Core product cards and items. Reused across many pages._
 
-- [ ] `CourseCard` ⭐ — `components/features/CourseCard.tsx`
-- [ ] `CourseCardHorizontal` — `components/features/CourseCardHorizontal.tsx`
-- [ ] `InstructorCard` — `components/features/InstructorCard.tsx`
-- [ ] `ReviewCard` — `components/features/ReviewCard.tsx`
+- [x] `CourseCard` ⭐ — `components/features/CourseCard.tsx`
+- [x] `CourseCardHorizontal` — `components/features/CourseCardHorizontal.tsx`
+- [x] `InstructorCard` — `components/features/InstructorCard.tsx`
+- [x] `ReviewCard` — `components/features/ReviewCard.tsx`
+- [x] `CategoryCard` — `components/features/CategoryCard.tsx` (Advanced Premium)
 - [ ] `CertificateCard` — `components/features/CertificateCard.tsx`
 - [ ] `LessonItem` — `components/features/LessonItem.tsx`
 - [ ] `SectionAccordion` — `components/features/SectionAccordion.tsx`
 - [ ] `CartItem` — `components/features/CartItem.tsx`
 
-**Phase 3 Progress: 0 / 8 done**
+**Phase 3 Progress: 5 / 9 done** (🟡 In Progress)
 
 ---
 
@@ -850,11 +851,11 @@ _Build last. Require Phase 1–3 components to exist first._
 | Phase | Done | Total | Progress |
 |---|---|---|---|
 | Already Built | 2 | 2 | ✅ 100% |
-| Phase 1 — Shared UI | 6 | 16 | 🟡 37% |
-| Phase 2 — Layout | 0 | 2 | 🔴 0% |
-| Phase 3 — Features | 0 | 8 | 🔴 0% |
+| Phase 1 — Shared UI | 16 | 16 | ✅ 100% |
+| Phase 2 — Layout | 2 | 2 | ✅ 100% |
+| Phase 3 — Features | 5 | 9 | 🟡 55% |
 | Phase 4 — Homepage | 0 | 6 | 🔴 0% |
-| **TOTAL** | **8** | **34** | **23%** |
+| **TOTAL** | **25** | **35** | **71%** |
 
 ---
 
