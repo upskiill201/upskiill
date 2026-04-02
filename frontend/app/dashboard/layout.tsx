@@ -16,7 +16,11 @@ import {
   Bell, 
   LogOut,
   Sparkles,
-  Rocket
+  Rocket,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  X
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -48,6 +52,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -75,18 +81,40 @@ export default function DashboardLayout({
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>
       <div className={styles.dashboardContainer}>
         {/* SIDEBAR */}
-        <aside className={styles.sidebarWrapper}>
-          <div className={styles.logoContainer}>
-            <Link href="/" className={styles.logoLink}>
-              <Image 
-                src="/logo.png" 
-                alt="Upskiill" 
-                width={100} 
-                height={28} 
-                priority 
-                className={styles.sidebarLogo}
-              />
-            </Link>
+        <aside className={`${styles.sidebarWrapper} ${isSidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
+          <div className={styles.sidebarHeader}>
+            <div className={styles.logoContainer}>
+              <Link href="/" className={styles.logoLink}>
+                {!isSidebarCollapsed ? (
+                  <Image 
+                    src="/logo.png" 
+                    alt="Upskiill" 
+                    width={100} 
+                    height={28} 
+                    priority 
+                    className={styles.sidebarLogo}
+                  />
+                ) : (
+                  <div className={styles.compactLogo}>U</div>
+                )}
+              </Link>
+            </div>
+            
+            <button 
+              className={styles.sidebarToggle} 
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              aria-label="Toggle Sidebar"
+            >
+              {isSidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+
+            <button 
+              className={styles.mobileClose} 
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close Mobile Menu"
+            >
+              <X size={24} />
+            </button>
           </div>
           
           <nav className={styles.nav}>
@@ -94,42 +122,65 @@ export default function DashboardLayout({
               <Link 
                 key={link.id} 
                 href={link.href} 
-                onClick={(e) => handleLinkClick(e, link)}
+                onClick={(e) => {
+                  handleLinkClick(e, link);
+                  setIsMobileMenuOpen(false);
+                }}
                 className={`${styles.navItem} ${link.id === 'dashboard' ? styles.active : ''}`}
+                title={isSidebarCollapsed ? link.label : ''}
               >
                 <span className={styles.icon}>{link.icon}</span>
-                <span className={styles.label}>{link.label}</span>
-                {link.isComingSoon && <span className={styles.comingSoonBadge}>Soon</span>}
+                {!isSidebarCollapsed && <span className={styles.label}>{link.label}</span>}
+                {!isSidebarCollapsed && link.isComingSoon && <span className={styles.comingSoonBadge}>Soon</span>}
               </Link>
             ))}
           </nav>
 
           <div className={styles.sidebarFooter}>
-            <Link href="/dashboard" onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); }} className={styles.navItem}>
+            <Link 
+              href="/dashboard" 
+              onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 
+              className={styles.navItem}
+              title={isSidebarCollapsed ? 'Settings' : ''}
+            >
               <span className={styles.icon}><Settings size={20} /></span>
-              <span className={styles.label}>Settings</span>
+              {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
             </Link>
-            <Link href="/login" className={`${styles.navItem} ${styles.logoutBtn}`}>
+            <Link 
+              href="/login" 
+              className={`${styles.navItem} ${styles.logoutBtn}`}
+              title={isSidebarCollapsed ? 'Logout' : ''}
+            >
               <span className={styles.icon}><LogOut size={20} /></span>
-              <span className={styles.label}>Logout</span>
+              {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
             </Link>
           </div>
         </aside>
 
+        {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
+
         {/* MAIN CONTENT AREA */}
-        <main className={styles.main}>
+        <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
           {/* DASHBOARD HEADER */}
           <header className={styles.header}>
             <div className={styles.headerLeft}>
+              <button 
+                className={styles.mobileToggle} 
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open Menu"
+              >
+                <Menu size={24} />
+              </button>
               <h1 className={styles.pageTitle}>Dashboard</h1>
               
-              {/* Gamification Bar */}
+              {/* Gamification Bar (Desktop Only) */}
               <div className={styles.gamificationBar}>
+                {/* ... existing gamification bar content ... */}
                 <div className={styles.gamiItem}>
                   <div className={styles.levelBadge}>12</div>
                   <div className={styles.gamiText}>
                     <span className={styles.gamiLabel}>Pro Learner</span>
-                    <span className={styles.gamiSub}>Level 12</span>
+                    <span className={styles.gamiSub}>Lvl 12</span>
                   </div>
                 </div>
                 <div className={styles.gamiDivider} />
@@ -144,7 +195,7 @@ export default function DashboardLayout({
                 <div className={styles.gamiItem}>
                   <button className={styles.nextBadgeBtn} onClick={() => triggerComingSoon('Gamification Rewards')}>
                      <div className={styles.lockIcon}><Award size={14} /></div>
-                     <span className={styles.gamiSub}>Next Badge</span>
+                     <span className={styles.gamiSub}>Badge</span>
                   </button>
                 </div>
               </div>
@@ -153,7 +204,7 @@ export default function DashboardLayout({
             <div className={styles.headerRight}>
               <div className={styles.searchWrapper}>
                 <Search size={18} className={styles.searchIcon} />
-                <input type="text" placeholder="Search courses..." className={styles.searchInput} />
+                <input type="text" placeholder="Search..." className={styles.searchInput} />
               </div>
               
               <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
@@ -163,10 +214,9 @@ export default function DashboardLayout({
 
               <div className={styles.userProfile}>
                 <div className={styles.userInfo}>
-                  <span className={styles.userName}>Alex Carter</span>
-                  <span className={styles.userRole}>Pro Member</span>
+                  <span className={styles.userName}>Alex</span>
                 </div>
-                <Avatar src="https://images.unsplash.com/photo-1539109132332-629230573f6a?w=100&h=100&fit=crop" name="Alex Carter" size="md" />
+                <Avatar src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100" name="Alex Carter" size="sm" />
               </div>
             </div>
           </header>

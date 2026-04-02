@@ -16,11 +16,20 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { CourseCardHorizontal } from '@/components/features/CourseCardHorizontal';
+import { CourseCard } from '@/components/features/CourseCard';
 import { useComingSoon } from './layout';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
   const { triggerComingSoon } = useComingSoon();
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   const heatmapData = [0.1, 0.6, 0.3, 1, 0.1, 1, 0.6, 0.3, 0.1, 0.6, 0.1, 0.3, 1, 0.6, 0.3, 0.1, 1, 0.6, 0.3, 0.1, 0.6, 0.1, 1, 0.3, 0.6, 0.1, 0.3, 1, 0.1, 0.6, 1, 0.3, 0.1, 0.6, 0.3];
 
@@ -99,37 +108,74 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className={styles.activeCoursesGrid}>
-            <CourseCardHorizontal 
-              id="c1"
-              title="Advanced Product Design Principles" 
-              category="UI/UX Design"
-              thumbnail="https://images.unsplash.com/photo-1586717791821-3f44a563cc4c?w=800&q=80"
-              instructorName="Sarah Johnson"
-              instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-              rating={4.8}
-              reviewCount={1204}
-              totalHours={24}
-              totalLessons={48}
-              price={0}
-              isEnrolled={true}
-              progress={65}
-            />
-            <CourseCardHorizontal 
-              id="c2"
-              title="Full-Stack React & Node.js Masterclass" 
-              category="Development"
-              thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80"
-              instructorName="David Chen"
-              instructorAvatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
-              rating={4.9}
-              reviewCount={850}
-              totalHours={42}
-              totalLessons={96}
-              price={0}
-              isEnrolled={true}
-              progress={32}
-            />
+          <div className={isMobile ? styles.courseGridMobile : styles.activeCoursesGrid}>
+            {!isMobile ? (
+              <>
+                <CourseCardHorizontal 
+                  id="c1"
+                  title="Advanced Product Design Principles" 
+                  category="UI/UX Design"
+                  thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"
+                  instructorName="Sarah Johnson"
+                  instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
+                  rating={4.8}
+                  reviewCount={1204}
+                  totalHours={24}
+                  totalLessons={48}
+                  price={0}
+                  isEnrolled={true}
+                  progress={65}
+                />
+                <CourseCardHorizontal 
+                  id="c2"
+                  title="Full-Stack React & Node.js Masterclass" 
+                  category="Development"
+                  thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800"
+                  instructorName="David Chen"
+                  instructorAvatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
+                  rating={4.9}
+                  reviewCount={850}
+                  totalHours={42}
+                  totalLessons={96}
+                  price={0}
+                  isEnrolled={true}
+                  progress={32}
+                />
+              </>
+            ) : (
+              <>
+                <CourseCard 
+                  id="c1"
+                  title="Advanced Product Design Principles"
+                  category="UI/UX Design"
+                  thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"
+                  instructorName="Sarah Johnson"
+                  instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
+                  rating={4.8}
+                  reviewCount={1204}
+                  price={0}
+                  isEnrolled={true}
+                  progress={65}
+                  totalHours={24}
+                  totalLessons={48}
+                />
+                <CourseCard 
+                  id="c2"
+                  title="Full-Stack Masterclass"
+                  category="Development"
+                  thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800"
+                  instructorName="David Chen"
+                  instructorAvatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
+                  rating={4.9}
+                  reviewCount={850}
+                  price={0}
+                  isEnrolled={true}
+                  progress={32}
+                  totalHours={42}
+                  totalLessons={96}
+                />
+              </>
+            )}
           </div>
 
           <div className={styles.activitySection}>
@@ -233,31 +279,62 @@ export default function DashboardPage() {
               See all <ArrowUpRight size={16} />
             </button>
           </div>
-          <div className={styles.recommendedGrid}>
-             <CourseCardHorizontal 
-                id="rec1"
-                title="Design System with Figma" 
-                category="Design"
-                thumbnail="https://images.unsplash.com/photo-1541462608141-ad4d4f9d3f0a?w=400&q=80"
-                instructorName="Daniel Scott"
-                rating={4.7}
-                reviewCount={320}
-                totalHours={8}
-                totalLessons={24}
-                price={49.99}
-             />
-             <CourseCardHorizontal 
-                id="rec2"
-                title="Microservices architecture" 
-                category="Architecture"
-                thumbnail="https://images.unsplash.com/photo-1558494949-ef010cbdcc51?w=400&q=80"
-                instructorName="Stephen Grider"
-                rating={4.9}
-                reviewCount={2100}
-                totalHours={18}
-                totalLessons={56}
-                price={89.99}
-             />
+          <div className={isMobile ? styles.courseGridMobile : styles.recommendedGrid}>
+             {!isMobile ? (
+                <>
+                  <CourseCardHorizontal 
+                    id="rec1"
+                    title="Design System with Figma" 
+                    category="Design"
+                    thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80"
+                    instructorName="Daniel Scott"
+                    rating={4.7}
+                    reviewCount={320}
+                    totalHours={8}
+                    totalLessons={24}
+                    price={49.99}
+                  />
+                  <CourseCardHorizontal 
+                    id="rec2"
+                    title="Microservices architecture" 
+                    category="Architecture"
+                    thumbnail="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"
+                    instructorName="Stephen Grider"
+                    rating={4.9}
+                    reviewCount={2100}
+                    totalHours={18}
+                    totalLessons={56}
+                    price={89.99}
+                  />
+                </>
+             ) : (
+                <>
+                  <CourseCard 
+                    id="rec1"
+                    title="Design System with Figma"
+                    category="Design"
+                    thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80"
+                    instructorName="Daniel Scott"
+                    rating={4.7}
+                    reviewCount={320}
+                    price={49.99}
+                    totalHours={8}
+                    totalLessons={24}
+                  />
+                   <CourseCard 
+                    id="rec2"
+                    title="Microservices architecture"
+                    category="Architecture"
+                    thumbnail="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"
+                    instructorName="Stephen Grider"
+                    rating={4.9}
+                    reviewCount={2100}
+                    price={89.99}
+                    totalHours={18}
+                    totalLessons={56}
+                  />
+                </>
+             )}
           </div>
         </div>
       </div>
