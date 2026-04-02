@@ -10,6 +10,7 @@ type AvatarProps = {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   ring?: boolean;
   online?: boolean;
+  className?: string;
 };
 
 export default function Avatar({
@@ -19,6 +20,7 @@ export default function Avatar({
   size = 'md',
   ring = false,
   online = false,
+  className = '',
 }: AvatarProps) {
   // Get initials from name "Amara Diallo" -> "AD"
   const getInitials = (fullName: string) => {
@@ -35,6 +37,7 @@ export default function Avatar({
     styles.avatar,
     styles[size],
     ring ? styles.ring : '',
+    className,
   ]
     .filter(Boolean)
     .join(' ');

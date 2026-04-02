@@ -1,0 +1,394 @@
+.dashboardContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F8FAFC;
+}
+
+/* SIDEBAR STYLES */
+.sidebarWrapper {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 0;
+  z-index: 100;
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.logoContainer {
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebarLogo {
+  object-fit: contain;
+}
+
+.nav {
+  flex: 1;
+  padding: 12px 0;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 32px;
+  color: #64748B;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.navItem:hover {
+  background-color: #F1F5F9;
+  color: #1F2A44;
+}
+
+.navItem.active {
+  background-color: #EEF2FF;
+  color: #3D5AFE;
+  border-left-color: #3D5AFE;
+  font-weight: 600;
+}
+
+.comingSoonBadge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #F1F5F9;
+  color: #94A3B8;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.navItem:hover .comingSoonBadge {
+  background-color: #E2E8F0;
+  color: #64748B;
+}
+
+.icon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoutBtn {
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #EF4444;
+}
+
+.logoutBtn:hover {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
+
+.sidebarFooter {
+  padding: 24px 0;
+  border-top: 1px solid #F1F5F9;
+}
+
+.messageIconWrapper {
+  position: relative;
+}
+
+.messageBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #3D5AFE;
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid white;
+}
+
+/* MAIN CONTENT STYLES */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: white;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.pageTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1F2A44;
+  margin: 0;
+}
+
+/* Gamification Bar */
+.gamificationBar {
+  display: flex;
+  align-items: center;
+  background-color: #F1F5F9;
+  padding: 6px 12px;
+  border-radius: 999px;
+  gap: 12px;
+}
+
+.gamiItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.levelBadge {
+  background: linear-gradient(135deg, #3D5AFE, #7B61FF);
+  color: white;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(61, 90, 254, 0.3);
+}
+
+.gamiText {
+  display: flex;
+  flex-direction: column;
+}
+
+.gamiLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1F2A44;
+  line-height: 1;
+}
+
+.gamiSub {
+  font-size: 10px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.streakIcon {
+  font-size: 16px;
+}
+
+.gamiDivider {
+  width: 1px;
+  height: 20px;
+  background-color: #CBD5E1;
+}
+
+.nextBadgeBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #E2E8F0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.lockIcon {
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+}
+
+/* Header Right */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 320px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+}
+
+.searchInput {
+  width: 100%;
+  height: 42px;
+  background-color: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0 16px 0 44px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3D5AFE;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.1);
+}
+
+.notifBtn {
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notifDot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: #EF4444;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1F2A44;
+}
+
+.userRole {
+  font-size: 11px;
+  color: #3D5AFE;
+  font-weight: 600;
+}
+
+/* CONTENT AREA */
+.content {
+  padding: 40px;
+}
+
+@media (max-width: 1024px) {
+  .searchWrapper {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebarWrapper {
+    display: none;
+  }
+  .header {
+    padding: 12px 16px;
+  }
+  .headerLeft {
+    gap: 16px;
+  }
+  .gamificationBar {
+    display: none;
+  }
+}
+
+/* MODAL INTERIOR */
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.modalIconWrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(61, 90, 254, 0.1), rgba(123, 97, 255, 0.1));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.sparkleIcon {
+  color: #3D5AFE;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1F2A44;
+  margin: 0 0 12px;
+}
+
+.modalDescription {
+  color: #64748B;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 32px;
+  max-width: 400px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ANIMATIONS */
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

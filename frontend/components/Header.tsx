@@ -8,7 +8,7 @@ import styles from './Header.module.css';
 
 export default function Header() {
   const pathname = usePathname();
-  if (pathname === '/signup' || pathname === '/login') return null;
+  if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard')) return null;
 
   return (
     <header className={styles.header}>

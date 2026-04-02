@@ -27,7 +27,7 @@ These GitHub checkboxes are interactive. You can check them off directly in the 
 - [ ] Build `/learn/[id]` Video Player UI (Sidebar, basic video container)
 
 ## 💸 Phase 1D: Dashboards & Payments
-- [ ] Build User Profile & Student Dashboard (`/dashboard`)
+- [x] Build User Profile & Student Dashboard (`/dashboard`)
 - [ ] Build basic Instructor Dashboard (Create course view)
 - [ ] Build `/checkout` Payment flow
 - [ ] Integrate Stripe API
@@ -43,5 +43,8 @@ _Track the individual reusable generic UI components here as they are built:_
 - [x] Shared Loading Spinners
 - [x] Course Cards (Thumbnail, title, instructor, price)
 - [x] Rating Stars component 
-- [ ] Course Card Horizontal (Next 🚀)
-- [ ] Review Card
+- [x] Course Card Horizontal
+- [x] Review Card
+- [x] Category Card
+- [x] Coming Soon Context & Modal Infrastructure
+- [ ] Instructor Card (Next 🚀)

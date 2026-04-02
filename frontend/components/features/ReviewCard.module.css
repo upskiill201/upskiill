@@ -1,0 +1,226 @@
+.reviewWrapper {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-jakarta), inherit;
+}
+
+.reviewCard {
+  background-color: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.3s ease;
+}
+
+.reviewCard:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nameDate {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0 0 2px;
+}
+
+.date {
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.moreBtn {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.moreBtn:hover {
+  background-color: #F1F5F9;
+  color: #64748B;
+}
+
+/* RATING */
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ratingValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: #B45309;
+}
+
+/* CONTENT */
+.commentContent {
+  margin-bottom: 24px;
+}
+
+.comment {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.helpfulText {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actionBtn {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background-color: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #1F2A44;
+}
+
+.actionBtn.active {
+  background-color: #EEF2FF;
+  border-color: #3D5AFE;
+  color: #3D5AFE;
+}
+
+.reportBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.reportBtn:hover {
+  color: #EF4444;
+  text-decoration: underline;
+}
+
+/* INSTRUCTOR RESPONSE */
+.instructorResponse {
+  margin-top: -10px; /* Slight overlap or snug fit under main review */
+  margin-left: 32px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-left: 4px solid #3D5AFE;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instructorHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.instructorInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.instructorName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1F2A44;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  background-color: #3D5AFE;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.responseLabel {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.instructorComment {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
