@@ -18,19 +18,39 @@ model User {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   enrollments Enrollment[]
+  courses     Course[]     @relation("InstructorCourses")
 }
 
 model Course {
-  id           String       @id @default(uuid())
-  title        String
-  description  String
-  thumbnailUrl String?
-  price        Float
-  instructorId String
-  published    Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  enrollments  Enrollment[]
+  id               String       @id @default(uuid())
+  title            String
+  description      String       @db.Text
+  shortDescription String?
+  thumbnailUrl     String?
+  price            Float
+  originalPrice    Float?
+  published        Boolean      @default(false)
+
+  // UI Metadata
+  category         String       @default("Uncategorized")
+  level            String       @default("Beginner")
+  duration         String       @default("0h")
+  rating           Float        @default(0)
+  reviewsCount     Int          @default(0)
+  studentsCount    Int          @default(0)
+
+  // Rich Content (JSON arrays)
+  whatYouWillLearn Json?
+  requirements     Json?
+
+  // Relations
+  instructorId     String
+  instructor       User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  
+  enrollments      Enrollment[]
 }
 
 model Enrollment {

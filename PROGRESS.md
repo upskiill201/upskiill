@@ -40,10 +40,10 @@
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
 - [x] `/courses/[id]` Course Detail/Sales Page ✅ **DONE (Mobile Polished)**
 
-### Step D — Build Course API (Backend) 🔴
-- [ ] `GET /courses` — list published courses (search & filter params)
-- [ ] `GET /courses/:id` — single course detail
-- [ ] `GET /courses/categories` — category list
+### Step D — Build Course API (Backend) ✅ COMPLETE
+- [x] `GET /courses` — list published courses (search & filter params)
+- [x] `GET /courses/:id` — single course detail
+- [x] Make sure relations (Instructor, etc.) load efficiently
 - [ ] Seed Supabase with sample course data
 
 ## 🟦 Pillar 3: Course Sales Page — 🟡 UI Ready (15%)

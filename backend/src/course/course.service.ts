@@ -8,10 +8,11 @@ export class CourseService {
   async findAll(query: {
     search?: string;
     category?: string;
+    level?: string;
     minPrice?: number;
     maxPrice?: number;
   }) {
-    const { search, minPrice, maxPrice } = query;
+    const { search, category, level, minPrice, maxPrice } = query;
 
     return await this.prisma.course.findMany({
       where: {
@@ -21,18 +22,34 @@ export class CourseService {
             ? {
                 OR: [
                   { title: { contains: search, mode: 'insensitive' } },
-                  { description: { contains: search, mode: 'insensitive' } },
+                  {
+                    description: { contains: search, mode: 'insensitive' },
+                  },
+                  {
+                    shortDescription: {
+                      contains: search,
+                      mode: 'insensitive',
+                    },
+                  },
                 ],
               }
             : {},
-          // category filter intentionally disabled until `Course.category` exists
-          // (or rename query param to reflect description search)
+          category
+            ? { category: { equals: category, mode: 'insensitive' } }
+            : {},
+          level ? { level: { equals: level, mode: 'insensitive' } } : {},
           minPrice !== undefined ? { price: { gte: Number(minPrice) } } : {},
           maxPrice !== undefined ? { price: { lte: Number(maxPrice) } } : {},
         ],
       },
       include: {
-        // We will add instructor details later
+        instructor: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -43,6 +60,15 @@ export class CourseService {
   async findOne(id: string) {
     const course = await this.prisma.course.findFirst({
       where: { id, published: true },
+      include: {
+        instructor: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+      },
     });
 
     if (!course) throw new NotFoundException('Course not found');
