@@ -55,10 +55,12 @@
 - [x] **Next.js 15 Compatibility**: Fixed async params unwrapping in dynamic routes ✅
 - [x] **Production API Switch**: All frontend pages updated to fetch from `https://upskiill-backend.onrender.com`. ✅
 
-## 🟦 Pillar 3: Course Sales Page — 🟡 UI Ready (15%)
-- [x] Build `InstructorCard` (just polished)
+## 🟦 Pillar 3: Course Sales Page — 🟢 100% UI Complete (2026-04-03)
+- [x] Build `InstructorCard` 
 - [x] Build `ReviewCard`
-- [ ] Build `/courses/[id]` layout
+- [x] Build `/courses` Marketplace grid with 'Add to Cart' integration
+- [x] Build `/courses/[id]` layout with MasterClass sticky-scroll & glassmorphism
+- [x] Integrate Markdown-lite rich descriptions & curriculum parsing
 
 ## 🟦 Pillar 4: Student Learning System — 🟡 UI Ready (60%)
 - [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**

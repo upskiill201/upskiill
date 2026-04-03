@@ -1,4 +1,4 @@
-> Last updated: 2026-04-03 20:59 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-03 22:25 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
 
