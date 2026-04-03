@@ -1,0 +1,119 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 32px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+@media (max-width: 992px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cartList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summaryCard {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 24px;
+  position: sticky;
+  top: 100px;
+}
+
+.summaryTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: #64748B;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #E2E8F0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 24px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 64px 24px;
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+}
+
+.emptyTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 12px;
+}
+
+.emptyDesc {
+  color: #64748B;
+  margin-bottom: 24px;
+}
+
+/* Guest Checkout Form */
+.guestForm {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px dashed #E2E8F0;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #3D5AFE;
+}

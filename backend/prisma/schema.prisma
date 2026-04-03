@@ -19,6 +19,7 @@ model User {
   updatedAt   DateTime     @updatedAt
   enrollments Enrollment[]
   courses     Course[]     @relation("InstructorCourses")
+  orders      Order[]
 }
 
 model Course {
@@ -43,6 +44,8 @@ model Course {
   // Rich Content (JSON arrays)
   whatYouWillLearn Json?
   requirements     Json?
+  targetAudience   Json?
+  curriculum       Json?        @default("[]")
 
   // Relations
   instructorId     String
@@ -52,6 +55,7 @@ model Course {
   updatedAt        DateTime     @updatedAt
   
   enrollments      Enrollment[]
+  orderItems       OrderItem[]
 }
 
 model Enrollment {
@@ -64,6 +68,33 @@ model Enrollment {
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  price     Float    // Price at the time of purchase
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -4,16 +4,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, Search, ShoppingCart, Menu } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import styles from './Header.module.css';
 
 export default function Header() {
+  const { totalItems } = useCart();
   const pathname = usePathname();
   if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard')) return null;
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        {/* Mobile Only: Menu Button */}
+        {/* ... (previous mobile menu button code) ... */}
         <button 
           type="button"
           className={styles.mobileMenuBtn}
@@ -63,14 +65,16 @@ export default function Header() {
             <Search size={22} />
           </button>
 
-          <button 
-            type="button"
+          <Link 
+            href="/cart"
             className={styles.cartBtn}
             aria-label="View shopping cart"
           >
             <ShoppingCart size={24} />
-            <span className={styles.cartBadge}>0</span>
-          </button>
+            {totalItems > 0 && (
+              <span className={styles.cartBadge}>{totalItems}</span>
+            )}
+          </Link>
           
           <Link href="/instructor" className={styles.teachLink}>
             Teach on Upskiill

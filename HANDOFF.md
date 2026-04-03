@@ -1,5 +1,6 @@
-> Last updated: 2026-04-03 13:05 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-03 20:59 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
+> **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
 
 ---
 
@@ -39,6 +40,8 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Production DB connectivity via Supabase Connection Pooler (P1001 fix)
 - [x] **SEO Slug System**: Dual lookup via ID or Slug in `CourseService`
 - [x] **Build Optimization**: Fixed `dist/src/main` pathing for Render.com deployment ✅ (2026-04-03)
+- [x] **Cart & Checkout Engine**: Implemented `Orders` controller for course enrollment & checkout processes. ✅ (2026-04-03)
+- [x] **Dynamic Curriculum (JSON)**: Courses now support nested sections and lessons via `curriculum` field. ✅ (2026-04-03)
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
@@ -72,6 +75,10 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Font Awesome 6 (Solid) integrated via CDN for lightweight iconography.
 - [x] **Next.js 15 Compatibility**: Fixed asynchronous `params` unwrapping in dynamic routes ✅ (2026-04-03)
 - [x] **Marketplace Live Data**: Transitioned from Mock to DB fetching with robust error handling
+- [x] **Shopping Cart (localStorage)**: Persistent cart with badge and checkout integration.
+- [x] **Guest Checkout Flow**: Guests can checkout; system creates automatic accounts via `/orders/checkout`.
+- [x] **Dynamic Curriculum Render**: Refactored `CourseDetailPage` to render data-driven sections and lessons.
+- [x] **Production API Enforcement**: All hardcoded `localhost:3001` replaced with `https://upskiill-backend.onrender.com`. ✅
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
 - [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
@@ -130,7 +137,7 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses` — list all published courses (with active filters)
      - [x] `GET /courses/:id` — single course detail with Instructor payload
      - [x] `GET /courses/categories` — list all categories
-- [ ] Build high-converting `/courses/[id]` layout
+- [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
 4. **[ ] Pillar 4: Student Learning System**
    - [ ] Finalize Video Player curriculum logic
 
@@ -162,6 +169,7 @@ _Current Focus: Pillar 2 (Course Marketplace)_
 | **3D Breakout Effect** | Uses `overflow: visible` and `height: 110%` to create a modern, deep visual aesthetic. |
 | **Image Optimization** | Added refined `sizes` prop (`calc(100vw - 40px)`, etc.) to accurately match CSS padding/flex distribution. |
 | **Feature Card Design** | Defined brand-specific 64x64px circular icon containers with `#EEF2FF` backdrop and `#3D5AFE` icons for consistency. |
+| **Production API URL** | Enforced `https://upskiill-backend.onrender.com` in code fallbacks to prevent "forgotten" env vars from breaking CI/CD. |
 | **Icon System — TWO libraries only** | `lucide-react` for all UI/form icons. `react-icons/fa` (FA6) for feature, brand & social icons. NO other icon libraries. NO emojis as icons in components. Established 2026-03-31. |
 | **Component Preview Strategy** | Every newly built component MUST be immediately showcased on the `/components` route for visual review and interaction testing. |
 

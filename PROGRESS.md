@@ -16,7 +16,9 @@
 - [x] Remove all `localStorage` token usage — 100% cookie-based
 - [x] All 5 manual tests passed ✅
 
-## 🟦 Pillar 2: Course Marketplace — 🟡 In Progress
+## 🟦 Pillar 2: Course Marketplace & Core Systems — 🟢 90% Complete (2026-04-03)
+> [!IMPORTANT]
+> **PRODUCTION BACKEND RULE:** All API calls in the frontend MUST use `https://upskiill-backend.onrender.com`. Hardcoded `localhost:3001` usage is prohibited in production-ready code.
 
 ### Step A — Finish Feature Components (Phase 3) ✅ COMPLETE
 - [x] Build Global responsive `<Header />` Component
@@ -40,15 +42,18 @@
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
 - [x] `/courses/[id]` Course Detail/Sales Page ✅ **DONE (Mobile Polished)**
 
-### Step D — Build Course API (Backend) ✅ COMPLETE
+### Step D — Build Course API & Core Systems ✅ COMPLETE
 - [x] `GET /courses` — list published courses (search & filter params)
 - [x] CRUD for Courses
 - [x] SEO-Friendly Slugs ( dual-lookup by ID or Slug)
 - [x] Production Deployment (PR #46 Recovery)
-- [ ] Cart & Checkout System
+- [x] **Cart & Checkout System**: Implemented `OrdersModule` with simulated checkout and enrollment logic. ✅
+- [x] **Guest Checkout**: Enabled checkout for unregistered users with auto-account creation. ✅
+- [x] **Dynamic Curriculum**: Added `curriculum` JSON field to Course model for nested sections/lessons. ✅
 - [x] Make sure relations (Instructor, etc.) load efficiently
-- [x] Seed Supabase with sample course data & SEO slugs ✅
+- [x] Seed Supabase with sample course data, SEO slugs, and structured curriculum. ✅
 - [x] **Next.js 15 Compatibility**: Fixed async params unwrapping in dynamic routes ✅
+- [x] **Production API Switch**: All frontend pages updated to fetch from `https://upskiill-backend.onrender.com`. ✅
 
 ## 🟦 Pillar 3: Course Sales Page — 🟡 UI Ready (15%)
 - [x] Build `InstructorCard` (just polished)
