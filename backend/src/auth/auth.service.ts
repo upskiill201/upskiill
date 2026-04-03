@@ -14,7 +14,7 @@ export class AuthService {
 
   async signup(dto: SignupDto) {
     const existing = await this.prisma.user.findUnique({
-      where: { email: dto.email }
+      where: { email: dto.email },
     });
     
     if (existing) {
@@ -29,10 +29,11 @@ export class AuthService {
         email: dto.email,
         password: hash,
         fullName: dto.fullName,
+        role: dto.role || 'STUDENT',
       },
     });
 
-    return this.signToken(user.id, user.email, user.fullName);
+    return this.signToken(user.id, user.email, user.fullName, user.role);
   }
 
   async login(dto: LoginDto) {
@@ -50,11 +51,16 @@ export class AuthService {
       throw new ForbiddenException('Incorrect credentials');
     }
 
-    return this.signToken(user.id, user.email, user.fullName);
+    return this.signToken(user.id, user.email, user.fullName, user.role);
   }
 
-  async signToken(userId: string, email: string, fullName: string) {
-    const payload = { sub: userId, email };
+  async signToken(
+    userId: string,
+    email: string,
+    fullName: string,
+    role: string,
+  ) {
+    const payload = { sub: userId, email, role };
     const secret = process.env.JWT_SECRET || 'super-secret-upskiill-key-2024';
 
     const token = await this.jwt.signAsync(payload, {
@@ -67,8 +73,9 @@ export class AuthService {
       user: {
         id: userId,
         email,
-        fullName
-      }
+        fullName,
+        role,
+      },
     };
   }
 }

@@ -2,23 +2,44 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 24px;
-  background-color: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.7);
-  border-radius: 20px;
+  padding: 36px 28px;
+  background: linear-gradient(145deg, #ffffff 0%, #f9fbff 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 24px;
   text-align: center;
   font-family: var(--font-jakarta), inherit;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
   width: 100%;
   max-width: 320px;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3D5AFE, #00C853);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  border-color: #3D5AFE;
-  box-shadow: 0 20px 40px rgba(61, 90, 254, 0.1);
+  transform: translateY(-12px) scale(1.02);
+  border-color: rgba(61, 90, 254, 0.3);
+  box-shadow: 
+    0 25px 50px -12px rgba(61, 90, 254, 0.15),
+    0 10px 20px -5px rgba(0, 0, 0, 0.04);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 /* AVATAR SECTION */
@@ -46,20 +67,20 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  background-color: #3D5AFE;
-  filter: blur(24px);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(61, 90, 254, 0.4) 0%, transparent 70%);
+  filter: blur(20px);
   opacity: 0;
   border-radius: 50%;
-  transition: all 0.4s ease;
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: 1;
 }
 
 .card:hover .avatarGlow {
-  opacity: 0.15;
-  width: 120%;
-  height: 120%;
+  opacity: 0.6;
+  width: 140%;
+  height: 140%;
 }
 
 .socialLink {
@@ -137,12 +158,19 @@
   letter-spacing: 0.5px;
 }
 
+.iconStar {
+  color: #F59E0B;
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.2));
+}
+
 .iconUsers {
   color: #3D5AFE;
+  filter: drop-shadow(0 2px 4px rgba(61, 90, 254, 0.2));
 }
 
 .iconCourses {
   color: #00C853;
+  filter: drop-shadow(0 2px 4px rgba(0, 200, 83, 0.2));
 }
 
 .bioSnippet {

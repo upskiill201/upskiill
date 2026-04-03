@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import styles from './SearchBar.module.css';
 
 export type SearchBarProps = {
@@ -66,8 +66,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             onFocus={() => setShowSuggestions(true)}
           />
         </div>
-        <button type="submit" className={styles.submitBtn}>
-          Search
+        <button type="submit" className={styles.submitBtn} aria-label="Search">
+          <ArrowRight size={size === 'lg' ? 24 : 20} strokeWidth={2.5} />
         </button>
       </form>
       

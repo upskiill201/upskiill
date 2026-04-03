@@ -67,13 +67,15 @@ export const InstructorCard = ({
         {/* STATS GRID */}
         <div className={styles.statsGrid}>
           <div className={styles.statItem}>
-            <Star size={14} fill="#F59E0B" stroke="#F59E0B" />
+            <Star size={14} className={styles.iconStar} fill="currentColor" />
             <span className={styles.statVal}>{rating.toFixed(1)}</span>
             <span className={styles.statLabel}>Rating</span>
           </div>
           <div className={styles.statItem}>
             <Users size={14} className={styles.iconUsers} />
-            <span className={styles.statVal}>{(studentsCount / 1000).toFixed(0)}k+</span>
+            <span className={styles.statVal}>
+              {studentsCount >= 1000 ? `${(studentsCount / 1000).toFixed(0)}k+` : studentsCount}
+            </span>
             <span className={styles.statLabel}>Students</span>
           </div>
           <div className={styles.statItem}>

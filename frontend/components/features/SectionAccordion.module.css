@@ -1,0 +1,128 @@
+/* ─── WRAPPER ─── */
+.wrapper {
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  font-family: var(--font-jakarta), inherit;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.wrapper.open {
+  border-color: rgba(61, 90, 254, 0.2);
+  box-shadow: 0 4px 16px rgba(61, 90, 254, 0.07);
+}
+
+/* ─── HEADER BUTTON ─── */
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #F8FAFC;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.header:hover {
+  background: #F1F5F9;
+}
+
+.open .header {
+  background: #EEF2FF;
+  border-bottom: 1px solid rgba(61, 90, 254, 0.12);
+}
+
+/* ─── HEADER LEFT ─── */
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.allDoneIcon {
+  color: #22C55E;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2A44;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.open .sectionTitle {
+  color: #3D5AFE;
+}
+
+/* ─── META ROW ─── */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.metaDot {
+  color: #CBD5E1;
+  font-size: 12px;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
+}
+
+.allDoneChip {
+  color: #22C55E;
+  font-weight: 700;
+}
+
+/* ─── CHEVRON ─── */
+.chevron {
+  flex-shrink: 0;
+  color: #94A3B8;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+  color: #3D5AFE;
+}
+
+/* ─── COLLAPSIBLE BODY ─── */
+.body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bodyOpen {
+  max-height: 2000px; /* large enough for any lesson list */
+}
+
+/* ─── LESSON LIST ─── */
+.lessonList {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px;
+  gap: 2px;
+}

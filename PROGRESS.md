@@ -1,50 +1,72 @@
 # 🚀 Upskiill Development Progress Tracker
-
-This document tracks the real-time development progress of the Upskiill Phase 1 MVP.
-These GitHub checkboxes are interactive. You can check them off directly in the GitHub UI!
+> **Rule:** We complete 100% of a Pillar before proceeding to the next one.
 
 ***
 
-## 🏗️ Phase 1A: Foundation & Layout
+## 🟦 Pillar 1: User & Auth System — ✅ 100% Complete & Tested (2026-04-03)
 - [x] Initial repository setup (Next.js, Tailwind, NestJS workspace)
-- [x] Implement `docs/` architecture strategy
-- [x] Configure global CSS variables & color system (`globals.css`)
-- [x] Configure fonts (`Inter`)
+- [x] Configure global CSS variables & color system
+- [x] Build `/signup` & `/login` layouts (Split-screen)
+- [x] Setup Supabase PostgreSQL Project & Prisma ORM
+- [x] Connect Frontend Auth to Backend API (JWT)
+- [x] Add `role` field to User Schema (Student/Instructor/Admin)
+- [x] Implement `GET /auth/me` Session Persistence (JWT-guarded)
+- [x] Move JWT to `httpOnly` secure cookies (backend sets, frontend uses `credentials: 'include'`)
+- [x] Implement Route Protection Middleware (frontend Next.js middleware)
+- [x] Remove all `localStorage` token usage — 100% cookie-based
+- [x] All 5 manual tests passed ✅
+
+## 🟦 Pillar 2: Course Marketplace — 🟡 In Progress
+
+### Step A — Finish Feature Components (Phase 3) ✅ COMPLETE
 - [x] Build Global responsive `<Header />` Component
-- [x] Implement Mobile Navbar design
+- [x] Build `HeroSection` (Pillar of immensity)
+- [x] Build `CategoryCard` & `CourseCard` UI
+- [x] Build `InstructorCard` & `ReviewCard`
+- [x] Build `CertificateCard` — `components/features/CertificateCard.tsx`
+- [x] Build `LessonItem` — `components/features/LessonItem.tsx`
+- [x] Build `SectionAccordion` — `components/features/SectionAccordion.tsx`
+- [x] Build `CartItem` — `components/features/CartItem.tsx`
 
-## 🔐 Phase 1B: Authentication UI & Setup
-- [x] Build highly polished `/signup` layout (Split-screen, wow-factor cards)
-- [x] Build `/login` layout (Split-screen adaptation)
-- [x] Setup Supabase PostgreSQL Project
-- [x] Initialize Prisma ORM in `backend/` and push User schema
-- [x] Connect Frontend Auth to Backend API
+### Step B — Build Homepage Sections (Phase 4) 🔴
+- [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
+- [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
+- [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
+- [ ] `HowItWorks` — `components/homepage/HowItWorks.tsx`
+- [ ] `InstructorCTA` — `components/homepage/InstructorCTA.tsx`
+- [ ] `Testimonials` — `components/homepage/Testimonials.tsx`
 
-## 🎓 Phase 1C: Core Platform (UI + Data)
-- [ ] Deep-build completely responsive `/` Homepage (hero, features, call-to-actions)
-- [ ] Build `/courses` Browse UI (Grid, search, filters)
-- [ ] Build `/courses/[id]` Course Detail UI
-- [ ] Build `/learn/[id]` Video Player UI (Sidebar, basic video container)
+### Step C — Build Marketplace Pages ✅ COMPLETE
+- [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
+- [x] `/courses/[id]` Course Detail/Sales Page ✅ **DONE (Mobile Polished)**
 
-## 💸 Phase 1D: Dashboards & Payments
-- [x] Build User Profile & Student Dashboard (`/dashboard`) — **100% Complete & Fully Responsive**
-- [ ] Build basic Instructor Dashboard (Create course view)
-- [ ] Build `/checkout` Payment flow
-- [ ] Integrate Stripe API
+### Step D — Build Course API (Backend) 🔴
+- [ ] `GET /courses` — list published courses (search & filter params)
+- [ ] `GET /courses/:id` — single course detail
+- [ ] `GET /courses/categories` — category list
+- [ ] Seed Supabase with sample course data
+
+## 🟦 Pillar 3: Course Sales Page — 🟡 UI Ready (15%)
+- [x] Build `InstructorCard` (just polished)
+- [x] Build `ReviewCard`
+- [ ] Build `/courses/[id]` layout
+
+## 🟦 Pillar 4: Student Learning System — 🟡 UI Ready (60%)
+- [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**
+- [x] Build global "Coming Soon" Infrastructure
+- [ ] Build `/learn/[id]` Video Player & Sidebar Logic
 
 ***
 
-## 🧩 Shared Component Library
-_Track the individual reusable generic UI components here as they are built:_
-- [x] Primary & Secondary Buttons (`.submitBtn`, `.exploreBtn`)
-- [x] Social Auth Buttons (Google, LinkedIn, Apple, Facebook)
-- [x] Form Inputs (w/ icons)
-- [x] Animated floating Glass Cards
-- [x] Shared Loading Spinners
-- [x] Course Cards (Thumbnail, title, instructor, price)
-- [x] Rating Stars component 
-- [x] Course Card Horizontal
-- [x] Review Card
-- [x] Category Card
-- [x] Coming Soon Context & Modal Infrastructure
-- [ ] Instructor Card (Next 🚀)
+## 🧩 Component Library Status
+_Phase 1 (Shared UI): 🟢 100% Complete (16/16)_
+_Phase 2 (Layout): 🟢 100% Complete (2/2)_
+_Phase 3 (Features): 🟡 5/10 Complete_
+
+- [x] Button, Input, Badge, Avatar, Spinner
+- [x] StarRating, ProgressBar, Modal, Tabs
+- [x] Dropdown, SearchBar, Toast, Tooltip
+- [x] Pagination, EmptyState, Footer, Sidebar
+- [x] CourseCard, CourseCardHorizontal, ReviewCard
+- [x] CategoryCard, InstructorCard
+- [x] CertificateCard, LessonItem, SectionAccordion, CartItem

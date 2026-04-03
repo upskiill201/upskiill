@@ -1,0 +1,144 @@
+.container {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #E2E8F0;
+  font-family: var(--font-jakarta), inherit;
+  align-items: flex-start;
+}
+
+/* ─── THUMBNAIL ─── */
+.imageLink {
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 160px;
+  height: 90px;
+  background-color: #F1F5F9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+  transition: opacity 0.2s;
+}
+
+.imageLink:hover .imageWrapper {
+  opacity: 0.85;
+}
+
+/* ─── MAIN INFO ─── */
+.mainInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.titleLink {
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.titleLink:hover .title {
+  color: #3D5AFE;
+}
+
+.instructor {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0 0 12px 0;
+}
+
+/* ─── ACTION LINKS ─── */
+.actionLinks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #3D5AFE;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.actionBtn:hover {
+  color: #2D4AEE;
+  text-decoration: underline;
+}
+
+.divider {
+  width: 1px;
+  height: 12px;
+  background-color: #CBD5E1;
+}
+
+/* ─── PRICING ─── */
+.pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #3D5AFE;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  margin-bottom: 2px;
+}
+
+.originalPrice {
+  font-size: 14px;
+  color: #94A3B8;
+  text-decoration: line-through;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .imageWrapper {
+    width: 100%;
+    height: 160px;
+  }
+
+  .pricing {
+    align-items: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
