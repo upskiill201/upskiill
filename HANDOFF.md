@@ -1,4 +1,5 @@
-> Last updated: 2026-04-02 02:45 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-03 13:05 WAT · Keep this file current at the end of every session.
+> **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 
 ---
 
@@ -68,31 +69,66 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] `NEXT_PUBLIC_API_URL` env var used for all API calls (falls back to `http://localhost:3001`)
 - [x] Font Awesome 6 (Solid) integrated via CDN for lightweight iconography.
 
-### Auth Flow (Local & Live — working ✅)
-- [x] Signup → POST `/auth/signup` → returns `{ access_token, user }`
-- [x] Login → POST `/auth/login` → returns `{ access_token, user }`
-- [x] Token stored in `localStorage` as `access_token`
-- [x] Redirects to `/dashboard` (page currently 404)
+### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
+- [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
+- [x] Login → POST `/auth/login` → sets `httpOnly` cookie, returns `{ access_token, user }`
+- [x] Frontend uses `credentials: 'include'` on all auth fetches — cookie accepted by browser
+- [x] No `localStorage` usage — 100% cookie-based session
+- [x] Redirects to `/dashboard` after login/signup ✅
 - [x] Live Vercel frontend communicates correctly with Live Render backend
 
 ---
 
-## 🟢 Current Status (2026-04-02 01:45 WAT)
+### Pillar 1: User & Auth System — ✅ 100% Complete & Tested (2026-04-03)
+Fully hardened and verified:
+- JWTs stored in `httpOnly` secure cookies (7-day expiry)
+- `credentials: 'include'` on all auth fetches
+- `/auth/me` session persistence endpoint (JWT-guarded)
+- Route protection middleware active on frontend
+- Cookie set/cleared correctly on login, signup, and logout
+- All 5 manual tests passed locally ✅
 
-### Student Dashboard: ✅ Complete (100%)
-The "My Learning Hub" is fully implemented as a high-fidelity, interactive dashboard. It includes gamification stats, AI-powered growth insights, and real-world analytics. All unbuilt modules (AI Tutor, Community, etc.) are safely wrapped in a premium "Coming Soon" modal to maintain a seamless user experience.
+### Pillar 2: Course Marketplace — 🟡 In Progress
+Focus: Finish component library → Build homepage sections → Build `/courses` page → Build `/courses/[id]` → Connect Course API.
 
-### Homepage Sections: 🟡 Ongoing (2/5 Complete)
-The Hero (with Category Slider) and the "Why Learn" section are finished. Remaining sections are pending.
+### Homepage Sections: 🟡 Ongoing (1/6 Complete)
+Hero + Category Slider + "Why Learn" section are finished. Remaining 6 homepage section components are pending.
 
 ---
 
-## 📋 What's Next (Priority Order)
+## 📋 Phase 1: Pillar-by-Pillar Roadmap
+_Current Focus: Pillar 2 (Course Marketplace)_
 
-1. **[ ] Persist auth state** — move token from `localStorage` to `httpOnly` cookie or add a `/auth/me` endpoint
-2. **[ ] Protected routes** — middleware to redirect unauthenticated users away from `/dashboard`
-3. **[ ] Build `/courses` Browse UI** — core discovery engine
-4. **[ ] Instructor Card** — next component in library
+1. **[x] Pillar 1: User & Auth (100% Done)**
+   - [x] Add `role` field to Prisma User model (`STUDENT`, `INSTRUCTOR`, `ADMIN`)
+   - [x] Implement `GET /auth/me` endpoint in NestJS
+   - [x] Switch JWT storage to `httpOnly` secure cookies
+   - [x] Implement Middleware for protected routes
+2. **[ ] Pillar 2: Course Marketplace (Target: 100%)**
+   - **Step A — Finish Feature Components (Phase 3): ✅ COMPLETE**
+     - [x] `CertificateCard` — `components/features/CertificateCard.tsx`
+     - [x] `LessonItem` — `components/features/LessonItem.tsx`
+     - [x] `SectionAccordion` — `components/features/SectionAccordion.tsx`
+     - [x] `CartItem` — `components/features/CartItem.tsx`
+   - **Step B — Build Homepage Sections (Phase 4):**
+     - [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
+     - [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
+     - [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
+     - [ ] `HowItWorks` — `components/homepage/HowItWorks.tsx`
+     - [ ] `InstructorCTA` — `components/homepage/InstructorCTA.tsx`
+     - [ ] `Testimonials` — `components/homepage/Testimonials.tsx`
+   - **Step C — Build Marketplace Pages: ✅ COMPLETE & RESPONSIVE**
+     - [x] `/courses` Browse UI (Responsive Grid + Pixel-perfect Mobile Optimization)
+     - [x] `/courses/[id]` Course Detail/Sales Page (Responsive Sticky Card & Layout Stack)
+   - **Step D — Build Course API (Backend):**
+     - [ ] `GET /courses` — list all published courses (with search & filter params)
+     - [ ] `GET /courses/:id` — single course detail
+     - [ ] `GET /courses/categories` — list all categories
+     - [ ] Seed Supabase with sample course data
+3. **[ ] Pillar 3: Course Sales Page**
+   - [ ] Build high-converting `/courses/[id]` layout
+4. **[ ] Pillar 4: Student Learning System**
+   - [ ] Finalize Video Player curriculum logic
 
 ---
 

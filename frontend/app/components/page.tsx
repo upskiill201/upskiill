@@ -24,6 +24,10 @@ import { CourseCardHorizontal } from "@/components/features/CourseCardHorizontal
 import { ReviewCard } from "@/components/features/ReviewCard";
 import { CategoryCard } from "@/components/features/CategoryCard";
 import { InstructorCard } from "@/components/features/InstructorCard";
+import { CertificateCard } from "@/components/features/CertificateCard";
+import { LessonItem } from "@/components/features/LessonItem";
+import { SectionAccordion } from "@/components/features/SectionAccordion";
+import { CartItem } from "@/components/features/CartItem";
 // ✅ PROJECT ICON STANDARD: lucide-react for UI icons, react-icons/fa for feature/brand icons
 import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye, User, Heart, Award, Settings, Code, Database, Palette, ShieldCheck, Cpu, TrendingUp, ExternalLink, PlayCircle } from 'lucide-react';
 import { FaTrash, FaRocket, FaGraduationCap } from 'react-icons/fa';
@@ -672,6 +676,151 @@ export default function ComponentsPreviewPage() {
                 coursesCount={5}
                 bioSnippet="Sarah combines ivory-tower academic research with real-world enterprise data engineering to help students break into AI."
                 socialLinks={{ linkedin: 'https://linkedin.com' }}
+              />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── CERTIFICATE CARD ─────────────────────────────── */}
+        <Section title="CertificateCard" file="components/features/CertificateCard.tsx" status="done">
+          <Group label="Accent Colors — Blue (Default), Purple, Green">
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+              <CertificateCard
+                courseTitle="Complete React Developer in 2026"
+                instructorName="Andrei Neagoie"
+                completedDate="March 15, 2026"
+                certificateId="UC-ABC123"
+                category="Web Development"
+                thumbnailColor="#3D5AFE"
+                onDownload={() => alert('Download PDF')}
+              />
+              <CertificateCard
+                courseTitle="Figma UI/UX Design Essentials"
+                instructorName="Daniel Scott"
+                completedDate="February 2, 2026"
+                certificateId="UC-DEF456"
+                category="Design"
+                thumbnailColor="#7C3AED"
+                onDownload={() => alert('Download PDF')}
+              />
+              <CertificateCard
+                courseTitle="Python for Data Science & Machine Learning"
+                instructorName="Dr. Angela Yu"
+                completedDate="January 20, 2026"
+                certificateId="UC-GHI789"
+                category="Data Science"
+                thumbnailColor="#059669"
+                onDownload={() => alert('Download PDF')}
+              />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── LESSON ITEM ──────────────────────────────────── */}
+        <Section title="LessonItem" file="components/features/LessonItem.tsx" status="done">
+          <Group label="All 4 States — Default · Active · Completed · Locked">
+            <div style={{ width: '100%', maxWidth: '640px', display: 'flex', flexDirection: 'column', border: '1px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden', background: '#fff' }}>
+              <LessonItem
+                index={1}
+                title="Welcome to the Course — What You Will Build"
+                duration="3:45"
+                isFreePreview
+              />
+              <LessonItem
+                index={2}
+                title="Setting Up Your Development Environment"
+                duration="8:12"
+                isFreePreview
+              />
+              <LessonItem
+                index={3}
+                title="Core Concepts: Components & Props"
+                duration="14:30"
+                isActive
+              />
+              <LessonItem
+                index={4}
+                title="State Management with useState"
+                duration="18:55"
+                isCompleted
+              />
+              <LessonItem
+                index={5}
+                title="Advanced Hooks: useEffect & useCallback"
+                duration="22:10"
+                isCompleted
+              />
+              <LessonItem
+                index={6}
+                title="Building a Full Project from Scratch"
+                duration="45:00"
+                isLocked
+              />
+              <LessonItem
+                index={7}
+                title="Deployment to Vercel — Production Ready"
+                duration="12:20"
+                isLocked
+              />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── SECTION ACCORDION ────────────────────────────── */}
+        <Section title="SectionAccordion" file="components/features/SectionAccordion.tsx" status="done">
+          <Group label="Curriculum Section (Wraps LessonItems)">
+            <div style={{ width: '100%', maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <SectionAccordion 
+                title="Section 1: Introduction to React 19"
+                lessonCount={3}
+                totalDuration="45m"
+                completedCount={3}
+                defaultOpen
+                lessons={[
+                  { index: 1, title: 'Welcome to the Course', duration: '5:00', isCompleted: true },
+                  { index: 2, title: 'What is React?', duration: '15:30', isCompleted: true },
+                  { index: 3, title: 'Environment Setup', duration: '24:30', isCompleted: true }
+                ]}
+              />
+              <SectionAccordion 
+                title="Section 2: Components and Props"
+                lessonCount={4}
+                totalDuration="1h 15m"
+                completedCount={1}
+                defaultOpen
+                lessons={[
+                  { index: 4, title: 'Your First Component', duration: '12:00', isCompleted: true },
+                  { index: 5, title: 'Passing Props', duration: '18:45', isActive: true },
+                  { index: 6, title: 'Nesting Components', duration: '22:15' },
+                  { index: 7, title: 'Props vs State', duration: '22:00', isLocked: true }
+                ]}
+              />
+            </div>
+          </Group>
+        </Section>
+
+        {/* ─── CART ITEM ────────────────────────────────────── */}
+        <Section title="CartItem" file="components/features/CartItem.tsx" status="done">
+          <Group label="Shopping Cart Items">
+            <div style={{ width: '100%', maxWidth: '720px', display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #E2E8F0' }}>
+              <CartItem 
+                courseId="1"
+                title="Complete React Developer in 2026 (w/ Redux, Hooks, GraphQL)"
+                thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=600&auto=format&fit=crop"
+                instructorName="Andrei Neagoie"
+                price={49.99}
+                originalPrice={129.99}
+                onRemove={() => alert('Remove item')}
+                onMoveToWishlist={() => alert('Move to wishlist')}
+              />
+              <CartItem 
+                courseId="2"
+                title="Figma UI/UX Design Essentials"
+                thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop"
+                instructorName="Daniel Scott"
+                price={19.99}
+                onRemove={() => alert('Remove item')}
+                onMoveToWishlist={() => alert('Move to wishlist')}
               />
             </div>
           </Group>

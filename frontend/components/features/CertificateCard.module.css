@@ -1,0 +1,197 @@
+/* ─── CARD SHELL ─── */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+  width: 100%;
+  max-width: 340px;
+  font-family: var(--font-jakarta), inherit;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 40px -8px rgba(61, 90, 254, 0.15),
+    0 8px 16px -4px rgba(0, 0, 0, 0.06);
+  border-color: rgba(61, 90, 254, 0.25);
+}
+
+/* ─── BANNER ─── */
+.banner {
+  position: relative;
+  height: 140px;
+  background: linear-gradient(135deg, var(--accent, #3D5AFE) 0%, color-mix(in srgb, var(--accent, #3D5AFE) 60%, #000) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Decorative circles */
+.circle1 {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.circle2 {
+  position: absolute;
+  bottom: -50px;
+  left: -20px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Trophy */
+.trophyWrapper {
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trophyRing {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: transform 0.3s ease;
+}
+
+.card:hover .trophyRing {
+  transform: scale(1.08) rotate(-5deg);
+}
+
+.trophyIcon {
+  color: #FCD34D;
+  filter: drop-shadow(0 4px 12px rgba(252, 211, 77, 0.5));
+}
+
+/* Verified badge */
+.verifiedBadge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.3px;
+  z-index: 2;
+}
+
+/* ─── CONTENT ─── */
+.content {
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.category {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3D5AFE;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.courseTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1F2A44;
+  margin: 0 0 6px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.instructorLine {
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.instructorName {
+  color: #475569;
+  font-weight: 600;
+}
+
+/* ─── DIVIDER ─── */
+.divider {
+  height: 1px;
+  background: #F1F5F9;
+  margin: 16px 0;
+}
+
+/* ─── META ─── */
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metaIcon {
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.metaLabel {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.metaValue {
+  font-size: 12px;
+  color: #1F2A44;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ─── ACTIONS ─── */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}

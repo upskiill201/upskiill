@@ -28,6 +28,7 @@ export default function Signup() {
       const res = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, fullName, password }),
       });
 
@@ -37,10 +38,11 @@ export default function Signup() {
         throw new Error(errMsg || 'Signup failed');
       }
 
-      localStorage.setItem('access_token', data.access_token);
+      // Cookie is set automatically by the backend (httpOnly, secure)
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Signup failed';
+      setError(message);
     } finally {
       setLoading(false);
     }

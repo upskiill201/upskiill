@@ -1,0 +1,152 @@
+/* ─── BASE ROW ─── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  min-height: 48px;
+  font-family: var(--font-jakarta), inherit;
+  position: relative;
+}
+
+/* Clickable state */
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background: #F5F7FB;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid #3D5AFE;
+  outline-offset: 2px;
+}
+
+/* ─── ACTIVE STATE ─── */
+.active {
+  background: #EEF2FF;
+  border-left-color: #3D5AFE;
+}
+
+.active .title {
+  color: #3D5AFE;
+  font-weight: 700;
+}
+
+/* ─── LOCKED STATE ─── */
+.locked {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.locked .title {
+  color: #94A3B8;
+}
+
+/* ─── LEFT ICON SLOT ─── */
+.iconSlot {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Completed check */
+.checkIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #22C55E;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Active play button */
+.playIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #3D5AFE;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Lock icon */
+.lockIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Number (default) */
+.numberIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── MIDDLE: title + badge ─── */
+.middle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1F2A44;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+
+/* Free badge */
+.freeBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  color: #065F46;
+  background: #D1FAE5;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── RIGHT: Duration ─── */
+.duration {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}

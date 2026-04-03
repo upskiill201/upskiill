@@ -27,6 +27,7 @@ export default function Login() {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -36,10 +37,11 @@ export default function Login() {
         throw new Error(errMsg || 'Login failed');
       }
 
-      localStorage.setItem('access_token', data.access_token);
+      // Cookie is set automatically by the backend (httpOnly, secure)
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message);
     } finally {
       setLoading(false);
     }

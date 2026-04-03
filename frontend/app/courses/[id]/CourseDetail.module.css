@@ -1,0 +1,489 @@
+.pageWrapper {
+  background-color: #F8FAFC;
+  min-height: 100vh;
+  font-family: var(--font-jakarta), inherit;
+  padding-bottom: 80px;
+}
+
+/* ─── HERO BANNER ─── */
+.hero {
+  background-color: #1F2A44; /* Dark slate navy */
+  color: #FFFFFF;
+  padding: 64px 24px 280px; /* huge bottom padding to allow for negative margin overlap */
+  position: relative;
+}
+
+.heroInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.heroContent {
+  width: 60%;
+}
+
+.breadcrumbs {
+  font-size: 13px;
+  color: #94A3B8;
+  margin-bottom: 24px;
+}
+
+.breadcrumbLink {
+  color: #CBD5E1;
+  text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #CBD5E1;
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #E2E8F0;
+}
+
+.ratingHighlight {
+  color: #F59E0B;
+  font-weight: 700;
+}
+
+.instructorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.instructorText {
+  font-size: 14px;
+  color: #CBD5E1;
+}
+
+.instructorName {
+  color: #FFFFFF;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ─── MAIN LAYOUT ─── */
+.mainContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 48px;
+  position: relative;
+  margin-top: -200px; /* Negative margin pulls it up into the hero */
+}
+
+.leftColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ─── SECTION BOXES (Left Side) ─── */
+.contentBox {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 40px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1F2A44;
+  margin: 0 0 24px 0;
+}
+
+/* What you'll learn Grid */
+.learnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.checkIcon {
+  color: #00C853;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Audience Grid */
+.audienceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.audienceItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.audienceIconBox {
+  width: 40px;
+  height: 40px;
+  background: #EEF2FF;
+  color: #3D5AFE;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.audienceTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0 0 4px 0;
+}
+
+.audienceDesc {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* About Typography */
+.aboutText {
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.blockquote {
+  border-left: 4px solid #3D5AFE;
+  padding-left: 20px;
+  margin: 24px 0;
+  font-size: 18px;
+  font-style: italic;
+  color: #1F2A44;
+  background: #F8FAFC;
+  padding: 20px;
+  border-radius: 0 8px 8px 0;
+}
+
+.aboutList {
+  padding-left: 20px;
+  margin: 16px 0;
+  color: #475569;
+}
+
+.aboutList li {
+  margin-bottom: 8px;
+}
+
+/* Certificate Banner */
+.certBanner {
+  background: linear-gradient(135deg, #1F2A44 0%, #0F172A 100%);
+  border-radius: 16px;
+  padding: 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.certInfo {
+  flex: 1;
+}
+
+.certBadge {
+  color: #FCD34D;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.certTitle {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+}
+
+.certDesc {
+  color: #CBD5E1;
+  line-height: 1.6;
+}
+
+.certVisual {
+  flex-shrink: 0;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  width: 260px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transform: rotate(2deg);
+}
+
+/* Curriculum Header Stats */
+.curriculumHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.curriculumStats {
+  font-size: 14px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.curriculumList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── STICKY CHECKOUT CARD (Right Side) ─── */
+.rightColumn {
+  width: 380px;
+  flex-shrink: 0;
+}
+
+.stickyCard {
+  position: sticky;
+  top: 100px;
+  z-index: 30;
+  
+  /* Glassmorphism & Borders */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  
+  /* Soft Premium Shadows */
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(226, 232, 240, 0.5);
+  
+  overflow: hidden;
+}
+
+.cardVideo {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background-color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cardVideo::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(31, 42, 68, 0.3);
+  transition: background 0.3s ease;
+}
+
+.cardVideo:hover::after {
+  background: rgba(31, 42, 68, 0.1);
+}
+
+.playBtnWrapper {
+  position: absolute;
+  z-index: 2;
+  width: 64px;
+  height: 64px;
+  background: rgba(61, 90, 254, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 16px rgba(61, 90, 254, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.cardVideo:hover .playBtnWrapper {
+  transform: scale(1.1);
+}
+
+.cardVideoLabel {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 2;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.cardBody {
+  padding: 32px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.price {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1F2A44;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.originalPrice {
+  font-size: 18px;
+  color: #94A3B8;
+  text-decoration: line-through;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.discountBadge {
+  color: #00C853;
+  font-size: 14px;
+  font-weight: 700;
+  background: #D1FAE5;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.actionWrapper {
+  margin-bottom: 24px;
+}
+
+.includesTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2A44;
+  margin: 0 0 16px 0;
+}
+
+.includesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.includeItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.includeIcon {
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.guaranteeBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #F8FAFC;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.guaranteeIcon {
+  color: #3D5AFE;
+}
+
+.guaranteeText {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .heroContent {
+    width: 100%;
+  }
+  
+  .mainContainer {
+    flex-direction: column;
+    margin-top: -100px;
+  }
+  
+  .rightColumn {
+    width: 100%;
+    order: -1; /* Move card to top on mobile */
+  }
+  
+  .stickyCard {
+    position: static;
+  }
+  
+  .learnGrid, .audienceGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .certBanner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
