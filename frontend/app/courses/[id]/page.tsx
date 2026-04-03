@@ -79,6 +79,38 @@ interface AudienceItem {
   description: string;
 }
 
+// ─── Simple Markdown-lite Parser ──────────────────────────────────────────────
+function renderDescription(text: string) {
+  if (!text) return null;
+  const blocks = text.split('\n\n');
+  return blocks.map((block, i) => {
+    if (block.startsWith('> ')) {
+      return (
+        <blockquote key={i} className={styles.blockquote}>
+          &ldquo;{block.replace(/^> /, '')}&rdquo;
+        </blockquote>
+      );
+    }
+    if (block.startsWith('### ')) {
+      return <h3 key={i} className={styles.subHeading}>{block.replace(/^### /, '')}</h3>;
+    }
+    if (block.startsWith('- ')) {
+      const items = block.split('\n').filter(line => line.startsWith('- '));
+      return (
+        <ul key={i} className={styles.bulletList}>
+          {items.map((item, j) => (
+            <li key={j} className={styles.bulletItem}>
+              <div className={styles.bulletDot} />
+              <span>{item.replace(/^- /, '')}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    return <p key={i} className={styles.paragraph}>{block}</p>;
+  });
+}
+
 export default function CourseDetailPage({
   params,
 }: {
@@ -302,13 +334,7 @@ export default function CourseDetailPage({
           <div className={styles.contentBox}>
             <h2 className={styles.sectionTitle}>About this Course</h2>
             <div className={styles.aboutText}>
-              {(course.description || '').split('\n\n').map((para: string, i: number) => (
-                i === 1 ? (
-                  <blockquote key={i} className={styles.blockquote}>&ldquo;{para}&rdquo;</blockquote>
-                ) : (
-                  <p key={i} style={{ marginBottom: '16px' }}>{para}</p>
-                )
-              ))}
+              {renderDescription(course.description)}
             </div>
           </div>
 
@@ -445,7 +471,6 @@ export default function CourseDetailPage({
                       size="lg"
                       fullWidth
                       onClick={handleAddToCart}
-                      style={{ marginTop: '10px' }}
                     >
                       Buy Now
                     </Button>

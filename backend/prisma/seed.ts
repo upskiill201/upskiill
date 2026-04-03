@@ -56,8 +56,20 @@ async function main() {
       slug: 'advanced-product-design-ux-strategy',
       shortDescription:
         'Master the complete design lifecycle — from user research and wireframing to high-fidelity prototyping and handoff.',
-      description:
-        "Welcome to the most comprehensive course on Product Design and UX Strategy available online. This isn't just another tutorial on how to use software — it's a deep dive into the mindset, frameworks, and execution strategies used by the world's most successful tech companies.\n\nWe start with first principles: why do users behave the way they do? What makes an interface intuitive almost immediately? From there you'll build a complete design system, prototype a full mobile app, and leave with a portfolio project that's been tested with real users.\n\nBy the time you finish, you won't just 'know Figma' — you'll think like a designer.",
+      description: `Welcome to the most comprehensive course on Product Design and UX Strategy available online. This isn't just another tutorial on how to use software — it is a deep dive into the mindset, frameworks, and execution strategies used by the world's most successful tech companies.
+
+> "Great design isn't just what it looks like and feels like. Design is how it works. Our aim is to bridge the gap between aesthetic beauty and functional brilliance in every digital interface."
+
+### The Journey from Beginner to Expert
+
+We start by breaking down the psychological drivers of user behavior. Why do users click? What makes an interface almost completely intuitive? From there, we move into wireframing, building a robust component library, and eventually establishing a full-fledged design system out of nothing. You will build actual, testable app prototypes that feel real to users.
+
+### Key Highlights:
+
+- Build a professional portfolio from day one layout sizing.
+- Post-course community exclusively for pro tier students to review your work.
+- Advanced Figma techniques: variants, auto-layout, and dynamic variables.
+- Usability testing guide: how to recruit early users and scale your research efforts.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop',
       price: 499,
@@ -182,8 +194,20 @@ async function main() {
       slug: 'fullstack-nextjs-15-development',
       shortDescription:
         'Build production-ready web applications using App Router, Server Actions, Prisma, and modern deployment pipelines.',
-      description:
-        "Learn modern full-stack web development by building a complete, high-performance SaaS platform from scratch. We cover the latest Next.js 15 features alongside standard industry practices — authentication, database design, payment integration, and CI/CD deployment.\n\nThis isn't a course about copying boilerplate. You'll understand every line of code you write and why it's there. We build a real product that you can show employers or ship to paying customers.\n\nBy the end, you'll be able to architect, build, and deploy any full-stack web application.",
+      description: `Learn modern full-stack web development by building a complete, high-performance SaaS platform from scratch. We cover the latest Next.js 15 features alongside standard industry practices — authentication, database design, payment integration, and CI/CD deployment.
+
+> "To truly understand web development today, you need to build across the entire stack. Knowing just the frontend or just the database leaves you dependent on others. This course makes you dangerous across the whole stack."
+
+### Beyond Boilerplate
+
+This isn't a course about copying boilerplate. You'll understand every line of code you write and why it's there. We build a real product that you can show employers or ship to paying customers.
+
+### Key Highlights:
+
+- Build a real, scalable product piece by piece in every single lesson.
+- Master React Server Components (RSC) and dramatically improve your web app's speed.
+- Deploy to Vercel and set up automated preview links via GitHub Actions.
+- Build your own authentication system with completely secure, httpOnly cookies and JWTs.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop',
       price: 350,
@@ -306,8 +330,20 @@ async function main() {
       slug: 'digital-marketing-mastery-2025',
       shortDescription:
         'Uncover the secrets to driving millions of organic and paid impressions — SEO, Google Ads, Meta Ads, and content strategy.',
-      description:
-        "Master the full digital marketing ecosystem. From SEO fundamentals to advanced paid advertising on Google and Meta, content strategy, email automation, and analytics — this bootcamp is built for real-world scale.\n\nYou'll walk away with live campaigns, proven swipe-file frameworks, and measurable results you can show any employer or client. We don't just teach theory — every module includes live screen recordings building and optimizing actual campaigns.\n\nMarketing is the highest-leverage skill in business. Let's make you dangerous at it.",
+      description: `Master the full digital marketing ecosystem. From SEO fundamentals to advanced paid advertising on Google and Meta, content strategy, email automation, and analytics — this bootcamp is built for real-world scale.
+
+> "A great product with zero distribution is a dead product. Distribution is arguably the most important skill in modern business, and digital marketing is the key to unlocking consistent, scalable growth."
+
+### Scaling What Works
+
+You'll walk away with live campaigns, proven swipe-file frameworks, and measurable results you can show any employer or client. We don't just teach theory — every module includes live screen recordings building and optimizing actual campaigns right before your eyes.
+
+### Key Highlights:
+
+- Unlock premium SEO templates used by leading marketing agencies.
+- Real case studies where we show how $1000 was converted into $50,000 via Meta Ads.
+- Hands-on workshops analyzing real-time Google Analytics 4 properties.
+- Automate repetitive marketing tasks using Zapier and AI workflows.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
       price: 199,
@@ -416,8 +452,20 @@ async function main() {
       slug: 'python-data-science-machine-learning',
       shortDescription:
         'Go from zero to building real ML models — Python, NumPy, Pandas, Scikit-learn, and neural networks with TensorFlow.',
-      description:
-        "The most in-demand skill set in tech — all in one course. You'll start from Python basics and build your way up to training machine learning models, working with real Kaggle datasets, and deploying your models to production as REST APIs.\n\nTaught by an ex-Google data scientist with 10+ years of industry experience across FAANG companies, this course uses real datasets and real problems — not toy examples.\n\nData science can feel overwhelming. This course gives you a clear, structured path from beginner to job-ready.",
+      description: `The most in-demand skill set in tech — all in one course. You'll start from Python basics and build your way up to training machine learning models, working with real Kaggle datasets, and deploying your models to production as REST APIs.
+
+> "Data is the new oil, but without the refinery capabilities, it's virtually useless. Python and its rich ecosystem of libraries give you the power to find the gold buried deep within complex data."
+
+### Taught by Industry Veterans
+
+Taught by an ex-Google data scientist with over 10 years of industry experience across FAANG companies, this course uses real datasets and real problems — no toy examples. Data science can feel overwhelming, but this structured curriculum gives you a clear path from beginner to job-ready.
+
+### Key Highlights:
+
+- Train your first Neural Network using Google's TensorFlow.
+- Master Pandas techniques to clean and manipulate data 100x faster than Excel.
+- Learn how to visualize relationships using Matplotlib and Seaborn.
+- Complete a Capstone project tackling an active Kaggle competition.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
       price: 279,
@@ -540,8 +588,20 @@ async function main() {
       slug: 'financial-freedom-blueprint',
       shortDescription:
         'Build passive income streams, master the stock market, and create the financial independence you deserve.',
-      description:
-        "Most people spend their entire lives trading time for money. This course teaches you the systems, strategies, and mindset shifts used by financially free individuals to build lasting wealth.\n\nCovering stocks, ETFs, real estate, and passive income vehicles — this is the financial education your school never gave you. Every module is built around specific, actionable steps you can take this week — not abstract theory.\n\nYour financial freedom is a decision, not a circumstance. Make it today.",
+      description: `Most people spend their entire lives trading time for money. This course teaches you the systems, strategies, and mindset shifts used by financially free individuals to build lasting, multi-generational wealth.
+
+> "Wealth isn't about making a lot of money; it's about making your money make a lot of money while you sleep. The sooner you start building asset structures, the sooner you find freedom."
+
+### Escaping the Rat Race
+
+Covering stocks, ETFs, real estate, and passive income vehicles — this is the financial education your school never gave you. Every module is built around specific, actionable steps you can take this week — not abstract theory or "get rich quick" schemes.
+
+### Key Highlights:
+
+- Build your own tax-efficient "lazy portfolio" utilizing ETFs.
+- Decode and interpret the real estate market cycles for Buy-to-Let opportunities.
+- Learn to manage risk properly during market downturns.
+- Establish alternative streams of income that don't trade your time for money.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
       price: 149,
@@ -649,8 +709,20 @@ async function main() {
       slug: 'deep-work-mastery-productivity-focus',
       shortDescription:
         'Build the habits, systems, and environment that allow you to do 8 hours of work in 4 — and reclaim your time.',
-      description:
-        "In a world of constant distraction, the ability to focus deeply is your most valuable professional skill. The research is clear: people who can concentrate without distraction are producing the work that matters — and they're rare.\n\nThis course distills the best research from Cal Newport, James Clear, and the Huberman Lab into a practical, proven system. You'll redesign your work environment, calendar, and habits to produce your best output consistently — without burning out.\n\nFocus is a skill. It can be trained. Let's build it.",
+      description: `In a world of constant distraction, the ability to focus deeply is your most valuable professional skill. The research is clear: people who can concentrate without distraction are producing the work that matters — and they're rare.
+
+> "Deep work is not a buzzword; it's the superpower of the 21st century economy. When you learn to protect your attention, you take control of your career and your life."
+
+### Building Unbreakable Habits
+
+This course distills the best research from Cal Newport, James Clear, and the Huberman Lab into a practical, proven system. You'll redesign your work environment, calendar, and habits to produce your best output consistently — without burning out.
+
+### Key Highlights:
+
+- Discover your daily chronotype and schedule focused work accordingly.
+- Use advanced time-blocking templates to schedule tasks securely.
+- Learn the "Shutdown Ritual" to properly disconnect from your work day mentally.
+- Identify the subtle digital addictions that waste up to 4 hours of your day.`,
       thumbnailUrl:
         'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=800&auto=format&fit=crop',
       price: 89,
