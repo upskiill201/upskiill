@@ -33,7 +33,7 @@
 .hero {
   background: linear-gradient(135deg, #0F172A 0%, #1F2A44 60%, #1e3a5f 100%);
   color: #FFFFFF;
-  padding: 52px 24px 260px;
+  padding: 52px 24px 80px;
   position: relative;
 }
 
@@ -191,10 +191,10 @@
 /* ─── MAIN LAYOUT ─── */
 .mainContainer {
   max-width: 1280px;
-  margin: -196px auto 0;
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 80px 24px 0;
   display: flex;
-  gap: 40px;
+  gap: 64px;
   position: relative;
   align-items: flex-start;
 }
@@ -205,7 +205,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 80px;
 }
 
 /* ─── WHITE CONTENT BOXES ─── */
@@ -518,16 +518,23 @@
 .rightColumn {
   width: 360px;
   flex-shrink: 0;
+  margin-top: -256px;
+  z-index: 30;
+  position: relative;
 }
 
 .stickyCard {
   position: sticky;
-  top: 90px;
+  top: 112px;
   z-index: 30;
-  background: #FFFFFF;
-  border-radius: 20px;
-  border: 1px solid rgba(226, 232, 240, 0.6);
-  box-shadow: 0 20px 40px rgba(31, 42, 68, 0.08); /* Premium shadow */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 30px 60px rgba(31, 42, 68, 0.08),
+    0 4px 12px rgba(31, 42, 68, 0.04);
   overflow: hidden;
 }
 
@@ -641,15 +648,38 @@
   gap: 12px;
 }
 
-.guarantee {
+.guaranteeBox {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 12px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.guaranteeIcon {
+  color: #3D5AFE;
+  margin-top: 2px;
+}
+
+.guaranteeText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guaranteeText strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1F2A44;
+}
+
+.guaranteeText span {
+  font-size: 11px;
   color: #64748B;
-  text-align: center;
-  margin-bottom: 16px;
+  line-height: 1.4;
 }
 
 .shareRow {

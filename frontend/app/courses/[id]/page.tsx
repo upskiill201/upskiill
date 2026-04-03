@@ -13,6 +13,7 @@ import {
   Clock,
   ChevronRight,
   Shield,
+  ShieldCheck,
   Share2,
   Heart,
   Gift,
@@ -478,10 +479,15 @@ export default function CourseDetailPage({
                 )}
               </div>
 
-              <p className={styles.guarantee}>
-                <Shield size={14} />
-                30-Day Money-Back Guarantee
-              </p>
+              <div className={styles.guaranteeBox}>
+                <div className={styles.guaranteeIcon}>
+                  <ShieldCheck size={20} />
+                </div>
+                <div className={styles.guaranteeText}>
+                  <strong>100% satisfaction guarantee</strong>
+                  <span>30-day money back guarantee by the Upskiill team.</span>
+                </div>
+              </div>
 
               {/* Share row */}
               <div className={styles.shareRow}>
