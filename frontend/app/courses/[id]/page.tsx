@@ -177,7 +177,49 @@ export default function CourseDetailPage({
     ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)
     : 0;
 
-  const totalLessons = (course?.curriculum || []).reduce(
+  const mockCurriculum = [
+    {
+      title: 'Section 1: Setup and Fundamentals',
+      lessonCount: 5,
+      totalDuration: '58m',
+      lessons: [
+        { index: 1, title: 'Welcome & Course Overview', duration: '4:15', isFreePreview: true },
+        { index: 2, title: 'Setting Up Your Environment', duration: '12:30', isFreePreview: true },
+        { index: 3, title: 'Core Concepts & Terminology', duration: '18:45' },
+        { index: 4, title: 'Understanding the Architecture', duration: '13:20' },
+        { index: 5, title: 'First Mini-Project', duration: '9:10' },
+      ],
+    },
+    {
+      title: 'Section 2: Deep Dive into Practice',
+      lessonCount: 6,
+      totalDuration: '1h 18m',
+      lessons: [
+        { index: 1, title: 'Introduction to Advanced Tools', duration: '8:00', isFreePreview: true },
+        { index: 2, title: 'Structuring Your Workflow', duration: '14:30' },
+        { index: 3, title: 'Live Coding / Real-World Example', duration: '22:15' },
+        { index: 4, title: 'Best Practices & Optimization', duration: '16:40' },
+        { index: 5, title: 'Debugging Common Issues', duration: '11:25' },
+        { index: 6, title: 'Chapter Summary & Quiz', duration: '5:10' },
+      ],
+    },
+    {
+      title: 'Section 3: Mastering the Craft',
+      lessonCount: 5,
+      totalDuration: '1h 5m',
+      lessons: [
+        { index: 1, title: 'Deploying Your Work', duration: '10:00' },
+        { index: 2, title: 'Handling Edge Cases', duration: '15:30' },
+        { index: 3, title: 'Scaling and Performance', duration: '24:00' },
+        { index: 4, title: 'Reviewing with Peers', duration: '9:45' },
+        { index: 5, title: 'Next Steps & Certification', duration: '5:45' },
+      ],
+    }
+  ];
+
+  const actualCurriculum = course?.curriculum && course.curriculum.length > 0 ? course.curriculum : mockCurriculum;
+
+  const totalLessons = actualCurriculum.reduce(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (acc: number, s: any) => acc + (s.lessonCount || 0),
     0
@@ -378,11 +420,11 @@ export default function CourseDetailPage({
               <h2 className={styles.sectionTitle} style={{ margin: 0 }}>Course Curriculum</h2>
               <div className={styles.curriculumStats}>
                 <BookOpen size={14} />
-                <span>{(course.curriculum || []).length} sections · {totalLessons} lessons · {course.duration}</span>
+                <span>{actualCurriculum.length} sections · {totalLessons} lessons · {course.duration}</span>
               </div>
             </div>
             <div className={styles.curriculumList}>
-              {(course.curriculum || []).map((section: CurriculumSection, i: number) => (
+              {actualCurriculum.map((section: CurriculumSection, i: number) => (
                 <SectionAccordion
                   key={i}
                   title={section.title}

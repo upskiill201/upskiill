@@ -196,7 +196,7 @@
   display: flex;
   gap: 64px;
   position: relative;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 /* ─── LEFT COLUMN ─── */
