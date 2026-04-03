@@ -8,114 +8,7 @@ import { Dropdown } from '@/components/ui/Dropdown';
 import Input from '@/components/ui/Input';
 import styles from './Courses.module.css';
 
-// Mock Data for UI Visualization
-const MOCK_COURSES = [
-  {
-    id: "c1",
-    title: "Advanced UI/UX Masterclass: From Concept to Launch",
-    thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Alex Rivera",
-    instructorAvatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
-    rating: 4.9,
-    reviewCount: 2400,
-    studentsCount: 15400,
-    totalHours: 12.5,
-    totalLessons: 145,
-    price: 89,
-    originalPrice: 129,
-    discountPercentage: 31,
-    isBestseller: true,
-    level: "Intermediate",
-    category: "Design",
-    shortDescription: "Master the complete design lifecycle, from user research and wireframing to high-fidelity prototyping and design handoffs in Figma."
-  },
-  {
-    id: "c2",
-    title: "Enterprise React Patterns & Performance",
-    thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Sarah Drasner",
-    instructorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    rating: 4.8,
-    reviewCount: 1100,
-    studentsCount: 8200,
-    totalHours: 8.75,
-    totalLessons: 92,
-    price: 149,
-    level: "Advanced",
-    category: "Engineering",
-    shortDescription: "Learn how to architect massively scalable React applications. Covers SSR, Server Components, advanced caching, and performance profiling."
-  },
-  {
-    id: "c3",
-    title: "Product Strategy: Building What Matters",
-    thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Marcus Chen",
-    instructorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    rating: 5.0,
-    reviewCount: 42,
-    studentsCount: 315,
-    totalHours: 4.25,
-    totalLessons: 48,
-    price: 69,
-    originalPrice: 99,
-    discountPercentage: 30,
-    isNew: true,
-    level: "All Levels",
-    category: "Business",
-    shortDescription: "A comprehensive playbook for identifying market opportunities, validating ideas, and defining a product roadmap that drives growth."
-  },
-  {
-    id: "c4",
-    title: "Mastering Tailwind CSS & Framer Motion",
-    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Lee Robinson",
-    instructorAvatar: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=100&h=100&fit=crop",
-    rating: 4.7,
-    reviewCount: 890,
-    studentsCount: 12000,
-    totalHours: 6.5,
-    totalLessons: 75,
-    price: 49,
-    isBestseller: true,
-    level: "Beginner",
-    category: "Design",
-    shortDescription: "Build beautiful, highly animated user interfaces in record time using utility-first CSS and React animation libraries."
-  },
-  {
-    id: "c5",
-    title: "Fullstack Next.js: Server Components Deep Dive",
-    thumbnail: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Guillermo Rauch",
-    instructorAvatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
-    rating: 4.9,
-    reviewCount: 3200,
-    studentsCount: 28500,
-    totalHours: 22,
-    totalLessons: 240,
-    price: 199,
-    originalPrice: 249,
-    discountPercentage: 20,
-    level: "Advanced",
-    category: "Engineering",
-    shortDescription: "The definitive guide to Next.js App Router. Learn Server Actions, advanced routing, parallel routes, and deploying to the edge."
-  },
-  {
-    id: "c6",
-    title: "Data Science for Non-Engineers",
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
-    instructorName: "Dr. Angela Yu",
-    instructorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    rating: 4.8,
-    reviewCount: 5600,
-    studentsCount: 45000,
-    totalHours: 15,
-    totalLessons: 180,
-    price: 89,
-    level: "Beginner",
-    category: "Data Science",
-    shortDescription: "Learn to analyze data, build predictive models, and understand AI fundamentals without needing advanced math or coding experience."
-  }
-];
+
 
 export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,7 +16,7 @@ export default function CoursesPage() {
   const [sortOption, setSortOption] = useState("popular");
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [courses, setCourses] = useState<any[]>(MOCK_COURSES);
+  const [courses, setCourses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -137,6 +30,7 @@ export default function CoursesPage() {
              // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const mappedCourses = data.map((c: any) => ({
                id: c.id,
+               slug: c.slug,
                title: c.title,
                thumbnail: c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop",
                instructorName: c.instructor?.fullName || "Instructor",
@@ -153,10 +47,14 @@ export default function CoursesPage() {
                shortDescription: c.shortDescription || c.description?.substring(0, 100),
              }));
              setCourses(mappedCourses);
+          } else {
+             console.warn('API returned 0 courses. Showing empty state.');
           }
+        } else {
+             console.error('API call failed with status:', res.status);
         }
       } catch (error) {
-        console.error('Failed to fetch live courses, falling back to mock data:', error);
+        console.error('Failed to fetch live courses:', error);
       } finally {
         setIsLoading(false);
       }
@@ -294,10 +192,20 @@ export default function CoursesPage() {
           {/* Course Grid */}
           <div className={styles.courseGrid}>
             {isLoading ? (
-              <div style={{ padding: '40px', color: '#64748B', textAlign: 'center', gridColumn: '1 / -1' }}>Loading courses...</div>
-            ) : courses.map(course => (
-              <CourseCard key={course.id} {...course} />
-            ))}
+              <div style={{ padding: '80px 0', textAlign: 'center', gridColumn: '1 / -1' }}>
+                <div style={{ fontSize: '18px', color: '#64748B', marginBottom: '8px' }}>Loading the marketplace...</div>
+                <div style={{ fontSize: '14px', color: '#94A3B8' }}>Fetching elite courses from the cloud.</div>
+              </div>
+            ) : courses.length > 0 ? (
+              courses.map(course => (
+                <CourseCard key={course.id} {...course} />
+              ))
+            ) : (
+              <div style={{ padding: '80px 0', textAlign: 'center', gridColumn: '1 / -1' }}>
+                <div style={{ fontSize: '18px', color: '#64748B', marginBottom: '8px' }}>No courses found in the database.</div>
+                <div style={{ fontSize: '14px', color: '#94A3B8' }}>Try running the prisma seeder to populate the marketplace.</div>
+              </div>
+            )}
           </div>
 
           {/* Pagination */}

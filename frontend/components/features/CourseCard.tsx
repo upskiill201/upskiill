@@ -13,6 +13,7 @@ import styles from './CourseCard.module.css';
 export type CourseCardProps = {
   id: string;
   title: string;
+  slug?: string;
   thumbnail: string;
   instructorName: string;
   instructorAvatar?: string;
@@ -38,6 +39,7 @@ export type CourseCardProps = {
 export const CourseCard = ({
   id,
   title,
+  slug,
   thumbnail,
   instructorName,
   instructorAvatar,
@@ -60,7 +62,8 @@ export const CourseCard = ({
   className = '',
 }: CourseCardProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const linkHref = isEnrolled ? `/learn/${id}` : `/course/${id}`;
+  const identifier = slug || id;
+  const linkHref = isEnrolled ? `/learn/${identifier}` : `/courses/${identifier}`;
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();

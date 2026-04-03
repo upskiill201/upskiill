@@ -24,6 +24,7 @@ model User {
 model Course {
   id               String       @id @default(uuid())
   title            String
+  slug             String       @unique
   description      String       @db.Text
   shortDescription String?
   thumbnailUrl     String?

@@ -57,9 +57,15 @@ export class CourseService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(idOrSlug: string) {
+    console.log('Searching for course with ID or Slug:', idOrSlug);
     const course = await this.prisma.course.findFirst({
-      where: { id, published: true },
+      where: {
+        OR: [
+          { id: idOrSlug, published: true },
+          { slug: idOrSlug, published: true },
+        ],
+      },
       include: {
         instructor: {
           select: {
