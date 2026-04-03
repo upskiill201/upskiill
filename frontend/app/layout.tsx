@@ -22,6 +22,8 @@ export const metadata: Metadata = {
 
 const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
 
+import { CartProvider } from "../context/CartContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,11 +35,13 @@ export default function RootLayout({
         <link rel="stylesheet" href={fontAwesomeLink} />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <Header />
-        <main className="flex-1" style={{ overflow: 'visible' }}>
-          {children}
-        </main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="flex-1" style={{ overflow: 'visible' }}>
+            {children}
+          </main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

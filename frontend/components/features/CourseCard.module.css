@@ -269,6 +269,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .pricing {
@@ -305,6 +306,34 @@
   padding: 4px 8px;
   border-radius: 6px;
   letter-spacing: 0.5px;
+  margin-right: auto;
+}
+
+.addToCartBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: #F8FAFC;
+  color: #3D5AFE;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.addToCartBtn:hover {
+  background-color: #3D5AFE;
+  color: white;
+  border-color: #3D5AFE;
+}
+
+.addToCartBtn.inCart {
+  background-color: #D1FAE5;
+  color: #059669;
+  border-color: #10B981;
 }
 
 /* ENROLLED STATE */

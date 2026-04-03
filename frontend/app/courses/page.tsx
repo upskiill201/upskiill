@@ -22,7 +22,7 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
         const res = await fetch(`${apiUrl}/courses`);
         if (res.ok) {
           const data = await res.json();
