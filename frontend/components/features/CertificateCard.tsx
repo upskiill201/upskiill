@@ -29,12 +29,18 @@ export const CertificateCard = ({
 }: CertificateCardProps) => {
   const [copied, setCopied] = useState(false);
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(`https://upskiill.vercel.app/certificates/${certificateId}`).then(() => {
+  const handleShare = async () => {
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    const shareUrl = `${origin}/certificates/${encodeURIComponent(certificateId)}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-    onShare?.();
+      window.setTimeout(() => setCopied(false), 2000);
+      onShare?.();
+    } catch {
+      // optional: surface toast/error state
+    }
   };
 
   const handleDownload = () => {

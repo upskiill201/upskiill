@@ -11,8 +11,11 @@ export function middleware(request: NextRequest) {
   // Public-only routes (don't show login/signup if already logged in)
   const publicOnlyRoutes = ['/login', '/signup'];
 
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isPublicOnlyRoute = publicOnlyRoutes.some(route => pathname.startsWith(route));
+  const matchesRoute = (route: string) =>
+    pathname === route || pathname.startsWith(`${route}/`);
+
+  const isProtectedRoute = protectedRoutes.some(matchesRoute);
+  const isPublicOnlyRoute = publicOnlyRoutes.some(matchesRoute);
 
   if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
@@ -35,6 +38,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public folder)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };

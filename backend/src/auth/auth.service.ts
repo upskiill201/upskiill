@@ -16,7 +16,7 @@ export class AuthService {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-    
+
     if (existing) {
       throw new ForbiddenException('Email already in use');
     }
@@ -29,7 +29,7 @@ export class AuthService {
         email: dto.email,
         password: hash,
         fullName: dto.fullName,
-        role: dto.role || 'STUDENT',
+        role: 'STUDENT',
       },
     });
 
