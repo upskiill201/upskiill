@@ -35,13 +35,16 @@ export const LessonItem = ({
         styles.row,
         isActive ? styles.active : '',
         isLocked ? styles.locked : '',
-        !isLocked ? styles.clickable : '',
+        (!isLocked && typeof onClick === 'function') ? styles.clickable : '',
       ].join(' ')}
       onClick={handleClick}
-      role={!isLocked ? 'button' : undefined}
-      tabIndex={!isLocked ? 0 : undefined}
+      role={!isLocked && typeof onClick === 'function' ? 'button' : undefined}
+      tabIndex={!isLocked && typeof onClick === 'function' ? 0 : undefined}
       onKeyDown={(e) => {
-        if (!isLocked && (e.key === 'Enter' || e.key === ' ')) handleClick();
+        if (!isLocked && typeof onClick === 'function' && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleClick();
+        }
       }}
     >
       {/* LEFT: Status icon */}

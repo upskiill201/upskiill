@@ -116,7 +116,7 @@
 }
 
 .bodyOpen {
-  max-height: 2000px; /* large enough for any lesson list */
+  max-height: none; /* large enough for any lesson list */
 }
 
 /* ─── LESSON LIST ─── */

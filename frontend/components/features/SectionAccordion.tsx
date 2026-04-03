@@ -71,13 +71,15 @@ export const SectionAccordion = ({
       </button>
 
       {/* BODY — collapsible */}
-      <div className={`${styles.body} ${isOpen ? styles.bodyOpen : ''}`}>
-        <div className={styles.lessonList}>
-          {lessons.map((lesson, i) => (
-            <LessonItem key={lesson.title + i} {...lesson} />
-          ))}
+      {isOpen && (
+        <div className={`${styles.body} ${styles.bodyOpen}`}>
+          <div className={styles.lessonList}>
+            {lessons.map((lesson, i) => (
+              <LessonItem key={lesson.title + i} {...lesson} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
