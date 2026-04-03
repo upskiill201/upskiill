@@ -42,7 +42,10 @@
 
 ### Step D — Build Course API (Backend) ✅ COMPLETE
 - [x] `GET /courses` — list published courses (search & filter params)
-- [x] `GET /courses/:id` — single course detail (ID or slug)
+- [x] CRUD for Courses
+- [x] SEO-Friendly Slugs ( dual-lookup by ID or Slug)
+- [x] Production Deployment (PR #46 Recovery)
+- [ ] Cart & Checkout System
 - [x] Make sure relations (Instructor, etc.) load efficiently
 - [x] Seed Supabase with sample course data & SEO slugs ✅
 - [x] **Next.js 15 Compatibility**: Fixed async params unwrapping in dynamic routes ✅
