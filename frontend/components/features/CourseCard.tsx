@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play, Heart, Users, Clock, BookOpen, ChevronRight } from 'lucide-react';
+import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import { StarRating } from '../ui/StarRating';
 import { ProgressBar } from '../ui/ProgressBar';
+import { useCart } from '@/context/CartContext';
 import styles from './CourseCard.module.css';
 
 export type CourseCardProps = {
@@ -61,13 +62,31 @@ export const CourseCard = ({
   progress = 0,
   className = '',
 }: CourseCardProps) => {
+  const { addItem, isInCart } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const identifier = slug || id;
   const linkHref = isEnrolled ? `/learn/${identifier}` : `/courses/${identifier}`;
+  const inCart = isInCart(id);
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsWishlisted(!isWishlisted);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!inCart) {
+      // The context expects: id, title, thumbnail, instructorName, price
+      addItem({
+        id,
+        title,
+        thumbnail,
+        instructorName,
+        price,
+      });
+    }
   };
 
   return (
@@ -179,6 +198,15 @@ export const CourseCard = ({
                 </div>
                 {discountPercentage && !isFree && (
                   <span className={styles.discountBadge}>{discountPercentage}% OFF</span>
+                )}
+                {!isFree && (
+                  <button 
+                    className={`${styles.addToCartBtn} ${inCart ? styles.inCart : ''}`}
+                    onClick={handleAddToCart}
+                    title={inCart ? "In Cart" : "Add to Cart"}
+                  >
+                    {inCart ? <Check size={16} /> : <ShoppingCart size={16} />}
+                  </button>
                 )}
               </div>
             )}
