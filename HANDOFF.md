@@ -120,11 +120,12 @@ _Current Focus: Pillar 2 (Course Marketplace)_
    - **Step C — Build Marketplace Pages: ✅ COMPLETE & RESPONSIVE**
      - [x] `/courses` Browse UI (Responsive Grid + Pixel-perfect Mobile Optimization)
      - [x] `/courses/[id]` Course Detail/Sales Page (Responsive Sticky Card & Layout Stack)
-   - **Step D — Build Course API (Backend):**
-     - [ ] `GET /courses` — list all published courses (with search & filter params)
-     - [ ] `GET /courses/:id` — single course detail
-     - [ ] `GET /courses/categories` — list all categories
-     - [ ] Seed Supabase with sample course data
+   - **Step D — Build Course API (Backend): ✅ COMPLETE**
+     - [x] Prisma Schema updated with robust Course metadata & relations
+     - [x] DB seeded with high-fidelity marketplace mock data
+     - [x] `GET /courses` — list all published courses (with active filters)
+     - [x] `GET /courses/:id` — single course detail with Instructor payload
+     - [x] `GET /courses/categories` — list all categories
 3. **[ ] Pillar 3: Course Sales Page**
    - [ ] Build high-converting `/courses/[id]` layout
 4. **[ ] Pillar 4: Student Learning System**

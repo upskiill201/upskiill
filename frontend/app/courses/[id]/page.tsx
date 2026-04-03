@@ -4,16 +4,46 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
-  Star, Users, ChevronRight, Play, Check, 
+  Star, Users, Play, Check, 
   MonitorPlay, FileText, Download, Trophy, Clock, 
-  ShieldCheck, Layout, Target, UserCheck, Briefcase
+  ShieldCheck, Target
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { SectionAccordion } from '@/components/features/SectionAccordion';
 import { InstructorCard } from '@/components/features/InstructorCard';
 import styles from './CourseDetail.module.css';
 
-export default function CourseDetailPage() {
+export default function CourseDetailPage({ params }: { params: { id: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [course, setCourse] = React.useState<any>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const res = await fetch(`${apiUrl}/courses/${params.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCourse(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch course details', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCourse();
+  }, [params.id]);
+
+  if (isLoading) {
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>Loading course details...</div>;
+  }
+
+  if (!course) {
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B' }}>Course not found.</div>;
+  }
+
   return (
     <div className={styles.pageWrapper}>
       {/* ─── HERO BANNER ─── */}
@@ -22,39 +52,37 @@ export default function CourseDetailPage() {
           <div className={styles.heroContent}>
             
             <div className={styles.breadcrumbs}>
-              <Link href="/courses" className={styles.breadcrumbLink}>Design</Link>
+              <Link href="/courses" className={styles.breadcrumbLink}>{course.category}</Link>
               <span style={{ margin: '0 8px' }}>›</span>
-              <Link href="/courses?cat=ui-design" className={styles.breadcrumbLink}>User Experience Design</Link>
-              <span style={{ margin: '0 8px' }}>›</span>
-              <span style={{ color: 'white' }}>UI/UX Strategy</span>
+              <span style={{ color: 'white' }}>{course.title}</span>
             </div>
 
-            <h1 className={styles.title}>Advanced Product Design & UX Strategy</h1>
+            <h1 className={styles.title}>{course.title}</h1>
             <p className={styles.subtitle}>
-              Master the complete design lifecycle, from user research and wireframing to high-fidelity prototyping. Learn the exact frameworks used by senior designers at top tech companies.
+              {course.shortDescription || course.description.substring(0, 150)}
             </p>
 
             <div className={styles.metaRow}>
               <div className={styles.metaItem}>
                 <Star size={16} fill="#F59E0B" color="#F59E0B" />
-                <span className={styles.ratingHighlight}>4.9</span>
-                <span>(3,254 ratings)</span>
+                <span className={styles.ratingHighlight}>{course.rating || 4.9}</span>
+                <span>({course.reviewsCount || 0} ratings)</span>
               </div>
               <span>|</span>
               <div className={styles.metaItem}>
                 <Users size={16} />
-                <span>15,400 students enrolled</span>
+                <span>{course.studentsCount || 0} students enrolled</span>
               </div>
               <span>|</span>
               <div className={styles.metaItem}>
                 <Clock size={16} />
-                <span>Last updated Oct 2025</span>
+                <span>{course.duration || '0h'}</span>
               </div>
             </div>
 
             <div className={styles.instructorRow}>
               <span className={styles.instructorText}>Created by</span>
-              <Link href="#instructor" className={styles.instructorName}>Alex Rivera, Product Design Lead</Link>
+              <Link href="#instructor" className={styles.instructorName}>{course.instructor?.fullName}</Link>
             </div>
 
           </div>
@@ -69,16 +97,9 @@ export default function CourseDetailPage() {
           
           {/* What you'll learn */}
           <div className={styles.contentBox}>
-            <h2 className={styles.sectionTitle}>What you'll learn</h2>
+            <h2 className={styles.sectionTitle}>What you&apos;ll learn</h2>
             <div className={styles.learnGrid}>
-              {[
-                "Conduct deep user research and translate insights into actionable product features.",
-                "Master Auto-Layout, Components, and Design Systems in Figma.",
-                "Build clickable, high-fidelity prototypes for stakeholder testing.",
-                "Understand behavioral psychology and how it drives user conversions.",
-                "Create comprehensive design handoff documents for engineering teams.",
-                "Prepare a world-class portfolio case study to land senior roles."
-              ].map((item, i) => (
+              {(course.whatYouWillLearn || []).map((item: string, i: number) => (
                 <div key={i} className={styles.checkItem}>
                   <Check size={18} className={styles.checkIcon} />
                   <span>{item}</span>
@@ -87,36 +108,15 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          {/* Target Audience */}
+          {/* Target Audience (Keeping static for MVP unless provided) */}
           <div className={styles.contentBox}>
             <h2 className={styles.sectionTitle}>Who is this course for?</h2>
             <div className={styles.audienceGrid}>
               <div className={styles.audienceItem}>
-                <div className={styles.audienceIconBox}><Layout size={20} /></div>
-                <div>
-                  <h3 className={styles.audienceTitle}>UI/UX Designers</h3>
-                  <p className={styles.audienceDesc}>Looking to level up from mid-level to senior by mastering advanced strategy.</p>
-                </div>
-              </div>
-              <div className={styles.audienceItem}>
                 <div className={styles.audienceIconBox}><Target size={20} /></div>
                 <div>
-                  <h3 className={styles.audienceTitle}>Product Managers</h3>
-                  <p className={styles.audienceDesc}>Who want to better understand the design process and communicate with designers.</p>
-                </div>
-              </div>
-              <div className={styles.audienceItem}>
-                <div className={styles.audienceIconBox}><UserCheck size={20} /></div>
-                <div>
-                  <h3 className={styles.audienceTitle}>Frontend Developers</h3>
-                  <p className={styles.audienceDesc}>Seeking to improve their UX intuition and build better-looking interfaces.</p>
-                </div>
-              </div>
-              <div className={styles.audienceItem}>
-                <div className={styles.audienceIconBox}><Briefcase size={20} /></div>
-                <div>
-                  <h3 className={styles.audienceTitle}>Entrepreneurs</h3>
-                  <p className={styles.audienceDesc}>Building their own startups who need to design high-converting MVPs themselves.</p>
+                  <h3 className={styles.audienceTitle}>Professionals</h3>
+                  <p className={styles.audienceDesc}>Looking to level up their skills in {course.category}.</p>
                 </div>
               </div>
             </div>
@@ -126,10 +126,9 @@ export default function CourseDetailPage() {
           <div className={styles.contentBox}>
             <h2 className={styles.sectionTitle}>Requirements & Prerequisites</h2>
             <div className={styles.aboutList}>
-              <li>No prior coding experience required.</li>
-              <li>A Mac or PC with an internet connection.</li>
-              <li>Basic familiarity with Figma or similar design tools is helpful, but not mandatory.</li>
-              <li>A willingness to learn and apply new concepts to real-world projects.</li>
+              {(course.requirements || []).map((req: string, idx: number) => (
+                <li key={idx}>{req}</li>
+              ))}
             </div>
           </div>
 
@@ -137,13 +136,7 @@ export default function CourseDetailPage() {
           <div className={styles.contentBox}>
             <h2 className={styles.sectionTitle}>About this Course</h2>
             <div className={styles.aboutText}>
-              <p>Welcome to the most comprehensive course on Product Design and UX Strategy available online. This isn't just another tutorial on how to use software. It's a deep-dive into the mindset, frameworks, and execution strategies used by the world's most successful tech companies.</p>
-              
-              <blockquote className={styles.blockquote}>
-                "Great design is not just what it looks like and feels like. Design is how it works." — We've built this entire curriculum around this fundamental truth.
-              </blockquote>
-              
-              <p>By the end of this course, you will have built 3 real-world projects from scratch. You will know how to take any abstract idea, break it down into user flows, conceptualize the architecture, design the UI, and build interactive prototypes that impress stakeholders and engineers alike.</p>
+              <p>{course.description}</p>
             </div>
           </div>
 
@@ -196,18 +189,18 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          {/* Instructor section using the component we built */}
+          {/* Instructor section */}
           <div id="instructor" className={styles.contentBox}>
             <h2 className={styles.sectionTitle}>Your Instructor</h2>
             <InstructorCard 
-              id="alex"
-              name="Alex Rivera"
-              avatar="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop"
-              professionalTitle="Product Design Lead at Meta"
+              id={course.instructorId}
+              name={course.instructor?.fullName}
+              avatar={course.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop"}
+              professionalTitle="Instructor at Upskiill"
               rating={4.9}
-              studentsCount={154000}
-              coursesCount={4}
-              bioSnippet="Alex is a seasoned product designer with 10+ years of experience leading teams at top Silicon Valley firms. He specializes in creating scalable design systems and bridging the gap between design and engineering."
+              studentsCount={course.studentsCount}
+              coursesCount={1}
+              bioSnippet={`Hi, I'm ${course.instructor?.fullName}. I am passionate about teaching and helping students achieve their career goals.`}
             />
           </div>
 
@@ -234,9 +227,9 @@ export default function CourseDetailPage() {
             {/* Checkout Body */}
             <div className={styles.cardBody}>
               <div className={styles.priceRow}>
-                <span className={styles.price}>$499</span>
-                <span className={styles.originalPrice}>$799</span>
-                <span className={styles.discountBadge}>38% OFF</span>
+                <span className={styles.price}>${course.price}</span>
+                {course.originalPrice && <span className={styles.originalPrice}>${course.originalPrice}</span>}
+                {course.originalPrice && <span className={styles.discountBadge}>{Math.round((1 - course.price / course.originalPrice) * 100)}% OFF</span>}
               </div>
 
               <div className={styles.actionWrapper}>

@@ -29,7 +29,7 @@ import { LessonItem } from "@/components/features/LessonItem";
 import { SectionAccordion } from "@/components/features/SectionAccordion";
 import { CartItem } from "@/components/features/CartItem";
 // ✅ PROJECT ICON STANDARD: lucide-react for UI icons, react-icons/fa for feature/brand icons
-import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Mail, Lock, Eye, User, Heart, Award, Settings, Code, Database, Palette, ShieldCheck, Cpu, TrendingUp, ExternalLink, PlayCircle } from 'lucide-react';
+import { Search, ArrowRight, ChevronRight, BookOpen, Plus, Star, Lock, Eye, User, Heart, Award, Settings, Code, Database, Palette, ShieldCheck, Cpu } from 'lucide-react';
 import { FaTrash, FaRocket, FaGraduationCap } from 'react-icons/fa';
 
 export default function ComponentsPreviewPage() {

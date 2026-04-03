@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CourseCard } from '@/components/features/CourseCard';
 import { Pagination } from '@/components/ui/Pagination';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -121,6 +121,49 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("popular");
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [courses, setCourses] = useState<any[]>(MOCK_COURSES);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const res = await fetch(`${apiUrl}/courses`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             const mappedCourses = data.map((c: any) => ({
+               id: c.id,
+               title: c.title,
+               thumbnail: c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop",
+               instructorName: c.instructor?.fullName || "Instructor",
+               instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
+               rating: c.rating || 4.5,
+               reviewCount: c.reviewsCount || 0,
+               studentsCount: c.studentsCount || 0,
+               totalHours: parseFloat(c.duration) || 10,
+               totalLessons: 50, // Mock fallback for MVP
+               price: c.price,
+               originalPrice: c.originalPrice,
+               category: c.category,
+               level: c.level,
+               shortDescription: c.shortDescription || c.description?.substring(0, 100),
+             }));
+             setCourses(mappedCourses);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch live courses, falling back to mock data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchCourses();
+  }, []);
 
   const sortOptions = [
     { label: "Most Popular", value: "popular" },
@@ -250,7 +293,9 @@ export default function CoursesPage() {
 
           {/* Course Grid */}
           <div className={styles.courseGrid}>
-            {MOCK_COURSES.map(course => (
+            {isLoading ? (
+              <div style={{ padding: '40px', color: '#64748B', textAlign: 'center', gridColumn: '1 / -1' }}>Loading courses...</div>
+            ) : courses.map(course => (
               <CourseCard key={course.id} {...course} />
             ))}
           </div>
