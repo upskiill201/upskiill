@@ -42,9 +42,10 @@
 
 ### Step D — Build Course API (Backend) ✅ COMPLETE
 - [x] `GET /courses` — list published courses (search & filter params)
-- [x] `GET /courses/:id` — single course detail
+- [x] `GET /courses/:id` — single course detail (ID or slug)
 - [x] Make sure relations (Instructor, etc.) load efficiently
-- [ ] Seed Supabase with sample course data
+- [x] Seed Supabase with sample course data & SEO slugs ✅
+- [x] **Next.js 15 Compatibility**: Fixed async params unwrapping in dynamic routes ✅
 
 ## 🟦 Pillar 3: Course Sales Page — 🟡 UI Ready (15%)
 - [x] Build `InstructorCard` (just polished)
