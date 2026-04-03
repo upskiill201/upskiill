@@ -37,6 +37,8 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Binds to `process.env.PORT ?? 3001` for Render compatibility
 - [x] `render.yaml` at repo root for Render deploy config
 - [x] Production DB connectivity via Supabase Connection Pooler (P1001 fix)
+- [x] **SEO Slug System**: Dual lookup via ID or Slug in `CourseService`
+- [x] **Build Optimization**: Fixed `dist/src/main` pathing for Render.com deployment ✅ (2026-04-03)
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
@@ -68,6 +70,8 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
     - [x] **Failsafe Image Assets**: Verified high-availability Unsplash production IDs.
 - [x] `NEXT_PUBLIC_API_URL` env var used for all API calls (falls back to `http://localhost:3001`)
 - [x] Font Awesome 6 (Solid) integrated via CDN for lightweight iconography.
+- [x] **Next.js 15 Compatibility**: Fixed asynchronous `params` unwrapping in dynamic routes ✅ (2026-04-03)
+- [x] **Marketplace Live Data**: Transitioned from Mock to DB fetching with robust error handling
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
 - [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
@@ -126,10 +130,22 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses` — list all published courses (with active filters)
      - [x] `GET /courses/:id` — single course detail with Instructor payload
      - [x] `GET /courses/categories` — list all categories
-3. **[ ] Pillar 3: Course Sales Page**
-   - [ ] Build high-converting `/courses/[id]` layout
+- [ ] Build high-converting `/courses/[id]` layout
 4. **[ ] Pillar 4: Student Learning System**
    - [ ] Finalize Video Player curriculum logic
+
+---
+
+## 🛠️ Deployment Notes (Render & Vercel)
+
+### **Render (Backend)**
+- **Build Command**: `npm install && npm run build`
+- **Start Command**: `npm run start:prod` (Now maps to `dist/src/main.js` correctly)
+- **Problem Fixed**: Previously failed with `MODULE_NOT_FOUND` because `dist/main.js` didn't exist due to TypeScript nesting. Fixed via `tsconfig.json` excludes and path update.
+
+### **Vercel (Frontend)**
+- **Environment Variable**: `NEXT_PUBLIC_API_URL` MUST be set to your Render URL (e.g., `https://upskiill-backend.onrender.com`).
+- **Middleware**: Ensure authentication middleware is configured to handle `httpOnly` cookies in production.
 
 ---
 
