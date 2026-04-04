@@ -101,12 +101,11 @@ Fully hardened and verified:
 - All 5 manual tests passed locally ✅
 
 ### Pillar 2: Course Marketplace — 🟡 In Progress
-### Pillar 2: Course Marketplace — 🟡 In Progress
 Focus: Finish component library → Build `/courses` page → Build `/courses/[id]` → Connect Course API.
 
-### Homepage Sections: ⏸️ PAUSED
-> **🛑 CRITICAL DECISION (2026-04-04):** We are strictly **NOT** building the rest of the Homepage UI right now. It is explicitly paused. Focus shifted away from Step B (Homepage Sections).
-Hero + Category Slider + "Why Learn" section are finished. Remaining components are paused.
+### Homepage & Instructor Landing Page: ⏸️ PIVOTED TO WAITLIST STRATEGY
+> **🛑 CRITICAL DECISION (2026-04-04):** We are strictly **NOT** building the rest of the generic Homepage right now. The strategy is to adapt the Homepage and an Instructor page strictly as **Waitlist Capture Systems** to acquire users and instructors while we build the core app.
+Hero + Category Slider + "Why Learn" section are finished. Remaining sections are pivoted to waitlist forms.
 
 ---
 
@@ -124,8 +123,8 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `LessonItem` — `components/features/LessonItem.tsx`
      - [x] `SectionAccordion` — `components/features/SectionAccordion.tsx`
      - [x] `CartItem` — `components/features/CartItem.tsx`
-   - **Step B — Build Homepage Sections (Phase 4): ⏸️ PAUSED**
-     > **NOTE:** We are actively skipping the homepage sections right now.
+   - **Step B — Build Waitlist Landing Pages (Phase 4): ⏸️ PIVOTED TO WAITLIST**
+     > **NOTE:** We are shifting the homepage focus purely to Waitlist Lead Capture for Students and Instructors.
      - [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
      - [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
      - [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
@@ -143,7 +142,14 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses/categories` — list all categories
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
 4. **[ ] Pillar 4: Student Learning System**
-   - [ ] Finalize Video Player curriculum logic
+   - [ ] Finalize Video Player curriculum logic & Sidebar
+   - [ ] Integrate full Stripe payment logic
+5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
+   - [ ] Instructor Dashboard & Analytics
+   - [ ] Course Creation UI & AWS S3 Video Uploader
+6. **[ ] Pillar 6: Admin & Polish (Phase 1F)**
+   - [ ] Admin Portal & Moderation tools
+   - [ ] Legal pages and SendGrid Email integrations
 
 ---
 

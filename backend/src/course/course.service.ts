@@ -80,4 +80,53 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
     return course;
   }
+
+  async getProgress(userId: string, idOrSlug: string) {
+    const course = await this.findOne(idOrSlug);
+    const enrollment = await this.prisma.enrollment.findUnique({
+      where: {
+        userId_courseId: { userId, courseId: course.id }
+      }
+    });
+
+    if (!enrollment) {
+      return { progress: 0, completedLessons: [] };
+    }
+    return {
+      progress: enrollment.progress,
+      completedLessons: enrollment.completedLessons || [],
+    };
+  }
+
+  async markLessonComplete(userId: string, idOrSlug: string, lessonId: string) {
+    const course = await this.findOne(idOrSlug);
+    let enrollment = await this.prisma.enrollment.findUnique({
+      where: { userId_courseId: { userId, courseId: course.id } }
+    });
+
+    if (!enrollment) {
+      enrollment = await this.prisma.enrollment.create({
+        data: {
+          userId,
+          courseId: course.id,
+          progress: 0,
+          completedLessons: [],
+        },
+      });
+    }
+
+    const currentCompleted = Array.isArray(enrollment.completedLessons)
+      ? (enrollment.completedLessons as string[])
+      : [];
+    
+    if (!currentCompleted.includes(lessonId)) {
+      currentCompleted.push(lessonId);
+      await this.prisma.enrollment.update({
+        where: { id: enrollment.id },
+        data: { completedLessons: currentCompleted },
+      });
+    }
+
+    return { success: true, completedLessons: currentCompleted };
+  }
 }

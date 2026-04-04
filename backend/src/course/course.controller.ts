@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+  Post,
+  Body,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from './course.service';
 
 @Controller('courses')
@@ -26,5 +36,25 @@ export class CourseController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.courseService.findOne(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/progress')
+  async getProgress(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.getProgress(req.user.id as string, id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/complete-lesson')
+  async completeLesson(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body('lessonId') lessonId: string,
+  ) {
+    return await this.courseService.markLessonComplete(
+      req.user.id as string,
+      id,
+      lessonId,
+    );
   }
 }

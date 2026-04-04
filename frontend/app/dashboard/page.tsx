@@ -23,11 +23,30 @@ import styles from './Page.module.css';
 export default function DashboardPage() {
   const { triggerComingSoon } = useComingSoon();
   const [isMobile, setIsMobile] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [enrolledCourses, setEnrolledCourses] = React.useState<any[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = React.useState(true);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener('resize', handleResize);
+
+    const fetchEnrollments = async () => {
+      try {
+        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setEnrolledCourses(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch enrolled courses', err);
+      } finally {
+        setIsLoadingCourses(false);
+      }
+    };
+    fetchEnrollments();
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
@@ -58,8 +77,8 @@ export default function DashboardPage() {
             <div className={styles.statContent}>
               <span className={styles.statLabel}>Enrolled Courses</span>
               <div className={styles.statLine}>
-                <span className={styles.statValue}>12</span>
-                <Badge variant="green" size="sm">+2 this month</Badge>
+                <span className={styles.statValue}>{enrolledCourses.length || 0}</span>
+                <Badge variant="green" size="sm">Active</Badge>
               </div>
             </div>
             <div className={styles.statIconBlue}><Layers size={20} /></div>
@@ -109,73 +128,55 @@ export default function DashboardPage() {
           </div>
 
           <div className={isMobile ? styles.courseGridMobile : styles.activeCoursesGrid}>
-            {!isMobile ? (
-              <>
+            {isLoadingCourses ? (
+              <div style={{ padding: 20, color: '#94a3b8' }}>Loading your courses...</div>
+            ) : enrolledCourses.length === 0 ? (
+              <div style={{ padding: 20, color: '#94a3b8' }}>You are not enrolled in any courses yet.</div>
+            ) : enrolledCourses.map((enrollment: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+              const c = enrollment.course;
+              if (!c) return null;
+              
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const totalLess = c.curriculum?.reduce((acc: number, mod: any) => acc + (mod.lessons?.length || 0), 0) || 0;
+              const completedLessArray = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
+              const progressPct = totalLess > 0 ? Math.round((completedLessArray.length / totalLess) * 100) : enrollment.progress || 0;
+
+              return !isMobile ? (
                 <CourseCardHorizontal 
-                  id="c1"
-                  title="Advanced Product Design Principles" 
-                  category="UI/UX Design"
-                  thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"
-                  instructorName="Sarah Johnson"
-                  instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
-                  rating={4.8}
-                  reviewCount={1204}
-                  totalHours={24}
-                  totalLessons={48}
+                  key={enrollment.id}
+                  id={c.slug || c.id}
+                  title={c.title} 
+                  category={c.category}
+                  thumbnail={c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"}
+                  instructorName={c.instructor?.fullName || "Instructor"}
+                  instructorAvatar={c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"}
+                  rating={c.rating || 4.8}
+                  reviewCount={c.reviewsCount || 100}
+                  totalHours={parseInt(c.duration) || 0}
+                  totalLessons={totalLess}
                   price={0}
                   isEnrolled={true}
-                  progress={65}
+                  progress={progressPct}
                 />
-                <CourseCardHorizontal 
-                  id="c2"
-                  title="Full-Stack React & Node.js Masterclass" 
-                  category="Development"
-                  thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800"
-                  instructorName="David Chen"
-                  instructorAvatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
-                  rating={4.9}
-                  reviewCount={850}
-                  totalHours={42}
-                  totalLessons={96}
-                  price={0}
-                  isEnrolled={true}
-                  progress={32}
-                />
-              </>
-            ) : (
-              <>
+              ) : (
                 <CourseCard 
-                  id="c1"
-                  title="Advanced Product Design Principles"
-                  category="UI/UX Design"
-                  thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"
-                  instructorName="Sarah Johnson"
-                  instructorAvatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
-                  rating={4.8}
-                  reviewCount={1204}
+                  key={enrollment.id}
+                  id={c.slug || c.id}
+                  title={c.title}
+                  category={c.category}
+                  thumbnail={c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"}
+                  instructorName={c.instructor?.fullName || "Instructor"}
+                  instructorAvatar={c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"}
+                  rating={c.rating || 4.8}
+                  reviewCount={c.reviewsCount || 100}
                   price={0}
                   isEnrolled={true}
-                  progress={65}
-                  totalHours={24}
-                  totalLessons={48}
+                  progress={progressPct}
+                  totalHours={parseInt(c.duration) || 0}
+                  totalLessons={totalLess}
                 />
-                <CourseCard 
-                  id="c2"
-                  title="Full-Stack Masterclass"
-                  category="Development"
-                  thumbnail="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800"
-                  instructorName="David Chen"
-                  instructorAvatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
-                  rating={4.9}
-                  reviewCount={850}
-                  price={0}
-                  isEnrolled={true}
-                  progress={32}
-                  totalHours={42}
-                  totalLessons={96}
-                />
-              </>
-            )}
+              );
+            })}
           </div>
 
           <div className={styles.activitySection}>
