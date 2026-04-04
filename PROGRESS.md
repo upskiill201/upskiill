@@ -55,19 +55,23 @@
 - [x] Seed Supabase with sample course data, SEO slugs, and structured curriculum. ✅
 - [x] **Next.js 15 Compatibility**: Fixed async params unwrapping in dynamic routes ✅
 - [x] **Production API Switch**: All frontend pages updated to fetch from `https://upskiill-backend.onrender.com`. ✅
-
-## 🟦 Pillar 3: Course Sales Page — 🟢 100% UI Complete (2026-04-03)
+- [x] **Cross-Domain Auth Fix (PR 48)**: Renamed `middleware.ts` to `proxy.ts`, configured auth fetches to `/api`. ✅
+- [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". ✅
+- [x] **Vercel Build Stability**: Rectified TypeScript Type Checks surrounding dynamically assigned components (`CoursePlayerLayout`). ✅
+## 🟦 Pillar 3: Course Sales Page — ✅ 100% Complete (2026-04-03)
 - [x] Build `InstructorCard` 
 - [x] Build `ReviewCard`
 - [x] Build `/courses` Marketplace grid with 'Add to Cart' integration
 - [x] Build `/courses/[id]` layout with MasterClass sticky-scroll & glassmorphism
 - [x] Integrate Markdown-lite rich descriptions & curriculum parsing
 
-## 🟦 Pillar 4: Student Learning System — 🟡 UI Ready (60%)
+## 🟦 Pillar 4: Student Learning System — 🟡 In Progress (75%)
 - [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**
 - [x] Build global "Coming Soon" Infrastructure
-- [ ] Build `/learn/[id]` Video Player & Sidebar Logic
-- [ ] Integrate Live Stripe Checkout API
+- [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅
+- [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`. ✅
+- [ ] **Build the Full Enrollment System** (Attaching DB to Courses securely)
+- [ ] Integrate Live Stripe Checkout API (Triggering the Enrollments)
 
 ## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
 - [ ] Build Instructor Dashboard (`/instructor`)
