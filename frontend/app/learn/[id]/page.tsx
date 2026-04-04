@@ -15,6 +15,7 @@ export default function LearnCoursePage() {
   const [activeLesson, setActiveLesson] = useState<{ moduleIndex: number; lessonIndex: number } | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
     const fetchCourseAndProgress = async () => {
@@ -33,8 +34,17 @@ export default function LearnCoursePage() {
 
         // Fetch User Progress
         const progRes = await fetch(`/api/courses/${params.id}/progress`, {
-          // credentials usually handled via fetch to proxy API
+          credentials: 'include',
+          headers: { 'Cache-Control': 'no-cache' }
         });
+
+        if (progRes.status === 401 || progRes.status === 403) {
+          setIsAuthorized(false);
+          setLoading(false);
+          return; // Stop execution
+        }
+
+        setIsAuthorized(true);
 
         if (progRes.ok) {
           const progData = await progRes.json();
@@ -95,6 +105,7 @@ export default function LearnCoursePage() {
       const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ lessonId })
       });
       
@@ -127,6 +138,29 @@ export default function LearnCoursePage() {
         <h2>Course Not Found</h2>
         <button onClick={() => router.push('/courses')} style={{ padding: '10px 20px', backgroundColor: '#3D5AFE', borderRadius: '8px', color: 'white', border: 'none', cursor: 'pointer' }}>
           Back to Marketplace
+        </button>
+      </div>
+    );
+  }
+
+  if (isAuthorized === false) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B0F19', color: 'white', flexDirection: 'column', padding: '20px', textAlign: 'center' }}>
+        <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px', letterSpacing: '-0.02em' }}>Course Locked</h1>
+        <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '400px', lineHeight: 1.6, marginBottom: '32px' }}>
+          You must purchase this course before you can access the learning materials and premium video player.
+        </p>
+        <button 
+          onClick={() => router.push(`/courses/${params.id}`)} 
+          style={{ padding: '14px 28px', backgroundColor: '#3D5AFE', borderRadius: '8px', color: 'white', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', transition: 'background-color 0.2s' }}
+        >
+          View Course Details
         </button>
       </div>
     );
