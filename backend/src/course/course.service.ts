@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -90,7 +90,7 @@ export class CourseService {
     });
 
     if (!enrollment) {
-      return { progress: 0, completedLessons: [] };
+      throw new ForbiddenException('You must purchase this course before you can access the learning materials.');
     }
     return {
       progress: enrollment.progress,
@@ -100,19 +100,12 @@ export class CourseService {
 
   async markLessonComplete(userId: string, idOrSlug: string, lessonId: string) {
     const course = await this.findOne(idOrSlug);
-    let enrollment = await this.prisma.enrollment.findUnique({
+    const enrollment = await this.prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } }
     });
 
     if (!enrollment) {
-      enrollment = await this.prisma.enrollment.create({
-        data: {
-          userId,
-          courseId: course.id,
-          progress: 0,
-          completedLessons: [],
-        },
-      });
+      throw new ForbiddenException('You must be enrolled to mark lessons complete.');
     }
 
     const currentCompleted = Array.isArray(enrollment.completedLessons)
@@ -121,9 +114,21 @@ export class CourseService {
     
     if (!currentCompleted.includes(lessonId)) {
       currentCompleted.push(lessonId);
+      
+      let totalLessons = 0;
+      if (Array.isArray(course.curriculum)) {
+        totalLessons = course.curriculum.reduce((acc: number, section: any) => acc + (section.lessons?.length || 0), 0);
+      }
+      totalLessons = totalLessons || 1; // Fallback to 1
+
+      const progress = Math.min(100, Math.round((currentCompleted.length / totalLessons) * 100));
+
       await this.prisma.enrollment.update({
         where: { id: enrollment.id },
-        data: { completedLessons: currentCompleted },
+        data: { 
+          completedLessons: currentCompleted,
+          progress 
+        },
       });
     }
 
