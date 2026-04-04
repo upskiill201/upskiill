@@ -42,6 +42,7 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Build Optimization**: Fixed `dist/src/main` pathing for Render.com deployment ✅ (2026-04-03)
 - [x] **Cart & Checkout Engine**: Implemented `Orders` controller for course enrollment & checkout processes. ✅ (2026-04-03)
 - [x] **Dynamic Curriculum (JSON)**: Courses now support nested sections and lessons via `curriculum` field. ✅ (2026-04-03)
+- [x] **Premium Dual-Payment API**: Integrated **Stripe** and **MeSomb** Mobile Money into `PaymentModule`. Supports USSD push prompts and Webhook-based server-side enrollments. ✅ (2026-04-04)
 
 ### Frontend (`/frontend`)
 - [x] Next.js App Router setup
@@ -83,6 +84,7 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅ (2026-04-04)
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`.
 - [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". 
+- [x] **Premium Frictionless Checkout**: Consolidated Cart/Checkout into a single-page split UI with animated payment method toggling, Stripe Elements, and MeSomb mobile money integration. ✅ (2026-04-04)
 - [x] **Unified Hub Routing**: Decoupled the `isEnrolled` condition from `CourseCard` navigation, guaranteeing that clicking any card (Dashboard or Marketplace) routes the user solidly to the centralized Details page (`/courses/[id]`) first as the single path to launch the player.
 - [x] **Vercel Build Fix**: Rectified severe TypeScript Type Checks surrounding outdated component prototypes (`CoursePlayerLayout`).
 
@@ -148,8 +150,11 @@ _Current Focus: Pillar 2 (Course Marketplace)_
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
 4. **[ ] Pillar 4: Student Learning System (Current Focus)**
    - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
-   - [ ] Build & Connect the Full Student Enrollment System
-   - [ ] Integrate full Stripe payment logic
+   - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
+   - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
+   - [x] **Premium Dual-Payment Integration**: Engineered a "Global + Local" hybrid gateway supporting **Stripe** (Credit Card/Apple Pay) and **MeSomb** (Mobile Money: MTN/Orange/Airtel).
+   - [x] **Frictionless Checkout Flow**: Consolidated the Cart and Checkout into a single high-conversion screen. Implemented Stripe Elements and MeSomb USSD Push triggers.
+   - [ ] Final Webhook Hardening & Production Key Handover
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics
    - [ ] Course Creation UI & AWS S3 Video Uploader
