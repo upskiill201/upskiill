@@ -129,8 +129,7 @@ export default function CourseDetailPage({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+        const apiUrl = '/api';
 
         const courseRes = await fetch(`${apiUrl}/courses/${idOrSlug}`);
         if (courseRes.ok) {

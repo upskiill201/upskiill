@@ -1,4 +1,4 @@
-> Last updated: 2026-04-03 22:25 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-04 12:23 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
 
@@ -79,6 +79,7 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Guest Checkout Flow**: Guests can checkout; system creates automatic accounts via `/orders/checkout`.
 - [x] **Dynamic Curriculum Render**: Refactored `CourseDetailPage` to render data-driven sections and lessons.
 - [x] **Production API Enforcement**: All hardcoded `localhost:3001` replaced with `https://upskiill-backend.onrender.com`. ✅
+- [x] **Cross-Domain Auth Fix (PR 48)**: Renamed `middleware.ts` to `proxy.ts`, added Next.js API `rewrites`, and configured auth fetches to `/api` to bypass strict 3rd-party cookie drops on Vercel.
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
 - [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
@@ -100,10 +101,12 @@ Fully hardened and verified:
 - All 5 manual tests passed locally ✅
 
 ### Pillar 2: Course Marketplace — 🟡 In Progress
-Focus: Finish component library → Build homepage sections → Build `/courses` page → Build `/courses/[id]` → Connect Course API.
+### Pillar 2: Course Marketplace — 🟡 In Progress
+Focus: Finish component library → Build `/courses` page → Build `/courses/[id]` → Connect Course API.
 
-### Homepage Sections: 🟡 Ongoing (1/6 Complete)
-Hero + Category Slider + "Why Learn" section are finished. Remaining 6 homepage section components are pending.
+### Homepage Sections: ⏸️ PAUSED
+> **🛑 CRITICAL DECISION (2026-04-04):** We are strictly **NOT** building the rest of the Homepage UI right now. It is explicitly paused. Focus shifted away from Step B (Homepage Sections).
+Hero + Category Slider + "Why Learn" section are finished. Remaining components are paused.
 
 ---
 
@@ -121,7 +124,8 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `LessonItem` — `components/features/LessonItem.tsx`
      - [x] `SectionAccordion` — `components/features/SectionAccordion.tsx`
      - [x] `CartItem` — `components/features/CartItem.tsx`
-   - **Step B — Build Homepage Sections (Phase 4):**
+   - **Step B — Build Homepage Sections (Phase 4): ⏸️ PAUSED**
+     > **NOTE:** We are actively skipping the homepage sections right now.
      - [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
      - [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
      - [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
