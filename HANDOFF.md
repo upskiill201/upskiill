@@ -80,6 +80,10 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Dynamic Curriculum Render**: Refactored `CourseDetailPage` to render data-driven sections and lessons.
 - [x] **Production API Enforcement**: All hardcoded `localhost:3001` replaced with `https://upskiill-backend.onrender.com`. ✅
 - [x] **Cross-Domain Auth Fix (PR 48)**: Renamed `middleware.ts` to `proxy.ts`, added Next.js API `rewrites`, and configured auth fetches to `/api` to bypass strict 3rd-party cookie drops on Vercel.
+- [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅ (2026-04-04)
+- [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`.
+- [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". 
+- [x] **Vercel Build Fix**: Rectified severe TypeScript Type Checks surrounding outdated component prototypes (`CoursePlayerLayout`).
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
 - [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
@@ -141,8 +145,9 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses/:id` — single course detail with Instructor payload
      - [x] `GET /courses/categories` — list all categories
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
-4. **[ ] Pillar 4: Student Learning System**
-   - [ ] Finalize Video Player curriculum logic & Sidebar
+4. **[ ] Pillar 4: Student Learning System (Current Focus)**
+   - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
+   - [ ] Build & Connect the Full Student Enrollment System
    - [ ] Integrate full Stripe payment logic
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics
@@ -280,3 +285,4 @@ cd backend && npm run start:dev
 - **Backend:** https://upskiill-backend.onrender.com
 - **GitHub:** https://github.com/upskiill201/upskiill
 - **PR for Latest UI:** https://github.com/upskiill201/upskiill/pull/31
+- **Test Course Player (Live):** https://upskiill.vercel.app/learn/advanced-product-design-ux-strategy (Login directly with Alex's credentials to view)
