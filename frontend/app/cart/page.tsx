@@ -21,7 +21,7 @@ export default function CartPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+        const apiUrl = '/api';
         const res = await fetch(`${apiUrl}/auth/me`);
         if (res.ok) {
           const data = await res.json();
@@ -39,7 +39,7 @@ export default function CartPage() {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+      const apiUrl = '/api';
       
       const payload = {
         courseIds: items.map((item) => item.id),

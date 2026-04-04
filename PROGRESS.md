@@ -30,7 +30,8 @@
 - [x] Build `SectionAccordion` — `components/features/SectionAccordion.tsx`
 - [x] Build `CartItem` — `components/features/CartItem.tsx`
 
-### Step B — Build Homepage Sections (Phase 4) 🔴
+### Step B — Build Homepage Sections (Phase 4) ⏸️ PAUSED
+> **🛑 CRITICAL DECISION:** We are strictly **NOT** building the rest of the Homepage right now. Do not begin work on these components until authorized.
 - [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
 - [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
 - [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
