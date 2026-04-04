@@ -148,7 +148,8 @@ _Current Focus: Pillar 2 (Course Marketplace)_
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
 4. **[ ] Pillar 4: Student Learning System (Current Focus)**
    - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
-   - [ ] Build & Connect the Full Student Enrollment System
+   - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
+   - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
    - [ ] Integrate full Stripe payment logic
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics

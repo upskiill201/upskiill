@@ -71,7 +71,8 @@
 - [x] Build global "Coming Soon" Infrastructure
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`. ✅
-- [ ] **Build the Full Enrollment System** (Attaching DB to Courses securely)
+- [x] **Build the Full Enrollment System**: Secured `/api/courses/:id/progress` & `/complete-lesson` against unauthorized pinging. Engineered automated integer parsing converting watched videos to 100% logic tracked in Prisma. 
+- [x] **Course Lock Screen**: Integrated full-screen UI barricade catching any backend 403 Forbidden checks, routing illegal `/learn/[id]` attempts safely to `/courses/[id]`.
 - [ ] Integrate Live Stripe Checkout API (Triggering the Enrollments)
 
 ## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
