@@ -287,3 +287,11 @@ cd backend && npm run start:dev
 - **GitHub:** https://github.com/upskiill201/upskiill
 - **PR for Latest UI:** https://github.com/upskiill201/upskiill/pull/31
 - **Test Course Player (Live):** https://upskiill.vercel.app/learn/advanced-product-design-ux-strategy (Login directly with Alex's credentials to view)
+
+---
+
+## 🧪 Testing Accounts
+Use the following officially seeded accounts to verify the platform, access the dashboard, and view the enrolled Player UI.
+- **Student Account (Alex)**
+  - **Email:** `alex@upskiill.com`
+  - **Password:** `password123`
