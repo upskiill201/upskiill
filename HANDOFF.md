@@ -83,6 +83,7 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅ (2026-04-04)
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`.
 - [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". 
+- [x] **Unified Hub Routing**: Decoupled the `isEnrolled` condition from `CourseCard` navigation, guaranteeing that clicking any card (Dashboard or Marketplace) routes the user solidly to the centralized Details page (`/courses/[id]`) first as the single path to launch the player.
 - [x] **Vercel Build Fix**: Rectified severe TypeScript Type Checks surrounding outdated component prototypes (`CoursePlayerLayout`).
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
