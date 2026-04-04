@@ -66,14 +66,17 @@
 - [x] Integrate Markdown-lite rich descriptions & curriculum parsing
 - [x] **Unified Hub Routing**: Standardized all Course Cards system-wide (Dashboard & Marketplace) to strictly navigate to `/courses/[id]` first, acting as a unified "hub" before launching the video player.
 
-## 🟦 Pillar 4: Student Learning System — 🟡 In Progress (75%)
+## 🟦 Pillar 4: Student Learning System — 🟡 90% Complete
 - [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**
 - [x] Build global "Coming Soon" Infrastructure
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`. ✅
 - [x] **Build the Full Enrollment System**: Secured `/api/courses/:id/progress` & `/complete-lesson` against unauthorized pinging. Engineered automated integer parsing converting watched videos to 100% logic tracked in Prisma. 
 - [x] **Course Lock Screen**: Integrated full-screen UI barricade catching any backend 403 Forbidden checks, routing illegal `/learn/[id]` attempts safely to `/courses/[id]`.
-- [ ] Integrate Live Stripe Checkout API (Triggering the Enrollments)
+- [x] **Premium Dual-Payment Integration**: Integrated **Stripe** (Global Cards/Apple Pay) and **MeSomb** (Central Africa Mobile Money — MTN/Orange) into the backend.
+- [x] **Frictionless Checkout UI**: Redesigned `/cart` into a premium, single-page split checkout with 0-friction method toggling and embedded Stripe Elements.
+- [ ] Final Webhook Hardening & Production Key Handover
+- [ ] End-to-end Live Transaction Testing
 
 ## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
 - [ ] Build Instructor Dashboard (`/instructor`)
