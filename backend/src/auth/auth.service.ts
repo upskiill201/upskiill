@@ -78,4 +78,16 @@ export class AuthService {
       },
     };
   }
+
+  async getMyEnrollments(userId: string) {
+    return this.prisma.enrollment.findMany({
+      where: { userId },
+      include: {
+        course: true,
+      },
+      orderBy: { // Optional: sort by enrollment creation date instead
+        id: 'desc',
+      },
+    });
+  }
 }

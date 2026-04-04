@@ -65,4 +65,10 @@ export class AuthController {
   getMe(@GetUser() user: User) {
     return user;
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me/enrollments')
+  async getMyEnrollments(@GetUser() user: User) {
+    return this.authService.getMyEnrollments(user.id);
+  }
 }

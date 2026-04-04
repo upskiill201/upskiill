@@ -30,8 +30,8 @@
 - [x] Build `SectionAccordion` — `components/features/SectionAccordion.tsx`
 - [x] Build `CartItem` — `components/features/CartItem.tsx`
 
-### Step B — Build Homepage Sections (Phase 4) ⏸️ PAUSED
-> **🛑 CRITICAL DECISION:** We are strictly **NOT** building the rest of the Homepage right now. Do not begin work on these components until authorized.
+### Step B — Build Waitlist Landing Pages (Phase 4) ⏸️ PIVOTED
+> **🛑 CRITICAL DECISION:** We are strictly **NOT** building the standard Marketplace Homepage right now. We are pivoting to build a Homepage and Instructor page that captures people on a Waitlist while the core product is built.
 - [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
 - [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
 - [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
@@ -67,6 +67,18 @@
 - [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**
 - [x] Build global "Coming Soon" Infrastructure
 - [ ] Build `/learn/[id]` Video Player & Sidebar Logic
+- [ ] Integrate Live Stripe Checkout API
+
+## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
+- [ ] Build Instructor Dashboard (`/instructor`)
+- [ ] Build Course Creation Wizard (`/instructor/create`)
+- [ ] Build Curriculum Video Uploader (AWS S3 Integration)
+
+## 🟦 Pillar 6: Admin & Polish (Phase 1F) — 🔴 Not Started (0%)
+- [ ] Build Admin Dashboard (`/admin`)
+- [ ] Course Moderation & User Management
+- [ ] Essential Legal Pages (Terms, Privacy, FAQ)
+- [ ] SendGrid Email Notifications
 
 ***
 

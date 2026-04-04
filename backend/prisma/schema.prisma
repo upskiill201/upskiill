@@ -61,9 +61,10 @@ model Course {
 model Enrollment {
   id        String   @id @default(uuid())
   userId    String
-  courseId  String
-  progress  Int      @default(0)
-  createdAt DateTime @default(now())
+  courseId         String
+  progress         Int      @default(0)
+  completedLessons Json?    @default("[]")
+  createdAt        DateTime @default(now())
   course    Course   @relation(fields: [courseId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 

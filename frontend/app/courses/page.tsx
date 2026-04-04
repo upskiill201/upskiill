@@ -23,6 +23,20 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const apiUrl = '/api';
+        
+        // Fetch user's enrollments to determine course status
+        let enrolledIds = new Set<string>();
+        try {
+          const enrollRes = await fetch(`${apiUrl}/auth/me/enrollments`, { credentials: 'include' });
+          if (enrollRes.ok) {
+            const enrollments = await enrollRes.json();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            enrolledIds = new Set(enrollments.map((e: any) => e.courseId));
+          }
+        } catch (err) {
+          console.warn('Silent skip: Could not fetch enrollments (maybe not logged in)', err);
+        }
+
         const res = await fetch(`${apiUrl}/courses`);
         if (res.ok) {
           const data = await res.json();
@@ -37,7 +51,6 @@ export default function CoursesPage() {
                instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
                rating: c.rating || 4.5,
                reviewCount: c.reviewsCount || 0,
-               studentsCount: c.studentsCount || 0,
                totalHours: parseFloat(c.duration) || 10,
                totalLessons: 50, // Mock fallback for MVP
                price: c.price,
@@ -45,6 +58,7 @@ export default function CoursesPage() {
                category: c.category,
                level: c.level,
                shortDescription: c.shortDescription || c.description?.substring(0, 100),
+               isEnrolled: enrolledIds.has(c.id),
              }));
              setCourses(mappedCourses);
           } else {

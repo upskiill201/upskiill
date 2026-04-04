@@ -18,7 +18,7 @@ async function main() {
     data: {
       email: 'alex@upskiill.com',
       fullName: 'Alex Rivera',
-      password: 'hashed_placeholder',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
       role: 'INSTRUCTOR',
       avatarUrl:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80',
@@ -29,7 +29,7 @@ async function main() {
     data: {
       email: 'sarah@upskiill.com',
       fullName: 'Sarah Chen',
-      password: 'hashed_placeholder',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
       role: 'INSTRUCTOR',
       avatarUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&q=80',
@@ -40,7 +40,7 @@ async function main() {
     data: {
       email: 'marcus@upskiill.com',
       fullName: 'Marcus Johnson',
-      password: 'hashed_placeholder',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
       role: 'INSTRUCTOR',
       avatarUrl:
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80',
@@ -50,7 +50,7 @@ async function main() {
   console.log(`✅ Instructors: ${alex.fullName}, ${sarah.fullName}, ${marcus.fullName}\n`);
 
   // ─── COURSE 1: Product Design & UX ────────────────────────────────────────
-  await prisma.course.create({
+  const course1 = await prisma.course.create({
     data: {
       title: 'Advanced Product Design & UX Strategy',
       slug: 'advanced-product-design-ux-strategy',
@@ -188,7 +188,7 @@ We start by breaking down the psychological drivers of user behavior. Why do use
   });
 
   // ─── COURSE 2: Full-Stack Next.js ─────────────────────────────────────────
-  await prisma.course.create({
+  const course2 = await prisma.course.create({
     data: {
       title: 'Full-Stack Next.js 15 Development',
       slug: 'fullstack-nextjs-15-development',
@@ -324,7 +324,7 @@ This isn't a course about copying boilerplate. You'll understand every line of c
   });
 
   // ─── COURSE 3: Digital Marketing ──────────────────────────────────────────
-  await prisma.course.create({
+  const course3 = await prisma.course.create({
     data: {
       title: 'Digital Marketing Mastery 2025',
       slug: 'digital-marketing-mastery-2025',
@@ -811,7 +811,15 @@ This course distills the best research from Cal Newport, James Clear, and the Hu
     },
   });
 
-  console.log('🎉 All 6 courses seeded successfully!');
+  await prisma.enrollment.createMany({
+    data: [
+      { userId: alex.id, courseId: course1.id, progress: 0, completedLessons: [] },
+      { userId: alex.id, courseId: course2.id, progress: 0, completedLessons: [] },
+      { userId: alex.id, courseId: course3.id, progress: 0, completedLessons: [] },
+    ]
+  });
+
+  console.log('🎉 All 6 courses and 3 initial enrollments seeded successfully!');
 }
 
 main()

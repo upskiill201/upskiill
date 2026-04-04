@@ -472,7 +472,15 @@ export default function ComponentsPreviewPage() {
         <Section title="Course Player UI" file="components/features/CoursePlayerLayout.tsx" status="done">
           <Group label="Full Video/Lesson Interface (All 8 Items)">
             <div style={{ width: "100%" }}>
-              <CoursePlayerLayout />
+              <CoursePlayerLayout
+                course={{ title: 'Demo Course', curriculum: [] }}
+                activeLesson={null}
+                completedLessons={[]}
+                onSelectLesson={() => {}}
+                onMarkComplete={() => {}}
+                onNextLesson={() => {}}
+                onPreviousLesson={() => {}}
+              />
             </div>
           </Group>
         </Section>
