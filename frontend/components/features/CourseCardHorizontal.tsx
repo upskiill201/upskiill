@@ -61,7 +61,7 @@ export const CourseCardHorizontal = ({
   className = '',
 }: CourseCardHorizontalProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const linkHref = isEnrolled ? `/learn/${id}` : `/course/${id}`;
+  const linkHref = `/courses/${id}`;
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();

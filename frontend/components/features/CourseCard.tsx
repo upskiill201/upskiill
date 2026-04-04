@@ -65,7 +65,7 @@ export const CourseCard = ({
   const { addItem, isInCart } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const identifier = slug || id;
-  const linkHref = isEnrolled ? `/learn/${identifier}` : `/courses/${identifier}`;
+  const linkHref = `/courses/${identifier}`;
   const inCart = isInCart(id);
 
   const toggleWishlist = (e: React.MouseEvent) => {
