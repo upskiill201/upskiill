@@ -152,9 +152,10 @@ _Current Focus: Pillar 2 (Course Marketplace)_
    - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
    - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
    - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
-   - [x] **Premium Dual-Payment Integration**: Engineered a "Global + Local" hybrid gateway supporting **Stripe** (Credit Card/Apple Pay) and **MeSomb** (Mobile Money: MTN/Orange/Airtel).
-   - [x] **Frictionless Checkout Flow**: Consolidated the Cart and Checkout into a single high-conversion screen. Implemented Stripe Elements and MeSomb USSD Push triggers.
-   - [ ] Final Webhook Hardening & Production Key Handover
+   - [ ] **Premium Dual-Payment Integration (IN PROGRESS 🟡)**: Engineered a "Global + Local" hybrid gateway supporting **Stripe** (Credit Card/Apple Pay) and **MeSomb** (Mobile Money: MTN/Orange/Airtel).
+   - [ ] **Frictionless Checkout Flow (IN PROGRESS 🟡)**: Consolidated the Cart and Checkout into a single high-conversion screen. Implemented Stripe Elements and MeSomb USSD Push triggers.
+      - [ ] **STAKEHOLDER NOTE:** This integration is currently in Phase 1 (Functional Initial Implementation). It requires final Webhook Signature Hardening, Production Key Handover, and End-to-end Live Testing before it is considered Pillar-Complete.
+   - [ ] Final Webhook Hardening & Production Key Handover (Pending Logic/Testing)
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics
    - [ ] Course Creation UI & AWS S3 Video Uploader
