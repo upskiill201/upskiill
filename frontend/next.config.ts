@@ -14,12 +14,16 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 
+      (isVercel ? 'https://upskiill-backend.onrender.com' : 'http://localhost:3001');
+
+    console.log(`Setting up rewrites. Target Backend: ${backendUrl}`);
+
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/:path*` 
-          : 'http://localhost:3001/:path*',
+        destination: `${backendUrl}/:path*`,
       },
     ];
   },
