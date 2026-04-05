@@ -1,29 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, ArrowLeft, Trash2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Trash2, Shield, RotateCcw, Zap } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { CartItem as CartItemComponent } from '../../components/features/CartItem';
-import Button from '../../components/ui/Button';
 import styles from './CartPage.module.css';
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, totalPrice, totalItems } = useCart();
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
+  const handleRemove = async (id: string) => {
+    setRemovingId(id);
+    setTimeout(() => {
+      removeItem(id);
+      setRemovingId(null);
+    }, 300);
+  };
 
   if (totalItems === 0) {
     return (
-      <div className={styles.container}>
+      <div className={styles.page}>
         <div className={styles.emptyState}>
-          <ShoppingBag size={72} color="#334155" style={{ margin: '0 auto 24px' }} />
+          <div className={styles.emptyOrb} />
+          <div className={styles.emptyIconWrap}>
+            <ShoppingCart size={40} />
+          </div>
           <h2 className={styles.emptyTitle}>Your cart is empty</h2>
           <p className={styles.emptyDesc}>
-            Explore our library and find a course that will level up your skills.
+            Discover world-class courses and start your learning journey today.
           </p>
-          <Link href="/courses">
-            <Button variant="primary" size="lg">Browse Courses</Button>
+          <Link href="/courses" className={styles.emptyBtn}>
+            Browse Courses →
           </Link>
         </div>
       </div>
@@ -31,51 +42,19 @@ export default function CartPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <Link href="/courses" className={styles.backLink}>
-        <ArrowLeft size={16} /> Back to Courses
-      </Link>
+    <div className={styles.page}>
+      {/* Background orb */}
+      <div className={styles.bgOrb} />
 
-      <h1 className={styles.title}>
-        <ShoppingCart size={28} /> Shopping Cart
-        <span className={styles.itemCount}>{totalItems} {totalItems === 1 ? 'item' : 'items'}</span>
-      </h1>
-
-      <div className={styles.layout}>
-        {/* Left: Cart Items */}
-        <div className={styles.cartList}>
-          {items.map((item) => (
-            <CartItemComponent
-              key={item.id}
-              courseId={item.id}
-              title={item.title}
-              thumbnail={item.thumbnail}
-              instructorName={item.instructorName}
-              price={item.price}
-              onRemove={() => removeItem(item.id)}
-              onMoveToWishlist={() => {}}
-            />
-          ))}
-        </div>
-
-        {/* Right: Order Summary */}
-        <div className={styles.summaryCard}>
-          <h2 className={styles.summaryTitle}>Order Summary</h2>
-
-          <div className={styles.summaryRows}>
-            {items.map(item => (
-              <div key={item.id} className={styles.summaryRow}>
-                <span className={styles.summaryItemName}>{item.title}</span>
-                <span className={styles.summaryItemPrice}>${item.price.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.divider} />
-
-          <div className={styles.totalRow}>
-            <span>Total</span>
-            <span className={styles.totalAmount}>${totalPrice.toFixed(2)}</span>
+      <div className={styles.wrapper}>
+        {/* Header */}
+        <div className={styles.header}>
+          <Link href="/courses" className={styles.backLink}>
+            <ArrowLeft size={16} /> Back to Courses
+          </Link>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>Shopping Cart</h1>
+            <span className={styles.badge}>{totalItems} {totalItems === 1 ? 'course' : 'courses'}</span>
           </div>
 
           <Button
@@ -91,6 +70,106 @@ export default function CartPage() {
           <p className={styles.secureNote}>
             🔒 Secure checkout. 30-day money-back guarantee.
           </p>
+        </div>
+
+        {/* Body */}
+        <div className={styles.body}>
+          {/* Left — Items */}
+          <div className={styles.itemsCol}>
+            <div className={styles.itemsList}>
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className={`${styles.itemCard} ${removingId === item.id ? styles.removing : ''}`}
+                >
+                  {/* Thumbnail */}
+                  <div className={styles.itemThumb}>
+                    {item.thumbnail ? (
+                      <img src={item.thumbnail} alt={item.title} className={styles.thumbImg} />
+                    ) : (
+                      <div className={styles.thumbPlaceholder}>
+                        <Zap size={20} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className={styles.itemInfo}>
+                    <p className={styles.itemTitle}>{item.title}</p>
+                    <p className={styles.itemInstructor}>by {item.instructorName}</p>
+                    <div className={styles.itemTags}>
+                      <span className={styles.tag}>Instant Access</span>
+                      <span className={styles.tag}>Certificate</span>
+                    </div>
+                  </div>
+
+                  {/* Price + Remove */}
+                  <div className={styles.itemRight}>
+                    <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
+                    <button
+                      className={styles.removeBtn}
+                      onClick={() => handleRemove(item.id)}
+                      aria-label="Remove item"
+                    >
+                      <Trash2 size={15} />
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Trust row */}
+            <div className={styles.trustRow}>
+              <span className={styles.trustItem}><Shield size={14} /> 30-day guarantee</span>
+              <span className={styles.trustItem}><RotateCcw size={14} /> Full refunds</span>
+              <span className={styles.trustItem}><Zap size={14} /> Instant enrollment</span>
+            </div>
+          </div>
+
+          {/* Right — Summary */}
+          <div className={styles.summaryCol}>
+            <div className={styles.summaryCard}>
+              {/* Glow accent */}
+              <div className={styles.summaryGlow} />
+
+              <h2 className={styles.summaryTitle}>Order Summary</h2>
+
+              <div className={styles.summaryLines}>
+                {items.map(item => (
+                  <div key={item.id} className={styles.summaryLine}>
+                    <span className={styles.summaryLineName}>{item.title}</span>
+                    <span className={styles.summaryLinePrice}>${item.price.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.summaryDivider} />
+
+              <div className={styles.totalRow}>
+                <span className={styles.totalLabel}>Total</span>
+                <span className={styles.totalAmount}>${totalPrice.toFixed(2)}</span>
+              </div>
+
+              <button
+                className={styles.checkoutBtn}
+                onClick={() => router.push('/checkout')}
+              >
+                <span>Proceed to Checkout</span>
+                <span className={styles.checkoutBtnArrow}>→</span>
+              </button>
+
+              <div className={styles.summaryFooter}>
+                <Shield size={13} />
+                <span>Secured by SSL encryption</span>
+              </div>
+            </div>
+
+            {/* Promo hint */}
+            <div className={styles.promoHint}>
+              🎓 All courses include a <strong>verified certificate</strong> upon completion.
+            </div>
+          </div>
         </div>
       </div>
     </div>

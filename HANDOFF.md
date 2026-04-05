@@ -1,6 +1,57 @@
-> Last updated: 2026-04-04 12:23 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-05 02:04 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
+
+---
+
+## 🔄 Rebranding Plan — ⏳ PENDING NEW NAME
+
+> **Strategic Decision (2026-04-05):** This platform is being re-launched as a **new product under a new brand name** (TBD). The codebase currently uses "Upskiill" / "upskiill" throughout. When the new name is confirmed, a full targeted find-and-replace will be run across all files listed below in a single session.
+
+### When the name is ready, change it in this exact order:
+
+#### 1. User-Facing Frontend Text
+| File | What to Change |
+|---|---|
+| `frontend/app/layout.tsx` | `<title>` tag, meta description, site name |
+| `frontend/public/meta.json` | `name`, `short_name`, `description` (PWA manifest) |
+| `frontend/components/Header.tsx` | Logo text / brand name in navbar |
+| `frontend/components/layout/Footer.tsx` | Brand name, copyright line |
+| `frontend/components/homepage/HeroSection.tsx` | Headline, sub-headline, all brand copy |
+| `frontend/app/login/page.tsx` | "Welcome back to Upskiill" copy |
+| `frontend/app/signup/page.tsx` | "Join Upskiill" copy |
+| `frontend/app/dashboard/layout.tsx` | Dashboard title references |
+| `frontend/app/certificates/[id]/page.tsx` | "Upskiill" printed on certificate |
+| `frontend/components/features/CoursePlayerLayout.tsx` | Player brand name |
+| `frontend/context/CartContext.tsx` | `localStorage` key `upskiill-cart` → `[newname]-cart` |
+
+#### 2. Backend / Auth / Seed Data
+| File | What to Change |
+|---|---|
+| `backend/src/auth/auth.service.ts` | Brand strings in responses |
+| `backend/src/auth/strategy/jwt.strategy.ts` | JWT issuer if branded |
+| `backend/prisma/seed.ts` | Seed emails: `@upskiill.com` → `@[newname].com` |
+| `backend/.env` | Any branded callback/redirect URLs |
+
+#### 3. Config & Infrastructure
+| File | What to Change |
+|---|---|
+| `frontend/next.config.ts` | API proxy target URL if backend URL changes |
+| `render.yaml` | Service name `upskiill-backend` → `[newname]-backend` |
+| `PROGRESS.md` | "Upskiill" in all headings |
+| `HANDOFF.md` | "Upskiill" throughout this document |
+
+#### 4. External Dashboards (Manual — no code)
+| Service | Action |
+|---|---|
+| **GitHub** | Rename repo `upskiill201/upskiill` → `[org]/[newname]` |
+| **Vercel** | Update project name + custom domain |
+| **Render** | Update service name + custom domain |
+| **Supabase** | Update project display name |
+| **Stripe** | Update business name |
+| **MeSomb** | Update app name |
+
+> ✅ **Ready to rebrand?** Just tell me the new name in chat. I will update every file above in a single session and push a PR for you to merge.
 
 ---
 
@@ -152,10 +203,10 @@ _Current Focus: Pillar 2 (Course Marketplace)_
    - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
    - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
    - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
-   - [ ] **Premium Dual-Payment Integration (IN PROGRESS 🟡)**: Engineered a "Global + Local" hybrid gateway supporting **Stripe** (Credit Card/Apple Pay) and **MeSomb** (Mobile Money: MTN/Orange/Airtel).
-   - [ ] **Frictionless Checkout Flow (IN PROGRESS 🟡)**: Consolidated the Cart and Checkout into a single high-conversion screen. Implemented Stripe Elements and MeSomb USSD Push triggers.
-      - [ ] **STAKEHOLDER NOTE:** This integration is currently in Phase 1 (Functional Initial Implementation). It requires final Webhook Signature Hardening, Production Key Handover, and End-to-end Live Testing before it is considered Pillar-Complete.
-   - [ ] Final Webhook Hardening & Production Key Handover (Pending Logic/Testing)
+   - [/] **Premium Dual-Payment Integration (Deployed, Untested 🟡)**: Full backend gateway built. Stripe supports Card/Apple Pay/Google Pay. MeSomb supports MTN, Orange, Express Union, Wave. Live keys injected to Render + Vercel. Build passes on both platforms. **NEEDS: End-to-end live transaction test with a real card and real phone.**
+   - [/] **Cart & Checkout Pages (Functional, Needs UI Polish 🟡)**: Cart (`/cart`) and Checkout (`/checkout`) are correctly separated. Checkout is login-required. Functional flow works. **NEEDS: A full premium UI redesign pass for both pages — better layout, animations, trust signals, mobile optimization.**
+   - [ ] End-to-end Payment Testing (test a real $1 Stripe charge + real MoMo prompt)
+   - [ ] Premium Cart & Checkout UI Redesign
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics
    - [ ] Course Creation UI & AWS S3 Video Uploader
