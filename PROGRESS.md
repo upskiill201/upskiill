@@ -66,7 +66,7 @@
 - [x] Integrate Markdown-lite rich descriptions & curriculum parsing
 - [x] **Unified Hub Routing**: Standardized all Course Cards system-wide (Dashboard & Marketplace) to strictly navigate to `/courses/[id]` first, acting as a unified "hub" before launching the video player.
 
-## 🟦 Pillar 4: Student Learning System — 🟡 90% Complete
+## 🟦 Pillar 4: Student Learning System — 🟡 In Progress (80%)
 - [x] Build Student Dashboard (`/dashboard`) — **100% Done & Responsive**
 - [x] Build global "Coming Soon" Infrastructure
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅

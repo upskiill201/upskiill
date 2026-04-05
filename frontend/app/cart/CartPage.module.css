@@ -23,6 +23,7 @@
   text-decoration: none;
   margin-bottom: 20px;
   transition: color 0.2s;
+  font-size: 15px;
 }
 .backLink:hover { color: #3D5AFE; }
 

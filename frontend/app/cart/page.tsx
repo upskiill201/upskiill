@@ -56,6 +56,20 @@ export default function CartPage() {
             <h1 className={styles.title}>Shopping Cart</h1>
             <span className={styles.badge}>{totalItems} {totalItems === 1 ? 'course' : 'courses'}</span>
           </div>
+
+          <Button
+            variant="primary"
+            fullWidth
+            size="lg"
+            onClick={() => router.push('/checkout')}
+            style={{ marginTop: '24px' }}
+          >
+            Proceed to Checkout →
+          </Button>
+
+          <p className={styles.secureNote}>
+            🔒 Secure checkout. 30-day money-back guarantee.
+          </p>
         </div>
 
         {/* Body */}
