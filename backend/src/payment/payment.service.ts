@@ -1,20 +1,32 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import Stripe from 'stripe';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const StripeSDK = require('stripe');
 import { PaymentOperation, RandomGenerator } from '@hachther/mesomb';
+
+// Manually define just the Stripe types we need to avoid namespace conflicts
+type StripeEvent = {
+  type: string;
+  data: {
+    object: {
+      metadata?: { userId?: string; courseIds?: string };
+    };
+  };
+};
 
 @Injectable()
 export class PaymentService {
-  private stripe: Stripe;
+  private stripe: any;
   private mesombClient: any;
 
   constructor(private prisma: PrismaService) {
     // Stripe Initialization
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_stripe_key', {
-      apiVersion: '2025-02-24.acacia',
-    });
+    this.stripe = new StripeSDK(
+      process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
+      { apiVersion: '2025-02-24.acacia' },
+    );
 
-    // MeSomb Initialization
+    // MeSomb Initialization (only if keys are set)
     if (process.env.MESOMB_APP_KEY) {
       this.mesombClient = new PaymentOperation({
         applicationKey: process.env.MESOMB_APP_KEY,
@@ -39,11 +51,14 @@ export class PaymentService {
   }
 
   /**
-   * Directly grant enrollment using a database transaction
+   * Shared helper: grant enrollments via DB transaction
    */
-  private async mintEnrollment(userId: string, courses: any[], totalAmount: number) {
+  private async mintEnrollment(
+    userId: string,
+    courses: { id: string; price: number }[],
+    totalAmount: number,
+  ) {
     return this.prisma.$transaction(async (tx) => {
-      // Create the Order
       const order = await tx.order.create({
         data: {
           userId,
@@ -58,21 +73,14 @@ export class PaymentService {
         },
       });
 
-      // Avoid creating duplicates if they exist (though webhooks should ideally be idempotent)
       for (const c of courses) {
         const existing = await tx.enrollment.findUnique({
-          where: { userId_courseId: { userId, courseId: c.id } }
+          where: { userId_courseId: { userId, courseId: c.id } },
         });
-        
         if (!existing) {
           await tx.enrollment.create({
-            data: {
-              userId,
-              courseId: c.id,
-              progress: 0,
-            },
+            data: { userId, courseId: c.id, progress: 0 },
           });
-          
           await tx.course.update({
             where: { id: c.id },
             data: { studentsCount: { increment: 1 } },
@@ -83,13 +91,13 @@ export class PaymentService {
     });
   }
 
-  // --- STRIPE logic ---
+  // ─── STRIPE ────────────────────────────────────────────────────────────────
+
   async createStripeIntent(userId: string, courseIds: string[]) {
     const { totalAmount, courses } = await this.getCoursesTotal(courseIds);
 
-    // Stripe expects cents for USD
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: Math.round(totalAmount * 100),
+      amount: Math.round(totalAmount * 100), // Stripe uses cents
       currency: 'usd',
       metadata: {
         userId,
@@ -97,33 +105,58 @@ export class PaymentService {
       },
     });
 
-    return { clientSecret: paymentIntent.client_secret };
+    return { clientSecret: paymentIntent.client_secret as string };
   }
 
-  async handleStripeWebhook(event: Stripe.Event) {
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      const { userId, courseIds: rawCourseIds } = paymentIntent.metadata;
+  async handleStripeWebhook(rawBody: Buffer, signature: string) {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-      if (userId && rawCourseIds) {
-        const courseIds = JSON.parse(rawCourseIds) as string[];
+    let event: StripeEvent;
+
+    if (webhookSecret && signature) {
+      // Production: verify signature to prevent spoofed webhooks
+      try {
+        event = this.stripe.webhooks.constructEvent(
+          rawBody,
+          signature,
+          webhookSecret,
+        ) as StripeEvent;
+      } catch (err) {
+        throw new BadRequestException(`Stripe webhook verification failed: ${err}`);
+      }
+    } else {
+      // Dev/fallback: trust the body directly
+      event = rawBody as unknown as StripeEvent;
+    }
+
+    if (event.type === 'payment_intent.succeeded') {
+      const meta = event.data.object.metadata;
+      if (meta?.userId && meta?.courseIds) {
+        const courseIds = JSON.parse(meta.courseIds) as string[];
         const { courses, totalAmount } = await this.getCoursesTotal(courseIds);
-        await this.mintEnrollment(userId, courses, totalAmount);
+        await this.mintEnrollment(meta.userId, courses, totalAmount);
       }
     }
+
     return { received: true };
   }
 
-  // --- MESOMB logic ---
-  async collectMesomb(userId: string, courseIds: string[], payerAccount: string, service: string) {
+  // ─── MESOMB ────────────────────────────────────────────────────────────────
+
+  async collectMesomb(
+    userId: string,
+    courseIds: string[],
+    payerAccount: string,
+    service: string,
+  ) {
     if (!this.mesombClient) {
-      throw new BadRequestException('MeSomb is not configured on this server.');
+      throw new BadRequestException(
+        'MeSomb is not configured on this server.',
+      );
     }
 
     const { totalAmount, courses } = await this.getCoursesTotal(courseIds);
-
-    // Conversion rate USD to XAF (e.g. 1 USD = 600 FCFA for MVP)
-    const amountXAF = Math.round(totalAmount * 600);
+    const amountXAF = Math.round(totalAmount * 600); // 1 USD ≈ 600 XAF
 
     try {
       const response = await this.mesombClient.makeCollect({
@@ -133,29 +166,34 @@ export class PaymentService {
         currency: 'XAF',
         country: 'CM',
         nonce: RandomGenerator.nonce(),
-        reference: JSON.stringify({ userId, courseIds }), 
+        reference: JSON.stringify({ userId, courseIds }),
       });
 
       if (response.isOperationSuccess()) {
-         await this.mintEnrollment(userId, courses, totalAmount);
-         return { success: true, message: 'Payment collected instantly' };
+        await this.mintEnrollment(userId, courses, totalAmount);
+        return { success: true, message: 'Payment collected via Mobile Money' };
       }
 
-      return { success: false, status: response.status };
+      return { success: false, status: 'PENDING — User prompt not yet confirmed' };
     } catch (e) {
       console.error('MeSomb error:', e);
-      throw new BadRequestException('MeSomb payment failed / User cancelled the prompt');
+      throw new BadRequestException(
+        'MeSomb payment failed. Did the user confirm the prompt on their phone?',
+      );
     }
   }
 
-  async handleMesombWebhook(payload: any) {
-    if (payload.status === 'SUCCESS' && payload.reference) {
+  async handleMesombWebhook(payload: Record<string, unknown>) {
+    if (payload['status'] === 'SUCCESS' && payload['reference']) {
       try {
-        const { userId, courseIds } = JSON.parse(payload.reference);
+        const { userId, courseIds } = JSON.parse(payload['reference'] as string) as {
+          userId: string;
+          courseIds: string[];
+        };
         const { courses, totalAmount } = await this.getCoursesTotal(courseIds);
         await this.mintEnrollment(userId, courses, totalAmount);
       } catch (e) {
-        console.error('Failed to parse MeSomb reference or mint enrollment:', e);
+        console.error('Failed to process MeSomb webhook:', e);
       }
     }
     return { received: true };
