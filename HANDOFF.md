@@ -152,9 +152,10 @@ _Current Focus: Pillar 2 (Course Marketplace)_
    - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
    - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
    - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
-   - [x] **Premium Dual-Payment Integration**: Engineered a "Global + Local" hybrid gateway supporting **Stripe** (Credit Card/Apple Pay) and **MeSomb** (Mobile Money: MTN/Orange/Airtel).
-   - [x] **Frictionless Checkout Flow**: Consolidated the Cart and Checkout into a single high-conversion screen. Implemented Stripe Elements and MeSomb USSD Push triggers.
-   - [ ] Final Webhook Hardening & Production Key Handover
+   - [/] **Premium Dual-Payment Integration (Deployed, Untested 🟡)**: Full backend gateway built. Stripe supports Card/Apple Pay/Google Pay. MeSomb supports MTN, Orange, Express Union, Wave. Live keys injected to Render + Vercel. Build passes on both platforms. **NEEDS: End-to-end live transaction test with a real card and real phone.**
+   - [/] **Cart & Checkout Pages (Functional, Needs UI Polish 🟡)**: Cart (`/cart`) and Checkout (`/checkout`) are correctly separated. Checkout is login-required. Functional flow works. **NEEDS: A full premium UI redesign pass for both pages — better layout, animations, trust signals, mobile optimization.**
+   - [ ] End-to-end Payment Testing (test a real $1 Stripe charge + real MoMo prompt)
+   - [ ] Premium Cart & Checkout UI Redesign
 5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
    - [ ] Instructor Dashboard & Analytics
    - [ ] Course Creation UI & AWS S3 Video Uploader

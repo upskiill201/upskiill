@@ -73,10 +73,10 @@
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`. ✅
 - [x] **Build the Full Enrollment System**: Secured `/api/courses/:id/progress` & `/complete-lesson` against unauthorized pinging. Engineered automated integer parsing converting watched videos to 100% logic tracked in Prisma. 
 - [x] **Course Lock Screen**: Integrated full-screen UI barricade catching any backend 403 Forbidden checks, routing illegal `/learn/[id]` attempts safely to `/courses/[id]`.
-- [x] **Premium Dual-Payment Integration**: Integrated **Stripe** (Global Cards/Apple Pay) and **MeSomb** (Central Africa Mobile Money — MTN/Orange) into the backend.
-- [x] **Frictionless Checkout UI**: Redesigned `/cart` into a premium, single-page split checkout with 0-friction method toggling and embedded Stripe Elements.
-- [ ] Final Webhook Hardening & Production Key Handover
-- [ ] End-to-end Live Transaction Testing
+- [/] **Premium Dual-Payment Integration (Deployed — Untested 🟡)**: Stripe (Cards/Apple Pay/Google Pay) and MeSomb (MTN/Orange/Express Union/Wave) live keys injected into Render + Vercel. Build passes. **Needs end-to-end live transaction test before fully marking done.**
+- [/] **Separated Cart & Checkout Pages (Functional — UI Needs Polish 🟡)**: `/cart` is now a clean order review page. `/checkout` handles all payment logic with login required. Functional but UI/UX needs a premium redesign pass.
+- [ ] End-to-end Live Transaction Testing (Stripe Card + MeSomb MoMo)
+- [ ] Cart & Checkout Premium UI Redesign (Better layout, animations, trust signals)
 
 ## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
 - [ ] Build Instructor Dashboard (`/instructor`)
