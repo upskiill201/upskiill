@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, ArrowLeft, Loader2, AlertCircle, CreditCard, Smartphone } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Loader2, AlertCircle, CreditCard, Smartphone, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { CartItem as CartItemComponent } from '../../components/features/CartItem';
 import Button from '../../components/ui/Button';
