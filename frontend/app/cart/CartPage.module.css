@@ -223,3 +223,19 @@
 .emptyState { text-align: center; padding: 64px 24px; }
 .emptyTitle { font-size: 24px; font-weight: 700; color: #F8FAFC; margin-bottom: 12px; }
 .emptyDesc { color: #94A3B8; margin-bottom: 24px; }
+
+.guestInfoBox {
+  background: rgba(61, 90, 254, 0.05);
+  border: 1px solid rgba(61, 90, 254, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.guestInfoLabel {
+  color: #94A3B8;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.mobileMoneyForm { color: #F8FAFC; }

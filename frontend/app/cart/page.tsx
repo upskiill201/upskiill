@@ -71,10 +71,17 @@ export default function CartPage() {
   const [clientSecret, setClientSecret] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(false);
   
+  // Guest Info (for non-logged in users)
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestName, setGuestName] = useState('');
+  
   // Mobile Money State
   const [mobileProvider, setMobileProvider] = useState<'MTN' | 'ORANGE'>('MTN');
   const [mobileNumber, setMobileNumber] = useState('');
   const [isProcessingMobile, setIsProcessingMobile] = useState(false);
+
+  // Is guest info ready (only required when not logged in)
+  const guestReady = !!user || (guestEmail.length > 3 && guestName.length > 1);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -88,15 +95,19 @@ export default function CartPage() {
     checkAuth();
   }, []);
 
-  // Fetch Stripe Intent if items exist
+  // Fetch Stripe Intent if items exist and guest info ready
   useEffect(() => {
-    if (totalItems > 0 && user && paymentMethod === 'stripe' && !clientSecret) {
+    if (totalItems > 0 && guestReady && paymentMethod === 'stripe' && !clientSecret) {
       setIsInitializing(true);
       fetch('/api/payment/stripe/create-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ courseIds: items.map(i => i.id) }),
+        body: JSON.stringify({ 
+          courseIds: items.map(i => i.id),
+          guestEmail: user ? undefined : guestEmail,
+          guestName: user ? undefined : guestName,
+        }),
       })
       .then(r => r.json())
       .then(data => {
@@ -105,11 +116,17 @@ export default function CartPage() {
       .catch(console.error)
       .finally(() => setIsInitializing(false));
     }
-  }, [items, user, paymentMethod, totalItems, clientSecret]);
+  // Reset client secret when guest info changes so a fresh intent is created
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, guestReady, paymentMethod, totalItems]);
 
   const handleMobileMoney = async () => {
     if (!mobileNumber) {
       setError('Please enter a valid mobile number');
+      return;
+    }
+    if (!user && (!guestEmail || !guestName)) {
+      setError('Please enter your name and email to continue');
       return;
     }
     setError(null);
@@ -123,7 +140,9 @@ export default function CartPage() {
         body: JSON.stringify({
           courseIds: items.map(i => i.id),
           payerAccount: mobileNumber,
-          service: mobileProvider
+          service: mobileProvider,
+          guestEmail: user ? undefined : guestEmail,
+          guestName: user ? undefined : guestName,
         }),
       });
       
@@ -135,7 +154,7 @@ export default function CartPage() {
       } else {
         setError(data.message || 'Payment failed. Please check your phone prompt.');
       }
-    } catch(err) {
+    } catch {
       setError('Connection to Mobile Money gateway failed.');
     } finally {
       setIsProcessingMobile(false);
@@ -199,13 +218,38 @@ export default function CartPage() {
         <div className={styles.paymentSide}>
           <h2 className={styles.paymentTitle}>Secure Checkout</h2>
           
-          {!user ? (
-            <div className={styles.authLock}>
-              <p>You must be signed in to purchase courses.</p>
-              <Link href="/login"><Button variant="primary" fullWidth>Log In to Continue</Button></Link>
+          {/* Guest Info — shown only when not logged in */}
+          {!user && (
+            <div className={styles.guestInfoBox}>
+              <p className={styles.guestInfoLabel}>📧 Enter your details to receive your course access</p>
+              <div className={styles.formGroup}>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  className={styles.input}
+                  placeholder="e.g. John Doe"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  className={styles.input}
+                  placeholder="e.g. john@example.com"
+                  value={guestEmail}
+                  onChange={(e) => { setGuestEmail(e.target.value); setClientSecret(''); }}
+                />
+              </div>
+              <p style={{ fontSize: '12px', color: '#64748B', marginBottom: '8px' }}>
+                Already have an account? <Link href="/login" style={{ color: '#3D5AFE' }}>Log in</Link>
+              </p>
             </div>
-          ) : (
-            <>
+          )}
+
+          {/* Payment Methods — always visible, locked until guest info complete */}
+          <div style={{ opacity: guestReady ? 1 : 0.4, pointerEvents: guestReady ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
               {/* Payment Selectors */}
               <div className={styles.paymentMethodCards}>
                 <button 
@@ -285,8 +329,8 @@ export default function CartPage() {
                   </div>
                 )}
               </div>
-            </>
-          )}
+            </div>
+
 
           <div className={styles.secureBadge}>
             <CheckCircle2 size={14} color="#10B981" />
