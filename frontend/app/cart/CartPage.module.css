@@ -1,48 +1,49 @@
-.premiumLayout {
-  max-width: 1300px;
+.container {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 60px 24px;
-}
-
-.checkoutWrapper {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 48px;
-  align-items: start;
-}
-
-@media (max-width: 992px) {
-  .checkoutWrapper {
-    grid-template-columns: 1fr;
-  }
-}
-
-.orderSide {
-  display: flex;
-  flex-direction: column;
+  padding: 48px 24px;
 }
 
 .backLink {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   color: #64748B;
   font-weight: 500;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   text-decoration: none;
   transition: color 0.2s;
+  font-size: 15px;
 }
-
-.backLink:hover {
-  color: #F8FAFC;
-}
+.backLink:hover { color: #F8FAFC; }
 
 .title {
-  font-size: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 32px;
   font-weight: 800;
   color: #F8FAFC;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   letter-spacing: -0.02em;
+}
+
+.itemCount {
+  font-size: 16px;
+  font-weight: 500;
+  color: #94A3B8;
+  margin-left: 4px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
 }
 
 .cartList {
@@ -51,191 +52,101 @@
   gap: 20px;
 }
 
-.totalsBlock {
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.totalRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 18px;
-  color: #F8FAFC;
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-.totalRowLarge {
-  display: flex;
-  justify-content: space-between;
-  font-size: 32px;
-  font-weight: 800;
-  margin-top: 24px;
-  align-items: center;
-  color: #F8FAFC;
-}
-
-.gradientText {
-  background: linear-gradient(135deg, #3D5AFE 0%, #8A2BE2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Right Side Panel */
-.paymentSide {
-  background: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(20px);
+/* Summary Card */
+.summaryCard {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 40px;
+  border-radius: 20px;
+  padding: 32px;
   position: sticky;
   top: 100px;
 }
 
-.paymentTitle {
-  font-size: 24px;
+.summaryTitle {
+  font-size: 20px;
   font-weight: 700;
   color: #F8FAFC;
   margin-bottom: 24px;
 }
 
-.authLock {
-  text-align: center;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 16px;
-  padding: 32px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.authLock p {
-  color: #94A3B8;
-  margin-bottom: 24px;
-}
-
-.paymentMethodCards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.methodCard {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px;
+.summaryRows {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 12px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.summaryItemName {
+  font-size: 14px;
   color: #94A3B8;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.summaryItemPrice {
+  font-size: 14px;
   font-weight: 600;
-}
-
-.methodCard:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.methodCard.active {
-  background: rgba(61, 90, 254, 0.1);
-  border-color: #3D5AFE;
   color: #F8FAFC;
+  flex-shrink: 0;
 }
 
-.methodCard.active svg {
-  color: #3D5AFE;
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 20px;
 }
 
-.paymentFormContainer {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 24px;
-}
-
-.loadingBox {
+.totalRow {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #94A3B8;
-  padding: 32px 0;
-}
-
-.stripeForm {
+  font-size: 20px;
+  font-weight: 700;
   color: #F8FAFC;
 }
 
-.formGroup {
-  margin-bottom: 16px;
+.totalAmount {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3D5AFE, #8A2BE2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.formGroup label {
-  display: block;
-  font-size: 14px;
-  color: #94A3B8;
-  margin-bottom: 8px;
-}
-
-.input {
-  width: 100%;
-  padding: 12px 16px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #F8FAFC;
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-
-.input:focus {
-  border-color: #3D5AFE;
-}
-
-.errorAlert {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
+.secureNote {
+  text-align: center;
+  font-size: 13px;
+  color: #64748B;
   margin-top: 16px;
 }
 
-.secureBadge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 32px;
-  color: #10B981;
-  font-size: 12px;
-  font-weight: 500;
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 80px 24px;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
-.container { margin: 0 auto; max-width: 1200px; padding: 48px 24px; }
-.emptyState { text-align: center; padding: 64px 24px; }
-.emptyTitle { font-size: 24px; font-weight: 700; color: #F8FAFC; margin-bottom: 12px; }
-.emptyDesc { color: #94A3B8; margin-bottom: 24px; }
-
-.guestInfoBox {
-  background: rgba(61, 90, 254, 0.05);
-  border: 1px solid rgba(61, 90, 254, 0.2);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 24px;
+.emptyTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 12px;
 }
 
-.guestInfoLabel {
+.emptyDesc {
   color: #94A3B8;
-  font-size: 14px;
-  margin-bottom: 16px;
+  font-size: 16px;
+  margin-bottom: 32px;
+  line-height: 1.6;
 }
-
-.mobileMoneyForm { color: #F8FAFC; }
