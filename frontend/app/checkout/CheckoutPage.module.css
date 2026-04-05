@@ -1,0 +1,323 @@
+.page {
+  min-height: 100vh;
+  padding: 60px 24px;
+}
+
+.wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .wrapper { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ─── Left: Summary ─── */
+.summarySide { display: flex; flex-direction: column; }
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748B;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+.backLink:hover { color: #F8FAFC; }
+
+.heading {
+  font-size: 36px;
+  font-weight: 800;
+  color: #F8FAFC;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.subheading {
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 32px;
+}
+.subheading strong { color: #94A3B8; }
+
+.orderCard {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 28px;
+}
+
+.orderTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.orderItemName {
+  font-size: 14px;
+  color: #94A3B8;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.orderItemPrice {
+  font-size: 14px;
+  font-weight: 600;
+  color: #F8FAFC;
+  flex-shrink: 0;
+}
+
+.orderDivider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 16px 0;
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #F8FAFC;
+}
+
+.orderTotalAmount {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3D5AFE, #8A2BE2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.guarantees {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guarantee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #10B981;
+}
+
+/* ─── Right: Payment ─── */
+.paymentSide {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 40px;
+}
+
+.paymentTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 28px;
+}
+
+/* Method Tabs */
+.methodSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.methodTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(15, 23, 42, 0.4);
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.methodTab:hover { background: rgba(255,255,255,0.05); color: #F8FAFC; }
+.activeTab {
+  background: rgba(61, 90, 254, 0.12);
+  border-color: #3D5AFE;
+  color: #F8FAFC;
+}
+.activeTab svg { color: #3D5AFE; }
+
+/* Payment Panel */
+.paymentPanel {
+  padding-top: 4px;
+}
+
+.panelNote {
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.loadingBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #94A3B8;
+  padding: 24px 0;
+  font-size: 15px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.errorAlert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #FCA5A5;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.retryLink {
+  background: none;
+  border: none;
+  color: #3D5AFE;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+  text-decoration: underline;
+}
+
+/* Provider Grid */
+.formGroup { margin-bottom: 20px; }
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.providerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.providerCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(15, 23, 42, 0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.providerCard:hover { background: rgba(255,255,255,0.05); }
+.providerActive {
+  border-color: #3D5AFE;
+  background: rgba(61,90,254,0.1);
+}
+
+.providerLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+}
+.providerActive .providerLabel { color: #F8FAFC; }
+
+/* Phone Input */
+.phoneInput {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.phoneInput:focus-within { border-color: #3D5AFE; }
+
+.phonePrefix {
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #64748B;
+  background: rgba(255,255,255,0.04);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+
+.phoneField {
+  flex: 1;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #F8FAFC;
+  font-size: 16px;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+}
+.phoneField::placeholder { color: #475569; }
+
+.momoHint {
+  font-size: 13px;
+  color: #64748B;
+  margin-top: 16px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Loading screen */
+.loadingScreen {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: #64748B;
+}
