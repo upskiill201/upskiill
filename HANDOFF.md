@@ -1,4 +1,4 @@
-> Last updated: 2026-04-05 02:04 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-05 14:21 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
 
@@ -138,6 +138,21 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Premium Frictionless Checkout**: Consolidated Cart/Checkout into a single-page split UI with animated payment method toggling, Stripe Elements, and MeSomb mobile money integration. ✅ (2026-04-04)
 - [x] **Unified Hub Routing**: Decoupled the `isEnrolled` condition from `CourseCard` navigation, guaranteeing that clicking any card (Dashboard or Marketplace) routes the user solidly to the centralized Details page (`/courses/[id]`) first as the single path to launch the player.
 - [x] **Vercel Build Fix**: Rectified severe TypeScript Type Checks surrounding outdated component prototypes (`CoursePlayerLayout`).
+- [x] **Premium Redesigned Order Flow**: Successfully decoupled `/cart` and `/checkout`, implementing a satisfying, brand-aligned white/blue premium UI for both. ✅ (2026-04-05)
+- [x] **Separated Payment Methods**: Stripe (Cards/Wallets) and MeSomb (Mobile Money) are now split into clean, animated tabs with provider-specific validation. ✅ (2026-04-05)
+
+### Pillar 4: Student Learning System — 🟡 In Progress (95%)
+- [x] Student Dashboard (`/dashboard`) - Fully Responsive
+- [x] Immersive Course Player (`/learn/[id]`) - Mobile Optimized
+- [x] Dual Payment Engine (Stripe + MeSomb) - Deployed & Live
+- [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
+- [ ] **NEXT:** End-to-end Live Transaction Verification (P0)
+
+### Pillar 5: Instructor Tools — 🔴 Not Started
+- [ ] Instructor Dashboard (`/instructor`)
+- [ ] Course Creation Wizard (`/instructor/create`)
+- [ ] Curriculum Video Upload (S3)
+
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
 - [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`

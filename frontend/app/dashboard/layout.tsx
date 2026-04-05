@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import { 
   LayoutGrid, 
@@ -51,12 +52,30 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
+  };
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.ok) {
+        router.push('/login');
+      }
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Fallback redirect if API fails
+      router.push('/login');
+    }
   };
 
   const dashboardLinks: EnhancedDashboardLink[] = [
@@ -146,14 +165,15 @@ export default function DashboardLayout({
               <span className={styles.icon}><Settings size={20} /></span>
               {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
             </Link>
-            <Link 
-              href="/login" 
+            <button 
+              onClick={handleLogout} 
               className={`${styles.navItem} ${styles.logoutBtn}`}
               title={isSidebarCollapsed ? 'Logout' : ''}
+              style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
             >
               <span className={styles.icon}><LogOut size={20} /></span>
               {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
-            </Link>
+            </button>
           </div>
         </aside>
 
