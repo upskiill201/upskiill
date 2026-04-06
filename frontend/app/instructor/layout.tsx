@@ -98,7 +98,6 @@ const SECTION_LABELS: Record<string, string> = {
 };
 
 export default function InstructorLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -141,11 +140,11 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-      if (res.ok) router.push('/login');
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {
-      router.push('/login');
+      // ignore network errors — still redirect
     }
+    window.location.href = '/instructor/login';
   };
 
   const handleLinkClick = (e: React.MouseEvent, link: NavLink) => {

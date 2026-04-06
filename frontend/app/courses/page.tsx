@@ -8,6 +8,12 @@ import { Dropdown } from '@/components/ui/Dropdown';
 import Input from '@/components/ui/Input';
 import styles from './Courses.module.css';
 
+interface Enrollment {
+  courseId: string;
+  progress?: number;
+  [key: string]: unknown;
+}
+
 
 
 export default function CoursesPage() {
@@ -44,8 +50,10 @@ export default function CoursesPage() {
           if (enrollRes.ok) {
             const enrollments = await enrollRes.json();
             // Create a map of courseId -> enrollment object for fast lookup
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const enrollMap = new Map((enrollments || []).map((e: any) => [e.courseId, e]));
+            const enrollMap = new Map<string, Enrollment>(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (enrollments || []).map((e: any) => [e.courseId, e as Enrollment])
+            );
             
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mappedCourses = data.map((c: any) => {
