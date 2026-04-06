@@ -6,7 +6,6 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { FaChartLine, FaCheck, FaApple, FaLinkedin, FaFacebook, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -15,7 +14,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +35,7 @@ export default function Login() {
       }
 
       // Cookie is set automatically by the backend (httpOnly, secure)
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);

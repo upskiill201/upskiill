@@ -10,7 +10,7 @@ import styles from './Header.module.css';
 export default function Header() {
   const { totalItems } = useCart();
   const pathname = usePathname();
-  if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard')) return null;
+  if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard') || pathname.startsWith('/instructor')) return null;
 
   return (
     <header className={styles.header}>
@@ -76,7 +76,7 @@ export default function Header() {
             )}
           </Link>
           
-          <Link href="/instructor" className={styles.teachLink}>
+          <Link href="/teach" className={styles.teachLink}>
             Teach on Upskiill
           </Link>
           

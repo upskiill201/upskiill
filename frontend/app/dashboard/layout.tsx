@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import { 
@@ -60,6 +60,21 @@ export default function DashboardLayout({
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
   };
+
+  // Ensure unauthenticated users are redirected to login
+  useEffect(() => {
+    const fetchMe = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!res.ok) {
+          window.location.href = '/login';
+        }
+      } catch {
+        window.location.href = '/login';
+      }
+    };
+    fetchMe();
+  }, []);
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();

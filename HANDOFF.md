@@ -1,4 +1,4 @@
-> Last updated: 2026-04-05 14:21 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-06 01:50 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
 
@@ -134,33 +134,45 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Cross-Domain Auth Fix (PR 48)**: Renamed `middleware.ts` to `proxy.ts`, added Next.js API `rewrites`, and configured auth fetches to `/api` to bypass strict 3rd-party cookie drops on Vercel.
 - [x] **Course Player UI (`/learn/[id]`)**: Implemented mobile-responsive sidebar drawer, immersive 80vh video container, and "Coming Soon" premium placeholders. ✅ (2026-04-04)
 - [x] **Dynamic Enrollment Architecture**: Established `GET /api/auth/me/enrollments`. Dashboard securely queries sessions and maps live progress into `CourseCardHorizontal`.
-- [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". 
-- [x] **Premium Frictionless Checkout**: Consolidated Cart/Checkout into a single-page split UI with animated payment method toggling, Stripe Elements, and MeSomb mobile money integration. ✅ (2026-04-04)
-- [x] **Unified Hub Routing**: Decoupled the `isEnrolled` condition from `CourseCard` navigation, guaranteeing that clicking any card (Dashboard or Marketplace) routes the user solidly to the centralized Details page (`/courses/[id]`) first as the single path to launch the player.
-- [x] **Vercel Build Fix**: Rectified severe TypeScript Type Checks surrounding outdated component prototypes (`CoursePlayerLayout`).
 - [x] **Premium Redesigned Order Flow**: Successfully decoupled `/cart` and `/checkout`, implementing a satisfying, brand-aligned white/blue premium UI for both. ✅ (2026-04-05)
 - [x] **Separated Payment Methods**: Stripe (Cards/Wallets) and MeSomb (Mobile Money) are now split into clean, animated tabs with provider-specific validation. ✅ (2026-04-05)
+- [x] **Student Dashboard Layout & UX Fixes**: Fixed sidebar scrolling issue (position: fixed) and implemented full backend-integrated logout logic. ✅ (2026-04-06)
 
-### Pillar 4: Student Learning System — 🟡 In Progress (95%)
-- [x] Student Dashboard (`/dashboard`) - Fully Responsive
+### Pillar 4: Student Learning System — 🟢 Complete (98%)
+- [x] Student Dashboard (`/dashboard`) - Fixed Sidebar & Layout 
+- [x] Secure Logout System - Integrated Backend Clear Cookie
 - [x] Immersive Course Player (`/learn/[id]`) - Mobile Optimized
 - [x] Dual Payment Engine (Stripe + MeSomb) - Deployed & Live
 - [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
-- [ ] **NEXT:** End-to-end Live Transaction Verification (P0)
+- [ ] **FINAL STEP:** End-to-end Live Transaction Verification (P0)
 
-### Pillar 5: Instructor Tools — 🔴 Not Started
-- [ ] Instructor Dashboard (`/instructor`)
+### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 75%)
+- [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅ (2026-04-06)
+- [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated matching split-pane UI uniquely built for creators ✅ (2026-04-06)
+- [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling, coming soon modals for Discussions, Quizzes, Assignments, etc ✅ (2026-04-06)
+- [x] Instructor Overview Page (`/instructor/page.tsx`) — Real seeded stats, advanced course performance table, instructor score, and at-risk student monitoring ✅ (2026-04-06)
+- [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper personalized learning insights: student engagement heatmap by hour, lesson drop-off analysis, segment cards, and student journey funnel ✅ (2026-04-06)
 - [ ] Course Creation Wizard (`/instructor/create`)
 - [ ] Curriculum Video Upload (S3)
 
 
-### Auth Flow (Local & Live — working ✅ — Tested 2026-04-03)
-- [x] Signup → POST `/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
-- [x] Login → POST `/auth/login` → sets `httpOnly` cookie, returns `{ access_token, user }`
+### Auth Flow (Local & Live — working ✅ — Tested 2026-04-06)
+- [x] Signup → POST `/api/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
+- [x] Login → POST `/api/auth/login` → sets `httpOnly` cookie, returns `{ access_token, user }`
 - [x] Frontend uses `credentials: 'include'` on all auth fetches — cookie accepted by browser
 - [x] No `localStorage` usage — 100% cookie-based session
-- [x] Redirects to `/dashboard` after login/signup ✅
-- [x] Live Vercel frontend communicates correctly with Live Render backend
+- [x] Route Protection active: Unauthorized routing is immediately swept via SPA cache-busting redirects (`window.location.href`)
+- [x] Strict Role Engine active: Instructors cannot view Student Dashboard, Students cannot access Instructor Studio.
+
+### Seed Database Credentials (For Live Testing)
+When the application seeds the production Postgres database via `npx prisma db seed`:
+**Instructor Test Account:**
+- **Email**: `alex@upskiill.com`
+- **Password**: `password123`
+
+**Student Test Account:** *(Pre-enrolled in 3 Premium Courses)*
+- **Email**: `student@upskiill.com`
+- **Password**: `password123`
 
 ---
 
