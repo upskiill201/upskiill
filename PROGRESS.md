@@ -80,8 +80,9 @@
 - [ ] End-to-end Live Transaction Testing (Stripe Card + MeSomb MoMo)
 - [ ] Cart & Checkout "Satisfaction" Iteration 2 (Refining trust signals further)
 
-## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🔴 Not Started (0%)
-- [ ] Build Instructor Dashboard (`/instructor`)
+## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🟡 In Progress (30%)
+- [x] Instructor Login/Signup Responsive Pages. ✅
+- [x] Instructor Dashboard Overview & Layout. ✅
 - [ ] Build Course Creation Wizard (`/instructor/create`)
 - [ ] Build Curriculum Video Uploader (AWS S3 Integration)
 

@@ -1,6 +1,7 @@
 > Last updated: 2026-04-06 01:50 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
+> **SEEDING POLICY:** Do NOT run `deleteMany()` at the start of the seeder as a default. Use `upsert()` or existence checks for core test data (Instructors & Students) to ensure we update what exists and preserve history instead of wiping the DB on every build.
 
 ---
 
@@ -146,12 +147,13 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
 - [ ] **FINAL STEP:** End-to-end Live Transaction Verification (P0)
 
-### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 75%)
-- [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅ (2026-04-06)
-- [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated matching split-pane UI uniquely built for creators ✅ (2026-04-06)
-- [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling, coming soon modals for Discussions, Quizzes, Assignments, etc ✅ (2026-04-06)
-- [x] Instructor Overview Page (`/instructor/page.tsx`) — Real seeded stats, advanced course performance table, instructor score, and at-risk student monitoring ✅ (2026-04-06)
-- [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper personalized learning insights: student engagement heatmap by hour, lesson drop-off analysis, segment cards, and student journey funnel ✅ (2026-04-06)
+### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 80%)
+- [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
+- [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated creators UI ✅
+- [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling ✅
+- [x] Instructor Overview Page (`/instructor/page.tsx`) — Seeded stats, table metrics, instructor score ✅
+- [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
+- [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅ (NEW: 2026-04-06)
 - [ ] Course Creation Wizard (`/instructor/create`)
 - [ ] Curriculum Video Upload (S3)
 
@@ -166,13 +168,15 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 ### Seed Database Credentials (For Live Testing)
 When the application seeds the production Postgres database via `npx prisma db seed`:
-**Instructor Test Account:**
-- **Email**: `alex@upskiill.com`
-- **Password**: `password123`
 
-**Student Test Account:** *(Pre-enrolled in 3 Premium Courses)*
-- **Email**: `student@upskiill.com`
-- **Password**: `password123`
+**Instructors:**
+- **Alex Rivera**: `alex@rivera.com` / `password123`
+- **Sarah Chen**: `sarah@chen.com` / `password123`
+- **Marcus Johnson**: `marcus@johnson.com` / `password123`
+
+**Test Student:**
+- **Jane Student**: `jane@student.com` / `password123`
+- **Enrollments**: Enrolled in 3 Premium Courses (Next.js, Digital Marketing, Python).
 
 ---
 
@@ -371,11 +375,3 @@ cd backend && npm run start:dev
 - **GitHub:** https://github.com/upskiill201/upskiill
 - **PR for Latest UI:** https://github.com/upskiill201/upskiill/pull/31
 - **Test Course Player (Live):** https://upskiill.vercel.app/learn/advanced-product-design-ux-strategy (Login directly with Alex's credentials to view)
-
----
-
-## 🧪 Testing Accounts
-Use the following officially seeded accounts to verify the platform, access the dashboard, and view the enrolled Player UI.
-- **Student Account (Alex)**
-  - **Email:** `alex@upskiill.com`
-  - **Password:** `password123`
