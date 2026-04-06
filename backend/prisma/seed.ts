@@ -3,55 +3,75 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database — wiping old data first...');
+  console.log('🌱 Seeding database — updating existing records or creating new ones...');
 
-  await prisma.orderItem.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.enrollment.deleteMany();
-  await prisma.course.deleteMany();
-  await prisma.user.deleteMany();
-
-  console.log('✅ Old data cleared.\n');
+  // Note: We no longer wipe all data at the start. 
+  // We use upserts to ensure we update what exists and add what is missing.
 
   // ─── INSTRUCTORS ──────────────────────────────────────────────────────────
-  const alex = await prisma.user.create({
-    data: {
-      email: 'alex@upskiill.com',
+  const alex = await prisma.user.upsert({
+    where: { email: 'alex@upskiill.com' },
+    update: {
       fullName: 'Alex Rivera',
       password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
       role: 'INSTRUCTOR',
-      avatarUrl:
-        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80',
+      avatarUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80',
+    },
+    create: {
+      email: 'alex@upskiill.com',
+      fullName: 'Alex Rivera',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
+      role: 'INSTRUCTOR',
+      avatarUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80',
     },
   });
 
-  const sarah = await prisma.user.create({
-    data: {
+  const sarah = await prisma.user.upsert({
+    where: { email: 'sarah@upskiill.com' },
+    update: {
+      fullName: 'Sarah Chen',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
+      role: 'INSTRUCTOR',
+      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&q=80',
+    },
+    create: {
       email: 'sarah@upskiill.com',
       fullName: 'Sarah Chen',
-      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
       role: 'INSTRUCTOR',
-      avatarUrl:
-        'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&q=80',
+      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&q=80',
     },
   });
 
-  const marcus = await prisma.user.create({
-    data: {
+  const marcus = await prisma.user.upsert({
+    where: { email: 'marcus@upskiill.com' },
+    update: {
+      fullName: 'Marcus Johnson',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
+      role: 'INSTRUCTOR',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80',
+    },
+    create: {
       email: 'marcus@upskiill.com',
       fullName: 'Marcus Johnson',
-      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
       role: 'INSTRUCTOR',
-      avatarUrl:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80',
     },
   });
 
-  const student = await prisma.user.create({
-    data: {
+  const student = await prisma.user.upsert({
+    where: { email: 'student@upskiill.com' },
+    update: {
+      fullName: 'Jane Student',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
+      role: 'STUDENT',
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80',
+    },
+    create: {
       email: 'student@upskiill.com',
       fullName: 'Jane Student',
-      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62',
       role: 'STUDENT',
       avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80',
     },
@@ -60,10 +80,9 @@ async function main() {
   console.log(`✅ Instructors: ${alex.fullName}, ${sarah.fullName}, ${marcus.fullName}`);
   console.log(`✅ Student: ${student.fullName}\n`);
 
-  console.log('📦 Creating Course 1...');
+  console.log('📦 Upserting Course 1...');
   // ─── COURSE 1: Product Design & UX ────────────────────────────────────────
-  const course1 = await prisma.course.create({
-    data: {
+  const course1Data = {
       title: 'Advanced Product Design & UX Strategy',
       slug: 'advanced-product-design-ux-strategy',
       shortDescription:
@@ -196,20 +215,23 @@ We start by breaking down the psychological drivers of user behavior. Why do use
           ],
         },
       ],
-    },
+  };
+
+  const course1 = await prisma.course.upsert({
+    where: { slug: course1Data.slug },
+    update: course1Data,
+    create: course1Data,
   });
+  console.log('✅ Course 1 upserted.');
 
-  console.log('✅ Course 1 created.');
-
-  console.log('📦 Creating Course 2...');
+  console.log('📦 Upserting Course 2...');
   // ─── COURSE 2: Full-Stack Next.js ─────────────────────────────────────────
-  const course2 = await prisma.course.create({
-    data: {
-      title: 'Full-Stack Next.js 15 Development',
-      slug: 'fullstack-nextjs-15-development',
-      shortDescription:
-        'Build production-ready web applications using App Router, Server Actions, Prisma, and modern deployment pipelines.',
-      description: `Learn modern full-stack web development by building a complete, high-performance SaaS platform from scratch. We cover the latest Next.js 15 features alongside standard industry practices — authentication, database design, payment integration, and CI/CD deployment.
+  const course2Data = {
+    title: 'Full-Stack Next.js 15 Development',
+    slug: 'fullstack-nextjs-15-development',
+    shortDescription:
+      'Build production-ready web applications using App Router, Server Actions, Prisma, and modern deployment pipelines.',
+    description: `Learn modern full-stack web development by building a complete, high-performance SaaS platform from scratch. We cover the latest Next.js 15 features alongside standard industry practices — authentication, database design, payment integration, and CI/CD deployment.
 
 > "To truly understand web development today, you need to build across the entire stack. Knowing just the frontend or just the database leaves you dependent on others. This course makes you dangerous across the whole stack."
 
@@ -223,132 +245,136 @@ This isn't a course about copying boilerplate. You'll understand every line of c
 - Master React Server Components (RSC) and dramatically improve your web app's speed.
 - Deploy to Vercel and set up automated preview links via GitHub Actions.
 - Build your own authentication system with completely secure, httpOnly cookies and JWTs.`,
-      thumbnailUrl:
-        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop',
-      price: 350,
-      originalPrice: 549,
-      published: true,
-      category: 'Development',
-      level: 'Intermediate',
-      duration: '28h 15m',
-      rating: 4.8,
-      reviewsCount: 2187,
-      studentsCount: 11200,
-      instructorId: sarah.id,
-      whatYouWillLearn: [
-        'Build full-stack applications with Next.js 15 App Router.',
-        'Use React Server Components and Server Actions effectively.',
-        'Design and query relational databases with Prisma ORM.',
-        'Implement secure JWT & cookie-based authentication from scratch.',
-        'Deploy to production on Vercel with proper CI/CD pipelines.',
-        'Write type-safe code throughout with TypeScript.',
-        'Integrate Stripe for real payment processing.',
-        'Profile and optimize Core Web Vitals for production.',
-      ],
-      requirements: [
-        'Solid understanding of JavaScript fundamentals (arrays, objects, async/await).',
-        'Basic familiarity with React — hooks, state, and props.',
-        'No Next.js experience required — we start from zero.',
-        'A computer with Node.js 18+ installed.',
-      ],
-      targetAudience: [
-        {
-          icon: 'FaReact',
-          title: 'React Developers',
-          description: 'Ready to go beyond React and build production full-stack apps.',
-        },
-        {
-          icon: 'FaCode',
-          title: 'Junior Developers',
-          description: 'Looking to level up from knowing JavaScript to shipping real products.',
-        },
-        {
-          icon: 'FaBriefcase',
-          title: 'Freelancers',
-          description: 'Build client projects faster with a modern, deployment-ready stack.',
-        },
-        {
-          icon: 'FaRocket',
-          title: 'Startup Founders',
-          description: 'Ship your MVP yourself — no agency needed.',
-        },
-      ],
-      curriculum: [
-        {
-          title: 'Section 1: Next.js 15 & App Router Deep Dive',
-          lessonCount: 5,
-          totalDuration: '1h 10m',
-          lessons: [
-            { index: 1, title: "Welcome! What We're Building", duration: '5:00', isFreePreview: true },
-            { index: 2, title: 'App Router vs. Pages Router Explained', duration: '14:30', isFreePreview: true },
-            { index: 3, title: 'File-Based Routing & Layouts', duration: '18:45' },
-            { index: 4, title: 'Server vs. Client Components', duration: '22:00' },
-            { index: 5, title: 'Environment Setup & Project Scaffolding', duration: '9:45' },
-          ],
-        },
-        {
-          title: 'Section 2: Data Fetching & Server Actions',
-          lessonCount: 6,
-          totalDuration: '1h 40m',
-          lessons: [
-            { index: 1, title: 'Fetching Data in Server Components', duration: '16:20' },
-            { index: 2, title: 'Streaming & Suspense Boundaries', duration: '18:00' },
-            { index: 3, title: 'Caching Strategies in Next.js 15', duration: '20:30' },
-            { index: 4, title: 'Introduction to Server Actions', duration: '14:15' },
-            { index: 5, title: 'Building Optimistic UI with Server Actions', duration: '22:00' },
-            { index: 6, title: 'Error Handling & Error Boundaries', duration: '9:00' },
-          ],
-        },
-        {
-          title: 'Section 3: Database Design with Prisma & PostgreSQL',
-          lessonCount: 5,
-          totalDuration: '1h 25m',
-          lessons: [
-            { index: 1, title: 'Prisma Schema Design Fundamentals', duration: '20:00' },
-            { index: 2, title: 'Migrations & Seed Data Strategies', duration: '15:30' },
-            { index: 3, title: 'Advanced Prisma Queries & Relations', duration: '24:45' },
-            { index: 4, title: 'Connection Pooling for Production', duration: '12:00' },
-            { index: 5, title: 'Database Indexes for Performance', duration: '13:45' },
-          ],
-        },
-        {
-          title: 'Section 4: Authentication & Authorization',
-          lessonCount: 5,
-          totalDuration: '1h 30m',
-          lessons: [
-            { index: 1, title: 'Cookie-Based Auth vs. JWT Explained', duration: '14:00' },
-            { index: 2, title: 'Building Signup & Login Endpoints', duration: '22:30' },
-            { index: 3, title: 'HttpOnly Cookies & CSRF Protection', duration: '18:00' },
-            { index: 4, title: 'Protecting Routes with Middleware', duration: '16:30' },
-            { index: 5, title: 'Role-Based Access Control (RBAC)', duration: '19:00' },
-          ],
-        },
-        {
-          title: 'Section 5: Deployment, CI/CD & Performance',
-          lessonCount: 4,
-          totalDuration: '58m',
-          lessons: [
-            { index: 1, title: 'Deploying to Vercel — Full Walkthrough', duration: '18:00' },
-            { index: 2, title: 'GitHub Actions for CI/CD Pipelines', duration: '16:30' },
-            { index: 3, title: 'Core Web Vitals & Performance Tuning', duration: '14:30' },
-            { index: 4, title: 'Monitoring Production with Sentry', duration: '9:00' },
-          ],
-        },
-      ],
-    },
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop',
+    price: 350,
+    originalPrice: 549,
+    published: true,
+    category: 'Development',
+    level: 'Intermediate',
+    duration: '28h 15m',
+    rating: 4.8,
+    reviewsCount: 2187,
+    studentsCount: 11200,
+    instructorId: sarah.id,
+    whatYouWillLearn: [
+      'Build full-stack applications with Next.js 15 App Router.',
+      'Use React Server Components and Server Actions effectively.',
+      'Design and query relational databases with Prisma ORM.',
+      'Implement secure JWT & cookie-based authentication from scratch.',
+      'Deploy to production on Vercel with proper CI/CD pipelines.',
+      'Write type-safe code throughout with TypeScript.',
+      'Integrate Stripe for real payment processing.',
+      'Profile and optimize Core Web Vitals for production.',
+    ],
+    requirements: [
+      'Solid understanding of JavaScript fundamentals (arrays, objects, async/await).',
+      'Basic familiarity with React — hooks, state, and props.',
+      'No Next.js experience required — we start from zero.',
+      'A computer with Node.js 18+ installed.',
+    ],
+    targetAudience: [
+      {
+        icon: 'FaReact',
+        title: 'React Developers',
+        description: 'Ready to go beyond React and build production full-stack apps.',
+      },
+      {
+        icon: 'FaCode',
+        title: 'Junior Developers',
+        description: 'Looking to level up from knowing JavaScript to shipping real products.',
+      },
+      {
+        icon: 'FaBriefcase',
+        title: 'Freelancers',
+        description: 'Build client projects faster with a modern, deployment-ready stack.',
+      },
+      {
+        icon: 'FaRocket',
+        title: 'Startup Founders',
+        description: 'Ship your MVP yourself — no agency needed.',
+      },
+    ],
+    curriculum: [
+      {
+        title: 'Section 1: Next.js 15 & App Router Deep Dive',
+        lessonCount: 5,
+        totalDuration: '1h 10m',
+        lessons: [
+          { index: 1, title: "Welcome! What We're Building", duration: '5:00', isFreePreview: true },
+          { index: 2, title: 'App Router vs. Pages Router Explained', duration: '14:30', isFreePreview: true },
+          { index: 3, title: 'File-Based Routing & Layouts', duration: '18:45' },
+          { index: 4, title: 'Server vs. Client Components', duration: '22:00' },
+          { index: 5, title: 'Environment Setup & Project Scaffolding', duration: '9:45' },
+        ],
+      },
+      {
+        title: 'Section 2: Data Fetching & Server Actions',
+        lessonCount: 6,
+        totalDuration: '1h 40m',
+        lessons: [
+          { index: 1, title: 'Fetching Data in Server Components', duration: '16:20' },
+          { index: 2, title: 'Streaming & Suspense Boundaries', duration: '18:00' },
+          { index: 3, title: 'Caching Strategies in Next.js 15', duration: '20:30' },
+          { index: 4, title: 'Introduction to Server Actions', duration: '14:15' },
+          { index: 5, title: 'Building Optimistic UI with Server Actions', duration: '22:00' },
+          { index: 6, title: 'Error Handling & Error Boundaries', duration: '9:00' },
+        ],
+      },
+      {
+        title: 'Section 3: Database Design with Prisma & PostgreSQL',
+        lessonCount: 5,
+        totalDuration: '1h 25m',
+        lessons: [
+          { index: 1, title: 'Prisma Schema Design Fundamentals', duration: '20:00' },
+          { index: 2, title: 'Migrations & Seed Data Strategies', duration: '15:30' },
+          { index: 3, title: 'Advanced Prisma Queries & Relations', duration: '24:45' },
+          { index: 4, title: 'Connection Pooling for Production', duration: '12:00' },
+          { index: 5, title: 'Database Indexes for Performance', duration: '13:45' },
+        ],
+      },
+      {
+        title: 'Section 4: Authentication & Authorization',
+        lessonCount: 5,
+        totalDuration: '1h 30m',
+        lessons: [
+          { index: 1, title: 'Cookie-Based Auth vs. JWT Explained', duration: '14:00' },
+          { index: 2, title: 'Building Signup & Login Endpoints', duration: '22:30' },
+          { index: 3, title: 'HttpOnly Cookies & CSRF Protection', duration: '18:00' },
+          { index: 4, title: 'Protecting Routes with Middleware', duration: '16:30' },
+          { index: 5, title: 'Role-Based Access Control (RBAC)', duration: '19:00' },
+        ],
+      },
+      {
+        title: 'Section 5: Deployment, CI/CD & Performance',
+        lessonCount: 4,
+        totalDuration: '58m',
+        lessons: [
+          { index: 1, title: 'Deploying to Vercel — Full Walkthrough', duration: '18:00' },
+          { index: 2, title: 'GitHub Actions for CI/CD Pipelines', duration: '16:30' },
+          { index: 3, title: 'Core Web Vitals & Performance Tuning', duration: '14:30' },
+          { index: 4, title: 'Monitoring Production with Sentry', duration: '9:00' },
+        ],
+      },
+    ],
+  };
+
+  const course2 = await prisma.course.upsert({
+    where: { slug: course2Data.slug },
+    update: course2Data,
+    create: course2Data,
   });
 
-  console.log('✅ Course 2 created.');
+  console.log('✅ Course 2 upserted.');
 
-  console.log('📦 Creating Course 3...');
+  console.log('📦 Upserting Course 3...');
   // ─── COURSE 3: Digital Marketing ──────────────────────────────────────────
-  const course3 = await prisma.course.create({
-    data: {
-      title: 'Digital Marketing Mastery 2025',
-      slug: 'digital-marketing-mastery-2025',
-      shortDescription:
-        'Uncover the secrets to driving millions of organic and paid impressions — SEO, Google Ads, Meta Ads, and content strategy.',
-      description: `Master the full digital marketing ecosystem. From SEO fundamentals to advanced paid advertising on Google and Meta, content strategy, email automation, and analytics — this bootcamp is built for real-world scale.
+  const course3Data = {
+    title: 'Digital Marketing Mastery 2025',
+    slug: 'digital-marketing-mastery-2025',
+    shortDescription:
+      'Uncover the secrets to driving millions of organic and paid impressions — SEO, Google Ads, Meta Ads, and content strategy.',
+    description: `Master the full digital marketing ecosystem. From SEO fundamentals to advanced paid advertising on Google and Meta, content strategy, email automation, and analytics — this bootcamp is built for real-world scale.
 
 > "A great product with zero distribution is a dead product. Distribution is arguably the most important skill in modern business, and digital marketing is the key to unlocking consistent, scalable growth."
 
@@ -362,115 +388,122 @@ You'll walk away with live campaigns, proven swipe-file frameworks, and measurab
 - Real case studies where we show how $1000 was converted into $50,000 via Meta Ads.
 - Hands-on workshops analyzing real-time Google Analytics 4 properties.
 - Automate repetitive marketing tasks using Zapier and AI workflows.`,
-      thumbnailUrl:
-        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
-      price: 199,
-      originalPrice: 349,
-      published: true,
-      category: 'Marketing',
-      level: 'Beginner',
-      duration: '14h 45m',
-      rating: 4.7,
-      reviewsCount: 1852,
-      studentsCount: 8900,
-      instructorId: marcus.id,
-      whatYouWillLearn: [
-        'Rank on page 1 of Google using proven on-page and off-page SEO techniques.',
-        'Run profitable Google Search & Display ad campaigns.',
-        'Build scalable Facebook and Instagram ad funnels.',
-        'Create a content calendar and grow organic social media following.',
-        'Automate email marketing sequences with 40%+ open rates.',
-        'Track every campaign using Google Analytics 4 and UTM parameters.',
-      ],
-      requirements: [
-        'A laptop or tablet and a willingness to learn.',
-        'No marketing experience required — we start from the basics.',
-        'A Google account and a Facebook/Meta personal account.',
-      ],
-      targetAudience: [
-        {
-          icon: 'FaStore',
-          title: 'Small Business Owners',
-          description: 'Get more customers online without hiring an agency.',
-        },
-        {
-          icon: 'FaHandshake',
-          title: 'Freelancers & Consultants',
-          description: 'Learn to sell digital marketing services to clients.',
-        },
-        {
-          icon: 'FaGraduationCap',
-          title: 'Marketing Students',
-          description: 'Add practical, real-world skills to your academic knowledge.',
-        },
-        {
-          icon: 'FaRocket',
-          title: 'Startup Founders',
-          description: 'Generate leads and grow an audience from zero budget.',
-        },
-      ],
-      curriculum: [
-        {
-          title: 'Section 1: The Digital Marketing Landscape',
-          lessonCount: 4,
-          totalDuration: '45m',
-          lessons: [
-            { index: 1, title: 'Introduction to Digital Marketing in 2025', duration: '6:30', isFreePreview: true },
-            { index: 2, title: 'The Marketing Funnel: TOFU, MOFU, BOFU', duration: '14:00', isFreePreview: true },
-            { index: 3, title: 'Understanding Your Ideal Customer Avatar', duration: '16:45' },
-            { index: 4, title: 'Setting SMART Marketing Goals & KPIs', duration: '7:45' },
-          ],
-        },
-        {
-          title: 'Section 2: Search Engine Optimization (SEO)',
-          lessonCount: 6,
-          totalDuration: '1h 32m',
-          lessons: [
-            { index: 1, title: "How Google's Algorithm Works", duration: '12:00' },
-            { index: 2, title: 'Keyword Research with Ahrefs & SEMrush', duration: '20:30' },
-            { index: 3, title: 'On-Page SEO: Title Tags, Meta, Headers', duration: '18:00' },
-            { index: 4, title: 'Technical SEO: Site Speed & Core Vitals', duration: '16:30' },
-            { index: 5, title: 'Link Building Strategies That Work', duration: '14:00' },
-            { index: 6, title: 'Local SEO for Business Owners', duration: '11:00' },
-          ],
-        },
-        {
-          title: 'Section 3: Paid Advertising (Google & Meta)',
-          lessonCount: 6,
-          totalDuration: '1h 48m',
-          lessons: [
-            { index: 1, title: 'Google Search Ads Fundamentals', duration: '18:00' },
-            { index: 2, title: 'Writing High-Converting Ad Copy', duration: '14:30' },
-            { index: 3, title: 'Bidding Strategies & Budget Management', duration: '16:00' },
-            { index: 4, title: 'Meta Ads Manager Deep Dive', duration: '22:00' },
-            { index: 5, title: 'Retargeting & Lookalike Audiences', duration: '18:30' },
-            { index: 6, title: 'Reading Your Dashboard & Optimizing', duration: '19:00' },
-          ],
-        },
-        {
-          title: 'Section 4: Content & Email Marketing',
-          lessonCount: 5,
-          totalDuration: '1h 10m',
-          lessons: [
-            { index: 1, title: 'Building a Content Strategy That Scales', duration: '15:00' },
-            { index: 2, title: 'Writing Content That Ranks AND Converts', duration: '18:30' },
-            { index: 3, title: 'Email List Building from Zero', duration: '14:00' },
-            { index: 4, title: 'Designing Automated Email Sequences', duration: '13:30' },
-            { index: 5, title: 'Analytics: Measuring What Matters', duration: '9:00' },
-          ],
-        },
-      ],
-    },
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
+    price: 199,
+    originalPrice: 349,
+    published: true,
+    category: 'Marketing',
+    level: 'Beginner',
+    duration: '14h 45m',
+    rating: 4.7,
+    reviewsCount: 1852,
+    studentsCount: 8900,
+    instructorId: marcus.id,
+    whatYouWillLearn: [
+      'Rank on page 1 of Google using proven on-page and off-page SEO techniques.',
+      'Run profitable Google Search & Display ad campaigns.',
+      'Build scalable Facebook and Instagram ad funnels.',
+      'Create a content calendar and grow organic social media following.',
+      'Automate email marketing sequences with 40%+ open rates.',
+      'Track every campaign using Google Analytics 4 and UTM parameters.',
+    ],
+    requirements: [
+      'A laptop or tablet and a willingness to learn.',
+      'No marketing experience required — we start from the basics.',
+      'A Google account and a Facebook/Meta personal account.',
+    ],
+    targetAudience: [
+      {
+        icon: 'FaStore',
+        title: 'Small Business Owners',
+        description: 'Get more customers online without hiring an agency.',
+      },
+      {
+        icon: 'FaHandshake',
+        title: 'Freelancers & Consultants',
+        description: 'Learn to sell digital marketing services to clients.',
+      },
+      {
+        icon: 'FaGraduationCap',
+        title: 'Marketing Students',
+        description: 'Add practical, real-world skills to your academic knowledge.',
+      },
+      {
+        icon: 'FaRocket',
+        title: 'Startup Founders',
+        description: 'Generate leads and grow an audience from zero budget.',
+      },
+    ],
+    curriculum: [
+      {
+        title: 'Section 1: The Digital Marketing Landscape',
+        lessonCount: 4,
+        totalDuration: '45m',
+        lessons: [
+          { index: 1, title: 'Introduction to Digital Marketing in 2025', duration: '6:30', isFreePreview: true },
+          { index: 2, title: 'The Marketing Funnel: TOFU, MOFU, BOFU', duration: '14:00', isFreePreview: true },
+          { index: 3, title: 'Understanding Your Ideal Customer Avatar', duration: '16:45' },
+          { index: 4, title: 'Setting SMART Marketing Goals & KPIs', duration: '7:45' },
+        ],
+      },
+      {
+        title: 'Section 2: Search Engine Optimization (SEO)',
+        lessonCount: 6,
+        totalDuration: '1h 32m',
+        lessons: [
+          { index: 1, title: "How Google's Algorithm Works", duration: '12:00' },
+          { index: 2, title: 'Keyword Research with Ahrefs & SEMrush', duration: '20:30' },
+          { index: 3, title: 'On-Page SEO: Title Tags, Meta, Headers', duration: '18:00' },
+          { index: 4, title: 'Technical SEO: Site Speed & Core Vitals', duration: '16:30' },
+          { index: 5, title: 'Link Building Strategies That Work', duration: '14:00' },
+          { index: 6, title: 'Local SEO for Business Owners', duration: '11:00' },
+        ],
+      },
+      {
+        title: 'Section 3: Paid Advertising (Google & Meta)',
+        lessonCount: 6,
+        totalDuration: '1h 48m',
+        lessons: [
+          { index: 1, title: 'Google Search Ads Fundamentals', duration: '18:00' },
+          { index: 2, title: 'Writing High-Converting Ad Copy', duration: '14:30' },
+          { index: 3, title: 'Bidding Strategies & Budget Management', duration: '16:00' },
+          { index: 4, title: 'Meta Ads Manager Deep Dive', duration: '22:00' },
+          { index: 5, title: 'Retargeting & Lookalike Audiences', duration: '18:30' },
+          { index: 6, title: 'Reading Your Dashboard & Optimizing', duration: '19:00' },
+        ],
+      },
+      {
+        title: 'Section 4: Content & Email Marketing',
+        lessonCount: 5,
+        totalDuration: '1h 10m',
+        lessons: [
+          { index: 1, title: 'Building a Content Strategy That Scales', duration: '15:00' },
+          { index: 2, title: 'Writing Content That Ranks AND Converts', duration: '18:30' },
+          { index: 3, title: 'Email List Building from Zero', duration: '14:00' },
+          { index: 4, title: 'Designing Automated Email Sequences', duration: '13:30' },
+          { index: 5, title: 'Analytics: Measuring What Matters', duration: '9:00' },
+        ],
+      },
+    ],
+  };
+
+  const course3 = await prisma.course.upsert({
+    where: { slug: course3Data.slug },
+    update: course3Data,
+    create: course3Data,
   });
 
+  console.log('✅ Course 3 upserted.');
+
+  console.log('📦 Upserting Course 4...');
   // ─── COURSE 4: Python for Data Science ────────────────────────────────────
-  await prisma.course.create({
-    data: {
-      title: 'Python for Data Science & Machine Learning',
-      slug: 'python-data-science-machine-learning',
-      shortDescription:
-        'Go from zero to building real ML models — Python, NumPy, Pandas, Scikit-learn, and neural networks with TensorFlow.',
-      description: `The most in-demand skill set in tech — all in one course. You'll start from Python basics and build your way up to training machine learning models, working with real Kaggle datasets, and deploying your models to production as REST APIs.
+  const course4Data = {
+    title: 'Python for Data Science & Machine Learning',
+    slug: 'python-data-science-machine-learning',
+    shortDescription:
+      'Go from zero to building real ML models — Python, NumPy, Pandas, Scikit-learn, and neural networks with TensorFlow.',
+    description: `The most in-demand skill set in tech — all in one course. You'll start from Python basics and build your way up to training machine learning models, working with real Kaggle datasets, and deploying your models to production as REST APIs.
 
 > "Data is the new oil, but without the refinery capabilities, it's virtually useless. Python and its rich ecosystem of libraries give you the power to find the gold buried deep within complex data."
 
@@ -484,129 +517,136 @@ Taught by an ex-Google data scientist with over 10 years of industry experience 
 - Master Pandas techniques to clean and manipulate data 100x faster than Excel.
 - Learn how to visualize relationships using Matplotlib and Seaborn.
 - Complete a Capstone project tackling an active Kaggle competition.`,
-      thumbnailUrl:
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
-      price: 279,
-      originalPrice: 449,
-      published: true,
-      category: 'Data Science',
-      level: 'Beginner',
-      duration: '32h 0m',
-      rating: 4.9,
-      reviewsCount: 4120,
-      studentsCount: 22500,
-      instructorId: sarah.id,
-      whatYouWillLearn: [
-        'Master Python from scratch including OOP and data structures.',
-        'Manipulate and analyze data at scale with NumPy and Pandas.',
-        'Visualize complex datasets with Matplotlib and Seaborn.',
-        'Build and evaluate supervised and unsupervised ML models.',
-        'Implement neural networks using TensorFlow and Keras.',
-        'Work with real-world datasets from Kaggle competitions.',
-        'Deploy machine learning models as REST APIs.',
-        'Understand statistics and probability for data science.',
-      ],
-      requirements: [
-        'No prior programming experience required.',
-        'A computer with Python 3.10+ and VS Code installed.',
-        'Basic algebra and high school level math is sufficient.',
-      ],
-      targetAudience: [
-        {
-          icon: 'FaUserGraduate',
-          title: 'Absolute Beginners',
-          description: 'Never coded before? We take you from hello world to ML models.',
-        },
-        {
-          icon: 'FaChartLine',
-          title: 'Data Analysts',
-          description: 'Level up from Excel and SQL to Python and machine learning.',
-        },
-        {
-          icon: 'FaBriefcase',
-          title: 'Business Professionals',
-          description: 'Use data to make better, evidence-based decisions at work.',
-        },
-        {
-          icon: 'FaCode',
-          title: 'Software Developers',
-          description: 'Expand your skills into the fastest-growing area of tech.',
-        },
-      ],
-      curriculum: [
-        {
-          title: 'Section 1: Python Programming Fundamentals',
-          lessonCount: 6,
-          totalDuration: '1h 25m',
-          lessons: [
-            { index: 1, title: 'Welcome & Environment Setup', duration: '7:00', isFreePreview: true },
-            { index: 2, title: 'Variables, Data Types & Operators', duration: '16:30', isFreePreview: true },
-            { index: 3, title: 'Control Flow: if, for, while', duration: '18:00' },
-            { index: 4, title: 'Functions, Scope & Lambdas', duration: '20:15' },
-            { index: 5, title: 'Lists, Dicts, Sets & Tuples', duration: '14:30' },
-            { index: 6, title: 'Object-Oriented Python (OOP)', duration: '8:45' },
-          ],
-        },
-        {
-          title: 'Section 2: Data Analysis with NumPy & Pandas',
-          lessonCount: 5,
-          totalDuration: '1h 35m',
-          lessons: [
-            { index: 1, title: 'NumPy Arrays & Broadcasting', duration: '20:00' },
-            { index: 2, title: 'Pandas DataFrames: Load, Clean, Explore', duration: '24:30' },
-            { index: 3, title: 'GroupBy, Merge & Pivot Tables', duration: '18:00' },
-            { index: 4, title: 'Handling Missing Data & Outliers', duration: '16:30' },
-            { index: 5, title: 'Exploratory Data Analysis Project', duration: '16:00' },
-          ],
-        },
-        {
-          title: 'Section 3: Data Visualization',
-          lessonCount: 4,
-          totalDuration: '58m',
-          lessons: [
-            { index: 1, title: 'Matplotlib: Lines, Bars, Scatterplots', duration: '16:00' },
-            { index: 2, title: 'Seaborn: Statistical Visualizations', duration: '14:30' },
-            { index: 3, title: 'Plotly: Interactive Dashboards', duration: '18:00' },
-            { index: 4, title: 'Storytelling with Data', duration: '9:30' },
-          ],
-        },
-        {
-          title: 'Section 4: Machine Learning with Scikit-Learn',
-          lessonCount: 6,
-          totalDuration: '2h 10m',
-          lessons: [
-            { index: 1, title: 'Supervised vs. Unsupervised Learning', duration: '12:00' },
-            { index: 2, title: 'Linear & Logistic Regression', duration: '24:30' },
-            { index: 3, title: 'Decision Trees & Random Forests', duration: '22:00' },
-            { index: 4, title: 'Support Vector Machines', duration: '18:30' },
-            { index: 5, title: 'Model Evaluation: Accuracy, Precision, Recall', duration: '20:00' },
-            { index: 6, title: 'Feature Engineering & Hyperparameter Tuning', duration: '13:00' },
-          ],
-        },
-        {
-          title: 'Section 5: Deep Learning & Deployment',
-          lessonCount: 5,
-          totalDuration: '1h 45m',
-          lessons: [
-            { index: 1, title: 'Neural Networks: How They Actually Work', duration: '22:00' },
-            { index: 2, title: 'Building CNNs with TensorFlow/Keras', duration: '26:00' },
-            { index: 3, title: 'Transfer Learning with Pre-Trained Models', duration: '18:30' },
-            { index: 4, title: 'Deploying ML Models with FastAPI', duration: '20:30' },
-            { index: 5, title: 'Capstone Project Walkthrough', duration: '18:00' },
-          ],
-        },
-      ],
-    },
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+    price: 279,
+    originalPrice: 449,
+    published: true,
+    category: 'Data Science',
+    level: 'Beginner',
+    duration: '32h 0m',
+    rating: 4.9,
+    reviewsCount: 4120,
+    studentsCount: 22500,
+    instructorId: sarah.id,
+    whatYouWillLearn: [
+      'Master Python from scratch including OOP and data structures.',
+      'Manipulate and analyze data at scale with NumPy and Pandas.',
+      'Visualize complex datasets with Matplotlib and Seaborn.',
+      'Build and evaluate supervised and unsupervised ML models.',
+      'Implement neural networks using TensorFlow and Keras.',
+      'Work with real-world datasets from Kaggle competitions.',
+      'Deploy machine learning models as REST APIs.',
+      'Understand statistics and probability for data science.',
+    ],
+    requirements: [
+      'No prior programming experience required.',
+      'A computer with Python 3.10+ and VS Code installed.',
+      'Basic algebra and high school level math is sufficient.',
+    ],
+    targetAudience: [
+      {
+        icon: 'FaUserGraduate',
+        title: 'Absolute Beginners',
+        description: 'Never coded before? We take you from hello world to ML models.',
+      },
+      {
+        icon: 'FaChartLine',
+        title: 'Data Analysts',
+        description: 'Level up from Excel and SQL to Python and machine learning.',
+      },
+      {
+        icon: 'FaBriefcase',
+        title: 'Business Professionals',
+        description: 'Use data to make better, evidence-based decisions at work.',
+      },
+      {
+        icon: 'FaCode',
+        title: 'Software Developers',
+        description: 'Expand your skills into the fastest-growing area of tech.',
+      },
+    ],
+    curriculum: [
+      {
+        title: 'Section 1: Python Programming Fundamentals',
+        lessonCount: 6,
+        totalDuration: '1h 25m',
+        lessons: [
+          { index: 1, title: 'Welcome & Environment Setup', duration: '7:00', isFreePreview: true },
+          { index: 2, title: 'Variables, Data Types & Operators', duration: '16:30', isFreePreview: true },
+          { index: 3, title: 'Control Flow: if, for, while', duration: '18:00' },
+          { index: 4, title: 'Functions, Scope & Lambdas', duration: '20:15' },
+          { index: 5, title: 'Lists, Dicts, Sets & Tuples', duration: '14:30' },
+          { index: 6, title: 'Object-Oriented Python (OOP)', duration: '8:45' },
+        ],
+      },
+      {
+        title: 'Section 2: Data Analysis with NumPy & Pandas',
+        lessonCount: 5,
+        totalDuration: '1h 35m',
+        lessons: [
+          { index: 1, title: 'NumPy Arrays & Broadcasting', duration: '20:00' },
+          { index: 2, title: 'Pandas DataFrames: Load, Clean, Explore', duration: '24:30' },
+          { index: 3, title: 'GroupBy, Merge & Pivot Tables', duration: '18:00' },
+          { index: 4, title: 'Handling Missing Data & Outliers', duration: '16:30' },
+          { index: 5, title: 'Exploratory Data Analysis Project', duration: '16:00' },
+        ],
+      },
+      {
+        title: 'Section 3: Data Visualization',
+        lessonCount: 4,
+        totalDuration: '58m',
+        lessons: [
+          { index: 1, title: 'Matplotlib: Lines, Bars, Scatterplots', duration: '16:00' },
+          { index: 2, title: 'Seaborn: Statistical Visualizations', duration: '14:30' },
+          { index: 3, title: 'Plotly: Interactive Dashboards', duration: '18:00' },
+          { index: 4, title: 'Storytelling with Data', duration: '9:30' },
+        ],
+      },
+      {
+        title: 'Section 4: Machine Learning with Scikit-Learn',
+        lessonCount: 6,
+        totalDuration: '2h 10m',
+        lessons: [
+          { index: 1, title: 'Supervised vs. Unsupervised Learning', duration: '12:00' },
+          { index: 2, title: 'Linear & Logistic Regression', duration: '24:30' },
+          { index: 3, title: 'Decision Trees & Random Forests', duration: '22:00' },
+          { index: 4, title: 'Support Vector Machines', duration: '18:30' },
+          { index: 5, title: 'Model Evaluation: Accuracy, Precision, Recall', duration: '20:00' },
+          { index: 6, title: 'Feature Engineering & Hyperparameter Tuning', duration: '13:00' },
+        ],
+      },
+      {
+        title: 'Section 5: Deep Learning & Deployment',
+        lessonCount: 5,
+        totalDuration: '1h 45m',
+        lessons: [
+          { index: 1, title: 'Neural Networks: How They Actually Work', duration: '22:00' },
+          { index: 2, title: 'Building CNNs with TensorFlow/Keras', duration: '26:00' },
+          { index: 3, title: 'Transfer Learning with Pre-Trained Models', duration: '18:30' },
+          { index: 4, title: 'Deploying ML Models with FastAPI', duration: '20:30' },
+          { index: 5, title: 'Capstone Project Walkthrough', duration: '18:00' },
+        ],
+      },
+    ],
+  };
+
+  const course4 = await prisma.course.upsert({
+    where: { slug: course4Data.slug },
+    update: course4Data,
+    create: course4Data,
   });
 
+  console.log('✅ Course 4 upserted.');
+
+  console.log('📦 Upserting Course 5...');
   // ─── COURSE 5: Financial Freedom ──────────────────────────────────────────
-  await prisma.course.create({
-    data: {
-      title: 'Financial Freedom Blueprint: Investing & Wealth',
-      slug: 'financial-freedom-blueprint',
-      shortDescription:
-        'Build passive income streams, master the stock market, and create the financial independence you deserve.',
-      description: `Most people spend their entire lives trading time for money. This course teaches you the systems, strategies, and mindset shifts used by financially free individuals to build lasting, multi-generational wealth.
+  const course5Data = {
+    title: 'Financial Freedom Blueprint: Investing & Wealth',
+    slug: 'financial-freedom-blueprint',
+    shortDescription:
+      'Build passive income streams, master the stock market, and create the financial independence you deserve.',
+    description: `Most people spend their entire lives trading time for money. This course teaches you the systems, strategies, and mindset shifts used by financially free individuals to build lasting, multi-generational wealth.
 
 > "Wealth isn't about making a lot of money; it's about making your money make a lot of money while you sleep. The sooner you start building asset structures, the sooner you find freedom."
 
@@ -620,114 +660,121 @@ Covering stocks, ETFs, real estate, and passive income vehicles — this is the 
 - Decode and interpret the real estate market cycles for Buy-to-Let opportunities.
 - Learn to manage risk properly during market downturns.
 - Establish alternative streams of income that don't trade your time for money.`,
-      thumbnailUrl:
-        'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
-      price: 149,
-      originalPrice: 249,
-      published: true,
-      category: 'Business & Finance',
-      level: 'All Levels',
-      duration: '10h 20m',
-      rating: 4.8,
-      reviewsCount: 2983,
-      studentsCount: 18700,
-      instructorId: marcus.id,
-      whatYouWillLearn: [
-        'Understand how money, compounding, and wealth generation actually works.',
-        'Build a personalized investment strategy based on your risk profile.',
-        'Invest in index funds, ETFs, and dividend stocks with confidence.',
-        'Analyze real estate opportunities and understand leverage.',
-        'Create multiple streams of passive income.',
-        'Reduce tax liability legally through smart financial structures.',
-      ],
-      requirements: [
-        'No financial background required — completely beginner-friendly.',
-        'A willingness to take control of your financial future.',
-        'A smartphone or computer to access a brokerage account.',
-      ],
-      targetAudience: [
-        {
-          icon: 'FaUserGraduate',
-          title: 'Young Professionals',
-          description: 'Start building wealth in your 20s and 30s — time is your biggest asset.',
-        },
-        {
-          icon: 'FaBriefcase',
-          title: 'Salaried Employees',
-          description: 'Make your salary work harder for you with smart investing.',
-        },
-        {
-          icon: 'FaStore',
-          title: 'Business Owners',
-          description: 'Move beyond trading time for money and build lasting wealth.',
-        },
-        {
-          icon: 'FaHome',
-          title: 'Aspiring Investors',
-          description: 'Learn how to evaluate stocks, property, and alternative assets.',
-        },
-      ],
-      curriculum: [
-        {
-          title: 'Section 1: Wealth Mindset & Money Fundamentals',
-          lessonCount: 5,
-          totalDuration: '52m',
-          lessons: [
-            { index: 1, title: 'Why 95% of People Never Build Wealth', duration: '9:00', isFreePreview: true },
-            { index: 2, title: 'The Power of Compound Interest (Visual Demo)', duration: '14:30', isFreePreview: true },
-            { index: 3, title: 'Tracking Net Worth & Setting Financial Goals', duration: '12:00' },
-            { index: 4, title: 'Budgeting Systems: 50/30/20 & Zero-Based', duration: '10:30' },
-            { index: 5, title: 'Emergency Funds & Eliminating High-Interest Debt', duration: '6:00' },
-          ],
-        },
-        {
-          title: 'Section 2: Stock Market Investing',
-          lessonCount: 6,
-          totalDuration: '1h 28m',
-          lessons: [
-            { index: 1, title: 'How the Stock Market Works', duration: '14:00' },
-            { index: 2, title: 'Index Funds & ETFs: The Lazy Way to Wealth', duration: '16:30' },
-            { index: 3, title: 'Analyzing Individual Stocks (Fundamentals)', duration: '20:00' },
-            { index: 4, title: 'Dollar-Cost Averaging Strategy', duration: '10:00' },
-            { index: 5, title: 'How to Use a Brokerage Account', duration: '14:30' },
-            { index: 6, title: 'Tax-Advantaged Accounts: IRA, 401k, ISA', duration: '13:00' },
-          ],
-        },
-        {
-          title: 'Section 3: Real Estate & Alternative Investments',
-          lessonCount: 4,
-          totalDuration: '58m',
-          lessons: [
-            { index: 1, title: 'Buy-to-Let: Numbers, Financing & ROI', duration: '18:30' },
-            { index: 2, title: 'REITs: Real Estate Without the Headaches', duration: '12:00' },
-            { index: 3, title: 'Crypto, Gold & Commodities — Diversification', duration: '16:00' },
-            { index: 4, title: 'Building a Balanced Portfolio Across Asset Classes', duration: '11:30' },
-          ],
-        },
-        {
-          title: 'Section 4: Creating Passive Income Streams',
-          lessonCount: 5,
-          totalDuration: '1h 5m',
-          lessons: [
-            { index: 1, title: 'The 7 Streams of Income Explained', duration: '10:00' },
-            { index: 2, title: 'Dividend Investing for Monthly Cash Flow', duration: '16:30' },
-            { index: 3, title: 'Digital Products & Online Courses as Assets', duration: '14:00' },
-            { index: 4, title: 'Rental Income Automation Systems', duration: '13:30' },
-            { index: 5, title: 'Your 10-Year Wealth Plan — Building It Now', duration: '11:00' },
-          ],
-        },
-      ],
-    },
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
+    price: 149,
+    originalPrice: 249,
+    published: true,
+    category: 'Business & Finance',
+    level: 'All Levels',
+    duration: '10h 20m',
+    rating: 4.8,
+    reviewsCount: 2983,
+    studentsCount: 18700,
+    instructorId: marcus.id,
+    whatYouWillLearn: [
+      'Understand how money, compounding, and wealth generation actually works.',
+      'Build a personalized investment strategy based on your risk profile.',
+      'Invest in index funds, ETFs, and dividend stocks with confidence.',
+      'Analyze real estate opportunities and understand leverage.',
+      'Create multiple streams of passive income.',
+      'Reduce tax liability legally through smart financial structures.',
+    ],
+    requirements: [
+      'No financial background required — completely beginner-friendly.',
+      'A willingness to take control of your financial future.',
+      'A smartphone or computer to access a brokerage account.',
+    ],
+    targetAudience: [
+      {
+        icon: 'FaUserGraduate',
+        title: 'Young Professionals',
+        description: 'Start building wealth in your 20s and 30s — time is your biggest asset.',
+      },
+      {
+        icon: 'FaBriefcase',
+        title: 'Salaried Employees',
+        description: 'Make your salary work harder for you with smart investing.',
+      },
+      {
+        icon: 'FaStore',
+        title: 'Business Owners',
+        description: 'Move beyond trading time for money and build lasting wealth.',
+      },
+      {
+        icon: 'FaHome',
+        title: 'Aspiring Investors',
+        description: 'Learn how to evaluate stocks, property, and alternative assets.',
+      },
+    ],
+    curriculum: [
+      {
+        title: 'Section 1: Wealth Mindset & Money Fundamentals',
+        lessonCount: 5,
+        totalDuration: '52m',
+        lessons: [
+          { index: 1, title: 'Why 95% of People Never Build Wealth', duration: '9:00', isFreePreview: true },
+          { index: 2, title: 'The Power of Compound Interest (Visual Demo)', duration: '14:30', isFreePreview: true },
+          { index: 3, title: 'Tracking Net Worth & Setting Financial Goals', duration: '12:00' },
+          { index: 4, title: 'Budgeting Systems: 50/30/20 & Zero-Based', duration: '10:30' },
+          { index: 5, title: 'Emergency Funds & Eliminating High-Interest Debt', duration: '6:00' },
+        ],
+      },
+      {
+        title: 'Section 2: Stock Market Investing',
+        lessonCount: 6,
+        totalDuration: '1h 28m',
+        lessons: [
+          { index: 1, title: 'How the Stock Market Works', duration: '14:00' },
+          { index: 2, title: 'Index Funds & ETFs: The Lazy Way to Wealth', duration: '16:30' },
+          { index: 3, title: 'Analyzing Individual Stocks (Fundamentals)', duration: '20:00' },
+          { index: 4, title: 'Dollar-Cost Averaging Strategy', duration: '10:00' },
+          { index: 5, title: 'How to Use a Brokerage Account', duration: '14:30' },
+          { index: 6, title: 'Tax-Advantaged Accounts: IRA, 401k, ISA', duration: '13:00' },
+        ],
+      },
+      {
+        title: 'Section 3: Real Estate & Alternative Investments',
+        lessonCount: 4,
+        totalDuration: '58m',
+        lessons: [
+          { index: 1, title: 'Buy-to-Let: Numbers, Financing & ROI', duration: '18:30' },
+          { index: 2, title: 'REITs: Real Estate Without the Headaches', duration: '12:00' },
+          { index: 3, title: 'Crypto, Gold & Commodities — Diversification', duration: '16:00' },
+          { index: 4, title: 'Building a Balanced Portfolio Across Asset Classes', duration: '11:30' },
+        ],
+      },
+      {
+        title: 'Section 4: Creating Passive Income Streams',
+        lessonCount: 5,
+        totalDuration: '1h 5m',
+        lessons: [
+          { index: 1, title: 'The 7 Streams of Income Explained', duration: '10:00' },
+          { index: 2, title: 'Dividend Investing for Monthly Cash Flow', duration: '16:30' },
+          { index: 3, title: 'Digital Products & Online Courses as Assets', duration: '14:00' },
+          { index: 4, title: 'Rental Income Automation Systems', duration: '13:30' },
+          { index: 5, title: 'Your 10-Year Wealth Plan — Building It Now', duration: '11:00' },
+        ],
+      },
+    ],
+  };
+
+  const course5 = await prisma.course.upsert({
+    where: { slug: course5Data.slug },
+    update: course5Data,
+    create: course5Data,
   });
 
+  console.log('✅ Course 5 upserted.');
+
+  console.log('📦 Upserting Course 6...');
   // ─── COURSE 6: Deep Work Mastery ──────────────────────────────────────────
-  await prisma.course.create({
-    data: {
-      title: 'Deep Work Mastery: Productivity & Focus Systems',
-      slug: 'deep-work-mastery-productivity-focus',
-      shortDescription:
-        'Build the habits, systems, and environment that allow you to do 8 hours of work in 4 — and reclaim your time.',
-      description: `In a world of constant distraction, the ability to focus deeply is your most valuable professional skill. The research is clear: people who can concentrate without distraction are producing the work that matters — and they're rare.
+  const course6Data = {
+    title: 'Deep Work Mastery: Productivity & Focus Systems',
+    slug: 'deep-work-mastery-productivity-focus',
+    shortDescription:
+      'Build the habits, systems, and environment that allow you to do 8 hours of work in 4 — and reclaim your time.',
+    description: `In a world of constant distraction, the ability to focus deeply is your most valuable professional skill. The research is clear: people who can concentrate without distraction are producing the work that matters — and they're rare.
 
 > "Deep work is not a buzzword; it's the superpower of the 21st century economy. When you learn to protect your attention, you take control of your career and your life."
 
@@ -741,107 +788,130 @@ This course distills the best research from Cal Newport, James Clear, and the Hu
 - Use advanced time-blocking templates to schedule tasks securely.
 - Learn the "Shutdown Ritual" to properly disconnect from your work day mentally.
 - Identify the subtle digital addictions that waste up to 4 hours of your day.`,
-      thumbnailUrl:
-        'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=800&auto=format&fit=crop',
-      price: 89,
-      originalPrice: 149,
-      published: true,
-      category: 'Personal Development',
-      level: 'All Levels',
-      duration: '8h 0m',
-      rating: 4.9,
-      reviewsCount: 5421,
-      studentsCount: 31000,
-      instructorId: alex.id,
-      whatYouWillLearn: [
-        'Eliminate digital distractions and achieve flow states on demand.',
-        'Design a work schedule that maximizes your peak cognitive hours.',
-        'Apply the Deep Work protocol to produce world-class output.',
-        'Use time-blocking and the Weekly Review system for maximum clarity.',
-        'Build atomic habits that compound over months and years.',
-        'Create a distraction-free digital and physical environment.',
-      ],
-      requirements: [
-        'No prior knowledge needed — open mind required.',
-        'A notebook and pen for completing the exercises.',
-        'Commitment to implementing what you learn immediately.',
-      ],
-      targetAudience: [
-        {
-          icon: 'FaLaptopCode',
-          title: 'Knowledge Workers',
-          description: 'Developers, writers, designers who need sustained focus to produce great work.',
-        },
-        {
-          icon: 'FaGraduationCap',
-          title: 'Students',
-          description: 'Study smarter, retain more, and achieve top results in less time.',
-        },
-        {
-          icon: 'FaBriefcase',
-          title: 'Managers & Leaders',
-          description: 'Reclaim strategic thinking time buried under meetings and email.',
-        },
-        {
-          icon: 'FaRocket',
-          title: 'Entrepreneurs',
-          description: 'Do the deep work that actually moves the needle in your business.',
-        },
-      ],
-      curriculum: [
-        {
-          title: 'Section 1: The Science of Focus & Deep Work',
-          lessonCount: 5,
-          totalDuration: '52m',
-          lessons: [
-            { index: 1, title: "What is Deep Work and Why It's Rare", duration: '8:30', isFreePreview: true },
-            { index: 2, title: 'The Neuroscience of Attention & Flow States', duration: '14:00', isFreePreview: true },
-            { index: 3, title: 'Digital Minimalism: Auditing Your Tools', duration: '12:30' },
-            { index: 4, title: 'Structuring Your 4 Deep Work Blocks Per Day', duration: '10:00' },
-            { index: 5, title: 'Session 1 Challenge: Your First Deep Work Day', duration: '7:00' },
-          ],
-        },
-        {
-          title: 'Section 2: Time Architecture & Scheduling Systems',
-          lessonCount: 5,
-          totalDuration: '58m',
-          lessons: [
-            { index: 1, title: 'Time-Blocking: The Ultimate Calendar Method', duration: '14:30' },
-            { index: 2, title: 'The Weekly Review Ritual (Full Template)', duration: '12:00' },
-            { index: 3, title: 'Task Management: GTD vs. Eat The Frog', duration: '10:30' },
-            { index: 4, title: 'Managing Email Without Email Managing You', duration: '11:00' },
-            { index: 5, title: 'Saying No: Protecting Your Attention Capital', duration: '10:00' },
-          ],
-        },
-        {
-          title: 'Section 3: Habits, Recovery & Long-Term Performance',
-          lessonCount: 5,
-          totalDuration: '1h 8m',
-          lessons: [
-            { index: 1, title: 'Atomic Habits Applied to Deep Work', duration: '16:00' },
-            { index: 2, title: 'Sleep Optimization for Cognitive Performance', duration: '14:30' },
-            { index: 3, title: 'Exercise, Nutrition & Brain Performance', duration: '13:00' },
-            { index: 4, title: 'Avoiding Burnout: Sustainable Intensity', duration: '12:30' },
-            { index: 5, title: 'Your 90-Day Deep Work Transformation Plan', duration: '12:00' },
-          ],
-        },
-      ],
-    },
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=800&auto=format&fit=crop',
+    price: 89,
+    originalPrice: 149,
+    published: true,
+    category: 'Personal Development',
+    level: 'All Levels',
+    duration: '8h 0m',
+    rating: 4.9,
+    reviewsCount: 5421,
+    studentsCount: 31000,
+    instructorId: alex.id,
+    whatYouWillLearn: [
+      'Eliminate digital distractions and achieve flow states on demand.',
+      'Design a work schedule that maximizes your peak cognitive hours.',
+      'Apply the Deep Work protocol to produce world-class output.',
+      'Use time-blocking and the Weekly Review system for maximum clarity.',
+      'Build atomic habits that compound over months and years.',
+      'Create a distraction-free digital and physical environment.',
+    ],
+    requirements: [
+      'No prior knowledge needed — open mind required.',
+      'A notebook and pen for completing the exercises.',
+      'Commitment to implementing what you learn immediately.',
+    ],
+    targetAudience: [
+      {
+        icon: 'FaLaptopCode',
+        title: 'Knowledge Workers',
+        description: 'Developers, writers, designers who need sustained focus to produce great work.',
+      },
+      {
+        icon: 'FaGraduationCap',
+        title: 'Students',
+        description: 'Study smarter, retain more, and achieve top results in less time.',
+      },
+      {
+        icon: 'FaBriefcase',
+        title: 'Managers & Leaders',
+        description: 'Reclaim strategic thinking time buried under meetings and email.',
+      },
+      {
+        icon: 'FaRocket',
+        title: 'Entrepreneurs',
+        description: 'Do the deep work that actually moves the needle in your business.',
+      },
+    ],
+    curriculum: [
+      {
+        title: 'Section 1: The Science of Focus & Deep Work',
+        lessonCount: 5,
+        totalDuration: '52m',
+        lessons: [
+          { index: 1, title: "What is Deep Work and Why It's Rare", duration: '8:30', isFreePreview: true },
+          { index: 2, title: 'The Neuroscience of Attention & Flow States', duration: '14:00', isFreePreview: true },
+          { index: 3, title: 'Digital Minimalism: Auditing Your Tools', duration: '12:30' },
+          { index: 4, title: 'Structuring Your 4 Deep Work Blocks Per Day', duration: '10:00' },
+          { index: 5, title: 'Session 1 Challenge: Your First Deep Work Day', duration: '7:00' },
+        ],
+      },
+      {
+        title: 'Section 2: Time Architecture & Scheduling Systems',
+        lessonCount: 5,
+        totalDuration: '58m',
+        lessons: [
+          { index: 1, title: 'Time-Blocking: The Ultimate Calendar Method', duration: '14:30' },
+          { index: 2, title: 'The Weekly Review Ritual (Full Template)', duration: '12:00' },
+          { index: 3, title: 'Task Management: GTD vs. Eat The Frog', duration: '10:30' },
+          { index: 4, title: 'Managing Email Without Email Managing You', duration: '11:00' },
+          { index: 5, title: 'Saying No: Protecting Your Attention Capital', duration: '10:00' },
+        ],
+      },
+      {
+        title: 'Section 3: Habits, Recovery & Long-Term Performance',
+        lessonCount: 5,
+        totalDuration: '1h 8m',
+        lessons: [
+          { index: 1, title: 'Atomic Habits Applied to Deep Work', duration: '16:00' },
+          { index: 2, title: 'Sleep Optimization for Cognitive Performance', duration: '14:30' },
+          { index: 3, title: 'Exercise, Nutrition & Brain Performance', duration: '13:00' },
+          { index: 4, title: 'Avoiding Burnout: Sustainable Intensity', duration: '12:30' },
+          { index: 5, title: 'Your 90-Day Deep Work Transformation Plan', duration: '12:00' },
+        ],
+      },
+    ],
+  };
+
+  const course6 = await prisma.course.upsert({
+    where: { slug: course6Data.slug },
+    update: course6Data,
+    create: course6Data,
   });
 
-  await prisma.enrollment.createMany({
-    data: [
-      { userId: alex.id, courseId: course1.id, progress: 0, completedLessons: [] },
-      { userId: alex.id, courseId: course2.id, progress: 0, completedLessons: [] },
-      { userId: alex.id, courseId: course3.id, progress: 0, completedLessons: [] },
-      // Enroll the test student in 3 courses
-      { userId: student.id, courseId: course1.id, progress: 0, completedLessons: [] },
-      { userId: student.id, courseId: course2.id, progress: 0, completedLessons: [] },
-      { userId: student.id, courseId: course3.id, progress: 0, completedLessons: [] },
-    ]
-  });
+  console.log('✅ Course 6 upserted.');
 
-  console.log('🎉 All 6 courses and 6 initial enrollments seeded successfully!');
+  console.log('📦 Seeding Enrollments (Idempotent)...');
+  const initialEnrollments = [
+    { userId: alex.id, courseId: course1.id },
+    { userId: alex.id, courseId: course2.id },
+    { userId: alex.id, courseId: course3.id },
+    { userId: student.id, courseId: course1.id },
+    { userId: student.id, courseId: course2.id },
+    { userId: student.id, courseId: course3.id },
+  ];
+
+  for (const enrollment of initialEnrollments) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: enrollment.userId,
+          courseId: enrollment.courseId,
+        },
+      },
+      update: {}, // No updates needed if already enrolled
+      create: {
+        userId: enrollment.userId,
+        courseId: enrollment.courseId,
+        progress: 0,
+        completedLessons: [],
+      },
+    });
+  }
+
+  console.log('🎉 All courses and initial enrollments seeded successfully!');
 }
 
 main()
@@ -852,3 +922,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
