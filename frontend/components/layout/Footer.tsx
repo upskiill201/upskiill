@@ -9,7 +9,7 @@ import styles from './Footer.module.css';
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/dashboard')) return null;
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/instructor')) return null;
   return (
     <footer className={styles.footer}>
       <div className={styles.topContainer}>
@@ -57,7 +57,7 @@ export default function Footer() {
             <li><Link href="/pricing">Plans and Pricing</Link></li>
             <li><Link href="/dashboard">Student Dashboard</Link></li>
             <li><Link href="/affiliate">Affiliate</Link></li>
-            <li><Link href="/instructor">Teach on Upskiill</Link></li>
+            <li><Link href="/teach">Teach on Upskiill</Link></li>
           </ul>
         </div>
 

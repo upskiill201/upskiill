@@ -75,6 +75,8 @@
 - [x] **Course Lock Screen**: Integrated full-screen UI barricade catching any backend 403 Forbidden checks, routing illegal `/learn/[id]` attempts safely to `/courses/[id]`.
 - [x] **Premium Dual-Payment Integration (Deployed — Untested 🟡)**: Stripe (Cards/Apple Pay/Google Pay) and MeSomb (MTN/Orange/Express Union/Wave) live keys injected into Render + Vercel. Build passes. **Needs end-to-end live transaction test.**
 - [x] **Separated Cart & Checkout Pages (Premium Polish ✅)**: `/cart` and `/checkout` redesigned with a satisfying brand-blue/white premium UI. Functional and ready for production testing.
+- [x] **Dashboard Layout Fixes ✅**: Sidebar is now `fixed` position (no more halfway scrolling) and correctly offsets the main content area for desktop and mobile.
+- [x] **Secure Logout Logic ✅**: Implemented `handleLogout` function and backend `POST /api/auth/logout`. User is correctly redirected to login and session cookie is cleared.
 - [ ] End-to-end Live Transaction Testing (Stripe Card + MeSomb MoMo)
 - [ ] Cart & Checkout "Satisfaction" Iteration 2 (Refining trust signals further)
 

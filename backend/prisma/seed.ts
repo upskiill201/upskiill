@@ -47,7 +47,18 @@ async function main() {
     },
   });
 
-  console.log(`✅ Instructors: ${alex.fullName}, ${sarah.fullName}, ${marcus.fullName}\n`);
+  const student = await prisma.user.create({
+    data: {
+      email: 'student@upskiill.com',
+      fullName: 'Jane Student',
+      password: '$2b$10$T1VFY3vAxGsJk6/VCa1A4Osfu9d0BrjMnJeQloTiyWpvkfrBjfM62', // 'password123'
+      role: 'STUDENT',
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80',
+    },
+  });
+
+  console.log(`✅ Instructors: ${alex.fullName}, ${sarah.fullName}, ${marcus.fullName}`);
+  console.log(`✅ Student: ${student.fullName}\n`);
 
   // ─── COURSE 1: Product Design & UX ────────────────────────────────────────
   const course1 = await prisma.course.create({
@@ -816,10 +827,14 @@ This course distills the best research from Cal Newport, James Clear, and the Hu
       { userId: alex.id, courseId: course1.id, progress: 0, completedLessons: [] },
       { userId: alex.id, courseId: course2.id, progress: 0, completedLessons: [] },
       { userId: alex.id, courseId: course3.id, progress: 0, completedLessons: [] },
+      // Enroll the test student in 3 courses
+      { userId: student.id, courseId: course1.id, progress: 0, completedLessons: [] },
+      { userId: student.id, courseId: course2.id, progress: 0, completedLessons: [] },
+      { userId: student.id, courseId: course3.id, progress: 0, completedLessons: [] },
     ]
   });
 
-  console.log('🎉 All 6 courses and 3 initial enrollments seeded successfully!');
+  console.log('🎉 All 6 courses and 6 initial enrollments seeded successfully!');
 }
 
 main()

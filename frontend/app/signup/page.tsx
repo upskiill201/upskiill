@@ -6,7 +6,6 @@ import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { FaGraduationCap, FaRocket, FaVideo, FaAward, FaApple, FaLinkedin, FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import styles from './Signup.module.css';
 
 export default function Signup() {
@@ -16,8 +15,6 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -38,7 +35,7 @@ export default function Signup() {
       }
 
       // Cookie is set automatically by the backend (httpOnly, secure)
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Signup failed';
       setError(message);
