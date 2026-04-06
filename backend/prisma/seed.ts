@@ -9,7 +9,7 @@ async function main() {
   await prisma.order.deleteMany();
   await prisma.enrollment.deleteMany();
   await prisma.course.deleteMany();
-  await prisma.user.deleteMany({ where: { role: 'INSTRUCTOR' } });
+  await prisma.user.deleteMany();
 
   console.log('✅ Old data cleared.\n');
 
@@ -60,6 +60,7 @@ async function main() {
   console.log(`✅ Instructors: ${alex.fullName}, ${sarah.fullName}, ${marcus.fullName}`);
   console.log(`✅ Student: ${student.fullName}\n`);
 
+  console.log('📦 Creating Course 1...');
   // ─── COURSE 1: Product Design & UX ────────────────────────────────────────
   const course1 = await prisma.course.create({
     data: {
@@ -198,6 +199,9 @@ We start by breaking down the psychological drivers of user behavior. Why do use
     },
   });
 
+  console.log('✅ Course 1 created.');
+
+  console.log('📦 Creating Course 2...');
   // ─── COURSE 2: Full-Stack Next.js ─────────────────────────────────────────
   const course2 = await prisma.course.create({
     data: {
@@ -334,6 +338,9 @@ This isn't a course about copying boilerplate. You'll understand every line of c
     },
   });
 
+  console.log('✅ Course 2 created.');
+
+  console.log('📦 Creating Course 3...');
   // ─── COURSE 3: Digital Marketing ──────────────────────────────────────────
   const course3 = await prisma.course.create({
     data: {

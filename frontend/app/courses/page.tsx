@@ -24,23 +24,55 @@ export default function CoursesPage() {
       try {
         const apiUrl = '/api';
         
+        const res = await fetch(`${apiUrl}/courses`);
+        if (!res.ok) {
+           console.error('API call failed with status:', res.status);
+           setIsLoading(false);
+           return;
+        }
+
+        const data = await res.json();
+        if (!data || data.length === 0) {
+           setCourses([]);
+           setIsLoading(false);
+           return;
+        }
+
         // Fetch user's enrollments to determine course status
-        let enrolledIds = new Set<string>();
         try {
           const enrollRes = await fetch(`${apiUrl}/auth/me/enrollments`, { credentials: 'include' });
           if (enrollRes.ok) {
             const enrollments = await enrollRes.json();
+            // Create a map of courseId -> enrollment object for fast lookup
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            enrolledIds = new Set(enrollments.map((e: any) => e.courseId));
-          }
-        } catch (err) {
-          console.warn('Silent skip: Could not fetch enrollments (maybe not logged in)', err);
-        }
-
-        const res = await fetch(`${apiUrl}/courses`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.length > 0) {
+            const enrollMap = new Map((enrollments || []).map((e: any) => [e.courseId, e]));
+            
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const mappedCourses = data.map((c: any) => {
+              const enrollment = enrollMap.get(c.id);
+              return {
+                id: c.id,
+                slug: c.slug,
+                title: c.title,
+                thumbnail: c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop",
+                instructorName: c.instructor?.fullName || "Instructor",
+                instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
+                rating: c.rating || 4.5,
+                reviewCount: c.reviewsCount || 0,
+                totalHours: parseFloat(c.duration) || 10,
+                totalLessons: 50, // Mock fallback for MVP
+                price: c.price,
+                originalPrice: c.originalPrice,
+                category: c.category,
+                level: c.level,
+                shortDescription: c.shortDescription || c.description?.substring(0, 100),
+                isEnrolled: !!enrollment,
+                progress: enrollment ? (enrollment.progress || 0) : 0,
+              };
+            });
+            setCourses(mappedCourses);
+          } else {
+             // Fallback if not logged in or endpoint fails
              // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const mappedCourses = data.map((c: any) => ({
                id: c.id,
@@ -58,14 +90,35 @@ export default function CoursesPage() {
                category: c.category,
                level: c.level,
                shortDescription: c.shortDescription || c.description?.substring(0, 100),
-               isEnrolled: enrolledIds.has(c.id),
+               isEnrolled: false,
+               progress: 0,
              }));
              setCourses(mappedCourses);
-          } else {
-             console.warn('API returned 0 courses. Showing empty state.');
           }
-        } else {
-             console.error('API call failed with status:', res.status);
+        } catch (err) {
+          console.warn('Silent skip: Could not fetch enrollments (maybe not logged in)', err);
+          // Set courses anyway
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const mappedCourses = data.map((c: any) => ({
+            id: c.id,
+            slug: c.slug,
+            title: c.title,
+            thumbnail: c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop",
+            instructorName: c.instructor?.fullName || "Instructor",
+            instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
+            rating: c.rating || 4.5,
+            reviewCount: c.reviewsCount || 0,
+            totalHours: parseFloat(c.duration) || 10,
+            totalLessons: 50, 
+            price: c.price,
+            originalPrice: c.originalPrice,
+            category: c.category,
+            level: c.level,
+            shortDescription: c.shortDescription || c.description?.substring(0, 100),
+            isEnrolled: false,
+            progress: 0,
+          }));
+          setCourses(mappedCourses);
         }
       } catch (error) {
         console.error('Failed to fetch live courses:', error);
@@ -191,7 +244,7 @@ export default function CoursesPage() {
           {/* Results Header */}
           <div className={styles.resultsHeader}>
             <span className={styles.resultsCount}>
-              Showing <span className={styles.resultsHighlight}>24</span> results for &quot;Design&quot;
+              Showing <span className={styles.resultsHighlight}>{courses.length}</span> {courses.length === 1 ? 'course' : 'courses'} found
             </span>
             <div className={styles.sortWrapper}>
               <span className={styles.sortLabel}>Sort by:</span>
