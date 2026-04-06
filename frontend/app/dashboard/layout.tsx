@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import { 
   LayoutGrid, 
@@ -52,23 +51,28 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState('Student');
+  const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100');
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
   };
 
-  // Ensure unauthenticated users are redirected to login
+  // Ensure unauthenticated users are redirected to login & populate real user data
   useEffect(() => {
     const fetchMe = async () => {
       try {
         const res = await fetch('/api/auth/me', { credentials: 'include' });
         if (!res.ok) {
           window.location.href = '/login';
+          return;
         }
+        const data = await res.json();
+        if (data?.fullName) setUserName(data.fullName);
+        if (data?.avatarUrl) setUserAvatar(data.avatarUrl);
       } catch {
         window.location.href = '/login';
       }
@@ -79,18 +83,11 @@ export default function DashboardLayout({
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/auth/logout', { 
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (res.ok) {
-        router.push('/login');
-      }
-    } catch (err) {
-      console.error('Logout failed:', err);
-      // Fallback redirect if API fails
-      router.push('/login');
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      // ignore network errors — still redirect
     }
+    window.location.href = '/login';
   };
 
   const dashboardLinks: EnhancedDashboardLink[] = [
@@ -249,9 +246,9 @@ export default function DashboardLayout({
 
               <div className={styles.userProfile}>
                 <div className={styles.userInfo}>
-                  <span className={styles.userName}>Alex</span>
+                  <span className={styles.userName}>{userName.split(' ')[0]}</span>
                 </div>
-                <Avatar src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100" name="Alex Carter" size="sm" />
+                <Avatar src={userAvatar} name={userName} size="sm" />
               </div>
             </div>
           </header>

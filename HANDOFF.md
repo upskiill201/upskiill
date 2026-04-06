@@ -138,6 +138,9 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Premium Redesigned Order Flow**: Successfully decoupled `/cart` and `/checkout`, implementing a satisfying, brand-aligned white/blue premium UI for both. ✅ (2026-04-05)
 - [x] **Separated Payment Methods**: Stripe (Cards/Wallets) and MeSomb (Mobile Money) are now split into clean, animated tabs with provider-specific validation. ✅ (2026-04-05)
 - [x] **Student Dashboard Layout & UX Fixes**: Fixed sidebar scrolling issue (position: fixed) and implemented full backend-integrated logout logic. ✅ (2026-04-06)
+- [x] **Production Deployment Stability**: Fixed Vercel TypeScript build failures by accurately typing `Map<string, Enrollment>` in `CoursesPage`. ✅ (2026-04-06)
+- [x] **Instructor Routing & Auth Fixes**: Corrected the marketing `/teach` page to isolate and strictly route instructors down the `/instructor/signup` funnel, separating them from the generic student flow. ✅ (2026-04-06)
+- [x] **Instantaneous Logout Engine**: Upgraded both Student & Instructor dashboards to use hard Navigation (`window.location.href`) during logout for immediate, 1-click state clearance without double-clicking. ✅ (2026-04-06)
 
 ### Pillar 4: Student Learning System — 🟢 Complete (98%)
 - [x] Student Dashboard (`/dashboard`) - Fixed Sidebar & Layout 

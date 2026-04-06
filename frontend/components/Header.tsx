@@ -81,10 +81,10 @@ export default function Header() {
           </Link>
           
           <div className={styles.authButtons}>
-            <Link href="/login" className={styles.loginBtn}>
+            <Link href={pathname === '/teach' ? "/instructor/login" : "/login"} className={styles.loginBtn}>
               Login
             </Link>
-            <Link href="/signup" className={styles.signupBtn}>
+            <Link href={pathname === '/teach' ? "/instructor/signup" : "/signup"} className={styles.signupBtn}>
               Sign Up
             </Link>
           </div>
