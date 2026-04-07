@@ -16,9 +16,10 @@
 - [x] Remove all `localStorage` token usage — 100% cookie-based
 - [x] All 5 manual tests passed ✅
 
-## 🟦 Pillar 2: Course Marketplace & Core Systems — 🟢 90% Complete (2026-04-03)
 > [!IMPORTANT]
-> **PRODUCTION BACKEND RULE:** All API calls in the frontend MUST use `https://upskiill-backend.onrender.com`. Hardcoded `localhost:3001` usage is prohibited in production-ready code.
+> **STRICT PRODUCTION BACKEND RULE:** The Front-end MUST ALWAYS point to the production backend (`https://upskiill-backend.onrender.com`). NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
+> 
+> **STRICT BRANCHING RULE:** All work must always be pushed to a new branch for Pull Requests (PR) and Code Review before merging. We never push directly to main.
 
 ### Step A — Finish Feature Components (Phase 3) ✅ COMPLETE
 - [x] Build Global responsive `<Header />` Component
