@@ -5,6 +5,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { firebaseAdmin } from './firebase-admin';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
         email: dto.email,
         password: hash,
         fullName: dto.fullName,
-        role: requestedRole,
+        role: requestedRole as Role,
       },
     });
 
@@ -99,7 +100,7 @@ export class AuthService {
             email,
             password: hash,
             fullName: name,
-            role: requestedRole,
+            role: requestedRole as Role,
           },
         });
       } else {

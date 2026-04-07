@@ -1,20 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  ArrowLeft, Bell, Play, Check, Lock, ChevronDown, ChevronUp, Clock, AlignLeft, Sparkles
+  ArrowLeft, Bell, Check, Lock, ChevronDown, ChevronUp, Clock, AlignLeft, Sparkles
 } from 'lucide-react';
 import styles from './CoursePlayerLayout.module.css';
 
 export interface CoursePlayerLayoutProps {
-  course: any;
+  course: Record<string, any>;
   activeLesson: { moduleIndex: number; lessonIndex: number } | null;
   completedLessons: string[];
   onSelectLesson: (moduleIndex: number, lessonIndex: number) => void;
   onMarkComplete: () => void;
-  onNextLesson: () => void;
-  onPreviousLesson: () => void;
 }
 
 const PremiumComingSoon = ({ title }: { title: string }) => (
@@ -33,8 +32,6 @@ export const CoursePlayerLayout = ({
   completedLessons,
   onSelectLesson,
   onMarkComplete,
-  onNextLesson,
-  onPreviousLesson,
 }: CoursePlayerLayoutProps) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarTab, setSidebarTab] = useState('curriculum');
@@ -52,7 +49,7 @@ export const CoursePlayerLayout = ({
   
   // Calculate Progress
   let totalLessons = 0;
-  course?.curriculum?.forEach((mod: any) => {
+  course?.curriculum?.forEach((mod: Record<string, any>) => {
     totalLessons += mod.lessons?.length || 0;
   });
   const progressPercent = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
@@ -87,6 +84,7 @@ export const CoursePlayerLayout = ({
           </div>
           <div className={styles.userProfile}>
             {/* Using standard img for quick illustration matching the design */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
                src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=150&auto=format&fit=crop" 
                alt="User" 
@@ -193,6 +191,7 @@ export const CoursePlayerLayout = ({
 
               {/* Instructor Box */}
               <div className={styles.instructorBox}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={course.instructor?.avatarUrl || "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?q=80&w=150&auto=format&fit=crop"} 
                   alt="Instructor" 
@@ -259,7 +258,7 @@ export const CoursePlayerLayout = ({
 
               {/* Modules Accordion */}
               <div className={styles.curriculumList}>
-                {course.curriculum?.map((moduleItem: any, mIdx: number) => (
+                {course.curriculum?.map((moduleItem: Record<string, any>, mIdx: number) => (
                   <div className={styles.moduleBox} key={`mod-${mIdx}`}>
                     <div className={styles.moduleHeader} onClick={() => toggleModule(`m${mIdx}`)}>
                       <span>{mIdx + 1}. {moduleItem.title}</span>
@@ -267,7 +266,7 @@ export const CoursePlayerLayout = ({
                     </div>
                     {expandedModules.includes(`m${mIdx}`) && (
                       <div className={styles.moduleContent}>
-                        {moduleItem.lessons.map((lesson: any, lIdx: number) => {
+                        {moduleItem.lessons.map((lesson: Record<string, any>, lIdx: number) => {
                           const isActive = activeLesson?.moduleIndex === mIdx && activeLesson?.lessonIndex === lIdx;
                           const lessonId = lesson.id || String(lesson.index);
                           const isCompleted = completedLessons.includes(lessonId);

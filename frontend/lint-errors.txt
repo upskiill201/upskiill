@@ -1,0 +1,58 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+C:\Users\HP\upskiill\frontend\app\cart\page.tsx
+   8:22  warning  'CartItemComponent' is defined but never used                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  76:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\HP\upskiill\frontend\app\checkout\success\page.tsx
+   5:24  warning  'Play' is defined but never used                                 @typescript-eslint/no-unused-vars
+  41:15  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\HP\upskiill\frontend\app\instructor\layout.tsx
+  4:10  warning  'useRouter' is defined but never used  @typescript-eslint/no-unused-vars
+  8:3   warning  'BarChart2' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\HP\upskiill\frontend\app\learn\[id]\page.tsx
+  11:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\HP\upskiill\frontend\app\teach\page.tsx
+   3:27  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+   3:38  warning  'useRef' is defined but never used     @typescript-eslint/no-unused-vars
+  11:3   warning  'Globe' is defined but never used      @typescript-eslint/no-unused-vars
+  13:3   warning  'Video' is defined but never used      @typescript-eslint/no-unused-vars
+  14:3   warning  'Rocket' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\HP\upskiill\frontend\components\features\CoursePlayerLayout.tsx
+    6:20  warning  'Play' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   11:11  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   36:3   warning  'onNextLesson' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   37:3   warning  'onPreviousLesson' is defined but never used                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   55:37  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   90:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  196:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  262:54  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  270:58  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+
+C:\Users\HP\upskiill\frontend\context\CartContext.tsx
+  33:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\HP\upskiill\frontend\context\CartContext.tsx:33:9
+  31 |     if (savedCart) {
+  32 |       try {
+> 33 |         setItems(JSON.parse(savedCart));
+     |         ^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |       } catch (e) {
+  35 |         console.error('Failed to parse cart from localStorage', e);
+  36 |       }  react-hooks/set-state-in-effect
+
+??? 22 problems (7 errors, 15 warnings)
+

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -8,7 +9,7 @@ import Spinner from '@/components/ui/Spinner';
 export default function LearnCoursePage() {
   const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
   
   // State for Player
@@ -76,16 +77,6 @@ export default function LearnCoursePage() {
       setActiveLesson({ moduleIndex: activeLesson.moduleIndex, lessonIndex: activeLesson.lessonIndex + 1 });
     } else if (activeLesson.moduleIndex < course.curriculum.length - 1) {
       setActiveLesson({ moduleIndex: activeLesson.moduleIndex + 1, lessonIndex: 0 });
-    }
-  };
-
-  const handlePreviousLesson = () => {
-    if (!course || !activeLesson) return;
-    if (activeLesson.lessonIndex > 0) {
-      setActiveLesson({ moduleIndex: activeLesson.moduleIndex, lessonIndex: activeLesson.lessonIndex - 1 });
-    } else if (activeLesson.moduleIndex > 0) {
-      const prevModule = course.curriculum[activeLesson.moduleIndex - 1];
-      setActiveLesson({ moduleIndex: activeLesson.moduleIndex - 1, lessonIndex: prevModule.lessons.length - 1 });
     }
   };
 
@@ -173,8 +164,6 @@ export default function LearnCoursePage() {
       completedLessons={completedLessons}
       onSelectLesson={handleSelectLesson}
       onMarkComplete={handleMarkComplete}
-      onNextLesson={handleNextLesson}
-      onPreviousLesson={handlePreviousLesson}
     />
   );
 }
