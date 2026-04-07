@@ -142,6 +142,9 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Production Deployment Stability**: Fixed Vercel TypeScript build failures by accurately typing `Map<string, Enrollment>` in `CoursesPage`. ✅ (2026-04-06)
 - [x] **Instructor Routing & Auth Fixes**: Corrected the marketing `/teach` page to isolate and strictly route instructors down the `/instructor/signup` funnel, separating them from the generic student flow. ✅ (2026-04-06)
 - [x] **Instantaneous Logout Engine**: Upgraded both Student & Instructor dashboards to use hard Navigation (`window.location.href`) during logout for immediate, 1-click state clearance without double-clicking. ✅ (2026-04-06)
+- [x] **Firebase Auth Robustness**: Fortified NestJS `ValidationPipe` to securely parse `FirebaseLoginDto` ensuring `idToken` payload is never stripped during social sign-on. ✅ (2026-04-06)
+- [x] **Dashboard Render Stability**: Guarded Prisma JSON arrays against corrupted strings preventing fatal Next.js "dark screen" hydrated errors rendering for seeded users over `.reduce` operations. ✅ (2026-04-06)
+- [x] **Global Auth Header State**: Revamped `Header.tsx` to instantly sync with JWT state exposing a dynamic Profile/Avatar interactive dropdown mirroring the logged-in user. Include fully stylized mobile-slider navigation. ✅ (2026-04-06)
 
 ### Pillar 4: Student Learning System — 🟢 Complete (98%)
 - [x] Student Dashboard (`/dashboard`) - Fixed Sidebar & Layout 

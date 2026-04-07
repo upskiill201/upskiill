@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Search, ShoppingCart, Menu, User, LayoutGrid, LogOut } from 'lucide-react';
+import { ChevronDown, Search, ShoppingCart, Menu, User, LayoutGrid, LogOut, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Avatar from './ui/Avatar';
 import styles from './Header.module.css';
@@ -15,6 +15,7 @@ export default function Header() {
   
   const [user, setUser] = useState<{ fullName: string, email: string, avatarUrl: string | null } | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -57,6 +58,11 @@ export default function Header() {
     }
     window.location.href = '/login';
   };
+  
+  // Close mobile nav when changing routes
+  useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [pathname]);
 
   if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard') || pathname.startsWith('/instructor')) return null;
 
@@ -67,6 +73,7 @@ export default function Header() {
           type="button"
           className={styles.mobileMenuBtn}
           aria-label="Open navigation menu"
+          onClick={() => setIsMobileNavOpen(true)}
         >
           <Menu size={24} />
         </button>
@@ -173,6 +180,71 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* MOBILE NAVIGATION MENU */}
+      {isMobileNavOpen && (
+        <>
+          <div className={styles.mobileNavOverlay} onClick={() => setIsMobileNavOpen(false)} />
+          <div className={styles.mobileNavPanel}>
+            <div className={styles.mobileNavHeader}>
+              <Link href="/" className={styles.logo} onClick={() => setIsMobileNavOpen(false)}>
+                <Image 
+                  src="/logo.png" 
+                  alt="Upskiill Logo" 
+                  width={140} 
+                  height={40} 
+                  style={{ width: 'auto', height: '32px' }}
+                />
+              </Link>
+              <button 
+                className={styles.closeMobileMenuBtn} 
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className={styles.mobileNavContent}>
+              {user ? (
+                <div className={styles.mobileUserInfo}>
+                  <Avatar src={user.avatarUrl || undefined} name={user.fullName} size="md" />
+                  <div className={styles.mobileUserDetails}>
+                    <span className={styles.userName}>{user.fullName}</span>
+                    <span className={styles.userEmail}>{user.email}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.mobileAuthRow}>
+                  <Link href="/login" className={styles.loginBtn}>Login</Link>
+                  <Link href="/signup" className={styles.signupBtn}>Sign Up</Link>
+                </div>
+              )}
+
+              <nav className={styles.mobileNavLinks}>
+                <button className={styles.mobileNavLinkBtn}>
+                  Explore Courses <ChevronDown size={18} />
+                </button>
+                <Link href="/teach" className={styles.mobileNavLink}>Teach on Upskiill</Link>
+                
+                {user && (
+                  <>
+                    <div className={styles.mobileDivider} />
+                    <Link href="/dashboard" className={styles.mobileNavLink}>
+                      <LayoutGrid size={18} /> Dashboard
+                    </Link>
+                    <Link href="/profile" className={styles.mobileNavLink}>
+                      <User size={18} /> Edit Profile
+                    </Link>
+                    <button onClick={handleLogout} className={`${styles.mobileNavLink} ${styles.logoutText}`}>
+                      <LogOut size={18} /> Logout
+                    </button>
+                  </>
+                )}
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
     </header>
   );
 }

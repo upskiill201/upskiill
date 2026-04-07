@@ -59,6 +59,9 @@
 - [x] **Cross-Domain Auth Fix (PR 48)**: Renamed `middleware.ts` to `proxy.ts`, configured auth fetches to `/api`. ✅
 - [x] **Marketplace Smart CTAs**: Browse (`/courses`) and Details (`/courses/[id]`) natively detect enrollment ownership, morphing "Buy Now" into "Continue Learning". ✅
 - [x] **Vercel Build Stability**: Rectified TypeScript Type Checks surrounding dynamically assigned components (`CoursePlayerLayout`). ✅
+- [x] **Firebase Auth Robustness**: Fortified NestJS `ValidationPipe` to securely parse `FirebaseLoginDto` ensuring `idToken` payload is never stripped during social sign-on. ✅
+- [x] **Dashboard Render Stability**: Guarded Prisma JSON arrays against corrupted strings preventing fatal Next.js "dark screen" hydrated errors rendering for seeded users. ✅
+- [x] **Global Auth Header State**: Revamped `Header.tsx` to instantly sync with JWT state exposing a dynamic Profile/Avatar interactive dropdown with fully stylized mobile navigation. ✅
 ## 🟦 Pillar 3: Course Sales Page — ✅ 100% Complete (2026-04-03)
 - [x] Build `InstructorCard` 
 - [x] Build `ReviewCard`
