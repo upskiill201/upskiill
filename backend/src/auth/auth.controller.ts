@@ -16,6 +16,11 @@ import { LoginDto } from './dto/login.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 
+export class FirebaseLoginDto {
+  idToken: string;
+  role?: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -37,6 +42,20 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto);
+    this.setCookie(res, result.access_token);
+    return result;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('firebase')
+  async firebaseLogin(
+    @Body() dto: FirebaseLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.firebaseSignIn(
+      dto.idToken,
+      dto.role || 'STUDENT',
+    );
     this.setCookie(res, result.access_token);
     return result;
   }

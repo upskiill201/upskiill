@@ -1,6 +1,7 @@
 > Last updated: 2026-04-06 01:50 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
-> **BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com`. Local `localhost:3001` is reserved for temporary local testing ONLY. Emphasize this in all new features.
+> **STRICT BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com` ALWAYS. NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
+> **STRICT BRANCHING RULE:** All work must always be pushed to a new branch to facilitate Pull Requests (PR), Code Reviews, and optimization BEFORE merging into the main branch. Direct pushes to the main branch are strictly prohibited.
 > **SEEDING POLICY:** Do NOT run `deleteMany()` at the start of the seeder as a default. Use `upsert()` or existence checks for core test data (Instructors & Students) to ensure we update what exists and preserve history instead of wiping the DB on every build.
 
 ---
