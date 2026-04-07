@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, Trash2, Shield, RotateCcw, Zap } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { CartItem as CartItemComponent } from '../../components/features/CartItem';
+
 import styles from './CartPage.module.css';
 
 export default function CartPage() {
@@ -73,7 +73,10 @@ export default function CartPage() {
                   {/* Thumbnail */}
                   <div className={styles.itemThumb}>
                     {item.thumbnail ? (
-                      <img src={item.thumbnail} alt={item.title} className={styles.thumbImg} />
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={item.thumbnail} alt={item.title} className={styles.thumbImg} />
+                      </>
                     ) : (
                       <div className={styles.thumbPlaceholder}>
                         <Zap size={20} />

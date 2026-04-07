@@ -478,8 +478,6 @@ export default function ComponentsPreviewPage() {
                 completedLessons={[]}
                 onSelectLesson={() => {}}
                 onMarkComplete={() => {}}
-                onNextLesson={() => {}}
-                onPreviousLesson={() => {}}
               />
             </div>
           </Group>

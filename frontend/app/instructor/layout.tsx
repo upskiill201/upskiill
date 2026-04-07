@@ -1,11 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   LayoutGrid,
   BookOpen,
-  BarChart2,
   Users,
   DollarSign,
   Settings,

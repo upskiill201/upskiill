@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Play, BookOpen, LayoutDashboard } from 'lucide-react';
+import { CheckCircle2, BookOpen, LayoutDashboard } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 
 export default function CheckoutSuccessPage() {
@@ -38,7 +38,7 @@ export default function CheckoutSuccessPage() {
 
       <div style={{ marginTop: '48px', padding: '24px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
         <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1E293B', marginBottom: '8px' }}>
-          What's next?
+          What&apos;s next?
         </h3>
         <p style={{ fontSize: '14px', color: '#64748B' }}>
           Check your email for a detailed receipt and instructions on how to access your learning portal. 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -8,10 +8,7 @@ import {
   BookOpen, 
   TrendingUp, 
   Users, 
-  Globe, 
   Award,
-  Video,
-  Rocket,
   Zap,
   Target,
   BarChart2,
