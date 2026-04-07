@@ -61,20 +61,18 @@ export default function DashboardLayout({
     setComingSoonFeature(feature);
   };
 
-  // Ensure unauthenticated users are redirected to login & populate real user data
+  // Fetch user data on mount (middleware handles route protection)
   useEffect(() => {
     const fetchMe = async () => {
       try {
         const res = await fetch('/api/auth/me', { credentials: 'include' });
-        if (!res.ok) {
-          window.location.href = '/login';
-          return;
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.fullName) setUserName(data.fullName);
+          if (data?.avatarUrl) setUserAvatar(data.avatarUrl);
         }
-        const data = await res.json();
-        if (data?.fullName) setUserName(data.fullName);
-        if (data?.avatarUrl) setUserAvatar(data.avatarUrl);
-      } catch {
-        window.location.href = '/login';
+      } catch (err) {
+        console.error('Failed to load user data', err);
       }
     };
     fetchMe();

@@ -106,31 +106,21 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
 
   const triggerComingSoon = (feature: string) => setComingSoonFeature(feature);
 
-  // Try to get real auth data and protect route
+  // Try to get real auth data (middleware handles route protection)
   useEffect(() => {
     const isAuthPageEnv = window.location.pathname.includes('/login') || window.location.pathname.includes('/signup');
-    if (isAuthPageEnv) return; // Don't redirect if already on login/signup page
+    if (isAuthPageEnv) return;
 
     const fetchMe = async () => {
       try {
         const res = await fetch('/api/auth/me', { credentials: 'include' });
-        if (!res.ok) {
-          window.location.href = '/instructor/login';
-          return;
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.fullName) setInstructorName(data.fullName);
+          if (data?.avatarUrl) setInstructorAvatar(data.avatarUrl);
         }
-        
-        const data = await res.json();
-        
-        // Strict Role Check: Kick standard students trying to access Instructor Studio
-        if (data.role && data.role !== 'INSTRUCTOR') {
-          window.location.href = '/dashboard';
-          return;
-        }
-
-        if (data?.fullName) setInstructorName(data.fullName);
-        if (data?.avatarUrl) setInstructorAvatar(data.avatarUrl);
-      } catch {
-        window.location.href = '/instructor/login';
+      } catch (err) {
+        console.error('Failed to load instructor data', err);
       }
     };
     fetchMe();
