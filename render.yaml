@@ -14,3 +14,21 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: PORT
+        value: 3001
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: MESOMB_APP_KEY
+        sync: false
+      - key: MESOMB_ACCESS_KEY
+        sync: false
+      - key: MESOMB_SECRET_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
