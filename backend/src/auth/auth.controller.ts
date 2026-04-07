@@ -16,8 +16,15 @@ import { LoginDto } from './dto/login.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+
 export class FirebaseLoginDto {
+  @IsString()
+  @IsNotEmpty()
   idToken: string;
+
+  @IsString()
+  @IsOptional()
   role?: string;
 }
 
