@@ -136,8 +136,17 @@ export default function DashboardPage() {
               const c = enrollment.course;
               if (!c) return null;
               
+              // Safely handle curriculum JSON (sometimes Prisma returns stringified JSON, sometimes null)
+              let currArray = [];
+              try {
+                if (Array.isArray(c.curriculum)) currArray = c.curriculum;
+                else if (typeof c.curriculum === 'string') currArray = JSON.parse(c.curriculum);
+              } catch {
+                currArray = [];
+              }
+              
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const totalLess = c.curriculum?.reduce((acc: number, mod: any) => acc + (mod.lessons?.length || 0), 0) || 0;
+              const totalLess = currArray.reduce((acc: number, mod: any) => acc + (mod.lessons?.length || 0), 0);
               const completedLessArray = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
               const progressPct = totalLess > 0 ? Math.round((completedLessArray.length / totalLess) * 100) : enrollment.progress || 0;
 
