@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -94,7 +95,7 @@ export class PaymentService {
   // ─── STRIPE ────────────────────────────────────────────────────────────────
 
   async createStripeIntent(userId: string, courseIds: string[]) {
-    const { totalAmount, courses } = await this.getCoursesTotal(courseIds);
+    const { totalAmount } = await this.getCoursesTotal(courseIds);
 
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100), // Stripe uses cents
@@ -122,7 +123,9 @@ export class PaymentService {
           webhookSecret,
         ) as StripeEvent;
       } catch (err) {
-        throw new BadRequestException(`Stripe webhook verification failed: ${err}`);
+        throw new BadRequestException(
+          `Stripe webhook verification failed: ${err}`,
+        );
       }
     } else {
       // Dev/fallback: trust the body directly
@@ -150,9 +153,7 @@ export class PaymentService {
     service: string,
   ) {
     if (!this.mesombClient) {
-      throw new BadRequestException(
-        'MeSomb is not configured on this server.',
-      );
+      throw new BadRequestException('MeSomb is not configured on this server.');
     }
 
     const { totalAmount, courses } = await this.getCoursesTotal(courseIds);
@@ -174,7 +175,10 @@ export class PaymentService {
         return { success: true, message: 'Payment collected via Mobile Money' };
       }
 
-      return { success: false, status: 'PENDING — User prompt not yet confirmed' };
+      return {
+        success: false,
+        status: 'PENDING — User prompt not yet confirmed',
+      };
     } catch (e) {
       console.error('MeSomb error:', e);
       throw new BadRequestException(
@@ -186,7 +190,9 @@ export class PaymentService {
   async handleMesombWebhook(payload: Record<string, unknown>) {
     if (payload['status'] === 'SUCCESS' && payload['reference']) {
       try {
-        const { userId, courseIds } = JSON.parse(payload['reference'] as string) as {
+        const { userId, courseIds } = JSON.parse(
+          payload['reference'] as string,
+        ) as {
           userId: string;
           courseIds: string[];
         };

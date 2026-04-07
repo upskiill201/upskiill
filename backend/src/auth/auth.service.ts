@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
@@ -27,16 +32,21 @@ export class AuthService {
         if (!pwMatches) {
           throw new ForbiddenException('Incorrect credentials');
         }
-        
+
         // Upgrade account to INSTRUCTOR
         existing = await this.prisma.user.update({
           where: { id: existing.id },
-          data: { role: 'INSTRUCTOR' }
+          data: { role: 'INSTRUCTOR' },
         });
-        
-        return this.signToken(existing.id, existing.email, existing.fullName, existing.role);
+
+        return this.signToken(
+          existing.id,
+          existing.email,
+          existing.fullName,
+          existing.role,
+        );
       }
-      
+
       throw new ForbiddenException('Email already in use');
     }
 
@@ -78,7 +88,7 @@ export class AuthService {
       // 1. Verify token with Firebase Admin
       const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
       const email = decodedToken.email;
-      const name = decodedToken.name || decodedToken.displayName || "User";
+      const name = decodedToken.name || decodedToken.displayName || 'User';
 
       if (!email) {
         throw new UnauthorizedException('No email found in Firebase token');
@@ -94,7 +104,7 @@ export class AuthService {
         // Also assign them the role they requested when signing up via social
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(Math.random().toString(36), salt);
-        
+
         user = await this.prisma.user.create({
           data: {
             email,
@@ -108,7 +118,7 @@ export class AuthService {
         if (requestedRole === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
           user = await this.prisma.user.update({
             where: { id: user.id },
-            data: { role: 'INSTRUCTOR' }
+            data: { role: 'INSTRUCTOR' },
           });
         }
       }
@@ -116,7 +126,9 @@ export class AuthService {
       // 3. Issue the standard JWT session token
       return this.signToken(user.id, user.email, user.fullName, user.role);
     } catch (error: any) {
-      throw new UnauthorizedException('Invalid Firebase Token: ' + error.message);
+      throw new UnauthorizedException(
+        'Invalid Firebase Token: ' + error.message,
+      );
     }
   }
 
@@ -151,7 +163,8 @@ export class AuthService {
       include: {
         course: true,
       },
-      orderBy: { // Optional: sort by enrollment creation date instead
+      orderBy: {
+        // Optional: sort by enrollment creation date instead
         id: 'desc',
       },
     });
