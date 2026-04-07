@@ -45,7 +45,7 @@ function AuthContent() {
       const endpoint = mode === 'signup' ? '/api/auth/signup' : '/api/auth/login';
       const body = mode === 'signup' 
         ? { email, password, fullName, role: 'INSTRUCTOR' }
-        : { email, password };
+        : { email, password, role: 'INSTRUCTOR' };
 
       const res = await fetch(endpoint, {
         method: 'POST',

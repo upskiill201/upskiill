@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
+    let user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
@@ -80,7 +80,18 @@ export class AuthService {
       throw new ForbiddenException('Incorrect credentials');
     }
 
-    return this.signToken(user.id, user.email, user.fullName, user.role);
+    // Upgrade account to INSTRUCTOR if they logged in via the instructor portal
+    // and aren't an instructor yet
+    let roleToAssign = user.role;
+    if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: { role: 'INSTRUCTOR' },
+      });
+      roleToAssign = 'INSTRUCTOR' as Role;
+    }
+
+    return this.signToken(user.id, user.email, user.fullName, roleToAssign);
   }
 
   async firebaseSignIn(idToken: string, requestedRole: string) {
