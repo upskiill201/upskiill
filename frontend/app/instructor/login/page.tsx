@@ -8,6 +8,7 @@ import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { FaGraduationCap, FaChalkboardTeacher, FaApple, FaLinkedin, FaFacebook, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import Button from '@/components/ui/Button';
+import { signInWithGoogle, signInWithFacebook } from '@/lib/firebase';
 import styles from './InstructorAuth.module.css';
 
 // Using Suspense boundary to cleanly fetch search params without blocking
@@ -67,6 +68,46 @@ function AuthContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSocialAuth = async (provider: 'google' | 'facebook') => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = provider === 'google' 
+        ? await signInWithGoogle() 
+        : await signInWithFacebook();
+        
+      const idToken = await result.user.getIdToken();
+
+      const res = await fetch(`/api/auth/firebase`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ idToken, role: 'INSTRUCTOR' }), // Crucial for Instructor pages!
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Social authentication failed');
+      }
+
+      window.location.href = '/instructor';
+    } catch (err: unknown) {
+      console.error(err);
+      if (err instanceof Error) {
+        setError(err.message || 'Authentication user popup dismissed or failed');
+      } else {
+        setError('Authentication user popup dismissed or failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showComingSoon = () => {
+    setError('Apple and LinkedIn integrations are coming soon!');
   };
 
   const toggleMode = () => {
@@ -187,16 +228,16 @@ function AuthContent() {
           </div>
 
           <div className={styles.socialGrid}>
-            <button type="button" className={styles.socialBtn}>
+            <button type="button" className={styles.socialBtn} onClick={() => handleSocialAuth('google')} disabled={loading}>
               <FcGoogle size={18} /> Google
             </button>
-            <button type="button" className={styles.socialBtn}>
+            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
               <FaLinkedin size={18} color="#0A66C2" /> LinkedIn
             </button>
-            <button type="button" className={styles.socialBtn}>
+            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
               <FaApple size={18} color="#000000" /> Apple
             </button>
-            <button type="button" className={styles.socialBtn}>
+            <button type="button" className={styles.socialBtn} onClick={() => handleSocialAuth('facebook')} disabled={loading}>
               <FaFacebook size={18} color="#1877F2" /> Facebook
             </button>
           </div>
