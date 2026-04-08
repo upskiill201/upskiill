@@ -1,4 +1,4 @@
-> Last updated: 2026-04-06 01:50 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-08 23:44 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **STRICT BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com` ALWAYS. NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
 > **STRICT BRANCHING RULE:** All work must always be pushed to a new branch to facilitate Pull Requests (PR), Code Reviews, and optimization BEFORE merging into the main branch. Direct pushes to the main branch are strictly prohibited.
@@ -145,6 +145,44 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Firebase Auth Robustness**: Fortified NestJS `ValidationPipe` to securely parse `FirebaseLoginDto` ensuring `idToken` payload is never stripped during social sign-on. ✅ (2026-04-06)
 - [x] **Dashboard Render Stability**: Guarded Prisma JSON arrays against corrupted strings preventing fatal Next.js "dark screen" hydrated errors rendering for seeded users over `.reduce` operations. ✅ (2026-04-06)
 - [x] **Global Auth Header State**: Revamped `Header.tsx` to instantly sync with JWT state exposing a dynamic Profile/Avatar interactive dropdown mirroring the logged-in user. Include fully stylized mobile-slider navigation. ✅ (2026-04-06)
+- [x] **Mobile Navigation Menu**: Implemented a full-screen slide-in hamburger drawer for `Header.tsx` with auth-aware state (shows Avatar+links for logged-in users, Login/Signup for guests). ✅ (2026-04-07)
+- [x] **Course Creation Wizard (Part 1)**: Built the 4-step instructor onboarding wizard at `/instructor/create`. ✅ (2026-04-08)
+
+---
+
+## 🧙 Course Creation Wizard — Architecture Reference
+
+> **Branch:** `course-creator-part-one` | **Status:** Part 1 Complete ✅ — Paused for Part 2 screenshots.
+
+### Part 1: The Wizard (Steps 1–4) at `/instructor/create`
+
+The wizard is a single-page client component (`InstructorLayout`-wrapped with shared `ComingSoonContext`). Steps are tracked in local state. The UI follows Udemy's minimalist design pattern with heavy black borders, animated grey selection cards, and sticky header/footer controls.
+
+| Step | Route | Content | Validation |
+|---|---|---|---|
+| **1/4** | `/instructor/create` | Select "Course" vs "Practice Test". Tapping "Practice Test" fires the global `triggerComingSoon()` modal from the layout context — no page change. | Requires a type selection to enable "Continue" |
+| **2/4** | Same page (local state) | Title input (`maxLength=60`). Placeholder: _e.g. Learn Photoshop CS6 from Scratch_ | Title must be non-empty |
+| **3/4** | Same page (local state) | Category dropdown with all 13 official categories + "I don't know yet" | Category must be selected |
+| **4/4** | Same page (local state) | Time commitment radio buttons (4 options: 0-2h / 2-4h / 5+h / Undecided). Final button says **"Create Course"** | A radio option must be selected |
+
+**On Submit:** A `POST /api/courses` request is fired to `NEXT_PUBLIC_API_URL` (production) with `{ title, category, creatorTimeWeekly }` and `credentials: 'include'`. Backend auto-generates a collision-proof slug and creates a `published: false` course draft. The response `data.id` is used to redirect to the Course Studio.
+
+### Part 2: The Course Studio Shell at `/instructor/courses/[id]/manage`
+
+Currently a **placeholder shell** with:
+- A dark header bar: `← Back to courses | Course Draft Studio | [DRAFT] | [Save]`
+- A white `280px` sidebar stub (awaiting layout screenshots)
+- A main canvas showing a success message + the new course's UUID
+
+> **⏸️ PAUSED HERE** — Once the user provides the remaining course builder screenshots (sidebar nav, "Intended Learners" form, Curriculum builder, etc.), we will build the full multi-section course studio.
+
+### Backend: `POST /api/courses` Endpoint
+
+| Layer | File | Change |
+|---|---|---|
+| **Schema** | `backend/prisma/schema.prisma` | Added `creatorTimeWeekly String?` field to `Course` model. Applied via `prisma db push` (non-destructive). |
+| **Service** | `backend/src/course/course.service.ts` | Added `createCourse(userId, data)` method. Generates `baseSlug` from title + 6-char random hash. Creates draft with `published: false`. |
+| **Controller** | `backend/src/course/course.controller.ts` | Added `POST /courses` route guarded by `@UseGuards(AuthGuard('jwt'))`. Extracts `instructorId` from `req.user.id`. |
 
 ### Pillar 4: Student Learning System — 🟢 Complete (98%)
 - [x] Student Dashboard (`/dashboard`) - Fixed Sidebar & Layout 
@@ -154,13 +192,16 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
 - [ ] **FINAL STEP:** End-to-end Live Transaction Verification (P0)
 
-### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 80%)
+### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 85%)
 - [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
 - [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated creators UI ✅
 - [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling ✅
 - [x] Instructor Overview Page (`/instructor/page.tsx`) — Seeded stats, table metrics, instructor score ✅
 - [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
 - [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅ (NEW: 2026-04-06)
+- [x] **Course Creation Wizard Part 1** (`/instructor/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅ (2026-04-08)
+- [ ] **Course Studio (`/instructor/courses/[id]/manage`)** — ⏸️ Shell built. Awaiting builder UI screenshots to implement full layout.
+- [ ] Course Creation Wizard Part 2 — Intended Learners, Curriculum Builder, Video Upload
 - [ ] Course Creation Wizard (`/instructor/create`)
 - [ ] Curriculum Video Upload (S3)
 

@@ -27,6 +27,7 @@ import {
   FaRocket,
 } from 'react-icons/fa';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // <-- ADD THIS
 import Badge from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import Button from '@/components/ui/Button';
@@ -203,6 +204,7 @@ const MONTHLY_REVENUE = [2800, 3600, 3200, 4500, 4200, 5400, 4900, 6400, 5900, 7
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function InstructorPage() {
+  const router = useRouter(); // <-- ADD THIS
   const { triggerComingSoon } = useComingSoon();
   const [activityTab, setActivityTab] = useState<'all' | 'enrollments' | 'reviews' | 'questions'>('all');
 
@@ -242,8 +244,8 @@ export default function InstructorPage() {
           </div>
         </div>
         <div className={styles.welcomeActions}>
-          <Button variant="primary" leftIcon={<Plus size={15} />} onClick={() => triggerComingSoon('Course Creator')}>
-            Create New Course
+        <Button variant="primary" leftIcon={<Plus size={15} />} onClick={() => router.push('/instructor/create')}>
+        Create New Course
           </Button>
           <Link href="/instructor/analytics">
             <Button variant="outline" leftIcon={<ArrowUpRight size={15} />}>
@@ -402,7 +404,7 @@ export default function InstructorPage() {
             <h3 className={styles.cardTitle}>My Courses</h3>
             <p className={styles.cardSub}>Alex Rivera&apos;s published content on Upskiill</p>
           </div>
-          <Button variant="outline" leftIcon={<Plus size={14} />} onClick={() => triggerComingSoon('Course Creator')}>
+          <Button variant="outline" leftIcon={<Plus size={14} />} onClick={() => router.push('/instructor/create')}>
             Add Course
           </Button>
         </div>
@@ -505,7 +507,7 @@ export default function InstructorPage() {
               <button
                 key={i}
                 className={`${styles.quickAction} ${styles[`qa_${action.color}`]}`}
-                onClick={() => triggerComingSoon(action.feature)}
+                onClick={() => action.feature === 'Course Creator' ? router.push('/instructor/create') : triggerComingSoon(action.feature)}
               >
                 <div className={styles.qaIcon}>{action.icon}</div>
                 <span>{action.label}</span>
