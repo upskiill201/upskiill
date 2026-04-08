@@ -154,7 +154,7 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
   const sections = ['main', 'content', 'community', 'business'];
 
   // Auth pages, the full-screen create wizard, and the course studio do not need the sidebar layout
-  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create') || pathname.includes('/courses');
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create') || pathname.endsWith('/manage');
 
   return (
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>

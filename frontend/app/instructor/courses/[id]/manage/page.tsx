@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Check, Settings } from 'lucide-react';
+import Button from '@/components/ui/Button';
 import styles from './Studio.module.css';
 
 // Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
@@ -161,9 +162,9 @@ function IntendedLearnersPanel({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8 }}>
-        <button className={styles.saveBtn} onClick={save} disabled={isSaving}>
-          {isSaving ? 'Saving...' : 'Save'}
-        </button>
+        <Button variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
+          Save
+        </Button>
         {saved && (
           <span className={styles.savedTag}>
             <Check size={14} /> Saved!
@@ -192,7 +193,7 @@ function CourseStructurePanel() {
           <div style={{ fontSize: 40, marginBottom: 8 }}>📚</div>
           <h4>Our library of resources</h4>
           <p>Tips and guides to structuring a course students love</p>
-          <button className={styles.resourceBtn}>Teaching Center</button>
+          <Button variant="outline" size="sm">Teaching Center</Button>
         </div>
       </div>
 
@@ -342,7 +343,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       {/* ─── TOP BAR ─── */}
       <header className={styles.topBar}>
         <div className={styles.topBarLeft}>
-          <Link href="/instructor" className={styles.backBtn}>
+          <Link href="/instructor/courses" className={styles.backBtn}>
             <ArrowLeft size={16} /> Back to courses
           </Link>
           <span className={styles.topBarDivider}>|</span>
@@ -351,9 +352,9 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <span className={styles.videoInfo}>0min of video content uploaded</span>
         </div>
         <div className={styles.topBarRight}>
-          <button className={styles.saveBtn} disabled>
+          <Button variant="secondary" disabled>
             Save
-          </button>
+          </Button>
           <Settings size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
         </div>
       </header>
@@ -367,7 +368,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <SidebarGroup title="Publish your course" items={PUBLISH_ITEMS} />
 
           <div className={styles.sidebarSubmitArea}>
-            <button className={styles.submitBtn}>Submit for Review</button>
+            <Button variant="primary" fullWidth>Submit for Review</Button>
           </div>
         </aside>
 

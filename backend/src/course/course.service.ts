@@ -185,14 +185,19 @@ export class CourseService {
         slug: true,
         published: true,
         createdAt: true,
-        _count: { select: { enrolments: true } },
+        _count: { select: { enrollments: true } },
       },
     });
   }
 
-  async getOwnedDraft(userId: string, courseId: string) {
-    const course = await this.prisma.course.findUnique({
-      where: { id: courseId },
+  async getOwnedDraft(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: { 
+        OR: [
+          { id: courseIdOrSlug },
+          { slug: courseIdOrSlug }
+        ]
+      },
       include: {
         instructor: { select: { id: true, fullName: true, avatarUrl: true } },
       },
@@ -206,7 +211,7 @@ export class CourseService {
 
   async updateCourse(
     userId: string,
-    courseId: string,
+    courseIdOrSlug: string,
     data: {
       title?: string;
       description?: string;
@@ -221,14 +226,21 @@ export class CourseService {
       curriculum?: unknown;
     },
   ) {
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findFirst({ 
+      where: { 
+        OR: [
+          { id: courseIdOrSlug },
+          { slug: courseIdOrSlug }
+        ]
+      } 
+    });
     if (!course) throw new NotFoundException('Course not found');
     if (course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
 
     return await this.prisma.course.update({
-      where: { id: courseId },
+      where: { id: course.id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
         ...(data.description !== undefined && { description: data.description }),

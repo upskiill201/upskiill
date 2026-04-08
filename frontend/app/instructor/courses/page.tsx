@@ -94,7 +94,7 @@ export default function InstructorCoursesPage() {
           <div className={styles.bannerContent}>
             <h3>We upgraded practice tests so you can upgrade yours.</h3>
             <p>
-              With our creation improvements, new question types, and generative AI features, maximize your practice test's certification prep potential.
+              With our creation improvements, new question types, and generative AI features, maximize your practice test&apos;s certification prep potential.
             </p>
             <div className={styles.bannerActions}>
               <Button variant="primary" size="sm" style={{ padding: '0 16px', borderRadius: '0' }}>Learn more</Button>
@@ -116,7 +116,12 @@ export default function InstructorCoursesPage() {
       ) : (
         <div className={styles.courseList}>
           {filteredCourses.map(course => (
-            <Link key={course.id} href={`/instructor/courses/${course.id}/manage`} className={styles.courseRow}>
+            <Link key={course.id} href={`/instructor/courses/${course.slug}/manage`} className={styles.courseRow}>
+              {/* Hover Edit Overlay */}
+              <div className={styles.editBtnOverlay}>
+                <span className={styles.editOverlayLabel}>Edit / manage course</span>
+              </div>
+
               <div className={styles.courseIcon}>
                 <MonitorPlay size={32} strokeWidth={1} />
               </div>
