@@ -73,7 +73,7 @@ const NAV_LINKS: NavLink[] = [
   { id: 'analytics', label: 'Analytics', href: '/instructor/analytics', icon: <FaChartLine size={16} />, section: 'main' },
 
   // Content
-  { id: 'courses', label: 'My Courses', href: '/instructor/courses', icon: <BookOpen size={18} />, isComingSoon: true, section: 'content' },
+  { id: 'courses', label: 'My Courses', href: '/instructor/courses', icon: <BookOpen size={18} />, section: 'content' },
   { id: 'videos', label: 'Video Library', href: '/instructor/videos', icon: <FaVideo size={16} />, isComingSoon: true, section: 'content' },
   { id: 'quizzes', label: 'Quizzes', href: '/instructor/quizzes', icon: <FaPencilAlt size={16} />, isComingSoon: true, section: 'content' },
   { id: 'assignments', label: 'Assignments', href: '/instructor/assignments', icon: <FaClipboardList size={16} />, isComingSoon: true, badge: 4, section: 'content' },

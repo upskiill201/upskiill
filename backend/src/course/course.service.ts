@@ -175,6 +175,21 @@ export class CourseService {
     return newCourse;
   }
 
+  async getInstructorCourses(userId: string) {
+    return await this.prisma.course.findMany({
+      where: { instructorId: userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        published: true,
+        createdAt: true,
+        _count: { select: { enrolments: true } },
+      },
+    });
+  }
+
   async getOwnedDraft(userId: string, courseId: string) {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },

@@ -79,6 +79,12 @@ export class CourseController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('instructor/me')
+  async getInstructorCourses(@Req() req: any) {
+    return await this.courseService.getInstructorCourses(req.user.id as string);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id/draft')
   async getDraft(@Req() req: any, @Param('id') id: string) {
     return await this.courseService.getOwnedDraft(req.user.id as string, id);
