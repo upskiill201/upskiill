@@ -6,7 +6,10 @@ import {
   UseGuards,
   Req,
   Post,
+  Patch,
   Body,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from './course.service';
@@ -73,5 +76,34 @@ export class CourseController {
       category: body.category,
       creatorTimeWeekly: body.creatorTimeWeekly,
     });
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/draft')
+  async getDraft(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.getOwnedDraft(req.user.id as string, id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id')
+  async updateCourse(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body()
+    body: {
+      title?: string;
+      description?: string;
+      shortDescription?: string;
+      thumbnailUrl?: string;
+      price?: number;
+      originalPrice?: number;
+      level?: string;
+      whatYouWillLearn?: string[];
+      requirements?: string[];
+      targetAudience?: string[];
+      curriculum?: unknown;
+    },
+  ) {
+    return await this.courseService.updateCourse(req.user.id as string, id, body);
   }
 }

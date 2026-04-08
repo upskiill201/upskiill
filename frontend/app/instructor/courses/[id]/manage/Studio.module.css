@@ -1,0 +1,450 @@
+/* ─── LAYOUT ─── */
+.studioLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f7f9fa;
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+}
+
+/* ─── TOP BAR ─── */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background-color: #1c1d1f;
+  color: white;
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.backBtn {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.backBtn:hover {
+  opacity: 1;
+}
+
+.topBarDivider {
+  color: #6b7280;
+}
+
+.courseTitle {
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.draftBadge {
+  background-color: #374151;
+  color: #d1d5db;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.videoInfo {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.topBarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.saveBtn {
+  background-color: #ffffff;
+  color: #1c1d1f;
+  border: none;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 2px;
+}
+
+.saveBtn:hover {
+  background-color: #e5e7eb;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── BODY ─── */
+.studioBody {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── LEFT SIDEBAR ─── */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarGroup {
+  padding: 24px 0 8px;
+}
+
+.sidebarGroupTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  padding: 0 20px 8px;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebarItem:hover {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.sidebarItem.active {
+  color: #6366f1;
+  border-left-color: #6366f1;
+  background-color: #f5f3ff;
+  font-weight: 600;
+}
+
+.sidebarCircle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.sidebarCircle.done {
+  border-color: #6366f1;
+  background-color: #6366f1;
+  color: white;
+}
+
+.sidebarCircle.active {
+  border-color: #6366f1;
+}
+
+.sidebarSubmitArea {
+  margin-top: auto;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.submitBtn:hover {
+  background-color: #4f46e5;
+}
+
+/* ─── MAIN CONTENT ─── */
+.mainContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 48px;
+}
+
+.panel {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ─── SECTION HEADER ─── */
+.sectionTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1c1d1f;
+  margin-bottom: 8px;
+}
+
+.sectionIntro {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sectionIntro a {
+  color: #6366f1;
+  text-decoration: underline;
+}
+
+/* ─── FORM GROUPS ─── */
+.formGroup {
+  margin-bottom: 40px;
+}
+
+.formLabel {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1d1f;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.formHint {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.formHint a {
+  color: #6366f1;
+  text-decoration: underline;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+
+.fieldRow:focus-within {
+  border-color: #6366f1;
+}
+
+.fieldInput {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  background: transparent;
+  color: #1c1d1f;
+}
+
+.fieldInput::placeholder {
+  color: #9ca3af;
+}
+
+.fieldCharCount {
+  padding: 0 14px;
+  font-size: 12px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.addMoreBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: opacity 0.2s;
+}
+
+.addMoreBtn:hover {
+  opacity: 0.7;
+}
+
+/* ─── SAVE NOTIFICATION ─── */
+.savedTag {
+  font-size: 13px;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── COURSE STRUCTURE PANEL ─── */
+.structureHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 32px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 32px;
+}
+
+.structureHeaderText h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.structureHeaderText p {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.resourceBox {
+  min-width: 200px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  text-align: center;
+}
+
+.resourceBox h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.resourceBox p {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.resourceBtn {
+  background: white;
+  border: 1px solid #6366f1;
+  color: #6366f1;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resourceBtn:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.tipsList {
+  padding: 0;
+}
+
+.tipsTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1c1d1f;
+}
+
+.tipItem {
+  margin-bottom: 24px;
+}
+
+.tipItemTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 6px;
+}
+
+.tipItemDesc {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* ─── COMING SOON STUB PANEL ─── */
+.stubPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #9ca3af;
+  text-align: center;
+  gap: 16px;
+}
+
+.stubPanel h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.stubPanel p {
+  font-size: 15px;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .mainContent {
+    padding: 24px 16px;
+  }
+  .structureHeader {
+    flex-direction: column;
+  }
+}

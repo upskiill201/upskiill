@@ -174,4 +174,59 @@ export class CourseService {
 
     return newCourse;
   }
+
+  async getOwnedDraft(userId: string, courseId: string) {
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        instructor: { select: { id: true, fullName: true, avatarUrl: true } },
+      },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+    return course;
+  }
+
+  async updateCourse(
+    userId: string,
+    courseId: string,
+    data: {
+      title?: string;
+      description?: string;
+      shortDescription?: string;
+      thumbnailUrl?: string;
+      price?: number;
+      originalPrice?: number;
+      level?: string;
+      whatYouWillLearn?: string[];
+      requirements?: string[];
+      targetAudience?: string[];
+      curriculum?: unknown;
+    },
+  ) {
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.course.update({
+      where: { id: courseId },
+      data: {
+        ...(data.title !== undefined && { title: data.title }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.shortDescription !== undefined && { shortDescription: data.shortDescription }),
+        ...(data.thumbnailUrl !== undefined && { thumbnailUrl: data.thumbnailUrl }),
+        ...(data.price !== undefined && { price: data.price }),
+        ...(data.originalPrice !== undefined && { originalPrice: data.originalPrice }),
+        ...(data.level !== undefined && { level: data.level }),
+        ...(data.whatYouWillLearn !== undefined && { whatYouWillLearn: data.whatYouWillLearn }),
+        ...(data.requirements !== undefined && { requirements: data.requirements }),
+        ...(data.targetAudience !== undefined && { targetAudience: data.targetAudience }),
+        ...(data.curriculum !== undefined && { curriculum: data.curriculum as any }),
+      },
+    });
+  }
 }
