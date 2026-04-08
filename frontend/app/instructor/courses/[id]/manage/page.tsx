@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Check, BookOpen, Video, FileText, Globe, DollarSign, Megaphone, MessageSquare, Settings } from 'lucide-react';
+import { ArrowLeft, Plus, Check, Settings } from 'lucide-react';
 import styles from './Studio.module.css';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+// Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
 
 // ─── SIDEBAR NAV CONFIG ───
 const PLAN_ITEMS = [
@@ -94,7 +94,7 @@ function IntendedLearnersPanel({
   const save = useCallback(async () => {
     setIsSaving(true);
     try {
-      await fetch(`${API_URL}/courses/${courseId}`, {
+      await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -266,7 +266,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(`${API_URL}/courses/${courseId}/draft`, {
+        const res = await fetch(`/api/courses/${courseId}/draft`, {
           credentials: 'include',
         });
         if (res.ok) {

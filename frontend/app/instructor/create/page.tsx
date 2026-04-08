@@ -66,7 +66,9 @@ export default function CourseCreationWizard() {
     if (!title) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/courses`, {
+      // IMPORTANT: Must use /api/ proxy so the httpOnly session cookie is forwarded correctly.
+      // Direct calls to NEXT_PUBLIC_API_URL across domains will strip the cookie.
+      const res = await fetch('/api/courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ export default function CourseCreationWizard() {
         credentials: 'include',
         body: JSON.stringify({
           title: title || 'Untitled Course',
-          category: category || 'I don\'t know yet',
+          category: category || "I don't know yet",
           creatorTimeWeekly: timeWeekly
         })
       });
@@ -83,11 +85,13 @@ export default function CourseCreationWizard() {
         const data = await res.json();
         router.push(`/instructor/courses/${data.id}/manage`);
       } else {
-        console.error("Failed to create course");
-        alert("There was an error initializing your course. Please try again.");
+        const err = await res.json().catch(() => ({}));
+        console.error('Failed to create course:', res.status, err);
+        alert(`There was an error creating your course (${res.status}). Please try again.`);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Network error:', err);
+      alert('A network error occurred. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
