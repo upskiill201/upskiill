@@ -5,7 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { MonitorPlay, ClipboardList } from 'lucide-react';
-import { useComingSoon } from '../layout'; // ✅ Using the global layout hook instead
+import { useComingSoon } from '../layout'; 
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 import styles from './Wizard.module.css';
 
 const CATEGORIES = [
@@ -156,9 +158,8 @@ export default function CourseCreationWizard() {
             <>
               <h1 className={styles.title}>How about a working title?</h1>
               <p className={styles.subtitle}>It's ok if you can't think of a good title now. You can change it later.</p>
-              <input 
+              <Input 
                 type="text" 
-                className={styles.inputField} 
                 placeholder="e.g. Learn Photoshop CS6 from Scratch" 
                 maxLength={60}
                 value={title}
@@ -216,20 +217,22 @@ export default function CourseCreationWizard() {
       {/* Footer Controls */}
       <footer className={styles.footer}>
         {step > 1 ? (
-          <button className={`${styles.navBtn} ${styles.secondary}`} onClick={handlePrevious}>
+          <Button variant="outline" size="lg" onClick={handlePrevious}>
             Previous
-          </button>
+          </Button>
         ) : (
           <div /> /* Empty div for flex-between spacing */
         )}
         
-        <button 
-          className={`${styles.navBtn} ${styles.primary}`} 
+        <Button 
+          variant="primary" 
+          size="lg" 
           onClick={handleNext}
           disabled={isNextDisabled()}
+          loading={isSubmitting}
         >
-          {step === 4 ? (isSubmitting ? 'Creating...' : 'Create Course') : 'Continue'}
-        </button>
+          {step === 4 ? 'Create Course' : 'Continue'}
+        </Button>
       </footer>
     </div>
   );
