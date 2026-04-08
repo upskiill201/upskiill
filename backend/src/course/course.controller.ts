@@ -57,4 +57,21 @@ export class CourseController {
       lessonId,
     );
   }
+  @UseGuards(AuthGuard('jwt'))
+  @Post()
+  async createCourse(
+    @Req() req: any,
+    @Body()
+    body: {
+      title: string;
+      category: string;
+      creatorTimeWeekly?: string;
+    },
+  ) {
+    return await this.courseService.createCourse(req.user.id as string, {
+      title: body.title,
+      category: body.category,
+      creatorTimeWeekly: body.creatorTimeWeekly,
+    });
+  }
 }

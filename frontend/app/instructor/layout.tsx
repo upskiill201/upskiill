@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation'; // <-- ADDED useRouter
 import {
   LayoutGrid,
   BookOpen,
@@ -98,6 +98,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 export default function InstructorLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter(); // <-- INITIALIZED router
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -108,7 +109,7 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
 
   // Try to get real auth data (middleware handles route protection)
   useEffect(() => {
-    const isAuthPageEnv = window.location.pathname.includes('/login') || window.location.pathname.includes('/signup');
+    const isAuthPageEnv = window.location.pathname.includes('/login') || window.location.pathname.includes('/signup') || window.location.pathname.includes('/create'); // added create
     if (isAuthPageEnv) return;
 
     const fetchMe = async () => {
@@ -152,182 +153,181 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
   // Group links by section
   const sections = ['main', 'content', 'community', 'business'];
 
-  // Auth pages do not need the sidebar layout
-  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup');
-
-  if (isAuthPage) {
-    return <>{children}</>;
-  }
+  // Auth pages and the full-screen create wizard do not need the sidebar layout
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create');
 
   return (
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>
-      <div className={styles.dashboardContainer}>
-
-        {/* ─── SIDEBAR ─── */}
-        <aside className={`${styles.sidebarWrapper} ${isSidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
-
-          {/* Header */}
-          <div className={styles.sidebarHeader}>
-            <div className={styles.logoContainer}>
-              <Link href="/" className={styles.logoLink}>
-                {!isSidebarCollapsed ? (
-                  <Image src="/logo.png" alt="Upskiill" width={100} height={28} priority className={styles.sidebarLogo} />
-                ) : (
-                  <div className={styles.compactLogo}>U</div>
-                )}
-              </Link>
-            </div>
-            <button className={styles.sidebarToggle} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} aria-label="Toggle Sidebar">
-              {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </button>
-            <button className={styles.mobileClose} onClick={() => setIsMobileMenuOpen(false)} aria-label="Close">
-              <X size={22} />
-            </button>
-          </div>
-
-          {/* Role Badge */}
-          {!isSidebarCollapsed && (
-            <div className={styles.roleBadge}>
-              <FaGraduationCap size={13} />
-              <span>Instructor Studio</span>
-            </div>
-          )}
-
-          {/* Nav — grouped by section */}
-          <nav className={styles.nav}>
-            {sections.map((section) => {
-              const links = NAV_LINKS.filter((l) => l.section === section);
-              return (
-                <div key={section} className={styles.navSection}>
-                  {!isSidebarCollapsed && (
-                    <span className={styles.navSectionLabel}>{SECTION_LABELS[section]}</span>
+      {isAuthPage ? (
+        // If it's the wizard or auth page, just render the content naked (no sidebar)
+        <>{children}</>
+      ) : (
+        // If it's the dashboard, render the sidebar and top header
+        <div className={styles.dashboardContainer}>
+          {/* ─── SIDEBAR ─── */}
+          <aside className={`${styles.sidebarWrapper} ${isSidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
+            {/* Header */}
+            <div className={styles.sidebarHeader}>
+              <div className={styles.logoContainer}>
+                <Link href="/" className={styles.logoLink}>
+                  {!isSidebarCollapsed ? (
+                    <Image src="/logo.png" alt="Upskiill" width={100} height={28} priority className={styles.sidebarLogo} />
+                  ) : (
+                    <div className={styles.compactLogo}>U</div>
                   )}
-                  {links.map((link) => (
-                    <Link
-                      key={link.id}
-                      href={link.href}
-                      onClick={(e) => { handleLinkClick(e, link); setIsMobileMenuOpen(false); }}
-                      className={`${styles.navItem} ${isActive(link) ? styles.active : ''}`}
-                      title={isSidebarCollapsed ? link.label : ''}
-                    >
-                      <span className={styles.icon}>{link.icon}</span>
-                      {!isSidebarCollapsed && (
-                        <>
-                          <span className={styles.label}>{link.label}</span>
-                          {link.badge ? (
-                            <span className={styles.navBadge}>{link.badge}</span>
-                          ) : link.isComingSoon ? (
-                            <span className={styles.comingSoonBadge}>Soon</span>
-                          ) : null}
-                        </>
-                      )}
-                      {isSidebarCollapsed && link.badge && (
-                        <span className={styles.navBadgeCollapsed}>{link.badge}</span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              );
-            })}
-          </nav>
+                </Link>
+              </div>
+              <button className={styles.sidebarToggle} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} aria-label="Toggle Sidebar">
+                {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+              <button className={styles.mobileClose} onClick={() => setIsMobileMenuOpen(false)} aria-label="Close">
+                <X size={22} />
+              </button>
+            </div>
 
-          {/* Create Course CTA */}
-          {!isSidebarCollapsed && (
-            <div className={styles.createCTAWrapper}>
-              <button
-                className={styles.createCTABtn}
-                onClick={() => triggerComingSoon('Course Creator')}
+            {/* Role Badge */}
+            {!isSidebarCollapsed && (
+              <div className={styles.roleBadge}>
+                <FaGraduationCap size={13} />
+                <span>Instructor Studio</span>
+              </div>
+            )}
+
+            {/* Nav — grouped by section */}
+            <nav className={styles.nav}>
+              {sections.map((section) => {
+                const links = NAV_LINKS.filter((l) => l.section === section);
+                return (
+                  <div key={section} className={styles.navSection}>
+                    {!isSidebarCollapsed && (
+                      <span className={styles.navSectionLabel}>{SECTION_LABELS[section]}</span>
+                    )}
+                    {links.map((link) => (
+                      <Link
+                        key={link.id}
+                        href={link.href}
+                        onClick={(e) => { handleLinkClick(e, link); setIsMobileMenuOpen(false); }}
+                        className={`${styles.navItem} ${isActive(link) ? styles.active : ''}`}
+                        title={isSidebarCollapsed ? link.label : ''}
+                      >
+                        <span className={styles.icon}>{link.icon}</span>
+                        {!isSidebarCollapsed && (
+                          <>
+                            <span className={styles.label}>{link.label}</span>
+                            {link.badge ? (
+                              <span className={styles.navBadge}>{link.badge}</span>
+                            ) : link.isComingSoon ? (
+                              <span className={styles.comingSoonBadge}>Soon</span>
+                            ) : null}
+                          </>
+                        )}
+                        {isSidebarCollapsed && link.badge && (
+                          <span className={styles.navBadgeCollapsed}>{link.badge}</span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                );
+              })}
+            </nav>
+
+            {/* Create Course CTA */}
+            {!isSidebarCollapsed && (
+              <div className={styles.createCTAWrapper}>
+                <button
+                  className={styles.createCTABtn}
+                  onClick={() => router.push('/instructor/create')}
+                >
+                  <Plus size={15} />
+                  <span>Create New Course</span>
+                </button>
+              </div>
+            )}
+
+            {/* Footer */}
+            <div className={styles.sidebarFooter}>
+              <Link
+                href="/instructor"
+                onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }}
+                className={styles.navItem}
+                title={isSidebarCollapsed ? 'Settings' : ''}
               >
-                <Plus size={15} />
-                <span>Create New Course</span>
+                <span className={styles.icon}><Settings size={18} /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className={`${styles.navItem} ${styles.logoutBtn}`}
+                title={isSidebarCollapsed ? 'Logout' : ''}
+              >
+                <span className={styles.icon}><LogOut size={18} /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
               </button>
             </div>
-          )}
+          </aside>
 
-          {/* Footer */}
-          <div className={styles.sidebarFooter}>
-            <Link
-              href="/instructor"
-              onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }}
-              className={styles.navItem}
-              title={isSidebarCollapsed ? 'Settings' : ''}
-            >
-              <span className={styles.icon}><Settings size={18} /></span>
-              {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
-            </Link>
-            <button
-              onClick={handleLogout}
-              className={`${styles.navItem} ${styles.logoutBtn}`}
-              title={isSidebarCollapsed ? 'Logout' : ''}
-            >
-              <span className={styles.icon}><LogOut size={18} /></span>
-              {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
-            </button>
-          </div>
-        </aside>
+          {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
 
-        {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
-
-        {/* ─── MAIN AREA ─── */}
-        <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
-
-          {/* Header */}
-          <header className={styles.header}>
-            <div className={styles.headerLeft}>
-              <button className={styles.mobileToggle} onClick={() => setIsMobileMenuOpen(true)} aria-label="Open Menu">
-                <Menu size={22} />
-              </button>
-              <h1 className={styles.pageTitle}>Instructor Studio</h1>
-            </div>
-
-            <div className={styles.headerRight}>
-              <div className={styles.searchWrapper}>
-                <Search size={16} className={styles.searchIcon} />
-                <input type="text" placeholder="Search courses, students..." className={styles.searchInput} />
+          {/* ─── MAIN AREA ─── */}
+          <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
+            {/* Header */}
+            <header className={styles.header}>
+              <div className={styles.headerLeft}>
+                <button className={styles.mobileToggle} onClick={() => setIsMobileMenuOpen(true)} aria-label="Open Menu">
+                  <Menu size={22} />
+                </button>
+                <h1 className={styles.pageTitle}>Instructor Studio</h1>
               </div>
 
-              <button className={styles.createBtn} onClick={() => triggerComingSoon('Course Creator')}>
-                <Plus size={15} />
-                <span>New Course</span>
-              </button>
-
-              <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
-                <Bell size={18} />
-                <span className={styles.notifDot} />
-              </button>
-
-              <div className={styles.userProfile}>
-                <div className={styles.userInfo}>
-                  <span className={styles.userName}>{instructorName.split(' ')[0]}</span>
-                  <span className={styles.userRole}>Instructor</span>
+              <div className={styles.headerRight}>
+                <div className={styles.searchWrapper}>
+                  <Search size={16} className={styles.searchIcon} />
+                  <input type="text" placeholder="Search courses, students..." className={styles.searchInput} />
                 </div>
-                <Avatar src={instructorAvatar} name={instructorName} size="sm" />
+
+                <button className={styles.createBtn} onClick={() => router.push('/instructor/create')}>
+                  <Plus size={15} />
+                  <span>New Course</span>
+                </button>
+
+                <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
+                  <Bell size={18} />
+                  <span className={styles.notifDot} />
+                </button>
+
+                <div className={styles.userProfile}>
+                  <div className={styles.userInfo}>
+                    <span className={styles.userName}>{instructorName.split(' ')[0]}</span>
+                    <span className={styles.userRole}>Instructor</span>
+                  </div>
+                  <Avatar src={instructorAvatar} name={instructorName} size="sm" />
+                </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          <div className={styles.content}>{children}</div>
-        </main>
+            <div className={styles.content}>{children}</div>
+          </main>
+        </div>
+      )}
 
-        {/* ─── COMING SOON MODAL ─── */}
-        <Modal isOpen={!!comingSoonFeature} onClose={() => setComingSoonFeature(null)} size="md">
-          <div className={styles.modalBody}>
-            <div className={styles.modalIconWrapper}>
-              <Sparkles size={36} className={styles.sparkleIcon} />
-            </div>
-            <h2 className={styles.modalTitle}>{comingSoonFeature} is Coming Soon!</h2>
-            <p className={styles.modalDescription}>
-              We&apos;re precision-engineering the <strong>{comingSoonFeature}</strong> module
-              for instructors. It will be available in the next platform update — stay tuned!
-            </p>
-            <div className={styles.modalActions}>
-              <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Rocket size={16} />}>
-                Got it!
-              </Button>
-            </div>
+      {/* ─── GLOBAL COMING SOON MODAL (Renders on ALL pages) ─── */}
+      <Modal isOpen={!!comingSoonFeature} onClose={() => setComingSoonFeature(null)} size="md">
+        <div className={styles.modalBody}>
+          <div className={styles.modalIconWrapper}>
+            <Sparkles size={36} className={styles.sparkleIcon} />
           </div>
-        </Modal>
-      </div>
+          <h2 className={styles.modalTitle}>{comingSoonFeature} is Coming Soon!</h2>
+          <p className={styles.modalDescription}>
+            We&apos;re precision-engineering the <strong>{comingSoonFeature}</strong> module
+            for instructors. It will be available in the next platform update — stay tuned!
+          </p>
+          <div className={styles.modalActions}>
+            <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Rocket size={16} />}>
+              Got it!
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </ComingSoonContext.Provider>
   );
 }

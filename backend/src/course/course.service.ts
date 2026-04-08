@@ -148,4 +148,30 @@ export class CourseService {
 
     return { success: true, completedLessons: currentCompleted };
   }
+  async createCourse(userId: string, data: { title: string; category: string; creatorTimeWeekly?: string }) {
+    // Basic slug generation: lowercasing and replacing non-alphanumeric with hyphens
+    const baseSlug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+      
+    // Append a simple unique identifier just in case of clashes
+    const uniqueHash = Math.random().toString(36).substring(2, 8);
+    const slug = `${baseSlug}-${uniqueHash}`;
+
+    const newCourse = await this.prisma.course.create({
+      data: {
+        title: data.title,
+        slug: slug,
+        category: data.category,
+        creatorTimeWeekly: data.creatorTimeWeekly,
+        instructorId: userId,
+        description: 'New Course Draft',
+        price: 0,
+        published: false,
+      },
+    });
+
+    return newCourse;
+  }
 }

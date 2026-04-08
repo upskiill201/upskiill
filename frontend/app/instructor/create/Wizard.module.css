@@ -1,0 +1,259 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  cursor: pointer;
+}
+
+.stepIndicator {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
+}
+
+.exitBtn {
+  color: var(--brand-blue);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.exitBtn:hover {
+  text-decoration: underline;
+}
+
+/* Progress Bar at the top of the header */
+.progressBarContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--bg-section);
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: var(--brand-blue);
+  transition: width 0.3s ease;
+}
+
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.stepContainer {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+/* Step 1: Type Selection */
+.typeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.typeCard {
+  border: 1px solid var(--border);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.typeCard:hover {
+  background-color: var(--bg-section);
+}
+
+.typeCard.selected {
+  border: 2px solid var(--text-primary);
+  background-color: #f7f9fa; /* Udemy style light grey */
+  padding: 31px 23px; /* Compensate for thicker border */
+}
+
+.iconWrapper {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.typeLabel {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.typeDesc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Step 2 & 3: Inputs */
+.inputField, .selectField {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid var(--text-primary); /* Heavy border like Udemy */
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  background-color: white;
+}
+
+.inputField:focus, .selectField:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Step 4: Radio List */
+.radioList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.radioOption:hover {
+  background-color: var(--bg-section);
+}
+
+.radioOption.selected {
+  border: 1px solid var(--text-primary);
+}
+
+.radioInput {
+  margin-right: 16px;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--text-primary);
+  cursor: pointer;
+}
+
+.radioLabel {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 500;
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Footer Controls */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background-color: #ffffff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.navBtn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.navBtn.secondary {
+  background-color: white;
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.navBtn.secondary:hover {
+  background-color: var(--bg-section);
+}
+
+.navBtn.primary {
+  background-color: var(--brand-blue);
+  color: white;
+}
+
+.navBtn.primary:hover {
+  background-color: var(--brand-blue-hover);
+}
+
+.navBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .typeGrid {
+    grid-template-columns: 1fr;
+  }
+}
