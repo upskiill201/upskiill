@@ -159,8 +159,12 @@ export class CourseService {
     const uniqueHash = Math.random().toString(36).substring(2, 8);
     const slug = `${baseSlug}-${uniqueHash}`;
 
+    // Generate a 7 digit numeric ID string (e.g. "7127813")
+    const shortId = Math.floor(1000000 + Math.random() * 9000000).toString();
+
     const newCourse = await this.prisma.course.create({
       data: {
+        id: shortId,
         title: data.title,
         slug: slug,
         category: data.category,

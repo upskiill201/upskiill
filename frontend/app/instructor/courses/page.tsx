@@ -116,7 +116,7 @@ export default function InstructorCoursesPage() {
       ) : (
         <div className={styles.courseList}>
           {filteredCourses.map(course => (
-            <Link key={course.id} href={`/instructor/courses/${course.slug}/manage`} className={styles.courseRow}>
+            <Link key={course.id} href={`/instructor/courses/${course.id}/manage`} className={styles.courseRow}>
               {/* Hover Edit Overlay */}
               <div className={styles.editBtnOverlay}>
                 <span className={styles.editOverlayLabel}>Edit / manage course</span>

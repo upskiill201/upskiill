@@ -85,7 +85,7 @@ export default function CourseCreationWizard() {
 
       if (res.ok) {
         const data = await res.json();
-        router.push(`/instructor/courses/${data.slug}/manage`);
+        router.push(`/instructor/courses/${data.id}/manage`);
       } else {
         const err = await res.json().catch(() => ({}));
         console.error('Failed to create course:', res.status, err);
