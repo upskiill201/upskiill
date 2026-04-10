@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { MonitorPlay, ClipboardList } from 'lucide-react';
+import { FaVideo, FaClipboardList } from 'react-icons/fa';
 import { useComingSoon } from '../layout'; 
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -138,7 +138,7 @@ export default function CourseCreationWizard() {
                   className={`${styles.typeCard} ${courseType === 'course' ? styles.selected : ''}`}
                   onClick={() => setCourseType('course')}
                 >
-                  <MonitorPlay className={styles.iconWrapper} />
+                  <FaVideo size={48} className={styles.iconWrapper} />
                   <div className={styles.typeLabel}>Course</div>
                   <div className={styles.typeDesc}>Create rich learning experiences with the help of video lectures, quizzes, coding exercises, etc.</div>
                 </div>
@@ -146,7 +146,7 @@ export default function CourseCreationWizard() {
                   className={`${styles.typeCard} ${courseType === 'test' ? styles.selected : ''}`}
                   onClick={() => setCourseType('test')}
                 >
-                  <ClipboardList className={styles.iconWrapper} />
+                  <FaClipboardList size={48} className={styles.iconWrapper} />
                   <div className={styles.typeLabel}>Practice Test</div>
                   <div className={styles.typeDesc}>Help students prepare for certification exams by providing practice questions.</div>
                 </div>

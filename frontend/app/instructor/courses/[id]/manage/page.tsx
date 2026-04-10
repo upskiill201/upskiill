@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Check, Settings } from 'lucide-react';
+import { FaArrowLeft, FaPlus, FaCheck, FaCog } from 'react-icons/fa';
 import Button from '@/components/ui/Button';
 import styles from './Studio.module.css';
 
@@ -162,12 +162,12 @@ function IntendedLearnersPanel({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8 }}>
-        <Button variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
+        <Button id="global-save-btn" variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
           Save
         </Button>
         {saved && (
           <span className={styles.savedTag}>
-            <Check size={14} /> Saved!
+            <FaCheck size={14} /> Saved!
           </span>
         )}
       </div>
@@ -344,7 +344,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       <header className={styles.topBar}>
         <div className={styles.topBarLeft}>
           <Link href="/instructor/courses" className={styles.backBtn}>
-            <ArrowLeft size={16} /> Back to courses
+            <FaArrowLeft size={16} /> Back to courses
           </Link>
           <span className={styles.topBarDivider}>|</span>
           <span className={styles.courseTitle}>{course?.title || 'Loading...'}</span>
@@ -352,10 +352,10 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <span className={styles.videoInfo}>0min of video content uploaded</span>
         </div>
         <div className={styles.topBarRight}>
-          <Button variant="secondary" disabled>
+          <Button variant="secondary" onClick={() => document.getElementById('global-save-btn')?.click()}>
             Save
           </Button>
-          <Settings size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
+          <FaCog size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
         </div>
       </header>
 

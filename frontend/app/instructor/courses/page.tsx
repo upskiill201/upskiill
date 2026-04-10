@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, MonitorPlay } from 'lucide-react';
+import { FaSearch, FaVideo } from 'react-icons/fa';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import styles from './Courses.module.css';
@@ -70,7 +70,7 @@ export default function InstructorCoursesPage() {
               style={{ width: '260px', borderRight: 'none', borderRadius: '0' }}
             />
             <button className={styles.searchBtn}>
-              <Search size={18} />
+              <FaSearch size={18} />
             </button>
           </div>
           
@@ -123,7 +123,7 @@ export default function InstructorCoursesPage() {
               </div>
 
               <div className={styles.courseIcon}>
-                <MonitorPlay size={32} strokeWidth={1} />
+                <FaVideo size={32} />
               </div>
               <div className={styles.courseDetails}>
                 <div className={styles.courseTitle}>{course.title}</div>
