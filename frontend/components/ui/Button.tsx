@@ -17,6 +17,7 @@ type ButtonProps = {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  id?: string;
 };
 
 export default function Button({
@@ -33,6 +34,7 @@ export default function Button({
   children,
   className = '',
   style,
+  id,
 }: ButtonProps) {
   const classes = [
     styles.btn,
@@ -65,7 +67,7 @@ export default function Button({
 
   if (href && !disabled && !loading) {
     return (
-      <Link href={href} className={classes} style={style}>
+      <Link href={href} className={classes} style={style} id={id}>
         {content}
       </Link>
     );
@@ -79,6 +81,7 @@ export default function Button({
       disabled={disabled || loading}
       aria-busy={loading}
       style={style}
+      id={id}
     >
       {content}
     </button>
