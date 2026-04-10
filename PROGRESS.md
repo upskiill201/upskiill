@@ -1,25 +1,12 @@
 # 🚀 Upskiill Development Progress Tracker
 > **Rule:** We complete 100% of a Pillar before proceeding to the next one.
 
-***
-
-## 🟦 Pillar 1: User & Auth System — ✅ 100% Complete & Tested (2026-04-03)
-- [x] Initial repository setup (Next.js, Tailwind, NestJS workspace)
-- [x] Configure global CSS variables & color system
-- [x] Build `/signup` & `/login` layouts (Split-screen)
-- [x] Setup Supabase PostgreSQL Project & Prisma ORM
-- [x] Connect Frontend Auth to Backend API (JWT)
-- [x] Add `role` field to User Schema (Student/Instructor/Admin)
-- [x] Implement `GET /auth/me` Session Persistence (JWT-guarded)
-- [x] Move JWT to `httpOnly` secure cookies (backend sets, frontend uses `credentials: 'include'`)
-- [x] Implement Route Protection Middleware (frontend Next.js middleware)
-- [x] Remove all `localStorage` token usage — 100% cookie-based
-- [x] All 5 manual tests passed ✅
-
 > [!IMPORTANT]
 > **STRICT PRODUCTION BACKEND RULE:** The Front-end MUST ALWAYS point to the production backend (`https://upskiill-backend.onrender.com`). NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
 > 
 > **STRICT BRANCHING RULE:** All work must always be pushed to a new branch for Pull Requests (PR) and Code Review before merging. We never push directly to main.
+> 
+> **STRICT COMPONENT SYSTEM RULE:** All UI components use the established design system with 10px rounded corners, 48px input height, and brand colors. New pages MUST utilize the shared component library (`components/ui/*` and `components/features/*`) to maintain design coherence across the entire application.
 
 ### Step A — Finish Feature Components (Phase 3) ✅ COMPLETE
 - [x] Build Global responsive `<Header />` Component

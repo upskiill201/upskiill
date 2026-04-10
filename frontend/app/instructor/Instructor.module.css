@@ -5,6 +5,7 @@
   background-color: #F8FAFC;
   position: relative;
   overflow-x: hidden;
+  width: 100%;
 }
 
 /* ─── SIDEBAR ─── */
@@ -268,10 +269,14 @@
   transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: 256px;   /* Match sidebar width */
   min-height: 100vh;
+  width: calc(100% - 256px); /* Ensure content fits */
   /* The main area fills the remaining space — website footer doesn't appear */
 }
 
-.main.expanded { margin-left: 72px; }
+.main.expanded { 
+  margin-left: 72px; 
+  width: calc(100% - 72px);
+}
 
 /* Header */
 .header {
@@ -387,7 +392,12 @@
 .userRole { display: block; font-size: 10px; color: #94A3B8; font-weight: 500; margin-top: -1px; }
 
 /* Content */
-.content { padding: clamp(16px, 3vw, 32px); }
+.content { 
+  padding: clamp(16px, 3vw, 32px); 
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
 
 /* Overlay */
 .overlay {
@@ -427,14 +437,47 @@
     padding: 4px;
   }
 
-  .main { margin-left: 0 !important; }
-  .header { padding: 10px 14px; }
+  .main { 
+    margin-left: 0 !important; 
+    width: 100% !important;
+  }
+  .header { 
+    padding: 10px 14px; 
+    flex-wrap: wrap;
+    gap: 8px;
+  }
   .mobileToggle { display: flex; }
   .userName { display: none; }
   .userRole { display: none; }
   .searchWrapper { display: none; }
   .createBtn span { display: none; }
   .createBtn { padding: 8px 10px; }
+  
+  /* Additional mobile fixes */
+  .pageTitle { 
+    font-size: 16px !important;
+    white-space: nowrap;
+  }
+  .headerLeft { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+  }
+  .headerRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+  }
+  .pageTitle {
+    font-size: 14px !important;
+  }
 }
 
 /* ─── MODAL ─── */

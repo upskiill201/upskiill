@@ -473,9 +473,43 @@ export default function ComponentsPreviewPage() {
           <Group label="Full Video/Lesson Interface (All 8 Items)">
             <div style={{ width: "100%" }}>
               <CoursePlayerLayout
-                course={{ title: 'Demo Course', curriculum: [] }}
-                activeLesson={null}
-                completedLessons={[]}
+                course={{
+                  title: 'Figma UI/UX Design Masterclass',
+                  slug: 'figma-ux-design',
+                  shortDescription: 'Master Figma from basics to advanced prototyping',
+                  instructor: {
+                    fullName: 'Daniel Scott',
+                    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop'
+                  },
+                  curriculum: [
+                    {
+                      title: 'Getting Started with Figma',
+                      lessons: [
+                        { id: 'l1', index: 0, title: 'Welcome to the Course', duration: '3:45' },
+                        { id: 'l2', index: 1, title: 'Installing Figma & Setting Up', duration: '8:12' },
+                        { id: 'l3', index: 2, title: 'Interface Tour & Tools', duration: '14:30' },
+                      ]
+                    },
+                    {
+                      title: 'Core Design Principles',
+                      lessons: [
+                        { id: 'l4', index: 3, title: 'Color Theory Basics', duration: '12:20' },
+                        { id: 'l5', index: 4, title: 'Typography & Fonts', duration: '18:45' },
+                        { id: 'l6', index: 5, title: 'Spacing & Grid Systems', duration: '22:10' },
+                      ]
+                    },
+                    {
+                      title: 'Advanced Prototyping',
+                      lessons: [
+                        { id: 'l7', index: 6, title: 'Interactive Components', duration: '25:00' },
+                        { id: 'l8', index: 7, title: 'Smart Animations', duration: '20:30' },
+                        { id: 'l9', index: 8, title: 'Variants & States', duration: '15:45' },
+                      ]
+                    }
+                  ]
+                }}
+                activeLesson={{ moduleIndex: 0, lessonIndex: 0 }}
+                completedLessons={['l1']}
                 onSelectLesson={() => {}}
                 onMarkComplete={() => {}}
               />

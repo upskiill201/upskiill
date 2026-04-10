@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { FaArrowLeft, FaPlus, FaCheck, FaCog } from 'react-icons/fa';
+import { ArrowLeft, Plus, Check, Settings, Loader2, BookOpen, Wrench, Library } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import Spinner from '@/components/ui/Spinner';
 import styles from './Studio.module.css';
 
 // Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
@@ -48,19 +49,23 @@ function FieldList({ values, onChange, placeholder, maxLength = 160, minItems = 
 
   return (
     <div>
-      {values.map((v, i) => (
-        <div key={i} className={styles.fieldRow}>
-          <input
-            type="text"
-            className={styles.fieldInput}
-            placeholder={placeholder}
-            maxLength={maxLength}
-            value={v}
-            onChange={e => update(i, e.target.value)}
-          />
-          <span className={styles.fieldCharCount}>{maxLength - v.length}</span>
-        </div>
-      ))}
+      {values.map((v, i) => {
+        const val = v || '';
+        const remaining = typeof val === 'string' ? maxLength - val.length : maxLength;
+        return (
+          <div key={i} className={styles.fieldRow}>
+            <input
+              type="text"
+              className={styles.fieldInput}
+              placeholder={placeholder}
+              maxLength={maxLength}
+              value={val}
+              onChange={e => update(i, e.target.value)}
+            />
+            <span className={styles.fieldCharCount}>{Number.isNaN(remaining) ? maxLength : remaining}</span>
+          </div>
+        );
+      })}
       <button type="button" className={styles.addMoreBtn} onClick={add}>
         <Plus size={16} /> Add more to your response
       </button>
@@ -167,7 +172,7 @@ function IntendedLearnersPanel({
         </Button>
         {saved && (
           <span className={styles.savedTag}>
-            <FaCheck size={14} /> Saved!
+            <Check size={14} /> Saved!
           </span>
         )}
       </div>
@@ -190,7 +195,7 @@ function CourseStructurePanel() {
           </p>
         </div>
         <div className={styles.resourceBox}>
-          <div style={{ fontSize: 40, marginBottom: 8 }}>📚</div>
+          <div style={{ marginBottom: 8 }}><Library size={40} color="#3D5AFE" /></div>
           <h4>Our library of resources</h4>
           <p>Tips and guides to structuring a course students love</p>
           <Button variant="outline" size="sm">Teaching Center</Button>
@@ -240,7 +245,7 @@ function ComingSoonPanel({ title }: { title: string }) {
     <div className={styles.panel}>
       <h1 className={styles.sectionTitle}>{title}</h1>
       <div className={styles.stubPanel}>
-        <div style={{ fontSize: 64 }}>🚧</div>
+        <Wrench size={48} color="#94A3B8" />
         <h2>Coming Soon</h2>
         <p>
           The <strong>{title}</strong> section is currently being built. Check back shortly — it will be available in the next update!
@@ -293,7 +298,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       return (
         <div className={styles.panel}>
           <div className={styles.stubPanel}>
-            <div style={{ fontSize: 48 }}>⏳</div>
+            <Spinner size="lg" color="blue" />
             <h2>Loading your course...</h2>
           </div>
         </div>
@@ -344,7 +349,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       <header className={styles.topBar}>
         <div className={styles.topBarLeft}>
           <Link href="/instructor/courses" className={styles.backBtn}>
-            <FaArrowLeft size={16} /> Back to courses
+            <ArrowLeft size={16} /> Back to courses
           </Link>
           <span className={styles.topBarDivider}>|</span>
           <span className={styles.courseTitle}>{course?.title || 'Loading...'}</span>
@@ -355,7 +360,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <Button variant="secondary" onClick={() => document.getElementById('global-save-btn')?.click()}>
             Save
           </Button>
-          <FaCog size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
+          <Settings size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
         </div>
       </header>
 

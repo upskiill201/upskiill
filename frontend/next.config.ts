@@ -14,9 +14,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 
-      (isVercel ? 'https://upskiill-backend.onrender.com' : 'http://localhost:3001');
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
 
     console.log(`Setting up rewrites. Target Backend: ${backendUrl}`);
 
