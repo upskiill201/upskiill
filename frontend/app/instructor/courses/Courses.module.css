@@ -1,0 +1,289 @@
+.container {
+  padding: 32px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1c1d1f;
+  margin-bottom: 32px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid #d1d5db;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  color: #1c1d1f;
+}
+
+.tab.active {
+  color: #1c1d1f;
+  border-bottom-color: #1c1d1f;
+}
+
+.betaBadge {
+  background-color: #e5e7eb;
+  color: #374151;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: stretch; /* So input and button align perfectly */
+  gap: 24px;
+}
+
+.searchGroup {
+  display: flex;
+  align-items: stretch;
+}
+
+.searchBtn {
+  background-color: var(--brand-blue);
+  color: white;
+  border: none;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.filterSelect {
+  padding: 0 16px;
+  border: 1px solid #1c1d1f;
+  background-color: white;
+  color: var(--brand-blue);
+  font-weight: 700;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Banner */
+.banner {
+  background-color: #f7f9fa;
+  border: 1px solid #d1d5db;
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.newBadge {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.bannerContent h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #1c1d1f;
+}
+
+.bannerContent p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.bannerActions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: #1c1d1f;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Course List */
+.courseList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: #d1d5db; /* creates borders between items */
+  border: 1px solid #d1d5db;
+  margin-bottom: 48px;
+}
+
+.courseRow {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  gap: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.editBtnOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.courseRow:hover .editBtnOverlay {
+  opacity: 1;
+}
+
+.editOverlayLabel {
+  font-weight: 700;
+  color: var(--brand-blue);
+  font-size: 15px;
+}
+
+.courseRow:hover {
+  background-color: #f9fafb;
+}
+
+.courseIcon {
+  width: 64px;
+  height: 64px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.courseDetails {
+  flex: 1;
+}
+
+.courseTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1d1f;
+  margin-bottom: 6px;
+}
+
+.courseMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.draftLabel {
+  font-weight: 700;
+  color: #1c1d1f;
+}
+
+.publicLabel {
+  color: #6b7280;
+}
+
+.courseProgressArea {
+  width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progressLabel {
+  font-size: 14px;
+  color: #1c1d1f;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--brand-blue);
+}
+
+.footerNote {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 64px;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbarLeft {
+    flex-direction: column;
+  }
+  .courseRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .courseProgressArea {
+    width: 100%;
+  }
+}

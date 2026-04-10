@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Check, BookOpen, Video, FileText, Globe, DollarSign, Megaphone, MessageSquare, Settings } from 'lucide-react';
+import { FaArrowLeft, FaPlus, FaCheck, FaCog } from 'react-icons/fa';
+import Button from '@/components/ui/Button';
 import styles from './Studio.module.css';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+// Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
 
 // ─── SIDEBAR NAV CONFIG ───
 const PLAN_ITEMS = [
@@ -94,7 +95,7 @@ function IntendedLearnersPanel({
   const save = useCallback(async () => {
     setIsSaving(true);
     try {
-      await fetch(`${API_URL}/courses/${courseId}`, {
+      await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -161,12 +162,12 @@ function IntendedLearnersPanel({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8 }}>
-        <button className={styles.saveBtn} onClick={save} disabled={isSaving}>
-          {isSaving ? 'Saving...' : 'Save'}
-        </button>
+        <Button id="global-save-btn" variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
+          Save
+        </Button>
         {saved && (
           <span className={styles.savedTag}>
-            <Check size={14} /> Saved!
+            <FaCheck size={14} /> Saved!
           </span>
         )}
       </div>
@@ -192,7 +193,7 @@ function CourseStructurePanel() {
           <div style={{ fontSize: 40, marginBottom: 8 }}>📚</div>
           <h4>Our library of resources</h4>
           <p>Tips and guides to structuring a course students love</p>
-          <button className={styles.resourceBtn}>Teaching Center</button>
+          <Button variant="outline" size="sm">Teaching Center</Button>
         </div>
       </div>
 
@@ -266,7 +267,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(`${API_URL}/courses/${courseId}/draft`, {
+        const res = await fetch(`/api/courses/${courseId}/draft`, {
           credentials: 'include',
         });
         if (res.ok) {
@@ -342,8 +343,8 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       {/* ─── TOP BAR ─── */}
       <header className={styles.topBar}>
         <div className={styles.topBarLeft}>
-          <Link href="/instructor" className={styles.backBtn}>
-            <ArrowLeft size={16} /> Back to courses
+          <Link href="/instructor/courses" className={styles.backBtn}>
+            <FaArrowLeft size={16} /> Back to courses
           </Link>
           <span className={styles.topBarDivider}>|</span>
           <span className={styles.courseTitle}>{course?.title || 'Loading...'}</span>
@@ -351,10 +352,10 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <span className={styles.videoInfo}>0min of video content uploaded</span>
         </div>
         <div className={styles.topBarRight}>
-          <button className={styles.saveBtn} disabled>
+          <Button variant="secondary" onClick={() => document.getElementById('global-save-btn')?.click()}>
             Save
-          </button>
-          <Settings size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
+          </Button>
+          <FaCog size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
         </div>
       </header>
 
@@ -367,7 +368,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <SidebarGroup title="Publish your course" items={PUBLISH_ITEMS} />
 
           <div className={styles.sidebarSubmitArea}>
-            <button className={styles.submitBtn}>Submit for Review</button>
+            <Button variant="primary" fullWidth>Submit for Review</Button>
           </div>
         </aside>
 

@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { MonitorPlay, ClipboardList } from 'lucide-react';
-import { useComingSoon } from '../layout'; // ✅ Using the global layout hook instead
+import { FaVideo, FaClipboardList } from 'react-icons/fa';
+import { useComingSoon } from '../layout'; 
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 import styles from './Wizard.module.css';
 
 const CATEGORIES = [
@@ -66,7 +68,9 @@ export default function CourseCreationWizard() {
     if (!title) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/courses`, {
+      // IMPORTANT: Must use /api/ proxy so the httpOnly session cookie is forwarded correctly.
+      // Direct calls to NEXT_PUBLIC_API_URL across domains will strip the cookie.
+      const res = await fetch('/api/courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +78,7 @@ export default function CourseCreationWizard() {
         credentials: 'include',
         body: JSON.stringify({
           title: title || 'Untitled Course',
-          category: category || 'I don\'t know yet',
+          category: category || "I don't know yet",
           creatorTimeWeekly: timeWeekly
         })
       });
@@ -83,11 +87,13 @@ export default function CourseCreationWizard() {
         const data = await res.json();
         router.push(`/instructor/courses/${data.id}/manage`);
       } else {
-        console.error("Failed to create course");
-        alert("There was an error initializing your course. Please try again.");
+        const err = await res.json().catch(() => ({}));
+        console.error('Failed to create course:', res.status, err);
+        alert(`There was an error creating your course (${res.status}). Please try again.`);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Network error:', err);
+      alert('A network error occurred. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -132,7 +138,7 @@ export default function CourseCreationWizard() {
                   className={`${styles.typeCard} ${courseType === 'course' ? styles.selected : ''}`}
                   onClick={() => setCourseType('course')}
                 >
-                  <MonitorPlay className={styles.iconWrapper} />
+                  <FaVideo size={48} className={styles.iconWrapper} />
                   <div className={styles.typeLabel}>Course</div>
                   <div className={styles.typeDesc}>Create rich learning experiences with the help of video lectures, quizzes, coding exercises, etc.</div>
                 </div>
@@ -140,7 +146,7 @@ export default function CourseCreationWizard() {
                   className={`${styles.typeCard} ${courseType === 'test' ? styles.selected : ''}`}
                   onClick={() => setCourseType('test')}
                 >
-                  <ClipboardList className={styles.iconWrapper} />
+                  <FaClipboardList size={48} className={styles.iconWrapper} />
                   <div className={styles.typeLabel}>Practice Test</div>
                   <div className={styles.typeDesc}>Help students prepare for certification exams by providing practice questions.</div>
                 </div>
@@ -152,9 +158,8 @@ export default function CourseCreationWizard() {
             <>
               <h1 className={styles.title}>How about a working title?</h1>
               <p className={styles.subtitle}>It's ok if you can't think of a good title now. You can change it later.</p>
-              <input 
+              <Input 
                 type="text" 
-                className={styles.inputField} 
                 placeholder="e.g. Learn Photoshop CS6 from Scratch" 
                 maxLength={60}
                 value={title}
@@ -212,20 +217,22 @@ export default function CourseCreationWizard() {
       {/* Footer Controls */}
       <footer className={styles.footer}>
         {step > 1 ? (
-          <button className={`${styles.navBtn} ${styles.secondary}`} onClick={handlePrevious}>
+          <Button variant="outline" size="lg" onClick={handlePrevious}>
             Previous
-          </button>
+          </Button>
         ) : (
           <div /> /* Empty div for flex-between spacing */
         )}
         
-        <button 
-          className={`${styles.navBtn} ${styles.primary}`} 
+        <Button 
+          variant="primary" 
+          size="lg" 
           onClick={handleNext}
           disabled={isNextDisabled()}
+          loading={isSubmitting}
         >
-          {step === 4 ? (isSubmitting ? 'Creating...' : 'Create Course') : 'Continue'}
-        </button>
+          {step === 4 ? 'Create Course' : 'Continue'}
+        </Button>
       </footer>
     </div>
   );
