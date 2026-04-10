@@ -1,5 +1,13 @@
 /* ─── ANALYTICS PAGE ─── */
-.container { display: flex; flex-direction: column; gap: 24px; }
+.container { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 24px; 
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 .animateIn { animation: slideUp 0.5s ease both; }
 .delay1 { animation-delay: 0.08s; }
@@ -78,6 +86,8 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 14px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .kpiCard {
@@ -388,9 +398,18 @@
 .noteIcon { color: #10B981; flex-shrink: 0; }
 
 /* ─── LESSON TABLE ─── */
-.tableWrapper { overflow-x: auto; }
+.tableWrapper { 
+  overflow-x: auto; 
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
 
-.table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 580px; }
+.table { 
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0; 
+  min-width: 580px; 
+}
 
 .table thead th {
   text-align: left;
@@ -484,6 +503,289 @@
 .funnelInsightIcon { color: #EF4444; flex-shrink: 0; margin-top: 1px; }
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 1280px) { .kpiGrid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 1024px) { .lowerGrid { grid-template-columns: 1fr; } .segmentGrid { grid-template-columns: 1fr; } }
-@media (max-width: 768px) { .kpiGrid { grid-template-columns: repeat(2, 1fr); } .pageHeader { flex-direction: column; align-items: flex-start; } }
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .kpiGrid { grid-template-columns: repeat(3, 1fr); }
+  .lowerGrid { grid-template-columns: 1fr; }
+  .segmentGrid { grid-template-columns: 1fr 1fr; }
+  .mainChart { min-height: auto; }
+  .chartArea { height: 200px; }
+}
+
+/* Mobile Large */
+@media (max-width: 768px) {
+  .container { 
+    gap: 16px; 
+    padding: 16px;
+  }
+  
+  /* Page Header */
+  .pageHeader { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 16px;
+    padding: 16px;
+    border-radius: 14px;
+    background: white;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+  .pageTitle { font-size: 22px; }
+  .pageSub { font-size: 12px; }
+  .periodSelector { 
+    width: 100%;
+    position: relative;
+  }
+  .periodBtn { 
+    width: 100%; 
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 10px;
+  }
+  .periodDropdown {
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+  
+  /* KPI Grid - 2 columns */
+  .kpiGrid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px;
+  }
+  .kpiCard { 
+    padding: 14px; 
+    border-radius: 12px;
+  }
+  .kpiIcon { width: 32px; height: 32px; }
+  .kpiValue { font-size: 18px; }
+  .kpiLabel { font-size: 11px; }
+  .kpiDetail { font-size: 10px; display: none; }
+  .kpiChange { display: none; }
+  
+  /* Main Chart */
+  .mainChart { 
+    padding: 16px; 
+    border-radius: 14px; 
+    overflow: hidden;
+  }
+  .cardTitle { font-size: 14px; }
+  .cardSub { font-size: 11px; }
+  .chartToggle { 
+    display: flex; 
+    width: 100%;
+    margin-top: 12px;
+    background: #F8FAFC;
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .toggleBtn { 
+    flex: 1; 
+    padding: 10px 8px; 
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .chartArea { 
+    height: 180px; 
+    margin-top: 16px;
+  }
+  .chartLegend { 
+    flex-direction: column; 
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  /* Lower Grid */
+  .lowerGrid { gap: 16px; }
+  .card { 
+    padding: 16px; 
+    border-radius: 14px; 
+    overflow: hidden;
+  }
+  
+  /* Table */
+  .tableWrapper { 
+    overflow-x: auto; 
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  .table { 
+    min-width: 600px; 
+    font-size: 11px;
+  }
+  .table thead th { 
+    font-size: 9px; 
+    padding: 0 8px 8px;
+  }
+  .tableRow td { 
+    padding: 10px 6px; 
+    font-size: 11px;
+  }
+  .lessonName { 
+    max-width: 120px; 
+    font-size: 11px;
+  }
+  .metaCell { font-size: 10px; }
+  .dropOff { font-size: 10px; padding: 2px 5px; }
+  .statusGood, .statusWarn { font-size: 10px; }
+  
+  /* Drop-off insight */
+  .dropOffInsight {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  /* Heatmap */
+  .heatmapRow { 
+    overflow-x: auto; 
+    padding-bottom: 8px;
+    gap: 4px;
+  }
+  .heatCell { 
+    min-width: 24px; 
+    flex-shrink: 0;
+  }
+  .heatHour { font-size: 8px; }
+  .heatInsight {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    font-size: 11px;
+    padding: 12px;
+  }
+  
+  /* Segment Grid */
+  .segmentGrid { gap: 16px; }
+  .segmentGrid .card { padding: 14px; }
+  .atRiskHeadLeft { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .viewAllBtn { display: none; }
+  
+  /* Risk List */
+  .riskList { gap: 10px; }
+  .riskItem { 
+    flex-wrap: wrap; 
+    padding: 12px;
+    gap: 10px;
+  }
+  .riskInfo { 
+    order: 3; 
+    width: 100%;
+    margin-top: 8px;
+  }
+  .riskBarWrap { width: 100%; }
+  .riskRight { 
+    flex-direction: column; 
+    gap: 8px;
+    align-items: flex-end;
+  }
+  
+  /* Top List */
+  .topList { gap: 10px; }
+  .topItem { 
+    flex-wrap: wrap; 
+    padding: 12px;
+    gap: 10px;
+  }
+  .topInfo { 
+    order: 3; 
+    width: 100%;
+  }
+  .topMeta { 
+    order: 2; 
+    margin-left: auto;
+  }
+  .leaderboardNote {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  /* Funnel */
+  .funnelCard { 
+    padding: 16px; 
+    border-radius: 14px; 
+    overflow: hidden;
+  }
+  .funnelSteps { gap: 10px; }
+  .funnelLabelRow { 
+    flex-direction: column; 
+    gap: 4px;
+    font-size: 12px;
+  }
+  .funnelCount { font-size: 14px; }
+  .funnelBarTrack { height: 6px; }
+  .funnelInsight {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 12px;
+    font-size: 11px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .container { padding: 12px; }
+  
+  /* Page Header */
+  .pageHeader { padding: 14px; }
+  .pageTitle { font-size: 20px; }
+  .pageSub { font-size: 11px; }
+  
+  /* KPI - single column */
+  .kpiGrid { grid-template-columns: 1fr; }
+  .kpiCard { padding: 16px; flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .kpiTop { 
+    width: 100%; 
+    justify-content: space-between;
+    order: 1;
+  }
+  .kpiValue { 
+    font-size: 24px; 
+    order: 2;
+    width: 100%;
+    margin: 8px 0;
+  }
+  .kpiLabel { 
+    font-size: 12px; 
+    order: 3;
+  }
+  
+  /* Chart */
+  .chartArea { height: 150px; }
+  
+  /* Table */
+  .table { min-width: 520px; }
+  
+  /* Country list */
+  .countryList { gap: 8px; }
+  .countryItem { 
+    flex-wrap: wrap; 
+    gap: 8px;
+    padding: 10px;
+  }
+  .countryName { 
+    order: 2; 
+    width: calc(100% - 60px);
+    font-size: 12px;
+  }
+  .countryBarWrap { 
+    order: 3; 
+    width: 100%; 
+    height: 6px;
+  }
+  .countryCount { order: 1; }
+  
+  /* Risk/Top items */
+  .riskItem, .topItem { padding: 10px; }
+  .streakPill, .ratingPill { 
+    font-size: 10px; 
+    padding: 4px 8px;
+  }
+}

@@ -7,23 +7,24 @@
 .title {
   font-size: 32px;
   font-weight: 700;
-  color: #1c1d1f;
+  color: var(--text-primary);
   margin-bottom: 32px;
+  letter-spacing: -0.5px;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  gap: 24px;
-  border-bottom: 1px solid #d1d5db;
-  margin-bottom: 24px;
+  gap: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
 }
 
 .tab {
-  padding: 0 0 12px 0;
+  padding: 0 0 16px 0;
   font-size: 15px;
-  font-weight: 700;
-  color: #6b7280;
+  font-weight: 600;
+  color: var(--text-muted);
   cursor: pointer;
   background: none;
   border: none;
@@ -35,20 +36,20 @@
 }
 
 .tab:hover {
-  color: #1c1d1f;
+  color: var(--text-primary);
 }
 
 .tab.active {
-  color: #1c1d1f;
-  border-bottom-color: #1c1d1f;
+  color: var(--brand-blue);
+  border-bottom-color: var(--brand-blue);
 }
 
 .betaBadge {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: #EEF2FF;
+  color: var(--brand-blue);
   font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   font-weight: 600;
 }
 
@@ -57,19 +58,41 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  gap: 16px;
+  margin-bottom: 32px;
+  gap: 24px;
 }
 
 .toolbarLeft {
   display: flex;
-  align-items: stretch; /* So input and button align perfectly */
-  gap: 24px;
+  align-items: stretch;
+  gap: 16px;
 }
 
 .searchGroup {
   display: flex;
   align-items: stretch;
+}
+
+.searchGroup input {
+  width: 280px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 0 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.searchGroup input:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.1);
+}
+
+.searchGroup input::placeholder {
+  color: var(--text-muted);
 }
 
 .searchBtn {
@@ -81,75 +104,97 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border-radius: 0 10px 10px 0;
+  transition: all 0.2s;
+}
+
+.searchBtn:hover {
+  background-color: var(--brand-blue-hover);
 }
 
 .filterSelect {
   padding: 0 16px;
-  border: 1px solid #1c1d1f;
+  height: 48px;
+  border: 1px solid var(--border);
   background-color: white;
-  color: var(--brand-blue);
-  font-weight: 700;
-  font-size: 15px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
   outline: none;
   cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.filterSelect:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.1);
 }
 
 /* Banner */
 .banner {
-  background-color: #f7f9fa;
-  border: 1px solid #d1d5db;
+  background: linear-gradient(135deg, #EEF2FF 0%, #F5F7FB 100%);
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
   padding: 24px;
   display: flex;
-  gap: 16px;
+  gap: 20px;
   align-items: flex-start;
   margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(61, 90, 254, 0.08);
 }
 
 .newBadge {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--brand-blue);
+  color: white;
   font-weight: 700;
-  font-size: 13px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
 .bannerContent h3 {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #1c1d1f;
+  color: var(--text-primary);
 }
 
 .bannerContent p {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 16px;
   line-height: 1.5;
 }
 
 .bannerActions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 }
 
 .dismissBtn {
   background: none;
   border: none;
-  color: #1c1d1f;
-  font-weight: 700;
+  color: var(--text-muted);
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.dismissBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
 }
 
 /* Course List */
 .courseList {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  background-color: #d1d5db; /* creates borders between items */
-  border: 1px solid #d1d5db;
+  gap: 16px;
   margin-bottom: 48px;
 }
 
@@ -160,10 +205,19 @@
   padding: 24px;
   gap: 24px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   text-decoration: none;
   color: inherit;
   position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.courseRow:hover {
+  border-color: var(--brand-blue);
+  box-shadow: 0 4px 16px rgba(61, 90, 254, 0.12);
+  transform: translateY(-2px);
 }
 
 .editBtnOverlay {
@@ -172,13 +226,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.98);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.2s;
   z-index: 10;
+  border-radius: 16px;
 }
 
 .courseRow:hover .editBtnOverlay {
@@ -186,24 +241,25 @@
 }
 
 .editOverlayLabel {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--brand-blue);
   font-size: 15px;
-}
-
-.courseRow:hover {
-  background-color: #f9fafb;
+  background-color: #EEF2FF;
+  padding: 12px 24px;
+  border-radius: 10px;
 }
 
 .courseIcon {
-  width: 64px;
-  height: 64px;
-  background-color: #f3f4f6;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #EEF2FF 0%, #F5F7FB 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: var(--brand-blue);
   flex-shrink: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(61, 90, 254, 0.1);
 }
 
 .courseDetails {
@@ -211,30 +267,37 @@
 }
 
 .courseTitle {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
-  color: #1c1d1f;
-  margin-bottom: 6px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
 .courseMeta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 12px;
+  font-size: 13px;
 }
 
 .draftLabel {
-  font-weight: 700;
-  color: #1c1d1f;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .publicLabel {
-  color: #6b7280;
+  color: var(--success-green, #22C55E);
+  background-color: #DCFCE7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .courseProgressArea {
-  width: 250px;
+  width: 280px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -242,29 +305,60 @@
 
 .progressLabel {
   font-size: 14px;
-  color: #1c1d1f;
+  color: var(--text-secondary);
   font-weight: 500;
   white-space: nowrap;
 }
 
 .progressBar {
   flex: 1;
-  height: 8px;
-  background-color: #e5e7eb;
-  border-radius: 4px;
+  height: 6px;
+  background-color: #E2E8F0;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background-color: var(--brand-blue);
+  background: linear-gradient(90deg, var(--brand-blue) 0%, #6366F1 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }
 
 .footerNote {
   text-align: center;
-  color: #6b7280;
-  font-size: 13px;
+  color: var(--text-muted);
+  font-size: 14px;
   margin-top: 64px;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 64px 24px;
+  background-color: white;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  color: var(--text-muted);
+}
+
+.emptyStateTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.emptyStateDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Loading State */
+.loadingState {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-muted);
 }
 
 /* Responsiveness */
@@ -279,9 +373,19 @@
   .toolbarLeft {
     flex-direction: column;
   }
+  .searchGroup {
+    width: 100%;
+  }
+  .searchGroup input {
+    width: 100%;
+  }
   .courseRow {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .courseIcon {
+    width: 100%;
+    height: 160px;
   }
   .courseProgressArea {
     width: 100%;

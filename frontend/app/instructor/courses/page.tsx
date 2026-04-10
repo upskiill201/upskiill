@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaSearch, FaVideo } from 'react-icons/fa';
-import Input from '@/components/ui/Input';
+import { Video, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Courses.module.css';
 
@@ -62,15 +61,15 @@ export default function InstructorCoursesPage() {
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
           <div className={styles.searchGroup}>
-            <Input 
+            <input 
               type="text" 
               placeholder="Search your courses" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '260px', borderRight: 'none', borderRadius: '0' }}
+              className={styles.searchInput}
             />
             <button className={styles.searchBtn}>
-              <FaSearch size={18} />
+              <Search size={18} />
             </button>
           </div>
           
@@ -82,7 +81,7 @@ export default function InstructorCoursesPage() {
           </select>
         </div>
 
-        <Button variant="primary" href="/instructor/create" style={{ padding: '0 24px', borderRadius: '0' }}>
+        <Button variant="primary" href="/instructor/create" style={{ padding: '0 24px' }}>
           New course
         </Button>
       </div>
@@ -97,7 +96,7 @@ export default function InstructorCoursesPage() {
               With our creation improvements, new question types, and generative AI features, maximize your practice test&apos;s certification prep potential.
             </p>
             <div className={styles.bannerActions}>
-              <Button variant="primary" size="sm" style={{ padding: '0 16px', borderRadius: '0' }}>Learn more</Button>
+              <Button variant="primary" size="sm" style={{ padding: '0 16px' }}>Learn more</Button>
               <button className={styles.dismissBtn} onClick={() => setShowBanner(false)}>Dismiss</button>
             </div>
           </div>
@@ -106,12 +105,17 @@ export default function InstructorCoursesPage() {
 
       {/* ─── COURSE LIST ─── */}
       {loading ? (
-        <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280' }}>
+        <div className={styles.loadingState}>
           Loading your courses...
         </div>
       ) : filteredCourses.length === 0 ? (
-        <div style={{ padding: '48px', textAlign: 'center', color: '#6b7280', border: '1px solid #d1d5db' }}>
-          {searchQuery ? 'No courses match your search.' : "You haven't created any courses yet."}
+        <div className={styles.emptyState}>
+          <div className={styles.emptyStateTitle}>
+            {searchQuery ? 'No courses match your search.' : "You haven't created any courses yet."}
+          </div>
+          <div className={styles.emptyStateDesc}>
+            {searchQuery ? 'Try adjusting your search terms.' : 'Create your first course to get started.'}
+          </div>
         </div>
       ) : (
         <div className={styles.courseList}>
@@ -123,7 +127,7 @@ export default function InstructorCoursesPage() {
               </div>
 
               <div className={styles.courseIcon}>
-                <FaVideo size={32} />
+                <Video size={32} />
               </div>
               <div className={styles.courseDetails}>
                 <div className={styles.courseTitle}>{course.title}</div>
@@ -131,7 +135,7 @@ export default function InstructorCoursesPage() {
                   {course.published ? (
                     <span className={styles.publicLabel}>PUBLISHED</span>
                   ) : (
-                    <span className={styles.draftLabel}>DRAFT <span className={styles.publicLabel}>Public</span></span>
+                    <span className={styles.draftLabel}>DRAFT</span>
                   )}
                 </div>
               </div>

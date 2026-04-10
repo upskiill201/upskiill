@@ -1,7 +1,8 @@
-> Last updated: 2026-04-08 23:44 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-10 11:39 WAT · Keep this file current at the end of every session.
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **STRICT BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com` ALWAYS. NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
 > **STRICT BRANCHING RULE:** All work must always be pushed to a new branch to facilitate Pull Requests (PR), Code Reviews, and optimization BEFORE merging into the main branch. Direct pushes to the main branch are strictly prohibited.
+> **STRICT COMPONENT SYSTEM RULE:** All UI components use the established design system with 10px rounded corners, 48px input height, and brand colors. New pages MUST utilize the shared component library (`components/ui/*` and `components/features/*`) to maintain design coherence across the entire application. DO NOT create custom styles that deviate from established patterns.
 > **SEEDING POLICY:** Do NOT run `deleteMany()` at the start of the seeder as a default. Use `upsert()` or existence checks for core test data (Instructors & Students) to ensure we update what exists and preserve history instead of wiping the DB on every build.
 
 ---
@@ -354,6 +355,73 @@ import { FaGraduationCap, FaRocket, FaVideo, FaTrash } from 'react-icons/fa';
 // Google icon only
 import { FcGoogle } from 'react-icons/fc';
 ```
+
+---
+
+## 🎯 Established Design System — Project Standard (Agreed 2026-04-10)
+
+> **Rule:** All new pages and features MUST use the shared component library to maintain design coherence. Custom styles that deviate from established patterns are NOT allowed.
+
+### UI Components (components/ui/*)
+
+| Component | Border Radius | Height | Notes |
+|-----------|---------------|--------|-------|
+| **Button** | 10px | 36px (sm), 44px (md), 52px (lg) | Uses `--brand-blue` with hover states |
+| **Input** | 10px | 48px | Border `--border`, focus ring `--brand-blue` |
+| **Textarea** | 10px | auto | Character counter support |
+| **Badge** | 999px (pill) | auto | Variants: blue, yellow, green, red, purple, grey |
+| **Avatar** | 50% (circle) | auto | Sizes: xs, sm, md, lg, xl |
+| **Spinner** | 50% | auto | Colors: blue, white, grey |
+| **Modal** | 16px | auto | Centered with overlay |
+| **Card** | 12px | auto | Used in feature components |
+
+### Feature Components (components/features/*)
+
+| Component | Border Radius | Notes |
+|-----------|---------------|-------|
+| **CourseCard** | 12px | Thumbnail + content layout |
+| **CourseCardHorizontal** | 12px | Horizontal list variant |
+| **CoursePlayerLayout** | 8px, 12px, 16px | Dark mode video player |
+| **ReviewCard** | 12px | User review display |
+| **CategoryCard** | 12px | Subject/category grid |
+| **InstructorCard** | 12px | Expert profile |
+| **CertificateCard** | 12px | Course completion cert |
+| **LessonItem** | 8px | Single lesson row |
+| **SectionAccordion** | 12px | Curriculum section |
+| **CartItem** | 12px | Shopping cart item |
+
+### CSS Variables (globals.css)
+
+```css
+/* Brand Colors */
+--brand-blue: #3D5AFE;
+--brand-blue-hover: #253ECC;
+
+/* Backgrounds */
+--bg-card: #ffffff;
+--bg-section: #F5F7FB;
+
+/* Borders */
+--border: #E2E8F0;
+--border-strong: #CBD5E1;
+
+/* Text */
+--text-primary: #1F2A44;
+--text-secondary: #64748B;
+--text-muted: #94A3B8;
+
+/* States */
+--error-red: #EF4444;
+--success-green: #22C55E;
+```
+
+### ✅ Implementation Rules
+
+1. **Always use existing components** — Before creating custom UI, check if a shared component exists in `components/ui/` or `components/features/`
+2. **Follow border-radius patterns** — 10px for buttons/inputs, 12px for cards, 16px for modals
+3. **Use established icon libraries** — `lucide-react` for UI, `react-icons/fa` for features
+4. **Preview on /components** — Every new component must be added to the preview page
+5. **Match spacing** — 8px base unit (8, 16, 24, 32, 48, 64)
 
 ---
 

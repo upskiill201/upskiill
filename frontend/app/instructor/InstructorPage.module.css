@@ -3,6 +3,10 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Animations */
@@ -74,6 +78,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .statCard {
@@ -154,6 +160,8 @@
   border-radius: 18px;
   padding: 24px;
   border: 1px solid rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .cardHeader {
@@ -450,7 +458,11 @@
 .nudgeBtn:hover { border-color: #3D5AFE; color: #3D5AFE; background: #EEF2FF; }
 
 /* ─── TABLE ─── */
-.tableWrapper { overflow-x: auto; }
+.tableWrapper { 
+  overflow-x: auto; 
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
 
 .table {
   width: 100%;
@@ -668,25 +680,155 @@
 .scorePct { font-weight: 700; color: #1F2A44; }
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 1280px) {
+
+/* Tablet */
+@media (max-width: 1024px) {
   .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .middleGrid { grid-template-columns: 1fr; }
+  .atRiskGrid { grid-template-columns: repeat(2, 1fr); }
   .bottomGrid { grid-template-columns: 1fr 1fr; }
   .scoreCard { display: none; }
 }
 
-@media (max-width: 1024px) {
-  .middleGrid { grid-template-columns: 1fr; }
-  .atRiskGrid { grid-template-columns: 1fr 1fr; }
-}
-
+/* Mobile Large */
 @media (max-width: 768px) {
-  .statsGrid { grid-template-columns: 1fr 1fr; }
-  .atRiskGrid { grid-template-columns: 1fr; }
-  .bottomGrid { grid-template-columns: 1fr; }
-  .welcomeBanner { flex-direction: column; align-items: flex-start; }
-  .welcomeActions { width: 100%; }
+  .container { 
+    gap: 16px; 
+    padding: 16px;
+  }
+  
+  /* Welcome Banner */
+  .welcomeBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 14px;
+    gap: 16px  }
+  .welcomeLeft { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .welcomeActions { 
+    width: 100%; 
+    flex-direction: column;
+    gap: 10px;
+  }
+  .welcomeActions button { width: 100%; }
+  .welcomeTitle { font-size: 18px; }
+  .welcomeSub { font-size: 12px; }
+  
+  /* Stats Grid - 2 columns on mobile */
+  .statsGrid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px;
+  }
+  .statCard { padding: 14px; }
+  .statIcon { width: 32px; height: 32px; }
+  .statValue { font-size: 18px; }
+  .statLabel { font-size: 11px; }
+  .statSub { display: none; }
+  .statBadge { display: none; }
+  
+  /* Cards */
+  .card { 
+    padding: 16px; 
+    border-radius: 14px; 
+    overflow: hidden;
+  }
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cardTitle { font-size: 14px; }
+  .cardSub { font-size: 11px; }
+  
+  /* Chart */
+  .barChartWrap { height: 140px; }
+  
+  /* At Risk */
+  .atRiskCard { padding: 16px; border-radius: 14px; }
+  .atRiskGrid { grid-template-columns: 1fr; gap: 12px; }
+  .atRiskLeft { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .atRiskItem { padding: 12px; }
+  
+  /* Table */
+  .tableWrapper { 
+    overflow-x: auto; 
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  .table { 
+    min-width: 600px; 
+    font-size: 12px;
+  }
+  .tableRow td { padding: 10px 8px; }
+  .courseThumbnail { width: 40px; height: 30px; }
+  .courseTitle { 
+    max-width: 120px; 
+    font-size: 12px;
+  }
+  .courseTags { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 4px;
+  }
+  .courseCategory, .courseDuration, .courseLessons { font-size: 9px; }
+  
+  /* Bottom Grid */
+  .bottomGrid { grid-template-columns: 1fr; gap: 16px; }
+  
+  /* Quick Actions */
+  .quickGrid { 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px;
+  }
+  .quickAction { 
+    padding: 10px 6px; 
+    gap: 4px;
+  }
+  .qaIcon { width: 28px; height: 28px; }
+  .quickAction span { font-size: 10px; }
+  
+  /* Tip Card */
+  .tipCard { 
+    flex-direction: column; 
+    text-align: center; 
+    padding: 16px;
+  }
+  .tipIconWrap { margin: 0 auto; }
+  
+  /* Activity */
+  .activityTabs { flex-wrap: wrap; gap: 4px; }
+  .actTab { flex: none; padding: 8px 12px; font-size: 11px; }
+  .activityItem { flex-wrap: wrap; gap: 8px; }
+  .actContent { width: calc(100% - 50px); }
+  .actTime { width: 100%; margin-top: 4px; }
 }
 
+/* Small Mobile */
 @media (max-width: 480px) {
+  .container { padding: 12px; }
+  
+  .welcomeBanner { padding: 16px; }
+  .welcomeTitle { font-size: 16px; }
+  .welcomeSub { font-size: 11px; }
+  
+  /* Stats - single column on very small screens */
   .statsGrid { grid-template-columns: 1fr; }
+  .statCard { padding: 12px; }
+  .statValue { font-size: 22px; }
+  
+  /* Table */
+  .table { min-width: 550px; }
+  .courseTitle { max-width: 100px; }
+  
+  /* Quick Actions - 2 columns */
+  .quickGrid { grid-template-columns: repeat(2, 1fr); }
+  .quickAction { padding: 12px 8px; }
+  
+  /* Score Card */
+  .scoreCard { display: none; }
+  
+  /* At Risk */
+  .atRiskHeader { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .atRiskProgress { width: 100%; }
 }
