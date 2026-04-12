@@ -1,0 +1,209 @@
+.section {
+  padding: 100px 24px;
+  background: var(--bg-section);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.step {
+  position: relative;
+}
+
+.stepNum {
+  font-size: 64px;
+  font-weight: 800;
+  color: var(--brand-blue);
+  opacity: 0.15;
+  margin-bottom: -20px;
+  position: relative;
+  z-index: 0;
+}
+
+.stepContent {
+  position: relative;
+  z-index: 1;
+}
+
+.stepGraphic {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepContent h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.stepContent p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Graphics */
+.graphic1 .inputMock {
+  background: var(--bg-section);
+  padding: 16px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.graphic1 .cursor {
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+
+.graphic2 .pathLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.graphic2 .pathStep {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.graphic2 .pathArrow {
+  color: var(--text-muted);
+}
+
+.graphic3 .lessonMock {
+  width: 100%;
+  padding: 16px;
+}
+
+.graphic3 .lessonHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--success-green);
+  margin-bottom: 8px;
+}
+
+.graphic3 .lessonTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.graphic3 .progressMock {
+  height: 6px;
+  background: var(--bg-section);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.graphic3 .progressFill2 {
+  width: 35%;
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 100px;
+}
+
+.graphic4 .certMock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.graphic4 .certIcon {
+  font-size: 40px;
+}
+
+.graphic4 .certText {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success-green);
+}
+
+.cta {
+  text-align: center;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: var(--brand-blue);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ctaBtn:hover {
+  background: var(--brand-blue-hover);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 36px;
+  }
+  
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .section {
+    padding: 60px 16px;
+  }
+}

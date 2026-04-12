@@ -1,0 +1,21 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.count {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+}
+
+.number {
+  font-weight: 700;
+  color: #fbbf24;
+}

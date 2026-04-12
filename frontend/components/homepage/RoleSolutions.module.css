@@ -1,0 +1,281 @@
+/* ===== ROLE SOLUTIONS - TWO COLUMNS ===== */
+.section {
+  background: #ffffff;
+  padding: 100px 24px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6352FF;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin-bottom: 16px;
+}
+
+.subheading {
+  font-size: 18px;
+  color: #64748B;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Card base */
+.card {
+  border-radius: 24px;
+  padding: 44px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.studentCard {
+  background: linear-gradient(160deg, #EEF2FF 0%, #F5F3FF 100%);
+  border: 1.5px solid #C4B5FD;
+}
+
+.instructorCard {
+  background: linear-gradient(160deg, #0F172A 0%, #1E293B 100%);
+  border: 1.5px solid rgba(99, 82, 255, 0.3);
+}
+
+/* Decorative glow */
+.studentCard::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(99, 82, 255, 0.12), transparent);
+  border-radius: 50%;
+}
+
+.instructorCard::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.25), transparent);
+  border-radius: 50%;
+}
+
+.cardBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 20px;
+}
+
+.studentBadge {
+  background: rgba(99, 82, 255, 0.15);
+  color: #6352FF;
+  border: 1px solid rgba(99, 82, 255, 0.25);
+}
+
+.instructorBadge {
+  background: rgba(167, 139, 250, 0.15);
+  color: #A78BFA;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.cardProblem {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.studentCard .cardProblem {
+  color: #4B5563;
+}
+
+.instructorCard .cardProblem {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cardTitle {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 28px;
+  letter-spacing: -0.8px;
+}
+
+.studentCard .cardTitle {
+  color: #0F172A;
+}
+
+.instructorCard .cardTitle {
+  color: #ffffff;
+}
+
+.solutionList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solutionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.studentCard .solutionItem {
+  color: #374151;
+}
+
+.instructorCard .solutionItem {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.checkIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.studentCheck {
+  background: rgba(99, 82, 255, 0.12);
+  color: #6352FF;
+}
+
+.instructorCheck {
+  background: rgba(167, 139, 250, 0.15);
+  color: #A78BFA;
+}
+
+/* Revenue callout inside instructor card */
+.revenueBox {
+  background: rgba(99, 82, 255, 0.1);
+  border: 1px solid rgba(99, 82, 255, 0.2);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+
+.revenueTitle {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #A78BFA;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.revenueItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 6px;
+}
+
+.revenueDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A78BFA;
+  flex-shrink: 0;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: none;
+  width: 100%;
+  justify-content: center;
+}
+
+.studentCtaBtn {
+  background: linear-gradient(135deg, #6352FF, #9333EA);
+  color: white;
+  box-shadow: 0 4px 20px rgba(99, 82, 255, 0.3);
+}
+
+.studentCtaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(99, 82, 255, 0.45);
+}
+
+.instructorCtaBtn {
+  background: linear-gradient(135deg, #A78BFA, #6352FF);
+  color: white;
+  box-shadow: 0 4px 20px rgba(99, 82, 255, 0.3);
+}
+
+.instructorCtaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(167, 139, 250, 0.4);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .section { padding: 72px 16px; }
+  .heading { font-size: 32px; }
+  .card { padding: 32px 24px; }
+  .cardTitle { font-size: 24px; }
+}

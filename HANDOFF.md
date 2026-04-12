@@ -1,4 +1,7 @@
-> Last updated: 2026-04-10 11:39 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-12 01:50 WAT · Keep this file current at the end of every session.
+
+> **IMPORTANT:** The company name is now **Teyro**. The codebase currently uses "Upskiill" throughout - rebranding will happen when the logo arrives.
+
 > **STRICT RULE:** We proceed to the next Pillar ONLY when the current one is 100% complete.
 > **STRICT BACKEND URL RULE:** All frontend fetch calls MUST use `https://upskiill-backend.onrender.com` ALWAYS. NEVER point to the local backend on `localhost:3001` ever, even during local development and testing. This is a foundational code-based rule and principle.
 > **STRICT BRANCHING RULE:** All work must always be pushed to a new branch to facilitate Pull Requests (PR), Code Reviews, and optimization BEFORE merging into the main branch. Direct pushes to the main branch are strictly prohibited.
@@ -7,9 +10,9 @@
 
 ---
 
-## 🔄 Rebranding Plan — ⏳ PENDING NEW NAME
+## 🔄 Rebranding Plan — IN PROGRESS
 
-> **Strategic Decision (2026-04-05):** This platform is being re-launched as a **new product under a new brand name** (TBD). The codebase currently uses "Upskiill" / "upskiill" throughout. When the new name is confirmed, a full targeted find-and-replace will be run across all files listed below in a single session.
+> **Strategic Decision (2026-04-12):** The company name has been confirmed as **Teyro**. The domain is **Teyro.app**. Once the logo is ready, a full targeted find-and-replace will be run across all files listed below in a single session to change "Upskiill" to "Teyro".
 
 ### When the name is ready, change it in this exact order:
 
@@ -55,6 +58,47 @@
 | **MeSomb** | Update app name |
 
 > ✅ **Ready to rebrand?** Just tell me the new name in chat. I will update every file above in a single session and push a PR for you to merge.
+
+---
+
+## 🚀 Waitlist Landing Page Strategy - Separate Project
+
+> **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
+
+### Deployment Plan
+
+| Phase | Domain (Teyro.app) Points To | Status |
+|-------|------------------------------|--------|
+| **Build Phase** | Waitlist project (separate repo) | Captures emails |
+| **Launch** | Main project (this repo) | Live! |
+
+### How It Works
+1. Create a **new GitHub repo** for the waitlist page (e.g., `teyro/teyro-waitlist`)
+2. Deploy to **separate Vercel project**
+3. Point `Teyro.app` to the waitlist project
+4. Continue development on this repo using `upskiill.vercel.app`
+5. At launch: Change `Teyro.app` to point to main project
+
+### Benefits
+- ✅ No middleware complexity
+- ✅ Can't accidentally block development
+- ✅ Clean separation
+- ✅ Simple launch = just switch domain pointer
+
+---
+
+### Developer's Waitlist Instructions
+> **Full Implementation Guide:** See `TEYRO-WAITLIST-HANDOFF.md`
+
+This separate document contains:
+- 13 page section specifications (Hero through Footer)
+- Typeform integration setup (Student + Instructor forms) — **NOTE:** The Typeform forms have NOT been created yet. They need to be built and the IDs plugged in.
+- Component file structure
+- Design system tokens
+- Animation specs
+- Live counter implementation — **NOTE:** The counter on the homepage currently uses a hardcoded value. We need to implement an API fetch to pull the actual, live number of people on the waitlist.
+- SEO requirements
+- Analytics events to track
 
 ---
 
@@ -148,6 +192,10 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Global Auth Header State**: Revamped `Header.tsx` to instantly sync with JWT state exposing a dynamic Profile/Avatar interactive dropdown mirroring the logged-in user. Include fully stylized mobile-slider navigation. ✅ (2026-04-06)
 - [x] **Mobile Navigation Menu**: Implemented a full-screen slide-in hamburger drawer for `Header.tsx` with auth-aware state (shows Avatar+links for logged-in users, Login/Signup for guests). ✅ (2026-04-07)
 - [x] **Course Creation Wizard (Part 1)**: Built the 4-step instructor onboarding wizard at `/instructor/create`. ✅ (2026-04-08)
+- [x] **Production Backend Enforcement**: Enforced `https://upskiill-backend.onrender.com` in next.config.ts - never localhost. ✅ (2026-04-10)
+- [x] **Instructor Responsive Pages**: Made instructor overview, analytics, courses, and course studio fully responsive. ✅ (2026-04-10)
+- [x] **Instructor Courses Page** (`/instructor/courses`) — List of instructor's courses with search, filter, hover-to-edit overlay. ✅ (2026-04-10)
+- [x] **Course Studio** (`/instructor/courses/[id]/manage`) — Full studio with Intended Learners panel, sidebar navigation, responsive. ✅ (2026-04-10)
 
 ---
 
@@ -168,14 +216,27 @@ The wizard is a single-page client component (`InstructorLayout`-wrapped with sh
 
 **On Submit:** A `POST /api/courses` request is fired to `NEXT_PUBLIC_API_URL` (production) with `{ title, category, creatorTimeWeekly }` and `credentials: 'include'`. Backend auto-generates a collision-proof slug and creates a `published: false` course draft. The response `data.id` is used to redirect to the Course Studio.
 
-### Part 2: The Course Studio Shell at `/instructor/courses/[id]/manage`
+### Part 2: The Course Studio at `/instructor/courses/[id]/manage`
 
-Currently a **placeholder shell** with:
-- A dark header bar: `← Back to courses | Course Draft Studio | [DRAFT] | [Save]`
-- A white `280px` sidebar stub (awaiting layout screenshots)
-- A main canvas showing a success message + the new course's UUID
+Built a **full-featured Course Studio** with:
 
-> **⏸️ PAUSED HERE** — Once the user provides the remaining course builder screenshots (sidebar nav, "Intended Learners" form, Curriculum builder, etc.), we will build the full multi-section course studio.
+| Panel | Status | Description |
+|-------|--------|-------------|
+| **Intended Learners** | ✅ Complete | What you'll learn, requirements, target audience with multi-field input |
+| **Course Structure** | ✅ Complete | Tips, resource box, course structure guidance |
+| **Setup & Test Video** | ⏳ Coming Soon | Video upload and configuration |
+| **Film & Edit** | ⏳ Coming Soon | Video recording and editing |
+| **Curriculum** | ⏳ Coming Soon | Section and lesson builder |
+| **Captions** | ⏳ Coming Soon | Subtitle management |
+| **Course Landing Page** | ⏳ Coming Soon | Sales page editor |
+| **Pricing** | ⏳ Coming Soon | Price configuration |
+| **Promotions** | ⏳ Coming Soon | Coupon management |
+
+The studio features:
+- Dark header bar with draft status and save button
+- Left sidebar navigation with step indicators
+- Responsive design (mobile-friendly)
+- Auto-save functionality via `PATCH /api/courses/:id`
 
 ### Backend: `POST /api/courses` Endpoint
 
@@ -193,18 +254,18 @@ Currently a **placeholder shell** with:
 - [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
 - [ ] **FINAL STEP:** End-to-end Live Transaction Verification (P0)
 
-### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 85%)
+### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 60%)
 - [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
 - [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated creators UI ✅
 - [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling ✅
 - [x] Instructor Overview Page (`/instructor/page.tsx`) — Seeded stats, table metrics, instructor score ✅
 - [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
-- [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅ (NEW: 2026-04-06)
+- [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅
 - [x] **Course Creation Wizard Part 1** (`/instructor/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅ (2026-04-08)
-- [ ] **Course Studio (`/instructor/courses/[id]/manage`)** — ⏸️ Shell built. Awaiting builder UI screenshots to implement full layout.
-- [ ] Course Creation Wizard Part 2 — Intended Learners, Curriculum Builder, Video Upload
-- [ ] Course Creation Wizard (`/instructor/create`)
-- [ ] Curriculum Video Upload (S3)
+- [x] **Instructor Courses Page** (`/instructor/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅ (2026-04-10)
+- [x] **Course Studio** (`/instructor/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅ (2026-04-10)
+- [x] **Responsive Mobile Design** — Fixed mobile responsiveness for all instructor pages (overview, analytics, courses, studio). ✅ (2026-04-10)
+- [ ] **Course Studio Part 2** — Curriculum Builder, Video Upload (AWS S3)
 
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-06)
@@ -279,18 +340,15 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses/:id` — single course detail with Instructor payload
      - [x] `GET /courses/categories` — list all categories
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
-4. **[ ] Pillar 4: Student Learning System (Current Focus)**
-   - [x] Finalize Video Player curriculum logic & Sidebar Layout (`CoursePlayerLayout`)
-   - [x] **Build the Full Enrollment System**: Constructed the core NestJS synchronization logic translating consumed `completedLessons` into the `progress` Prisma integer (`0-100%`) cleanly driving the interactive Dashboard bars.
-   - [x] **API & UI Security Lockdown**: Wrapped the API endpoints in hard `403 Forbidden` checks intercepting non-owners. Next.js `/learn/[id]` correctly deploys a full-screen "Course Locked" aesthetic terminating DOM loading.
-   - [/] **Premium Dual-Payment Integration (Deployed, Untested 🟡)**: Full backend gateway built. Stripe supports Card/Apple Pay/Google Pay. MeSomb supports MTN, Orange, Express Union, Wave. Live keys injected to Render + Vercel. Build passes on both platforms. **NEEDS: End-to-end live transaction test with a real card and real phone.**
-   - [/] **Cart & Checkout Pages (Functional, Needs UI Polish 🟡)**: Cart (`/cart`) and Checkout (`/checkout`) are correctly separated. Checkout is login-required. Functional flow works. **NEEDS: A full premium UI redesign pass for both pages — better layout, animations, trust signals, mobile optimization.**
-   - [ ] End-to-end Payment Testing (test a real $1 Stripe charge + real MoMo prompt)
-   - [ ] Premium Cart & Checkout UI Redesign
-5. **[ ] Pillar 5: Instructor Tools (Phase 1E)**
-   - [ ] Instructor Dashboard & Analytics
-   - [ ] Course Creation UI & AWS S3 Video Uploader
-6. **[ ] Pillar 6: Admin & Polish (Phase 1F)**
+4. **[x] Pillar 5: Instructor Tools (Current - 60% Done)**
+   - [x] Instructor Dashboard Overview (`/instructor`)
+   - [x] Instructor Analytics Page (`/instructor/analytics`)
+   - [x] Instructor Courses Page (`/instructor/courses`)
+   - [x] Course Creation Wizard (`/instructor/create`)
+   - [x] Course Studio (`/instructor/courses/[id]/manage`)
+   - [x] Mobile Responsive Design
+   - [ ] AWS S3 Video Upload Integration
+5. **[ ] Pillar 6: Admin & Polish (Phase 1F)**
    - [ ] Admin Portal & Moderation tools
    - [ ] Legal pages and SendGrid Email integrations
 
@@ -305,7 +363,8 @@ _Current Focus: Pillar 2 (Course Marketplace)_
 
 ### **Vercel (Frontend)**
 - **Environment Variable**: `NEXT_PUBLIC_API_URL` MUST be set to your Render URL (e.g., `https://upskiill-backend.onrender.com`).
-- **Middleware**: Ensure authentication middleware is configured to handle `httpOnly` cookies in production.
+- **Middleware**: Ensure authentication middleware is handle `httpOnly` cookies in production.
+- **Production Backend Rule**: The frontend MUST always point to production backend (`https://upskiill-backend.onrender.com`). Never use `localhost:3001` even in local development. This is enforced in `next.config.ts`.
 
 ---
 

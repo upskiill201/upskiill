@@ -16,8 +16,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Upskiill - Learn Anything",
-  description: "The premier learning platform for your career.",
+  title: "Teyro — AI-Powered Learning That Actually Works",
+  description: "Join 23,543+ on the waitlist for Teyro. AI-powered learning that guides you from confused to confident. Build skills, earn money, built for Africa.",
 };
 
 const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';

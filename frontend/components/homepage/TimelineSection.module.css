@@ -1,0 +1,164 @@
+.section {
+  padding: 100px 20px;
+  background: var(--bg-page);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.phaseCard {
+  display: flex;
+  gap: 32px;
+  position: relative;
+}
+
+.timelineLine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.phaseIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 1;
+}
+
+.connector {
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(180deg, var(--brand-blue-new) 0%, var(--brand-purple) 100%);
+  margin: 8px 0;
+}
+
+.phaseContent {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px 32px;
+  border: 1px solid var(--border);
+  flex-grow: 1;
+  margin-bottom: 32px;
+}
+
+.phaseMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.phaseTag {
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.timelineLabel {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.phaseTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.phaseDescription {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.featureList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.featureList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--bg-section);
+  padding: 6px 12px;
+  border-radius: 100px;
+}
+
+.featureIcon {
+  color: var(--success-green);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .phaseCard {
+    gap: 16px;
+  }
+
+  .phaseContent {
+    padding: 20px;
+  }
+
+  .connector {
+    height: 60px;
+  }
+}
