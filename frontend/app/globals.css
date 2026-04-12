@@ -13,6 +13,16 @@
   --soft-blue:      #6C8CFF;
   --light-blue-bg:  #EEF2FF;
 
+  /* Scribe-Inspired Design System */
+  --brand-indigo:   #6352FF;
+  --brand-purple:   #9333EA;
+  --brand-violet:   #A78BFA;
+  --bg-dark:        #060818;
+  --bg-dark-mid:    #0F172A;
+  --bg-dark-card:   #1E293B;
+  --gradient-primary: linear-gradient(135deg, #6352FF 0%, #9333EA 100%);
+  --gradient-text:  linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #F472B6 100%);
+
   /* Text */
   --text-primary:   #1F2A44;
   --text-secondary: #64748B;
@@ -22,28 +32,44 @@
   /* Borders & Dividers */
   --border:         #E2E8F0;
   --border-strong:  #CBD5E1;
+  --border-indigo:  #E8E4FF;
 
-  /* Accent */
-  --gradient-purple: #7B61FF;
+  /* States */
   --success-green:  #22C55E;
   --error-red:      #EF4444;
   --warning:        #F59E0B;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Make Plus Jakarta Sans available globally */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
 
 *, *::before, *::after {
   box-sizing: inherit;
+}
+
+/* Smooth transitions for interactive elements */
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }

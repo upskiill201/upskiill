@@ -1,4 +1,6 @@
-# 🚀 Upskiill Development Progress Tracker
+# 🚀 Teyro Development Progress Tracker
+> **IMPORTANT:** The company name is now **Teyro**. The codebase currently uses "Upskiill" throughout - rebranding will happen when the logo arrives.
+
 > **Rule:** We complete 100% of a Pillar before proceeding to the next one.
 
 > [!IMPORTANT]
@@ -7,6 +9,19 @@
 > **STRICT BRANCHING RULE:** All work must always be pushed to a new branch for Pull Requests (PR) and Code Review before merging. We never push directly to main.
 > 
 > **STRICT COMPONENT SYSTEM RULE:** All UI components use the established design system with 10px rounded corners, 48px input height, and brand colors. New pages MUST utilize the shared component library (`components/ui/*` and `components/features/*`) to maintain design coherence across the entire application.
+
+---
+
+## 🔄 Waitlist Strategy - Separate Project
+
+> **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
+
+- **Domain**: Teyro.app (to be acquired)
+- **Phase 1**: Teyro.app points to waitlist project (captures emails)
+- **Phase 2**: Teyro.app points to main project (launch!)
+- **Development**: Continue using upskiill.vercel.app for main app development/testing
+
+---
 
 ### Step A — Finish Feature Components (Phase 3) ✅ COMPLETE
 - [x] Build Global responsive `<Header />` Component
@@ -18,14 +33,18 @@
 - [x] Build `SectionAccordion` — `components/features/SectionAccordion.tsx`
 - [x] Build `CartItem` — `components/features/CartItem.tsx`
 
-### Step B — Build Waitlist Landing Pages (Phase 4) ⏸️ PIVOTED
-> **🛑 CRITICAL DECISION:** We are strictly **NOT** building the standard Marketplace Homepage right now. We are pivoting to build a Homepage and Instructor page that captures people on a Waitlist while the core product is built.
-- [ ] `CategoryGrid` — `components/homepage/CategoryGrid.tsx`
-- [ ] `TopCourses` — `components/homepage/TopCourses.tsx`
-- [ ] `StatsBanner` — `components/homepage/StatsBanner.tsx`
-- [ ] `HowItWorks` — `components/homepage/HowItWorks.tsx`
-- [ ] `InstructorCTA` — `components/homepage/InstructorCTA.tsx`
-- [ ] `Testimonials` — `components/homepage/Testimonials.tsx`
+### Step B — Build Waitlist Landing Pages (Phase 4) ✅ IN PROGRESS
+> **🛑 CRITICAL DECISION:** We pivoted from the core marketplace to build a high-converting Waitlist Homepage first, inspired by Scribe UI (dark themes, purple glows, micro-animations).
+- [x] `HeroSection` (Scribe dark gradient, floating badges)
+- [x] `StatsSection` (Animated counters & Teyro vs Coursera vs Udemy table)
+- [x] `ProblemsSolutions` (5 paired alternating cards)
+- [x] `WhyTeyro` (6 global-first feature cards)
+- [x] `RoleSolutions` (Student vs Instructor split)
+- [x] `Marketplace` (Monetization flow steps)
+- [x] `FAQSection` (Animated accordion)
+- [x] `FinalCTA` (Dark shimmer glowing button)
+- [ ] **Pending: Typeform Setup** — The actual Typeforms have not been created yet. IDs need to be plugged into `RoleModal.tsx`.
+- [ ] **Pending: Live Counter API** — The waitlist number needs to be wired to an API to pull the live count dynamically instead of the hardcoded `23543` value in `HeroSection` & `FinalCTA`.
 
 ### Step C — Build Marketplace Pages ✅ COMPLETE
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
@@ -71,10 +90,14 @@
 - [ ] End-to-end Live Transaction Testing (Stripe Card + MeSomb MoMo)
 - [ ] Cart & Checkout "Satisfaction" Iteration 2 (Refining trust signals further)
 
-## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🟡 In Progress (30%)
+## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🟡 In Progress (60%)
 - [x] Instructor Login/Signup Responsive Pages. ✅
 - [x] Instructor Dashboard Overview & Layout. ✅
-- [ ] Build Course Creation Wizard (`/instructor/create`)
+- [x] **Course Creation Wizard (`/instructor/create`)** — ✅ COMPLETE (2026-04-10) 4-step wizard: type → title → category → time → creates DB draft + redirects to Studio
+- [x] **Course Studio (`/instructor/courses/[id]/manage`)** — ✅ COMPLETE (2026-04-10) Intended Learners panel, Course Structure panel, responsive design
+- [x] **Instructor Courses Page (`/instructor/courses`)** — ✅ COMPLETE (2026-04-10) Responsive course list with search, filter, and hover actions
+- [x] **Instructor Analytics Page (`/instructor/analytics`)** — ✅ COMPLETE (2026-04-10) Full analytics with KPIs, charts, student segmentation, responsive
+- [x] **Responsive Design Fixes** — ✅ COMPLETE (2026-04-10) Fixed mobile responsiveness for all instructor pages
 - [ ] Build Curriculum Video Uploader (AWS S3 Integration)
 
 ## 🟦 Pillar 6: Admin & Polish (Phase 1F) — 🔴 Not Started (0%)
@@ -88,7 +111,7 @@
 ## 🧩 Component Library Status
 _Phase 1 (Shared UI): 🟢 100% Complete (16/16)_
 _Phase 2 (Layout): 🟢 100% Complete (2/2)_
-_Phase 3 (Features): 🟡 5/10 Complete_
+_Phase 3 (Features): 🟢 100% Complete (10/10)_
 
 - [x] Button, Input, Badge, Avatar, Spinner
 - [x] StarRating, ProgressBar, Modal, Tabs
@@ -97,3 +120,4 @@ _Phase 3 (Features): 🟡 5/10 Complete_
 - [x] CourseCard, CourseCardHorizontal, ReviewCard
 - [x] CategoryCard, InstructorCard
 - [x] CertificateCard, LessonItem, SectionAccordion, CartItem
+- [x] CoursePlayerLayout (Video Player UI)

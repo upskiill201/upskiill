@@ -1,0 +1,226 @@
+/* ===== PROBLEMS & SOLUTIONS SECTION ===== */
+.section {
+  background: #ffffff;
+  padding: 100px 24px;
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6352FF;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
+}
+
+.subheading {
+  font-size: 18px;
+  color: #64748B;
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* Problem+Solution card pair */
+.cardGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.cardPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.cardPair:nth-child(even) {
+  direction: rtl;
+}
+
+.cardPair:nth-child(even) > * {
+  direction: ltr;
+}
+
+/* Problem card – left, light red tint */
+.problemCard {
+  background: #FFF9F9;
+  border: 1px solid #FEE2E2;
+  border-radius: 20px;
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.problemCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #EF4444, #F97316);
+}
+
+/* Solution card – right, gradient brand */
+.solutionCard {
+  background: linear-gradient(135deg, #F0EEFF 0%, #F5F3FF 100%);
+  border: 1px solid #DDD6FE;
+  border-radius: 20px;
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.solutionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6352FF, #9333EA);
+}
+
+.cardLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+
+.problemLabel {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.solutionLabel {
+  background: #DDD6FE;
+  color: #6352FF;
+}
+
+.cardNumber {
+  font-size: 52px;
+  font-weight: 900;
+  color: #F3F4F6;
+  line-height: 1;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 16px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.cardList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.problemBullet {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FEE2E2;
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.solutionBullet {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #DDD6FE;
+  color: #6352FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.solutionHighlight {
+  font-weight: 600;
+  color: #6352FF;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .cardPair {
+    grid-template-columns: 1fr;
+  }
+  .cardPair:nth-child(even) {
+    direction: ltr;
+  }
+  .heading {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 72px 16px;
+  }
+  .heading {
+    font-size: 30px;
+  }
+  .problemCard,
+  .solutionCard {
+    padding: 28px 24px;
+  }
+}

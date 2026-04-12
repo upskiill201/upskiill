@@ -1,242 +1,127 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { ArrowRight, ChevronDown, Zap, BookOpen, Brain, TrendingUp, Award } from 'lucide-react';
 import styles from './HeroSection.module.css';
 
-/* ─────────────────────────────────────────────
-   CATEGORY SLIDER DATA — 12 cards / 4 groups of 3
-───────────────────────────────────────────── */
-const CATEGORIES = [
-  { name: 'Generative AI',       img: '/homepage/cat-generative-ai.png',   href: '/courses?cat=generative-ai' },
-  { name: 'IT Certifications',   img: '/homepage/cat-it-certs.png',         href: '/courses?cat=it-certs' },
-  { name: 'Data Science',        img: '/homepage/cat-data-science.png',     href: '/courses?cat=data-science' },
-  { name: 'ChatGPT',             img: '/homepage/cat-chatgpt.png',          href: '/courses?cat=chatgpt' },
-  { name: 'Prompt Engineering',  img: '/homepage/cat-prompt-eng.png',       href: '/courses?cat=prompt-eng' },
-  { name: 'Microsoft Excel',     img: '/homepage/cat-excel.png',            href: '/courses?cat=excel' },
-  { name: 'Large Language Models', img: '/homepage/cat-llm.png',           href: '/courses?cat=llm' },
-  { name: 'Machine Learning',    img: '/homepage/cat-machine-learning.png', href: '/courses?cat=machine-learning' },
-  { name: 'AI Agents',           img: '/homepage/cat-ai-agents.png',        href: '/courses?cat=ai-agents' },
-  { name: 'UI Design',           img: '/homepage/cat-ui-design.png',        href: '/courses?cat=ui-design' },
-  { name: 'Guitar',              img: '/homepage/cat-guita.png',            href: '/courses?cat=guitar' },
-  { name: 'Business Strategy',   img: '/homepage/cat-business.png',         href: '/courses?cat=business' },
+interface HeroSectionProps {
+  onOpenModal: () => void;
+}
+
+const previewCards = [
+  { icon: Brain, title: 'AI Tutor', sub: 'Always available when stuck' },
+  { icon: BookOpen, title: 'Your Path', sub: 'Personalized in minutes' },
+  { icon: TrendingUp, title: 'Earn Fast', sub: 'Marketplace from day 1' },
+  { icon: Award, title: 'Verified', sub: 'Credentials that matter' },
 ];
 
-const CARDS_PER_SLIDE = 3;
-const TOTAL_GROUPS = Math.ceil(CATEGORIES.length / CARDS_PER_SLIDE); // 4
-
-/* ─────────────────────────────────────────────
-   WHY LEARN DATA — 12 feature cards
-───────────────────────────────────────────── */
-const WHY_FEATURES = [
-  { icon: <i className="fa-solid fa-laptop-code"></i>,    title: '500+ courses across every skill',  body: 'Tech, business, design, music, health, language — if you want to learn it, we have it. Taught by real-world experts.', soon: false },
-  { icon: <i className="fa-solid fa-clock"></i>,          title: 'Learn at your own pace',           body: 'Lifetime access to every course you buy. Learn on your lunch break, late at night, or all weekend — no deadlines.', soon: false },
-  { icon: <i className="fa-solid fa-certificate"></i>,    title: 'Earn verified certificates',        body: 'Get a certificate when you complete a course. Download as PDF, share on LinkedIn, and verify with a unique ID.', soon: false },
-  { icon: <i className="fa-solid fa-chart-line"></i>,     title: 'Track your progress',    body: "Your dashboard shows every course you're in, visual progress bars, and high-impact study statistics.", soon: false },
-  { icon: <i className="fa-solid fa-chalkboard-user"></i>, title: 'Vetted instructors',     body: 'Every course is reviewed before it goes live. You learn from professionals with real industry experience.', soon: false },
-  { icon: <i className="fa-solid fa-credit-card"></i>,     title: 'Pay your way',          body: 'We support the payment methods that work for you, including Mobile Money and local bank transfers.', soon: false },
-  { icon: <i className="fa-solid fa-robot"></i>,           title: 'AI Tutor — 24/7',       body: "Stuck on something? Ask your personal AI tutor. It reads your course content and answers instantly.", soon: true },
-  { icon: <i className="fa-solid fa-map-location-dot"></i>, title: 'Your learning path',   body: 'Set your career goal and our AI builds a custom course sequence for you, adjusting as you progress.', soon: true },
-  { icon: <i className="fa-solid fa-magnifying-glass"></i>, title: 'Skill Gap Analyzer',   body: "Upload your CV, pick your target job, and see exactly which skills you're missing. We map the gap.", soon: true },
-  { icon: <i className="fa-solid fa-gamepad"></i>,         title: 'Earn XP & badges',      body: 'Level up as you learn. Earn XP for every lesson, unlock achievement badges, and climb the leaderboard.', soon: true },
-  { icon: <i className="fa-solid fa-bell"></i>,            title: 'Smart reminders',       body: "Haven't studied in a few days? We'll nudge you via email or WhatsApp with a spaced-repetition reminder.", soon: true },
-  { icon: <i className="fa-solid fa-download"></i>,        title: 'Learn offline',         body: 'Download your lessons and watch them without internet. Your progress automatically syncs when online.', soon: true },
-];
-
-/* ─────────────────────────────────────────────
-   MAIN COMPONENT
-───────────────────────────────────────────── */
-export default function HeroSection() {
-  const [activeGroup, setActiveGroup] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const goToGroup = useCallback((index: number) => setActiveGroup(index), []);
-
-  const nextGroup = useCallback(() =>
-    setActiveGroup(prev => (prev + 1) % TOTAL_GROUPS), []);
-
-  const prevGroup = useCallback(() =>
-    setActiveGroup(prev => (prev - 1 + TOTAL_GROUPS) % TOTAL_GROUPS), []);
-
-  const startAutoPlay = useCallback(() => {
-    intervalRef.current = setInterval(nextGroup, 4000);
-  }, [nextGroup]);
-
-  const stopAutoPlay = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  }, []);
-
-  useEffect(() => {
-    startAutoPlay();
-    return () => stopAutoPlay();
-  }, [startAutoPlay, stopAutoPlay]);
-
-  // Slide offset: each group moves track left by 100% of visible width + 1 gap
-  const trackOffset = `calc(-${activeGroup * 100}% - ${activeGroup * 16}px)`;
-
+export default function HeroSection({ onOpenModal }: HeroSectionProps) {
   return (
-    <>
-      <div className={styles.heroContainer}>
-      {/* ══════════════════════════════════════════
-          PART 1 — BLUE BANNER (260px desktop)
-      ══════════════════════════════════════════ */}
-      <section className={styles.banner}>
-
-        {/* Abstract SVG wave — right side, 40% opacity */}
-        <div className={styles.bannerWave} aria-hidden="true">
-          <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" fill="#5C77FF">
-            <ellipse cx="560" cy="60"  rx="300" ry="220" opacity="0.6" />
-            <ellipse cx="650" cy="200" rx="200" ry="180" opacity="0.5" />
-            <ellipse cx="440" cy="260" rx="180" ry="140" opacity="0.4" />
-          </svg>
-        </div>
-
-        {/* Inner flex row */}
-        <div className={styles.bannerInner}>
-
-          {/* LEFT — White floating card */}
-          <div className={styles.contentCard}>
-            <h1 className={styles.cardTitle}>Master in-demand skills</h1>
-            <p className={styles.cardDesc}>
-              Get access to 500+ courses from real-world experts across every skill.
-            </p>
-            <div className={styles.btnRow}>
-              <Link href="/courses" style={{ textDecoration: 'none' }}>
-                <button className={styles.btnPrimary}>Explore Plans</button>
-              </Link>
-              <Link href="/courses" style={{ textDecoration: 'none' }}>
-                <button className={styles.btnSecondary}>Browse Free</button>
-              </Link>
-            </div>
-          </div>
-
-          {/* RIGHT — Instructor + floating badges */}
-          <div className={styles.visualArea}>
-
-            {/* Badge 1 — Chart (top-right, 20% / right 10%) */}
-            <div className={`${styles.badge} ${styles.badge1}`} aria-hidden="true">
-              <i className={`fa-solid fa-chart-simple ${styles.iconChart}`}></i>
-            </div>
-
-            {/* Badge 2 — Shield (mid-left, 50% / left 5%) */}
-            <div className={`${styles.badge} ${styles.badge2}`} aria-hidden="true">
-              <i className={`fa-solid fa-shield-halved ${styles.iconShield}`}></i>
-            </div>
-
-            {/* Badge 3 — Sparkles (bottom-right, 15% / right 5%) */}
-            <div className={`${styles.badge} ${styles.badge3}`} aria-hidden="true">
-              <i className={`fa-solid fa-wand-magic-sparkles ${styles.iconSparkle}`}></i>
-            </div>
-
-            {/* Instructor photo — 110% of container height, breakouts top */}
-            <div className={styles.instructorWrapper}>
-              <Image
-                src="/homepage/instructor.png"
-                alt="Upskiill expert instructor"
-                fill
-                sizes="(max-width: 768px) calc(100vw - 40px), (max-width: 1200px) calc((100vw - 80px) / 2), 600px"
-                className={styles.instructorImg}
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          PART 2 — CATEGORY SLIDER
-      ══════════════════════════════════════════ */}
-      <section className={styles.sliderSection}>
-        <div className={styles.sliderInner}>
-
-          {/* Static left text */}
-          <div className={styles.sliderLeft}>
-            <h2 className={styles.sliderHeadline}>
-              Learn <em>essential</em><br />
-              career<br />
-              and life skills
-            </h2>
-            <p className={styles.sliderSubtext}>
-              Upskiill helps you build in-demand skills fast and advance your career in a changing world.
-            </p>
-          </div>
-
-          {/* Scrolling carousel */}
-          <div
-            className={styles.carouselWrap}
-            onMouseEnter={stopAutoPlay}
-            onMouseLeave={startAutoPlay}
+    <section className={styles.hero}>
+      <div className={styles.container}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Badge */}
+          <motion.div
+            className={styles.badge}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
           >
-            <div
-              className={styles.carouselTrack}
-              style={{ transform: `translateX(${trackOffset})` }}
-            >
-              {CATEGORIES.map((cat) => (
-                <Link
-                  href={cat.href}
-                  key={cat.name}
-                  className={styles.categoryCard}
-                >
-                  <Image
-                    src={cat.img}
-                    alt={cat.name}
-                    width={400}
-                    height={240}
-                    className={styles.cardImage}
-                  />
-                  <div className={styles.cardFooter}>
-                    <span className={styles.cardName}>{cat.name}</span>
-                    <span className={styles.cardArrow}>→</span>
-                  </div>
-                </Link>
+            <span className={styles.badgeDot} />
+            Now building — join before launch for exclusive perks
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            className={styles.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.6 }}
+          >
+            See the learning you have.{' '}
+            <span className={styles.highlight}>Build the future you want.</span>
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p
+            className={styles.subtitle}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.5 }}
+          >
+            Introducing Teyro: AI-powered learning that actually guides you.
+            From confused to confident in weeks, not years.
+          </motion.p>
+
+          {/* CTA Group */}
+          <motion.div
+            className={styles.ctaGroup}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
+            <button className={styles.primaryBtn} onClick={onOpenModal} id="hero-join-waitlist-btn">
+              <Zap size={20} className={styles.btnIcon} />
+              Join the waitlist
+              <span className={styles.liveChip}>
+                <span className={styles.liveDot} />
+                23,543 joined
+              </span>
+            </button>
+
+            <div className={styles.scrollHint}>
+              <span>See what you&apos;re waiting for</span>
+              <ChevronDown size={16} className={styles.scrollArrow} />
+            </div>
+          </motion.div>
+
+          {/* Social proof */}
+          <motion.div
+            className={styles.socialProof}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className={styles.avatars}>
+              {['A', 'M', 'Z', 'K', 'F'].map((char, i) => (
+                <span key={i} className={styles.avatar}>{char}</span>
               ))}
             </div>
-          </div>
-        </div>
+            <span className={styles.proofText}>
+              <strong>23,543</strong> students & instructors already waiting
+            </span>
+          </motion.div>
+        </motion.div>
 
-        {/* Dot + chevron navigation */}
-        <div className={styles.sliderNav}>
-          <button className={styles.navBtn} onClick={prevGroup} aria-label="Previous">‹</button>
-          {Array.from({ length: TOTAL_GROUPS }).map((_, i) => (
-            <button
-              key={i}
-              className={`${styles.dot} ${i === activeGroup ? styles.dotActive : ''}`}
-              onClick={() => goToGroup(i)}
-              aria-label={`Slide ${i + 1}`}
-            />
-          ))}
-          <button className={styles.navBtn} onClick={nextGroup} aria-label="Next">›</button>
-        </div>
-      </section>
-    </div>
-
-      {/* ══════════════════════════════════════════
-          PART 3 — WHY LEARN WITH UPSKIILL
-      ══════════════════════════════════════════ */}
-      <section className={styles.whySection}>
-        <div className={styles.whyInner}>
-          <div className={styles.whyHeader}>
-            <h2 className={styles.whyTitle}>Why learn with Upskiill?</h2>
-            <p className={styles.whySubtitle}>
-              Everything you need to learn, grow, and get ahead — all in one place.
-            </p>
-          </div>
-
-          <div className={styles.whyGrid}>
-            {WHY_FEATURES.map((feat) => (
-              <div key={feat.title} className={styles.whyCard}>
-                {feat.soon && (
-                  <span className={styles.comingSoonBadge}>Coming Soon</span>
-                )}
-                <div className={styles.iconCircle}>{feat.icon}</div>
-                <h3 className={styles.whyCardTitle}>{feat.title}</h3>
-                <p className={styles.whyCardBody}>{feat.body}</p>
+        {/* Floating product cards - Scribe style */}
+        <motion.div
+          className={styles.previewStrip}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
+          {previewCards.map(({ icon: Icon, title, sub }, i) => (
+            <motion.div
+              key={title}
+              className={styles.previewCard}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 + i * 0.1 }}
+              whileHover={{ y: -4 }}
+            >
+              <div className={styles.previewCardIcon}>
+                <Icon size={18} />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
+              <div className={styles.previewCardTitle}>{title}</div>
+              <div className={styles.previewCardSub}>{sub}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   );
 }
