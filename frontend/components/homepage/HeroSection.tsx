@@ -29,17 +29,24 @@ const previewCards = [
 
 export default function HeroSection({ onOpenModal }: HeroSectionProps) {
   return (
-    /* TubesBackground fills 100vh; all hero content is passed as children
-       and rendered in the z-10 overlay div inside TubesBackground */
-    <TubesBackground className={styles.heroWrapper}>
-      {/* Vignette + masked glass + glow overlays */}
+    /* 
+     * SSR ARCHITECTURE:
+     * TubesBackground is the animated canvas layer (client-only, ssr:false).
+     * All hero text & CTAs are in a sibling div that is SSR'd immediately,
+     * so search engines and initial HTML always contain the full content.
+     */
+    <div className={styles.heroWrapper}>
+
+      {/* Animated canvas background — loads client-only, no SSR needed */}
+      <TubesBackground className={styles.animBg} />
+
+      {/* Vignette + glow overlays */}
       <div className={styles.vignetteDark}  aria-hidden="true" />
       <div className={styles.vignetteGlass} aria-hidden="true" />
-      <div className={styles.glowOverlay} aria-hidden="true" />
-      {/* Bottom fade to next section */}
-      <div className={styles.bottomFade}  aria-hidden="true" />
+      <div className={styles.glowOverlay}   aria-hidden="true" />
+      <div className={styles.bottomFade}    aria-hidden="true" />
 
-      {/* ── Centred content ── */}
+      {/* ── SSR'd hero content overlay ── */}
       <div className={styles.container}>
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -96,6 +103,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
               <Zap size={20} className={styles.btnIcon} />
               Join the waitlist
               <span className={styles.liveChip}>
+                {/* TODO: Replace hardcoded count with live API fetch from /api/waitlist/count */}
                 <span className={styles.liveDot} />
                 23,543 joined
               </span>
@@ -120,6 +128,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
               ))}
             </div>
             <span className={styles.proofText}>
+              {/* TODO: Replace hardcoded count with live API fetch */}
               <strong>23,543</strong> students &amp; instructors already waiting
             </span>
           </motion.div>
@@ -148,6 +157,6 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
           ))}
         </motion.div>
       </div>
-    </TubesBackground>
+    </div>
   );
 }

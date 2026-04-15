@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring, useInView, useReducedMotion } from 'framer-motion';
+import { useId, useRef } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import styles from './Marketplace.module.css';
 
@@ -17,6 +17,11 @@ const features = [
 export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Each SVG root must declare its own gradient — IDs are scoped to the SVG document
+  // Using useId() generates stable, unique IDs even with multiple instances on a page
+  const desktopGradientId = useId();
+  const mobileGradientId = useId();
+
   // Track the scroll specifically over the timeline wrapper
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -53,15 +58,22 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
         {/* The Scrolling SVG Journey Timeline */}
         <div className={styles.timelineWrapper}>
           
-          {/* THE SVG S-CURVE */}
-          {/* We use preserveAspectRatio="none" and vectorEffect to stretch the curve 
-              flawlessly across any height without distorting the stroke width. */}
+          {/* THE SVG LAYERS */}
           <div className={styles.svgLayer}>
-             <svg 
+
+            {/* Desktop S-Curve SVG — each SVG root owns its own gradient definition */}
+            <svg 
                className={styles.desktopSvg}
                viewBox="0 0 100 1000" 
                preserveAspectRatio="none"
              >
+               <defs>
+                 <linearGradient id={desktopGradientId} x1="0" y1="0" x2="0" y2="1">
+                   <stop offset="0%" stopColor="#818cf8" />
+                   <stop offset="50%" stopColor="#c084fc" />
+                   <stop offset="100%" stopColor="#ec4899" />
+                 </linearGradient>
+               </defs>
                {/* Background Track (Faded) */}
                <path 
                  d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
@@ -74,28 +86,28 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
                <motion.path 
                  d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
                  fill="none" 
-                 stroke="url(#glowGradient)" 
+                 stroke={`url(#${desktopGradientId})`} 
                  strokeWidth="4" 
                  vectorEffect="non-scaling-stroke"
                  style={{ pathLength }}
                />
-               <defs>
-                 <linearGradient id="glowGradient" x1="0" y1="0" x2="0" y2="1">
-                   <stop offset="0%" stopColor="#818cf8" />
-                   <stop offset="50%" stopColor="#c084fc" />
-                   <stop offset="100%" stopColor="#ec4899" />
-                 </linearGradient>
-               </defs>
              </svg>
              
-             {/* Mobile SVG (Straight line on the left side) */}
+             {/* Mobile SVG — positioned to the left edge so dots align with the line */}
              <svg 
                className={styles.mobileSvg}
                viewBox="0 0 10 1000" 
                preserveAspectRatio="none"
              >
+               <defs>
+                 <linearGradient id={mobileGradientId} x1="0" y1="0" x2="0" y2="1">
+                   <stop offset="0%" stopColor="#818cf8" />
+                   <stop offset="50%" stopColor="#c084fc" />
+                   <stop offset="100%" stopColor="#ec4899" />
+                 </linearGradient>
+               </defs>
                <path d="M 5 0 L 5 1000" fill="none" stroke="rgba(99, 82, 255, 0.1)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-               <motion.path d="M 5 0 L 5 1000" fill="none" stroke="url(#glowGradient)" strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ pathLength }} />
+               <motion.path d="M 5 0 L 5 1000" fill="none" stroke={`url(#${mobileGradientId})`} strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ pathLength }} />
              </svg>
           </div>
 
@@ -104,7 +116,6 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
             {features.map((feature, i) => {
               const isLeft = i % 2 !== 0; // Alternate staggering on Desktop
               
-              // Each node fades in precisely as it's reached
               return (
                 <TimelineNode key={i} index={i} isLeft={isLeft} feature={feature} />
               )
@@ -132,7 +143,7 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
 }
 
 // Sub-component for individual timeline nodes
-function TimelineNode({ index, isLeft, feature }: { index: number, isLeft: boolean, feature: any }) {
+function TimelineNode({ index, isLeft, feature }: { index: number, isLeft: boolean, feature: { title: string; desc: string } }) {
   const nodeRef = useRef(null);
   const isInView = useInView(nodeRef, { margin: "-20% 0px -20% 0px", once: true });
 
@@ -151,7 +162,7 @@ function TimelineNode({ index, isLeft, feature }: { index: number, isLeft: boole
         <div className={styles.innerDot} />
       </motion.div>
 
-        {/* The Feature Card with enhanced 3D hover interactivity */}
+      {/* The Feature Card with enhanced 3D hover interactivity */}
       <motion.div 
         className={styles.nodeCard}
         initial={{ opacity: 0, x: isLeft ? -40 : 40 }}

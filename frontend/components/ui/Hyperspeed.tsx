@@ -171,6 +171,9 @@ export const Hyperspeed = forwardRef<HTMLDivElement, HyperspeedProps>(
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       geometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
 
+      // Keep an immutable copy of starting positions so distortions never drift/accumulate
+      const basePositions = positions.slice();
+
       const material = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
@@ -204,30 +207,28 @@ export const Hyperspeed = forwardRef<HTMLDivElement, HyperspeedProps>(
             pos[idx + 5] = -(newZ + length);
           }
 
-          // Distortion modes
+          // Distortion modes — always derived from basePositions to prevent drift
           if (options.distortion === 'turbulentDistortion') {
-            const offset =
-              Math.sin(time * 0.001 + pos[idx + 2] * 0.01) * 2;
-            pos[idx] += offset * 0.01;
-            pos[idx + 3] += offset * 0.01;
+            const offset = Math.sin(time * 0.001 + basePositions[idx + 2] * 0.01) * 2;
+            pos[idx]     = basePositions[idx]     + offset * 0.01;
+            pos[idx + 3] = basePositions[idx + 3] + offset * 0.01;
           } else if (options.distortion === 'mountainDistortion') {
-            const offset = Math.cos(pos[idx + 2] * 0.005) * 5;
-            pos[idx + 1] += offset * 0.01;
-            pos[idx + 4] += offset * 0.01;
+            const offset = Math.cos(basePositions[idx + 2] * 0.005) * 5;
+            pos[idx + 1] = basePositions[idx + 1] + offset * 0.01;
+            pos[idx + 4] = basePositions[idx + 4] + offset * 0.01;
           } else if (options.distortion === 'xyDistortion') {
-            const ox = Math.sin(time * 0.0007 + pos[idx + 2] * 0.008) * 1.5;
-            const oy = Math.cos(time * 0.0009 + pos[idx + 2] * 0.006) * 1.5;
-            pos[idx] += ox * 0.01;
-            pos[idx + 1] += oy * 0.01;
-            pos[idx + 3] += ox * 0.01;
-            pos[idx + 4] += oy * 0.01;
+            const ox = Math.sin(time * 0.0007 + basePositions[idx + 2] * 0.008) * 1.5;
+            const oy = Math.cos(time * 0.0009 + basePositions[idx + 2] * 0.006) * 1.5;
+            pos[idx]     = basePositions[idx]     + ox * 0.01;
+            pos[idx + 1] = basePositions[idx + 1] + oy * 0.01;
+            pos[idx + 3] = basePositions[idx + 3] + ox * 0.01;
+            pos[idx + 4] = basePositions[idx + 4] + oy * 0.01;
           } else if (options.distortion === 'deepDistortion') {
-            const wave =
-              Math.sin(time * 0.0005 + pos[idx + 2] * 0.003) * 3;
-            pos[idx] += wave * 0.008;
-            pos[idx + 1] += wave * 0.008;
-            pos[idx + 3] += wave * 0.008;
-            pos[idx + 4] += wave * 0.008;
+            const wave = Math.sin(time * 0.0005 + basePositions[idx + 2] * 0.003) * 3;
+            pos[idx]     = basePositions[idx]     + wave * 0.008;
+            pos[idx + 1] = basePositions[idx + 1] + wave * 0.008;
+            pos[idx + 3] = basePositions[idx + 3] + wave * 0.008;
+            pos[idx + 4] = basePositions[idx + 4] + wave * 0.008;
           }
         }
         geometry.attributes.position.needsUpdate = true;
@@ -236,7 +237,7 @@ export const Hyperspeed = forwardRef<HTMLDivElement, HyperspeedProps>(
 
       animate(0);
 
-      // Speed-up interaction
+      // Speed-up interaction — scoped to the canvas, not the whole window
       const handleSpeedUp = () => {
         state.targetSpeed = options.speedUp!;
         state.targetFov = options.fovSpeedUp!;
@@ -248,17 +249,19 @@ export const Hyperspeed = forwardRef<HTMLDivElement, HyperspeedProps>(
         options.onSlowDown?.();
       };
 
-      window.addEventListener('mousedown', handleSpeedUp);
-      window.addEventListener('mouseup', handleSlowDown);
-      window.addEventListener('touchstart', handleSpeedUp);
-      window.addEventListener('touchend', handleSlowDown);
+      // Attach to canvas element only — prevents triggering on any page scroll/tap
+      const interactionTarget = canvasRef.current;
+      interactionTarget.addEventListener('pointerdown', handleSpeedUp);
+      interactionTarget.addEventListener('pointerup', handleSlowDown);
+      interactionTarget.addEventListener('pointerleave', handleSlowDown);
+      interactionTarget.addEventListener('pointercancel', handleSlowDown);
 
       return () => {
         window.removeEventListener('resize', resize);
-        window.removeEventListener('mousedown', handleSpeedUp);
-        window.removeEventListener('mouseup', handleSlowDown);
-        window.removeEventListener('touchstart', handleSpeedUp);
-        window.removeEventListener('touchend', handleSlowDown);
+        interactionTarget.removeEventListener('pointerdown', handleSpeedUp);
+        interactionTarget.removeEventListener('pointerup', handleSlowDown);
+        interactionTarget.removeEventListener('pointerleave', handleSlowDown);
+        interactionTarget.removeEventListener('pointercancel', handleSlowDown);
         cancelAnimationFrame(animationId);
         geometry.dispose();
         material.dispose();

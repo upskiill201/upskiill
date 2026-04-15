@@ -232,7 +232,10 @@
   
   .mobileSvg {
     display: block;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 15px;
+    width: 10px;
     height: 100%;
   }
 
