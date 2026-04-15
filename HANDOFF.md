@@ -1,4 +1,4 @@
-> Last updated: 2026-04-12 01:50 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-04-15 14:25 WAT · Keep this file current at the end of every session.
 
 > **IMPORTANT:** The company name is now **Teyro**. The codebase currently uses "Upskiill" throughout - rebranding will happen when the logo arrives.
 
@@ -58,14 +58,15 @@
 | **MeSomb** | Update app name |
 
 > ✅ **Ready to rebrand?** Just tell me the new name in chat. I will update every file above in a single session and push a PR for you to merge.
-
----
-
-## 🚀 Waitlist Landing Page Strategy - Separate Project
-
-> **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
-
-### Deployment Plan
+61: 
+62: ---
+63: 
+64: ## 🚀 Waitlist Landing Page Strategy - Separate Project
+65: 
+66: > **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
+67: > **Update (2026-04-15):** The waitlist landing page components have been polished and pushed to a new branch `feat/teyro-landing-page-polish` for review. This includes data-backed content (Scribe-style), micro-animations, and UI refinements.
+68: 
+69: ### Deployment Plan
 
 | Phase | Target Date | Domain (Teyro.app) Points To | Status |
 |-------|-------------|------------------------------|--------|

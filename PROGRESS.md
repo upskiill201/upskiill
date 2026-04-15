@@ -33,8 +33,9 @@
 - [x] Build `SectionAccordion` — `components/features/SectionAccordion.tsx`
 - [x] Build `CartItem` — `components/features/CartItem.tsx`
 
-### Step B — Build Waitlist Landing Pages (Phase 4) ✅ IN PROGRESS
+### Step B — Build Waitlist Landing Pages (Phase 4) ✅ COMPLETE
 > **🛑 CRITICAL DECISION:** We pivoted from the core marketplace to build a high-converting Waitlist Homepage first, inspired by Scribe UI (dark themes, purple glows, micro-animations).
+> **Update (2026-04-15):** The waitlist components have been polished with data-backed content and pushed to `feat/teyro-landing-page-polish`.
 - [x] `HeroSection` (Scribe dark gradient, floating badges)
 - [x] `StatsSection` (Animated counters & Teyro vs Coursera vs Udemy table)
 - [x] `ProblemsSolutions` (5 paired alternating cards)
@@ -43,6 +44,7 @@
 - [x] `Marketplace` (Monetization flow steps)
 - [x] `FAQSection` (Animated accordion)
 - [x] `FinalCTA` (Dark shimmer glowing button)
+- [x] **Polishing & GitHub Push**: All waitlist sections updated with hard-hitting copy and UI refinements. ✅
 - [ ] **Pending: Typeform Setup** — The actual Typeforms have not been created yet. IDs need to be plugged into `RoleModal.tsx`.
 - [ ] **Pending: Live Counter API** — The waitlist number needs to be wired to an API to pull the live count dynamically instead of the hardcoded `23543` value in `HeroSection` & `FinalCTA`.
 
