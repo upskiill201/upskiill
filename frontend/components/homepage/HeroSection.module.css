@@ -104,6 +104,24 @@
   margin-right: auto;
 }
 
+.brandUnderline {
+  color: #FFFFFF;
+  font-weight: 800;
+  position: relative;
+  display: inline-block;
+}
+
+.brandUnderline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #6352FF, #C084FC);
+  border-radius: 10px;
+}
+
 /* CTA area */
 .ctaGroup {
   display: flex;

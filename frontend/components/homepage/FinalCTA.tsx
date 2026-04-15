@@ -4,14 +4,15 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Zap } from 'lucide-react';
-import { FaTwitter, FaLinkedin, FaInstagram, FaDiscord } from 'react-icons/fa6';
+import { FaFacebook, FaInstagram, FaTiktok, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 import styles from './FinalCTA.module.css';
 
 const socialLinks = [
-  { icon: FaTwitter, href: 'https://twitter.com/teyroapp', label: 'Twitter' },
-  { icon: FaLinkedin, href: 'https://linkedin.com/company/teyro', label: 'LinkedIn' },
+  { icon: FaFacebook, href: 'https://facebook.com/teyroapp', label: 'Facebook' },
   { icon: FaInstagram, href: 'https://instagram.com/teyroapp', label: 'Instagram' },
-  { icon: FaDiscord, href: 'https://discord.gg/teyro', label: 'Discord' },
+  { icon: FaTiktok, href: 'https://tiktok.com/@teyroapp', label: 'TikTok' },
+  { icon: FaLinkedin, href: 'https://linkedin.com/company/teyro', label: 'LinkedIn' },
+  { icon: FaXTwitter, href: 'https://x.com/teyroapp', label: 'X (Twitter)' },
 ];
 
 export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {

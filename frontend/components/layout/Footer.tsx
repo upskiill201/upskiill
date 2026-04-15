@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaApple, FaGooglePlay, FaTiktok, FaYoutube, FaCreditCard, FaBuildingColumns } from 'react-icons/fa6';
+import { FaFacebook, FaXTwitter, FaLinkedin, FaInstagram, FaApple, FaGooglePlay, FaTiktok, FaCreditCard, FaBuildingColumns } from 'react-icons/fa6';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -28,12 +28,11 @@ export default function Footer() {
             The premier learning platform empowering your career with world-class courses, AI-driven learning tools, and a dynamic freelance marketplace for skills.
           </p>
           <div className={styles.socials}>
-            <Link href="#" aria-label="Facebook"><FaFacebook size={20} /></Link>
-            <Link href="#" aria-label="Twitter"><FaTwitter size={20} /></Link>
-            <Link href="#" aria-label="Instagram"><FaInstagram size={20} /></Link>
-            <Link href="#" aria-label="LinkedIn"><FaLinkedin size={20} /></Link>
-            <Link href="#" aria-label="TikTok"><FaTiktok size={20} /></Link>
-            <Link href="#" aria-label="YouTube"><FaYoutube size={20} /></Link>
+            <Link href="https://facebook.com/teyroapp" aria-label="Facebook"><FaFacebook size={20} /></Link>
+            <Link href="https://x.com/teyroapp" aria-label="X (Twitter)"><FaXTwitter size={20} /></Link>
+            <Link href="https://instagram.com/teyroapp" aria-label="Instagram"><FaInstagram size={20} /></Link>
+            <Link href="https://linkedin.com/company/teyro" aria-label="LinkedIn"><FaLinkedin size={20} /></Link>
+            <Link href="https://tiktok.com/@teyroapp" aria-label="TikTok"><FaTiktok size={20} /></Link>
           </div>
         </div>
 

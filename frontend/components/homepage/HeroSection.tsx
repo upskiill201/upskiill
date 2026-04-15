@@ -53,8 +53,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
           >
-            Introducing Teyro: AI-powered learning that actually guides you.
-            From confused to confident in weeks, not years.
+            Introducing <strong className={styles.brandUnderline}>Teyro</strong>: <strong>Edtech 2.0</strong>. Because traditional platforms are just video libraries that sell hope and certificates. We deliver actual achievement, accountability, and real results.
           </motion.p>
 
           {/* CTA Group */}

@@ -8,7 +8,7 @@ import styles from './FAQSection.module.css';
 const faqs = [
   {
     q: 'When does Teyro launch?',
-    a: '<strong>Phase 1 (MVP):</strong> Launching in Q3 2026 with core courses, AI tutor, and personalized paths. <strong>Full platform</strong> (marketplace, gamification, community) follows in Q4 2026. Waitlist members get early access 4 weeks before public launch.',
+    a: '<strong>Phase 1 MVP</strong> will launch in August, and we will launch <strong>Beta</strong> in July. Waitlist members get early access to the beta platform, insider insights, and testing opportunities while we develop.',
   },
   {
     q: 'Is it really free to join the waitlist?',
@@ -40,11 +40,15 @@ const faqs = [
   },
   {
     q: "How is Teyro different from Coursera or Udemy?",
-    a: 'Simple: <strong>Coursera and Udemy are video libraries.</strong> Teyro is a guided learning system. We have AI tutors, personalized paths, confusion detection, a skills marketplace to earn money, and we work on 2G. They don\'t.',
+    a: 'Simple: <strong>Coursera and Udemy are Edtech 1.0.</strong> They are video libraries with a 97% drop-off rate that prioritize monetization over your success. Teyro is <strong>Edtech 2.0</strong>—a re-imagined system with 24/7 AI coaching, active problem solving, and a marketplace for real-world results. We don\'t just sell video access; we track actual achievement.',
   },
   {
     q: 'What role should I select — Student or Instructor?',
     a: 'Choose <strong>Student</strong> if you want to learn new skills and potentially earn money on the marketplace. Choose <strong>Instructor</strong> if you want to create and sell courses and build your own teaching brand.',
+  },
+  {
+    q: 'Is Teyro just another video library like Udemy?',
+    a: 'No. Traditional platforms are <strong>"dumb translations"</strong> of classroom lectures to video. They lack the three essentials for online success: Accountability, Active Practice, and Real-Time Interaction. Teyro is <strong>Edtech 2.0</strong>—re-imagined to catch you right before you "ghost" with guidance that actually sticks.',
   },
 ];
 

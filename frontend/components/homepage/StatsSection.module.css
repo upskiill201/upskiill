@@ -155,10 +155,68 @@
 .btnX { color: #EF4444; font-size: 18px; }
 .btnPartial { color: #F59E0B; font-size: 16px; }
 
+/* Industry Problem Context Styles */
+.industryContext {
+  margin-bottom: 56px;
+  background: #F1F5F9;
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+}
+
+.quoteGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.quoteItem {
+  position: relative;
+  padding-left: 20px;
+  border-left: 3px solid #6352FF;
+}
+
+.quoteItem p {
+  font-size: 16px;
+  font-style: italic;
+  color: #334155;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.quoteItem span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contextSub {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  background: white;
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.contextSub strong {
+  color: #6352FF;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .quoteGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 
@@ -168,4 +226,6 @@
   .statsGrid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .statValue { font-size: 36px; }
   .statCard { padding: 24px 16px; }
+  .industryContext { padding: 24px 16px; }
+  .contextSub { font-size: 15px; }
 }
