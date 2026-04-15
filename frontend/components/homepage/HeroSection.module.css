@@ -1,11 +1,21 @@
 /* ===== HERO SECTION — anim2: Tubes cursor bg ===== */
 
-/* Applied to the TubesBackground wrapper div */
+/* Applied to the outer wrapper div — always SSR'd */
 .heroWrapper {
   min-height: 100vh !important;
   background: #060818 !important;
   position: relative;
 }
+
+/* The TubesBackground canvas lives here — absolute fill, underneath all text */
+.animBg {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+}
+
 
 /* ── Overlay layers (all absolute, pointer-events: none) ── */
 

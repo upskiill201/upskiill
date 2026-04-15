@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import styles from './RoleSolutions.module.css';
 
@@ -76,6 +76,12 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
   const cardInstructorY = useTransform(smoothProgress, [0.51, 0.6, 0.85, 1], ["80vh", "0vh", "0vh", "-80vh"]);
   const cardInstructorOpacity = useTransform(smoothProgress, [0.51, 0.58, 0.9, 1], [0, 1, 1, 0]);
 
+  // Derive boolean visibility state from opacity values for aria-hidden
+  const [studentVisible, setStudentVisible] = useState(true);
+  const [instructorVisible, setInstructorVisible] = useState(false);
+  useMotionValueEvent(cardStudentOpacity, 'change', (v) => setStudentVisible(v > 0.1));
+  useMotionValueEvent(cardInstructorOpacity, 'change', (v) => setInstructorVisible(v > 0.1));
+
   return (
     <section className={styles.sectionWrapper} ref={containerRef}>
       
@@ -134,10 +140,15 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                 then Framer-Motion shifts them perfectly into the viewport at the right time. */}
             <div className={styles.cardsContainer}>
 
-              {/* Student Card */}
+              {/* Student Card — aria-hidden + pointer-events:none when not visible */}
               <motion.div 
                 className={`${styles.card} ${styles.studentCard}`}
-                style={{ y: cardStudentY, opacity: cardStudentOpacity }}
+                style={{ 
+                  y: cardStudentY, 
+                  opacity: cardStudentOpacity,
+                  pointerEvents: studentVisible ? 'auto' : 'none'
+                }}
+                aria-hidden={!studentVisible}
               >
                 <p className={styles.cardProblem}>
                   &ldquo;I want to learn real skills without wasting time or money.&rdquo;
@@ -158,10 +169,15 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                 </button>
               </motion.div>
 
-              {/* Instructor Card */}
+              {/* Instructor Card — aria-hidden + pointer-events:none when not visible */}
               <motion.div 
                 className={`${styles.card} ${styles.instructorCard}`}
-                style={{ y: cardInstructorY, opacity: cardInstructorOpacity }}
+                style={{ 
+                  y: cardInstructorY, 
+                  opacity: cardInstructorOpacity,
+                  pointerEvents: instructorVisible ? 'auto' : 'none'
+                }}
+                aria-hidden={!instructorVisible}
               >
                 <p className={styles.cardProblem}>
                   &ldquo;I want to reach more students and actually make good money.&rdquo;

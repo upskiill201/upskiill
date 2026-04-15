@@ -243,7 +243,7 @@
 /* Responsiveness */
 @media (max-width: 1200px) {
   .machineStage {
-    transform: scale(0.85); /* Seamlessly scale coordinates down to fit screen width */
+    transform: scale(0.85);
   }
 }
 
@@ -259,12 +259,19 @@
   }
 }
 
+/* On mobile (< 640px) the desktop explosion stage is completely hidden.
+   The component renders a native sequential mobile card stack instead (isMobile state).
+   We do NOT scale the stage to 45% as that makes all text unreadable. */
 @media (max-width: 640px) {
-  .machineStage {
-    transform: scale(0.45); /* Ensures no overflow off screen horizontally */
+  .scrollContainer {
+    /* Let the component's isMobile fallback take over;
+       keep the container but reduce its height since the
+       sticky stage is hidden inside it on mobile. */
+    height: auto;
+    min-height: 100vh;
   }
-  .header {
-    top: 6%;
+  .stickyCanvas {
+    display: none; /* Hide the desktop explosion stage entirely on mobile */
   }
   .heading {
     font-size: 28px;

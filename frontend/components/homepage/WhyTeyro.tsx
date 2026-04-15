@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FaRobot, FaRoute, FaGlobe, FaUsers, FaLightbulb, FaAward } from 'react-icons/fa';
@@ -96,18 +96,15 @@ export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) 
     stiffness: 100, damping: 30, restDelta: 0.001
   });
 
+  const shouldReduceMotion = useReducedMotion();
+
   // On desktop, the track translates left based on scroll.
   // 6 cards of ~400px width + gaps = ~2600px width.
-  // Translate from 0% to minus whatever percentage moves the track fully.
-  // Using absolute ranges or percentages can be tricky. CSS handles it via vh/vw well,
-  // but framer motion handles percentages of the element itself flawlessly using x: "percentage".
-  
-  // Actually x: "-80%" moves it 80% left. But since the track width is longer than the screen,
-  const x = useTransform(progress, [0, 1], ["0%", "-75%"]); // Moves track 75% of its own length to the left
+  const x = useTransform(progress, [0, 1], shouldReduceMotion ? ["0%", "0%"] : ["0%", "-75%"]);
 
-  // Header fades smoothly as you scroll deep into the cards
-  const headerOpacity = useTransform(progress, [0, 0.15, 0.3], [1, 1, 0]);
-  const headerY = useTransform(progress, [0, 0.2], [0, -30]);
+  // Header fades smoothly as you scroll deep into the cards (disabled for reduced-motion)
+  const headerOpacity = useTransform(progress, [0, 0.15, 0.3], shouldReduceMotion ? [1, 1, 1] : [1, 1, 0]);
+  const headerY = useTransform(progress, [0, 0.2], shouldReduceMotion ? [0, 0] : [0, -30]);
 
   return (
     <section className={styles.scrollWrapper} ref={containerRef}>
