@@ -58,14 +58,13 @@
 | **MeSomb** | Update app name |
 
 > ✅ **Ready to rebrand?** Just tell me the new name in chat. I will update every file above in a single session and push a PR for you to merge.
-61: 
-62: ---
-63: 
-64: ## 🚀 Waitlist Landing Page Strategy - Separate Project
-65: 
-66: > **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
-67: > **Update (2026-04-15):** The waitlist landing page components have been polished and pushed to a new branch `feat/teyro-landing-page-polish` for review. This includes data-backed content (Scribe-style), micro-animations, and UI refinements.
-68: 
+
+---
+
+## 🚀 Waitlist Landing Page Strategy - Separate Project
+
+> **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
+> **Update (2026-04-15):** The waitlist landing page has undergone a **High-End Interactive Revamp**. All sections now feature cinematic, scroll-linked interactions: **Exploded View Assembly**, **Stacking Cards**, **Horizontal Scroll**, **Sticky Split-Scroll**, and **Animated SVG Journeys**. The code has been pushed to `feat/teyro-landing-page-interactive`.
 69: ### Deployment Plan
 
 | Phase | Target Date | Domain (Teyro.app) Points To | Status |

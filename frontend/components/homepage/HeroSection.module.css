@@ -1,53 +1,85 @@
-/* ===== HERO SECTION - SCRIBE INSPIRED ===== */
-.hero {
-  min-height: 100vh;
-  background: #060818;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 120px 24px 80px;
+/* ===== HERO SECTION — anim2: Tubes cursor bg ===== */
+
+/* Applied to the TubesBackground wrapper div */
+.heroWrapper {
+  min-height: 100vh !important;
+  background: #060818 !important;
   position: relative;
-  overflow: hidden;
-  text-align: center;
 }
 
-/* Radial glow behind headline - Scribe signature */
-.hero::before {
-  content: '';
+/* ── Overlay layers (all absolute, pointer-events: none) ── */
+
+/* Elegant dark vignette — keeps the edges dark for framing, completely transparent in the center */
+.vignetteDark {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(6, 8, 24, 0.55) 60%, #060818 100%);
+}
+
+/* Premium frosted glass — localized strictly to the center behind the text using mask-image.
+   This diffuses the 3D tubes so text is clear, while letting the edges of the screen stay sharp! */
+.vignetteGlass {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  mask-image: radial-gradient(ellipse at 50% 45%, black 0%, black 20%, transparent 60%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 45%, black 0%, black 20%, transparent 60%);
+}
+
+/* Purple brand glow — stays on top of vignette */
+.glowOverlay {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 900px;
   height: 600px;
-  background: radial-gradient(ellipse at 50% 30%, rgba(99, 82, 255, 0.45) 0%, rgba(147, 51, 234, 0.2) 40%, transparent 70%);
-  z-index: 0;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(99, 82, 255, 0.32) 0%,
+    rgba(147, 51, 234, 0.12) 45%,
+    transparent 70%
+  );
+  z-index: 12;
   pointer-events: none;
 }
 
-/* Bottom fade into next section */
-.hero::after {
-  content: '';
+/* Fade into next section */
+.bottomFade {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 200px;
   background: linear-gradient(to bottom, transparent, #060818 80%);
-  z-index: 1;
+  z-index: 13;
   pointer-events: none;
 }
 
+/* ── Centred content column ── */
 .container {
+  position: relative;
+  z-index: 20; /* above all overlays */
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
-  position: relative;
-  z-index: 2;
+  padding: 120px 24px 80px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-/* Pill badge */
+/* ── Pill badge ── */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -74,10 +106,10 @@
 
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.4); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(167, 139, 250, 0); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 6px rgba(167, 139, 250, 0); }
 }
 
-/* Main headline */
+/* ── Headline ── */
 .title {
   font-size: 66px;
   font-weight: 800;
@@ -85,6 +117,7 @@
   line-height: 1.08;
   margin-bottom: 24px;
   letter-spacing: -2px;
+  text-shadow: 0 4px 32px rgba(6, 8, 24, 0.9);
 }
 
 .highlight {
@@ -94,16 +127,25 @@
   background-clip: text;
 }
 
+/* ── Subtitle ── */
 .subtitle {
   font-size: 19px;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.75;
   margin-bottom: 40px;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  text-shadow: 0 1px 16px rgba(6, 8, 24, 1), 0 0 40px rgba(6, 8, 24, 0.9);
 }
 
+/* Bold text inside subtitle */
+.strongVisible {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* "Teyro" brand name inline */
 .brandUnderline {
   color: #FFFFFF;
   font-weight: 800;
@@ -122,7 +164,7 @@
   border-radius: 10px;
 }
 
-/* CTA area */
+/* ── CTA group ── */
 .ctaGroup {
   display: flex;
   flex-direction: column;
@@ -148,6 +190,7 @@
   position: relative;
   overflow: hidden;
   letter-spacing: -0.2px;
+  pointer-events: auto; /* must be clickable inside pointer-events:none overlay */
 }
 
 .primaryBtn::before {
@@ -168,11 +211,9 @@
   transform: translateY(-1px) scale(1.01);
 }
 
-.btnIcon {
-  font-size: 18px;
-}
+.btnIcon { font-size: 18px; }
 
-/* Live counter badge inside button */
+/* Live counter pill inside button */
 .liveChip {
   display: inline-flex;
   align-items: center;
@@ -194,34 +235,33 @@
 
 @keyframes livePulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.4; }
 }
 
+/* Scroll hint */
 .scrollHint {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.85);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
   transition: color 0.2s;
+  text-shadow: 0 1px 10px rgba(6, 8, 24, 1);
+  pointer-events: auto;
 }
 
-.scrollHint:hover {
-  color: rgba(255,255,255,0.6);
-}
+.scrollHint:hover { color: #ffffff; }
 
-.scrollArrow {
-  animation: bounce 2s infinite;
-}
+.scrollArrow { animation: bounce 2s infinite; }
 
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
+  50%       { transform: translateY(6px); }
 }
 
-/* Social proof */
+/* ── Social proof ── */
 .socialProof {
   display: flex;
   align-items: center;
@@ -229,9 +269,7 @@
   gap: 12px;
 }
 
-.avatars {
-  display: flex;
-}
+.avatars { display: flex; }
 
 .avatar {
   width: 34px;
@@ -252,14 +290,16 @@
 
 .proofText {
   font-size: 14px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 10px rgba(6, 8, 24, 1);
 }
 
 .proofText strong {
-  color: rgba(255,255,255,0.8);
+  color: #ffffff;
+  font-weight: 700;
 }
 
-/* Product preview strip - Scribe floating cards row */
+/* ── Floating product preview cards ── */
 .previewStrip {
   display: flex;
   gap: 16px;
@@ -270,29 +310,29 @@
 }
 
 .previewCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   padding: 18px 20px;
   text-align: left;
-  backdrop-filter: blur(10px);
-  min-width: 180px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  min-width: 170px;
   flex: 1;
-  max-width: 220px;
+  max-width: 215px;
   transition: all 0.3s;
 }
 
 .previewCard:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(99, 82, 255, 0.4);
-  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(99, 82, 255, 0.45);
 }
 
 .previewCardIcon {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #6352FF20, #9333EA20);
+  background: linear-gradient(135deg, rgba(99,82,255,0.2), rgba(147,51,234,0.2));
   border: 1px solid rgba(99, 82, 255, 0.3);
   display: flex;
   align-items: center;
@@ -304,54 +344,27 @@
 .previewCardTitle {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.92);
   margin-bottom: 4px;
 }
 
 .previewCardSub {
   font-size: 12px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.5);
   line-height: 1.4;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .hero {
-    padding: 100px 16px 60px;
-  }
-
-  .title {
-    font-size: 40px;
-    letter-spacing: -1px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-  }
-
-  .primaryBtn {
-    font-size: 15px;
-    padding: 16px 28px;
-  }
-
-  .previewStrip {
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .previewCard {
-    min-width: 140px;
-    max-width: 160px;
-    padding: 14px;
-  }
+  .container { padding: 100px 16px 60px; }
+  .title { font-size: 40px; letter-spacing: -1px; }
+  .subtitle { font-size: 16px; }
+  .primaryBtn { font-size: 15px; padding: 16px 28px; }
+  .previewStrip { gap: 10px; flex-wrap: wrap; }
+  .previewCard { min-width: 140px; max-width: 160px; padding: 14px; }
 }
 
 @media (max-width: 480px) {
-  .title {
-    font-size: 34px;
-  }
-
-  .previewStrip {
-    display: none;
-  }
+  .title { font-size: 34px; }
+  .previewStrip { display: none; }
 }

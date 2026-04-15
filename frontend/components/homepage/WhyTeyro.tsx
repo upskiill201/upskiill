@@ -1,7 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FaRobot, FaRoute, FaGlobe, FaUsers, FaLightbulb, FaAward } from 'react-icons/fa';
@@ -82,56 +81,86 @@ const features = [
   },
 ];
 
-export default function WhyTeyro({ onOpenModal }: { onOpenModal: () => void }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) {
+  const containerRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    // The container is very tall, so we scroll map its entire progression
+    // Start tracking when the top of the container hits the top of the viewport
+    offset: ["start start", "end end"]
+  });
+
+  // Smooth out the horizontal scrolling slightly
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 100, damping: 30, restDelta: 0.001
+  });
+
+  // On desktop, the track translates left based on scroll.
+  // 6 cards of ~400px width + gaps = ~2600px width.
+  // Translate from 0% to minus whatever percentage moves the track fully.
+  // Using absolute ranges or percentages can be tricky. CSS handles it via vh/vw well,
+  // but framer motion handles percentages of the element itself flawlessly using x: "percentage".
+  
+  // Actually x: "-80%" moves it 80% left. But since the track width is longer than the screen,
+  const x = useTransform(progress, [0, 1], ["0%", "-75%"]); // Moves track 75% of its own length to the left
+
+  // Header fades smoothly as you scroll deep into the cards
+  const headerOpacity = useTransform(progress, [0, 0.15, 0.3], [1, 1, 0]);
+  const headerY = useTransform(progress, [0, 0.2], [0, -30]);
 
   return (
-    <section className={styles.section} ref={ref}>
-      <div className={styles.container}>
-        <motion.div
-          className={styles.header}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-        >
-          <div className={styles.eyebrow}>Why Teyro is Different</div>
-          <h2 className={styles.heading}>
-            Teyro is **Edtech 2.0**.<br />
-            <em>Real outcomes, not just video scrolls.</em>
-          </h2>
-          <p className={styles.subheading}>
-            Six structural advantages that legacy platforms ignore. We don&apos;t just sell video access; we build a system for <strong>actual achievement</strong>.
-          </p>
-        </motion.div>
+    <section className={styles.scrollWrapper} ref={containerRef}>
+      <div className={styles.stickyStage}>
+        <div className={styles.container}>
+          
+          <motion.div
+            className={styles.header}
+            style={{ opacity: headerOpacity, y: headerY }}
+          >
+            <div className={styles.eyebrow}>Why Teyro is Different</div>
+            <h2 className={styles.heading}>
+              Teyro is <em>Edtech 2.0</em>.<br />
+              Real outcomes, not just video scrolls.
+            </h2>
+            <p className={styles.subheading}>
+              Six structural advantages that legacy platforms ignore. We don&apos;t just sell video access; we build a system for <strong>actual achievement</strong>.
+            </p>
+          </motion.div>
 
-        <div className={styles.grid}>
-          {features.map(({ icon: Icon, title, desc, points, cta }, i) => (
-            <motion.div
-              key={title}
-              className={styles.card}
-              initial={{ opacity: 0, y: 32 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-            >
-              <div className={styles.iconBox}>
-                <Icon size={24} />
+          <motion.div className={styles.horizontalTrack} style={{ x }}>
+            {features.map(({ icon: Icon, title, desc, points, cta }, i) => (
+              <div
+                key={title}
+                className={styles.card}
+              >
+                <div className={styles.iconBox}>
+                  <Icon size={24} />
+                </div>
+                <h3 className={styles.cardTitle}>{title}</h3>
+                <p className={styles.cardDesc}>{desc}</p>
+                <ul className={styles.cardFeatures}>
+                  {points.map((p, j) => (
+                    <li key={j}>
+                      <span className={styles.featureDot} />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+                <button className={styles.cardCta} onClick={onOpenModal}>
+                  {cta} <ArrowRight size={14} />
+                </button>
               </div>
-              <h3 className={styles.cardTitle}>{title}</h3>
-              <p className={styles.cardDesc}>{desc}</p>
-              <ul className={styles.cardFeatures}>
-                {points.map((p, j) => (
-                  <li key={j}>
-                    <span className={styles.featureDot} />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-              <button className={styles.cardCta} onClick={onOpenModal}>
-                {cta} <ArrowRight size={14} />
-              </button>
-            </motion.div>
-          ))}
+            ))}
+            
+            {/* The prompt references visual inline elements acting like punctuation. We can add a simple end-card or divider */}
+            <div className={styles.endCard}>
+              <h3>That&apos;s Real Magic.</h3>
+              <p>Ready to experience the difference?</p>
+              <button className={styles.ctaSolid} onClick={onOpenModal}>Explore Courses</button>
+            </div>
+            
+          </motion.div>
         </div>
       </div>
     </section>

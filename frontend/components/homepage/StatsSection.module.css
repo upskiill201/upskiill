@@ -1,7 +1,7 @@
 /* ===== STATS SECTION - SCRIBE STYLE ===== */
 .section {
   background: #ffffff;
-  padding: 80px 24px;
+  padding: 80px 24px 120px;
   border-top: 1px solid #F1F5F9;
   border-bottom: 1px solid #F1F5F9;
 }
@@ -33,12 +33,32 @@
   letter-spacing: -1.2px;
 }
 
+/* ===== STACKING CARDS ===== */
+.cardStack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stickyCard {
+  position: sticky;
+  background: #ffffff;
+  border-radius: 32px;
+  border: 1px solid #E8E4FF;
+  box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.05); /* upward shadow to emphasize stacking */
+  padding: 48px;
+}
+
+/* Staggered offsets so they look like a deck of cards */
+.card1 { top: 100px; z-index: 10; }
+.card2 { top: 124px; z-index: 20; }
+.card3 { top: 148px; z-index: 30; }
+
 /* Scribe-style stats grid */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 56px;
 }
 
 .statCard {
@@ -157,8 +177,7 @@
 
 /* Industry Problem Context Styles */
 .industryContext {
-  margin-bottom: 56px;
-  background: #F1F5F9;
+  background: #F8F9FF;
   border-radius: 24px;
   padding: 40px;
   text-align: center;

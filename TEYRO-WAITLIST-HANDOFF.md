@@ -160,10 +160,11 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 | 4 | **The Motivation Cliff** | XP Points & Badges - Gamified progression system |
 | 5 | **Learning Doesn't Lead to Earning** | Teyro Marketplace - Sell skills immediately |
 
-**Card Design:**
-- Problem card (left): Red-tinted, icon + text
-- Solution card (right): Green-tinted, icon + text + screenshot mockup
-- Scroll-triggered reveal (staggered)
+**Cinematic Interaction:**
+- **Exploded View Assembly**: The section uses a `600vh` scroll container. The 5 paired cards start "exploded" around a central **Teyro Engine Core** (CSS-driven glassmorphic mockup).
+- **Scroll Mapping**: As the user scrolls, cards orbit and fly together, locking into a readable layout.
+- **Mobile reveal**: Standardized to a sequential reveal (one-by-one) for legibility.
+- **Dwell Time**: Extended dwell time at 100% assembly for high readability.
 
 ---
 
@@ -182,10 +183,11 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 5. **Confusion Detector** - "We Notice When You're Stuck (Before You Quit)"
 6. **Skill Verification** - "Certificates That Actually Get You Hired"
 
-**Card Design:**
-- Icon (48px, gradient background)
-- Headline + description
-- Hover: subtle lift + shadow
+**Cinematic Interaction:**
+- **Horizontal Ticker Scroll**: On desktop, the cards are arranged on a long horizontal rail.
+- **Scroll Duration**: The section spans `400vh`. Scrolling down vertically pans the cards horizontally from right to left like a ticker tape.
+- **Gap & Alignment**: Cards are perfectly aligned to the 1200px container boundary (Logo edge).
+- **Mobile Strategy**: Converged back to vertical stacking on mobile for natural flow.
 
 ---
 
@@ -206,6 +208,12 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 - Instructor dashboard mockup + revenue breakdown
 - CTA: "I'm an Instructor - Let Me In"
 
+**Cinematic Interaction:**
+- **Sticky Split-Scroll**: Desktop screen is split down the middle. Left side is a **Sticky Orchestrator** pinned to the viewport.
+- **Dynamic Content Switch**: As the user scrolls on the right, the left-side text crossfades from Student copy to Instructor copy.
+- **Hard Swap Logic**: A "dead zone" gap ensures the Student text fully disappears before Instructor text enters, preventing overlap.
+- **Mobile strategy**: On mobile, headings are interleaved directly above their respective cards for standard vertical flow.
+
 ---
 
 ### Section 6: Marketplace
@@ -214,11 +222,11 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 **Headline:**
 > "Beyond Courses. Services. Real Income. From Day One."
 
-**Visual Flow:**
-1. Learn a Skill
-2. Your Projects Become Sellable
-3. Students Buy Your Services
-4. You Earn
+**Cinematic Interaction:**
+- **Animated SVG Journey**: Features an "S-Curve" line woven between alternating cards.
+- **Scroll Tracking**: The SVG `pathLength` is mapped directly to `scrollYProgress`, "drawing" the line as you scroll.
+- **Timeline Nodes**: Glowing nodes illuminate specifically as the drawing line passes through them.
+- **Mobile Strategy**: SVG line shifts to the left margin with cards stacked on the right.
 
 **Features:**
 - Service packages (Basic, Standard, Premium)
@@ -247,7 +255,10 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 | Marketplace Success | 23,543 earning ($400/mo avg) | N/A |
 | Data Efficiency | 85% less data | N/A |
 
-**Design:** Gradient stat cards with icons, animated counter on scroll
+**Cinematic Interaction:**
+- **Stacking Cards Interaction**: As users scroll, cards stay sticky at the top, sliding over each other like a deck of cards.
+- **Staggered Offsets**: Cards lock at `top: 100px`, `124px`, etc., to create a tiered visual stack.
+- **Z-Index Layering**: Precisely controlled depth to ensure smooth sliding.
 
 ---
 

@@ -1,120 +1,179 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import styles from './Marketplace.module.css';
-
-const flowSteps = [
-  { num: '1', label: 'Learn a Skill' },
-  { num: '2', label: 'Build Projects' },
-  { num: '3', label: 'Sell on Marketplace' },
-  { num: '4', label: 'Get Paid' },
-];
 
 const features = [
   { title: 'Service Packages', desc: 'Basic, Standard, Premium pricing tiers for every skill' },
   { title: 'Verified Skill Badges', desc: 'AI + instructor validated credentials clients trust' },
   { title: 'Client Rating System', desc: 'Build your reputation with every completed project' },
   { title: 'Secure Escrow Payments', desc: 'Get paid safely — Teyro holds funds until delivery' },
-  { title: 'Transparent Commission', desc: 'Only 15–20% platform fee, clearly displayed upfront' },
-  { title: 'Seller Levels', desc: 'Rookie → Rising Star → Expert — gamified seller growth' },
+  { title: 'Transparent Commission', desc: 'Only 15–20% platform fee, displayed upfront' },
+  { title: 'Seller Levels', desc: 'Rookie → Rising Star → Expert — gamify your growth' },
 ];
 
-export default function Marketplace({ onOpenModal }: { onOpenModal: () => void }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Track the scroll specifically over the timeline wrapper
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end 80%"]
+  });
+
+  // Smooth the drawing animation of the glowing SVG thread
+  const pathLength = useSpring(scrollYProgress, {
+    stiffness: 70, damping: 20, restDelta: 0.001
+  });
 
   return (
-    <section className={styles.section} ref={ref}>
+    <section className={styles.section} ref={containerRef}>
+      
+      {/* Header Context */}
       <div className={styles.container}>
         <motion.div
           className={styles.header}
           initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
         >
           <div className={styles.eyebrow}>Teyro Marketplace</div>
           <h2 className={styles.heading}>
-            Beyond Courses. Services.{' '}
-            <em>Real Income. From Day One.</em>
+            Beyond Courses. Services.<br />
+            <em>Real Income.</em>
           </h2>
           <p className={styles.subheading}>
-            After learning, students immediately sell their skills to real clients.
-            Learn → Build → Earn. Not someday — now.
+            Why wait years for a degree? After passing a Teyro skill module, you can immediately offer your newly verified skills to real clients around the world.
           </p>
         </motion.div>
 
-        {/* Flow steps */}
-        <motion.div
-          className={styles.flowRow}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15 }}
-        >
-          {flowSteps.map(({ num, label }, i) => (
-            <div key={num} style={{ display: 'contents' }}>
-              <div className={styles.flowStep}>
-                <span className={styles.flowNum}>{num}</span>
-                <span className={styles.flowLabel}>{label}</span>
-              </div>
-              {i < flowSteps.length - 1 && (
-                <span className={styles.flowArrow}>→</span>
-              )}
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Feature cards */}
-        <motion.div
-          className={styles.featureGrid}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.25 }}
-        >
-          {features.map(({ title, desc }, i) => (
-            <motion.div
-              key={title}
-              className={styles.featureCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
-            >
-              <div className={styles.featureCardTitle}>{title}</div>
-              <div className={styles.featureCardDesc}>{desc}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Industry Problem Quotes */}
-        <motion.div
-          className={styles.testimonial}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.45 }}
-        >
-          <div className={styles.testimonialAvatar} style={{ fontSize: '24px' }}>⚠️</div>
-          <div>
-            <p className={styles.testimonialText}>
-              &ldquo;The dirty little secret of edtech: the biggest names don’t actually care if you learn anything... video courses have a fatal flaw: they only work for the most motivated. 4-10% completion rates!&rdquo;
-            </p>
-            <p className={styles.testimonialName}>— Industry Insight · Why Teyro exists</p>
+        {/* The Scrolling SVG Journey Timeline */}
+        <div className={styles.timelineWrapper}>
+          
+          {/* THE SVG S-CURVE */}
+          {/* We use preserveAspectRatio="none" and vectorEffect to stretch the curve 
+              flawlessly across any height without distorting the stroke width. */}
+          <div className={styles.svgLayer}>
+             <svg 
+               className={styles.desktopSvg}
+               viewBox="0 0 100 1000" 
+               preserveAspectRatio="none"
+             >
+               {/* Background Track (Faded) */}
+               <path 
+                 d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
+                 fill="none" 
+                 stroke="rgba(99, 82, 255, 0.1)" 
+                 strokeWidth="4" 
+                 vectorEffect="non-scaling-stroke"
+               />
+               {/* Animated Glowing Track mapped to scroll */}
+               <motion.path 
+                 d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
+                 fill="none" 
+                 stroke="url(#glowGradient)" 
+                 strokeWidth="4" 
+                 vectorEffect="non-scaling-stroke"
+                 style={{ pathLength }}
+               />
+               <defs>
+                 <linearGradient id="glowGradient" x1="0" y1="0" x2="0" y2="1">
+                   <stop offset="0%" stopColor="#818cf8" />
+                   <stop offset="50%" stopColor="#c084fc" />
+                   <stop offset="100%" stopColor="#ec4899" />
+                 </linearGradient>
+               </defs>
+             </svg>
+             
+             {/* Mobile SVG (Straight line on the left side) */}
+             <svg 
+               className={styles.mobileSvg}
+               viewBox="0 0 10 1000" 
+               preserveAspectRatio="none"
+             >
+               <path d="M 5 0 L 5 1000" fill="none" stroke="rgba(99, 82, 255, 0.1)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+               <motion.path d="M 5 0 L 5 1000" fill="none" stroke="url(#glowGradient)" strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ pathLength }} />
+             </svg>
           </div>
-        </motion.div>
 
-        {/* CTA */}
+          {/* HTML Card Nodes mapped to the curve apexes */}
+          <div className={styles.nodesContainer}>
+            {features.map((feature, i) => {
+              const isLeft = i % 2 !== 0; // Alternate staggering on Desktop
+              
+              // Each node fades in precisely as it's reached
+              return (
+                <TimelineNode key={i} index={i} isLeft={isLeft} feature={feature} />
+              )
+            })}
+          </div>
+
+        </div>
+
+        {/* Closing CTA */}
         <motion.div
           className={styles.ctaRow}
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.4, delay: 0.55 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
-          <button className={styles.ctaBtn} onClick={onOpenModal} id="marketplace-join-btn">
+          <button className={styles.ctaBtn} onClick={onOpenModal}>
             Start Earning on the Marketplace <ArrowRight size={18} />
           </button>
         </motion.div>
+
       </div>
     </section>
   );
+}
+
+// Sub-component for individual timeline nodes
+function TimelineNode({ index, isLeft, feature }: { index: number, isLeft: boolean, feature: any }) {
+  const nodeRef = useRef(null);
+  const isInView = useInView(nodeRef, { margin: "-20% 0px -20% 0px", once: true });
+
+  return (
+    <div 
+      className={`${styles.nodeWrapper} ${isLeft ? styles.alignLeft : styles.alignRight}`}
+      ref={nodeRef}
+    >
+      {/* Visual Dot on the line passing through */}
+      <motion.div 
+        className={styles.nodeDot}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={isInView ? { scale: 1, opacity: 1 } : {}}
+        transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+      >
+        <div className={styles.innerDot} />
+      </motion.div>
+
+        {/* The Feature Card with enhanced 3D hover interactivity */}
+      <motion.div 
+        className={styles.nodeCard}
+        initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
+        animate={isInView ? { opacity: 1, x: 0 } : {}}
+        whileHover={{ 
+          scale: 1.03, 
+          y: -8,
+          boxShadow: "0 20px 40px rgba(99, 82, 255, 0.15)",
+          borderColor: "#A78BFA"
+        }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 20 }}
+      >
+        <div className={styles.cardContext}>
+           Step 0{index + 1}
+        </div>
+        <h3 className={styles.cardTitle}>{feature.title}</h3>
+        <p className={styles.cardDesc}>{feature.desc}</p>
+        
+        <div className={styles.cardCheck}>
+           <CheckCircle2 size={16} /> Coming in Phase 3
+        </div>
+      </motion.div>
+    </div>
+  )
 }
