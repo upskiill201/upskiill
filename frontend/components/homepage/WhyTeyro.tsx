@@ -97,11 +97,11 @@ export default function WhyTeyro({ onOpenModal }: { onOpenModal: () => void }) {
         >
           <div className={styles.eyebrow}>Why Teyro is Different</div>
           <h2 className={styles.heading}>
-            This isn&apos;t another course platform.<br />
-            <em>Here&apos;s what sets Teyro apart.</em>
+            Teyro is **Edtech 2.0**.<br />
+            <em>Real outcomes, not just video scrolls.</em>
           </h2>
           <p className={styles.subheading}>
-            Six real advantages — not marketing fluff. Every feature solves a problem the industry has ignored for years.
+            Six structural advantages that legacy platforms ignore. We don&apos;t just sell video access; we build a system for <strong>actual achievement</strong>.
           </p>
         </motion.div>
 

@@ -9,10 +9,10 @@ const problems = [
   {
     title: 'Analysis Paralysis',
     issues: [
-      'Overwhelming course options — thousands to choose from',
-      'No clear path forward for your specific goal',
-      'Users don\'t know what to learn or where to start',
-      'Result: Never start, or start and immediately drop out',
+      'Overwhelming options — thousands of low-effort courses to choice from',
+      'The "Dumb Translation": Avg completion rate of MOOCs is just 4%',
+      'Structural Failure: Lack of accountability and real interaction',
+      'The "Ghosting" Pattern: sign up with hope, then ghost because it doesn\'t stick',
     ],
     solutionTitle: 'Skill Gap Analyzer — Your Personalized Path',
     solutions: [
@@ -25,10 +25,10 @@ const problems = [
   {
     title: 'Learning in the Dark',
     issues: [
-      'Watching videos passively without any real guidance',
-      'Get stuck → no one available to help → quit',
-      'Teachers can\'t see when students are struggling',
-      'Isolation and loneliness in the learning journey',
+      'Fatal Flaw: "100 talks, zero examples — more talking than showing"',
+      'Scale-first design that treats students as numbers, not people',
+      'Dull lectures with narrators just reading slides (Edtech 1.0)',
+      'Structural Failure: zero live coaching or active practice in STEM',
     ],
     solutionTitle: 'AI Tutor (24/7) — Never Get Stuck Again',
     solutions: [
@@ -73,10 +73,10 @@ const problems = [
   {
     title: 'Learning Doesn\'t Lead to Earning',
     issues: [
-      'Complete course → get certificate → still no job or income',
-      'No way to immediately monetize the skills you\'ve learned',
-      'No portfolio to show employers or freelance clients',
-      'Learning feels completely disconnected from real life',
+      'Low-effort cash grabs: Outdated by 2-4 years (labeled 2025)',
+      'Broken labs and code examples that never get updated',
+      'Subpar teaching quality & terrible production (IBM/Coursera rants)',
+      'Edtech 1.0 prioritized monetization instead of real learning',
     ],
     solutionTitle: 'Teyro Marketplace — Learn, Build, Earn',
     solutions: [

@@ -625,7 +625,7 @@ xl: '1280px' // Large desktop
 "When does Teyro launch?"
 
 ### FAQ Answer 1
-"Phase 1 (MVP): [DATE]. Full platform: [DATE]"
+"Phase 1 MVP will launch in August, and we will launch Beta in July. Waitlist members get early access to the beta platform, insider insights, and testing opportunities while we develop."
 
 ### Final CTA
 "Join 23,543 others - Get early access"

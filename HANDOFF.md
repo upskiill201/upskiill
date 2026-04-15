@@ -67,10 +67,11 @@
 
 ### Deployment Plan
 
-| Phase | Domain (Teyro.app) Points To | Status |
-|-------|------------------------------|--------|
-| **Build Phase** | Waitlist project (separate repo) | Captures emails |
-| **Launch** | Main project (this repo) | Live! |
+| Phase | Target Date | Domain (Teyro.app) Points To | Status |
+|-------|-------------|------------------------------|--------|
+| **Build Phase** | Now - June | Waitlist project (separate repo) | Captures emails |
+| **Beta Access** | July 2026 | Main project (Beta invite only) | Insider Testing |
+| **MVP Launch** | August 2026 | Main project (Public) | Live! |
 
 ### How It Works
 1. Create a **new GitHub repo** for the waitlist page (e.g., `teyro/teyro-waitlist`)

@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 import styles from './StatsSection.module.css';
 
 const stats = [
-  { value: '93', suffix: '%', label: 'Completion Rate', sub: 'vs 5–10% industry average' },
+  { value: '93', suffix: '%', label: 'Completion Rate', sub: 'vs 1%–13% industry range' },
   { value: '6', suffix: ' wks', label: 'To Proficiency', sub: 'vs 6–12 months elsewhere' },
   { value: '23k', suffix: '+', label: 'On the Waitlist', sub: 'and growing every day' },
   { value: '85', suffix: '%', label: 'Less Mobile Data', sub: 'with Lite Mode enabled' },
@@ -94,6 +94,28 @@ export default function StatsSection() {
               <div className={styles.statSub}>{sub}</div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Industry Problem Context */}
+        <motion.div
+          className={styles.industryContext}
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.25 }}
+        >
+          <div className={styles.quoteGrid}>
+            <div className={styles.quoteItem}>
+              <p>&ldquo;The dirty little secret of edtech: the biggest names don’t actually care if you learn anything… video courses have a fatal flaw: they only work for the most motivated. 4-10% completion rates!&rdquo;</p>
+              <span>— Gagan Biyani, <strong>Udemy Co-founder</strong></span>
+            </div>
+            <div className={styles.quoteItem}>
+              <p>&ldquo;The pattern is clear — people sign up with hope, then ghost because the format doesn’t stick. MOOCs are a dumb translation, not a re-imagination.&rdquo;</p>
+              <span>— Reddit User Analysis · Systemic Failure</span>
+            </div>
+          </div>
+          <div className={styles.contextSub}>
+            Traditional edtech sells <strong>hope and certificates</strong>. Teyro delivers <strong>actual achievement</strong>.
+          </div>
         </motion.div>
 
         {/* Comparison table */}

@@ -87,21 +87,19 @@ export default function Marketplace({ onOpenModal }: { onOpenModal: () => void }
           ))}
         </motion.div>
 
-        {/* Testimonial */}
+        {/* Industry Problem Quotes */}
         <motion.div
           className={styles.testimonial}
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.45 }}
         >
-          <div className={styles.testimonialAvatar}>Z</div>
+          <div className={styles.testimonialAvatar} style={{ fontSize: '24px' }}>⚠️</div>
           <div>
             <p className={styles.testimonialText}>
-              &ldquo;Zainab learned UI Design on Teyro → Sold <em>47 design projects</em> →
-              Earned <em>$3,200 in 3 months</em> → Now a full-time designer.
-              And she started with zero experience.&rdquo;
+              &ldquo;The dirty little secret of edtech: the biggest names don’t actually care if you learn anything... video courses have a fatal flaw: they only work for the most motivated. 4-10% completion rates!&rdquo;
             </p>
-            <p className={styles.testimonialName}>— Zainab A., UI Designer · Marketplace Top Seller</p>
+            <p className={styles.testimonialName}>— Industry Insight · Why Teyro exists</p>
           </div>
         </motion.div>
 

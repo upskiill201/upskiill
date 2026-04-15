@@ -17,9 +17,9 @@
 > **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.
 
 - **Domain**: Teyro.app (to be acquired)
-- **Phase 1**: Teyro.app points to waitlist project (captures emails)
-- **Phase 2**: Teyro.app points to main project (launch!)
-- **Development**: Continue using upskiill.vercel.app for main app development/testing
+- **Phase 1 (July 2026)**: Beta Launch — Waitlist members get early access to the platform, insider insights, and testing.
+- **Phase 2 (August 2026)**: Official Phase 1 MVP Launch — Teyro.app points to the main project.
+- **Development**: Continue using upskiill.vercel.app for main app development/testing.
 
 ---
 
