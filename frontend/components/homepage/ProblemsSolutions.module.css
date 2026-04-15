@@ -1,226 +1,275 @@
-/* ===== PROBLEMS & SOLUTIONS SECTION ===== */
-.section {
-  background: #ffffff;
-  padding: 100px 24px;
+.scrollContainer {
+  background: #030712; /* Deep space dark */
   position: relative;
+  height: 600vh; /* Extended to 6 screens for massive read-time dwell */
+  width: 100%;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+.stickyCanvas {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Header */
 .header {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   text-align: center;
-  margin-bottom: 72px;
+  z-index: 50;
+  pointer-events: none;
+  max-width: 800px;
+  padding: 0 24px;
 }
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6352FF;
+  color: #a78bfa;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  margin-bottom: 12px;
 }
 
 .heading {
-  font-size: 44px;
+  color: white;
+  font-size: 48px;
   font-weight: 800;
-  color: #0F172A;
-  line-height: 1.15;
-  margin-bottom: 16px;
-  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.8);
 }
 
 .subheading {
+  color: #94a3b8;
   font-size: 18px;
-  color: #64748B;
-  max-width: 560px;
+  max-width: 600px;
   margin: 0 auto;
-  line-height: 1.65;
 }
 
-/* Problem+Solution card pair */
-.cardGrid {
+/* Machine Stage */
+.machineStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Central Mockup (Teyro Engine Core) */
+.coreMockup {
+  position: absolute;
+  z-index: 10;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  box-shadow: 
+    0 0 80px rgba(139, 92, 246, 0.2), 
+    inset 0 0 50px rgba(139, 92, 246, 0.15),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coreMockup::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(139, 92, 246, 0.8) 50%, transparent 100%);
+  animation: spin 4s linear infinite;
+  z-index: 0;
+  mask-image: radial-gradient(transparent 68%, black 70%);
+  -webkit-mask-image: radial-gradient(transparent 68%, black 70%);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.mockupInner {
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 2;
+  background: #0f172a;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-}
-
-.cardPair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: stretch;
-}
-
-.cardPair:nth-child(even) {
-  direction: rtl;
-}
-
-.cardPair:nth-child(even) > * {
-  direction: ltr;
-}
-
-/* Problem card – left, light red tint */
-.problemCard {
-  background: #FFF9F9;
-  border: 1px solid #FEE2E2;
-  border-radius: 20px;
-  padding: 36px 32px;
-  position: relative;
-  overflow: hidden;
-}
-
-.problemCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #EF4444, #F97316);
-}
-
-/* Solution card – right, gradient brand */
-.solutionCard {
-  background: linear-gradient(135deg, #F0EEFF 0%, #F5F3FF 100%);
-  border: 1px solid #DDD6FE;
-  border-radius: 20px;
-  padding: 36px 32px;
-  position: relative;
-  overflow: hidden;
-}
-
-.solutionCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #6352FF, #9333EA);
-}
-
-.cardLabel {
-  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
+  box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.mockupInner h3 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #c4b5fd, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.mockupInner p {
   font-size: 11px;
-  font-weight: 700;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border-radius: 100px;
-  margin-bottom: 16px;
+  letter-spacing: 1.5px;
 }
 
-.problemLabel {
-  background: #FEE2E2;
-  color: #DC2626;
+.mockupPulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%);
+  z-index: -1;
+  animation: pulse 2.5s infinite;
 }
 
-.solutionLabel {
-  background: #DDD6FE;
-  color: #6352FF;
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
 }
 
-.cardNumber {
-  font-size: 52px;
-  font-weight: 900;
-  color: #F3F4F6;
-  line-height: 1;
-  margin-bottom: 8px;
-  font-variant-numeric: tabular-nums;
+/* Exploding Cards */
+.explodedCard {
+  position: absolute;
+  z-index: 20;
+  width: 340px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  will-change: transform, opacity;
+  transform-origin: center center;
 }
 
-.cardTitle {
-  font-size: 22px;
+.cardIcon {
+  font-size: 28px;
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+}
+
+.lucideIcon {
+  width: 24px;
+  height: 24px;
+  color: #a78bfa;
+}
+
+.problemSide {
+  padding-bottom: 20px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+  margin-bottom: 20px;
+}
+
+.labelCross {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.1);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.labelCheck {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #86efac;
+  background: rgba(74, 222, 128, 0.1);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.explodedCard h4 {
+  color: white;
+  font-size: 18px;
   font-weight: 700;
-  color: #0F172A;
-  margin-bottom: 16px;
-  line-height: 1.3;
+  margin-bottom: 8px;
   letter-spacing: -0.5px;
 }
 
-.cardList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cardList li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 15px;
-  color: #374151;
+.explodedCard p {
+  color: #cbd5e1;
+  font-size: 14px;
   line-height: 1.5;
 }
 
-.problemBullet {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #FEE2E2;
-  color: #DC2626;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-  font-size: 11px;
-  font-weight: 700;
+/* Responsiveness */
+@media (max-width: 1200px) {
+  .machineStage {
+    transform: scale(0.85); /* Seamlessly scale coordinates down to fit screen width */
+  }
 }
 
-.solutionBullet {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #DDD6FE;
-  color: #6352FF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-  font-size: 11px;
-}
-
-.solutionHighlight {
-  font-weight: 600;
-  color: #6352FF;
-}
-
-/* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .cardPair {
-    grid-template-columns: 1fr;
+  .machineStage {
+    transform: scale(0.7); 
   }
-  .cardPair:nth-child(even) {
-    direction: ltr;
+  .header {
+    top: 8%;
   }
   .heading {
-    font-size: 34px;
+    font-size: 36px;
   }
 }
 
-@media (max-width: 768px) {
-  .section {
-    padding: 72px 16px;
+@media (max-width: 640px) {
+  .machineStage {
+    transform: scale(0.45); /* Ensures no overflow off screen horizontally */
+  }
+  .header {
+    top: 6%;
   }
   .heading {
-    font-size: 30px;
+    font-size: 28px;
   }
-  .problemCard,
-  .solutionCard {
-    padding: 28px 24px;
+  .subheading {
+    font-size: 15px;
   }
 }

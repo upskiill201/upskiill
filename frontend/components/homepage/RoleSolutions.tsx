@@ -1,7 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import styles from './RoleSolutions.module.css';
@@ -34,107 +33,241 @@ const revenueStreams = [
   'Content partnerships (coming soon)',
 ];
 
-export default function RoleSolutions({ onOpenModal }: { onOpenModal: () => void }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Track vertical scroll over this specific 500vh section wrapper
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  // Smooth out the progress for cinematic motion
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  /*
+   * EPIC SCROLL ORCHESTRATION:
+   * 0.00 -> 0.15: Student Card & Text Enter
+   * 0.15 -> 0.40: Student Card & Text LOCKED (Reading Time)
+   * 0.40 -> 0.49: Student Card & Text Exit (Fade Out)
+   * 0.49 -> 0.51: DEAD ZONE (Clean gap)
+   * 0.51 -> 0.60: Instructor Card & Text Enter
+   * 0.60 -> 0.85: Instructor Card & Text LOCKED (Reading Time)
+   * 0.85 -> 1.00: Instructor Card & Text Exit
+   */
+
+  // LEFT SIDE: TEXT OPACITIES & Y-SHIFTS
+  const studentOpacity = useTransform(smoothProgress, [0, 0.1, 0.4, 0.49], [0, 1, 1, 0]);
+  const studentY = useTransform(smoothProgress, [0, 0.1, 0.4, 0.49], [40, 0, 0, -40]);
+
+  const instructorOpacity = useTransform(smoothProgress, [0.51, 0.6, 0.9, 1], [0, 1, 1, 0]);
+  const instructorY = useTransform(smoothProgress, [0.51, 0.6, 0.9, 1], [40, 0, 0, -40]);
+
+  // RIGHT SIDE: CARD Y-SHIFTS & OPACITIES
+  // We use vh units string matching to guarantee mobile/desktop scaling. 
+  // framer-motion handles string interpolation perfectly for Y.
+  const cardStudentY = useTransform(smoothProgress, [0, 0.15, 0.4, 0.49], ["80vh", "0vh", "0vh", "-80vh"]);
+  const cardStudentOpacity = useTransform(smoothProgress, [0, 0.1, 0.45, 0.49], [0, 1, 1, 0]);
+
+  const cardInstructorY = useTransform(smoothProgress, [0.51, 0.6, 0.85, 1], ["80vh", "0vh", "0vh", "-80vh"]);
+  const cardInstructorOpacity = useTransform(smoothProgress, [0.51, 0.58, 0.9, 1], [0, 1, 1, 0]);
 
   return (
-    <section className={styles.section} ref={ref}>
-      <div className={styles.container}>
-        <motion.div
-          className={styles.header}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-        >
-          <div className={styles.eyebrow}>Solutions for Every Role</div>
-          <h2 className={styles.heading}>
-            We solve the real problems<br />
-            of students and instructors
-          </h2>
-          <p className={styles.subheading}>
-            Whether you want to learn and earn, or teach and scale — Teyro was built for you.
-          </p>
-        </motion.div>
+    <section className={styles.sectionWrapper} ref={containerRef}>
+      
+      {/* Universal top header */}
+      <div className={styles.sectionTopHeader}>
+        <div className={styles.eyebrowBadgeUniversal}>Solutions for Every Role</div>
+      </div>
 
-        <div className={styles.columns}>
-          {/* Student Card */}
-          <motion.div
-            className={`${styles.card} ${styles.studentCard}`}
-            initial={{ opacity: 0, x: -32 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className={`${styles.cardBadge} ${styles.studentBadge}`}>
-              🎓 For Students
+      {/* The 100vh Sticky Stage that locks into the viewport */}
+      <div className={styles.stickyStage}>
+        <div className={styles.splitContainer}>
+          
+          {/* ===== LEFT: Pinned Desktop Orchestrator ===== */}
+          <div className={styles.leftPanel}>
+            
+            <div className={styles.dynamicHeaderContainer}>
+              {/* Student Dynamic Text State */}
+              <motion.div 
+                className={styles.dynamicHeader}
+                style={{ opacity: studentOpacity, y: studentY }}
+              >
+                <div className={styles.eyebrowBadge}>🎓 For Students</div>
+                <h2 className={styles.heading}>
+                  Learn smart.<br />
+                  Earn fast.<br />
+                  Build your future.
+                </h2>
+                <p className={styles.subheading}>
+                  We built a learning system that respects your time and actively pulls you towards the finish line. Don&apos;t just watch lectures—verify your skills.
+                </p>
+              </motion.div>
+
+              {/* Instructor Dynamic Text State */}
+              <motion.div 
+                className={styles.dynamicHeader}
+                style={{ opacity: instructorOpacity, y: instructorY }}
+              >
+                <div className={styles.eyebrowBadge}>🎙️ For Instructors</div>
+                <h2 className={styles.heading}>
+                  Teach more.<br />
+                  Earn more.<br />
+                  Build your brand.
+                </h2>
+                <p className={styles.subheading}>
+                  Leave behind the platforms that treat you like a commodity and cap your reach. Partner with a network that actually invests in your success.
+                </p>
+              </motion.div>
             </div>
-            <p className={styles.cardProblem}>
-              &ldquo;I want to learn real skills without wasting time or money.&rdquo;
-            </p>
-            <h3 className={styles.cardTitle}>Learn smart. Earn fast. Build your future.</h3>
 
-            <ul className={styles.solutionList}>
-              {studentSolutions.map((s, i) => (
-                <li key={i} className={styles.solutionItem}>
-                  <span className={`${styles.checkIcon} ${styles.studentCheck}`}>✓</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
+          </div>
 
-            <button
-              className={`${styles.ctaBtn} ${styles.studentCtaBtn}`}
-              onClick={onOpenModal}
-              id="student-join-btn"
-            >
-              I&apos;m a Student — Let Me In <ArrowRight size={18} />
-            </button>
-          </motion.div>
+          {/* ===== RIGHT: Orchestrated Cards ===== */}
+          <div className={styles.rightPanel}>
+            
+            {/* The right panel relies on a relative container to stack cards absolutely,
+                then Framer-Motion shifts them perfectly into the viewport at the right time. */}
+            <div className={styles.cardsContainer}>
 
-          {/* Instructor Card */}
-          <motion.div
-            className={`${styles.card} ${styles.instructorCard}`}
-            initial={{ opacity: 0, x: 32 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className={`${styles.cardBadge} ${styles.instructorBadge}`}>
-              🎙️ For Instructors
-            </div>
-            <p className={styles.cardProblem}>
-              &ldquo;I want to reach more students and actually make good money.&rdquo;
-            </p>
-            <h3 className={styles.cardTitle}>Teach more. Earn more. Build your brand.</h3>
+              {/* Student Card */}
+              <motion.div 
+                className={`${styles.card} ${styles.studentCard}`}
+                style={{ y: cardStudentY, opacity: cardStudentOpacity }}
+              >
+                <p className={styles.cardProblem}>
+                  &ldquo;I want to learn real skills without wasting time or money.&rdquo;
+                </p>
+                <ul className={styles.solutionList}>
+                  {studentSolutions.map((s, i) => (
+                    <li key={i} className={styles.solutionItem}>
+                      <span className={`${styles.checkIcon} ${styles.studentCheck}`}>✓</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className={`${styles.ctaBtn} ${styles.studentCtaBtn}`}
+                  onClick={onOpenModal}
+                >
+                  I&apos;m a Student — Let Me In <ArrowRight size={18} />
+                </button>
+              </motion.div>
 
-            <ul className={styles.solutionList}>
-              {instructorSolutions.map((s, i) => (
-                <li key={i} className={styles.solutionItem}>
-                  <span className={`${styles.checkIcon} ${styles.instructorCheck}`}>✓</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
-
-            <div className={styles.revenueBox}>
-              <div className={styles.revenueTitle}>Multiple Revenue Streams</div>
-              {revenueStreams.map((r, i) => (
-                <div key={i} className={styles.revenueItem}>
-                  <span className={styles.revenueDot} />
-                  {r}
+              {/* Instructor Card */}
+              <motion.div 
+                className={`${styles.card} ${styles.instructorCard}`}
+                style={{ y: cardInstructorY, opacity: cardInstructorOpacity }}
+              >
+                <p className={styles.cardProblem}>
+                  &ldquo;I want to reach more students and actually make good money.&rdquo;
+                </p>
+                <ul className={styles.solutionList}>
+                  {instructorSolutions.map((s, i) => (
+                    <li key={i} className={styles.solutionItem}>
+                      <span className={`${styles.checkIcon} ${styles.instructorCheck}`}>✓</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                <div className={styles.revenueBox}>
+                  <div className={styles.revenueTitle}>Multiple Revenue Streams</div>
+                  {revenueStreams.map((r, i) => (
+                    <div key={i} className={styles.revenueItem}>
+                      <span className={styles.revenueDot} />
+                      {r}
+                    </div>
+                  ))}
                 </div>
-              ))}
+                <button
+                  className={`${styles.ctaBtn} ${styles.instructorCtaBtn}`}
+                  onClick={onOpenModal}
+                >
+                  I&apos;m an Instructor — Let Me In <ArrowRight size={18} />
+                </button>
+              </motion.div>
+
             </div>
 
-            <button
-              className={`${styles.ctaBtn} ${styles.instructorCtaBtn}`}
-              onClick={onOpenModal}
-              id="instructor-join-btn"
-            >
-              I&apos;m an Instructor — Let Me In <ArrowRight size={18} />
-            </button>
-          </motion.div>
+          </div>
+
         </div>
       </div>
+
+      {/* ===== MOBILE FLOW: Renders purely natively below, killing the sticky complex view ===== */}
+      <div className={styles.mobileFlow}>
+        
+        <div className={styles.mobileInlineHeader}>
+            <div className={styles.eyebrowBadge}>🎓 For Students</div>
+            <h2 className={styles.heading}>Learn smart. Make money.</h2>
+            <p className={styles.subheading}>We actively pull you towards the finish line.</p>
+        </div>
+
+        <div className={`${styles.card} ${styles.studentCard} ${styles.mobileCardOverride}`}>
+          <p className={styles.cardProblem}>
+            &ldquo;I want to learn real skills without wasting time or money.&rdquo;
+          </p>
+          <ul className={styles.solutionList}>
+            {studentSolutions.map((s, i) => (
+              <li key={i} className={styles.solutionItem}>
+                <span className={`${styles.checkIcon} ${styles.studentCheck}`}>✓</span>
+                {s}
+              </li>
+            ))}
+          </ul>
+          <button
+            className={`${styles.ctaBtn} ${styles.studentCtaBtn}`}
+            onClick={onOpenModal}
+          >
+            I&apos;m a Student — Let Me In <ArrowRight size={18} />
+          </button>
+        </div>
+
+        <div className={styles.mobileSpacer} />
+
+        <div className={styles.mobileInlineHeader}>
+            <div className={styles.eyebrowBadge}>🎙️ For Instructors</div>
+            <h2 className={styles.heading}>Teach more. Earn more.</h2>
+            <p className={styles.subheading}>Partner with a network that invests in your success.</p>
+        </div>
+
+        <div className={`${styles.card} ${styles.instructorCard} ${styles.mobileCardOverride}`}>
+          <p className={styles.cardProblem}>
+            &ldquo;I want to reach more students and actually make good money.&rdquo;
+          </p>
+          <ul className={styles.solutionList}>
+            {instructorSolutions.map((s, i) => (
+              <li key={i} className={styles.solutionItem}>
+                <span className={`${styles.checkIcon} ${styles.instructorCheck}`}>✓</span>
+                {s}
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.revenueBox}>
+            <div className={styles.revenueTitle}>Multiple Revenue Streams</div>
+            {revenueStreams.map((r, i) => (
+              <div key={i} className={styles.revenueItem}>
+                <span className={styles.revenueDot} />
+                {r}
+              </div>
+            ))}
+          </div>
+
+          <button
+            className={`${styles.ctaBtn} ${styles.instructorCtaBtn}`}
+            onClick={onOpenModal}
+          >
+            I&apos;m an Instructor — Let Me In <ArrowRight size={18} />
+          </button>
+        </div>
+
+      </div>
+
     </section>
   );
 }

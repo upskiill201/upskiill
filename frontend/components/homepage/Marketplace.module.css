@@ -1,59 +1,45 @@
-/* ===== MARKETPLACE SECTION ===== */
+/* ===== MARKETPLACE SCROLLING TIMELINE ===== */
 .section {
-  background: #060818;
+  background: #ffffff;
   padding: 100px 24px;
   position: relative;
   overflow: hidden;
-}
-
-.section::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 700px;
-  height: 400px;
-  background: radial-gradient(ellipse at 50% 80%, rgba(147, 51, 234, 0.3) 0%, transparent 65%);
-  pointer-events: none;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
-  z-index: 1;
 }
 
+/* Header */
 .header {
   text-align: center;
-  margin-bottom: 64px;
+  margin-bottom: 80px;
 }
 
 .eyebrow {
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #A78BFA;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6352FF;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: 16px;
 }
 
 .heading {
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 800;
-  color: #ffffff;
+  color: #0F172A;
   line-height: 1.15;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   letter-spacing: -1.5px;
 }
 
 .heading em {
   font-style: normal;
-  background: linear-gradient(135deg, #818CF8, #C084FC);
+  background: linear-gradient(135deg, #6352FF, #9333EA);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -61,181 +47,215 @@
 
 .subheading {
   font-size: 18px;
-  color: rgba(255, 255, 255, 0.5);
-  max-width: 520px;
+  color: #64748B;
+  max-width: 600px;
   margin: 0 auto;
-  line-height: 1.65;
-}
-
-/* Flow steps */
-.flowRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 64px;
-  flex-wrap: wrap;
-}
-
-.flowStep {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 100px;
-  padding: 12px 20px;
-  backdrop-filter: blur(8px);
-}
-
-.flowNum {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6352FF, #9333EA);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
-
-.flowLabel {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.flowArrow {
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 20px;
-}
-
-/* Feature grid */
-.featureGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 48px;
-}
-
-.featureCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 24px 20px;
-  transition: all 0.3s;
-}
-
-.featureCard:hover {
-  background: rgba(99, 82, 255, 0.08);
-  border-color: rgba(99, 82, 255, 0.3);
-  transform: translateY(-3px);
-}
-
-.featureCardTitle {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 8px;
-}
-
-.featureCardDesc {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.45);
-  line-height: 1.5;
-}
-
-/* Testimonial */
-.testimonial {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(99, 82, 255, 0.3);
-  border-radius: 20px;
-  padding: 36px 40px;
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  margin-bottom: 48px;
-}
-
-.testimonialAvatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6352FF, #9333EA);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: 800;
-  color: white;
-  flex-shrink: 0;
-}
-
-.testimonialText {
-  font-size: 17px;
-  color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
-  font-style: italic;
 }
 
-.testimonialText em {
-  font-style: normal;
-  color: #A78BFA;
+/* ===== TIMELINE WRAPPER ===== */
+.timelineWrapper {
+  position: relative;
+  width: 100%;
+  padding: 40px 0;
+  min-height: 800px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 
+ * The SVG explicitly overlays everything inside the wrapper.
+ * Because we use an alternating layout returning to X=50%,
+ * the SVG is positioned exactly in the center over everything.
+ */
+.svgLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.desktopSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.mobileSvg {
+  display: none;
+}
+
+/* ===== HTML TIMELINE NODES ===== */
+.nodesContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 80px; /* Space between each stop on the timeline */
+}
+
+.nodeWrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.alignLeft {
+  justify-content: flex-start;
+}
+
+.alignRight {
+  justify-content: flex-end;
+}
+
+/* 
+ * The node dot always sits strictly at 50% left. 
+ * Since the SVG curve also intersects exactly at X=50% at these intervals,
+ * the SVG line will magically pass effortlessly exactly through these HTML dots! 
+ */
+.nodeDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 4px solid #F1F5F9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(99, 82, 255, 0.2);
+  z-index: 10;
+}
+
+.innerDot {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #6352FF, #9333EA);
+  border-radius: 50%;
+}
+
+/* Feature Card container */
+.nodeCard {
+  width: calc(50% - 60px); /* Fill half the screen but leave 60px padding from the central dot */
+  background: #ffffff;
+  border: 1px solid #E8E4FF;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nodeCard:hover {
+  transform: translateY(-4px);
+  border-color: #C4B5FD;
+  box-shadow: 0 16px 40px rgba(99, 82, 255, 0.1);
+}
+
+.cardContext {
+  font-size: 13px;
+  font-weight: 800;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.cardDesc {
+  font-size: 15px;
+  color: #64748B;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.cardCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
   font-weight: 600;
-}
-
-.testimonialName {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 10px;
-  font-style: normal;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 6px 12px;
+  border-radius: 100px;
 }
 
 /* CTA */
 .ctaRow {
-  display: flex;
-  justify-content: center;
+  text-align: center;
+  margin-top: 80px;
+  position: relative;
+  z-index: 10;
 }
 
 .ctaBtn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #6352FF, #9333EA);
-  color: white;
-  border: none;
-  border-radius: 12px;
+  gap: 12px;
   font-size: 16px;
   font-weight: 700;
+  background: linear-gradient(135deg, #6352FF, #9333EA);
+  color: white;
+  padding: 18px 40px;
+  border-radius: 100px;
+  border: none;
   cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 0 30px rgba(99, 82, 255, 0.4);
+  box-shadow: 0 12px 24px rgba(99, 82, 255, 0.3);
+  transition: all 0.3s;
 }
 
 .ctaBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 50px rgba(99, 82, 255, 0.6);
+  box-shadow: 0 16px 32px rgba(99, 82, 255, 0.4);
+  gap: 16px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-  .featureGrid {
-    grid-template-columns: repeat(2, 1fr);
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .desktopSvg { display: none; }
+  
+  .mobileSvg {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
-  .testimonial {
-    flex-direction: column;
-    text-align: center;
+
+  .nodesContainer {
+    gap: 40px;
+  }
+
+  .nodeWrapper {
+    /* override alternating align */
+    justify-content: flex-end !important;
+  }
+
+  .nodeDot {
+    /* Push dot to the far left to hug the mobile straight line */
+    left: 20px !important;
+  }
+
+  .nodeCard {
+    width: calc(100% - 60px); /* Provide room for the dot on the left */
   }
 }
 
 @media (max-width: 640px) {
-  .section { padding: 72px 16px; }
-  .heading { font-size: 30px; }
-  .featureGrid { grid-template-columns: 1fr; }
-  .flowRow { gap: 6px; }
-  .flowStep { padding: 10px 14px; }
+  .heading { font-size: 32px; }
+  .nodeCard { padding: 24px; }
 }
