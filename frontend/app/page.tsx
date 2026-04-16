@@ -18,7 +18,7 @@ export default function Home() {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <main>
+    <main style={{ overflowX: 'hidden' }}>
       {/* 1. Hero — Dark, Scribe gradient */}
       <HeroSection onOpenModal={openModal} />
 

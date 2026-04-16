@@ -240,6 +240,11 @@
   line-height: 1.5;
 }
 
+/* Desktop only: the orbital scene is always hidden on mobile */
+.mobileStack {
+  display: none; /* Hidden on desktop; shown on mobile via media query */
+}
+
 /* Responsiveness */
 @media (max-width: 1200px) {
   .machineStage {
@@ -260,23 +265,58 @@
 }
 
 /* On mobile (< 640px) the desktop explosion stage is completely hidden.
-   The component renders a native sequential mobile card stack instead (isMobile state).
-   We do NOT scale the stage to 45% as that makes all text unreadable. */
+   The component renders a native sequential mobile card stack instead (mobileStack). */
 @media (max-width: 640px) {
   .scrollContainer {
-    /* Let the component's isMobile fallback take over;
-       keep the container but reduce its height since the
-       sticky stage is hidden inside it on mobile. */
     height: auto;
-    min-height: 100vh;
+    min-height: unset;
   }
   .stickyCanvas {
-    display: none; /* Hide the desktop explosion stage entirely on mobile */
+    display: none;
   }
-  .heading {
+  /* Show the mobile stack */
+  .mobileStack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 60px 16px 80px;
+    background: #030712;
+  }
+  .mobileSectionHeader {
+    text-align: center;
+    padding-bottom: 8px;
+  }
+  .mobileSectionHeader .eyebrow {
+    color: #a78bfa;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .mobileSectionHeader .heading {
     font-size: 28px;
+    color: white;
   }
-  .subheading {
-    font-size: 15px;
+  .mobileCard {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
   }
+  .mobileCardIcon {
+    margin-bottom: 16px;
+    display: flex;
+  }
+  .mobileCard h4 {
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .mobileCard p {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .heading { font-size: 28px; }
+  .subheading { font-size: 15px; }
 }

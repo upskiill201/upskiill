@@ -2,8 +2,10 @@
 .scrollWrapper {
   background: #F8F7FF;
   position: relative;
-  height: 400vh; /* Determines how much vertical scroll triggers the horizontal pan */
+  height: 400vh;
   width: 100%;
+  /* Prevent this section's wide track from creating a horizontal scrollbar */
+  overflow-x: hidden;
 }
 
 .scrollWrapper::before {
@@ -254,8 +256,6 @@
 }
 
 /* ===== RESPONSIVE ===== */
-/* On mobile, standardizing the horizontal scroll might be too awkward. 
-   We will keep it standard but ensure the cards shrink slightly. */
 @media (max-width: 1024px) {
   .horizontalTrack {
     gap: 24px;
@@ -270,21 +270,70 @@
   .cardFeatures li { font-size: 13px; }
 }
 
+/* On mobile: disable the horizontal scroll-jack entirely.
+   The section collapses to normal height and cards scroll vertically.
+   This ensures:
+   - No horizontal overflow / right-edge gap
+   - The endCard ("That's Real Magic") is fully visible
+   - Users can actually read the content */
 @media (max-width: 640px) {
-  /* Kept horizontal scroll based on user feedback to prevent boring scroll ! */
-  .header {
-    top: 40px; 
-    max-width: 90%;
+  .scrollWrapper {
+    /* Remove the 400vh scroll-jacking height on mobile — collapse to auto */
+    height: auto;
+    overflow: visible;
   }
+  .stickyStage {
+    /* Remove sticky — section now flows normally */
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding-top: 60px;
+    padding-bottom: 40px;
+    align-items: flex-start;
+  }
+  .container {
+    display: block;
+    height: auto;
+  }
+  .header {
+    position: static;
+    max-width: 100%;
+    padding: 0 20px;
+    margin-bottom: 32px;
+  }
+  .heading { font-size: 26px; }
+  .subheading { font-size: 14px; }
+  /* Turn the horizontal track into a vertical column */
   .horizontalTrack {
-    padding-top: 300px; /* Even more gap on mobile to clear text wrapping */
+    /* Override framer-motion x transform by forcing no horizontal clip */
+    display: flex;
+    flex-direction: column;
+    /* Reset the translate: framer-motion will still try to move it, 
+       but on mobile we override with max-width and column direction */
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 16px;
+    padding-top: 0;
     gap: 20px;
+    transform: none !important; /* Override framer-motion x translate on mobile */
   }
   .card {
-    width: 300px;
-    height: 480px;
+    width: 100%;
+    height: auto;
+    min-height: 360px;
+    padding: 24px 20px;
   }
+  .cardTitle { font-size: 18px; }
+  .cardDesc { font-size: 14px; }
+  .cardFeatures li { font-size: 13px; }
   .endCard {
-    width: 260px;
+    width: 100%;
+    padding: 40px 20px;
+    align-items: center;
+    text-align: center;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #E8E4FF;
   }
+  .endCard h3 { font-size: 26px; }
 }

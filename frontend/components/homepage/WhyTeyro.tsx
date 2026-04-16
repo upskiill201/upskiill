@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform, useSpring, useReducedMotion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FaRobot, FaRoute, FaGlobe, FaUsers, FaLightbulb, FaAward } from 'react-icons/fa';
 import styles from './WhyTeyro.module.css';
@@ -84,27 +84,34 @@ const features = [
 export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) {
   const containerRef = useRef<HTMLElement>(null);
 
+  // Detect mobile to disable scroll-jacking; CSS handles vertical layout on mobile
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    // The container is very tall, so we scroll map its entire progression
-    // Start tracking when the top of the container hits the top of the viewport
     offset: ["start start", "end end"]
   });
 
-  // Smooth out the horizontal scrolling slightly
   const progress = useSpring(scrollYProgress, {
     stiffness: 100, damping: 30, restDelta: 0.001
   });
 
   const shouldReduceMotion = useReducedMotion();
+  const disableAnimation = isMobile || !!shouldReduceMotion;
 
-  // On desktop, the track translates left based on scroll.
-  // 6 cards of ~400px width + gaps = ~2600px width.
-  const x = useTransform(progress, [0, 1], shouldReduceMotion ? ["0%", "0%"] : ["0%", "-75%"]);
+  // On desktop: translate the track left as the user scrolls
+  // Bump to -82% to ensure the endCard slides fully into view
+  const x = useTransform(progress, [0, 1], disableAnimation ? ["0%", "0%"] : ["0%", "-82%"]);
 
-  // Header fades smoothly as you scroll deep into the cards (disabled for reduced-motion)
-  const headerOpacity = useTransform(progress, [0, 0.15, 0.3], shouldReduceMotion ? [1, 1, 1] : [1, 1, 0]);
-  const headerY = useTransform(progress, [0, 0.2], shouldReduceMotion ? [0, 0] : [0, -30]);
+  // Header fades out as you scroll into the cards (disabled on mobile / reduced-motion)
+  const headerOpacity = useTransform(progress, [0, 0.15, 0.3], disableAnimation ? [1, 1, 1] : [1, 1, 0]);
+  const headerY = useTransform(progress, [0, 0.2], disableAnimation ? [0, 0] : [0, -30]);
 
   return (
     <section className={styles.scrollWrapper} ref={containerRef}>

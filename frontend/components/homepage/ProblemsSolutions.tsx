@@ -138,6 +138,8 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
 
   return (
     <div className={styles.scrollContainer} ref={containerRef}>
+      
+      {/* Desktop Sticky Scene (hidden on mobile via CSS) */}
       <div className={styles.stickyCanvas}>
         
         {/* Header Content */}
@@ -164,7 +166,6 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
             style={{ 
               scale: mockupScale, 
               opacity: mockupOpacity,
-              y: isMobile ? mockupMobileY : 0 // Push up on mobile to make room for cards
             }}
           >
             <div className={styles.mockupInner}>
@@ -174,10 +175,8 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
             </div>
           </motion.div>
 
-          {/* Exploding / Sequential Cards */}
+          {/* Exploding Cards on Desktop */}
           {unifiedProblems.map((item, i) => {
-            const { x, y, rotate, scale, opacity } = cardTransforms[i];
-            
             return (
               <motion.div
                 key={i}
@@ -209,6 +208,33 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
         </div>
 
       </div>
+
+      {/* Mobile Stack (shown only on mobile via CSS, completely separate from the sticky scene) */}
+      <div className={styles.mobileStack}>
+        <div className={styles.mobileSectionHeader}>
+          <div className={styles.eyebrow}>The Problem We Solve</div>
+          <h2 className={styles.heading}>
+            Why platforms fail.<br />
+            Here&apos;s how Teyro fixes it.
+          </h2>
+        </div>
+        {unifiedProblems.map((item, i) => (
+          <div key={i} className={styles.mobileCard}>
+            <div className={styles.mobileCardIcon}>{item.icon}</div>
+            <div className={styles.problemSide}>
+              <span className={styles.labelCross}>✗ Problem</span>
+              <h4>{item.title}</h4>
+              <p>{item.problemText}</p>
+            </div>
+            <div className={styles.solutionSide}>
+              <span className={styles.labelCheck}>✓ Teyro Solution</span>
+              <h4>{item.solutionTitle}</h4>
+              <p>{item.solutionText}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 }
