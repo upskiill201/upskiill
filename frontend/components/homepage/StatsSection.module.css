@@ -45,11 +45,8 @@
   background: #ffffff;
   border-radius: 32px;
   border: 1px solid #E8E4FF;
-  box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.05); /* upward shadow to emphasize stacking */
-  padding: 48px;
-  /* Prevent card from overflowing viewport width */
-  max-width: 100%;
-  box-sizing: border-box;
+  box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.05);
+  padding: 32px; /* Reduced from 48px — tighter content-to-border gap */
 }
 
 /* Staggered offsets so they look like a deck of cards */
@@ -68,7 +65,7 @@
   background: #F8F9FF;
   border: 1px solid #E8E4FF;
   border-radius: 20px;
-  padding: 32px 24px;
+  padding: 20px 16px; /* Reduced from 32px 24px — closer content-to-border gap */
   text-align: center;
   transition: all 0.3s;
   position: relative;
@@ -243,24 +240,23 @@
 }
 
 @media (max-width: 640px) {
-  .section { padding: 48px 16px 80px; }
-  .heading { font-size: 26px; }
-  /* Reduce stickyCard padding drastically on mobile */
-  .stickyCard { 
-    padding: 20px 16px; 
-    border-radius: 20px;
-  }
-  .statsGrid { 
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 10px; 
-  }
-  .statCard { padding: 16px 12px; }
-  .statValue { font-size: 30px; }
-  .statLabel { font-size: 13px; }
-  .statSub { font-size: 11px; }
-  .industryContext { padding: 20px 14px; }
-  .contextSub { font-size: 13px; }
-  /* Make comparison table scroll horizontally — prevent page-level overflow */
-  .comparisonWrap { overflow-x: auto; max-width: 100%; }
-  .comparison th, .comparison td { padding: 12px 14px; font-size: 12px; }
+  .section { padding: 64px 16px; }
+  .heading { font-size: 30px; }  /* Increased from 28px for better readability */
+  .statsGrid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  
+  /* Larger stat numbers and labels so users can read clearly on mobile */
+  .statValue { font-size: 40px; } /* Up from 36px */
+  .statLabel { font-size: 14px; font-weight: 700; }
+  .statSub { font-size: 13px; line-height: 1.5; }
+  
+  .statCard { padding: 20px 14px; }
+  .industryContext { padding: 24px 16px; }
+  .contextSub { font-size: 16px; } /* Up from 15px */
+  
+  /* Comparison table readable on mobile */
+  .comparison th { padding: 14px 12px; font-size: 13px; }
+  .comparison td { padding: 12px; font-size: 13px; }
+  
+  /* Quotes more readable */
+  .quoteItem p { font-size: 15px; }
 }

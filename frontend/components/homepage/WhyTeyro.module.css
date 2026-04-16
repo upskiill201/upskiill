@@ -4,8 +4,11 @@
   position: relative;
   height: 400vh;
   width: 100%;
-  /* Prevent this section's wide track from creating a horizontal scrollbar */
-  overflow-x: hidden;
+}
+
+/* Mobile fallback — hidden on desktop, revealed at 640px */
+.mobileFallback {
+  display: none;
 }
 
 .scrollWrapper::before {
@@ -270,70 +273,130 @@
   .cardFeatures li { font-size: 13px; }
 }
 
-/* On mobile: disable the horizontal scroll-jack entirely.
-   The section collapses to normal height and cards scroll vertically.
-   This ensures:
-   - No horizontal overflow / right-edge gap
-   - The endCard ("That's Real Magic") is fully visible
-   - Users can actually read the content */
+/* ===== MOBILE ≤ 640px =====
+   Hide the complex 400vh desktop section entirely.
+   Show a native vertical card stack instead. */
 @media (max-width: 640px) {
+  /* Kill the 400vh height trap on mobile */
   .scrollWrapper {
-    /* Remove the 400vh scroll-jacking height on mobile — collapse to auto */
-    height: auto;
-    overflow: visible;
+    display: none;
   }
-  .stickyStage {
-    /* Remove sticky — section now flows normally */
-    position: static;
-    height: auto;
-    overflow: visible;
-    padding-top: 60px;
-    padding-bottom: 40px;
-    align-items: flex-start;
-  }
-  .container {
+
+  /* Show the mobile fallback */
+  .mobileFallback {
     display: block;
-    height: auto;
+    background: #F8F7FF;
+    padding: 64px 0 80px;
   }
-  .header {
-    position: static;
-    max-width: 100%;
+
+  .mobileInner {
     padding: 0 20px;
-    margin-bottom: 32px;
   }
-  .heading { font-size: 26px; }
-  .subheading { font-size: 14px; }
-  /* Turn the horizontal track into a vertical column */
-  .horizontalTrack {
-    /* Override framer-motion x transform by forcing no horizontal clip */
+
+  .mobileHeaderBlock {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .mobileHeaderBlock .heading {
+    font-size: 30px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .mobileHeaderBlock .subheading {
+    font-size: 15px;
+    color: #64748B;
+  }
+
+  /* Vertical card list — all cards stacked, fully visible, no scroll tricks */
+  .mobileCardList {
     display: flex;
     flex-direction: column;
-    /* Reset the translate: framer-motion will still try to move it, 
-       but on mobile we override with max-width and column direction */
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 16px;
-    padding-top: 0;
     gap: 20px;
-    transform: none !important; /* Override framer-motion x translate on mobile */
   }
-  .card {
-    width: 100%;
-    height: auto;
-    min-height: 360px;
-    padding: 24px 20px;
-  }
-  .cardTitle { font-size: 18px; }
-  .cardDesc { font-size: 14px; }
-  .cardFeatures li { font-size: 13px; }
-  .endCard {
-    width: 100%;
-    padding: 40px 20px;
-    align-items: center;
-    text-align: center;
-    background: white;
-    border-radius: 20px;
+
+  .mobileCard {
+    background: #ffffff;
     border: 1px solid #E8E4FF;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 16px rgba(99, 82, 255, 0.06);
+    position: relative;
+    overflow: hidden;
   }
-  .endCard h3 { font-size: 26px; }
+
+  /* Purple gradient top bar — matches desktop card accent */
+  .mobileCard::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6352FF, #9333EA);
+  }
+
+  .mobileCardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .mobileCardNum {
+    font-size: 12px;
+    font-weight: 700;
+    color: #a78bfa;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Reuse the same iconBox from desktop — already styled */
+  .mobileCard .iconBox {
+    margin-bottom: 0; /* Override desktop margin since it&apos;s now in a flex row */
+  }
+
+  .mobileCard .cardTitle {
+    font-size: 19px;
+    margin-bottom: 10px;
+  }
+
+  .mobileCard .cardDesc {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .mobileCard .cardFeatures li {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mobileCard .cardCta {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  /* End card — fully visible, always rendered as a real block */
+  .mobileEndCard {
+    background: linear-gradient(135deg, #6352FF, #9333EA);
+    border-radius: 20px;
+    padding: 40px 28px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .mobileEndCard h3 {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+  }
+
+  .mobileEndCard p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+  }
 }

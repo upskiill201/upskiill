@@ -139,7 +139,7 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
   return (
     <div className={styles.scrollContainer} ref={containerRef}>
       
-      {/* Desktop Sticky Scene (hidden on mobile via CSS) */}
+      {/* ===== DESKTOP: Sticky Exploded View (hidden on mobile via CSS) ===== */}
       <div className={styles.stickyCanvas}>
         
         {/* Header Content */}
@@ -163,10 +163,7 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
           {/* Central Mockup */}
           <motion.div 
             className={styles.coreMockup}
-            style={{ 
-              scale: mockupScale, 
-              opacity: mockupOpacity,
-            }}
+            style={{ scale: mockupScale, opacity: mockupOpacity }}
           >
             <div className={styles.mockupInner}>
               <div className={styles.mockupPulse} />
@@ -175,7 +172,7 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
             </div>
           </motion.div>
 
-          {/* Exploding Cards on Desktop */}
+          {/* Exploding / Sequential Cards */}
           {unifiedProblems.map((item, i) => {
             return (
               <motion.div
@@ -209,30 +206,39 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
 
       </div>
 
-      {/* Mobile Stack (shown only on mobile via CSS, completely separate from the sticky scene) */}
-      <div className={styles.mobileStack}>
-        <div className={styles.mobileSectionHeader}>
+      {/* ===== MOBILE: Clean vertical card stack (shown only on mobile via CSS) ===== */}
+      <div className={styles.mobileFallback}>
+        <div className={styles.mobileHeader}>
           <div className={styles.eyebrow}>The Problem We Solve</div>
           <h2 className={styles.heading}>
             Why platforms fail.<br />
             Here&apos;s how Teyro fixes it.
           </h2>
+          <p className={styles.subheading}>
+            The 5 fatal flaws of legacy learning — and how Teyro fixes each one.
+          </p>
         </div>
-        {unifiedProblems.map((item, i) => (
-          <div key={i} className={styles.mobileCard}>
-            <div className={styles.mobileCardIcon}>{item.icon}</div>
-            <div className={styles.problemSide}>
-              <span className={styles.labelCross}>✗ Problem</span>
-              <h4>{item.title}</h4>
-              <p>{item.problemText}</p>
+
+        <div className={styles.mobileCardList}>
+          {unifiedProblems.map((item, i) => (
+            <div key={i} className={styles.mobileCard}>
+              <div className={styles.mobileCardNum}>0{i + 1}</div>
+              <div className={styles.mobileCardIcon}>{item.icon}</div>
+              
+              <div className={styles.problemSide}>
+                <span className={styles.labelCross}>✗ Problem</span>
+                <h4>{item.title}</h4>
+                <p>{item.problemText}</p>
+              </div>
+              
+              <div className={styles.solutionSide}>
+                <span className={styles.labelCheck}>✓ Teyro Fix</span>
+                <h4>{item.solutionTitle}</h4>
+                <p>{item.solutionText}</p>
+              </div>
             </div>
-            <div className={styles.solutionSide}>
-              <span className={styles.labelCheck}>✓ Teyro Solution</span>
-              <h4>{item.solutionTitle}</h4>
-              <p>{item.solutionText}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
     </div>

@@ -42,6 +42,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent any section with width:max-content or absolute overflow from causing horizontal shift */
+  overflow-x: hidden;
 }
 
 body {
@@ -53,6 +55,9 @@ body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Belt-and-suspenders: prevents any child from causing horizontal scroll */
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Make Plus Jakarta Sans available globally */
