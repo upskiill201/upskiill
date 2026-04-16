@@ -64,9 +64,78 @@
   gap: 20px;
 }
 
+.studentCard {
+  order: 1; /* Student always first */
+}
+
+.instructorCard {
+  order: 2; /* Instructor always second */
+}
+
 @media (max-width: 600px) {
+  .overlay {
+    padding: 12px; /* Less padding so modal has more room */
+    align-items: flex-end; /* Slide up from bottom on mobile like a sheet */
+  }
+
+  .modal {
+    max-height: 95vh;
+    border-radius: 20px 20px 0 0; /* Bottom sheet style on mobile */
+    max-width: 100%;
+  }
+
+  .roleSelection {
+    padding: 28px 20px 40px; /* Tighter padding */
+  }
+
+  .formContainer {
+    padding: 28px 20px 40px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
   .roleCards {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Stack vertically */
+    gap: 14px;
+  }
+
+  /* Guarantee student is on top, instructor below */
+  .studentCard { order: 1; }
+  .instructorCard { order: 2; }
+
+  .roleCard {
+    padding: 20px 16px; /* Less padding on mobile */
+    flex-direction: row; /* Icon left, text right — more compact */
+    text-align: left;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .roleIcon {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  .roleCard h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .roleCard p {
+    font-size: 13px;
+  }
+
+  .typeformPlaceholder {
+    min-height: 250px;
   }
 }
 

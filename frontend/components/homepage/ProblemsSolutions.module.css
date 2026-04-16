@@ -1,8 +1,13 @@
 .scrollContainer {
-  background: #030712; /* Deep space dark */
+  background: #030712;
   position: relative;
-  height: 600vh; /* Extended to 6 screens for massive read-time dwell */
+  height: 600vh;
   width: 100%;
+}
+
+/* Mobile fallback: always hidden on desktop, shown on mobile */
+.mobileFallback {
+  display: none;
 }
 
 .stickyCanvas {
@@ -260,23 +265,99 @@
 }
 
 /* On mobile (< 640px) the desktop explosion stage is completely hidden.
-   The component renders a native sequential mobile card stack instead (isMobile state).
+   The component renders a native sequential mobile card stack instead.
    We do NOT scale the stage to 45% as that makes all text unreadable. */
 @media (max-width: 640px) {
+  /* Kill the 600vh height trap on mobile — it would create a blank white scroll */
   .scrollContainer {
-    /* Let the component's isMobile fallback take over;
-       keep the container but reduce its height since the
-       sticky stage is hidden inside it on mobile. */
     height: auto;
-    min-height: 100vh;
+    min-height: 0;
   }
   .stickyCanvas {
-    display: none; /* Hide the desktop explosion stage entirely on mobile */
+    display: none;
   }
-  .heading {
-    font-size: 28px;
+
+  /* Show the mobile fallback */
+  .mobileFallback {
+    display: block;
+    background: #030712;
+    padding: 64px 20px;
   }
-  .subheading {
+
+  .mobileHeader {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  
+  .mobileHeader .heading {
+    font-size: 30px;
+    color: white;
+  }
+  
+  .mobileHeader .subheading {
     font-size: 15px;
+    color: #94a3b8;
+    margin-top: 12px;
   }
+
+  .mobileCardList {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .mobileCard {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Top gradient accent bar */
+  .mobileCard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6352FF, #9333EA);
+  }
+
+  .mobileCardNum {
+    font-size: 13px;
+    font-weight: 800;
+    color: #6352FF;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .mobileCardIcon {
+    margin-bottom: 20px;
+  }
+
+  .mobileCard .problemSide h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .mobileCard .problemSide p,
+  .mobileCard .solutionSide p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .mobileCard .solutionSide h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #86efac;
+    margin-bottom: 8px;
+  }
+
+  .heading { font-size: 28px; }
+  .subheading { font-size: 15px; }
 }

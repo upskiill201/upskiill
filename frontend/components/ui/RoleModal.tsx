@@ -54,7 +54,7 @@ export default function RoleModal({ isOpen, onClose }: RoleModalProps) {
                 
                 <div className={styles.roleCards}>
                   <button 
-                    className={styles.roleCard}
+                    className={`${styles.roleCard} ${styles.studentCard}`}
                     onClick={() => handleRoleSelect('student')}
                   >
                     <div className={styles.roleIcon}>
@@ -65,7 +65,7 @@ export default function RoleModal({ isOpen, onClose }: RoleModalProps) {
                   </button>
 
                   <button 
-                    className={styles.roleCard}
+                    className={`${styles.roleCard} ${styles.instructorCard}`}
                     onClick={() => handleRoleSelect('instructor')}
                   >
                     <div className={styles.roleIcon}>

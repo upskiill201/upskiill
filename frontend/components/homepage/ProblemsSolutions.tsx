@@ -138,6 +138,8 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
 
   return (
     <div className={styles.scrollContainer} ref={containerRef}>
+      
+      {/* ===== DESKTOP: Sticky Exploded View (hidden on mobile via CSS) ===== */}
       <div className={styles.stickyCanvas}>
         
         {/* Header Content */}
@@ -161,11 +163,7 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
           {/* Central Mockup */}
           <motion.div 
             className={styles.coreMockup}
-            style={{ 
-              scale: mockupScale, 
-              opacity: mockupOpacity,
-              y: isMobile ? mockupMobileY : 0 // Push up on mobile to make room for cards
-            }}
+            style={{ scale: mockupScale, opacity: mockupOpacity }}
           >
             <div className={styles.mockupInner}>
               <div className={styles.mockupPulse} />
@@ -176,8 +174,6 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
 
           {/* Exploding / Sequential Cards */}
           {unifiedProblems.map((item, i) => {
-            const { x, y, rotate, scale, opacity } = cardTransforms[i];
-            
             return (
               <motion.div
                 key={i}
@@ -209,6 +205,42 @@ export default function ProblemsSolutions({ onOpenModal }: { onOpenModal?: () =>
         </div>
 
       </div>
+
+      {/* ===== MOBILE: Clean vertical card stack (shown only on mobile via CSS) ===== */}
+      <div className={styles.mobileFallback}>
+        <div className={styles.mobileHeader}>
+          <div className={styles.eyebrow}>The Problem We Solve</div>
+          <h2 className={styles.heading}>
+            Why platforms fail.<br />
+            Here&apos;s how Teyro fixes it.
+          </h2>
+          <p className={styles.subheading}>
+            The 5 fatal flaws of legacy learning — and how Teyro fixes each one.
+          </p>
+        </div>
+
+        <div className={styles.mobileCardList}>
+          {unifiedProblems.map((item, i) => (
+            <div key={i} className={styles.mobileCard}>
+              <div className={styles.mobileCardNum}>0{i + 1}</div>
+              <div className={styles.mobileCardIcon}>{item.icon}</div>
+              
+              <div className={styles.problemSide}>
+                <span className={styles.labelCross}>✗ Problem</span>
+                <h4>{item.title}</h4>
+                <p>{item.problemText}</p>
+              </div>
+              
+              <div className={styles.solutionSide}>
+                <span className={styles.labelCheck}>✓ Teyro Fix</span>
+                <h4>{item.solutionTitle}</h4>
+                <p>{item.solutionText}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
