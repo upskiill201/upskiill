@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Zap } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaTiktok, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 import styles from './FinalCTA.module.css';
@@ -18,11 +18,27 @@ const socialLinks = [
 export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch('/webhook/count');
+        const data = await res.json();
+        setWaitlistCount(data.count);
+      } catch (err) {
+        setWaitlistCount(0);
+      }
+    };
+    fetchCount();
+  }, []);
 
   return (
     <section className={styles.section} ref={ref}>
       {/* Decorative background number */}
-      <span className={styles.counterGlow}>23K</span>
+      <span className={styles.counterGlow}>
+        {waitlistCount === null ? '...' : waitlistCount === 0 ? 'VIP' : `${Math.floor(waitlistCount / 1000)}K`}
+      </span>
 
       <div className={styles.container}>
         <motion.div
@@ -56,7 +72,11 @@ export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {
               id="final-cta-btn"
             >
               <Zap size={22} />
-              Join 23,543 others — Get early access
+              {waitlistCount === null 
+                ? 'Loading live spots...' 
+                : waitlistCount === 0 
+                  ? 'Claim the #1 spot — Get early access' 
+                  : `Join ${waitlistCount.toLocaleString()} others — Get early access`}
               <span className={styles.btnLiveChip}>
                 <span className={styles.liveDot} />
                 Free

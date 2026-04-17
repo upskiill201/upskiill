@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Zap, BookOpen, Brain, TrendingUp, Award } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -28,6 +29,21 @@ const previewCards = [
 ];
 
 export default function HeroSection({ onOpenModal }: HeroSectionProps) {
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch('/webhook/count');
+        const data = await res.json();
+        setWaitlistCount(data.count);
+      } catch (err) {
+        setWaitlistCount(0);
+      }
+    };
+    fetchCount();
+  }, []);
+
   return (
     /* 
      * SSR ARCHITECTURE:
@@ -103,9 +119,8 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
               <Zap size={20} className={styles.btnIcon} />
               Join the waitlist
               <span className={styles.liveChip}>
-                {/* TODO: Replace hardcoded count with live API fetch from /api/waitlist/count */}
                 <span className={styles.liveDot} />
-                23,543 joined
+                {waitlistCount === null ? 'Loading...' : waitlistCount === 0 ? 'Be the first to join' : `${waitlistCount.toLocaleString()} joined`}
               </span>
             </button>
 
@@ -128,8 +143,13 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
               ))}
             </div>
             <span className={styles.proofText}>
-              {/* TODO: Replace hardcoded count with live API fetch */}
-              <strong>23,543</strong> students &amp; instructors already waiting
+              {waitlistCount === null ? (
+                'Fetching live waitlist block...'
+              ) : waitlistCount === 0 ? (
+                'Secure your spot as one of our very first early adopters'
+              ) : (
+                <><strong>{waitlistCount.toLocaleString()}</strong> students &amp; instructors already waiting</>
+              )}
             </span>
           </motion.div>
         </motion.div>

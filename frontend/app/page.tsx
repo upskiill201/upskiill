@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import HeroSection from '../components/homepage/HeroSection';
 import ProblemsSolutions from '../components/homepage/ProblemsSolutions';
 import WhyTeyro from '../components/homepage/WhyTeyro';
@@ -9,13 +9,11 @@ import Marketplace from '../components/homepage/Marketplace';
 import StatsSection from '../components/homepage/StatsSection';
 import FAQSection from '../components/homepage/FAQSection';
 import FinalCTA from '../components/homepage/FinalCTA';
-import RoleModal from '../components/ui/RoleModal';
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = () => router.push('/join');
 
   return (
     <main>
@@ -42,9 +40,6 @@ export default function Home() {
 
       {/* 8. Final CTA — Dark, glowing button */}
       <FinalCTA onOpenModal={openModal} />
-
-      {/* Role Modal — Shared */}
-      <RoleModal isOpen={isModalOpen} onClose={closeModal} />
     </main>
   );
 }

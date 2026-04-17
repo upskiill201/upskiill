@@ -48,7 +48,7 @@
 - [x] **Mobile Responsiveness Fixes**: Bottom-sheet style `RoleModal`, proper `overflow-x: clip` bug fixing for broken `position: sticky` implementations globally.
 - [x] **Domain Migration & SEO**: Whitelisted `teyro.app` in backend CORS, populated `layout.tsx` with full SEO keywords + OG Meta for production.
 - [x] **Isolated Waitlist Footer**: Added a dedicated `WaitlistFooter.tsx` (dark theme, isolated links, block socials). Added global HTML ID anchors (`#features`, `#faq`) to restrict navigation completely to the landing page.
-- [ ] **Pending: Tally Form Setup** — User has created Tally waitlist forms. Need to wire the `RoleModal.tsx` buttons to open these forms natively.
+- [x] **Tally Form Full-Page Architecture**: Securely integrated the waitlist form. Deleted the redundant `<RoleModal />` to stream users directly to a native 100vh embedded Tally frame hosted locally on `/join`. All waitlist buttons route instantly.
 - [ ] **Pending: Live Counter Webhook** — Need to write the Next.js API route to receive Tally webhook submissions to automatically increment the Supabase counter.
 
 ### Step C — Build Marketplace Pages ✅ COMPLETE
