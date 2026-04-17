@@ -40,19 +40,35 @@ export async function POST(request: Request) {
     }
 
     const { data } = payload;
-    const fields = data.fields || [];
+    const fields: any[] = data.fields || [];
 
-    // Dynamically search Tally fields for the email input regardless of what it was named in the UI
-    const emailField = fields.find((f: any) => f.type === 'INPUT_EMAIL');
+    // Dynamically search Tally fields for the email input
+    const emailField = fields.find((f) => f.type === 'INPUT_EMAIL');
     const email = emailField ? emailField.value : 'unknown@noemail.com';
 
-    // Insert the lead into the database safely
+    // Heuristic extraction for Name (hunts for 'name' in the question label)
+    const nameField = fields.find((f) => typeof f.label === 'string' && f.label.toLowerCase().includes('name'));
+    const name = nameField ? String(nameField.value) : null;
+
+    // Heuristic extraction for Role (hunts for 'role', 'student', or 'instructor' context)
+    const roleField = fields.find((f) => typeof f.label === 'string' && (f.label.toLowerCase().includes('role') || f.label.toLowerCase().includes('who are you') || f.label.toLowerCase().includes('which best describes')));
+    let role = roleField ? String(roleField.value) : null;
+
+    // If Tally passes an array of ID options, we try to extract the literal text
+    if (roleField && Array.isArray(roleField.value) && Array.isArray(roleField.options)) {
+      const selected = roleField.options.find((opt: any) => roleField.value.includes(opt.id));
+      if (selected && selected.text) role = selected.text;
+    }
+
+    // Insert the lead into the database securely with all extracted top-level columns
     const { error } = await supabase
       .from('Waitlist')
       .insert([
         {
           email: email,
-          raw_data: data // Save the entire raw submission so we capture all answers automatically
+          name: name,
+          role: role,
+          raw_data: data // Always save raw fallback data just in case
         }
       ]);
 
