@@ -23,6 +23,13 @@ interface TubesBackgroundProps {
   enableClickInteraction?: boolean;
 }
 
+interface TubesInstance {
+  tubes: {
+    setColors: (colors: string[]) => void;
+    setLightsColors: (colors: string[]) => void;
+  };
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const randomColors = (count: number): string[] =>
@@ -48,7 +55,7 @@ export function TubesBackground({
   enableClickInteraction = true,
 }: TubesBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const tubesRef  = useRef<unknown>(null);
+  const tubesRef  = useRef<TubesInstance | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -60,7 +67,6 @@ export function TubesBackground({
 
       try {
         // webpackIgnore: browser resolves this natively at runtime
-        // @ts-expect-error CDN injection
         const cdnModule = await import(/* webpackIgnore: true */ TUBES_CDN as string);
         const TubesCursor = cdnModule.default;
 

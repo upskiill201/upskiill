@@ -41,6 +41,8 @@ const unifiedProblems = [
     solutionText: 'Convert lab projects directly into paid freelance gigs starting day one.',
     icon: <Briefcase className={styles.lucideIcon} />
   }
+];
+
 import { MotionValue } from 'framer-motion';
 
 function AnimatedCard({ item, index, progress, isMobile }: { item: { title: string, problemText: string, solutionTitle: string, solutionText: string, icon: React.ReactNode }; index: number; progress: MotionValue<number>; isMobile: boolean }) {
