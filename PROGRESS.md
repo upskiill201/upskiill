@@ -39,7 +39,7 @@
 - [x] `HeroSection` (Scribe dark gradient, floating badges)
 - [x] `StatsSection` (Magnificent **Stacking Cards** deck interaction — *perfected native scroll translation via Framer Motion*)
 - [x] `ProblemsSolutions` (**Exploded View Assembly** scroll-mapped interaction)
-- [x] `WhyTeyro` (**Horizontal Ticker Scroll** rail interaction)
+- [x] `WhyTeyro` (**Horizontal Ticker Scroll** — *perfected edge-to-center mathematical scroll-linking to guarantee mobile, tablet, and desktop flawlessly stop precisely on the final CTA*)
 - [x] `RoleSolutions` (**Sticky Split-Scroll** dynamic content crossfade)
 - [x] `Marketplace` (Monetized **SVG Journey Line** animated S-curve)
 - [x] `FAQSection` (Animated accordion)

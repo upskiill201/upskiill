@@ -1,14 +1,11 @@
-/* ===== WHY TEYRO - HORIZONTAL SCROLL ===== */
+/* ===== WHY TEYRO - RESPONSIVE 400VH ENGINE ===== */
 .scrollWrapper {
   background: #F8F7FF;
   position: relative;
+  /* Reduced height on mobile so the scroll doesn't feel like it takes forever on phones 
+     (handled gracefully by keeping it large enough to allow track panning) */
   height: 400vh;
   width: 100%;
-}
-
-/* Mobile fallback — hidden on desktop, revealed at 640px */
-.mobileFallback {
-  display: none;
 }
 
 .scrollWrapper::before {
@@ -26,16 +23,15 @@
 .stickyStage {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100svh;
   width: 100%;
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding-top: 80px; /* Accounts for header height if needed */
+  padding-top: 80px; 
 }
 
 .container {
-  /* No max-width constraint because the track will stretch way beyond the right screen edge */
   width: 100%;
   height: 100%;
   position: relative;
@@ -46,8 +42,8 @@
 
 .header {
   position: absolute;
-  top: 80px; /* Increased gap from top */
-  left: max(24px, calc(50vw - 600px)); /* Align precisely with the 1200px container boundary */
+  top: 80px; 
+  left: max(24px, calc(50vw - 600px)); 
   width: 100%;
   max-width: 600px;
   z-index: 10;
@@ -95,10 +91,10 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 40px;
-  padding-left: max(24px, calc(50vw - 600px)); /* Align perfectly with logo/container */
+  padding-left: max(24px, calc(50vw - 600px)); 
   padding-right: 48px; 
-  padding-top: 280px; /* Massive gap between absolute header and the cards */
-  width: max-content; /* Ensure container expands to hold all cards rigidly */
+  padding-top: 280px; /* Gap below the absolute header */
+  width: max-content; /* Critical: allows us to measure full track width */
   will-change: transform;
 }
 
@@ -107,8 +103,8 @@
   border: 1px solid #E8E4FF;
   border-radius: 20px;
   padding: 40px;
-  width: 420px; /* Fixed width so they look like consistent blocks in the ticker */
-  height: 480px; /* Uniform height */
+  width: 420px; 
+  height: 480px; 
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -135,10 +131,7 @@
   box-shadow: 0 20px 50px rgba(99, 82, 255, 0.08);
   transform: translateY(-8px);
 }
-
-.card:hover::after {
-  transform: scaleX(1);
-}
+.card:hover::after { transform: scaleX(1); }
 
 .iconBox {
   width: 60px;
@@ -151,8 +144,8 @@
   color: #6352FF;
   margin-bottom: 24px;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
-
 .card:hover .iconBox {
   background: linear-gradient(135deg, #6352FF, #9333EA);
   color: white;
@@ -177,7 +170,7 @@
 .cardFeatures {
   list-style: none;
   padding: 0;
-  margin: 0 0 auto; /* Pushes CTA to the bottom */
+  margin: 0 0 auto; 
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -208,25 +201,22 @@
   font-weight: 700;
   color: #6352FF;
   cursor: pointer;
-  transition: gap 0.2s;
   background: transparent;
   border: none;
   padding: 0;
 }
+.cardCta:hover { gap: 12px; }
 
-.cardCta:hover {
-  gap: 12px;
-}
-
-/* The inline "Punctuation" elements */
+/* End Punctuation Card */
 .endCard {
-  width: 300px;
-  padding: 40px;
+  width: 320px;
+  padding: 0 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   gap: 16px;
+  height: 480px; /* Match standard card height for vertical alignment */
 }
 
 .endCard h3 {
@@ -259,144 +249,77 @@
 }
 
 /* ===== RESPONSIVE ===== */
+
 @media (max-width: 1024px) {
-  .horizontalTrack {
-    gap: 24px;
-  }
-  .card {
-    width: 340px;
-    height: 440px;
-    padding: 24px;
-  }
+  .horizontalTrack { gap: 24px; }
+  .card { width: 340px; height: 440px; padding: 24px; }
+  .endCard { width: 280px; padding: 0 24px; height: 440px; }
   .cardTitle { font-size: 18px; }
   .cardDesc { font-size: 14px; }
   .cardFeatures li { font-size: 13px; }
 }
 
-/* ===== MOBILE ≤ 640px =====
-   Hide the complex 400vh desktop section entirely.
-   Show a native vertical card stack instead. */
 @media (max-width: 640px) {
-  /* Kill the 400vh height trap on mobile */
   .scrollWrapper {
-    display: none;
+    height: 300vh; /* Reduces swiping effort on tiny screens */
   }
 
-  /* Show the mobile fallback */
-  .mobileFallback {
-    display: block;
-    background: #F8F7FF;
-    padding: 64px 0 80px;
+  .stickyStage {
+    padding-top: 56px; /* give more top breathing room on mobile */
   }
 
-  .mobileInner {
-    padding: 0 20px;
+  .header {
+    top: 56px;
+    padding-right: 24px; /* Stop text clipping right edge */
   }
 
-  .mobileHeaderBlock {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-
-  .mobileHeaderBlock .heading {
-    font-size: 30px;
-    margin-top: 12px;
+  .heading {
+    font-size: 28px;
     margin-bottom: 12px;
   }
 
-  .mobileHeaderBlock .subheading {
-    font-size: 15px;
-    color: #64748B;
-  }
-
-  /* Vertical card list — all cards stacked, fully visible, no scroll tricks */
-  .mobileCardList {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .mobileCard {
-    background: #ffffff;
-    border: 1px solid #E8E4FF;
-    border-radius: 20px;
-    padding: 28px 24px;
-    box-shadow: 0 4px 16px rgba(99, 82, 255, 0.06);
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Purple gradient top bar — matches desktop card accent */
-  .mobileCard::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #6352FF, #9333EA);
-  }
-
-  .mobileCardTop {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .mobileCardNum {
-    font-size: 12px;
-    font-weight: 700;
-    color: #a78bfa;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  /* Reuse the same iconBox from desktop — already styled */
-  .mobileCard .iconBox {
-    margin-bottom: 0; /* Override desktop margin since it&apos;s now in a flex row */
-  }
-
-  .mobileCard .cardTitle {
-    font-size: 19px;
-    margin-bottom: 10px;
-  }
-
-  .mobileCard .cardDesc {
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-
-  .mobileCard .cardFeatures li {
+  .subheading {
     font-size: 14px;
     line-height: 1.5;
   }
 
-  .mobileCard .cardCta {
-    margin-top: 20px;
-    font-size: 14px;
-  }
-
-  /* End card — fully visible, always rendered as a real block */
-  .mobileEndCard {
-    background: linear-gradient(135deg, #6352FF, #9333EA);
-    border-radius: 20px;
-    padding: 40px 28px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .horizontalTrack {
+    /* Push cards down further so they don't overlap the mobile header */
+    padding-top: 240px; 
     gap: 16px;
-    margin-top: 8px;
+    padding-right: 24px;
   }
 
-  .mobileEndCard h3 {
-    font-size: 26px;
-    font-weight: 800;
-    color: white;
+  .card {
+    /* Critical: Shrink cards on mobile so users can see the next card peeking */
+    width: 290px;
+    height: 480px; 
+    padding: 24px 20px;
   }
 
-  .mobileEndCard p {
-    font-size: 15px;
-    color: rgba(255,255,255,0.8);
+  .endCard {
+    width: 260px;
+    padding: 0 16px;
+    height: 480px;
+  }
+
+  .iconBox {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  .cardTitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .cardDesc {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .cardFeatures {
+    gap: 10px;
   }
 }
