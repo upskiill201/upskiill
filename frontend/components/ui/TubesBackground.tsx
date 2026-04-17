@@ -14,7 +14,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,7 +48,7 @@ export function TubesBackground({
   enableClickInteraction = true,
 }: TubesBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const tubesRef  = useRef<any>(null);
+  const tubesRef  = useRef<unknown>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -61,8 +60,9 @@ export function TubesBackground({
 
       try {
         // webpackIgnore: browser resolves this natively at runtime
-        const module = await import(/* webpackIgnore: true */ TUBES_CDN as any);
-        const TubesCursor = module.default;
+        // @ts-expect-error CDN injection
+        const cdnModule = await import(/* webpackIgnore: true */ TUBES_CDN as string);
+        const TubesCursor = cdnModule.default;
 
         if (!mounted) return;
 
