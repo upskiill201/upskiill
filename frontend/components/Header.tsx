@@ -64,7 +64,7 @@ export default function Header() {
     setIsMobileNavOpen(false);
   }, [pathname]);
 
-  if (pathname === '/signup' || pathname === '/login' || pathname.startsWith('/dashboard') || pathname.startsWith('/instructor')) return null;
+  if (pathname === '/signup' || pathname === '/login' || pathname === '/join' || pathname.startsWith('/dashboard') || pathname.startsWith('/instructor')) return null;
 
   return (
     <header className={styles.header}>
