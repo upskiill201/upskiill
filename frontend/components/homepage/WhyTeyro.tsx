@@ -124,7 +124,7 @@ export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) 
   const headerY = useTransform(progress, [0, 0.2], shouldReduceMotion ? [0, 0] : [0, -30]);
 
   return (
-    <section className={styles.scrollWrapper} ref={containerRef}>
+    <section id="features" className={styles.scrollWrapper} ref={containerRef}>
       <div className={styles.stickyStage}>
         <div className={styles.container}>
           
