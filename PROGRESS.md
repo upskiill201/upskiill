@@ -37,7 +37,7 @@
 > **🛑 CRITICAL DECISION:** We pivoted from the core marketplace to build a high-converting Waitlist Homepage first, inspired by Scribe UI (dark themes, purple glows, micro-animations).
 > **Update (2026-04-15):** The waitlist components have been updated with a **High-End Interactive Revamp** (Cinematic interactions) and pushed to `feat/teyro-landing-page-interactive`.
 - [x] `HeroSection` (Scribe dark gradient, floating badges)
-- [x] `StatsSection` (Magnificent **Stacking Cards** deck interaction)
+- [x] `StatsSection` (Magnificent **Stacking Cards** deck interaction — *perfected native scroll translation via Framer Motion*)
 - [x] `ProblemsSolutions` (**Exploded View Assembly** scroll-mapped interaction)
 - [x] `WhyTeyro` (**Horizontal Ticker Scroll** rail interaction)
 - [x] `RoleSolutions` (**Sticky Split-Scroll** dynamic content crossfade)
@@ -45,8 +45,10 @@
 - [x] `FAQSection` (Animated accordion)
 - [x] `FinalCTA` (Dark shimmer glowing button)
 - [x] **Interactive Revamp & GitHub Push**: All waitlist sections updated with premium scroll animations. ✅
-- [ ] **Pending: Typeform Setup** — The actual Typeforms have not been created yet. IDs need to be plugged into `RoleModal.tsx`.
-- [ ] **Pending: Live Counter API** — The waitlist number needs to be wired to an API to pull the live count dynamically instead of the hardcoded `23543` value in `HeroSection` & `FinalCTA`.
+- [x] **Mobile Responsiveness Fixes**: Bottom-sheet style `RoleModal`, proper `overflow-x: clip` bug fixing for broken `position: sticky` implementations globally.
+- [x] **Domain Migration & SEO**: Whitelisted `teyro.app` in backend CORS, populated `layout.tsx` with full SEO keywords + OG Meta for production.
+- [ ] **Pending: Tally Form Setup** — User has created Tally waitlist forms. Need to wire the `RoleModal.tsx` buttons to open these forms natively.
+- [ ] **Pending: Live Counter Webhook** — Need to write the Next.js API route to receive Tally webhook submissions to automatically increment the Supabase counter.
 
 ### Step C — Build Marketplace Pages ✅ COMPLETE
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**

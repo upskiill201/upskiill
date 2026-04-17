@@ -93,11 +93,11 @@
 
 This separate document contains:
 - 13 page section specifications (Hero through Footer)
-- Typeform integration setup (Student + Instructor forms) — **NOTE:** The Typeform forms have NOT been created yet. They need to be built and the IDs plugged in.
+- Tally form integration setup (Student + Instructor forms) — **NOTE:** Forms have been created by user. Need to plug `RoleModal.tsx` directly into the Tally form or webhook.
 - Component file structure
 - Design system tokens
 - Animation specs
-- Live counter implementation — **NOTE:** The counter on the homepage currently uses a hardcoded value. We need to implement an API fetch to pull the actual, live number of people on the waitlist.
+- Live counter implementation — **NOTE:** The counter on the homepage needs to track live submissions via a custom Next.js API route receiving Tally Webhooks, posting to Supabase.
 - SEO requirements
 - Analytics events to track
 
