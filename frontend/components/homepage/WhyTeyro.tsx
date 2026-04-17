@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform, useSpring, useReducedMotion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FaRobot, FaRoute, FaGlobe, FaUsers, FaLightbulb, FaAward } from 'react-icons/fa';
 import styles from './WhyTeyro.module.css';
@@ -83,6 +83,28 @@ const features = [
 
 export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) {
   const containerRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  
+  // The mathematical distance we need to physically pan the cards to the left
+  const [scrollRange, setScrollRange] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (trackRef.current) {
+        // Calculate the maximum pixels we can pan so the final card lands beautifully in the center of the screen
+        const endCard = trackRef.current.lastElementChild as HTMLElement;
+        const endCardWidth = endCard ? endCard.clientWidth : 320;
+        // Total track width MINUS half the screen MINUS half the card width precisely aligns their centers
+        const maxScroll = trackRef.current.scrollWidth - (window.innerWidth / 2) - (endCardWidth / 2);
+        setScrollRange(-maxScroll);
+      }
+    };
+    
+    // Measure on mount, and remeasure if the window is resized (e.g. pivoting tablet orientation)
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -95,81 +117,39 @@ export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) 
 
   const shouldReduceMotion = useReducedMotion();
 
-  const x = useTransform(progress, [0, 1], shouldReduceMotion ? ["0%", "0%"] : ["0%", "-75%"]);
+  // Dynamic Horizontal Translation
+  const x = useTransform(progress, [0, 1], shouldReduceMotion ? [0, 0] : [0, scrollRange]);
+  
   const headerOpacity = useTransform(progress, [0, 0.15, 0.3], shouldReduceMotion ? [1, 1, 1] : [1, 1, 0]);
   const headerY = useTransform(progress, [0, 0.2], shouldReduceMotion ? [0, 0] : [0, -30]);
 
   return (
-    <>
-      {/* ===== DESKTOP: 400vh scroll-linked horizontal pan ===== */}
-      <section className={styles.scrollWrapper} ref={containerRef}>
-        <div className={styles.stickyStage}>
-          <div className={styles.container}>
-            
-            <motion.div
-              className={styles.header}
-              style={{ opacity: headerOpacity, y: headerY }}
-            >
-              <div className={styles.eyebrow}>Why Teyro is Different</div>
-              <h2 className={styles.heading}>
-                Teyro is <em>Edtech 2.0</em>.<br />
-                Real outcomes, not just video scrolls.
-              </h2>
-              <p className={styles.subheading}>
-                Six structural advantages that legacy platforms ignore. We don&apos;t just sell video access; we build a system for <strong>actual achievement</strong>.
-              </p>
-            </motion.div>
-
-            <motion.div className={styles.horizontalTrack} style={{ x }}>
-              {features.map(({ icon: Icon, title, desc, points, cta }, i) => (
-                <div key={title} className={styles.card}>
-                  <div className={styles.iconBox}><Icon size={24} /></div>
-                  <h3 className={styles.cardTitle}>{title}</h3>
-                  <p className={styles.cardDesc}>{desc}</p>
-                  <ul className={styles.cardFeatures}>
-                    {points.map((p, j) => (
-                      <li key={j}>
-                        <span className={styles.featureDot} />
-                        {p}
-                      </li>
-                    ))}
-                  </ul>
-                  <button className={styles.cardCta} onClick={onOpenModal}>
-                    {cta} <ArrowRight size={14} />
-                  </button>
-                </div>
-              ))}
-              
-              <div className={styles.endCard}>
-                <h3>That&apos;s Real Magic.</h3>
-                <p>Ready to experience the difference?</p>
-                <button className={styles.ctaSolid} onClick={onOpenModal}>Explore Courses</button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== MOBILE: Native vertical card stack ===== */}
-      <section className={styles.mobileFallback}>
-        <div className={styles.mobileInner}>
-          <div className={styles.mobileHeaderBlock}>
+    <section className={styles.scrollWrapper} ref={containerRef}>
+      <div className={styles.stickyStage}>
+        <div className={styles.container}>
+          
+          <motion.div
+            className={styles.header}
+            style={{ opacity: headerOpacity, y: headerY }}
+          >
             <div className={styles.eyebrow}>Why Teyro is Different</div>
             <h2 className={styles.heading}>
-              Teyro is <em>Edtech 2.0</em>. Real outcomes, not just video scrolls.
+              Teyro is <em>Edtech 2.0</em>.<br />
+              Real outcomes, not just video scrolls.
             </h2>
             <p className={styles.subheading}>
-              Six reasons legacy platforms keep failing — and how Teyro fixes every one.
+              Six structural advantages that legacy platforms ignore. We don&apos;t just sell video access; we build a system for <strong>actual achievement</strong>.
             </p>
-          </div>
+          </motion.div>
 
-          <div className={styles.mobileCardList}>
+          <motion.div 
+            ref={trackRef}
+            className={styles.horizontalTrack} 
+            style={{ x }}
+          >
             {features.map(({ icon: Icon, title, desc, points, cta }, i) => (
-              <div key={title} className={styles.mobileCard}>
-                <div className={styles.mobileCardTop}>
-                  <div className={styles.iconBox}><Icon size={22} /></div>
-                  <span className={styles.mobileCardNum}>0{i + 1} / 06</span>
-                </div>
+              <div key={title} className={styles.card}>
+                <div className={styles.iconBox}><Icon size={24} /></div>
                 <h3 className={styles.cardTitle}>{title}</h3>
                 <p className={styles.cardDesc}>{desc}</p>
                 <ul className={styles.cardFeatures}>
@@ -185,16 +165,15 @@ export default function WhyTeyro({ onOpenModal }: { onOpenModal?: () => void }) 
                 </button>
               </div>
             ))}
-
-            {/* End card — always fully visible */}
-            <div className={styles.mobileEndCard}>
+            
+            <div className={styles.endCard}>
               <h3>That&apos;s Real Magic.</h3>
               <p>Ready to experience the difference?</p>
               <button className={styles.ctaSolid} onClick={onOpenModal}>Explore Courses</button>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
