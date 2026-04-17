@@ -47,6 +47,7 @@
 - [x] **Interactive Revamp & GitHub Push**: All waitlist sections updated with premium scroll animations. ✅
 - [x] **Mobile Responsiveness Fixes**: Bottom-sheet style `RoleModal`, proper `overflow-x: clip` bug fixing for broken `position: sticky` implementations globally.
 - [x] **Domain Migration & SEO**: Whitelisted `teyro.app` in backend CORS, populated `layout.tsx` with full SEO keywords + OG Meta for production.
+- [x] **Isolated Waitlist Footer**: Added a dedicated `WaitlistFooter.tsx` (dark theme, isolated links, block socials) to ensure waitlist users cannot leak into unfinished dashboard segments.
 - [ ] **Pending: Tally Form Setup** — User has created Tally waitlist forms. Need to wire the `RoleModal.tsx` buttons to open these forms natively.
 - [ ] **Pending: Live Counter Webhook** — Need to write the Next.js API route to receive Tally webhook submissions to automatically increment the Supabase counter.
 
