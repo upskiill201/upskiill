@@ -286,7 +286,7 @@
 
   .horizontalTrack {
     /* Push cards down further so they don't overlap the mobile header */
-    padding-top: 240px; 
+    padding-top: 320px; 
     gap: 16px;
     padding-right: 24px;
   }
