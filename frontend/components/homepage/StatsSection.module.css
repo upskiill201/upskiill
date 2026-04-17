@@ -1,19 +1,43 @@
-/* ===== STATS SECTION - SCRIBE STYLE ===== */
-.section {
+/* ===== STATS SECTION - SCRIBE STYLE WITH TRUE SCROLL DOM ===== */
+
+/* ── 1. The Scroll Track ── */
+.scrollWrapper {
+  position: relative;
   background: #ffffff;
-  padding: 80px 24px 120px;
+  /* 300vh gives enough pure scrolling distance to play the slide-in animations */
+  height: 300vh;
   border-top: 1px solid #F1F5F9;
   border-bottom: 1px solid #F1F5F9;
+  width: 100%;
 }
 
+/* ── 2. The Viewport Stage ── */
+.stickyStage {
+  position: sticky;
+  top: 0;
+  height: 100svh; /* use svh for better mobile rendering ignoring toolbars */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 24px 40px;
+  box-sizing: border-box;
+  overflow: hidden; /* hides cards before they slide up */
+}
+
+/* ── 3. Content Container ── */
 .container {
   max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 40px;
+  flex-shrink: 0;
 }
 
 .eyebrow {
@@ -33,26 +57,45 @@
   letter-spacing: -1.2px;
 }
 
-/* ===== STACKING CARDS ===== */
-.cardStack {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* ── 4. The Absolute Card Deck ── */
+.cardDeck {
+  position: relative;
+  width: 100%;
+  flex: 1;
 }
 
-.stickyCard {
-  position: sticky;
+/* All cards sit exactly on top of each other. 
+   NO margin-bottom or gap needed. Framer Motion moves them. */
+.animatedCard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   background: #ffffff;
   border-radius: 32px;
   border: 1px solid #E8E4FF;
   box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.05);
-  padding: 32px; /* Reduced from 48px — tighter content-to-border gap */
+  padding: 32px;
+  /* On small screens, if the card's content is taller than the deck height, let it scroll internally */
+  max-height: 100%;
+  overflow-y: auto;
+  will-change: transform, opacity;
 }
 
-/* Staggered offsets so they look like a deck of cards */
-.card1 { top: 100px; z-index: 10; }
-.card2 { top: 124px; z-index: 20; }
-.card3 { top: 148px; z-index: 30; }
+.animatedCard::-webkit-scrollbar {
+  width: 4px;
+}
+.animatedCard::-webkit-scrollbar-thumb {
+  background: #E8E4FF;
+  border-radius: 4px;
+}
+
+/* Staggered z-index */
+.card1 { z-index: 10; top: 0px; background: #fafafc; }
+.card2 { z-index: 20; top: 24px; }
+.card3 { z-index: 30; top: 48px; }
+
+/* ── INSIDE DECK CONTENT ── */
 
 /* Scribe-style stats grid */
 .statsGrid {
@@ -65,9 +108,8 @@
   background: #F8F9FF;
   border: 1px solid #E8E4FF;
   border-radius: 20px;
-  padding: 20px 16px; /* Reduced from 32px 24px — closer content-to-border gap */
+  padding: 20px 16px;
   text-align: center;
-  transition: all 0.3s;
   position: relative;
   overflow: hidden;
 }
@@ -80,11 +122,6 @@
   right: 0;
   height: 3px;
   background: linear-gradient(90deg, #6352FF, #9333EA);
-}
-
-.statCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(99, 82, 255, 0.12);
 }
 
 .statValue {
@@ -110,6 +147,58 @@
   font-size: 13px;
   color: #94A3B8;
   line-height: 1.4;
+}
+
+/* Industry Problem Context Styles */
+.industryContext {
+  background: #F8F9FF;
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+.quoteGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.quoteItem {
+  position: relative;
+  padding-left: 20px;
+  border-left: 3px solid #6352FF;
+}
+
+.quoteItem p {
+  font-size: 16px;
+  font-style: italic;
+  color: #334155;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.quoteItem span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contextSub {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  background: white;
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.contextSub strong {
+  color: #6352FF;
 }
 
 /* Comparison table - Scribe style */
@@ -175,88 +264,35 @@
 .btnX { color: #EF4444; font-size: 18px; }
 .btnPartial { color: #F59E0B; font-size: 16px; }
 
-/* Industry Problem Context Styles */
-.industryContext {
-  background: #F8F9FF;
-  border-radius: 24px;
-  padding: 40px;
-  text-align: center;
-}
+/* ===== RESPONSIVE GLOBALLY PRESERVED FOR ANIMATION ===== */
 
-.quoteGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-bottom: 32px;
-  text-align: left;
-}
-
-.quoteItem {
-  position: relative;
-  padding-left: 20px;
-  border-left: 3px solid #6352FF;
-}
-
-.quoteItem p {
-  font-size: 16px;
-  font-style: italic;
-  color: #334155;
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.quoteItem span {
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.contextSub {
-  font-size: 18px;
-  font-weight: 600;
-  color: #0F172A;
-  background: white;
-  display: inline-block;
-  padding: 12px 24px;
-  border-radius: 100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.contextSub strong {
-  color: #6352FF;
-}
-
-/* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .quoteGrid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .quoteGrid { grid-template-columns: 1fr; gap: 24px; }
+  .heading { font-size: 34px; }
 }
 
 @media (max-width: 640px) {
-  .section { padding: 64px 16px; }
-  .heading { font-size: 30px; }  /* Increased from 28px for better readability */
-  .statsGrid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  /* Do not remove scroll tracking, keep the sliding animation! */
+  .stickyStage { padding: 40px 16px 20px; }
+  .heading { font-size: 28px; letter-spacing: -0.5px; }
+  .animatedCard { padding: 24px 16px; border-radius: 20px; }
   
-  /* Larger stat numbers and labels so users can read clearly on mobile */
-  .statValue { font-size: 40px; } /* Up from 36px */
-  .statLabel { font-size: 14px; font-weight: 700; }
-  .statSub { font-size: 13px; line-height: 1.5; }
+  /* Stagger stacking offsets closer together on mobile */
+  .card1 { top: 0px; }
+  .card2 { top: 12px; }
+  .card3 { top: 24px; }
+
+  .statsGrid { gap: 12px; }
+  .statCard { padding: 16px 12px; }
+  .statValue { font-size: 36px; }
+  .statLabel { font-size: 13px; font-weight: 700; }
+  .statSub { font-size: 12px; line-height: 1.3; }
   
-  .statCard { padding: 20px 14px; }
-  .industryContext { padding: 24px 16px; }
-  .contextSub { font-size: 16px; } /* Up from 15px */
+  .industryContext { padding: 20px 14px; border-radius: 16px; }
+  .quoteItem p { font-size: 14px; }
+  .contextSub { font-size: 14px; padding: 10px 16px; }
   
-  /* Comparison table readable on mobile */
-  .comparison th { padding: 14px 12px; font-size: 13px; }
-  .comparison td { padding: 12px; font-size: 13px; }
-  
-  /* Quotes more readable */
-  .quoteItem p { font-size: 15px; }
+  .comparison th { padding: 12px; font-size: 12px; }
+  .comparison td { padding: 10px; font-size: 12px; }
 }

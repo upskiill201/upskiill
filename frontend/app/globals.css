@@ -42,8 +42,7 @@
 
 html {
   scroll-behavior: smooth;
-  /* Prevent any section with width:max-content or absolute overflow from causing horizontal shift */
-  overflow-x: hidden;
+  overflow-x: clip; /* Fixes horizontal scroll without breaking position: sticky */
 }
 
 body {
@@ -55,7 +54,7 @@ body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Belt-and-suspenders: prevents any child from causing horizontal scroll */
+  overflow-x: clip; /* Fixes horizontal scroll without breaking position: sticky */
   width: 100%;
   max-width: 100%;
 }
