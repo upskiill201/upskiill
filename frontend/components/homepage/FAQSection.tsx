@@ -58,7 +58,7 @@ export default function FAQSection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section className={styles.section} ref={ref}>
+    <section id="faq" className={styles.section} ref={ref}>
       <div className={styles.container}>
         <motion.div
           className={styles.header}
