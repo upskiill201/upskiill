@@ -4,14 +4,18 @@ import crypto from 'crypto';
 
 // Initialize the Supabase Client with the hidden Service Role Key so it runs with admin backend privileges.
 // This safely bypasses Row Level Security constraints for webhook writes.
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const tallySigningSecret = process.env.TALLY_SIGNING_SECRET!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
 export async function POST(request: Request) {
   try {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const tallySigningSecret = process.env.TALLY_SIGNING_SECRET;
+
+    if (!supabaseUrl || !supabaseServiceKey || !tallySigningSecret) {
+      console.error('Missing required environment variables for Webhook');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     // securely read the raw text stream for precise cryptographic hashing
     const rawBody = await request.text();
     const signature = request.headers.get('tally-signature');
