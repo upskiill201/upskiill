@@ -77,6 +77,16 @@ export async function POST(request: Request) {
     );
     const name = nameField ? String(nameField.value).trim() : null;
 
+    // --- PHONE ---
+    // Find any INPUT_PHONE_NUMBER type OR a field whose label includes 'phone'.
+    // The "Instructor, What's your Phone Number?" label still contains 'phone' so this catches both flows.
+    const phoneField = fields.find((f) =>
+      (f.type === 'INPUT_PHONE_NUMBER' || (typeof f.label === 'string' && f.label.toLowerCase().includes('phone'))) &&
+      f.value !== null && f.value !== undefined &&
+      String(f.value).trim() !== ''
+    );
+    const phone = phoneField ? String(phoneField.value).trim() : null;
+
     // --- ROLE ---
     // Q1 "Who are you?" is ALWAYS the first MULTIPLE_CHOICE in the form.
     // This works for both Student and Instructor branches — branching only affects later questions.
@@ -96,12 +106,13 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log(`[Tally Webhook] Extracted → email: ${email} | name: ${name} | role: ${role}`);
+    console.log(`[Tally Webhook] Extracted → email: ${email} | name: ${name} | phone: ${phone} | role: ${role}`);
 
-    // ALWAYS insert — no submission should ever be silently dropped
+    // ALWAYS insert — no submission should ever be silently dropped.
+    // raw_data contains the COMPLETE Tally payload (all questions, all answers, nulls for skipped ones).
     const { error } = await supabase
       .from('Waitlist')
-      .insert([{ email, name, role, raw_data: data }]);
+      .insert([{ email, name, phone, role, raw_data: data }]);
 
     if (error) {
       console.error('[Tally Webhook] Supabase Insert Error:', JSON.stringify(error));
