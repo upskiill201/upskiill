@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "../components/Header";
+import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
 
 const inter = Inter({
@@ -113,6 +113,7 @@ export const metadata: Metadata = {
 const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
 
 import { CartProvider } from "../context/CartContext";
+import { PostHogProvider } from "../components/PostHogProvider";
 
 export default function RootLayout({
   children,
@@ -125,13 +126,15 @@ export default function RootLayout({
         <link rel="stylesheet" href={fontAwesomeLink} />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <CartProvider>
-          <Header />
-          <main className="flex-1" style={{ overflow: 'visible' }}>
-            {children}
-          </main>
-          <FooterWrapper />
-        </CartProvider>
+        <PostHogProvider>
+          <CartProvider>
+            <HeaderWrapper />
+            <main className="flex-1" style={{ overflow: 'visible' }}>
+              {children}
+            </main>
+            <FooterWrapper />
+          </CartProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
