@@ -234,10 +234,6 @@ export default function PrivacyPolicy() {
                 <span className="text-white">Contact Support</span>
               </a>
             </section>
-
-            <footer className="mt-12 pt-8 border-t border-gray-100 text-sm text-gray-400">
-              <p>This Privacy Policy was created for {clickableLink("https://teyro.app/", "https://teyro.app/")} by {clickableLink("https://policymaker.io", "PolicyMaker.io")} on 2026-04-18.</p>
-            </footer>
           </main>
         </div>
       </div>
