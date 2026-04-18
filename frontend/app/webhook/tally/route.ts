@@ -16,7 +16,8 @@ export async function POST(request: Request) {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    // securely read the raw text stream for precise cryptographic hashing
+
+    // Securely read the raw text stream for precise cryptographic hashing
     const rawBody = await request.text();
     const signature = request.headers.get('tally-signature');
 
@@ -31,59 +32,78 @@ export async function POST(request: Request) {
       .digest('base64');
 
     if (calculatedSignature !== signature) {
-      console.error('Invalid Webhook Signature Detected');
+      console.error('[Tally Webhook] Invalid Webhook Signature Detected');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Since it's securely verified, parse the JSON
     const payload = JSON.parse(rawBody);
 
-    // Ensure it's a valid form submission event
     if (payload.eventType !== 'FORM_RESPONSE') {
       return NextResponse.json({ message: 'Irrelevant event type' }, { status: 200 });
     }
 
     const { data } = payload;
-    const fields: any[] = data.fields || [];
+    const fields: any[] = data?.fields || [];
 
-    // Dynamically search Tally fields for the email input
-    const emailField = fields.find((f) => f.type === 'INPUT_EMAIL');
-    const email = emailField ? emailField.value : 'unknown@noemail.com';
+    // Log the full fields for debugging in Vercel logs
+    console.log('[Tally Webhook] Fields received:', JSON.stringify(
+      fields.map(f => ({ type: f.type, label: f.label, value: f.value, hasOptions: !!f.options })),
+      null, 2
+    ));
 
-    // Heuristic extraction for Name (hunts for 'name' in the question label)
-    const nameField = fields.find((f) => typeof f.label === 'string' && f.label.toLowerCase().includes('name'));
-    const name = nameField ? String(nameField.value) : null;
+    // --- EMAIL ---
+    // Try INPUT_EMAIL type first, fall back to any field labeled "email"
+    const emailField = fields.find((f) => f.type === 'INPUT_EMAIL')
+      ?? fields.find((f) => typeof f.label === 'string' && f.label.toLowerCase().includes('email'));
+    const email = (emailField?.value && String(emailField.value).trim())
+      ? String(emailField.value).trim()
+      : 'unknown@noemail.com';
 
-    // Heuristic extraction for Role (hunts for 'role', 'student', or 'instructor' context)
-    const roleField = fields.find((f) => typeof f.label === 'string' && (f.label.toLowerCase().includes('role') || f.label.toLowerCase().includes('who are you') || f.label.toLowerCase().includes('which best describes')));
-    let role = roleField ? String(roleField.value) : null;
+    // --- NAME ---
+    // Any non-empty text field with "name" in the label
+    const nameField = fields.find((f) =>
+      typeof f.label === 'string' &&
+      f.label.toLowerCase().includes('name') &&
+      f.value !== null && f.value !== ''
+    );
+    const name = nameField ? String(nameField.value).trim() : null;
 
-    // If Tally passes an array of ID options, we try to extract the literal text
-    if (roleField && Array.isArray(roleField.value) && Array.isArray(roleField.options)) {
-      const selected = roleField.options.find((opt: any) => roleField.value.includes(opt.id));
-      if (selected && selected.text) role = selected.text;
+    // --- ROLE ---
+    // Q1 "Who are you?" is ALWAYS the first MULTIPLE_CHOICE in the form.
+    // This works for both Student and Instructor branches — branching only affects later questions.
+    const roleField = fields.find((f) => f.type === 'MULTIPLE_CHOICE');
+    let role: string | null = null;
+
+    if (roleField) {
+      if (Array.isArray(roleField.value) && Array.isArray(roleField.options)) {
+        // Tally sends selected option IDs — resolve them to human-readable text
+        const selectedIds: string[] = roleField.value;
+        const resolvedTexts = roleField.options
+          .filter((opt: any) => selectedIds.includes(opt.id))
+          .map((opt: any) => opt.text);
+        role = resolvedTexts.join(', ') || null;
+      } else if (typeof roleField.value === 'string') {
+        role = roleField.value;
+      }
     }
 
-    // Insert the lead into the database securely with all extracted top-level columns
+    console.log(`[Tally Webhook] Extracted → email: ${email} | name: ${name} | role: ${role}`);
+
+    // ALWAYS insert — no submission should ever be silently dropped
     const { error } = await supabase
       .from('Waitlist')
-      .insert([
-        {
-          email: email,
-          name: name,
-          role: role,
-          raw_data: data // Always save raw fallback data just in case
-        }
-      ]);
+      .insert([{ email, name, role, raw_data: data }]);
 
     if (error) {
-      console.error('Supabase Insert Error:', error);
+      console.error('[Tally Webhook] Supabase Insert Error:', JSON.stringify(error));
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log('[Tally Webhook] Successfully captured lead:', email);
     return NextResponse.json({ success: true, message: 'Waitlist lead captured' }, { status: 200 });
+
   } catch (error) {
-    console.error('Webhook Error:', error);
+    console.error('[Tally Webhook] Unexpected Error:', error);
     return NextResponse.json({ error: 'Internal Server Error processing webhook' }, { status: 500 });
   }
 }
