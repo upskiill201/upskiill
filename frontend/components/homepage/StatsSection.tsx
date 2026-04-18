@@ -4,13 +4,6 @@ import { motion, useSpring, useInView, useScroll, useTransform } from 'framer-mo
 import { useRef, useEffect, useState } from 'react';
 import styles from './StatsSection.module.css';
 
-const stats = [
-  { value: '93', suffix: '%', label: 'Completion Rate', sub: 'vs 1%–13% industry range' },
-  { value: '6', suffix: ' wks', label: 'To Proficiency', sub: 'vs 6–12 months elsewhere' },
-  { value: '23k', suffix: '+', label: 'On the Waitlist', sub: 'and growing every day' },
-  { value: '85', suffix: '%', label: 'Less Mobile Data', sub: 'with Lite Mode enabled' },
-];
-
 const comparison = [
   { feature: 'AI Tutor (24/7)', teyro: '✓', coursera: '✗', udemy: '✗' },
   { feature: 'Personalized Learning Path', teyro: '✓', coursera: '~', udemy: '✗' },
@@ -61,6 +54,27 @@ export default function StatsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, margin: '-80px' });
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch('/webhook/count');
+        const data = await res.json();
+        setWaitlistCount(data.count);
+      } catch (err) {
+        setWaitlistCount(0);
+      }
+    };
+    fetchCount();
+  }, []);
+
+  const stats = [
+    { value: '75', suffix: '%', label: 'Target Completion Rate', sub: 'vs 1%–13% industry range' },
+    { value: '8', suffix: ' wks', label: 'Time to Mastery', sub: 'vs 6–12 months elsewhere' },
+    { value: waitlistCount === null ? '0' : String(waitlistCount), suffix: '', label: 'On the Waitlist', sub: 'and growing every day' },
+    { value: '60', suffix: '%', label: 'Projected Bandwidth Savings', sub: 'with Lite Mode enabled' },
+  ];
 
   // Use framer-motion scroll tracking inside the tall wrapper
   const { scrollYProgress } = useScroll({
@@ -98,7 +112,7 @@ export default function StatsSection() {
             transition={{ duration: 0.5 }}
           >
             <div className={styles.eyebrow}>Real Results, Really Fast</div>
-            <h2 className={styles.heading}>People are already building better futures on Teyro</h2>
+            <h2 className={styles.heading}>Built for Real Outcomes, Not Just Attendance</h2>
           </motion.div>
 
           {/* Absolute stacking deck area */}
