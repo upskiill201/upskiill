@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "../components/Header";
+import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
 
 const inter = Inter({
@@ -126,7 +126,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <CartProvider>
-          <Header />
+          <HeaderWrapper />
           <main className="flex-1" style={{ overflow: 'visible' }}>
             {children}
           </main>

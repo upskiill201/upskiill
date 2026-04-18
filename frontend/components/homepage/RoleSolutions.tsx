@@ -83,7 +83,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
   useMotionValueEvent(cardInstructorOpacity, 'change', (v) => setInstructorVisible(v > 0.1));
 
   return (
-    <section className={styles.sectionWrapper} ref={containerRef}>
+    <section id="solutions" className={styles.sectionWrapper} ref={containerRef}>
       
       {/* Universal top header */}
       <div className={styles.sectionTopHeader}>

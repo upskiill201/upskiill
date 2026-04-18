@@ -34,7 +34,7 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
   });
 
   return (
-    <section className={styles.section} ref={containerRef}>
+    <section id="marketplace" className={styles.section} ref={containerRef}>
       
       {/* Header Context */}
       <div className={styles.container}>
