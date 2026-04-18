@@ -52,19 +52,28 @@ export async function POST(request: Request) {
     ));
 
     // --- EMAIL ---
-    // Try INPUT_EMAIL type first, fall back to any field labeled "email"
-    const emailField = fields.find((f) => f.type === 'INPUT_EMAIL')
-      ?? fields.find((f) => typeof f.label === 'string' && f.label.toLowerCase().includes('email'));
-    const email = (emailField?.value && String(emailField.value).trim())
-      ? String(emailField.value).trim()
-      : 'unknown@noemail.com';
+    // Find the first INPUT_EMAIL field that has an actual non-empty value.
+    // Tally includes ALL fields in the payload (including skipped branches) but with null values.
+    // We must skip null/empty fields to find the one that was actually filled in.
+    const emailField = fields.find((f) =>
+      f.type === 'INPUT_EMAIL' &&
+      f.value !== null && f.value !== undefined &&
+      String(f.value).trim() !== ''
+    ) ?? fields.find((f) =>
+      typeof f.label === 'string' &&
+      f.label.toLowerCase().includes('email') &&
+      f.value !== null && f.value !== undefined &&
+      String(f.value).trim() !== ''
+    );
+    const email = emailField ? String(emailField.value).trim() : 'unknown@noemail.com';
 
     // --- NAME ---
-    // Any non-empty text field with "name" in the label
+    // Find the first name-labeled field that has an actual value (not skipped by branching).
     const nameField = fields.find((f) =>
       typeof f.label === 'string' &&
       f.label.toLowerCase().includes('name') &&
-      f.value !== null && f.value !== ''
+      f.value !== null && f.value !== undefined &&
+      String(f.value).trim() !== ''
     );
     const name = nameField ? String(nameField.value).trim() : null;
 
