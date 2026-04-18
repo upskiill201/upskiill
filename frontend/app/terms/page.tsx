@@ -83,7 +83,8 @@ export default function TermsOfUse() {
   <div className="disclaimer">
     <strong>Legal Disclaimer:</strong> This document was generated using a template generator for informational purposes only. It does not constitute legal advice. Please consult with a qualified attorney to ensure this document meets your specific legal requirements.
     </div>
-       </div>
-       </>
+    
+   </div>
+</>
     )
 }
