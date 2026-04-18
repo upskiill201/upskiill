@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Footer from './Footer';
 import WaitlistFooter from './WaitlistFooter';
+import TermsOfUse from '@/app/terms/page';
 
 export default function FooterWrapper() {
   const pathname = usePathname();
