@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "prisma.prisma",
+    "eamodio.gitlens",
+    "PKief.material-icon-theme",
+    "christian-kohler.path-intellisense",
+    "WallabyJs.console-ninja",
+    "rangav.vscode-thunder-client"
+  ]
+}

@@ -64,8 +64,6 @@ export default function Header() {
     setIsMobileNavOpen(false);
   }, [pathname]);
 
-  if (pathname === '/signup' || pathname === '/login' || pathname === '/join' || pathname.startsWith('/dashboard') || pathname.startsWith('/instructor')) return null;
-
   return (
     <header className={styles.header}>
       <div className={styles.container}>

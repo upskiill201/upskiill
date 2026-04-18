@@ -105,18 +105,20 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 ## 4. Page Sections (In Order)
 
 ### Section 1: Navigation Bar
-**File:** `components/layout/Navbar.tsx`
+**File:** `components/layout/WaitlistHeader.tsx` (linked via `HeaderWrapper.tsx`)
 
-**Layout:** Sticky top navigation (backdrop-blur)
+**Layout:** Fixed top navigation (transparent → glassmorphism on scroll)
 
 **Components:**
-- Logo: "Teyro" text (bold, gradient)
-- Links: Features, Solutions, Marketplace, FAQ
-- CTA Button: "Join Waitlist" (ghost → solid on scroll)
+- Logo: "Teyro." text (Jakarta 800, white-to-grey gradient, purple dot)
+- Links: Features (#features), Solutions (#solutions), Marketplace (#marketplace), FAQ (#faq)
+- CTA Buttons: "Login" (ghost) and "Get Started" (gradient + ChevronRight)
 
 **Behavior:**
-- Hide on scroll down, show on scroll up
-- Background blur increases on scroll
+- **Glassmorphism**: Transparent on hero; becomes frosted glass (blur 18px + dark tint) when scroll > 50px.
+- **Smart Routing**: Smooth-scrolls to anchors if on homepage; navigates to `/#anchor` if on legal pages.
+- **Unified CTAs**: Both header buttons route directly to `/join`.
+- **Mobile**: Hamburger menu slides in a dark custom panel.
 
 ---
 
@@ -415,6 +417,8 @@ TALLY_SIGNING_SECRET=<secret_from_tally_dashboard>
 | `frontend/app/webhook/tally/route.ts` | Main POST handler — verifies signature, extracts fields, inserts to Supabase |
 | `frontend/app/webhook/count/route.ts` | GET handler — returns live `COUNT(*)` from Waitlist table |
 | `frontend/app/join/page.tsx` | Full-page Tally embed (`100vh` iframe) |
+| `frontend/components/layout/HeaderWrapper.tsx` | Orchestrator for conditional WaitlistHeader vs Main Header rendering |
+| `frontend/components/layout/WaitlistHeader.tsx` | Dedicated waitlist navigation system |
 
 ### Supabase Table: `Waitlist`
 
