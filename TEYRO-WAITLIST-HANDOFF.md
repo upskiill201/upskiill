@@ -1,9 +1,9 @@
 # TEYRO WAITLIST LANDING PAGE — Developer Handoff
 
 > **Project:** Teyro Waitlist Landing Page  
-> **Version:** 1.0  
-> **Last Updated:** 2026-04-15  
-> **Status:** 100% Completed, Secured with Next.js Edge Webhooks, & Ready for Market (Production Configured)
+> **Version:** 1.1  
+> **Last Updated:** 2026-04-18  
+> **Status:** ✅ 100% Complete — Tally webhook live, Supabase capturing all submissions, live counter operational
 
 ---
 
@@ -362,70 +362,125 @@ Scribe landing page (modern, gradient, product-focused, community-driven)
 
 ---
 
-## 5. Typeform Integration
+## 5. Tally Form Integration (LIVE — Replaced Typeform)
 
-### Setup
-Create two Typeform forms:
+### Overview
+The waitlist form is powered by **Tally** (not Typeform as originally planned). The form is embedded at `/join` as a full-page 100vh iframe.
 
-#### Student Form (Form A)
-**Fields:**
-- Full Name (text, required)
-- Email (email, required)
-- What skill do you want to learn? (short text)
-- Experience Level (multiple choice: Beginner/Intermediate/Advanced)
-- Country (dropdown)
-- How did you hear about us? (multiple choice, optional)
-- Subscribe to updates (boolean)
+### Tally Form — 5 Universal Questions
+Every respondent answers these 5 questions (no branching):
 
-#### Instructor Form (Form B)
-**Fields:**
-- Full Name (text, required)
-- Email (email, required)
-- What expertise will you teach? (short text)
-- Have you taught before? (yes/no)
-- How many courses will you create? (estimate)
-- Country (dropdown)
-- Why do you want to teach on Teyro? (long text)
-- Portfolio/LinkedIn link (url, optional)
-- Subscribe to updates (boolean)
+| # | Question | Tally Field Type |
+|---|----------|------------------|
+| 1 | What's Your Name? | INPUT_TEXT |
+| 2 | What's your email? | INPUT_EMAIL |
+| 3 | What's Your Phone Number? | INPUT_PHONE_NUMBER |
+| 4 | How did you hear about Teyro? | MULTIPLE_CHOICE |
+| 5 | Who are you? | MULTIPLE_CHOICE (Student / Instructor) |
 
-### Integration
-- Use `@typeform/embed-react` library
-- Modal trigger on CTA click
-- Role selection modal before Typeform
+> **Note:** Tally handles additional questions in its own submissions dashboard. Only these 5 core fields are stored in Supabase.
 
-### User Flow
+### Webhook — How It Works
+
 ```
-Hero CTA Click
+User Submits Tally Form
     ↓
-Modal: "Are you a Student or Instructor?"
+Tally POSTs to → https://upskiill.vercel.app/webhook/tally
     ↓
-    ├─ STUDENT → Typeform A → Thank you page
-    └─ INSTRUCTOR → Typeform B → Thank you page
+Next.js API Route verifies HMAC-SHA256 signature (TALLY_SIGNING_SECRET)
+    ↓
+Extracts 5 fields using type-first extraction:
+  - name:              extractByLabel → "what's your name"
+  - email:             extractByType  → INPUT_EMAIL
+  - phone:             extractByType  → INPUT_PHONE_NUMBER
+  - discovery_channel: extractChoice  → "how did you hear"
+  - role:              extractChoice  → "who are you"
+    ↓
+Inserts row into Supabase 'Waitlist' table
+(unanswered fields = NULL, never a fake address)
+    ↓
+Returns 200 OK to Tally
 ```
 
-### Post-Submission
-- Typeform sends email confirmation
-- Webhook to update waitlist database
-- Add to email nurture sequence
+### Environment Variables (Vercel + .env.local)
+```bash
+SUPABASE_URL=https://iobdpmczxikgocvfzouo.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<service_role_key>   # SERVER SIDE ONLY
+TALLY_SIGNING_SECRET=<secret_from_tally_dashboard>
+```
+
+### Key Implementation Files
+| File | Purpose |
+|------|---------|
+| `frontend/app/webhook/tally/route.ts` | Main POST handler — verifies signature, extracts fields, inserts to Supabase |
+| `frontend/app/webhook/count/route.ts` | GET handler — returns live `COUNT(*)` from Waitlist table |
+| `frontend/app/join/page.tsx` | Full-page Tally embed (`100vh` iframe) |
+
+### Supabase Table: `Waitlist`
+
+```sql
+CREATE TABLE "Waitlist" (
+  id                uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        timestamptz DEFAULT now(),
+  name              text,          -- Q1
+  email             text,          -- Q2 (null if not provided, never fake)
+  phone             text,          -- Q3
+  discovery_channel text,          -- Q4
+  role              text,          -- Q5 ("Student" or "Instructor")
+  raw_data          jsonb          -- full Tally payload for auditability
+);
+
+-- Required grants (run after any DROP + CREATE)
+GRANT ALL ON TABLE "Waitlist" TO service_role;
+GRANT ALL ON TABLE "Waitlist" TO postgres;
+GRANT ALL ON TABLE "Waitlist" TO authenticated;
+GRANT ALL ON TABLE "Waitlist" TO anon;
+GRANT USAGE ON SCHEMA public TO service_role;
+
+-- After schema changes, reload PostgREST cache:
+NOTIFY pgrst, 'reload schema';
+```
+
+> **⚠️ PostgREST Cache Gotcha:** If you ever `DROP` and `CREATE` the Waitlist table via Supabase SQL Editor, you MUST re-run the GRANT statements above AND run `NOTIFY pgrst, 'reload schema';` — otherwise the API layer won't see the new table and inserts will silently fail.
 
 ---
 
 ## 6. Live Waitlist Counter
 
-### Implementation
-```typescript
-// API endpoint returns current count
-// GET /api/waitlist/count
+### Implementation (LIVE)
 
-// Frontend fetches and displays:
-// "Join 23,543 others on the waitlist"
+A dedicated Next.js API route queries Supabase on every request with zero caching:
+
+```typescript
+// GET /webhook/count  →  { count: number }
+// frontend/app/webhook/count/route.ts
+
+export const dynamic = 'force-dynamic'; // disable Vercel edge cache
+
+const { count } = await supabase
+  .from('Waitlist')
+  .select('*', { count: 'exact', head: true });
+
+return NextResponse.json({ count: count || 0 });
 ```
 
-### Options
-1. **Simple (Recommended):** Static counter + manual updates
-2. **Database:** Store signups in Airtable/Supabase
-3. **Typeform:** Fetch submission count via Typeform API
+### Frontend Components Using the Counter
+| Component | Where it shows |
+|-----------|---------------|
+| `HeroSection.tsx` | Hero CTA button — "Join {count} others on the waitlist" |
+| `StatsSection.tsx` | Stats card with live number |
+| `FinalCTA.tsx` | Bottom-of-page CTA button |
+
+Each component fetches `/webhook/count` on mount:
+```typescript
+const res = await fetch('/webhook/count');
+const { count } = await res.json();
+```
+
+### Tally Webhook URL (set in Tally dashboard → Integrations → Webhooks)
+```
+https://upskiill.vercel.app/webhook/tally
+```
 
 ---
 
