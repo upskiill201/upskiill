@@ -49,7 +49,7 @@
 - [x] **Domain Migration & SEO**: Whitelisted `teyro.app` in backend CORS, populated `layout.tsx` with full SEO keywords + OG Meta for production.
 - [x] **Isolated Waitlist Footer**: Added a dedicated `WaitlistFooter.tsx` (dark theme, isolated links, block socials). Added global HTML ID anchors (`#features`, `#faq`) to restrict navigation completely to the landing page.
 - [x] **Tally Form Full-Page Architecture**: Securely integrated the waitlist form. Deleted the redundant `<RoleModal />` to stream users directly to a native 100vh embedded Tally frame hosted locally on `/join`. All waitlist buttons route instantly.
-- [ ] **Pending: Live Counter Webhook** — Need to write the Next.js API route to receive Tally webhook submissions to automatically increment the Supabase counter.
+- [x] **Live Counter Webhook**: Successfully wrote Next.js Serverless API endpoints (`/webhook/tally`, `/webhook/count`) bridging the Tally forms securely into Supabase PostgreSQL. Frontend UI correctly hydrates live metrics dynamically without hitting the backend.
 
 ### Step C — Build Marketplace Pages ✅ COMPLETE
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
