@@ -1,183 +1,114 @@
-# Phase 1 — MVP Foundation (Months 1-3)
+# Phase 1 — MVP Foundation & Complete System Overview
 
-> **Goal:** Get 1,000+ users on the platform, launch 20+ courses, achieve $5,000+ in sales.
-> **Budget:** $43,000 | **Team:** 6 people | **Duration:** 12 weeks
-
----
-
-## Features to Build
-
-### 1. User Authentication
-**Pages:** `/login`, `/signup`
-**What to build:**
-- Email/password sign up and login
-- Google social login (via Firebase)
-- Email verification
-- Password reset flow
-
-**Tech:** Firebase Auth + NestJS JWT
-**Effort:** 3 days
+> **Goal:** Deploy the complete V2 Ecosystem focusing on high-conversion learning.
+> **Current Status:** Under active development (UI Shells established, transitioning to Backend Integration).
 
 ---
 
-### 2. User Profiles
-**Pages:** `/profile`
-**What to build:**
-- Profile photo upload
-- Bio and skills
-- Enrolled courses list
-- Certificates earned
-
-**Effort:** 4 days
+## Complete Ecosystem Flow
+Traffic enters from Google → Reads articles → Discovers courses → Buys courses → Instructors earn → Publishers earn → Platform earns → More content created → More traffic → repeat 🔁
 
 ---
 
-### 3. Course Marketplace (Browse)
-**Pages:** `/courses`
-**What to build:**
-- Grid of course cards
-- Search bar
-- Filter by: price, rating, level (beginner/intermediate/advanced)
-- Sort by: popular, newest, price
+## The 14 System Pillars & Current Status
 
-**Effort:** 8 days
+### PILLAR 1 — USER & AUTH SYSTEM
+**Status: 🟡 Partially Complete (UI/Basic Firebase)**
+*   **Abilities:** Sign up / login / logout, Social login (Google, Facebook), Email verification, Password reset, Profile management.
+*   **Profile Data:** Profile photo, Bio, Social links, Enrolled courses, Wishlist, Certificates, Published articles.
+*   **Roles:** Visitor, Student, Instructor, Publisher, Admin, Editor.
 
----
+### PILLAR 2 — COURSE MARKETPLACE (CORE BUSINESS)
+**Status: 🟡 Partially Complete (UI Mockups Exist)**
+*   **Homepage:** Featured courses, Categories, Popular courses, New courses, Testimonials.
+*   **Discovery:** Browse categories, Search, Filters (Price, Level, Rating, Duration).
+*   **Card Info:** Thumbnail, Title, Instructor, Rating, Students count, Price.
 
-### 4. Course Detail Page
-**Pages:** `/courses/[id]`
-**What to build:**
-- Course title, description, thumbnail
-- Curriculum preview (list of lessons)
-- Instructor info
-- Price + Buy button
-- Student reviews & ratings
+### PILLAR 3 — COURSE SALES PAGE
+**Status: 🔴 Pending Backend**
+*   **Course info:** Title, description, learning outcomes, requirements, target audience.
+*   **Social proof:** Reviews, ratings, enrollment count.
+*   **Curriculum preview:** Sections & lectures.
+*   **Purchase section:** Price, Add to cart, Buy now.
 
-**Effort:** 6 days
+### PILLAR 4 — STUDENT LEARNING SYSTEM
+**Status: 🟡 Partially Complete (Dashboard UI Exists)**
+*   **Student dashboard:** My courses, Progress tracking, Recommended courses.
+*   **Course player:** Video streaming player, Playback speed, Quality selector, Fullscreen, Mark lecture complete, Notes, Resource downloads.
+*   **Progress tracking:** % completion, Resume where left off, Certificates.
 
----
+### PILLAR 5 — INSTRUCTOR SYSTEM
+**Status: 🟡 Partially Complete (Dashboard UI + Wizard Steps 1-4 UI)**
+*   **Instructor dashboard:** Revenue overview, Student count, Course analytics, Reviews.
+*   **Course creation wizard:** 1. Basics, 2. Curriculum builder, 3. Pricing, 4. Submit for review, 5. Publish.
 
-### 5. Video Streaming (Course Player)
-**Pages:** `/learn/[courseId]`
-**What to build:**
-- Video player with quality selector
-- Sidebar with lesson list
-- Progress tracking (which lessons completed)
-- Notes section
+### PILLAR 6 — PAYMENTS & MONETIZATION
+**Status: 🟡 Partially Complete (Cart UI exists)**
+*   **Shopping system:** Cart, Coupons, Checkout.
+*   **Gateways:** Stripe, PayPal, Mobile Money.
+*   **Post-payment:** Auto enrollment, Invoice, Refund system, Instructor payouts.
 
-**Tech:** AWS S3 + HLS.js player
-**Effort:** 8 days
+### PILLAR 7 — REVIEWS & WISHLIST
+**Status: 🔴 Pending Backend**
+*   Students rate, write reviews, save to wishlist. Admins moderate.
 
----
+### PILLAR 8 — NOTIFICATIONS
+**Status: 🔴 Pending**
+*   Purchase confirmations, Course updates, Announcements (Email + In-app).
 
-### 6. Student Dashboard
-**Pages:** `/dashboard`
-**What to build:**
-- My enrolled courses
-- Progress bars per course
-- Resume learning button
-- Certificates earned
+### PILLAR 9 — ADMIN BACKOFFICE
+**Status: 🔴 Pending**
+*   Analytics (Users, Courses, Revenue), User management, Course moderation, Finance.
 
-**Effort:** 5 days
+### PILLAR 10 — SUPPORT & LEGAL
+**Status: 🟡 Partially Complete**
+*   **Done:** Waitlist Page/Tally Integrations. Privacy Policy, Terms.
+*   **Pending:** Help center, Support ticketing.
 
----
-
-### 7. Payment / Checkout
-**Pages:** `/checkout`
-**What to build:**
-- Cart summary
-- Stripe payment form
-- Order confirmation
-- Invoice generation
-
-**Tech:** Stripe
-**Effort:** 6 days
-
----
-
-### 8. Instructor Dashboard
-**Pages:** `/instructor`, `/instructor/create`
-**What to build:**
-- Create new course (title, description, price)
-- Upload video lessons
-- View enrolled students
-- Earnings overview
-
-**Effort:** 8 days
+### PILLARS 11-14 — CONTENT, SEO & FUTURE PUBLISHERS
+**Status: 🔴 Phase 2 Focus**
+*   **Pillar 11 (Blog):** Rich text editor, comments, SEO schema.
+*   **Pillar 12 (Editorial Workflow):** Draft → Pending → Approved → Published.
+*   **Pillar 13 (Publisher Program):** External publishers write articles, track views.
+*   **Pillar 14 (AdSense Share):** Revenue split model for publishers.
 
 ---
 
-### 9. Landing / Homepage
-**Pages:** `/` (update existing)
-**What to build:**
-- Hero section (headline, CTA button)
-- Featured courses
-- How it works section
-- Testimonials
-- Footer
+## 🏗️ Structured Build Order (Chronological Execution)
 
-**Effort:** 5 days
+To construct this massive system efficiently without causing dependency conflicts or confusion, we must build strictly in the following order:
 
----
+### STEP 1: Database Architecture (CRITICAL NEXT STEP)
+Before any more features are written, the data layer must be finalized.
+*   Define `Users`, `Profiles`, `Courses`, `Sections`, `Lessons`, `Enrollments`, `Reviews`, `Payments`.
+*   Set up Prisma schemas / Supabase relationships.
 
-### 10. Email Notifications
-**What to build:**
-- Welcome email on signup
-- Purchase confirmation email
-- Course completion email
+### STEP 2: Unified Authentication & Roles
+*   Bind Firebase Auth IDs strictly to Database `User` rows.
+*   Implement Route Guards (e.g., stopping Students from hitting Admin routes).
 
-**Tech:** SendGrid
-**Effort:** 3 days
+### STEP 3: Instructor "Supply" Engine
+We cannot sell courses that don't exist in the DB.
+*   Connect the Course Wizard UI to the Database (Create Drafts).
+*   Implement Video Uploading (AWS S3/Mux).
+*   Create the "Submit for Review" and Admin Approval pipeline.
 
----
+### STEP 4: Marketplace "Discovery" Engine
+Once courses exist in the DB, they must be displayed.
+*   Connect Homepage and `/courses` page to pull live, published courses.
+*   Implement Search & Filtering API logic.
 
-## Phase 1 Build Order (Recommended)
+### STEP 5: Payments & Enrollment "Conversion" Engine
+Students discover courses and need to buy them.
+*   Integrate Stripe Checkout and Webhooks.
+*   Upon successful payment, automatically write to `Enrollments` table.
 
-```
-Week 1-2:   Authentication (login, signup) + User Profiles
-Week 3-4:   Homepage + Course Browse + Course Detail page
-Week 5-6:   Payment/Checkout + Video Player
-Week 7-8:   Student Dashboard + Instructor Dashboard
-Week 9-10:  Admin Panel (basic) + Email Notifications
-Week 11-12: Testing, bug fixes, launch prep
-```
+### STEP 6: Student Learning "Consumption" Engine
+Students own the course and must play it.
+*   Connect Student Dashboard to their `Enrollments`.
+*   Build the Course Video Player with progress tracking (updating DB completion %).
+*   Certificate Generation.
 
----
-
-## Phase 1 Component Checklist
-
-### UI Components
-- [ ] `Button` — primary, secondary, outline variants
-- [ ] `Input` — text, email, password with labels
-- [ ] `Card` — reusable card container
-- [ ] `Modal` — popup dialogs
-- [ ] `Spinner` — loading state
-- [ ] `Badge` — labels (Beginner, Intermediate, etc.)
-- [ ] `Avatar` — user profile image
-
-### Layout Components
-- [ ] `Header` — navigation, logo, user menu
-- [ ] `Footer` — links, copyright
-- [ ] `Sidebar` — for dashboard and course player
-
-### Feature Components
-- [ ] `CourseCard` — thumbnail, title, price, rating
-- [ ] `VideoPlayer` — HLS video with controls
-- [ ] `ProgressBar` — course completion progress
-- [ ] `StarRating` — display/input ratings
-- [ ] `LessonList` — sidebar list of lessons
-- [ ] `PaymentForm` — Stripe card input
-
----
-
-## Definition of Done for Phase 1
-
-- [ ] User can sign up, log in, reset password
-- [ ] User can browse and search courses
-- [ ] User can buy a course with Stripe
-- [ ] User can watch video lessons
-- [ ] User can track their progress
-- [ ] Instructor can create and upload a course
-- [ ] Emails send on key events
-- [ ] Works on mobile (responsive)
-- [ ] Deployed and live on Vercel + Render
+### STEP 7: Operations & Scale
+*   Reviews, Notifications, and Backoffice Admin panels to govern the bustling ecosystem.
+*   Phase 2: Blog & SEO Traffic Engine.
