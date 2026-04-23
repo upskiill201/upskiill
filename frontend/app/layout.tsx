@@ -20,14 +20,14 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+  title: 'Teyro — Duolingo for learning skills online',
   description:
     'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice. Build real skills, stay consistent, and achieve results.',
 
   // ── Keywords ──
   keywords: [
     // Core brand
-    'Teyro', 'teyro.app', 'Teyro learning platform', 'Teyro online learning',
+    'Teyro', 'Teyro.app', 'Teyro learning platform', 'Teyro online learning',
     'Teyro platform', 'Teyro app', 'what is Teyro', 'Teyro learning', 'Teyro edtech',
     // Core product
     'online learning platform', 'skill learning platform', 'learn skills online',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     'AI-powered learning', 'AI learning assistant', 'personalized learning platform',
     'adaptive learning system', 'smart learning platform', 'AI education platform',
     // Waitlist / pre-launch
-    'Teyro waitlist', 'teyro.app waitlist', 'join Teyro early', 'Teyro early access',
+    'Teyro waitlist', 'Teyro.app waitlist', 'join Teyro early', 'Teyro early access',
     'join learning platform waitlist', 'early access learning platform',
     'upcoming edtech platform', 'new online learning platform',
     'beta access learning app', 'sign up for early access learning platform',
@@ -77,19 +77,28 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+    title: 'Teyro — Duolingo for learning skills online',
     description:
       'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice.',
     locale: 'en_US',
+    images: [
+      {
+        url: '/teyro-og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Teyro — Duolingo for learning skills online',
+      },
+    ],
   },
 
   // ── Twitter Card ──
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+    title: 'Teyro — Duolingo for learning skills online',
     description:
       'Next-generation learning platform. Build real skills, stay consistent, achieve results.',
+    images: ['/teyro-og.png'],
   },
 
   // ── Canonical + Robots ──
@@ -106,6 +115,10 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 
