@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaFacebook, FaXTwitter, FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa6';
 import styles from './WaitlistFooter.module.css';
 
@@ -11,9 +12,19 @@ export default function WaitlistFooter() {
         {/* TOP SECTION */}
         <div className={styles.topSection}>
           <div className={styles.brandCol}>
-            {/* Stylistic Text Logo */}
-            <Link href="/" className={styles.logoText}>
-              Teyro<span>.</span>
+            {/* Logo Image */}
+            <Link href="/" className={styles.logoLink}>
+              <Image
+                src="/Teyro Logo.png"
+                alt="Teyro Logo"
+                width={220}
+                height={66}
+                style={{
+                  width: 'auto',
+                  height: '54px',
+                  objectFit: 'contain',
+                }}
+              />
             </Link>
             <p className={styles.tagline}>
               Personalised AI-Powered Learning That Actually Works.

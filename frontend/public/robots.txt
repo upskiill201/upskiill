@@ -1,0 +1,136 @@
+# =============================================================
+# robots.txt — Teyro (https://teyro.app)
+# Strategy: Only the waitlist homepage (/) is public.
+# All app pages are blocked from crawling.
+# =============================================================
+
+# ── Google Search ──────────────────────────────────────────
+User-agent: Googlebot
+Allow: /$
+Disallow: /
+
+# ── Google Image Search ────────────────────────────────────
+User-agent: Googlebot-Image
+Allow: /$
+Disallow: /
+
+# ── Google AI (Gemini / AI Overviews / AI training) ────────
+User-agent: Google-Extended
+Allow: /$
+Disallow: /
+
+# ── Bing / Microsoft Search ────────────────────────────────
+User-agent: Bingbot
+Allow: /$
+Disallow: /
+
+# ── Bing Image Search ──────────────────────────────────────
+User-agent: msnbot-media
+Allow: /$
+Disallow: /
+
+# ── DuckDuckGo ─────────────────────────────────────────────
+User-agent: DuckDuckBot
+Allow: /$
+Disallow: /
+
+# ── Yahoo / Slurp ──────────────────────────────────────────
+User-agent: Slurp
+Allow: /$
+Disallow: /
+
+# ── Yandex ─────────────────────────────────────────────────
+User-agent: YandexBot
+Allow: /$
+Disallow: /
+
+# ── Baidu ──────────────────────────────────────────────────
+User-agent: Baiduspider
+Allow: /$
+Disallow: /
+
+# ── OpenAI — ChatGPT Browse & GPT plugins ──────────────────
+User-agent: GPTBot
+Allow: /$
+Disallow: /
+
+User-agent: ChatGPT-User
+Allow: /$
+Disallow: /
+
+User-agent: OAI-SearchBot
+Allow: /$
+Disallow: /
+
+# ── Anthropic — Claude AI ──────────────────────────────────
+User-agent: ClaudeBot
+Allow: /$
+Disallow: /
+
+User-agent: Claude-Web
+Allow: /$
+Disallow: /
+
+User-agent: anthropic-ai
+Allow: /$
+Disallow: /
+
+# ── Perplexity AI ──────────────────────────────────────────
+User-agent: PerplexityBot
+Allow: /$
+Disallow: /
+
+# ── Meta AI (Llama) ────────────────────────────────────────
+User-agent: Meta-ExternalAgent
+Allow: /$
+Disallow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /$
+Disallow: /
+
+# ── Amazon Alexa / Amazonbot ───────────────────────────────
+User-agent: Amazonbot
+Allow: /$
+Disallow: /
+
+# ── Apple (Siri / Spotlight) ───────────────────────────────
+User-agent: Applebot
+Allow: /$
+Disallow: /
+
+User-agent: Applebot-Extended
+Allow: /$
+Disallow: /
+
+# ── Cohere AI ──────────────────────────────────────────────
+User-agent: cohere-ai
+Allow: /$
+Disallow: /
+
+# ── You.com AI ─────────────────────────────────────────────
+User-agent: YouBot
+Allow: /$
+Disallow: /
+
+# ── Diffbot (used by many AI knowledge graphs) ─────────────
+User-agent: Diffbot
+Allow: /$
+Disallow: /
+
+# ── Common Crawl (powers many AI training datasets) ────────
+User-agent: CCBot
+Allow: /$
+Disallow: /
+
+# ── ByteDance / TikTok AI ──────────────────────────────────
+User-agent: Bytespider
+Allow: /$
+Disallow: /
+
+# ── All other bots — blocked entirely ─────────────────────
+User-agent: *
+Disallow: /
+
+# ── Sitemap ────────────────────────────────────────────────
+Sitemap: https://teyro.app/sitemap.xml

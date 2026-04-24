@@ -28,6 +28,18 @@
   max-width: 320px;
 }
 
+.logoLink {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.logoLink:hover {
+  opacity: 0.75;
+}
+
 .logoText {
   font-family: var(--font-jakarta), sans-serif;
   font-size: 28px;
