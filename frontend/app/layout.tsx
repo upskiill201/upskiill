@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro — Duolingo for learning skills online',
+  title: 'Teyro — AI-Powered Learning That Actually Works',
   description:
     'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice. Build real skills, stay consistent, and achieve results.',
 
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — Duolingo for learning skills online',
+    title: 'Teyro — AI-Powered Learning That Actually Works',
     description:
       'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice.',
     locale: 'en_US',
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
         url: '/teyro-og.png',
         width: 1200,
         height: 630,
-        alt: 'Teyro — Duolingo for learning skills online',
+        alt: 'Teyro — AI-Powered Learning That Actually Works',
       },
     ],
   },
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — Duolingo for learning skills online',
+    title: 'Teyro — AI-Powered Learning That Actually Works',
     description:
       'Next-generation learning platform. Build real skills, stay consistent, achieve results.',
     images: ['/teyro-og.png'],
@@ -117,8 +117,15 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
   },
 };
 
