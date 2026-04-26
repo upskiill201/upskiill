@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro — AI-Powered Learning That Actually Works',
+  title: 'Teyro - AI-Powered Learning That Actually Works',
   description:
-    'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice. Build real skills, stay consistent, and achieve results.',
+    'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
 
   // ── Keywords ──
   keywords: [
@@ -77,9 +77,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — AI-Powered Learning That Actually Works',
+    title: 'Teyro - AI-Powered Learning That Actually Works',
     description:
-      'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice.',
+      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
     locale: 'en_US',
     images: [
       {
@@ -95,9 +95,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — AI-Powered Learning That Actually Works',
+    title: 'Teyro - AI-Powered Learning That Actually Works',
     description:
-      'Next-generation learning platform. Build real skills, stay consistent, achieve results.',
+      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start.',
     images: ['/teyro-og.png'],
   },
 
@@ -113,7 +113,7 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
+      'max-snippet': 160,
     },
   },
   icons: {
