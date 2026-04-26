@@ -7,11 +7,20 @@
 # ── Google Search ──────────────────────────────────────────
 User-agent: Googlebot
 Allow: /$
+Allow: /_next/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.jpeg$
 Disallow: /
 
 # ── Google Image Search ────────────────────────────────────
 User-agent: Googlebot-Image
-Allow: /$
+Allow: /_next/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.jpeg$
 Disallow: /
 
 # ── Google AI (Gemini / AI Overviews / AI training) ────────
@@ -22,6 +31,11 @@ Disallow: /
 # ── Bing / Microsoft Search ────────────────────────────────
 User-agent: Bingbot
 Allow: /$
+Allow: /_next/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.jpeg$
 Disallow: /
 
 # ── Bing Image Search ──────────────────────────────────────
@@ -32,6 +46,11 @@ Disallow: /
 # ── DuckDuckGo ─────────────────────────────────────────────
 User-agent: DuckDuckBot
 Allow: /$
+Allow: /_next/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+Allow: /*.jpeg$
 Disallow: /
 
 # ── Yahoo / Slurp ──────────────────────────────────────────
