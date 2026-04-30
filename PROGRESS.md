@@ -60,8 +60,10 @@
 - [x] `GET /courses` — list published courses (search & filter params)
 - [x] CRUD for Courses
 - [x] SEO-Friendly Slugs ( dual-lookup by ID or Slug)
-- [x] Production Deployment (PR #46 Recovery)
-- [x] **Cart & Checkout System**: Implemented `OrdersModule` with simulated checkout and enrollment logic. ✅
+- [x] Production DB connectivity via Supabase Connection Pooler (P1001 fix)
+- [x] **Database Architecture (Phase 1):** Expanded Prisma schema with native `Profile`, `Section`, `Lesson`, and `Review` relational models, replacing unstructured JSON arrays.
+- [x] **Strict Firebase-to-Profile Sync:** Refactored auth flows (`auth.service.ts`) to instantly generate and link a `Profile` instance during signup or Firebase social login, ensuring 100% data integrity.
+- [x] **SEO Slug System**: Dual lookup via ID or Slug in `CourseService` with simulated checkout and enrollment logic. ✅
 - [x] **Guest Checkout**: Enabled checkout for unregistered users with auto-account creation. ✅
 - [x] **Dynamic Curriculum**: Added `curriculum` JSON field to Course model for nested sections/lessons. ✅
 - [x] Make sure relations (Instructor, etc.) load efficiently

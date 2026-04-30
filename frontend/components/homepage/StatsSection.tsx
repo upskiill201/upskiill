@@ -5,13 +5,13 @@ import { useRef, useEffect, useState } from 'react';
 import styles from './StatsSection.module.css';
 
 const comparison = [
-  { feature: 'AI Tutor (24/7)', teyro: '✓', coursera: '✗', udemy: '✗' },
-  { feature: 'Personalized Learning Path', teyro: '✓', coursera: '~', udemy: '✗' },
-  { feature: 'Offline + Low-Data Mode', teyro: '✓', coursera: '✗', udemy: '✗' },
-  { feature: 'Earn While You Learn', teyro: '✓', coursera: '✗', udemy: '✗' },
-  { feature: 'Skill Gap Analyzer', teyro: '✓', coursera: '✗', udemy: '✗' },
-  { feature: 'Works Anywhere (Low-Data Mode)', teyro: '✓', coursera: '✗', udemy: '✗' },
-  { feature: 'Gamified Progression', teyro: '✓', coursera: '~', udemy: '✗' },
+  { feature: 'AI Tutor (24/7)', Teyro: '✓', coursera: '✗', udemy: '✗' },
+  { feature: 'Personalized Learning Path', Teyro: '✓', coursera: '~', udemy: '✗' },
+  { feature: 'Offline + Low-Data Mode', Teyro: '✓', coursera: '✗', udemy: '✗' },
+  { feature: 'Earn While You Learn', Teyro: '✓', coursera: '✗', udemy: '✗' },
+  { feature: 'Skill Gap Analyzer', Teyro: '✓', coursera: '✗', udemy: '✗' },
+  { feature: 'Works Anywhere (Low-Data Mode)', Teyro: '✓', coursera: '✗', udemy: '✗' },
+  { feature: 'Gamified Progression', Teyro: '✓', coursera: '~', udemy: '✗' },
 ];
 
 function AnimatedNumber({ value, suffix }: { value: string; suffix: string }) {
@@ -172,11 +172,11 @@ export default function StatsSection() {
                     </tr>
                   </thead>
                   <tbody>
-                    {comparison.map(({ feature, teyro, coursera, udemy }) => (
+                    {comparison.map(({ feature, Teyro, coursera, udemy }) => (
                       <tr key={feature}>
                         <td>{feature}</td>
                         <td className={styles.teyroCell}>
-                          <span className={getCellStyle(teyro)}>{teyro}</span>
+                          <span className={getCellStyle(Teyro)}>{Teyro}</span>
                         </td>
                         <td className={styles.grayCell}>
                           <span className={getCellStyle(coursera)}>{coursera}</span>

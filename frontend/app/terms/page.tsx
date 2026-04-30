@@ -1,6 +1,6 @@
 import styles from "./terms.module.css";
 
-export default function TermsOfService(): JSX.Element {
+export default function TermsOfService(){
   return (
     <main className={styles.container}>
       <h1>Terms of Service</h1>
@@ -173,5 +173,4 @@ export default function TermsOfService(): JSX.Element {
   );
 }
 
-    )
-}
+    

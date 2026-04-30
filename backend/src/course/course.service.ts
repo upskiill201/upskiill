@@ -78,6 +78,14 @@ export class CourseService {
             avatarUrl: true,
           },
         },
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+            },
+          },
+        },
       },
     });
 
@@ -124,9 +132,18 @@ export class CourseService {
       currentCompleted.push(lessonId);
 
       let totalLessons = 0;
-      if (Array.isArray(course.curriculum)) {
-        totalLessons = course.curriculum.reduce(
-          (acc: number, section: any) => acc + (section.lessons?.length || 0),
+      const courseWithLessons = await this.prisma.course.findUnique({
+        where: { id: course.id },
+        include: {
+          sections: {
+            include: { lessons: true },
+          },
+        },
+      });
+
+      if (courseWithLessons) {
+        totalLessons = courseWithLessons.sections.reduce(
+          (acc, section) => acc + section.lessons.length,
           0,
         );
       }
@@ -258,6 +275,134 @@ export class CourseService {
         ...(data.targetAudience !== undefined && { targetAudience: data.targetAudience }),
         ...(data.curriculum !== undefined && { curriculum: data.curriculum as any }),
       },
+    });
+  }
+
+  // ─── CURRICULUM MANAGEMENT ───
+
+  async getFullCurriculum(userId: string, courseIdOrSlug: string) {
+    const course = await this.getOwnedDraft(userId, courseIdOrSlug);
+    return await this.prisma.section.findMany({
+      where: { courseId: course.id },
+      orderBy: { orderIndex: 'asc' },
+      include: {
+        lessons: {
+          orderBy: { orderIndex: 'asc' },
+        },
+      },
+    });
+  }
+
+  async createSection(userId: string, courseId: string, title: string) {
+    const course = await this.getOwnedDraft(userId, courseId);
+    
+    // Auto-calculate orderIndex
+    const count = await this.prisma.section.count({
+      where: { courseId: course.id }
+    });
+
+    return await this.prisma.section.create({
+      data: {
+        title,
+        orderIndex: count,
+        courseId: course.id
+      }
+    });
+  }
+
+  async updateSection(userId: string, sectionId: string, title: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: { course: true }
+    });
+
+    if (!section) throw new NotFoundException('Section not found');
+    if (section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.section.update({
+      where: { id: sectionId },
+      data: { title }
+    });
+  }
+
+  async deleteSection(userId: string, sectionId: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: { course: true }
+    });
+
+    if (!section) throw new NotFoundException('Section not found');
+    if (section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.section.delete({
+      where: { id: sectionId }
+    });
+  }
+
+  async createLesson(userId: string, sectionId: string, title: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: { course: true }
+    });
+
+    if (!section) throw new NotFoundException('Section not found');
+    if (section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    const count = await this.prisma.lesson.count({
+      where: { sectionId }
+    });
+
+    return await this.prisma.lesson.create({
+      data: {
+        title,
+        orderIndex: count,
+        sectionId
+      }
+    });
+  }
+
+  async updateLesson(userId: string, lessonId: string, data: { 
+    title?: string; 
+    description?: string; 
+    videoUrl?: string; 
+    durationMinutes?: number; 
+    isFreePreview?: boolean; 
+  }) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: { section: { include: { course: true } } }
+    });
+
+    if (!lesson) throw new NotFoundException('Lesson not found');
+    if (lesson.section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.lesson.update({
+      where: { id: lessonId },
+      data
+    });
+  }
+
+  async deleteLesson(userId: string, lessonId: string) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: { section: { include: { course: true } } }
+    });
+
+    if (!lesson) throw new NotFoundException('Lesson not found');
+    if (lesson.section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.lesson.delete({
+      where: { id: lessonId }
     });
   }
 }

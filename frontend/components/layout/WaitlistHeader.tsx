@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronRight } from 'lucide-react';
 import styles from './WaitlistHeader.module.css';
@@ -75,9 +76,18 @@ export default function WaitlistHeader() {
         <div className={styles.container}>
           {/* Logo */}
           <Link href="/" className={styles.logoLink}>
-            <span className={styles.logoText}>
-              Teyro<span className={styles.logoDot}>.</span>
-            </span>
+            <Image
+              src="/Teyro Logo.png"
+              alt="Teyro Logo"
+              width={220}
+              height={66}
+              priority
+              style={{
+                width: 'auto',
+                height: '56px',
+                objectFit: 'contain',
+              }}
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -138,9 +148,17 @@ export default function WaitlistHeader() {
           <div className={styles.mobilePanel}>
             <div className={styles.mobileHeader}>
               <Link href="/" className={styles.logoLink} onClick={() => setMobileOpen(false)}>
-                <span className={styles.logoText}>
-                  Teyro<span className={styles.logoDot}>.</span>
-                </span>
+                <Image
+                  src="/Teyro Logo.png"
+                  alt="Teyro Logo"
+                  width={200}
+                  height={60}
+                  style={{
+                    width: 'auto',
+                    height: '46px',
+                    objectFit: 'contain',
+                  }}
+                />
               </Link>
               <button
                 className={styles.closeBtn}

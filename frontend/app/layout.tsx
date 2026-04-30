@@ -20,14 +20,14 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+  title: 'Teyro - AI-Powered Learning That Actually Works',
   description:
-    'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice. Build real skills, stay consistent, and achieve results.',
+    'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
 
   // ── Keywords ──
   keywords: [
     // Core brand
-    'Teyro', 'teyro.app', 'Teyro learning platform', 'Teyro online learning',
+    'Teyro', 'Teyro.app', 'Teyro learning platform', 'Teyro online learning',
     'Teyro platform', 'Teyro app', 'what is Teyro', 'Teyro learning', 'Teyro edtech',
     // Core product
     'online learning platform', 'skill learning platform', 'learn skills online',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     'AI-powered learning', 'AI learning assistant', 'personalized learning platform',
     'adaptive learning system', 'smart learning platform', 'AI education platform',
     // Waitlist / pre-launch
-    'Teyro waitlist', 'teyro.app waitlist', 'join Teyro early', 'Teyro early access',
+    'Teyro waitlist', 'Teyro.app waitlist', 'join Teyro early', 'Teyro early access',
     'join learning platform waitlist', 'early access learning platform',
     'upcoming edtech platform', 'new online learning platform',
     'beta access learning app', 'sign up for early access learning platform',
@@ -77,19 +77,28 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+    title: 'Teyro - AI-Powered Learning That Actually Works',
     description:
-      'Teyro is a next-generation online learning platform that helps you learn skills faster through project-based learning, AI guidance, mentorship, and real-world practice.',
+      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
     locale: 'en_US',
+    images: [
+      {
+        url: '/teyro-og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Teyro — AI-Powered Learning That Actually Works',
+      },
+    ],
   },
 
   // ── Twitter Card ──
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — Personalised AI-Powered Learning That Actually Works',
+    title: 'Teyro - AI-Powered Learning That Actually Works',
     description:
-      'Next-generation learning platform. Build real skills, stay consistent, achieve results.',
+      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start.',
+    images: ['/teyro-og.png'],
   },
 
   // ── Canonical + Robots ──
@@ -104,8 +113,19 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
+      'max-snippet': 160,
     },
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
   },
 };
 

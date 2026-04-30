@@ -59,6 +59,9 @@ export class AuthService {
         password: hash,
         fullName: dto.fullName,
         role: requestedRole as Role,
+        profile: {
+          create: {}
+        }
       },
     });
 
@@ -122,6 +125,11 @@ export class AuthService {
             password: hash,
             fullName: name,
             role: requestedRole as Role,
+            profile: {
+              create: {
+                avatarUrl: decodedToken.picture || null
+              }
+            }
           },
         });
       } else {

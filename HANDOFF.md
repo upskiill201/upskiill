@@ -137,6 +137,8 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] Binds to `process.env.PORT ?? 3001` for Render compatibility
 - [x] `render.yaml` at repo root for Render deploy config
 - [x] Production DB connectivity via Supabase Connection Pooler (P1001 fix)
+- [x] **Database Architecture (Phase 1):** Expanded Prisma schema with native `Profile`, `Section`, `Lesson`, and `Review` relational models, replacing unstructured JSON arrays.
+- [x] **Strict Firebase-to-Profile Sync:** Refactored auth flows (`auth.service.ts`) to instantly generate and link a `Profile` instance during signup or Firebase social login, ensuring 100% data integrity.
 - [x] **SEO Slug System**: Dual lookup via ID or Slug in `CourseService`
 - [x] **Build Optimization**: Fixed `dist/src/main` pathing for Render.com deployment ✅ (2026-04-03)
 - [x] **Cart & Checkout Engine**: Implemented `Orders` controller for course enrollment & checkout processes. ✅ (2026-04-03)

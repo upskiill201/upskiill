@@ -175,13 +175,13 @@ enum Role {
 }
 
 model Waitlist {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  id                String   @id @default(uuid())
   name              String?
   email             String?
   phone             String?
   discovery_channel String?
   role              String?
   raw_data          Json?
+  createdAt         DateTime @default(now())
 }
 
