@@ -50,6 +50,14 @@ function getCellStyle(val: string) {
   return `${styles.btnPartial}`;
 }
 
+// Add keyboard navigation support
+function handleKeyDown(e: React.KeyboardEvent, callback: () => void) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    callback();
+  }
+}
+
 export default function StatsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef(null);
@@ -62,7 +70,7 @@ export default function StatsSection() {
         const res = await fetch('/webhook/count');
         const data = await res.json();
         setWaitlistCount(data.count);
-      } catch (err) {
+      } catch (error) {
         setWaitlistCount(0);
       }
     };
@@ -124,8 +132,13 @@ export default function StatsSection() {
               style={{ y: card1Y }}
             >
               <div className={styles.statsGrid}>
-                {stats.map(({ value, suffix, label, sub }, i) => (
-                  <div key={label} className={styles.statCard}>
+                {stats.map(({ value, suffix, label, sub }, index) => (
+                  <div
+  key={index}
+  className={styles.statCard}
+  role="region"
+  aria-label={`${label}: ${value}${suffix}`}
+>
                     <AnimatedNumber value={value} suffix={suffix} />
                     <div className={styles.statLabel}>{label}</div>
                     <div className={styles.statSub}>{sub}</div>
@@ -173,7 +186,16 @@ export default function StatsSection() {
                   </thead>
                   <tbody>
                     {comparison.map(({ feature, Teyro, coursera, udemy }) => (
-                      <tr key={feature}>
+                      <tr
+  key={feature}
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      // Add any action you want when pressing Enter or Space
+    }
+  }}
+>
                         <td>{feature}</td>
                         <td className={styles.teyroCell}>
                           <span className={getCellStyle(Teyro)}>{Teyro}</span>
