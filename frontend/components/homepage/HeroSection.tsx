@@ -87,8 +87,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.6 }}
           >
-            See the learning you have.{' '}
-            <span className={styles.highlight}>Build the future you want.</span>
+            Master skills that matter. Build your future, faster.
           </motion.h1>
 
           {/* Subheadline */}

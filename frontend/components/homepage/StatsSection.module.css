@@ -272,27 +272,18 @@
   .heading { font-size: 34px; }
 }
 
-@media (max-width: 640px) {
-  /* Do not remove scroll tracking, keep the sliding animation! */
-  .stickyStage { padding: 40px 16px 20px; }
-  .heading { font-size: 28px; letter-spacing: -0.5px; }
-  .animatedCard { padding: 24px 16px; border-radius: 20px; }
-  
-  /* Stagger stacking offsets closer together on mobile */
-  .card1 { top: 0px; }
-  .card2 { top: 12px; }
-  .card3 { top: 24px; }
+/* Add reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animatedCard {
+    scroll-behavior: auto;
+    transition: none;
+  }
 
-  .statsGrid { gap: 12px; }
-  .statCard { padding: 16px 12px; }
-  .statValue { font-size: 36px; }
-  .statLabel { font-size: 13px; font-weight: 700; }
-  .statSub { font-size: 12px; line-height: 1.3; }
-  
-  .industryContext { padding: 20px 14px; border-radius: 16px; }
-  .quoteItem p { font-size: 14px; }
-  .contextSub { font-size: 14px; padding: 10px 16px; }
-  
-  .comparison th { padding: 12px; font-size: 12px; }
-  .comparison td { padding: 10px; font-size: 12px; }
+  .statValue {
+    transition: none;
+  }
+
+  .statCard::after {
+    transition: none;
+  }
 }
