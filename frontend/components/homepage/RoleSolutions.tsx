@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, GraduationCap, Mic } from 'lucide-react';
 import styles from './RoleSolutions.module.css';
 
 const studentSolutions = [
@@ -103,7 +103,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                 className={styles.dynamicHeader}
                 style={{ opacity: studentOpacity, y: studentY }}
               >
-                <div className={styles.eyebrowBadge}>🎓 For Students</div>
+                <div className={styles.eyebrowBadge}><GraduationCap size={16} /> For Students</div>
                 <h2 className={styles.heading}>
                   Learn smart.<br />
                   Earn fast.<br />
@@ -119,7 +119,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                 className={styles.dynamicHeader}
                 style={{ opacity: instructorOpacity, y: instructorY }}
               >
-                <div className={styles.eyebrowBadge}>🎙️ For Instructors</div>
+                <div className={styles.eyebrowBadge}><Mic size={16} /> For Instructors</div>
                 <h2 className={styles.heading}>
                   Teach more.<br />
                   Earn more.<br />
@@ -165,7 +165,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                   className={`${styles.ctaBtn} ${styles.studentCtaBtn}`}
                   onClick={onOpenModal}
                 >
-                  I&apos;m a Student — Let Me In <ArrowRight size={18} />
+                  I&apos;m a Student Let Me In <ArrowRight size={18} />
                 </button>
               </motion.div>
 
@@ -203,7 +203,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
                   className={`${styles.ctaBtn} ${styles.instructorCtaBtn}`}
                   onClick={onOpenModal}
                 >
-                  I&apos;m an Instructor — Let Me In <ArrowRight size={18} />
+                  I&apos;m an Instructor Let Me In <ArrowRight size={18} />
                 </button>
               </motion.div>
 
@@ -218,7 +218,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
       <div className={styles.mobileFlow}>
         
         <div className={styles.mobileInlineHeader}>
-            <div className={styles.eyebrowBadge}>🎓 For Students</div>
+            <div className={styles.eyebrowBadge}><GraduationCap size={16} /> For Students</div>
             <h2 className={styles.heading}>Learn smart. Make money.</h2>
             <p className={styles.subheading}>We actively pull you towards the finish line.</p>
         </div>
@@ -239,14 +239,14 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
             className={`${styles.ctaBtn} ${styles.studentCtaBtn}`}
             onClick={onOpenModal}
           >
-            I&apos;m a Student — Let Me In <ArrowRight size={18} />
+            I&apos;m a Student Let Me In <ArrowRight size={18} />
           </button>
         </div>
 
         <div className={styles.mobileSpacer} />
 
         <div className={styles.mobileInlineHeader}>
-            <div className={styles.eyebrowBadge}>🎙️ For Instructors</div>
+            <div className={styles.eyebrowBadge}><Mic size={16} /> For Instructors</div>
             <h2 className={styles.heading}>Teach more. Earn more.</h2>
             <p className={styles.subheading}>Partner with a network that invests in your success.</p>
         </div>
@@ -278,7 +278,7 @@ export default function RoleSolutions({ onOpenModal }: { onOpenModal?: () => voi
             className={`${styles.ctaBtn} ${styles.instructorCtaBtn}`}
             onClick={onOpenModal}
           >
-            I&apos;m an Instructor — Let Me In <ArrowRight size={18} />
+            I&apos;m an Instructor Let Me In <ArrowRight size={18} />
           </button>
         </div>
 

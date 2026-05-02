@@ -1,6 +1,6 @@
 /* ===== ORCHESTRATED SLIDE DECK ARCHITECTURE ===== */
 .sectionWrapper {
-  background: #020617; /* Very dark premium background */
+  background: var(--text-primary);
   position: relative;
   /* Extremely tall to give the absolute max reading time and fluid movement */
   height: 500vh; 
@@ -39,16 +39,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #a78bfa;
+  color: var(--soft-blue);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding: 8px 24px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 100px;
-  backdrop-filter: blur(4px);
 }
 
 /* ===== LEFT PANEL (TEXT ORCHESTRATOR) ===== */
@@ -80,16 +75,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #a78bfa;
+  color: var(--soft-blue);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: 24px;
-  padding: 6px 16px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 100px;
+  margin-bottom: 16px;
 }
 
 .heading {
@@ -103,7 +94,7 @@
 
 .subheading {
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
@@ -128,45 +119,30 @@
   top: 0; 
   left: 0;
   width: 100%; /* Fill container width */
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 32px;
+  background: var(--bg-card);
+  border-radius: 12px;
   padding: 40px;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 16px rgba(31, 42, 68, 0.04);
   will-change: transform, opacity;
   overflow: hidden;
 }
 
 .studentCard {
-  border: 1px solid rgba(129, 140, 248, 0.2);
+  border: 1px solid var(--border);
 }
 
 .instructorCard {
-  border: 1px solid rgba(244, 114, 182, 0.2);
+  border: 1px solid var(--border);
 }
-
-/* Glow lines over the top edges */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-}
-
-.studentCard::after { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-.instructorCard::after { background: linear-gradient(90deg, #ec4899, #f43f5e); }
 
 .cardProblem {
   font-size: 16px;
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-style: italic;
   line-height: 1.5;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border);
 }
 
 .solutionList {
@@ -183,7 +159,7 @@
   align-items: flex-start;
   gap: 12px;
   font-size: 14px;
-  color: #cbd5e1;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
@@ -200,21 +176,17 @@
   margin-top: -1px;
 }
 
-.studentCheck {
-  color: #818cf8;
-  background: rgba(129, 140, 248, 0.15);
-}
-
+.studentCheck,
 .instructorCheck {
-  color: #f472b6;
-  background: rgba(244, 114, 182, 0.15);
+  color: var(--brand-blue);
+  background: var(--light-blue-bg);
 }
 
 /* Revenue Box Specific to Instructor */
 .revenueBox {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 20px;
   margin: 24px 0 32px;
 }
@@ -223,7 +195,7 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-secondary);
   letter-spacing: 0.1em;
   margin-bottom: 12px;
 }
@@ -233,7 +205,7 @@
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #f1f5f9;
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
@@ -245,7 +217,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f472b6;
+  background: var(--brand-blue);
 }
 
 /* Buttons */
@@ -258,28 +230,16 @@
   font-size: 15px;
   font-weight: 700;
   color: white;
-  padding: 16px 24px;
-  border-radius: 16px;
+  padding: 14px 24px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s;
+  background: var(--brand-blue);
 }
 
-.studentCtaBtn {
-  background: #4f46e5;
-  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
-}
-.studentCtaBtn:hover {
-  background: #4338ca;
-  transform: translateY(-2px);
-}
-
-.instructorCtaBtn {
-  background: #e11d48;
-  box-shadow: 0 10px 20px rgba(225, 29, 72, 0.2);
-}
-.instructorCtaBtn:hover {
-  background: #be123c;
+.ctaBtn:hover {
+  background: var(--brand-blue-hover);
   transform: translateY(-2px);
 }
 
@@ -305,7 +265,7 @@
 .mobileSpacer {
   height: 80px;
   margin: 40px 0;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid var(--border);
 }
 
 /* Desktop classes hidden by default on mobile override */
@@ -320,7 +280,7 @@
 @media (max-width: 1024px) {
   .sectionWrapper {
     height: auto !important; /* Kill the 500vh lock */
-    background: #020617;
+    background: var(--text-primary);
   }
   
   .stickyStage { display: none; } /* Destroy the entire complex split desktop view */

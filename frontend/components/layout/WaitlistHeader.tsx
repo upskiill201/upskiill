@@ -77,7 +77,7 @@ export default function WaitlistHeader() {
           {/* Logo */}
           <Link href="/" className={styles.logoLink}>
             <Image
-              src="/Teyro Logo.png"
+              src="/teyro-logo-blue.png"
               alt="Teyro Logo"
               width={220}
               height={66}
@@ -149,7 +149,7 @@ export default function WaitlistHeader() {
             <div className={styles.mobileHeader}>
               <Link href="/" className={styles.logoLink} onClick={() => setMobileOpen(false)}>
                 <Image
-                  src="/Teyro Logo.png"
+                  src="/teyro-logo-blue.png"
                   alt="Teyro Logo"
                   width={200}
                   height={60}

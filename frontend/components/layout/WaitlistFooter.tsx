@@ -15,7 +15,7 @@ export default function WaitlistFooter() {
             {/* Logo Image */}
             <Link href="/" className={styles.logoLink}>
               <Image
-                src="/Teyro Logo.png"
+                src="/teyro-logo-blue.png"
                 alt="Teyro Logo"
                 width={220}
                 height={66}

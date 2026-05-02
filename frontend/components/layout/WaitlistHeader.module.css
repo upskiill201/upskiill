@@ -36,26 +36,7 @@
   flex-shrink: 0;
 }
 
-.logoText {
-  font-family: var(--font-jakarta), sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #ffffff, #a0aab8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: opacity 0.2s;
-}
-
-.logoText:hover {
-  opacity: 0.85;
-}
-
-.logoDot {
-  color: #6352FF;
-  -webkit-text-fill-color: #6352FF;
-}
+/* Removed dead logoText CSS */
 
 /* ── Desktop Navigation ── */
 .desktopNav {
@@ -99,7 +80,7 @@
   padding: 8px 20px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
@@ -119,21 +100,20 @@
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
-  padding: 9px 22px;
-  border-radius: 10px;
+  padding: 10px 24px;
+  border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #6352FF 0%, #9333EA 100%);
+  background: var(--brand-blue);
   color: #ffffff;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 0 20px rgba(99, 82, 255, 0.25);
+  transition: all 0.2s ease;
   font-family: inherit;
   letter-spacing: 0.01em;
 }
 
 .getStartedBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(99, 82, 255, 0.45), 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: var(--brand-blue-hover);
 }
 
 .getStartedBtn:active {
@@ -290,18 +270,17 @@
   font-size: 15px;
   font-weight: 600;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #6352FF 0%, #9333EA 100%);
+  background: var(--brand-blue);
   color: #ffffff;
   cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 0 24px rgba(99, 82, 255, 0.3);
+  transition: all 0.2s;
   font-family: inherit;
 }
 
 .mobileGetStartedBtn:hover {
-  box-shadow: 0 0 32px rgba(99, 82, 255, 0.5);
+  background: var(--brand-blue-hover);
 }
 
 /* ── Responsive ── */

@@ -1,6 +1,6 @@
 /* ===== WAITLIST FOOTER ===== */
 .footer {
-  background-color: #050814; /* Deep dark background matching Scribe waitlist style */
+  background-color: #050814;
   color: #ffffff;
   padding: 80px 24px 40px;
   border-top: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle top border */
@@ -40,23 +40,7 @@
   opacity: 0.75;
 }
 
-.logoText {
-  font-family: var(--font-jakarta), sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin-bottom: 20px;
-  display: inline-block;
-  background: linear-gradient(135deg, #ffffff, #a0aab8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.logoText span {
-  color: #6352FF;
-  -webkit-text-fill-color: #6352FF;
-}
+/* Removed dead logoText CSS */
 
 .tagline {
   font-size: 15px;
@@ -95,7 +79,7 @@
 }
 
 .linkCol a:hover {
-  color: #6352FF;
+  color: var(--brand-blue);
 }
 
 /* --- MIDDLE SECTION: Social Blocks --- */
@@ -119,8 +103,8 @@
 }
 
 .socialBox:hover {
-  background: rgba(99, 82, 255, 0.05);
-  border-color: rgba(99, 82, 255, 0.3);
+  background: rgba(61, 90, 254, 0.05);
+  border-color: rgba(61, 90, 254, 0.3);
   transform: translateY(-2px);
   color: #ffffff;
 }
@@ -131,7 +115,7 @@
 }
 
 .socialBox:hover svg {
-  color: #6352FF;
+  color: var(--brand-blue);
 }
 
 .socialName {
@@ -163,7 +147,7 @@
 }
 
 .contactEmail:hover {
-  color: #6352FF;
+  color: var(--brand-blue);
 }
 
 /* --- RESPONSIVE --- */
