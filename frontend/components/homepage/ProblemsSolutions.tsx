@@ -24,7 +24,7 @@ const unifiedProblems = [
     title: 'Offline = Out of Luck',
     problemText: 'Huge video files require fast internet, leaving billions of global learners behind.',
     solutionTitle: 'Lite Mode Architecture',
-    solutionText: '2G-optimized audio-first downloads. Learn anywhere, anytime.',
+    solutionText: 'High-quality, low-data streaming & WhatsApp-integrated downloads. Learn anywhere, anytime.',
     icon: <Zap className={styles.lucideIcon} />
   },
   {

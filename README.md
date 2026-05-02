@@ -1,6 +1,6 @@
 # Upskiill 2.0 🚀
 
-> **Learn → Build → Earn** — Africa's leading AI-powered learning & marketplace platform.
+> **Learn → Build → Earn** — The world's leading AI-powered learning & marketplace platform.
 
 ---
 
@@ -118,4 +118,4 @@ Runs at: http://localhost:3001
 
 ---
 
-*Built with ❤️ for Africa*
+*Built with ❤️ for the world*
