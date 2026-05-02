@@ -36,7 +36,7 @@ const features = [
     title: 'Works Anywhere in the World',
     desc: 'Slow internet? Limited time? Expensive data? Teyro works regardless.',
     points: [
-      'Works on 2G connections — no excuses',
+      'High-quality, low-data streaming + WhatsApp integration',
       'Audio-only & full offline download mode',
       'Mobile money + card + wallet payments',
       'English, French, Spanish & more (expanding)',
