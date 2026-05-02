@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Zap, BookOpen, Brain, TrendingUp, Award } from 'lucide-react';
+import { ChevronDown, Zap } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import styles from './HeroSection.module.css';
 
@@ -21,11 +21,10 @@ interface HeroSectionProps {
   onOpenModal: () => void;
 }
 
-const previewCards = [
-  { icon: Brain,      title: 'AI Tutor',   sub: 'Always available when stuck' },
-  { icon: BookOpen,   title: 'Your Path',  sub: 'Personalized in minutes'     },
-  { icon: TrendingUp, title: 'Earn Fast',  sub: 'Marketplace from day 1'      },
-  { icon: Award,      title: 'Verified',   sub: 'Credentials that matter'     },
+const journeySteps = [
+  { num: '01', label: 'Learn a skill',   detail: 'Structured, AI-guided modules'    },
+  { num: '02', label: 'Get verified',    detail: 'Credentials real clients trust'   },
+  { num: '03', label: 'Start earning',   detail: 'Marketplace access from day one'  },
 ];
 
 export default function HeroSection({ onOpenModal }: HeroSectionProps) {
@@ -56,10 +55,9 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
       {/* Animated canvas background — loads client-only, no SSR needed */}
       <TubesBackground className={styles.animBg} />
 
-      {/* Vignette + glow overlays */}
+      {/* Vignette overlays — glowOverlay removed (AI slop: redundant purple glow blob) */}
       <div className={styles.vignetteDark}  aria-hidden="true" />
       <div className={styles.vignetteGlass} aria-hidden="true" />
-      <div className={styles.glowOverlay}   aria-hidden="true" />
       <div className={styles.bottomFade}    aria-hidden="true" />
 
       {/* ── SSR'd hero content overlay ── */}
@@ -77,7 +75,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             transition={{ delay: 0.15 }}
           >
             <span className={styles.badgeDot} />
-            Now building — join before launch for exclusive perks
+            In active development · Founding spots are limited
           </motion.div>
 
           {/* Headline */}
@@ -87,7 +85,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.6 }}
           >
-            Master skills that matter. Build your future, faster.
+            Learn smarter, not harder. Build real skills with Teyro.
           </motion.h1>
 
           {/* Subheadline */}
@@ -98,7 +96,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             transition={{ delay: 0.35, duration: 0.5 }}
           >
             Introducing <strong className={styles.brandUnderline}>Teyro</strong>:{' '}
-            <strong className={styles.strongVisible}>EdTech 2.0</strong>. Because traditional
+            <strong className={styles.strongVisible}>The Future of Learning</strong>. Because traditional
             platforms are just video libraries that sell hope and certificates. We deliver actual
             achievement, accountability, and real results.
           </motion.p>
@@ -129,50 +127,41 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             </div>
           </motion.div>
 
-          {/* Social proof */}
+          {/* Social proof — real count only, no fake letter-initial avatars */}
           <motion.div
             className={styles.socialProof}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <div className={styles.avatars}>
-              {['A', 'M', 'Z', 'K', 'F'].map((char, i) => (
-                <span key={i} className={styles.avatar}>{char}</span>
-              ))}
-            </div>
             <span className={styles.proofText}>
               {waitlistCount === null ? (
-                'Fetching live waitlist block...'
+                'Fetching live count...'
               ) : waitlistCount === 0 ? (
-                'Secure your spot as one of our very first early adopters'
+                'Be first — founding access is open now'
               ) : (
-                <><strong>{waitlistCount.toLocaleString()}</strong> students &amp; instructors already waiting</>
+                <><strong>{waitlistCount.toLocaleString()}</strong> already on the founding waitlist</>
               )}
             </span>
           </motion.div>
         </motion.div>
 
-        {/* Floating product cards */}
+        {/* Sequential journey strip — replaces generic icon/title/sub card grid */}
         <motion.div
-          className={styles.previewStrip}
+          className={styles.journeyStrip}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
         >
-          {previewCards.map(({ icon: Icon, title, sub }, i) => (
-            <motion.div
-              key={title}
-              className={styles.previewCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75 + i * 0.1 }}
-              whileHover={{ y: -4 }}
-            >
-              <div className={styles.previewCardIcon}><Icon size={18} /></div>
-              <div className={styles.previewCardTitle}>{title}</div>
-              <div className={styles.previewCardSub}>{sub}</div>
-            </motion.div>
+          {journeySteps.map(({ num, label, detail }, i) => (
+            <div key={num} className={styles.journeyStep}>
+              <div className={styles.journeyNum}>{num}</div>
+              <div className={styles.journeyLabel}>{label}</div>
+              <div className={styles.journeyDetail}>{detail}</div>
+              {i < journeySteps.length - 1 && (
+                <div className={styles.journeyArrow} aria-hidden="true" />
+              )}
+            </div>
           ))}
         </motion.div>
       </div>

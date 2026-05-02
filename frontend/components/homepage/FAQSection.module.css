@@ -1,6 +1,6 @@
 /* ===== FAQ SECTION ===== */
 .section {
-  background: #F8F7FF;
+  background: var(--bg-section);
   padding: 100px 24px;
 }
 
@@ -17,7 +17,7 @@
 .eyebrow {
   font-size: 13px;
   font-weight: 600;
-  color: #6352FF;
+  color: var(--brand-blue);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 14px;
@@ -26,7 +26,7 @@
 .heading {
   font-size: 40px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.15;
   letter-spacing: -1.2px;
   margin-bottom: 14px;
@@ -34,7 +34,7 @@
 
 .subheading {
   font-size: 17px;
-  color: #64748B;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -46,16 +46,16 @@
 }
 
 .item {
-  background: #ffffff;
-  border: 1px solid #E8E4FF;
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .item.open {
-  border-color: #C4B5FD;
-  box-shadow: 0 4px 20px rgba(99, 82, 255, 0.08);
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 16px rgba(31, 42, 68, 0.06);
 }
 
 .questionBtn {
@@ -74,12 +74,12 @@
 .question {
   font-size: 16px;
   font-weight: 600;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
 .chevron {
-  color: #6352FF;
+  color: var(--brand-blue);
   flex-shrink: 0;
   transition: transform 0.25s ease;
 }
@@ -95,12 +95,12 @@
 .answerInner {
   padding: 0 28px 22px;
   font-size: 15px;
-  color: #4B5563;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 
 .answerInner strong {
-  color: #6352FF;
+  color: var(--brand-blue);
 }
 
 /* ===== RESPONSIVE ===== */

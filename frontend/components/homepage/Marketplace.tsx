@@ -61,24 +61,17 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
           {/* THE SVG LAYERS */}
           <div className={styles.svgLayer}>
 
-            {/* Desktop S-Curve SVG — each SVG root owns its own gradient definition */}
+            {/* Desktop S-Curve SVG */}
             <svg 
                className={styles.desktopSvg}
                viewBox="0 0 100 1000" 
                preserveAspectRatio="none"
              >
-               <defs>
-                 <linearGradient id={desktopGradientId} x1="0" y1="0" x2="0" y2="1">
-                   <stop offset="0%" stopColor="#818cf8" />
-                   <stop offset="50%" stopColor="#c084fc" />
-                   <stop offset="100%" stopColor="#ec4899" />
-                 </linearGradient>
-               </defs>
                {/* Background Track (Faded) */}
                <path 
                  d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
                  fill="none" 
-                 stroke="rgba(99, 82, 255, 0.1)" 
+                 stroke="var(--border)" 
                  strokeWidth="4" 
                  vectorEffect="non-scaling-stroke"
                />
@@ -86,7 +79,7 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
                <motion.path 
                  d="M 50 0 Q 30 83, 50 166 Q 70 249, 50 332 Q 30 415, 50 498 Q 70 581, 50 664 Q 30 747, 50 830 Q 70 915, 50 1000" 
                  fill="none" 
-                 stroke={`url(#${desktopGradientId})`} 
+                 stroke="var(--brand-blue)" 
                  strokeWidth="4" 
                  vectorEffect="non-scaling-stroke"
                  style={{ pathLength }}
@@ -99,15 +92,8 @@ export default function Marketplace({ onOpenModal }: { onOpenModal?: () => void 
                viewBox="0 0 10 1000" 
                preserveAspectRatio="none"
              >
-               <defs>
-                 <linearGradient id={mobileGradientId} x1="0" y1="0" x2="0" y2="1">
-                   <stop offset="0%" stopColor="#818cf8" />
-                   <stop offset="50%" stopColor="#c084fc" />
-                   <stop offset="100%" stopColor="#ec4899" />
-                 </linearGradient>
-               </defs>
-               <path d="M 5 0 L 5 1000" fill="none" stroke="rgba(99, 82, 255, 0.1)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-               <motion.path d="M 5 0 L 5 1000" fill="none" stroke={`url(#${mobileGradientId})`} strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ pathLength }} />
+               <path d="M 5 0 L 5 1000" fill="none" stroke="var(--border)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+               <motion.path d="M 5 0 L 5 1000" fill="none" stroke="var(--brand-blue)" strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ pathLength }} />
              </svg>
           </div>
 

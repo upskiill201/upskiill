@@ -50,13 +50,7 @@ function getCellStyle(val: string) {
   return `${styles.btnPartial}`;
 }
 
-// Add keyboard navigation support
-function handleKeyDown(e: React.KeyboardEvent, callback: () => void) {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    callback();
-  }
-}
+
 
 export default function StatsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -186,16 +180,7 @@ export default function StatsSection() {
                   </thead>
                   <tbody>
                     {comparison.map(({ feature, Teyro, coursera, udemy }) => (
-                      <tr
-  key={feature}
-  tabIndex={0}
-  onKeyDown={(e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      // Add any action you want when pressing Enter or Space
-    }
-  }}
->
+                      <tr key={feature}>
                         <td>{feature}</td>
                         <td className={styles.teyroCell}>
                           <span className={getCellStyle(Teyro)}>{Teyro}</span>

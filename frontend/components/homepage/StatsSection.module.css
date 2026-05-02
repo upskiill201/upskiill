@@ -3,11 +3,10 @@
 /* ── 1. The Scroll Track ── */
 .scrollWrapper {
   position: relative;
-  background: #ffffff;
-  /* 300vh gives enough pure scrolling distance to play the slide-in animations */
+  background: var(--bg-page);
   height: 300vh;
-  border-top: 1px solid #F1F5F9;
-  border-bottom: 1px solid #F1F5F9;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   width: 100%;
 }
 
@@ -43,7 +42,7 @@
 .eyebrow {
   font-size: 13px;
   font-weight: 600;
-  color: #6352FF;
+  color: var(--brand-blue);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 12px;
@@ -52,7 +51,7 @@
 .heading {
   font-size: 40px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.15;
   letter-spacing: -1.2px;
 }
@@ -64,19 +63,18 @@
   flex: 1;
 }
 
-/* All cards sit exactly on top of each other. 
+/* All cards sit exactly on top of each other.
    NO margin-bottom or gap needed. Framer Motion moves them. */
 .animatedCard {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
-  border-radius: 32px;
-  border: 1px solid #E8E4FF;
-  box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.05);
-  padding: 32px;
-  /* On small screens, if the card's content is taller than the deck height, let it scroll internally */
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(31, 42, 68, 0.04);
+  padding: 20px;
   max-height: 100%;
   overflow-y: auto;
   will-change: transform, opacity;
@@ -86,14 +84,14 @@
   width: 4px;
 }
 .animatedCard::-webkit-scrollbar-thumb {
-  background: #E8E4FF;
+  background: var(--border-strong);
   border-radius: 4px;
 }
 
 /* Staggered z-index */
-.card1 { z-index: 10; top: 0px; background: #fafafc; }
-.card2 { z-index: 20; top: 24px; }
-.card3 { z-index: 30; top: 48px; }
+.card1 { z-index: 10; top: 0px; background: var(--bg-section); }
+.card2 { z-index: 20; top: 12px; }
+.card3 { z-index: 30; top: 24px; }
 
 /* ── INSIDE DECK CONTENT ── */
 
@@ -105,32 +103,19 @@
 }
 
 .statCard {
-  background: #F8F9FF;
-  border: 1px solid #E8E4FF;
-  border-radius: 20px;
-  padding: 20px 16px;
-  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: left;
   position: relative;
   overflow: hidden;
-}
-
-.statCard::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #6352FF, #9333EA);
 }
 
 .statValue {
   font-size: 48px;
   font-weight: 900;
-  background: linear-gradient(135deg, #6352FF, #9333EA);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   line-height: 1;
   margin-bottom: 8px;
   display: block;
@@ -139,42 +124,42 @@
 .statLabel {
   font-size: 15px;
   font-weight: 600;
-  color: #0F172A;
-  margin-bottom: 6px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
 .statSub {
   font-size: 13px;
-  color: #94A3B8;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
 /* Industry Problem Context Styles */
 .industryContext {
-  background: #F8F9FF;
-  border-radius: 24px;
-  padding: 32px;
-  text-align: center;
+  background: var(--bg-card);
+  border-radius: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .quoteGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-bottom: 24px;
+  gap: 24px;
+  margin-bottom: 20px;
   text-align: left;
 }
 
 .quoteItem {
   position: relative;
-  padding-left: 20px;
-  border-left: 3px solid #6352FF;
+  padding-left: 16px;
+  border-left: 3px solid var(--brand-blue);
 }
 
 .quoteItem p {
-  font-size: 16px;
+  font-size: 15px;
   font-style: italic;
-  color: #334155;
+  color: var(--text-primary);
   line-height: 1.5;
   margin-bottom: 12px;
 }
@@ -182,30 +167,30 @@
 .quoteItem span {
   font-size: 13px;
   font-weight: 700;
-  color: #64748B;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .contextSub {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  color: #0F172A;
-  background: white;
-  display: inline-block;
-  padding: 12px 24px;
-  border-radius: 100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+  border-left: 3px solid var(--brand-blue);
+  padding-left: 16px;
+  margin-top: 8px;
+  text-align: left;
+  line-height: 1.5;
 }
 .contextSub strong {
-  color: #6352FF;
+  color: var(--brand-blue);
 }
 
 /* Comparison table - Scribe style */
 .comparisonWrap {
   overflow-x: auto;
-  border-radius: 20px;
-  border: 1px solid #E8E4FF;
+  border-radius: 8px;
+  border: 1px solid var(--border);
 }
 
 .comparison {
@@ -214,16 +199,16 @@
 }
 
 .comparison thead tr {
-  background: linear-gradient(135deg, #6352FF08, #9333EA08);
+  background: var(--bg-section);
 }
 
 .comparison th {
-  padding: 20px 24px;
+  padding: 10px 16px;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #0F172A;
-  border-bottom: 1px solid #E8E4FF;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
 }
 
 .comparison th:first-child {
@@ -231,16 +216,16 @@
 }
 
 .comparison th.teyroCol {
-  color: #6352FF;
-  background: rgba(99, 82, 255, 0.05);
+  color: var(--brand-blue);
   text-align: center;
+  border-left: 2px solid var(--brand-blue);
 }
 
 .comparison td {
-  padding: 16px 24px;
+  padding: 10px 16px;
   font-size: 14px;
-  color: #374151;
-  border-bottom: 1px solid #F1F5F9;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
 
@@ -249,20 +234,20 @@
 }
 
 .comparison td.teyroCell {
-  background: rgba(99, 82, 255, 0.03);
   text-align: center;
   font-weight: 600;
-  color: #6352FF;
+  color: var(--brand-blue);
+  border-left: 2px solid var(--brand-blue);
 }
 
 .comparison td.grayCell {
   text-align: center;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
-.btnCheck { color: #22C55E; font-size: 18px; }
-.btnX { color: #EF4444; font-size: 18px; }
-.btnPartial { color: #F59E0B; font-size: 16px; }
+.btnCheck { color: var(--success-green); font-size: 18px; }
+.btnX { color: var(--error-red); font-size: 18px; }
+.btnPartial { color: var(--warning); font-size: 16px; }
 
 /* ===== RESPONSIVE GLOBALLY PRESERVED FOR ANIMATION ===== */
 

@@ -1,6 +1,6 @@
 # Teyro Production Principles
 
-> **Last updated:** 2026-04-29
+> **Last updated:** 2026-05-02
 
 This document outlines the core production principles that must be followed when developing the Teyro platform. These principles ensure consistency, maintainability, and quality across the codebase.
 
@@ -100,3 +100,19 @@ All new pages and features MUST use the shared component library to maintain des
 - Update relevant documentation when making changes
 - Maintain clear and concise code comments
 - Follow the established codebase documentation structure
+
+### 17. AVOID AI SLOP — MANDATORY UI PRE-CHECK
+Before building **any** UI component, section, or page, you MUST consult [`docs/AVOID_AI_SLOP.md`](./AVOID_AI_SLOP.md) and verify the design does not fall into any of the banned AI slop patterns.
+
+This is non-negotiable. The checklist in that document must be passed before any UI-related PR is submitted.
+
+Banned patterns include (but are not limited to):
+- Generic purple/blue gradient glows in hero sections or buttons
+- Glassmorphism used decoratively without structural purpose
+- The "3-card grid" (hero → 3-column icon/heading/text) as a primary layout
+- Sterile oversized spacing hiding a lack of content
+- Placeholder marquee logos or generic 3D character illustrations
+- Default Inter/Geist + Space Grotesk typography without brand motivation
+- Shadcn-clone navigation or sidebar layouts
+
+Violating this principle will result in the PR being rejected regardless of functionality.
