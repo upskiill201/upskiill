@@ -348,7 +348,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
       {/* ─── TOP BAR ─── */}
       <header className={styles.topBar}>
         <div className={styles.topBarLeft}>
-          <Link href="/instructor/courses" className={styles.backBtn}>
+          <Link href="/creator/courses" className={styles.backBtn}>
             <ArrowLeft size={16} /> Back to courses
           </Link>
           <span className={styles.topBarDivider}>|</span>

@@ -98,14 +98,17 @@
 - [ ] End-to-end Live Transaction Testing (Stripe Card + MeSomb MoMo)
 - [ ] Cart & Checkout "Satisfaction" Iteration 2 (Refining trust signals further)
 
-## 🟦 Pillar 5: Instructor Tools (Phase 1E) — 🟡 In Progress (60%)
-- [x] Instructor Login/Signup Responsive Pages. ✅
-- [x] Instructor Dashboard Overview & Layout. ✅
-- [x] **Course Creation Wizard (`/instructor/create`)** — ✅ COMPLETE (2026-04-10) 4-step wizard: type → title → category → time → creates DB draft + redirects to Studio
-- [x] **Course Studio (`/instructor/courses/[id]/manage`)** — ✅ COMPLETE (2026-04-10) Intended Learners panel, Course Structure panel, responsive design
-- [x] **Instructor Courses Page (`/instructor/courses`)** — ✅ COMPLETE (2026-04-10) Responsive course list with search, filter, and hover actions
-- [x] **Instructor Analytics Page (`/instructor/analytics`)** — ✅ COMPLETE (2026-04-10) Full analytics with KPIs, charts, student segmentation, responsive
-- [x] **Responsive Design Fixes** — ✅ COMPLETE (2026-04-10) Fixed mobile responsiveness for all instructor pages
+## 🟦 Pillar 5: Creator Tools (Phase 1E) — 🟡 In Progress (70%)
+- [x] Creator Login/Signup Responsive Pages. ✅
+- [x] **Creator Studio Redesign (`/creator/layout.tsx`)** — Rebranded from Instructor to Creator. Built new white-themed sidebar, layout, and integrated logout dropdown. ✅
+- [x] **Creator Dashboard Overview (`/creator/page.tsx`)** — Built new custom SVG chart mockup, widgets, and data tables removing AI slop. ✅
+- [x] **Course Creation Wizard (`/creator/create`)** — ✅ COMPLETE (2026-04-10) 4-step wizard: type → title → category → time → creates DB draft + redirects to Studio
+- [x] **Course Studio (`/creator/courses/[id]/manage`)** — ✅ COMPLETE (2026-04-10) Intended Learners panel, Course Structure panel, responsive design
+- [x] **Creator Courses Page (`/creator/courses`)** — ✅ COMPLETE (2026-04-10) Responsive course list with search, filter, and hover actions
+- [x] **Creator Analytics Page (`/creator/analytics`)** — ✅ COMPLETE (2026-04-10) Full analytics with KPIs, charts, student segmentation, responsive
+- [x] **Responsive Design Fixes** — ✅ COMPLETE (2026-04-10) Fixed mobile responsiveness for all creator pages
+- [x] **Task Assignment**: Assigned Logo Replacement task to Cynthia. ✅
+- [ ] Database fields for Course Creator wizard. 🚀 (NEXT)
 - [ ] Build Curriculum Video Uploader (AWS S3 Integration)
 
 ## 🟦 Pillar 6: Admin & Polish (Phase 1F) — 🔴 Not Started (0%)

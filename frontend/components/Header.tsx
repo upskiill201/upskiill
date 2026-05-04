@@ -167,10 +167,10 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <Link href={pathname === '/teach' ? "/instructor/login" : "/login"} className={styles.loginBtn}>
+                <Link href={pathname === '/teach' ? "/creator/login" : "/login"} className={styles.loginBtn}>
                   Login
                 </Link>
-                <Link href={pathname === '/teach' ? "/instructor/signup" : "/signup"} className={styles.signupBtn}>
+                <Link href={pathname === '/teach' ? "/creator/signup" : "/signup"} className={styles.signupBtn}>
                   Sign Up
                 </Link>
               </>

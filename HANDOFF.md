@@ -188,17 +188,15 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Separated Payment Methods**: Stripe (Cards/Wallets) and MeSomb (Mobile Money) are now split into clean, animated tabs with provider-specific validation. ✅ (2026-04-05)
 - [x] **Student Dashboard Layout & UX Fixes**: Fixed sidebar scrolling issue (position: fixed) and implemented full backend-integrated logout logic. ✅ (2026-04-06)
 - [x] **Production Deployment Stability**: Fixed Vercel TypeScript build failures by accurately typing `Map<string, Enrollment>` in `CoursesPage`. ✅ (2026-04-06)
-- [x] **Instructor Routing & Auth Fixes**: Corrected the marketing `/teach` page to isolate and strictly route instructors down the `/instructor/signup` funnel, separating them from the generic student flow. ✅ (2026-04-06)
-- [x] **Instantaneous Logout Engine**: Upgraded both Student & Instructor dashboards to use hard Navigation (`window.location.href`) during logout for immediate, 1-click state clearance without double-clicking. ✅ (2026-04-06)
-- [x] **Firebase Auth Robustness**: Fortified NestJS `ValidationPipe` to securely parse `FirebaseLoginDto` ensuring `idToken` payload is never stripped during social sign-on. ✅ (2026-04-06)
-- [x] **Dashboard Render Stability**: Guarded Prisma JSON arrays against corrupted strings preventing fatal Next.js "dark screen" hydrated errors rendering for seeded users over `.reduce` operations. ✅ (2026-04-06)
-- [x] **Global Auth Header State**: Revamped `Header.tsx` to instantly sync with JWT state exposing a dynamic Profile/Avatar interactive dropdown mirroring the logged-in user. Include fully stylized mobile-slider navigation. ✅ (2026-04-06)
-- [x] **Mobile Navigation Menu**: Implemented a full-screen slide-in hamburger drawer for `Header.tsx` with auth-aware state (shows Avatar+links for logged-in users, Login/Signup for guests). ✅ (2026-04-07)
-- [x] **Course Creation Wizard (Part 1)**: Built the 4-step instructor onboarding wizard at `/instructor/create`. ✅ (2026-04-08)
-- [x] **Production Backend Enforcement**: Enforced `https://upskiill-backend.onrender.com` in next.config.ts - never localhost. ✅ (2026-04-10)
-- [x] **Instructor Responsive Pages**: Made instructor overview, analytics, courses, and course studio fully responsive. ✅ (2026-04-10)
-- [x] **Instructor Courses Page** (`/instructor/courses`) — List of instructor's courses with search, filter, hover-to-edit overlay. ✅ (2026-04-10)
-- [x] **Course Studio** (`/instructor/courses/[id]/manage`) — Full studio with Intended Learners panel, sidebar navigation, responsive. ✅ (2026-04-10)
+- [x] **Creator Marketing Funnel (`/teach`)** — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
+- [x] **Creator Authentication (`/creator/login` & `/creator/signup`)** — Explicitly isolated creators UI ✅
+- [x] **Creator Studio Redesign Phase 1 (`/creator/layout.tsx` & `/creator/page.tsx`)** — Complete UI overhaul of the dashboard, clean white sidebar, SVG charting mockup, and Pro card removal. ✅ (2026-05-04)
+- [x] Analytics Page (`/creator/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
+- [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅
+- [x] **Course Creation Wizard Part 1** (`/creator/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅ (2026-04-08)
+- [x] **Creator Courses Page** (`/creator/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅ (2026-04-10)
+- [x] **Course Studio** (`/creator/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅ (2026-04-10)
+- [x] **Logo Replacement Task Assigned**: Created task in `Cynthia-Progress.md` for Cynthia to handle logo swap-outs across headers/footers and auth pages. ✅ (2026-05-04)
 
 ---
 
@@ -206,20 +204,20 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 
 > **Branch:** `course-creator-part-one` | **Status:** Part 1 Complete ✅ — Paused for Part 2 screenshots.
 
-### Part 1: The Wizard (Steps 1–4) at `/instructor/create`
+### Part 1: The Wizard (Steps 1–4) at `/creator/create`
 
-The wizard is a single-page client component (`InstructorLayout`-wrapped with shared `ComingSoonContext`). Steps are tracked in local state. The UI follows Udemy's minimalist design pattern with heavy black borders, animated grey selection cards, and sticky header/footer controls.
+The wizard is a single-page client component (`CreatorLayout`-wrapped with shared `ComingSoonContext`). Steps are tracked in local state. The UI follows Udemy's minimalist design pattern with heavy black borders, animated grey selection cards, and sticky header/footer controls.
 
 | Step | Route | Content | Validation |
 |---|---|---|---|
-| **1/4** | `/instructor/create` | Select "Course" vs "Practice Test". Tapping "Practice Test" fires the global `triggerComingSoon()` modal from the layout context — no page change. | Requires a type selection to enable "Continue" |
+| **1/4** | `/creator/create` | Select "Course" vs "Practice Test". Tapping "Practice Test" fires the global `triggerComingSoon()` modal from the layout context — no page change. | Requires a type selection to enable "Continue" |
 | **2/4** | Same page (local state) | Title input (`maxLength=60`). Placeholder: _e.g. Learn Photoshop CS6 from Scratch_ | Title must be non-empty |
 | **3/4** | Same page (local state) | Category dropdown with all 13 official categories + "I don't know yet" | Category must be selected |
 | **4/4** | Same page (local state) | Time commitment radio buttons (4 options: 0-2h / 2-4h / 5+h / Undecided). Final button says **"Create Course"** | A radio option must be selected |
 
 **On Submit:** A `POST /api/courses` request is fired to `NEXT_PUBLIC_API_URL` (production) with `{ title, category, creatorTimeWeekly }` and `credentials: 'include'`. Backend auto-generates a collision-proof slug and creates a `published: false` course draft. The response `data.id` is used to redirect to the Course Studio.
 
-### Part 2: The Course Studio at `/instructor/courses/[id]/manage`
+### Part 2: The Course Studio at `/creator/courses/[id]/manage`
 
 Built a **full-featured Course Studio** with:
 
@@ -257,20 +255,18 @@ The studio features:
 - [x] Premium Order UI (`/cart` & `/checkout`) - Redesigned & Polished
 - [ ] **FINAL STEP:** End-to-end Live Transaction Verification (P0)
 
-### Pillar 5: Instructor Tools & Insights 🏗️ (In Progress - 60%)
-- [x] Instructor Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
-- [x] Instructor Authentication (`/instructor/login` & `/instructor/signup`) — Explicitly isolated creators UI ✅
-- [x] Instructor Dashboard Layout (`/instructor/layout.tsx`) — fixed sidebar, role badge, proper overflow handling ✅
-- [x] Instructor Overview Page (`/instructor/page.tsx`) — Seeded stats, table metrics, instructor score ✅
-- [x] Analytics Page (`/instructor/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
+### Pillar 5: Creator Tools & Insights 🏗️ (In Progress - 70%)
+- [x] Creator Marketing Funnel (`/teach`) — 10x redesigned with interactive earnings calculator, platform comparison matrix, and floating UI animations ✅
+- [x] Creator Authentication (`/creator/login` & `/creator/signup`) — Explicitly isolated creators UI ✅
+- [x] **Creator Studio Redesign (`/creator/layout.tsx`)** — Rebranded from Instructor to Creator. Built new white-themed sidebar, layout, and integrated logout dropdown. ✅
+- [x] **Creator Dashboard Overview (`/creator/page.tsx`)** — Built new custom SVG chart mockup, widgets, and data tables removing AI slop. ✅
+- [x] Analytics Page (`/creator/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
 - [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅
-- [x] **Course Creation Wizard Part 1** (`/instructor/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅ (2026-04-08)
-- [x] **Instructor Courses Page** (`/instructor/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅ (2026-04-10)
-- [x] **Course Studio** (`/instructor/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅ (2026-04-10)
-- [x] **Responsive Mobile Design** — Fixed mobile responsiveness for all instructor pages (overview, analytics, courses, studio). ✅ (2026-04-10)
-- [ ] **Course Studio Part 2** — Curriculum Builder, Video Upload (AWS S3)
-
-
+- [x] **Course Creation Wizard Part 1** (`/creator/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅
+- [x] **Creator Courses Page** (`/creator/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅
+- [x] **Course Studio** (`/creator/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅
+- [x] **Task Assignment**: Assigned Logo Replacement task to Cynthia. ✅
+- [ ] **Course Studio Part 2** — Database fields for the course creator wizard & Curriculum Builder. 🚀 (NEXT)
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-06)
 - [x] Signup → POST `/api/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
 - [x] Login → POST `/api/auth/login` → sets `httpOnly` cookie, returns `{ access_token, user }`
@@ -343,13 +339,15 @@ _Current Focus: Pillar 2 (Course Marketplace)_
      - [x] `GET /courses/:id` — single course detail with Instructor payload
      - [x] `GET /courses/categories` — list all categories
 - [x] **Course Landing Page (100% DONE)**: Responsive sticky card, dynamic curriculum, instructor details. ✅
-4. **[x] Pillar 5: Instructor Tools (Current - 60% Done)**
-   - [x] Instructor Dashboard Overview (`/instructor`)
-   - [x] Instructor Analytics Page (`/instructor/analytics`)
-   - [x] Instructor Courses Page (`/instructor/courses`)
-   - [x] Course Creation Wizard (`/instructor/create`)
-   - [x] Course Studio (`/instructor/courses/[id]/manage`)
+4. **[x] Pillar 5: Creator Tools (Current - 70% Done)**
+   - [x] Creator Dashboard Redesign (`/creator`)
+   - [x] Creator Analytics Page (`/creator/analytics`)
+   - [x] Creator Courses Page (`/creator/courses`)
+   - [x] Course Creation Wizard (`/creator/create`)
+   - [x] Course Studio (`/creator/courses/[id]/manage`)
    - [x] Mobile Responsive Design
+   - [x] Logo Update assigned to Cynthia
+   - [ ] Database fields for Course Creator
    - [ ] AWS S3 Video Upload Integration
 5. **[ ] Pillar 6: Admin & Polish (Phase 1F)**
    - [ ] Admin Portal & Moderation tools
