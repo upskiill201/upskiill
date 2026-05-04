@@ -94,7 +94,7 @@ export const InstructorCard = ({
 
       {/* ACTIONS */}
       <div className={styles.footer}>
-        <Link href={`/instructor/${id}`} className={styles.fullLink}>
+        <Link href={`/creator/${id}`} className={styles.fullLink}>
           <Button variant="outline" fullWidth className={styles.profileBtn} rightIcon={<ExternalLink size={14} />}>
             View Full Profile
           </Button>

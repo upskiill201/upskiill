@@ -85,7 +85,7 @@ export default function CourseCreationWizard() {
 
       if (res.ok) {
         const data = await res.json();
-        router.push(`/instructor/courses/${data.id}/manage`);
+        router.push(`/creator/courses/${data.id}/manage`);
       } else {
         const err = await res.json().catch(() => ({}));
         console.error('Failed to create course:', res.status, err);
@@ -118,12 +118,12 @@ export default function CourseCreationWizard() {
           />
         </div>
         <div className={styles.headerLeft}>
-          <Link href="/instructor" className={styles.logo}>
+          <Link href="/creator" className={styles.logo}>
             <Image src="/logo.png" alt="Upskiill" width={100} height={28} style={{ width: 'auto', height: '24px' }} />
           </Link>
           <span className={styles.stepIndicator}>Step {step} of 4</span>
         </div>
-        <Link href="/instructor" className={styles.exitBtn}>Exit</Link>
+        <Link href="/creator" className={styles.exitBtn}>Exit</Link>
       </header>
 
       {/* Main Content Area */}

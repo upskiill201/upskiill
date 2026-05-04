@@ -6,18 +6,18 @@ export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isStudentAuthPage = path === '/login' || path === '/signup';
-  const isInstructorAuthPage = path.startsWith('/instructor/login') || path.startsWith('/instructor/signup');
+  const isInstructorAuthPage = path.startsWith('/creator/login') || path.startsWith('/creator/signup');
   const isAuthPage = isStudentAuthPage || isInstructorAuthPage;
   
   const isDashboard = path.startsWith('/dashboard');
-  const isInstructorArea = path.startsWith('/instructor') && !isInstructorAuthPage;
+  const isInstructorArea = path.startsWith('/creator') && !isInstructorAuthPage;
 
   if (!token) {
     if (isDashboard) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
     if (isInstructorArea) {
-      return NextResponse.redirect(new URL('/instructor/login', request.url));
+      return NextResponse.redirect(new URL('/creator/login', request.url));
     }
     return NextResponse.next();
   }
@@ -37,11 +37,11 @@ export function proxy(request: NextRequest) {
     // Redirect authenticated users away from login pages
     if (isAuthPage) {
        if (role === 'INSTRUCTOR' && isInstructorAuthPage) {
-          return NextResponse.redirect(new URL('/instructor', request.url));
+          return NextResponse.redirect(new URL('/creator', request.url));
        }
        if (role === 'INSTRUCTOR' && isStudentAuthPage) {
           // If instructor goes to student login, let's take them to instructor dashboard by default
-          return NextResponse.redirect(new URL('/instructor', request.url));
+          return NextResponse.redirect(new URL('/creator', request.url));
        }
        return NextResponse.redirect(new URL('/dashboard', request.url));
     }

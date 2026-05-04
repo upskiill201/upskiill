@@ -61,7 +61,7 @@ function AuthContent() {
       }
 
       // Success — Route directly to the instructor dashboard
-      window.location.href = '/instructor';
+      window.location.href = '/creator';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
       setError(message);
@@ -93,7 +93,7 @@ function AuthContent() {
         throw new Error(data.message || 'Social authentication failed');
       }
 
-      window.location.href = '/instructor';
+      window.location.href = '/creator';
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {
@@ -116,7 +116,7 @@ function AuthContent() {
     setMode(newMode);
     
     // Smoothly update URL without reloading
-    const newPath = `/instructor/${newMode}`;
+    const newPath = `/creator/${newMode}`;
     router.replace(newPath, { scroll: false });
   };
 
@@ -211,7 +211,7 @@ function AuthContent() {
 
             {mode === 'signup' && (
               <div className={styles.termsBox}>
-                By signing up, you agree to our <Link href="/terms/instructor">Instructor Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
+                By signing up, you agree to our <Link href="/terms/creator">Instructor Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
               </div>
             )}
 

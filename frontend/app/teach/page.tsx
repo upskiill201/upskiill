@@ -118,7 +118,7 @@ export default function TeachPage() {
             Become an instructor and change lives — including your own. Publish premium learning experiences on a platform that actively scales your success.
           </p>
           <div className={styles.heroActions}>
-            <Link href="/instructor/signup">
+            <Link href="/creator/signup">
               <Button size="lg" variant="primary" className={styles.btnPulse}>Get Started</Button>
             </Link>
           </div>
@@ -129,6 +129,7 @@ export default function TeachPage() {
               src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1000&q=80"
               alt="Instructor teaching"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className={styles.heroImage}
               priority
             />
@@ -164,7 +165,7 @@ export default function TeachPage() {
       {/* ─── GLOBAL STATS PARALLAX ─── */}
       <section className={styles.statsSection}>
         <div className={styles.statsBgWrap}>
-           <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&q=80" fill alt="Scale" className={styles.statsBgImage} />
+           <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&q=80" fill sizes="100vw" alt="Scale" className={styles.statsBgImage} />
            <div className={styles.statsOverlay} />
         </div>
         <div className={styles.statsInner}>
@@ -206,6 +207,7 @@ export default function TeachPage() {
                  src="/dashboard-concept.jpg"
                  alt="Our real analytics dashboard"
                  fill
+                 sizes="(max-width: 768px) 100vw, 50vw"
                  className={styles.advImgMain}
                />
                <div className={styles.advImgOverlay} />
@@ -333,7 +335,7 @@ export default function TeachPage() {
                   <p className={styles.resultNote}>Traditional platforms could tax up to 63% on promotional sales.</p>
                 </div>
 
-                <Link href="/instructor/signup" style={{width: '100%'}}>
+                <Link href="/creator/signup" style={{width: '100%'}}>
                   <Button variant="primary" style={{width: '100%', height: '52px', fontSize: '16px'}}>Start Earning Now</Button>
                 </Link>
 
@@ -382,6 +384,7 @@ export default function TeachPage() {
                 src={STEPS[activeStep].image}
                 alt={STEPS[activeStep].title}
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className={styles.stepImage}
               />
               <div className={styles.stepImageOverlay} />
@@ -397,6 +400,7 @@ export default function TeachPage() {
              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&q=80"
              alt="Support Team"
              fill
+             sizes="(max-width: 768px) 100vw, 50vw"
              className={styles.supportImage}
            />
            <div className={styles.supportImageOverlay} />
@@ -411,7 +415,7 @@ export default function TeachPage() {
             Plus, get the support of experienced instructors in our globally connected online community.
           </p>
           <div className={styles.supportActions}>
-            <Link href="/instructor/signup">
+            <Link href="/creator/signup">
               <Button variant="outline" size="lg" style={{borderColor:'white', color:'white'}}>Join the Community</Button>
             </Link>
           </div>
@@ -424,7 +428,7 @@ export default function TeachPage() {
         <div className={styles.ctaInner}>
           <h2 className={styles.ctaTitle}>Become an instructor today</h2>
           <p className={styles.ctaSub}>Join one of the world&apos;s most advanced and fastest growing online learning marketplaces.</p>
-          <Link href="/instructor/signup">
+          <Link href="/creator/signup">
             <Button size="lg" variant="primary" className={styles.btnPulse}>Get Started Now</Button>
           </Link>
         </div>

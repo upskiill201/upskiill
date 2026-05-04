@@ -15,10 +15,10 @@ export default function HeaderWrapper() {
     pathname === '/join' ||
     pathname === '/signup' ||
     pathname === '/login' ||
-    pathname === '/instructor/login' ||
-    pathname === '/instructor/signup' ||
+    pathname === '/creator/login' ||
+    pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/instructor');
+    pathname.startsWith('/creator');
 
   if (isHiddenRoute) return null;
 
