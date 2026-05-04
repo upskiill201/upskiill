@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
   X, Check, ChevronRight, GripVertical, Plus,
   Upload, Edit2, BookOpen, PenTool, LayoutTemplate,
-  ShieldCheck, HelpCircle, CheckCircle
+  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp
 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -95,12 +95,14 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const isNew = courseId === 'new';
   const router = useRouter();
 
-  const [loading, setLoading] = useState(!isNew); // only load if editing existing
+  const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [data, setData] = useState<CourseDraft>(EMPTY_DRAFT);
   const [skillInput, setSkillInput] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [stepsOpen, setStepsOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ─── LOAD EXISTING DRAFT ───
@@ -269,59 +271,75 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
     );
   }
 
+  const STEPS = [
+    { num: 1, label: 'Course Setup', desc: 'Define your course' },
+    { num: 2, label: 'Build Curriculum', desc: 'Add modules & lessons' },
+    { num: 3, label: 'Lesson Builder', desc: 'Learn · Apply · Reflect · Deepen' },
+    { num: 4, label: 'Preview & Publish', desc: 'Review and publish' },
+  ];
+
   return (
     <div className={styles.builderLayout}>
+
+      {/* ─── MOBILE STEPS DRAWER OVERLAY ─── */}
+      {stepsOpen && (
+        <div className={styles.drawerOverlay} onClick={() => setStepsOpen(false)}>
+          <div className={styles.stepsDrawer} onClick={e => e.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <span className={styles.drawerTitle}>Course Steps</span>
+              <button className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
+            </div>
+            {STEPS.map(step => (
+              <div key={step.num} className={`${styles.drawerStep} ${step.num === 1 ? styles.drawerStepActive : ''}`}>
+                <span className={`${styles.crumbNum} ${step.num === 1 ? styles.crumbNumActive : ''}`}>{step.num}</span>
+                <div>
+                  <div className={styles.drawerStepLabel}>{step.label}</div>
+                  <div className={styles.drawerStepDesc}>{step.desc}</div>
+                </div>
+                {step.num === 1 && <Check size={14} className={styles.drawerStepCheck} />}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ─── TOP HEADER ─── */}
       <header className={styles.header}>
         <div className={styles.headerLeft}>
+          {/* Mobile: hamburger */}
+          <button className={styles.hamburger} onClick={() => setStepsOpen(true)} aria-label="Open steps menu">
+            <Menu size={20} />
+          </button>
+
           <div className={styles.logoMark}>
-            <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} style={{ width: 'auto', height: '30px' }} priority />
+            <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} style={{ width: 'auto', height: '28px' }} priority />
           </div>
+
+          {/* Mobile: compact step badge */}
+          <span className={styles.mobileStepBadge}>Step 1/4</span>
+
           <span className={styles.headerSeparator} />
           <span className={styles.headerMeta}>Create a new course</span>
 
+          {/* Desktop: full breadcrumbs */}
           <div className={styles.breadcrumbs}>
-            <div className={`${styles.crumb} ${styles.crumbActive}`}>
-              <span className={`${styles.crumbNum} ${styles.crumbNumActive}`}>1</span>
-              <div className={styles.crumbText}>
-                <span className={styles.crumbLabel}>Course Setup</span>
-                <span className={styles.crumbDesc}>Define your course</span>
-              </div>
-            </div>
-            <ChevronRight size={14} className={styles.crumbArrow} />
-            <div className={styles.crumb}>
-              <span className={styles.crumbNum}>2</span>
-              <div className={styles.crumbText}>
-                <span className={styles.crumbLabel}>Build Curriculum</span>
-                <span className={styles.crumbDesc}>Add modules & lessons</span>
-              </div>
-            </div>
-            <ChevronRight size={14} className={styles.crumbArrow} />
-            <div className={styles.crumb}>
-              <span className={styles.crumbNum}>3</span>
-              <div className={styles.crumbText}>
-                <span className={styles.crumbLabel}>Lesson Builder</span>
-                <span className={styles.crumbDesc}>Learn · Apply · Reflect · Deepen</span>
-              </div>
-            </div>
-            <ChevronRight size={14} className={styles.crumbArrow} />
-            <div className={styles.crumb}>
-              <span className={styles.crumbNum}>4</span>
-              <div className={styles.crumbText}>
-                <span className={styles.crumbLabel}>Preview & Publish</span>
-                <span className={styles.crumbDesc}>Review and publish</span>
-              </div>
-            </div>
+            {STEPS.map((step, i) => (
+              <React.Fragment key={step.num}>
+                {i > 0 && <ChevronRight size={14} className={styles.crumbArrow} />}
+                <div className={`${styles.crumb} ${step.num === 1 ? styles.crumbActive : ''}`}>
+                  <span className={`${styles.crumbNum} ${step.num === 1 ? styles.crumbNumActive : ''}`}>{step.num}</span>
+                  <div className={styles.crumbText}>
+                    <span className={styles.crumbLabel}>{step.label}</span>
+                    <span className={styles.crumbDesc}>{step.desc}</span>
+                  </div>
+                </div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
         <div className={styles.headerRight}>
-          <button
-            className={styles.saveDraftBtn}
-            onClick={saveDraft}
-            disabled={saving}
-          >
+          <button className={styles.saveDraftBtn} onClick={saveDraft} disabled={saving}>
             {saving ? 'Saving...' : 'Save draft'}
           </button>
           <button className={styles.closeBtn} onClick={() => router.push('/creator/courses')}>
@@ -632,53 +650,60 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           ══════════════════════════════════ */}
           <aside className={styles.sidebar}>
 
-            {/* Help links */}
-            <div className={styles.widgetCard}>
-              <h3 className={styles.widgetTitle}>Need help?</h3>
-              <p className={styles.widgetDesc}>Check our documentation to create high-quality courses.</p>
+            {/* Mobile guide toggle */}
+            <button className={styles.guideToggle} onClick={() => setGuideOpen(o => !o)}>
+              <span>Course Guide &amp; Checklist</span>
+              {guideOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
 
-              {[
-                { icon: <BookOpen size={16} />, title: 'Course Setup Guide', desc: 'Learn how to create a course that learners love.' },
-                { icon: <PenTool size={16} />, title: 'Writing Effective Outcomes', desc: 'How to define clear learning outcomes that sell.' },
-                { icon: <LayoutTemplate size={16} />, title: 'Choosing the Right Category', desc: 'Tips to help your course get discovered.' },
-                { icon: <ShieldCheck size={16} />, title: 'Course Quality Standards', desc: 'Our guidelines for publishing successful courses.' },
-              ].map(item => (
-                <a key={item.title} href="#" className={styles.helpRow}>
-                  <div className={styles.helpIcon}>{item.icon}</div>
-                  <div>
-                    <div className={styles.helpTitle}>{item.title}</div>
-                    <div className={styles.helpDesc}>{item.desc}</div>
-                  </div>
-                </a>
-              ))}
-            </div>
+            <div className={`${styles.sidebarInner} ${guideOpen ? styles.sidebarInnerOpen : ''}`}>
+              {/* Help links */}
+              <div className={styles.widgetCard}>
+                <h3 className={styles.widgetTitle}>Need help?</h3>
+                <p className={styles.widgetDesc}>Check our documentation to create high-quality courses.</p>
 
-            {/* Checklist */}
-            <div className={styles.widgetCard}>
-              <h3 className={styles.widgetTitle}>Course Setup Checklist</h3>
-              <p className={styles.widgetDesc}>Complete all required sections to continue to the next step.</p>
-
-              <div className={styles.checklist}>
                 {[
-                  { label: 'Basic Information', done: basicDone, count: `${[data.title, data.subtitle, data.category].filter(Boolean).length}/3` },
-                  { label: 'Course Description', done: descDone, count: `${[data.shortDescription, data.description].filter(Boolean).length}/2` },
-                  { label: 'Learning Outcomes', done: outcomesDone, count: `${data.outcomes.filter(o => o.trim()).length > 0 ? 1 : 0}/1` },
-                  { label: 'Skills', done: skillsDone, count: `${skillsDone ? 1 : 0}/1` },
-                  { label: 'Thumbnail & Preview', done: thumbDone, count: `${thumbDone ? 1 : 0}/2` },
+                  { icon: <BookOpen size={16} />, title: 'Course Setup Guide', desc: 'Learn how to create a course that learners love.' },
+                  { icon: <PenTool size={16} />, title: 'Writing Effective Outcomes', desc: 'How to define clear learning outcomes that sell.' },
+                  { icon: <LayoutTemplate size={16} />, title: 'Choosing the Right Category', desc: 'Tips to help your course get discovered.' },
+                  { icon: <ShieldCheck size={16} />, title: 'Course Quality Standards', desc: 'Our guidelines for publishing successful courses.' },
                 ].map(item => (
-                  <div key={item.label} className={styles.checkRow}>
-                    <div className={styles.checkLeft}>
-                      <div className={`${styles.checkCircle} ${item.done ? styles.checkCircleDone : ''}`}>
-                        {item.done && <Check size={11} />}
-                      </div>
-                      <span className={styles.checkLabel}>{item.label}</span>
+                  <a key={item.title} href="#" className={styles.helpRow}>
+                    <div className={styles.helpIcon}>{item.icon}</div>
+                    <div>
+                      <div className={styles.helpTitle}>{item.title}</div>
+                      <div className={styles.helpDesc}>{item.desc}</div>
                     </div>
-                    <span className={styles.checkCount}>{item.count}</span>
-                  </div>
+                  </a>
                 ))}
               </div>
-            </div>
 
+              {/* Checklist */}
+              <div className={styles.widgetCard}>
+                <h3 className={styles.widgetTitle}>Course Setup Checklist</h3>
+                <p className={styles.widgetDesc}>Complete all required sections to continue to the next step.</p>
+
+                <div className={styles.checklist}>
+                  {[
+                    { label: 'Basic Information', done: basicDone, count: `${[data.title, data.subtitle, data.category].filter(Boolean).length}/3` },
+                    { label: 'Course Description', done: descDone, count: `${[data.shortDescription, data.description].filter(Boolean).length}/2` },
+                    { label: 'Learning Outcomes', done: outcomesDone, count: `${data.outcomes.filter(o => o.trim()).length > 0 ? 1 : 0}/1` },
+                    { label: 'Skills', done: skillsDone, count: `${skillsDone ? 1 : 0}/1` },
+                    { label: 'Thumbnail & Preview', done: thumbDone, count: `${thumbDone ? 1 : 0}/2` },
+                  ].map(item => (
+                    <div key={item.label} className={styles.checkRow}>
+                      <div className={styles.checkLeft}>
+                        <div className={`${styles.checkCircle} ${item.done ? styles.checkCircleDone : ''}`}>
+                          {item.done && <Check size={11} />}
+                        </div>
+                        <span className={styles.checkLabel}>{item.label}</span>
+                      </div>
+                      <span className={styles.checkCount}>{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </aside>
         </div>
       </main>
