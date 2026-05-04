@@ -55,19 +55,26 @@ model Course {
   originalPrice    Float?
   published        Boolean      @default(false)
 
-  // UI Metadata
+  // Teyro Course Transformation Engine
   category         String       @default("Uncategorized")
   level            String       @default("Beginner")
   duration         String       @default("0h")
+  creatorTimeWeekly String?
+  subtitle         String?
+  startingPoint    String?      @db.Text
+  endOutcome       String?      @db.Text
+  realOutputs      Json?
+  
+  subcategory      String?
+  language         String       @default("English")
+  skills           Json?        // Array of strings
+  requirements     Json?        // Array of strings (Prerequisites)
+  outcomes         Json?        // Array of strings (What learners will achieve)
+  
   rating           Float        @default(0)
   reviewsCount     Int          @default(0)
   studentsCount    Int          @default(0)
-  creatorTimeWeekly String?
 
-  // Rich Content (JSON arrays)
-  whatYouWillLearn Json?
-  requirements     Json?
-  targetAudience   Json?
   curriculum       Json?        @default("[]")
 
   // Relations
@@ -87,6 +94,7 @@ model Course {
 model Section {
   id          String   @id @default(uuid())
   title       String
+  goal        String?  @db.Text
   orderIndex  Int      @default(0)
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -99,11 +107,35 @@ model Section {
 model Lesson {
   id              String   @id @default(uuid())
   title           String
-  description     String?  @db.Text
-  videoUrl        String?  // The AWS S3 or Mux URL
-  durationMinutes Int      @default(0)
-  isFreePreview   Boolean  @default(false)
   orderIndex      Int      @default(0)
+  isFreePreview   Boolean  @default(false)
+  durationMinutes Int      @default(0)
+
+  // 1. LEARN (Input)
+  learnVideoUrl   String?
+  learnText       String?  @db.Text
+
+  // 2. APPLY (Action)
+  applyType       String?  @default("TEXT") // TEXT, MULTIPLE_CHOICE, BUILD, etc.
+  applyScenario   String?  @db.Text
+  applyTask       String?  @db.Text
+  applyAnswer     String?  @db.Text
+  applyExplanation String? @db.Text
+
+  // 3. REFLECT
+  reflectPrompt   String?  @db.Text
+  reflectChips    Json?    // Suggested takeaways array
+
+  // 4. DEEPEN
+  deepenResources Json?    // Array of resources [{title, type, url, estimatedTime}]
+
+  // 5. AI SUPPORT DATA
+  aiSimplified    String?  @db.Text
+  aiRealWorld     String?  @db.Text
+  aiCommonMistakes String? @db.Text
+
+  // System
+  xpReward        Int      @default(10)
   
   sectionId       String
   section         Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)

@@ -145,57 +145,59 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
         {/* ─── MAIN AREA ─── */}
         <main className={styles.main}>
-          {/* Header */}
-          <header className={styles.header}>
-            <div className={styles.headerLeft}>
-              <div className={styles.pageTitleWrapper}>
-                <BarChart2 size={20} className={styles.titleIcon} />
-                <h1 className={styles.pageTitle}>Creator Studio</h1>
-              </div>
-            </div>
-
-            <div className={styles.headerRight}>
-              <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')}>
-                <Plus size={16} />
-                <span>Create New Course</span>
-              </button>
-
-              <div className={styles.headerControls}>
-                <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
-                  <Bell size={20} />
-                  <span className={styles.notifBadge}>3</span>
-                </button>
-
-                {/* Profile Wrapper - using a div to handle outside click */}
-                <div className={styles.creatorProfileWrapper} ref={dropdownRef}>
-                  <div 
-                    className={styles.userProfile}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    <Avatar src={creatorAvatar} name={creatorName} size="sm" />
-                    <div className={styles.userInfo}>
-                      <div className={styles.userNameRow}>
-                        <span className={styles.userName}>{creatorName}</span>
-                        <ChevronDown size={14} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
-                      </div>
-                      <span className={styles.userRole}>Instructor</span>
-                    </div>
-                  </div>
-
-                  {isMounted && isDropdownOpen && (
-                    <div className={styles.profileDropdownMenu}>
-                      <button className={styles.profileDropdownItem} onClick={() => { setIsDropdownOpen(false); triggerComingSoon('Settings'); }}>
-                        <Settings size={16} /> Settings
-                      </button>
-                      <button className={styles.profileDropdownLogout} onClick={handleLogout}>
-                        <LogOut size={16} /> Logout
-                      </button>
-                    </div>
-                  )}
+          {/* Header - Hidden in Builder mode so the Builder can provide its own edge-to-edge header */}
+          {!pathname.includes('/builder') && (
+            <header className={styles.header}>
+              <div className={styles.headerLeft}>
+                <div className={styles.pageTitleWrapper}>
+                  <BarChart2 size={20} className={styles.titleIcon} />
+                  <h1 className={styles.pageTitle}>Creator Studio</h1>
                 </div>
               </div>
-            </div>
-          </header>
+
+              <div className={styles.headerRight}>
+                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/builder')}>
+                  <Plus size={16} />
+                  <span>Create New Course</span>
+                </button>
+
+                <div className={styles.headerControls}>
+                  <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
+                    <Bell size={20} />
+                    <span className={styles.notifBadge}>3</span>
+                  </button>
+
+                  {/* Profile Wrapper - using a div to handle outside click */}
+                  <div className={styles.creatorProfileWrapper} ref={dropdownRef}>
+                    <div 
+                      className={styles.userProfile}
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      <Avatar src={creatorAvatar} name={creatorName} size="sm" />
+                      <div className={styles.userInfo}>
+                        <div className={styles.userNameRow}>
+                          <span className={styles.userName}>{creatorName}</span>
+                          <ChevronDown size={14} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+                        </div>
+                        <span className={styles.userRole}>Instructor</span>
+                      </div>
+                    </div>
+
+                    {isMounted && isDropdownOpen && (
+                      <div className={styles.profileDropdownMenu}>
+                        <button className={styles.profileDropdownItem} onClick={() => { setIsDropdownOpen(false); triggerComingSoon('Settings'); }}>
+                          <Settings size={16} /> Settings
+                        </button>
+                        <button className={styles.profileDropdownLogout} onClick={handleLogout}>
+                          <LogOut size={16} /> Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </header>
+          )}
 
           <div className={styles.content}>{children}</div>
         </main>

@@ -262,11 +262,17 @@ The studio features:
 - [x] **Creator Dashboard Overview (`/creator/page.tsx`)** — Built new custom SVG chart mockup, widgets, and data tables removing AI slop. ✅
 - [x] Analytics Page (`/creator/analytics/page.tsx`) — Deeper insights: heatmaps, drop-off analysis, student funnel ✅
 - [x] Dynamic Browse UI Fixes — Fixed hardcoded result counts & added "Continue Learning" status detection for enrolled students ✅
-- [x] **Course Creation Wizard Part 1** (`/creator/create`) — 4-step wizard: type → title → category → time commitment → creates DB draft + redirects to Course Studio. ✅
-- [x] **Creator Courses Page** (`/creator/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅
-- [x] **Course Studio** (`/creator/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅
-- [x] **Task Assignment**: Assigned Logo Replacement task to Cynthia. ✅
-- [ ] **Course Studio Part 2** — Database fields for the course creator wizard & Curriculum Builder. 🚀 (NEXT)
+- [x] **Course Builder Step 1: Course Setup** (`/creator/builder/[id]`) — ✅ COMPLETE (2026-05-04)
+  - Interactive Step 1 following Hi-Fi design.
+  - Integration with Supabase Storage for course thumbnails.
+  - Rich Text Editor and dynamic Learning Outcomes system.
+  - "Save-on-demand" architecture to avoid partial/broken drafts.
+- [ ] **Course Builder Step 2: Build Curriculum** — 🚀 (NEXT) Database fields for Curriculum Builder & S3 Integration.
+- [x] **Team Task Hand-offs (2026-05-04)**:
+  - **Chelsea**: Copywriting for pedagogical tooltips (Deadline: May 8th).
+  - **Brandy**: Development of the Internal Documentation CMS (Deadline: May 10th).
+  - **Cynthia**: Global rebranding/logo swap (Deadline: May 7th).
+
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-06)
 - [x] Signup → POST `/api/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`
 - [x] Login → POST `/api/auth/login` → sets `httpOnly` cookie, returns `{ access_token, user }`

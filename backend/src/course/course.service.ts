@@ -241,9 +241,15 @@ export class CourseService {
       price?: number;
       originalPrice?: number;
       level?: string;
-      whatYouWillLearn?: string[];
+      subtitle?: string;
+      startingPoint?: string;
+      endOutcome?: string;
+      realOutputs?: string[];
+      subcategory?: string;
+      language?: string;
+      skills?: string[];
       requirements?: string[];
-      targetAudience?: string[];
+      outcomes?: string[];
       curriculum?: unknown;
     },
   ) {
@@ -270,9 +276,15 @@ export class CourseService {
         ...(data.price !== undefined && { price: data.price }),
         ...(data.originalPrice !== undefined && { originalPrice: data.originalPrice }),
         ...(data.level !== undefined && { level: data.level }),
-        ...(data.whatYouWillLearn !== undefined && { whatYouWillLearn: data.whatYouWillLearn }),
+        ...(data.subtitle !== undefined && { subtitle: data.subtitle }),
+        ...(data.startingPoint !== undefined && { startingPoint: data.startingPoint }),
+        ...(data.endOutcome !== undefined && { endOutcome: data.endOutcome }),
+        ...(data.realOutputs !== undefined && { realOutputs: data.realOutputs }),
+        ...(data.subcategory !== undefined && { subcategory: data.subcategory }),
+        ...(data.language !== undefined && { language: data.language }),
+        ...(data.skills !== undefined && { skills: data.skills }),
         ...(data.requirements !== undefined && { requirements: data.requirements }),
-        ...(data.targetAudience !== undefined && { targetAudience: data.targetAudience }),
+        ...(data.outcomes !== undefined && { outcomes: data.outcomes }),
         ...(data.curriculum !== undefined && { curriculum: data.curriculum as any }),
       },
     });
