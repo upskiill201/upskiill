@@ -112,9 +112,15 @@ export class CourseController {
       price?: number;
       originalPrice?: number;
       level?: string;
-      whatYouWillLearn?: string[];
+      subtitle?: string;
+      startingPoint?: string;
+      endOutcome?: string;
+      realOutputs?: string[];
+      subcategory?: string;
+      language?: string;
+      skills?: string[];
       requirements?: string[];
-      targetAudience?: string[];
+      outcomes?: string[];
       curriculum?: unknown;
     },
   ) {

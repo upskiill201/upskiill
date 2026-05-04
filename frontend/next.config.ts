@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        // Supabase Storage — course thumbnails
+        protocol: 'https',
+        hostname: 'iobdpmczxikgocvfzouo.supabase.co',
+      },
     ],
   },
   async rewrites() {

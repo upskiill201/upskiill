@@ -81,7 +81,7 @@ export default function InstructorCoursesPage() {
           </select>
         </div>
 
-        <Button variant="primary" href="/creator/create" style={{ padding: '0 24px' }}>
+        <Button variant="primary" href="/creator/builder" style={{ padding: '0 24px' }}>
           New course
         </Button>
       </div>
@@ -120,7 +120,7 @@ export default function InstructorCoursesPage() {
       ) : (
         <div className={styles.courseList}>
           {filteredCourses.map(course => (
-            <Link key={course.id} href={`/creator/courses/${course.id}/manage`} className={styles.courseRow}>
+            <Link key={course.id} href={`/creator/builder/${course.id}`} className={styles.courseRow}>
               {/* Hover Edit Overlay */}
               <div className={styles.editBtnOverlay}>
                 <span className={styles.editOverlayLabel}>Edit / manage course</span>
