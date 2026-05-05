@@ -40,7 +40,7 @@ type Section = {
   lessons: Lesson[];
 };
 
-export type Props = {
+type Props = {
   courseId: string;
   onBack: () => void;
   onSaveStatus: (s: 'idle' | 'saving' | 'saved' | 'error') => void;
