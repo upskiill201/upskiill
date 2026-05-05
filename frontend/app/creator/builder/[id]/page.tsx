@@ -11,6 +11,8 @@ import {
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import CurriculumBuilder from './CurriculumBuilderMain';
+import { InactiveStepModal } from './CurriculumBuilder';
 import styles from './Builder.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -215,6 +217,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const [uploadingImage, setUploadingImage] = useState(false);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
+  const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ─── LOAD EXISTING DRAFT ───
@@ -410,13 +414,13 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
               <button className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
             </div>
             {STEPS.map(step => (
-              <div key={step.num} className={`${styles.drawerStep} ${step.num === 1 ? styles.drawerStepActive : ''}`}>
-                <span className={`${styles.crumbNum} ${step.num === 1 ? styles.crumbNumActive : ''}`}>{step.num}</span>
+              <div key={step.num} className={`${styles.drawerStep} ${step.num === activeStep ? styles.drawerStepActive : ''}`}>
+                <span className={`${styles.crumbNum} ${step.num === activeStep ? styles.crumbNumActive : ''}`}>{step.num}</span>
                 <div>
                   <div className={styles.drawerStepLabel}>{step.label}</div>
                   <div className={styles.drawerStepDesc}>{step.desc}</div>
                 </div>
-                {step.num === 1 && <Check size={14} className={styles.drawerStepCheck} />}
+              {step.num === activeStep && <Check size={14} className={styles.drawerStepCheck} />}
               </div>
             ))}
           </div>
@@ -436,7 +440,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Mobile: compact step badge */}
-          <span className={styles.mobileStepBadge}>Step 1/4</span>
+          <span className={styles.mobileStepBadge}>Step {activeStep}/4</span>
 
           <span className={styles.headerSeparator} />
           <span className={styles.headerMeta}>Create a new course</span>
@@ -446,8 +450,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             {STEPS.map((step, i) => (
               <React.Fragment key={step.num}>
                 {i > 0 && <ChevronRight size={14} className={styles.crumbArrow} />}
-                <div className={`${styles.crumb} ${step.num === 1 ? styles.crumbActive : ''}`}>
-                  <span className={`${styles.crumbNum} ${step.num === 1 ? styles.crumbNumActive : ''}`}>{step.num}</span>
+                <div
+                  className={`${styles.crumb} ${step.num === activeStep ? styles.crumbActive : ''} ${step.num < activeStep ? styles.crumbDone : ''}`}
+                  style={{ cursor: step.num <= activeStep ? 'pointer' : 'default' }}
+                  onClick={() => {
+                    if (step.num < activeStep) { setActiveStep(step.num); }
+                    else if (step.num > activeStep) { setInactiveStepModal({ label: step.label }); }
+                  }}
+                >
+                  <span className={`${styles.crumbNum} ${step.num === activeStep ? styles.crumbNumActive : ''} ${step.num < activeStep ? styles.crumbNumDone : ''}`}>
+                    {step.num < activeStep ? '✓' : step.num}
+                  </span>
                   <div className={styles.crumbText}>
                     <span className={styles.crumbLabel}>{step.label}</span>
                     <span className={styles.crumbDesc}>{step.desc}</span>
@@ -470,6 +483,19 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
       {/* ─── MAIN CONTENT ─── */}
       <main className={styles.mainContent}>
+
+        {/* ═══ STEP 2: CURRICULUM ═══ */}
+        {activeStep === 2 && !isNew && (
+          <CurriculumBuilder
+            courseId={courseId}
+            onBack={() => setActiveStep(1)}
+            onSaveStatus={setSaveStatus}
+          />
+        )}
+
+        {/* ═══ STEP 1: COURSE SETUP ═══ */}
+        {activeStep === 1 && (
+        <>
         {/* Page title */}
         <div className={styles.pageHeader}>
           <div>
@@ -836,6 +862,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             </div>
           </aside>
         </div>
+        </>
+        )}
       </main>
 
       {/* ─── STICKY FOOTER ─── */}
@@ -852,12 +880,32 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           )}
         </div>
         <div className={styles.footerRight}>
-          <Button variant="outline" onClick={() => router.push('/creator/courses')}>Cancel</Button>
-          <Button variant="primary" onClick={saveDraft} loading={saving}>
-            Save &amp; Continue →
-          </Button>
+          {activeStep === 1 ? (
+            <>
+              <Button variant="outline" onClick={() => router.push('/creator/courses')}>Cancel</Button>
+              <Button variant="primary" onClick={async () => { await saveDraft(); if (!isNew) setActiveStep(2); }} loading={saving}>
+                Save &amp; Continue →
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => setActiveStep(1)}>Back</Button>
+              <Button variant="outline" onClick={saveDraft} loading={saving}>Save draft</Button>
+              <Button variant="primary" onClick={saveDraft} loading={saving}>
+                Save &amp; Continue →
+              </Button>
+            </>
+          )}
         </div>
       </footer>
+
+      {/* Inactive Step Modal */}
+      {inactiveStepModal && (
+        <InactiveStepModal 
+          stepLabel={inactiveStepModal.label} 
+          onClose={() => setInactiveStepModal(null)} 
+        />
+      )}
 
     </div>
   );

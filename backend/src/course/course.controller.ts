@@ -183,11 +183,13 @@ export class CourseController {
     @Req() req: any,
     @Param('sectionId') sectionId: string,
     @Body('title') title: string,
+    @Body('lessonType') lessonType?: string,
   ) {
     return await this.courseService.createLesson(
       req.user.id as string,
       sectionId,
       title,
+      lessonType,
     );
   }
 
