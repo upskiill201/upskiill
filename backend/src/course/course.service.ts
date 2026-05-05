@@ -290,6 +290,26 @@ export class CourseService {
     });
   }
 
+  async deleteCourse(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({ 
+      where: { 
+        OR: [
+          { id: courseIdOrSlug },
+          { slug: courseIdOrSlug }
+        ]
+      } 
+    });
+    
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.course.delete({
+      where: { id: course.id }
+    });
+  }
+
   // ─── CURRICULUM MANAGEMENT ───
 
   async getFullCurriculum(userId: string, courseIdOrSlug: string) {

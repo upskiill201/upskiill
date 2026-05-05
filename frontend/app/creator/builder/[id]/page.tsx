@@ -27,6 +27,7 @@ type CourseDraft = {
   skills: string[];
   requirements: string[];
   thumbnailUrl: string;
+  creatorTimeWeekly?: string;
 };
 
 const EMPTY_DRAFT: CourseDraft = {
@@ -61,29 +62,140 @@ const LEVELS = ["Beginner", "Intermediate", "Advanced"];
 const LANGUAGES = ["English", "French", "Spanish", "German", "Portuguese"];
 
 // ─── RICH TEXT EDITOR ────────────────────────────────────────
+const HEADING_OPTIONS = [
+  { label: 'Paragraph', tag: 'div' },
+  { label: 'Heading 2', tag: 'h2' },
+  { label: 'Heading 3', tag: 'h3' },
+];
+
 function RichTextEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [headingLabel, setHeadingLabel] = React.useState('Paragraph');
+  const [headingOpen, setHeadingOpen] = React.useState(false);
+
+  // Sync initial value into editor once on mount
+  useEffect(() => {
+    if (editorRef.current && !editorRef.current.innerHTML && value) {
+      editorRef.current.innerHTML = value;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const exec = (command: string, arg?: string) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, arg);
+    // After exec, sync html back to state
+    onChange(editorRef.current?.innerHTML || '');
+  };
+
+  const handleFormat = (e: React.MouseEvent, command: string, arg?: string) => {
+    e.preventDefault(); // prevent blur
+    exec(command, arg);
+  };
+
+  const handleHeading = (e: React.MouseEvent, tag: string, label: string) => {
+    e.preventDefault();
+    exec('formatBlock', tag);
+    setHeadingLabel(label);
+    setHeadingOpen(false);
+  };
+
+  const handleLink = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url = prompt('Enter URL:');
+    if (url) exec('createLink', url);
+  };
+
+  const handleInput = () => {
+    onChange(editorRef.current?.innerHTML || '');
+  };
+
+  const charCount = editorRef.current?.innerText?.length ?? 0;
+
   return (
     <div className={styles.richEditor}>
       <div className={styles.richToolbar}>
-        <span className={styles.richToolbarParagraph}>Paragraph <ChevronRight size={12} /></span>
+        {/* Heading dropdown */}
+        <div className={styles.headingDropdown}>
+          <button
+            type="button"
+            className={styles.headingBtn}
+            onMouseDown={(e) => { e.preventDefault(); setHeadingOpen(o => !o); }}
+          >
+            {headingLabel} <ChevronDown size={12} />
+          </button>
+          {headingOpen && (
+            <div className={styles.headingMenu}>
+              {HEADING_OPTIONS.map(opt => (
+                <button
+                  key={opt.tag}
+                  type="button"
+                  className={styles.headingMenuItem}
+                  onMouseDown={(e) => handleHeading(e, opt.tag, opt.label)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className={styles.richToolbarDivider} />
-        <button type="button" className={styles.richToolbarBtn} title="Bold"><strong>B</strong></button>
-        <button type="button" className={styles.richToolbarBtn} title="Italic"><em>I</em></button>
-        <button type="button" className={styles.richToolbarBtn} title="Underline"><u>U</u></button>
+
+        <button type="button" className={styles.richToolbarBtn} title="Bold"
+          onMouseDown={(e) => handleFormat(e, 'bold')}>
+          <strong>B</strong>
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Italic"
+          onMouseDown={(e) => handleFormat(e, 'italic')}>
+          <em>I</em>
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Underline"
+          onMouseDown={(e) => handleFormat(e, 'underline')}>
+          <u>U</u>
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Strikethrough"
+          onMouseDown={(e) => handleFormat(e, 'strikeThrough')}
+          style={{ textDecoration: 'line-through' }}>
+          S
+        </button>
+
         <div className={styles.richToolbarDivider} />
-        <button type="button" className={styles.richToolbarBtn} title="Ordered List">1.</button>
-        <button type="button" className={styles.richToolbarBtn} title="Bullet List">•</button>
+
+        <button type="button" className={styles.richToolbarBtn} title="Ordered List"
+          onMouseDown={(e) => handleFormat(e, 'insertOrderedList')}>
+          1.
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Bullet List"
+          onMouseDown={(e) => handleFormat(e, 'insertUnorderedList')}>
+          •
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Blockquote"
+          onMouseDown={(e) => handleFormat(e, 'formatBlock', 'blockquote')}>
+          ❝
+        </button>
+
         <div className={styles.richToolbarDivider} />
-        <button type="button" className={styles.richToolbarBtn} title="Link">🔗</button>
+
+        <button type="button" className={styles.richToolbarBtn} title="Link"
+          onMouseDown={handleLink}>
+          🔗
+        </button>
+        <button type="button" className={styles.richToolbarBtn} title="Clear Formatting"
+          onMouseDown={(e) => handleFormat(e, 'removeFormat')}>
+          Tx
+        </button>
       </div>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Write a detailed description of your course. Explain what learners will learn, why it matters, and what makes your course unique."
+
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
         className={styles.richTextarea}
-        maxLength={2000}
+        onInput={handleInput}
+        data-placeholder="Write a detailed description of your course. Explain what learners will learn, why it matters, and what makes your course unique."
       />
-      <div className={styles.charCountRight}>{value.length}/2000</div>
+      <div className={styles.charCountRight}>{charCount}/2000</div>
     </div>
   );
 }
@@ -126,6 +238,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             skills: Array.isArray(fetched.skills) ? fetched.skills : [],
             requirements: Array.isArray(fetched.requirements) && fetched.requirements.length > 0 ? fetched.requirements : [''],
             thumbnailUrl: fetched.thumbnailUrl || '',
+            creatorTimeWeekly: fetched.creatorTimeWeekly,
           });
         }
       } catch (err) {
@@ -369,6 +482,16 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
               LEFT COLUMN
           ══════════════════════════════════ */}
           <div className={styles.formCol}>
+            
+            {data.creatorTimeWeekly && (
+              <div className={styles.timeBanner} style={{ backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', padding: '12px 16px', borderRadius: '8px', marginBottom: '18px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '20px' }}>⏱️</span>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#1E3A8A' }}>Your Available Time</div>
+                  <div style={{ fontSize: '12px', color: '#1E40AF', marginTop: '2px' }}>You mentioned having <strong>{data.creatorTimeWeekly}</strong> available. We'll keep this in mind as you build your curriculum!</div>
+                </div>
+              </div>
+            )}
 
             {/* ① BASIC INFORMATION */}
             <section className={styles.card}>

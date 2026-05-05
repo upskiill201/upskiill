@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Video, Search } from 'lucide-react';
+import { Video, Search, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Courses.module.css';
 
@@ -18,6 +19,7 @@ type Course = {
 };
 
 export default function InstructorCoursesPage() {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,6 +43,28 @@ export default function InstructorCoursesPage() {
     };
     fetchCourses();
   }, []);
+
+  const handleDeleteCourse = async (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/courses/${courseId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setCourses(courses.filter(c => c.id !== courseId));
+      } else {
+        alert('Failed to delete course.');
+      }
+    } catch (err) {
+      console.error('Error deleting course:', err);
+      alert('Network error while deleting course.');
+    }
+  };
 
   const filteredCourses = courses.filter(course => 
     course.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -81,7 +105,7 @@ export default function InstructorCoursesPage() {
           </select>
         </div>
 
-        <Button variant="primary" href="/creator/builder" style={{ padding: '0 24px' }}>
+        <Button variant="primary" href="/creator/create" style={{ padding: '0 24px' }}>
           New course
         </Button>
       </div>
@@ -120,7 +144,7 @@ export default function InstructorCoursesPage() {
       ) : (
         <div className={styles.courseList}>
           {filteredCourses.map(course => (
-            <Link key={course.id} href={`/creator/builder/${course.id}`} className={styles.courseRow}>
+            <div key={course.id} onClick={() => router.push(`/creator/builder/${course.id}`)} className={styles.courseRow} style={{ cursor: 'pointer', position: 'relative' }}>
               {/* Hover Edit Overlay */}
               <div className={styles.editBtnOverlay}>
                 <span className={styles.editOverlayLabel}>Edit / manage course</span>
@@ -148,7 +172,15 @@ export default function InstructorCoursesPage() {
                   </div>
                 </div>
               )}
-            </Link>
+
+              <button 
+                onClick={(e) => handleDeleteCourse(e, course.id)}
+                className={styles.deleteBtn}
+                title="Delete course"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
           ))}
         </div>
       )}
