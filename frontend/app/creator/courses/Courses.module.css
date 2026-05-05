@@ -362,32 +362,99 @@
 }
 
 /* Responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .container {
-    padding: 24px 16px;
+    padding: 32px;
   }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 24px;
+  }
+  .title {
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
+  .courseProgressArea {
+    width: 220px;
+  }
+}
+
+@media (max-width: 900px) {
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 16px;
   }
   .toolbarLeft {
-    flex-direction: column;
+    flex-direction: row;
+    width: 100%;
   }
   .searchGroup {
-    width: 100%;
+    flex: 1;
   }
   .searchGroup input {
     width: 100%;
   }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+  .tabs {
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    white-space: nowrap;
+  }
+  .banner {
+    flex-direction: column;
+    padding: 16px;
+  }
   .courseRow {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    padding: 16px;
+    gap: 16px;
   }
   .courseIcon {
     width: 100%;
-    height: 160px;
+    height: 120px;
   }
   .courseProgressArea {
     width: 100%;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .toolbarLeft {
+    flex-direction: column;
+  }
+  .filterSelect {
+    width: 100%;
+  }
+  .bannerActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bannerActions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+  }
+  .courseTitle {
+    font-size: 15px;
   }
 }

@@ -106,7 +106,7 @@
 - [x] **Course Studio (`/creator/courses/[id]/manage`)** — ✅ COMPLETE (2026-04-10) Intended Learners panel, Course Structure panel, responsive design
 - [x] **Creator Courses Page (`/creator/courses`)** — ✅ COMPLETE (2026-04-10) Responsive course list with search, filter, and hover actions
 - [x] **Creator Analytics Page (`/creator/analytics`)** — ✅ COMPLETE (2026-04-10) Full analytics with KPIs, charts, student segmentation, responsive
-- [x] **Responsive Design Fixes** — ✅ COMPLETE (2026-04-10) Fixed mobile responsiveness for all creator pages
+- [x] **Creator Studio Responsiveness** — ✅ COMPLETE (2026-05-05) Implemented mobile sidebar drawer, hamburger menu, and responsive layout for all dashboard and course pages.
 - [x] **Course Builder Step 1: Course Setup** — ✅ COMPLETE (2026-05-04) Built high-fidelity setup page with rich text, tag-based skills, learning outcomes, and automated Supabase image uploads.
 - [ ] **Course Builder Step 2: Build Curriculum** — 🚀 (NEXT) Drag-and-drop module/lesson structure.
 - [ ] **Chelsea Task**: Draft pedagogical copy for "Why this matters" tooltips (Deadline: May 8th).

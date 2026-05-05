@@ -18,7 +18,9 @@ import {
   Plus,
   Sparkles,
   Rocket,
-  LogOut
+  LogOut,
+  Menu,
+  X as CloseIcon
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -67,6 +69,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   
   // Dummy data for design, normally fetched via API
@@ -111,11 +114,14 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>
       <div className={styles.dashboardContainer}>
         {/* ─── SIDEBAR ─── */}
-        <aside className={styles.sidebarWrapper}>
+        <aside className={`${styles.sidebarWrapper} ${isMobileSidebarOpen ? styles.mobileSidebarOpen : ''}`}>
           <div className={styles.sidebarHeader}>
-            <Link href="/creator" className={styles.logoLink}>
+            <Link href="/creator" className={styles.logoLink} onClick={() => setIsMobileSidebarOpen(false)}>
               <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} priority className={styles.sidebarLogo} />
             </Link>
+            <button className={styles.mobileCloseBtn} onClick={() => setIsMobileSidebarOpen(false)}>
+              <CloseIcon size={24} />
+            </button>
           </div>
 
           <nav className={styles.nav}>
@@ -127,6 +133,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                     key={link.id}
                     href={link.href}
                     onClick={(e) => {
+                      setIsMobileSidebarOpen(false);
                       if (link.isComingSoon) {
                         e.preventDefault();
                         triggerComingSoon(link.label);
@@ -143,12 +150,20 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           </nav>
         </aside>
 
+        {/* Overlay for mobile sidebar */}
+        {isMobileSidebarOpen && (
+          <div className={styles.sidebarOverlay} onClick={() => setIsMobileSidebarOpen(false)} />
+        )}
+
         {/* ─── MAIN AREA ─── */}
         <main className={styles.main}>
           {/* Header - Hidden in Builder mode so the Builder can provide its own edge-to-edge header */}
           {!pathname.includes('/builder') && (
             <header className={styles.header}>
               <div className={styles.headerLeft}>
+                <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)}>
+                  <Menu size={24} />
+                </button>
                 <div className={styles.pageTitleWrapper}>
                   <BarChart2 size={20} className={styles.titleIcon} />
                   <h1 className={styles.pageTitle}>Creator Studio</h1>
