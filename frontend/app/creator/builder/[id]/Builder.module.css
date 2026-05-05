@@ -392,17 +392,55 @@
   flex-wrap: wrap;
 }
 
-.richToolbarParagraph {
+/* Heading dropdown */
+.headingDropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+.headingBtn {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
+  padding: 5px 8px;
+  border: none;
+  background: none;
+  border-radius: 6px;
   font-size: 12px;
+  font-weight: 600;
+  color: #1F2A44;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.headingBtn:hover { background: #E8ECF0; }
+.headingMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  z-index: 50;
+  min-width: 140px;
+  overflow: hidden;
+}
+.headingMenuItem {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 13px;
   font-weight: 500;
   color: #1F2A44;
-  padding-right: 6px;
   cursor: pointer;
+  transition: background 0.12s;
 }
-.richToolbarDivider { width: 1px; height: 18px; background: #E2E8F0; margin: 0 3px; }
+.headingMenuItem:hover { background: #F1F5F9; color: #3D5AFE; }
+
+.richToolbarDivider { width: 1px; height: 18px; background: #E2E8F0; margin: 0 3px; flex-shrink: 0; }
 .richToolbarBtn {
   width: 28px; height: 28px;
   border: none; background: none;
@@ -410,23 +448,48 @@
   font-size: 13px; color: #64748B;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 .richToolbarBtn:hover { background: #E8ECF0; color: #1F2A44; }
 
+/* contentEditable editor area */
 .richTextarea {
+  display: block;
   width: 100%;
-  min-height: 140px;
+  min-height: 160px;
   padding: 14px;
   border: none;
   background: #fff;
   font-size: 14px;
   color: #1F2A44;
-  resize: vertical;
   outline: none;
   font-family: inherit;
-  line-height: 1.6;
+  line-height: 1.7;
   box-sizing: border-box;
+  word-break: break-word;
+  overflow-y: auto;
 }
+/* Placeholder via CSS on empty contentEditable */
+.richTextarea:empty::before {
+  content: attr(data-placeholder);
+  color: #94A3B8;
+  pointer-events: none;
+  display: block;
+}
+/* Formatting styles rendered inside the editor */
+.richTextarea h2 { font-size: 18px; font-weight: 700; margin: 12px 0 6px; }
+.richTextarea h3 { font-size: 15px; font-weight: 700; margin: 10px 0 4px; }
+.richTextarea blockquote {
+  border-left: 3px solid #3D5AFE;
+  margin: 10px 0;
+  padding: 8px 14px;
+  background: #F8FAFC;
+  color: #475569;
+  border-radius: 0 6px 6px 0;
+}
+.richTextarea ul, .richTextarea ol { padding-left: 22px; margin: 8px 0; }
+.richTextarea li { margin: 3px 0; }
+.richTextarea a { color: #3D5AFE; text-decoration: underline; }
 .charCountRight {
   font-size: 12px; color: #94A3B8;
   text-align: right; padding: 6px 12px 8px;

@@ -127,6 +127,13 @@ export class CourseController {
     return await this.courseService.updateCourse(req.user.id as string, id, body);
   }
 
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete(':id')
+  async deleteCourse(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.deleteCourse(req.user.id as string, id);
+  }
+
   // ─── CURRICULUM MANAGEMENT ───
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)

@@ -171,7 +171,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
               </div>
 
               <div className={styles.headerRight}>
-                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/builder')}>
+                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')}>
                   <Plus size={16} />
                   <span>Create New Course</span>
                 </button>
