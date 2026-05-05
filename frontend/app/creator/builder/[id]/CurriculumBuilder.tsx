@@ -286,5 +286,6 @@ function InactiveStepModal({ stepLabel, onClose }: { stepLabel: string; onClose:
   );
 }
 
-// ─── TYPES RE-EXPORT (used by page.tsx) ──────────────────────
+// ─── EXPORTS ────────────────────────────────────────────────
+export { ConfirmModal, InactiveStepModal, SortableModule, SortableLesson, getLessonTypeConfig, LESSON_TYPES, badgeClassMap };
 export type { LessonType, Lesson, Section, Props };
