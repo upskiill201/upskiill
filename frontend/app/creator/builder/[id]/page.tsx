@@ -368,10 +368,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   };
 
   // ─── CHECKLIST PROGRESS ───
-  const basicDone = !!(data.title && data.subtitle && data.category);
-  const descDone = !!(data.shortDescription && data.description);
-  const outcomesDone = data.outcomes.some(o => o.trim());
-  const skillsDone = data.skills.length > 0;
+  const hasText = (html: string) => {
+    if (!html) return false;
+    // Remove tags and &nbsp; to check if there's actual content
+    const stripped = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    return stripped.length > 0;
+  };
+
+  const basicDone = !!(data.title && data.subtitle && data.category && data.subcategory);
+  const descDone = !!(data.shortDescription && hasText(data.description));
+  const outcomesDone = data.outcomes.filter(o => o.trim()).length >= 3;
+  const skillsDone = data.skills.length >= 3;
   const thumbDone = !!data.thumbnailUrl;
 
   const subcategoryOptions = SUBCATEGORIES[data.category] || SUBCATEGORIES['default'];
@@ -808,11 +815,11 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
                 <div className={styles.checklist}>
                   {[
-                    { label: 'Basic Information', done: basicDone, count: `${[data.title, data.subtitle, data.category].filter(Boolean).length}/3` },
-                    { label: 'Course Description', done: descDone, count: `${[data.shortDescription, data.description].filter(Boolean).length}/2` },
-                    { label: 'Learning Outcomes', done: outcomesDone, count: `${data.outcomes.filter(o => o.trim()).length > 0 ? 1 : 0}/1` },
-                    { label: 'Skills', done: skillsDone, count: `${skillsDone ? 1 : 0}/1` },
-                    { label: 'Thumbnail & Preview', done: thumbDone, count: `${thumbDone ? 1 : 0}/2` },
+                    { label: 'Basic Information', done: basicDone, count: `${[data.title, data.subtitle, data.category, data.subcategory].filter(Boolean).length}/4` },
+                    { label: 'Course Description', done: descDone, count: `${[data.shortDescription, hasText(data.description)].filter(Boolean).length}/2` },
+                    { label: 'Learning Outcomes', done: outcomesDone, count: `${Math.min(data.outcomes.filter(o => o.trim()).length, 3)}/3` },
+                    { label: 'Skills & Keywords', done: skillsDone, count: `${Math.min(data.skills.length, 3)}/3` },
+                    { label: 'Course Thumbnail', done: thumbDone, count: `${thumbDone ? 1 : 0}/1` },
                   ].map(item => (
                     <div key={item.label} className={styles.checkRow}>
                       <div className={styles.checkLeft}>
