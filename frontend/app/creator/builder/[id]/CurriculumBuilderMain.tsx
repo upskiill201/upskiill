@@ -1,3 +1,23 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Plus, ChevronDown, ChevronUp, GripVertical, Edit2, Copy, Trash2,
+  Play, Video, FileText, Clock, BookOpen, Lightbulb, Target,
+  Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X
+} from 'lucide-react';
+import {
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext, verticalListSortingStrategy, arrayMove
+} from '@dnd-kit/sortable';
+import styles from './Curriculum.module.css';
+import {
+  ConfirmModal, SortableModule, LESSON_TYPES,
+  LessonType, Lesson, Section, Props
+} from './CurriculumBuilder';
 
 // ─── MAIN CURRICULUM BUILDER ─────────────────────────────────
 export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Props) {
