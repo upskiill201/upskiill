@@ -107,6 +107,7 @@ model Section {
 model Lesson {
   id              String   @id @default(uuid())
   title           String
+  lessonType      String   @default("video")
   orderIndex      Int      @default(0)
   isFreePreview   Boolean  @default(false)
   durationMinutes Int      @default(0)

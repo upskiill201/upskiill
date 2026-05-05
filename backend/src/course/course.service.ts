@@ -375,7 +375,7 @@ export class CourseService {
     });
   }
 
-  async createLesson(userId: string, sectionId: string, title: string) {
+  async createLesson(userId: string, sectionId: string, title: string, lessonType?: string) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
       include: { course: true }
@@ -393,6 +393,7 @@ export class CourseService {
     return await this.prisma.lesson.create({
       data: {
         title,
+        lessonType: lessonType || 'video',
         orderIndex: count,
         sectionId
       }

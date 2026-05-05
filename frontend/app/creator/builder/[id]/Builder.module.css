@@ -109,6 +109,8 @@
 }
 .crumbNumActive { background: #3D5AFE; color: #fff; }
 .crumbActive .crumbLabel { color: #3D5AFE; }
+.crumbDone .crumbLabel { color: #22C55E; }
+.crumbNumDone { background: #22C55E; color: #fff; }
 
 .crumbText { display: flex; flex-direction: column; }
 .crumbLabel { font-size: 12px; font-weight: 600; color: #64748B; line-height: 1.2; }
