@@ -227,7 +227,7 @@ Built a **full-featured Course Studio** with:
 | **Course Structure** | ✅ Complete | Tips, resource box, course structure guidance |
 | **Setup & Test Video** | ⏳ Coming Soon | Video upload and configuration |
 | **Film & Edit** | ⏳ Coming Soon | Video recording and editing |
-| **Curriculum** | ⏳ Coming Soon | Section and lesson builder |
+| **Curriculum** | ✅ Complete | Drag-and-drop section and lesson builder |
 | **Captions** | ⏳ Coming Soon | Subtitle management |
 | **Course Landing Page** | ⏳ Coming Soon | Sales page editor |
 | **Pricing** | ⏳ Coming Soon | Price configuration |

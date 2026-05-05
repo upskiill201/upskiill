@@ -108,7 +108,8 @@
 - [x] **Creator Analytics Page (`/creator/analytics`)** — ✅ COMPLETE (2026-04-10) Full analytics with KPIs, charts, student segmentation, responsive
 - [x] **Creator Studio Responsiveness** — ✅ COMPLETE (2026-05-05) Implemented mobile sidebar drawer, hamburger menu, and responsive layout for all dashboard and course pages.
 - [x] **Course Builder Step 1: Course Setup** — ✅ COMPLETE (2026-05-04) Built high-fidelity setup page with rich text, tag-based skills, learning outcomes, and automated Supabase image uploads.
-- [ ] **Course Builder Step 2: Build Curriculum** — 🚀 (NEXT) Drag-and-drop module/lesson structure.
+- [x] **Course Builder Step 2: Build Curriculum** — ✅ COMPLETE (2026-05-05) Built high-fidelity Launchpad with task-driven lesson tables, rich module modals, lesson type selection, DnD sorting, and synced backend CRUD endpoints.
+- [ ] **Course Builder Step 3: Lesson Builder** — 🚀 (NEXT) Build the high-fidelity multi-tab lesson builder (Learn, Apply, Reflect, Deepen).
 - [ ] **Chelsea Task**: Draft pedagogical copy for "Why this matters" tooltips (Deadline: May 8th).
 - [ ] **Brandy Task**: Build the "Creator Documentation CMS" internal management system (Deadline: May 10th).
 - [ ] **Cynthia Task**: Replace legacy logos with new Teyro branding across headers/footers (Deadline: May 7th).

@@ -39,8 +39,8 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
   // Confirm Modal
   const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void } | null>(null);
 
-  // AI / Premium modal
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  // Premium / Coming Soon modal
+  const [premiumModal, setPremiumModal] = useState<{ title: string; desc: string } | null>(null);
 
   const moduleSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -211,7 +211,10 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
   };
 
   const handleBuildLesson = (lessonId: string) => {
-    alert(`Step 3 (Lesson Builder) coming soon! Lesson ID: ${lessonId}`);
+    setPremiumModal({
+      title: 'Step 3: Lesson Builder',
+      desc: 'The Lesson Builder is the ultimate tool to craft engaging learning journeys (Learn → Apply → Reflect → Deepen). It will be unlocked in the next step of the wizard.',
+    });
   };
 
   // ─── COMPUTED ───
@@ -413,7 +416,10 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
               <div className={styles.aiSectionTitle}><Sparkles size={14} /> Smart Teyro AI Features</div>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {['Generate Outline', 'Suggest Lessons', 'Estimate Duration'].map(label => (
-                  <button key={label} className={styles.aiBtn} onClick={() => setShowPremiumModal(true)}><Brain size={12} /> {label}</button>
+                  <button key={label} className={styles.aiBtn} onClick={() => setPremiumModal({
+                    title: 'AI Features Coming Soon',
+                    desc: 'Teyro AI will help you generate outlines, suggest lessons, and build better learning journeys. Available in our upcoming Pro plan.'
+                  })}><Brain size={12} /> {label}</button>
                 ))}
               </div>
             </div>
@@ -466,14 +472,14 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
         <ConfirmModal message={confirmModal.message} onConfirm={confirmModal.onConfirm} onCancel={() => setConfirmModal(null)} />
       )}
 
-      {/* ─── PREMIUM MODAL ─── */}
-      {showPremiumModal && (
-        <div className={styles.premiumOverlay} onClick={() => setShowPremiumModal(false)}>
+      {/* ─── PREMIUM / COMING SOON MODAL ─── */}
+      {premiumModal && (
+        <div className={styles.premiumOverlay} onClick={() => setPremiumModal(null)}>
           <div className={styles.premiumBox} onClick={e => e.stopPropagation()}>
             <div className={styles.premiumIcon}><Sparkles size={32} /></div>
-            <h3 className={styles.premiumTitle}>AI Features Coming Soon</h3>
-            <p className={styles.premiumDesc}>Teyro AI will help you generate outlines, suggest lessons, and build better learning journeys. Available in our upcoming Pro plan.</p>
-            <button className={styles.premiumBtn} onClick={() => setShowPremiumModal(false)}>Got it — can't wait!</button>
+            <h3 className={styles.premiumTitle}>{premiumModal.title}</h3>
+            <p className={styles.premiumDesc}>{premiumModal.desc}</p>
+            <button className={styles.premiumBtn} onClick={() => setPremiumModal(null)}>Got it — can't wait!</button>
           </div>
         </div>
       )}
