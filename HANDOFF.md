@@ -1,4 +1,4 @@
-> Last updated: 2026-04-15 14:25 WAT · Keep this file current at the end of every session.
+> Last updated: 2026-05-05 08:45 WAT · Keep this file current at the end of every session.
 
 > **IMPORTANT:** The company name is now **Teyro**. The codebase currently uses "Upskiill" throughout - rebranding will happen when the logo arrives.
 
@@ -267,11 +267,17 @@ The studio features:
   - Integration with Supabase Storage for course thumbnails.
   - Rich Text Editor and dynamic Learning Outcomes system.
   - "Save-on-demand" architecture to avoid partial/broken drafts.
+  - **Full Mobile Responsiveness**: Implemented hamburger drawer and collapsible sidebar for Step 1.
+- [x] **Creator Studio & Dashboard Responsiveness** — ✅ COMPLETE (2026-05-05)
+  - Added mobile sidebar drawer and hamburger menu to the main Creator layout.
+  - Optimized dashboard widgets, stats grid, and data tables for all screen sizes.
+  - Made the Courses list page fully responsive with stacked cards.
 - [ ] **Course Builder Step 2: Build Curriculum** — 🚀 (NEXT) Database fields for Curriculum Builder & S3 Integration.
 - [x] **Team Task Hand-offs (2026-05-04)**:
   - **Chelsea**: Copywriting for pedagogical tooltips (Deadline: May 8th).
   - **Brandy**: Development of the Internal Documentation CMS (Deadline: May 10th).
   - **Cynthia**: Global rebranding/logo swap (Deadline: May 7th).
+- [x] **Render Build Fix**: Excluded `scratch/` directory from `tsconfig.build.json` to prevent migration script errors during production deployment. ✅
 
 ### Auth Flow (Local & Live — working ✅ — Tested 2026-04-06)
 - [x] Signup → POST `/api/auth/signup` → sets `httpOnly` cookie, returns `{ access_token, user }`

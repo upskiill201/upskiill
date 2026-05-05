@@ -21,7 +21,33 @@
   height: 100vh;
   z-index: 1000;
   box-shadow: none; /* Removed heavy shadows for cleaner look */
-  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mobileCloseBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: auto;
 }
 
 /* Sidebar Header */
@@ -114,6 +140,7 @@
   margin-left: 256px; 
   min-height: 100vh;
   width: calc(100% - 256px); 
+  transition: margin 0.3s ease, width 0.3s ease;
 }
 
 /* Header */
@@ -133,7 +160,20 @@
 
 .headerLeft { 
   display: flex; 
-  align-items: center; 
+  align-items: center;
+  gap: 16px;
+}
+
+.hamburgerBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 12px;
+  margin-left: -12px;
+  position: relative;
+  z-index: 910;
 }
 
 .pageTitleWrapper {
@@ -767,11 +807,186 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .statsGrid { grid-template-columns: repeat(3, 1fr); }
-  .mainColumns { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1024px) {
+  .sidebarWrapper {
+    transform: translateX(-100%);
+  }
+  
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .mainColumns {
+    grid-template-columns: 1fr;
+  }
+  
+  .hamburgerBtn {
+    display: flex;
+  }
+  
+  .mobileCloseBtn {
+    display: flex;
+  }
+  
+  .header {
+    padding: 0 20px;
+  }
+  
+  .content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  .welcomeSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .dateSelector {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
+  .courseTable th:nth-child(3),
+  .courseTable th:nth-child(4),
+  .courseTable th:nth-child(5),
+  .courseTable th:nth-child(6),
+  .courseTable td:nth-child(3),
+  .courseTable td:nth-child(4),
+  .courseTable td:nth-child(5),
+  .courseTable td:nth-child(6) {
+    display: none;
+  }
+
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  
+  .header {
+    padding: 0 16px;
+    height: 64px;
+  }
+
+  .headerLeft {
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pageTitleWrapper {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .titleIcon {
+    display: none;
+  }
+
+  .pageTitle {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .headerRight {
+    gap: 12px;
+  }
+
+  .headerCreateBtn span {
+    display: none;
+  }
+  
+  .headerCreateBtn {
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    justify-content: center;
+    border-color: #E2E8F0;
+  }
+  
+  .headerControls {
+    gap: 12px;
+    padding-left: 12px;
+  }
+
+  .notifBtn {
+    padding: 4px;
+  }
+
+  .userName, .userRole, .userChevron {
+    display: none;
+  }
+
+  .userProfile {
+    gap: 0;
+  }
+
+  .statValue {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 640px) {
   .statsGrid { grid-template-columns: 1fr; }
+  
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .chartArea {
+    height: 200px;
+  }
+  
+  .courseName {
+    font-size: 12px;
+  }
+  
+  .courseDate {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+  
+  .pageTitle {
+    font-size: 14px;
+    max-width: 120px;
+  }
+  
+  .headerRight {
+    gap: 8px;
+  }
+
+  .headerControls {
+    gap: 8px;
+    padding-left: 8px;
+  }
+
+  .welcomeTitle {
+    font-size: 20px;
+  }
+}
+
+/* Ensure mobile sidebar open state overrides hidden state in media queries */
+.sidebarWrapper.mobileSidebarOpen {
+  transform: translateX(0) !important;
 }
