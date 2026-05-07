@@ -197,6 +197,8 @@ Full-stack learning platform. Monorepo at `c:\Users\HP\upskiill`.
 - [x] **Creator Courses Page** (`/creator/courses`) — Responsive course list with search, filter, and hover-to-edit functionality. ✅ (2026-04-10)
 - [x] **Course Studio** (`/creator/courses/[id]/manage`) — Full studio with Intended Learners panel, Course Structure panel, responsive design. ✅ (2026-04-10)
 - [x] **Logo Replacement Task Assigned**: Created task in `Cynthia-Progress.md` for Cynthia to handle logo swap-outs across headers/footers and auth pages. ✅ (2026-05-04)
+- [x] **High-Fidelity Hero & Header Redesign**: Redesigned the waitlist hero section to strictly match the TrustLine reference. Features a 3x3 student grid, a hub-and-spoke creator diagram, background blueprint lines, and a floating glassmorphic pill header. Optimized for high-resolution displays and full mobile responsiveness. ✅ (2026-05-07)
+- [x] **Intercom Messenger Integration**: Installed and configured the `@intercom/messenger-js-sdk` globally via a client-side provider in `layout.tsx` for real-time customer support. ✅ (2026-05-07)
 
 ---
 
