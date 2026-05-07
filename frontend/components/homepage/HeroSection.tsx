@@ -6,16 +6,15 @@ import { ChevronDown, Zap } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import styles from './HeroSection.module.css';
 
-// ── anim2 (active): Cursor-following neon tubes
-const TubesBackground = dynamic(
-  () => import('../ui/TubesBackground').then((m) => m.TubesBackground),
-  { ssr: false }
-);
+// ── anim2 (parked): Cursor-following neon tubes
+// const TubesBackground = dynamic(
+//   () => import('../ui/TubesBackground').then((m) => m.TubesBackground),
+//   { ssr: false }
+// );
 
-// ── anim1 (parked): Hyperspeed warp-speed tunnel
-// Uncomment + swap TubesBackground below to revert.
-// import { teyroHyperspeedPreset } from '../ui/Hyperspeed';
-// const Hyperspeed = dynamic(() => import('../ui/Hyperspeed').then((m) => m.Hyperspeed), { ssr: false });
+// ── anim1 (active): Hyperspeed warp-speed tunnel
+import { teyroHyperspeedPreset } from '../ui/Hyperspeed';
+const Hyperspeed = dynamic(() => import('../ui/Hyperspeed').then((m) => m.Hyperspeed), { ssr: false });
 
 interface HeroSectionProps {
   onOpenModal: () => void;
@@ -53,7 +52,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
     <div className={styles.heroWrapper}>
 
       {/* Animated canvas background — loads client-only, no SSR needed */}
-      <TubesBackground className={styles.animBg} />
+      <Hyperspeed effectOptions={teyroHyperspeedPreset} className={styles.animBg} />
 
       {/* Vignette overlays — glowOverlay removed (AI slop: redundant purple glow blob) */}
       <div className={styles.vignetteDark}  aria-hidden="true" />
