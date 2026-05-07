@@ -134,6 +134,7 @@ const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5
 
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
+import { IntercomProvider } from "../components/providers/IntercomProvider";
 
 export default function RootLayout({
   children,
@@ -147,13 +148,15 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <PostHogProvider>
-          <CartProvider>
-            <HeaderWrapper />
-            <main className="flex-1" style={{ overflow: 'visible' }}>
-              {children}
-            </main>
-            <FooterWrapper />
-          </CartProvider>
+          <IntercomProvider>
+            <CartProvider>
+              <HeaderWrapper />
+              <main className="flex-1" style={{ overflow: 'visible' }}>
+                {children}
+              </main>
+              <FooterWrapper />
+            </CartProvider>
+          </IntercomProvider>
         </PostHogProvider>
       </body>
     </html>

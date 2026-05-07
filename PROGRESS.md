@@ -51,6 +51,8 @@
 - [x] **Tally Form Full-Page Architecture**: Securely integrated the waitlist form. Deleted the redundant `<RoleModal />` to stream users directly to a native 100vh embedded Tally frame hosted locally on `/join`. All waitlist buttons route instantly.
 - [x] **Live Counter Webhook**: Successfully wrote Next.js Serverless API endpoints (`/webhook/tally`, `/webhook/count`) bridging the Tally forms securely into Supabase PostgreSQL. Frontend UI correctly hydrates live metrics dynamically without hitting the backend.
 - [x] **Tally Webhook Audit & Simplification (2026-04-18)**: The Tally form was redesigned to a clean 5-question universal flow (Name, Email, Phone, Discovery Channel, Role). The webhook was fully rewritten — dead 18-question branch code removed, type-first field extraction (`INPUT_EMAIL`, `INPUT_PHONE_NUMBER`) implemented, email no longer falls back to `unknown@noemail.com` (now correctly `null`). Supabase `Waitlist` table schema was dropped and recreated with the correct column order matching question order. Grants were applied (`service_role`) and PostgREST schema cache reloaded. Committed to `fix/tally-5-field-webhook` and deployed via Vercel. ✅
+- [x] **High-Fidelity Hero & Header Redesign (2026-05-07)**: Redesigned the waitlist hero section to strictly match the TrustLine reference. Features a 3x3 student grid, a hub-and-spoke creator diagram, background blueprint lines, and a floating glassmorphic pill header. Optimized for high-resolution displays and full mobile responsiveness. ✅
+
 
 ### Step C — Build Marketplace Pages ✅ COMPLETE
 - [x] `/courses` Browse UI (Responsive Grid + Search + Filter Sidebar) ✅ **DONE (Mobile Polished)**
@@ -120,6 +122,8 @@
 - [ ] Course Moderation & User Management
 - [ ] Essential Legal Pages (Terms, Privacy, FAQ)
 - [ ] SendGrid Email Notifications
+- [x] **Intercom Messenger Integration (2026-05-07)**: Installed and configured the `@intercom/messenger-js-sdk` globally via a client-side provider in `layout.tsx` for real-time customer support. ✅
+
 
 ***
 
