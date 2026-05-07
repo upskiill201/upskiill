@@ -1,33 +1,34 @@
-/* ===== WAITLIST HEADER — Glassmorphic Fixed Nav ===== */
+/* ===== WAITLIST HEADER — Clean Light Nav ===== */
 
 .header {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
-  padding: 0 24px;
-  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  padding: 0 10px 0 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 100px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  width: 90%;
+  max-width: 900px;
+  transition: all 0.3s ease;
 }
 
-/* Scrolled state — glassmorphism activates */
+/* Scrolled state */
 .headerScrolled {
-  background: rgba(6, 8, 24, 0.55);
-  backdrop-filter: blur(18px) saturate(1.6);
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  top: 16px;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  height: 60px;
 }
 
 /* ── Logo ── */
@@ -46,7 +47,7 @@
 }
 
 .navLink {
-  color: rgba(255, 255, 255, 0.7);
+  color: #6B7280;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -61,8 +62,8 @@
 }
 
 .navLink:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  color: #111827;
+  background: #F3F4F6;
 }
 
 /* ── Right Section: Buttons ── */
@@ -73,13 +74,13 @@
 }
 
 .loginBtn {
-  color: rgba(255, 255, 255, 0.8);
+  color: #374151;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
   padding: 8px 20px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid #D1D5DB;
   transition: all 0.2s ease;
   background: transparent;
   cursor: pointer;
@@ -88,9 +89,9 @@
 }
 
 .loginBtn:hover {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.05);
+  color: #111827;
+  border-color: #9CA3AF;
+  background: #F9FAFB;
 }
 
 .getStartedBtn {
@@ -98,12 +99,13 @@
   align-items: center;
   gap: 6px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 10px 24px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
   border: none;
-  background: var(--brand-blue);
+  background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
   color: #ffffff;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -129,7 +131,7 @@
   display: none;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -137,7 +139,7 @@
 }
 
 .hamburgerBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: #F3F4F6;
 }
 
 /* ── Mobile Overlay ── */
@@ -162,13 +164,13 @@
   bottom: 0;
   width: 320px;
   max-width: 85vw;
-  background: #0c0f1e;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  background: #FFFFFF;
+  border-left: 1px solid #E5E7EB;
   z-index: 1002;
   display: flex;
   flex-direction: column;
   animation: slideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes slideIn {
@@ -181,13 +183,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .closeBtn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6B7280;
   cursor: pointer;
   padding: 6px;
   border-radius: 8px;
@@ -195,8 +197,8 @@
 }
 
 .closeBtn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
+  color: #111827;
+  background: #F3F4F6;
 }
 
 .mobileNavLinks {
@@ -207,7 +209,7 @@
 }
 
 .mobileNavLink {
-  color: rgba(255, 255, 255, 0.75);
+  color: #374151;
   text-decoration: none;
   font-size: 16px;
   font-weight: 500;
@@ -221,13 +223,13 @@
 }
 
 .mobileNavLink:hover {
-  color: #ffffff;
-  background: rgba(99, 82, 255, 0.08);
+  color: #111827;
+  background: #F3F4F6;
 }
 
 .mobileDivider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #E5E7EB;
   margin: 8px 24px;
 }
 
@@ -236,20 +238,20 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #E5E7EB;
 }
 
 .mobileLoginBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
   padding: 12px 20px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid #D1D5DB;
   background: transparent;
   cursor: pointer;
   transition: all 0.2s;
@@ -257,8 +259,9 @@
 }
 
 .mobileLoginBtn:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: #9CA3AF;
+  background: #F9FAFB;
+  color: #111827;
 }
 
 .mobileGetStartedBtn {

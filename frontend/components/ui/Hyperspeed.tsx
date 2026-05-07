@@ -104,18 +104,12 @@ export const Hyperspeed = forwardRef<HTMLDivElement, HyperspeedProps>(
         targetFov: options.fov!,
       };
 
-      let renderer: THREE.WebGLRenderer;
-      try {
-        renderer = new THREE.WebGLRenderer({
-          canvas: canvasRef.current,
-          antialias: true,
-          alpha: true,
-        });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      } catch (err) {
-        console.error('[Hyperspeed] WebGL initialization failed:', err);
-        return; // Gracefully exit if WebGL isn't supported
-      }
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef.current,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(colors.background);
