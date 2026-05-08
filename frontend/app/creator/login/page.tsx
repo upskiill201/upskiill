@@ -127,7 +127,7 @@ function AuthContent() {
         <div className={styles.formContainer}>
           <div className={styles.header}>
             <Link href="/">
-              <Image src="/teyro-logo-blue.png" alt="Teyro Logo" width={80} height={30} style={{ width: '100px', height: 'auto' }} priority />
+              <Image src="/teyro-logo-blue.png" alt="Teyro Logo" width={220} height={66} style={{ width: 'auto', height: '56px', objectFit: 'contain' }} priority />
             </Link>
           </div>
 

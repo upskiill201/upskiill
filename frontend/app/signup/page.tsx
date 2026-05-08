@@ -90,7 +90,7 @@ export default function Signup() {
       <div className={styles.leftPanel}>
         <div className={styles.formContainer}>
           <Link href="/" className={styles.logo}>
-            <Image src="/teyro-logo-blue.png" alt="Teyro Logo" width={140} height={40} style={{ width: 'auto', height: '36px' }} priority />
+            <Image src="/teyro-logo-blue.png" alt="Teyro Logo" width={220} height={66} style={{ width: 'auto', height: '56px', objectFit: 'contain' }} priority />
           </Link>
           
           <h1 className={styles.title}>Start your journey</h1>

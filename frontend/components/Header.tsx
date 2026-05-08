@@ -82,10 +82,10 @@ export default function Header() {
             <Image 
               src="/teyro-logo-blue.png"
               alt="Teyro Logo"
-              width={140} 
-              height={40} 
+              width={220}
+              height={66}
               priority
-              style={{ width: 'auto', height: '36px' }}
+              style={{ width: 'auto', height: '56px', objectFit: 'contain' }}
             />
           </Link>
           
@@ -189,9 +189,9 @@ export default function Header() {
                 <Image 
                   src="/teyro-logo-blue.png"
                   alt="Teyro Logo"
-                  width={140} 
-                  height={40} 
-                  style={{ width: 'auto', height: '32px' }}
+                  width={200}
+                  height={60}
+                  style={{ width: 'auto', height: '46px', objectFit: 'contain' }}
                 />
               </Link>
               <button 
