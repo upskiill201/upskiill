@@ -80,8 +80,8 @@ export default function Header() {
         <div className={styles.leftSection}>
           <Link href="/" className={styles.logo}>
             <Image 
-              src="/logo.png" 
-              alt="Upskiill Logo" 
+              src="/teyro-logo-blue.png"
+              alt="Teyro Logo"
               width={140} 
               height={40} 
               priority
@@ -187,8 +187,8 @@ export default function Header() {
             <div className={styles.mobileNavHeader}>
               <Link href="/" className={styles.logo} onClick={() => setIsMobileNavOpen(false)}>
                 <Image 
-                  src="/logo.png" 
-                  alt="Upskiill Logo" 
+                  src="/teyro-logo-blue.png"
+                  alt="Teyro Logo"
                   width={140} 
                   height={40} 
                   style={{ width: 'auto', height: '32px' }}

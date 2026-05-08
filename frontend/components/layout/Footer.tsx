@@ -17,8 +17,8 @@ export default function Footer() {
         <div className={styles.brandCol}>
           <Link href="/" className={styles.logo}>
             <Image 
-              src="/logo.png" 
-              alt="Upskiill Logo" 
+              src="/teyro-logo-blue.png"
+              alt="Teyro Logo"
               width={140} 
               height={40} 
               style={{ width: 'auto', height: '36px' }}

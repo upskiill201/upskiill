@@ -90,7 +90,7 @@ export default function Login() {
       <div className={styles.leftPanel}>
         <div className={styles.formContainer}>
           <div className={styles.header}>
-            <Image src="/logo.png" alt="Upskiill Logo" width={60} height={46} style={{ width: 'auto', height: 'auto' }} />
+            <Image src="/teyro-logo-blue.png" alt="Teyro Logo" width={60} height={46} style={{ width: 'auto', height: 'auto' }} />
           </div>
 
           <div className={styles.welcomeText}>
