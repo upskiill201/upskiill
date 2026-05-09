@@ -10,7 +10,8 @@ export function proxy(request: NextRequest) {
   const isAuthPage = isStudentAuthPage || isInstructorAuthPage;
   
   const isDashboard = path.startsWith('/dashboard');
-  const isInstructorArea = path.startsWith('/creator') && !isInstructorAuthPage;
+  const isTestRoute = path.startsWith('/creator-onboarding-test');
+  const isInstructorArea = path.startsWith('/creator') && !isInstructorAuthPage && !isTestRoute;
 
   if (!token) {
     if (isDashboard) {
