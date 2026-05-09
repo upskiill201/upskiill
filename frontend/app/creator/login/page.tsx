@@ -5,10 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
-import { FaGraduationCap, FaChalkboardTeacher, FaApple, FaLinkedin, FaFacebook, FaStar } from 'react-icons/fa';
+import { FaGraduationCap, FaChalkboardTeacher, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import Button from '@/components/ui/Button';
-import { signInWithGoogle, signInWithFacebook } from '@/lib/firebase';
+import { signInWithGoogle } from '@/lib/firebase';
 import styles from './InstructorAuth.module.css';
 
 // Using Suspense boundary to cleanly fetch search params without blocking
@@ -70,14 +70,12 @@ function AuthContent() {
     }
   };
 
-  const handleSocialAuth = async (provider: 'google' | 'facebook') => {
+  const handleSocialAuth = async () => {
     setError('');
     setLoading(true);
 
     try {
-      const result = provider === 'google' 
-        ? await signInWithGoogle() 
-        : await signInWithFacebook();
+      const result = await signInWithGoogle();
         
       const idToken = await result.user.getIdToken();
 
@@ -104,10 +102,6 @@ function AuthContent() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const showComingSoon = () => {
-    setError('Apple and LinkedIn integrations are coming soon!');
   };
 
   const toggleMode = () => {
@@ -228,17 +222,8 @@ function AuthContent() {
           </div>
 
           <div className={styles.socialGrid}>
-            <button type="button" className={styles.socialBtn} onClick={() => handleSocialAuth('google')} disabled={loading}>
-              <FcGoogle size={18} /> Google
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
-              <FaLinkedin size={18} color="#0A66C2" /> LinkedIn
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
-              <FaApple size={18} color="#000000" /> Apple
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={() => handleSocialAuth('facebook')} disabled={loading}>
-              <FaFacebook size={18} color="#1877F2" /> Facebook
+            <button type="button" className={styles.socialBtn} onClick={handleSocialAuth} disabled={loading}>
+              <FcGoogle size={18} /> Continue with Google
             </button>
           </div>
 

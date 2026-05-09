@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { FaGraduationCap, FaRocket, FaVideo, FaAward, FaApple, FaLinkedin, FaFacebook } from 'react-icons/fa';
+import { FaGraduationCap, FaRocket, FaVideo, FaAward } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
-import { signInWithGoogle, signInWithFacebook } from '@/lib/firebase';
+import { signInWithGoogle } from '@/lib/firebase';
 import styles from './Signup.module.css';
 
 export default function Signup() {
@@ -45,14 +45,12 @@ export default function Signup() {
     }
   };
 
-  const handleSocialSignup = async (provider: 'google' | 'facebook') => {
+  const handleSocialSignup = async () => {
     setError('');
     setLoading(true);
 
     try {
-      const result = provider === 'google' 
-        ? await signInWithGoogle() 
-        : await signInWithFacebook();
+      const result = await signInWithGoogle();
         
       const idToken = await result.user.getIdToken();
 
@@ -79,10 +77,6 @@ export default function Signup() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const showComingSoon = () => {
-    setError('Apple and LinkedIn integrations are coming soon!');
   };
 
   return (
@@ -185,17 +179,8 @@ export default function Signup() {
           </div>
 
           <div className={styles.socialGrid}>
-            <button type="button" className={styles.socialBtn} onClick={() => handleSocialSignup('google')} disabled={loading}>
-              <FcGoogle size={18} /> Google
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
-              <FaLinkedin size={18} color="#0A66C2" /> LinkedIn
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={showComingSoon} disabled={loading}>
-              <FaApple size={18} color="#000000" /> Apple
-            </button>
-            <button type="button" className={styles.socialBtn} onClick={() => handleSocialSignup('facebook')} disabled={loading}>
-              <FaFacebook size={18} color="#1877F2" /> Facebook
+            <button type="button" className={styles.socialBtn} onClick={handleSocialSignup} disabled={loading}>
+              <FcGoogle size={18} /> Continue with Google
             </button>
           </div>
 
