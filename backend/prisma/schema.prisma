@@ -135,6 +135,14 @@ model Lesson {
   aiRealWorld     String?  @db.Text
   aiCommonMistakes String? @db.Text
 
+  // 6. UI TRACKING & RESOURCES
+  shortDescription   String? @db.Text
+  resources          Json?   @default("[]")
+  isLearnCompleted   Boolean @default(false)
+  isApplyCompleted   Boolean @default(false)
+  isReflectCompleted Boolean @default(false)
+  isDeepenCompleted  Boolean @default(false)
+
   // System
   xpReward        Int      @default(10)
   

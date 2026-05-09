@@ -48,7 +48,9 @@ export class LessonService {
       'applyType', 'applyScenario', 'applyTask', 'applyAnswer', 'applyExplanation',
       'reflectPrompt', 'reflectChips',
       'deepenResources',
-      'aiSimplified', 'aiRealWorld', 'aiCommonMistakes'
+      'aiSimplified', 'aiRealWorld', 'aiCommonMistakes',
+      'shortDescription', 'resources',
+      'isLearnCompleted', 'isApplyCompleted', 'isReflectCompleted', 'isDeepenCompleted'
     ];
 
     for (const field of allowedFields) {
