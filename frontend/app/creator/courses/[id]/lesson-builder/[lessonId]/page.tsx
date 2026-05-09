@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, ChevronRight, Save, Layout, Eye, ArrowLeft, ArrowRight } from 'lucide-react';
-import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import styles from './LessonBuilder.module.css';
+
+import { Header } from './components/Header';
+import { TopTabs } from './components/TopTabs';
+import { FooterNav } from './components/FooterNav';
+import { Sidebar } from './components/Sidebar';
 import { ContentTypeSelector } from './components/ContentTypeSelector';
 import { VideoUploadBlock } from './components/VideoUploadBlock';
 import { LearningResources, ResourceItem } from './components/LearningResources';
 import { AIAssistant } from './components/AIAssistant';
-import { LessonFlowPreview } from './components/LessonFlowPreview';
-import { RightControlPanel } from './components/RightControlPanel';
+import { RichTextEditorMock } from './components/RichTextEditorMock';
 
 export default function LessonBuilderPage({ params }: { params: { id: string, lessonId: string } }) {
   const router = useRouter();
@@ -36,6 +37,8 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
           if (data.section?.course?.title) {
             setCourseTitle(data.section.course.title);
           }
+          if (data.lessonType) setContentType(data.lessonType);
+          if (data.deepenResources) setResources(data.deepenResources);
         }
       } catch (err) {
         console.error('Error fetching lesson:', err);
@@ -55,8 +58,9 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
         lessonType: contentType,
         learnText: lesson?.learnText,
         learnVideoUrl: lesson?.learnVideoUrl,
-        deepenResources: resources,
+        deepenResources: resources, // Saving resources attached to learn step
       };
+
       const res = await fetch(`/api/lesson/${params.lessonId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -76,9 +80,15 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
     }
   };
 
+  const handleTabChange = async (tab: string) => {
+    setCurrentTab(tab);
+    // Ideally we would save current state here before switching,
+    // but allowing draft navigation as requested.
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-50">
         <Spinner size="lg" />
       </div>
     );
@@ -86,48 +96,35 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
 
   return (
     <div className={styles.container}>
-      {/* HEADER */}
-      <header className={styles.header}>
-        <div className={styles.breadcrumbs}>
-          <Link href={`/creator/courses/${params.id}/manage`} className={styles.breadcrumbLink}>
-            {courseTitle}
-          </Link>
-          <ChevronRight size={14} />
-          <span>{lesson?.section?.title || 'Section'}</span>
-          <ChevronRight size={14} />
-          <span className="font-semibold">{lesson?.title || 'Lesson'}</span>
-        </div>
-        <div className={styles.headerActions}>
-          <div className={styles.autoSave}>
-            <CheckCircle2 size={14} />
-            <span>Auto-saved</span>
-          </div>
-          <Button variant="outline" size="sm">
-            <Eye size={16} className="mr-2" />
-            Preview as Student
-          </Button>
-          <Button size="sm" onClick={() => handleSave()} disabled={saving}>
-            {saving ? <div className="mr-2"><Spinner size="sm" /></div> : <Save size={16} className="mr-2" />}
-            Save Lesson
-          </Button>
-        </div>
-      </header>
+      <Header
+        courseId={params.id}
+        courseTitle={courseTitle}
+        sectionTitle={lesson?.section?.title || 'Section'}
+        lessonTitle={lesson?.title || 'Lesson'}
+      />
 
-      {/* MAIN GRID */}
+      <div className="px-6 bg-white border-b border-gray-200">
+        <TopTabs currentTab={currentTab} onTabChange={handleTabChange} />
+      </div>
+
       <main className={styles.mainLayout}>
         <div className={styles.leftCol}>
-          <div>
-            <h2 className={styles.title}>1. LEARN – Teach the Concept</h2>
-            <p className={styles.subtitle}>Add the core instructional content that introduces the concept to your students.</p>
+
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">1. LEARN – Teach the Concept</h2>
+              <p className="text-sm text-gray-500">Add the core instructional content that introduces the concept to your students.</p>
+            </div>
+            <button className="text-sm text-indigo-600 hover:underline">Learn more</button>
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm">1. Content Type</h3>
+            <h3 className="font-bold text-sm text-gray-900">1. Content Type</h3>
             <ContentTypeSelector selected={contentType} onChange={setContentType} />
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm">2. Add Content</h3>
+            <h3 className="font-bold text-sm text-gray-900">2. Add Content</h3>
             <VideoUploadBlock
               videoUrl={lesson?.learnVideoUrl || null}
               onUpload={(url) => setLesson({...lesson, learnVideoUrl: url})}
@@ -135,29 +132,31 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
             />
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex justify-between">
-                Video Title <span className="text-gray-400 font-normal text-xs">(Shown to students)</span>
+          <div className="flex gap-6 w-full">
+            <div className="flex-1 space-y-2">
+              <label className="text-sm font-bold text-gray-900 flex gap-1">
+                Video Title <span className="text-gray-400 font-normal">(Shown to students)</span> <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                value={lesson?.title || ''}
-                onChange={(e) => setLesson({...lesson, title: e.target.value})}
-                placeholder="e.g. What is UI Design?"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-gray-400"
+                  value={lesson?.title || ''}
+                  onChange={(e) => setLesson({...lesson, title: e.target.value})}
+                  placeholder="What is UI Design?"
+                />
+                <span className="absolute right-3 top-3 text-xs text-gray-400">{lesson?.title?.length || 0}/100</span>
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex justify-between">
-                Short Description <span className="text-gray-400 font-normal text-xs">(Shown to students)</span>
+
+            <div className="flex-1 space-y-2">
+              <label className="text-sm font-bold text-gray-900 flex gap-1">
+                Short Description <span className="text-gray-400 font-normal">(Shown to students)</span>
               </label>
-              <textarea
-                className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                rows={3}
+              <RichTextEditorMock
                 value={lesson?.learnText || ''}
-                onChange={(e) => setLesson({...lesson, learnText: e.target.value})}
-                placeholder="Learn the basics of UI design..."
+                onChange={(val) => setLesson({...lesson, learnText: val})}
+                placeholder="Learn the basics of UI design and why it plays a crucial role in creating beautiful and usable digital products."
               />
             </div>
           </div>
@@ -165,46 +164,23 @@ export default function LessonBuilderPage({ params }: { params: { id: string, le
           <LearningResources resources={resources} onChange={setResources} />
 
           <AIAssistant onApplyAI={(result) => setLesson({...lesson, learnText: result})} />
+
         </div>
 
-        <div className={styles.centerCol}>
-          <div>
-            <h2 className={styles.title}>Lesson Flow Preview</h2>
-            <p className={styles.subtitle}>This is how students will experience this lesson.</p>
-          </div>
-          <LessonFlowPreview lesson={lesson} />
-        </div>
-
-        <div className={styles.rightCol}>
-          <h2 className={styles.title}>Lesson Progress</h2>
-          <RightControlPanel lesson={lesson} />
-        </div>
+        <Sidebar lesson={lesson} />
       </main>
 
-      {/* FOOTER */}
-      <footer className={styles.footer}>
-        <div className={styles.flowNav}>
-          <div className={`${styles.flowStep} ${styles.active}`}>
-            Learn {currentTab === 'learn' && <CheckCircle2 size={16} />}
-          </div>
-          <ChevronRight size={16} color="#CBD5E1" />
-          <div className={styles.flowStep}>Apply</div>
-          <ChevronRight size={16} color="#CBD5E1" />
-          <div className={styles.flowStep}>Reflect</div>
-          <ChevronRight size={16} color="#CBD5E1" />
-          <div className={styles.flowStep}>Deepen</div>
-        </div>
-
-        <div className={styles.footerActions}>
-          <Button variant="outline" onClick={() => handleSave(`/creator/courses/${params.id}/manage`)}>
-            Save & Back to Curriculum
-          </Button>
-          <Button onClick={() => handleSave()}>
-            Save & Continue
-            <ArrowRight size={16} className="ml-2" />
-          </Button>
-        </div>
-      </footer>
+      <FooterNav
+        currentTab={currentTab}
+        onTabChange={handleTabChange}
+        onSave={handleSave}
+        courseId={params.id}
+      />
     </div>
   );
 }
+// TODO: [Validation Requirement]
+// Currently, creators are allowed to save and navigate forward with an incomplete 'Learn' step (draft mode).
+// When the AWS S3 video storage integration is completed, this behavior must change.
+// At that time, we must enforce strict validation ensuring that a video is uploaded and a title is provided
+// before allowing the user to proceed to the 'Apply' step.
