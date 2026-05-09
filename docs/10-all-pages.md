@@ -65,7 +65,7 @@
 | 26 | My Courses (Instructor) | `/instructor/courses` | `app/instructor/courses/page.tsx` | ⬜ |
 | 27 | Create Course — Step 1 | `/instructor/create` | `app/instructor/create/page.tsx` | ⬜ |
 | 28 | Edit Course | `/instructor/courses/[id]/edit` | `app/instructor/courses/[id]/edit/page.tsx` | ⬜ |
-| 29 | Course Curriculum Builder | `/instructor/courses/[id]/curriculum` | `app/instructor/courses/[id]/curriculum/page.tsx` | ⬜ |
+| 29 | Lesson Builder | `/creator/courses/[id]/lesson-builder/[lessonId]` | `app/creator/courses/[id]/lesson-builder/[lessonId]/page.tsx` | 🔨 |
 | 30 | Instructor Earnings | `/instructor/earnings` | `app/instructor/earnings/page.tsx` | ⬜ |
 | 31 | Instructor Analytics | `/instructor/analytics` | `app/instructor/analytics/page.tsx` | ⬜ |
 

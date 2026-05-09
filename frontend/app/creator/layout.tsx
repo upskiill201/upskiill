@@ -215,7 +215,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             </header>
           )}
 
-          <div className={styles.content} style={pathname.includes('/lesson-builder') ? { padding: 0, height: 'calc(100vh)', overflow: 'hidden' } : undefined}>{children}</div>
+          <div className={styles.content} style={pathname.includes('/lesson-builder') ? { padding: 0, height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' } : undefined}>{children}</div>
         </main>
       </div>
 

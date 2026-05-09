@@ -44,7 +44,7 @@ export class LessonService {
     const validData: any = {};
     const allowedFields = [
       'title', 'lessonType', 'isFreePreview', 'durationMinutes',
-      'learnVideoUrl', 'learnText',
+      'learnVideoUrl', 'learnText', 'learnAudioUrl',
       'applyType', 'applyScenario', 'applyTask', 'applyAnswer', 'applyExplanation',
       'reflectPrompt', 'reflectChips',
       'deepenResources',
