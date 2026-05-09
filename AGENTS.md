@@ -48,7 +48,7 @@ The project is organized into a monorepo structure.
 
 ### Backend (`/backend/`)
 - **Framework:** NestJS
-- **Database/ORM:** Prisma
+- **Database/ORM:** Supabase and Prisma
 
 ---
 
