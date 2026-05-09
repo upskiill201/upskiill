@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course/course.module';
+import { LessonModule } from './lesson/lesson.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 
@@ -12,6 +13,7 @@ import { PaymentModule } from './payment/payment.module';
     PrismaModule,
     AuthModule,
     CourseModule,
+    LessonModule,
     OrdersModule,
     PaymentModule,
   ],

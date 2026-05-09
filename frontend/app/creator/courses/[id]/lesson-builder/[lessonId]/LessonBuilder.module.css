@@ -1,0 +1,148 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #FAFAFA;
+}
+
+.header {
+  padding: 16px 24px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #EAEAEA;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.breadcrumbs {
+  font-size: 14px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumbLink {
+  color: #1A1A1A;
+  text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.autoSave {
+  font-size: 13px;
+  color: #10B981;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mainLayout {
+  display: grid;
+  grid-template-columns: 350px 1fr 300px;
+  flex: 1;
+  overflow: hidden;
+  gap: 24px;
+  padding: 24px;
+}
+
+.leftCol, .centerCol, .rightCol {
+  overflow-y: auto;
+  padding-bottom: 80px; /* space for footer */
+}
+
+.leftCol {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #EAEAEA;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.centerCol {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightCol {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #EAEAEA;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid #EAEAEA;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  margin: 0 -24px -24px -24px; /* Pull out to match padding */
+}
+
+.flowNav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flowStep {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #EAEAEA;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666666;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flowStep.active {
+  border-color: #4F46E5;
+  color: #4F46E5;
+  background-color: #EEF2FF;
+}
+
+.flowStep.completed {
+  border-color: #10B981;
+  color: #10B981;
+  background-color: #ECFDF5;
+}
+
+.footerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6B7280;
+}
