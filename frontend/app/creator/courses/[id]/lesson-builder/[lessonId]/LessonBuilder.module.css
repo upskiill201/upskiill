@@ -6,9 +6,15 @@
 }
 
 .header {
-  padding: 16px 24px;
+  padding: 16px 24px 0 24px;
   background-color: #FFFFFF;
   border-bottom: 1px solid #EAEAEA;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -31,6 +37,12 @@
   text-decoration: underline;
 }
 
+.headerTitleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .headerActions {
   display: flex;
   align-items: center;
@@ -45,68 +57,101 @@
   gap: 4px;
 }
 
+.topTabs {
+  display: flex;
+  gap: 16px;
+}
+
+.topTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 2px solid transparent;
+  color: #666666;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.topTab.active {
+  border-bottom-color: #4F46E5;
+  color: #4F46E5;
+  font-weight: 600;
+}
+
 .mainLayout {
   display: grid;
-  grid-template-columns: 350px 1fr 300px;
+  grid-template-columns: 1fr 320px;
   flex: 1;
   overflow: hidden;
   gap: 24px;
   padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.leftCol, .centerCol, .rightCol {
+.leftCol, .rightCol {
   overflow-y: auto;
-  padding-bottom: 80px; /* space for footer */
+  padding-bottom: 120px; /* space for footer */
 }
 
 .leftCol {
   background-color: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #EAEAEA;
-  padding: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.rightCol {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.centerCol {
-  background-color: transparent;
+.sidebarCard {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #EAEAEA;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.rightCol {
-  background-color: #FFFFFF;
-  border-radius: 8px;
-  border: 1px solid #EAEAEA;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   background-color: #FFFFFF;
   border-top: 1px solid #EAEAEA;
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
-  margin: 0 -24px -24px -24px; /* Pull out to match padding */
+  z-index: 50;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.footerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .flowNav {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .flowStep {
-  padding: 8px 16px;
+  padding: 12px 20px;
   border-radius: 8px;
   border: 1px solid #EAEAEA;
   font-size: 14px;
@@ -115,7 +160,8 @@
   background-color: #FFFFFF;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  cursor: pointer;
 }
 
 .flowStep.active {
@@ -125,9 +171,8 @@
 }
 
 .flowStep.completed {
-  border-color: #10B981;
-  color: #10B981;
-  background-color: #ECFDF5;
+  border-color: #EAEAEA;
+  color: #1A1A1A;
 }
 
 .footerActions {

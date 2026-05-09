@@ -18,61 +18,63 @@ export function RightControlPanel({ lesson }: { lesson: any }) {
   return (
     <div className="flex flex-col gap-6">
 
-      {/* PROGRESS CIRCLE */}
-      <div className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg bg-white">
-        <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4 border-gray-100 mb-4">
+      {/* PROGRESS CIRCLE & INFO */}
+      <div className="flex gap-4 items-center">
+        <div className="relative w-[60px] h-[60px] flex items-center justify-center rounded-full border-4 border-gray-100 flex-shrink-0">
            {/* Fake SVG Circle for progress */}
            <svg className="absolute inset-0 w-full h-full transform -rotate-90">
              <circle
-               cx="44" cy="44" r="40"
+               cx="26" cy="26" r="26"
                stroke="currentColor"
-               strokeWidth="8"
+               strokeWidth="4"
                fill="transparent"
                className="text-indigo-600"
-               strokeDasharray={`${(completion / 100) * 251} 251`}
+               strokeDasharray={`${(completion / 100) * 163} 163`}
              />
            </svg>
-           <span className="text-xl font-bold text-gray-900">{completion}%</span>
+           <span className="text-sm font-bold text-gray-900">{completion}%</span>
         </div>
-        <h4 className="text-sm font-bold text-gray-900 text-center">Keep going!</h4>
-        <p className="text-xs text-gray-500 text-center mt-1">Complete all steps to publish this lesson.</p>
+        <div>
+          <h4 className="text-sm font-bold text-gray-900">Keep going!</h4>
+          <p className="text-xs text-gray-500 mt-0.5">Complete all steps to publish this lesson.</p>
+        </div>
       </div>
 
       {/* CHECKLIST */}
-      <div className="space-y-3">
+      <div className="space-y-3 mt-2">
         <div className="flex items-center gap-3">
           {checks.learn ? <CheckCircle2 size={16} className="text-green-500" /> : <Circle size={16} className="text-gray-300" />}
-          <span className="text-sm text-gray-700">Learn content</span>
+          <span className="text-sm text-gray-700 font-medium">Learn content</span>
         </div>
         <div className="flex items-center gap-3">
           {checks.apply ? <CheckCircle2 size={16} className="text-green-500" /> : <Circle size={16} className="text-gray-300" />}
-          <span className="text-sm text-gray-700">Apply activity</span>
+          <span className="text-sm text-gray-700 font-medium">Apply activity</span>
         </div>
         <div className="flex items-center gap-3">
           {checks.reflect ? <CheckCircle2 size={16} className="text-green-500" /> : <Circle size={16} className="text-gray-300" />}
-          <span className="text-sm text-gray-700">Reflect prompt</span>
+          <span className="text-sm text-gray-700 font-medium">Reflect prompt</span>
         </div>
         <div className="flex items-center gap-3">
           {checks.deepen ? <CheckCircle2 size={16} className="text-green-500" /> : <Circle size={16} className="text-gray-300" />}
-          <span className="text-sm text-gray-700">Deepen resources</span>
+          <span className="text-sm text-gray-700 font-medium">Deepen resources</span>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <hr className="border-gray-200" />
-
-      {/* SYSTEM INFO FOR XP */}
-      <div>
-        <h4 className="text-sm font-semibold text-gray-900 mb-2">System Info</h4>
-        <p className="text-xs text-gray-500 leading-relaxed mb-4">
-          XP is automatically calculated by the system based on lesson content and activity type.
-        </p>
-        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded p-2 text-indigo-700 text-xs font-medium">
-          <Star size={14} className="fill-indigo-700" />
-          XP will be shown to learners
-          <Info size={14} className="ml-auto text-indigo-400" />
-        </div>
+export function SystemInfoPanel() {
+  return (
+    <div className="sidebarCard mt-6 p-6 border border-gray-200 rounded-xl bg-white flex flex-col gap-3">
+      <h3 className="font-bold text-gray-900">System Info</h3>
+      <p className="text-xs text-gray-500 leading-relaxed">
+        XP is automatically calculated by the system based on lesson content and activity type.
+      </p>
+      <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded px-3 py-2 text-indigo-700 text-xs font-medium mt-1">
+        <Star size={14} className="fill-indigo-700" />
+        XP will be shown to learners
+        <Info size={14} className="ml-auto text-indigo-400" />
       </div>
-
     </div>
   );
 }

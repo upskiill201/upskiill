@@ -565,3 +565,12 @@ cd backend && npm run start:dev
 - **GitHub:** https://github.com/upskiill201/upskiill
 - **PR for Latest UI:** https://github.com/upskiill201/upskiill/pull/31
 - **Test Course Player (Live):** https://upskiill.vercel.app/learn/advanced-product-design-ux-strategy (Login directly with Alex's credentials to view)
+
+## Step 3 Lesson Builder (Learn Screen)
+- The UI has been entirely rebuilt to strictly adhere to the `Step three learning final ui` hifi mockup.
+- Features implemented:
+  - 2-column Main Layout (Builder + Sidebar).
+  - Left Builder Column: Content Type, Video Upload mock, Title, Rich Text Description mock, Learning Resources (now correctly placed below content), and AI Assistant.
+  - Right Sidebar: Lesson Flow Preview (with circular completion badge), Checklists, and System Info panel for XP rules.
+  - Top tabs and sticky Footer flow navigation accurately matching the design.
+  - **Note on Validation:** As requested, validation ensuring the "Learn" step is fully completed (e.g. enforcing video upload) is currently bypassed to allow draft navigation. This must be strictly enforced once the AWS S3 video storage integration is built.

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, Edit3, MessageSquare, PlusSquare, CheckCircle2, Circle } from 'lucide-react';
+import { Video, MousePointer2, MessageSquare, Cloud } from 'lucide-react';
 
 export function LessonFlowPreview({ lesson }: { lesson: any }) {
   const flowSteps = [
@@ -8,55 +8,56 @@ export function LessonFlowPreview({ lesson }: { lesson: any }) {
       title: '1. Learn',
       subtitle: 'Current step',
       icon: Video,
-      status: lesson?.learnVideoUrl || lesson?.learnText ? 'complete' : 'current',
+      isCurrent: true,
+      hasContent: !!(lesson?.learnVideoUrl || lesson?.learnText),
     },
     {
       id: 'apply',
       title: '2. Apply',
       subtitle: 'Practice & engage',
-      icon: Edit3,
-      status: lesson?.applyTask ? 'complete' : 'pending',
+      icon: MousePointer2,
+      isCurrent: false,
+      hasContent: !!lesson?.applyTask,
     },
     {
       id: 'reflect',
       title: '3. Reflect',
       subtitle: 'Think & reinforce',
       icon: MessageSquare,
-      status: lesson?.reflectPrompt ? 'complete' : 'pending',
+      isCurrent: false,
+      hasContent: !!lesson?.reflectPrompt,
     },
     {
       id: 'deepen',
       title: '4. Deepen',
       subtitle: 'Explore more',
-      icon: PlusSquare,
-      status: lesson?.deepenResources?.length > 0 ? 'complete' : 'pending',
+      icon: Cloud,
+      isCurrent: false,
+      hasContent: !!(lesson?.deepenResources?.length > 0),
     }
   ];
 
   return (
-    <div className="flex flex-col gap-3 mt-4">
-      {flowSteps.map((step, idx) => {
+    <div className="flex flex-col gap-3">
+      {flowSteps.map((step) => {
         const Icon = step.icon;
-        const isCurrent = step.status === 'current';
 
         return (
           <div
             key={step.id}
-            className={`p-4 rounded-lg border flex items-center gap-4 transition-all
-              ${isCurrent ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-white border-gray-200'}
+            className={`p-3 rounded-lg border flex items-center gap-4 transition-all
+              ${step.isCurrent ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-gray-100'}
             `}
           >
-            <div className={`p-2 rounded-md ${isCurrent ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
-              <Icon size={20} />
+            <div className={`w-8 h-8 rounded-md flex items-center justify-center ${step.isCurrent ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
+              <Icon size={16} />
             </div>
-            <div className="flex-1">
-              <h4 className={`text-sm font-semibold ${isCurrent ? 'text-indigo-900' : 'text-gray-900'}`}>{step.title}</h4>
-              <p className="text-xs text-gray-500">{step.subtitle}</p>
-            </div>
-            <div>
-              {step.status === 'complete' && <CheckCircle2 size={18} className="text-green-500" />}
-              {step.status === 'current' && <span className="text-xs font-medium text-indigo-600 bg-white px-2 py-1 rounded border border-indigo-200">Current step</span>}
-              {step.status === 'pending' && <Circle size={18} className="text-gray-300" />}
+            <div className="flex-1 flex justify-between items-center">
+              <div>
+                <h4 className={`text-sm font-bold ${step.isCurrent ? 'text-indigo-900' : 'text-gray-900'}`}>{step.title}</h4>
+                <p className="text-xs text-gray-500">{step.subtitle}</p>
+              </div>
+              {step.isCurrent && <span className="text-[10px] font-medium text-indigo-600 bg-white px-2 py-0.5 rounded border border-indigo-200">Current step</span>}
             </div>
           </div>
         );
