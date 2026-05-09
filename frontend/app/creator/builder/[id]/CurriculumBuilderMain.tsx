@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Plus, ChevronDown, ChevronUp, GripVertical, Edit2, Copy, Trash2,
@@ -21,6 +24,7 @@ import {
 
 // ─── MAIN CURRICULUM BUILDER ─────────────────────────────────
 export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Props) {
+  const router = useRouter();
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -211,10 +215,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
   };
 
   const handleBuildLesson = (lessonId: string) => {
-    setPremiumModal({
-      title: 'Step 3: Lesson Builder',
-      desc: 'The Lesson Builder is the ultimate tool to craft engaging learning journeys (Learn → Apply → Reflect → Deepen). It will be unlocked in the next step of the wizard.',
-    });
+    router.push(`/creator/courses/${courseId}/lesson-builder/${lessonId}`);
   };
 
   // ─── COMPUTED ───
