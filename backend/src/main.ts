@@ -8,9 +8,9 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // Allow Vercel (any subdomain), teyro.app, and localhost (any port) — blocks everything else
+  // Allow Vercel (production), teyro.app, and localhost (any port) — blocks everything else
   const allowedOrigins: RegExp[] = [
-    /^https:\/\/.*\.vercel\.app$/,         // All Vercel preview + production deployments
+    /^https:\/\/upskiill\.vercel\.app$/,   // Production Vercel deployment
     /^https:\/\/(www\.)?teyro\.app$/,       // Production custom domain — teyro.app
     /^http:\/\/localhost:\d+$/,             // Local development
   ];
