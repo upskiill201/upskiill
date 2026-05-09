@@ -44,10 +44,6 @@
   margin-bottom: 24px;
 }
 
-.logo :global(img) {
-  filter: brightness(0) invert(1);
-}
-
 .description {
   color: rgba(255, 255, 255, 0.7);
   font-size: 15px;

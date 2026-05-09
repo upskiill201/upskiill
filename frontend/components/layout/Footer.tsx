@@ -19,9 +19,9 @@ export default function Footer() {
             <Image 
               src="/teyro-logo-blue.png"
               alt="Teyro Logo"
-              width={140} 
-              height={40} 
-              style={{ width: 'auto', height: '36px' }}
+              width={220}
+              height={66}
+              style={{ width: 'auto', height: '56px', objectFit: 'contain' }}
             />
           </Link>
           <p className={styles.description}>
