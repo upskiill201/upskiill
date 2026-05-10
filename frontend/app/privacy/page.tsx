@@ -85,11 +85,11 @@ export default function PrivacyPolicy() {
                 <h3 className="text-xl font-bold mt-6 mb-2">Personal Data</h3>
                 <p>While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you (<b>“Personal Data”</b>). Personally identifiable information may include, but is not limited to:</p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>0.1. Email address</li>
-                  <li>0.2. First name and last name</li>
-                  <li>0.3. Phone number</li>
-                  <li>0.4. Address, Country, State, Province, ZIP/Postal code, City</li>
-                  <li>0.5. Cookies and Usage Data</li>
+                  <li>Email address</li>
+                  <li>First name and last name</li>
+                  <li>Phone number</li>
+                  <li>Address, Country, State, Province, ZIP/Postal code, City</li>
+                  <li>Cookies and Usage Data</li>
                 </ul>
                 <p>We may use your Personal Data to contact you with newsletters, marketing or promotional materials and other information that may be of interest to you. You may opt out of receiving any, or all, of these communications from us by following the unsubscribe link.</p>
 
@@ -108,33 +108,30 @@ export default function PrivacyPolicy() {
                 <p>You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Service.</p>
                 <p>Examples of Cookies we use:</p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>0.1. <b>Session Cookies:</b> We use Session Cookies to operate our Service.</li>
-                  <li>0.2. <b>Preference Cookies:</b> We use Preference Cookies to remember your preferences and various settings.</li>
-                  <li>0.3. <b>Security Cookies:</b> We use Security Cookies for security purposes.</li>
-                  <li>0.4. <b>Advertising Cookies:</b> Advertising Cookies are used to serve you with advertisements that may be relevant to you and your interests.</li>
+                  <li><b>Session Cookies:</b> We use Session Cookies to operate our Service.</li>
+                  <li><b>Preference Cookies:</b> We use Preference Cookies to remember your preferences and various settings.</li>
+                  <li><b>Security Cookies:</b> We use Security Cookies for security purposes.</li>
+                  <li><b>Advertising Cookies:</b> Advertising Cookies are used to serve you with advertisements that may be relevant to you and your interests.</li>
                 </ul>
-
-                <h3 className="text-xl font-bold mt-6 mb-2">Other Data</h3>
-                <p>While using our Service, we may also collect the following information: sex, age, date of birth, place of birth, passport details, citizenship, registration at place of residence and actual address, telephone number (work, mobile), details of documents on education, qualification, professional training, employment agreements, <a href="https://policymaker.io/non-disclosure-agreement/" target="_blank" rel="noopener noreferrer" className="text-[var(--brand-blue)] hover:underline">NDA agreements</a>, information on bonuses and compensation, information on marital status, family members, social security (or other taxpayer identification) number, office location and other data.</p>
               </section>
 
               <section id="use-of-data" className="scroll-mt-28 mb-8">
                 <h2 className="text-2xl font-bold mb-4 border-b border-[var(--border)] pb-2">5. Use of Data</h2>
                 <p>Teyro uses the collected data for various purposes:</p>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>0.1. to provide and maintain our Service;</li>
-                  <li>0.2. to notify you about changes to our Service;</li>
-                  <li>0.3. to allow you to participate in interactive features of our Service when you choose to do so;</li>
-                  <li>0.4. to provide customer support;</li>
-                  <li>0.5. to gather analysis or valuable information so that we can improve our Service;</li>
-                  <li>0.6. to monitor the usage of our Service;</li>
-                  <li>0.7. to detect, prevent and address technical issues;</li>
-                  <li>0.8. to fulfil any other purpose for which you provide it;</li>
-                  <li>0.9. to carry out our obligations and enforce our rights arising from any contracts entered into between you and us, including for billing and collection;</li>
-                  <li>0.10. to provide you with notices about your account and/or subscription, including expiration and renewal notices, email-instructions, etc.;</li>
-                  <li>0.11. to provide you with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless you have opted not to receive such information;</li>
-                  <li>0.12. in any other way we may describe when you provide the information;</li>
-                  <li>0.13. for any other purpose with your consent.</li>
+                  <li>to provide and maintain our Service;</li>
+                  <li>to notify you about changes to our Service;</li>
+                  <li>to allow you to participate in interactive features of our Service when you choose to do so;</li>
+                  <li>to provide customer support;</li>
+                  <li>to gather analysis or valuable information so that we can improve our Service;</li>
+                  <li>to monitor the usage of our Service;</li>
+                  <li>to detect, prevent and address technical issues;</li>
+                  <li>to fulfil any other purpose for which you provide it;</li>
+                  <li>to carry out our obligations and enforce our rights arising from any contracts entered into between you and us, including for billing and collection;</li>
+                  <li>to provide you with notices about your account and/or subscription, including expiration and renewal notices, email-instructions, etc.;</li>
+                  <li>to provide you with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless you have opted not to receive such information;</li>
+                  <li>in any other way we may describe when you provide the information;</li>
+                  <li>for any other purpose with your consent.</li>
                 </ul>
               </section>
 
@@ -157,23 +154,23 @@ export default function PrivacyPolicy() {
                 <p>We may disclose personal information that we collect, or you provide:</p>
                 <div className="space-y-4">
                   <div>
-                    <p>0.1. <b>Disclosure for Law Enforcement.</b></p>
+                    <p><b>Disclosure for Law Enforcement.</b></p>
                     <p>Under certain circumstances, we may be required to disclose your Personal Data if required to do so by law or in response to valid requests by public authorities.</p>
                   </div>
                   <div>
-                    <p>0.2. <b>Business Transaction.</b></p>
+                    <p><b>Business Transaction.</b></p>
                     <p>If we or our subsidiaries are involved in a merger, acquisition or asset sale, your Personal Data may be transferred.</p>
                   </div>
                   <div>
-                    <p>0.3. <b>Other cases. We may disclose your information also:</b></p>
+                    <p><b>Other cases. We may disclose your information also:</b></p>
                     <ul className="list-disc pl-6 space-y-1">
-                      <li>0.3.1. to our subsidiaries and affiliates;</li>
-                      <li>0.3.2. to contractors, service providers, and other third parties we use to support our business;</li>
-                      <li>0.3.3. to fulfill the purpose for which you provide it;</li>
-                      <li>0.3.4. for the purpose of including your company’s logo on our website;</li>
-                      <li>0.3.5. for any other purpose disclosed by us when you provide the information;</li>
-                      <li>0.3.6. with your consent in any other cases;</li>
-                      <li>0.3.7. if we believe disclosure is necessary or appropriate to protect the rights, property, or safety of the Company, our customers, or others.</li>
+                      <li>to our subsidiaries and affiliates;</li>
+                      <li>to contractors, service providers, and other third parties we use to support our business;</li>
+                      <li>to fulfill the purpose for which you provide it;</li>
+                      <li>for the purpose of including your company’s logo on our website;</li>
+                      <li>for any other purpose disclosed by us when you provide the information;</li>
+                      <li>with your consent in any other cases;</li>
+                      <li>if we believe disclosure is necessary or appropriate to protect the rights, property, or safety of the Company, our customers, or others.</li>
                     </ul>
                   </div>
                 </div>
@@ -191,12 +188,12 @@ export default function PrivacyPolicy() {
                 <p>If you wish to be informed what Personal Data we hold about you and if you want it to be removed from our systems, please email us at <b>teyro@gmail.com</b>.</p>
                 <p>In certain circumstances, you have the following data protection rights:</p>
                 <ul className="list-disc pl-6 space-y-1 mb-4">
-                  <li>0.1. the right to access, update or to delete the information we have on you;</li>
-                  <li>0.2. the right of rectification. You have the right to have your information rectified if that information is inaccurate or incomplete;</li>
-                  <li>0.3. the right to object. You have the right to object to our processing of your Personal Data;</li>
-                  <li>0.4. the right of restriction. You have the right to request that we restrict the processing of your personal information;</li>
-                  <li>0.5. the right to data portability. You have the right to be provided with a copy of your Personal Data in a structured, machine-readable and commonly used format;</li>
-                  <li>0.6. the right to withdraw consent. You also have the right to withdraw your consent at any time where we rely on your consent to process your personal information;</li>
+                  <li>the right to access, update or to delete the information we have on you;</li>
+                  <li>the right of rectification. You have the right to have your information rectified if that information is inaccurate or incomplete;</li>
+                  <li>the right to object. You have the right to object to our processing of your Personal Data;</li>
+                  <li>the right of restriction. You have the right to request that we restrict the processing of your personal information;</li>
+                  <li>the right to data portability. You have the right to be provided with a copy of your Personal Data in a structured, machine-readable and commonly used format;</li>
+                  <li>the right to withdraw consent. You also have the right to withdraw your consent at any time where we rely on your consent to process your personal information;</li>
                 </ul>
                 <p>Please note that we may ask you to verify your identity before responding to such requests. Please note, we may not able to provide Service without some necessary data.</p>
                 <p>You have the right to complain to a Data Protection Authority about our collection and use of your Personal Data. For more information, please contact your local data protection authority in the European Economic Area (EEA).</p>
@@ -207,10 +204,10 @@ export default function PrivacyPolicy() {
                 <p>CalOPPA is the first state law in the nation to require commercial websites and online services to post a privacy policy. The law’s reach stretches well beyond California to require a person or company in the United States (and conceivable the world) that operates websites collecting personally identifiable information from California consumers to post a conspicuous privacy policy on its website stating exactly the information being collected and those individuals with whom it is being shared, and to comply with this policy.</p>
                 <p>According to CalOPPA we agree to the following:</p>
                 <ul className="list-disc pl-6 space-y-1 mb-4">
-                  <li>0.1. users can visit our site anonymously;</li>
-                  <li>0.2. our Privacy Policy link includes the word “Privacy”, and can easily be found on the home page of our website;</li>
-                  <li>0.3. users will be notified of any privacy policy changes on our Privacy Policy Page;</li>
-                  <li>0.4. users are able to change their personal information by emailing us at <b>teyro@gmail.com</b>.</li>
+                  <li>users can visit our site anonymously;</li>
+                  <li>our Privacy Policy link includes the word “Privacy”, and can easily be found on the home page of our website;</li>
+                  <li>users will be notified of any privacy policy changes on our Privacy Policy Page;</li>
+                  <li>users are able to change their personal information by emailing us at <b>teyro@gmail.com</b>.</li>
                 </ul>
                 <p>Our Policy on “Do Not Track” Signals:</p>
                 <p>We honor Do Not Track signals and do not track, plant cookies, or use advertising when a Do Not Track browser mechanism is in place. Do Not Track is a preference you can set in your web browser to inform websites that you do not want to be tracked.</p>
@@ -223,26 +220,25 @@ export default function PrivacyPolicy() {
                 
                 <div className="space-y-4">
                   <div>
-                    <p><b>0.1. What personal information we have about you. If you make this request, we will return to you:</b></p>
+                    <p><b>What personal information we have about you. If you make this request, we will return to you:</b></p>
                     <ul className="list-disc pl-6 space-y-1">
-                      <li>0.0.1. The categories of personal information we have collected about you.</li>
-                      <li>0.0.2. The categories of sources from which we collect your personal information.</li>
-                      <li>0.0.3. The business or commercial purpose for collecting or selling your personal information.</li>
-                      <li>0.0.4. The categories of third parties with whom we share personal information.</li>
-                      <li>0.0.5. The specific pieces of personal information we have collected about you.</li>
-                      <li>0.0.6. A list of categories of personal information that we have sold, along with the category of any other company we sold it to. If we have not sold your personal information, we will inform you of that fact.</li>
-                      <li>0.0.7. A list of categories of personal information that we have disclosed for a business purpose, along with the category of any other company we shared it with.</li>
+                      <li>The categories of personal information we have collected about you.</li>
+                      <li>The categories of sources from which we collect your personal information.</li>
+                      <li>The business or commercial purpose for collecting or selling your personal information.</li>
+                      <li>The categories of third parties with whom we share personal information.</li>
+                      <li>The specific pieces of personal information we have collected about you.</li>
+                      <li>A list of categories of personal information that we have sold, along with the category of any other company we sold it to. If we have not sold your personal information, we will inform you of that fact.</li>
+                      <li>A list of categories of personal information that we have disclosed for a business purpose, along with the category of any other company we shared it with.</li>
                     </ul>
                     <p className="mt-2">Please note, you are entitled to ask us to provide you with this information up to two times in a rolling twelve-month period. When you make this request, the information provided may be limited to the personal information we collected about you in the previous 12 months.</p>
                   </div>
 
                   <div>
-                    <p><b>0.2. To delete your personal information.</b> If you make this request, we will delete the personal information we hold about you as of the date of your request from our records and direct any service providers to do the same. In some cases, deletion may be accomplished through de-identification of the information. If you choose to delete your personal information, you may not be able to use certain functions that require your personal information to operate.</p>
+                    <p><b>To delete your personal information.</b> If you make this request, we will delete the personal information we hold about you as of the date of your request from our records and direct any service providers to do the same. In some cases, deletion may be accomplished through de-identification of the information. If you choose to delete your personal information, you may not be able to use certain functions that require your personal information to operate.</p>
                   </div>
 
                   <div>
-                    <p><b>0.3. To stop selling your personal information.</b> We don’t sell or rent your personal information to any third parties for any purpose. We do not sell your personal information for monetary consideration. However, under some circumstances, a transfer of personal information to a third party, or within our family of companies, without monetary consideration may be considered a “sale” under California law. You are the only owner of your Personal Data and can request disclosure or deletion at any time.</p>
-                    <p className="mt-2">If you submit a request to stop selling your personal information, we will stop making such transfers.</p>
+                    <p><b>To stop selling your personal information.</b> We do not sell or rent your personal information to any third parties for any purpose. You are the only owner of your Personal Data and can request disclosure or deletion at any time.</p>
                   </div>
                 </div>
 
