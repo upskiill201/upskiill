@@ -1,36 +1,31 @@
 import React from 'react';
-import { Bold, Italic, Underline, List, ListOrdered, ChevronDown } from 'lucide-react';
+import { Bold, Italic, Underline, Link as LinkIcon, List, FileImage } from 'lucide-react';
+import styles from '../LessonBuilder.module.css';
 
-interface RichTextEditorMockProps {
+interface Props {
   value: string;
   onChange: (val: string) => void;
   placeholder?: string;
 }
 
-export function RichTextEditorMock({ value, onChange, placeholder }: RichTextEditorMockProps) {
+export function RichTextEditorMock({ value, onChange, placeholder }: Props) {
   return (
-    <div className="w-full border border-gray-300 rounded-md overflow-hidden bg-white focus-within:ring-2 focus-within:ring-indigo-500">
-      <div className="flex items-center gap-1 border-b border-gray-200 p-2 bg-gray-50">
-        <button className="flex items-center gap-1 text-sm text-gray-700 hover:bg-gray-200 px-2 py-1 rounded">
-          Normal <ChevronDown size={14} />
-        </button>
-        <div className="w-px h-4 bg-gray-300 mx-1"></div>
-        <button className="p-1.5 text-gray-600 hover:bg-gray-200 rounded"><Bold size={14} /></button>
-        <button className="p-1.5 text-gray-600 hover:bg-gray-200 rounded"><Italic size={14} /></button>
-        <button className="p-1.5 text-gray-600 hover:bg-gray-200 rounded"><Underline size={14} /></button>
-        <div className="w-px h-4 bg-gray-300 mx-1"></div>
-        <button className="p-1.5 text-gray-600 hover:bg-gray-200 rounded"><List size={14} /></button>
-        <button className="p-1.5 text-gray-600 hover:bg-gray-200 rounded"><ListOrdered size={14} /></button>
+    <div className={styles.richEditor}>
+      <div className={styles.richToolbar}>
+        <Bold size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <Italic size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <Underline size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <div style={{ width: '1px', height: '16px', backgroundColor: 'var(--border)', margin: '0 8px' }}></div>
+        <LinkIcon size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <List size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
+        <FileImage size={16} color="var(--text-secondary)" style={{ cursor: 'pointer' }} />
       </div>
       <textarea
-        className="w-full p-3 text-sm focus:outline-none min-h-[100px] resize-y"
+        className={styles.richTextarea}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder || "Start typing..."}
       />
-      <div className="px-3 py-1.5 text-right text-xs text-gray-400 bg-white">
-        {value.length}/300
-      </div>
     </div>
   );
 }

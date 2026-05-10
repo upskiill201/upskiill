@@ -99,8 +99,9 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
     window.location.href = '/creator/login';
   };
 
-  // Auth pages, the full-screen create wizard, and the course studio do not need the sidebar layout
-  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create') || pathname.includes('/builder') || pathname.endsWith('/manage');
+  // Auth pages, the full-screen create wizard, and the curriculum builder do not need the sidebar layout
+  // Note: /lesson-builder needs the sidebar, so we use exact startsWith for the curriculum builder
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create') || pathname.startsWith('/creator/builder') || pathname.endsWith('/manage');
 
   if (isAuthPage) {
     return (
@@ -157,8 +158,8 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
         {/* ─── MAIN AREA ─── */}
         <main className={styles.main}>
-          {/* Header - Hidden in Builder mode so the Builder can provide its own edge-to-edge header */}
-          {!pathname.includes('/builder') && (
+          {/* Header - Hidden in Curriculum Builder and Lesson Builder modes so they can provide their own edge-to-edge header */}
+          {!pathname.includes('/builder') && !pathname.includes('/lesson-builder') && (
             <header className={styles.header}>
               <div className={styles.headerLeft}>
                 <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)}>
@@ -214,7 +215,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             </header>
           )}
 
-          <div className={styles.content}>{children}</div>
+          <div className={styles.content} style={pathname.includes('/lesson-builder') ? { padding: 0, height: 'calc(100vh)', overflow: 'hidden' } : undefined}>{children}</div>
         </main>
       </div>
 
