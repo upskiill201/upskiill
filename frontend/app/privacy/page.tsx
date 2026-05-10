@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="bg-[var(--bg-page)] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[var(--bg-page)] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8">
       {/* Container */}
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
