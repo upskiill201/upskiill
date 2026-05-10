@@ -11,6 +11,7 @@ import {
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import { Tooltip } from '@/components/ui/Tooltip';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
 import styles from './Builder.module.css';
@@ -533,7 +534,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <span className={styles.sectionBadge}>1</span>
                   Basic Information
                 </div>
-                <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                <Tooltip content="A strong title and accurate category are foundational for discoverability. They act as the 'front door' to your course, signaling relevance to potential learners." position="top">
+                  <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                </Tooltip>
               </div>
 
               {/* Title */}
@@ -613,7 +616,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <span className={styles.sectionBadge}>2</span>
                   Course Description
                 </div>
-                <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                <Tooltip content="The description is where you communicate 'why' you are the right person to teach it. It builds the bridge between a learner's current state and their desired future." position="top">
+                  <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                </Tooltip>
               </div>
 
               <div className={styles.field}>
@@ -644,7 +649,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <span className={styles.sectionBadge}>3</span>
                   What Learners Will Achieve
                 </div>
-                <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                <Tooltip content="Concrete outcomes transform vague interest into clear commitment. They provide a roadmap for the learner's journey and serve as a benchmark for their success." position="top">
+                  <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                </Tooltip>
               </div>
               <p className={styles.hint} style={{ marginBottom: 16 }}>By the end of this course, learners will be able to:</p>
 
@@ -687,7 +694,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <span className={styles.sectionBadge}>4</span>
                   Skills Learners Will Gain
                 </div>
-                <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                <Tooltip content="Explicitly listing skills helps learners visualize their professional growth and makes your course a more valuable investment in their career." position="top">
+                  <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                </Tooltip>
               </div>
               <p className={styles.hint} style={{ marginBottom: 16 }}>Add key skills learners will develop.</p>
 
@@ -718,7 +727,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <span className={styles.sectionBadge}>5</span>
                   Prerequisites (Optional)
                 </div>
-                <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                <Tooltip content="Transparency about required knowledge ensures every student is equipped to cross the finish line, fostering accomplishment rather than overwhelm." position="top">
+                  <button className={styles.whyBtn}><HelpCircle size={13} /> Why this matters</button>
+                </Tooltip>
               </div>
               <p className={styles.hint} style={{ marginBottom: 16 }}>What should learners know or have before starting this course?</p>
               <textarea
