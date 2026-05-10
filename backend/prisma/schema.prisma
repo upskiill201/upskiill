@@ -115,6 +115,7 @@ model Lesson {
   // 1. LEARN (Input)
   learnVideoUrl   String?
   learnText       String?  @db.Text
+  learnAudioUrl   String?
 
   // 2. APPLY (Action)
   applyType       String?  @default("TEXT") // TEXT, MULTIPLE_CHOICE, BUILD, etc.
