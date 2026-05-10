@@ -21,6 +21,15 @@ This file is the central location for task assignment and status tracking for Ch
   - **Implementation**: The buttons should trigger a clean tooltip or small popover explaining the "The Why" behind each section to the creator.
 - [ ] Initializing your development environment
 
+## Task Details
+### [ "Why this matters" Tooltips**]
+- **Date**: 2026-05-10
+- **Description**: I was assigned to Draft and implement the copy for the "Why this matters" buttons in Step 1.. handling all the details
+  Basic Information, Course Description, Learning Outcomes, Skills Gain and the prerequest and to also ensure that the buttons should trigger a clean tooltip or small popover explaining the "The Why" behind each section to the creator
+- **Files Modified**: I modified just the file page.tsx under builder folder.
+- **Verification**: After pulling the code, i now prompted to commit to the task i was assigned to while checking the outcome and do modifications.
+
+
 ## Backlog
 - [ ] Reviewing Teyro UI components
 
