@@ -294,7 +294,7 @@
 }
 
 .btnPrimary {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   padding: 13px 28px;
@@ -733,6 +733,30 @@
   .btnPrimary,
   .btnGhost {
     justify-content: center;
+  }
+
+  .btnPrimary {
+    width: 95%;
+    max-width: 350px;
+    padding: 12px 16px;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    font-size: 15px;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .btnIcon {
+    flex-shrink: 0;
+  }
+
+  .btnText {
+    white-space: nowrap !important;
+    display: inline-block;
+  }
+
+  .btnGhost {
     width: 70%;
   }
 }
