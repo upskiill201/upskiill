@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import Spinner from '@/components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
 import { Tooltip } from '@/components/ui/Tooltip';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
@@ -224,6 +224,10 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // For Preview Video selector
+  const [courseLessons, setCourseLessons] = useState<any[]>([]);
+  const [previewLessonId, setPreviewLessonId] = useState<string>('');
+
   // ─── LOAD EXISTING DRAFT ───
   useEffect(() => {
     if (isNew) return;
@@ -248,14 +252,57 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             creatorTimeWeekly: fetched.creatorTimeWeekly,
           });
         }
+        
+        // Fetch curriculum for Preview Video selector
+        const curRes = await fetch(`/api/courses/${courseId}/curriculum`, { credentials: 'include' });
+        if (curRes.ok) {
+          const sections = await curRes.json();
+          const lessons: any[] = [];
+          sections.forEach((s: any) => {
+            if (Array.isArray(s.lessons)) {
+              lessons.push(...s.lessons.filter((l: any) => l.learnVideoUrl));
+            }
+          });
+          setCourseLessons(lessons);
+          const previewLesson = lessons.find(l => l.isFreePreview);
+          if (previewLesson) {
+            setPreviewLessonId(previewLesson.id);
+          }
+        }
       } catch (err) {
-        console.error('Failed to load course draft', err);
+        console.error('Failed to load course data', err);
       } finally {
         setLoading(false);
       }
     };
     fetchDraft();
   }, [courseId, isNew]);
+
+  // Handle preview lesson change
+  const handlePreviewLessonChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    setPreviewLessonId(selectedId);
+    
+    // Optimistically update backend (mark selected as true, previous as false)
+    try {
+      if (previewLessonId) {
+        await fetch(`/api/lessons/${previewLessonId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isFreePreview: false })
+        });
+      }
+      if (selectedId) {
+        await fetch(`/api/lessons/${selectedId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isFreePreview: true })
+        });
+      }
+    } catch (err) {
+      console.error('Failed to update preview lesson', err);
+    }
+  };
 
   // ─── SAVE ───
   const saveDraft = useCallback(async () => {
@@ -411,8 +458,22 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' }}>
-        <Spinner size="lg" color="blue" />
+      <div className={styles.builderLayout}>
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
+            <Skeleton width={120} height={24} />
+          </div>
+        </header>
+        <main className={styles.mainContent}>
+          <Skeleton width={200} height={32} style={{ marginBottom: 24 }} />
+          <div className={styles.contentGrid}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <Skeleton height={200} />
+              <Skeleton height={300} />
+            </div>
+            <Skeleton height={400} />
+          </div>
+        </main>
       </div>
     );
   }
@@ -852,8 +913,18 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 <div className={styles.field}>
                   <label className={styles.label}>Preview Video</label>
                   <span className={styles.hint}>Give learners a quick preview of what to expect. Select a lesson video to show before enrollment.</span>
-                  <select className={styles.select} style={{ marginTop: 12 }}>
+                  <select 
+                    className={styles.select} 
+                    style={{ marginTop: 12 }}
+                    value={previewLessonId}
+                    onChange={handlePreviewLessonChange}
+                  >
                     <option value="">Select a lesson video</option>
+                    {courseLessons.map(lesson => (
+                      <option key={lesson.id} value={lesson.id}>
+                        {lesson.title}
+                      </option>
+                    ))}
                   </select>
                   <p className={styles.hint} style={{ marginTop: 10 }}>
                     We recommend a 2–3 min lesson that showcases the value of your course.

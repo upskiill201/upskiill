@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CoursePlayerLayout } from '@/components/features/CoursePlayerLayout';
-import Spinner from '@/components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
 
 export default function LearnCoursePage() {
   const params = useParams();
@@ -117,8 +117,19 @@ export default function LearnCoursePage() {
 
   if (loading) {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#111827' }}>
-        <Spinner size="lg" />
+      <div style={{ height: '100vh', display: 'flex', backgroundColor: '#111827', overflow: 'hidden' }}>
+        <div style={{ flex: 1, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <Skeleton height={60} style={{ background: '#1F2937' }} />
+          <Skeleton height="70%" style={{ background: '#1F2937' }} />
+          <Skeleton height={120} style={{ background: '#1F2937' }} />
+        </div>
+        <div style={{ width: 400, borderLeft: '1px solid #1F2937', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Skeleton height={24} width={150} style={{ background: '#1F2937' }} />
+          <Skeleton height={60} style={{ background: '#1F2937' }} />
+          <Skeleton height={60} style={{ background: '#1F2937' }} />
+          <Skeleton height={60} style={{ background: '#1F2937' }} />
+          <Skeleton height={60} style={{ background: '#1F2937' }} />
+        </div>
       </div>
     );
   }

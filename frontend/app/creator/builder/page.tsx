@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Spinner from '@/components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
 
 /**
  * /creator/builder
@@ -26,12 +26,14 @@ export default function BuilderEntry() {
       height: '80vh',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '16px'
+      gap: '24px',
+      padding: '0 40px'
     }}>
-      <Spinner size="lg" color="blue" />
-      <h2 style={{ fontSize: '18px', fontWeight: '500', color: '#1F2A44' }}>
-        Opening Course Builder...
-      </h2>
+      <div style={{ width: '100%', maxWidth: '800px' }}>
+        <Skeleton height={24} width={150} style={{ marginBottom: 30 }} />
+        <Skeleton height={200} style={{ marginBottom: 20 }} />
+        <Skeleton height={150} style={{ marginBottom: 20 }} />
+      </div>
     </div>
   );
 }

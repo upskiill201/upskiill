@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Check, Settings, Loader2, BookOpen, Wrench, Library } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import Spinner from '@/components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
 import styles from './Studio.module.css';
 
 // Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
@@ -297,10 +297,10 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
     if (loading || !course) {
       return (
         <div className={styles.panel}>
-          <div className={styles.stubPanel}>
-            <Spinner size="lg" color="blue" />
-            <h2>Loading your course...</h2>
-          </div>
+          <Skeleton height={40} width={250} style={{ marginBottom: 20 }} />
+          <Skeleton height={200} style={{ marginBottom: 20 }} />
+          <Skeleton height={150} style={{ marginBottom: 20 }} />
+          <Skeleton height={150} />
         </div>
       );
     }
