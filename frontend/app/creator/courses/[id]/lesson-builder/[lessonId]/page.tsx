@@ -8,6 +8,7 @@ import {
   UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
+import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
 
 import dynamic from 'next/dynamic';
@@ -185,8 +186,24 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const circumference = 2 * Math.PI * radius;
 
   if (loading) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh' }}>
-      <div style={{ fontSize:14, color:'#94A3B8' }}>Loading…</div>
+    <div className={styles.shell}>
+      <header className={styles.header}>
+        <div className={styles.headerTop}>
+          <Skeleton width={200} height={20} />
+          <Skeleton width={120} height={32} />
+        </div>
+      </header>
+      <div className={styles.layout}>
+        <div className={styles.sidebar}>
+          <Skeleton height={60} style={{ marginBottom: 12 }} />
+          <Skeleton height={60} style={{ marginBottom: 12 }} />
+          <Skeleton height={60} style={{ marginBottom: 12 }} />
+          <Skeleton height={60} />
+        </div>
+        <main className={styles.main}>
+          <Skeleton height={400} />
+        </main>
+      </div>
     </div>
   );
 
