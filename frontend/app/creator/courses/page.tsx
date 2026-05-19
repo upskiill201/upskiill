@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Video, Search, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import Skeleton from '@/components/ui/Skeleton';
 import styles from './Courses.module.css';
 
 type Course = {
@@ -129,8 +130,10 @@ export default function InstructorCoursesPage() {
 
       {/* ─── COURSE LIST ─── */}
       {loading ? (
-        <div className={styles.loadingState}>
-          Loading your courses...
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Skeleton height={120} />
+          <Skeleton height={120} />
+          <Skeleton height={120} />
         </div>
       ) : filteredCourses.length === 0 ? (
         <div className={styles.emptyState}>
