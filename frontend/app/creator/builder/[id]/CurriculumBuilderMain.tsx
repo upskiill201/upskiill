@@ -21,6 +21,7 @@ import {
   ConfirmModal, SortableModule, LESSON_TYPES,
   LessonType, Lesson, Section, Props
 } from './CurriculumBuilder';
+import Skeleton from '@/components/ui/Skeleton';
 
 // ─── MAIN CURRICULUM BUILDER ─────────────────────────────────
 export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Props) {
@@ -234,9 +235,19 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
   const checkDone = [hasModule, hasLessons, hasPreview, hasEstimation].filter(Boolean).length;
 
   if (loading) return (
-    <div style={{ textAlign: 'center', padding: '80px 20px', color: '#94A3B8' }}>
-      <div style={{ fontSize: 16, fontWeight: 600 }}>Loading curriculum…</div>
-    </div>
+    <>
+      <div className={styles.pageHeader}>
+        <div><Skeleton width={250} height={32} style={{ marginBottom: 8 }} /><Skeleton width={300} height={20} /></div>
+        <div className={styles.headerActions}><Skeleton width={200} height={36} /></div>
+      </div>
+      <div className={styles.summaryBar} style={{ padding: 20 }}>
+        <Skeleton width="100%" height={24} />
+      </div>
+      <div className={styles.contentGrid}>
+        <div><Skeleton height={400} /></div>
+        <aside className={styles.sidebar}><Skeleton height={200} style={{ marginBottom: 24 }} /><Skeleton height={300} /></aside>
+      </div>
+    </>
   );
 
   return (

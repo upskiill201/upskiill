@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Plus, FileText, Image as ImageIcon, Link as LinkIcon, MoreVertical, Trash2 } from 'lucide-react';
+import { useS3Upload } from '@/hooks/useS3Upload';
 import styles from '../LessonBuilder.module.css';
 
 export interface ResourceItem {
@@ -14,6 +15,7 @@ export interface ResourceItem {
 interface Props {
   resources: ResourceItem[];
   onChange: (r: ResourceItem[]) => void;
+  lessonId: string;
 }
 
 function iconClass(type: string) {
@@ -30,25 +32,35 @@ function typeLabel(type: string) {
   return 'LINK';
 }
 
-export function LearningResources({ resources, onChange }: Props) {
+export function LearningResources({ resources, onChange, lessonId }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const { upload, uploading, progress, error } = useS3Upload();
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf';
-    const type = ['png','jpg','fig','svg'].includes(ext) ? 'fig'
-               : ['ppt','pptx'].includes(ext) ? 'pptx'
-               : ext === 'pdf' ? 'pdf' : 'link';
-    onChange([...resources, {
-      id: Date.now().toString(),
-      title: file.name,
-      type,
-      size: (file.size / 1024 / 1024).toFixed(1) + ' MB',
-      time: '5 min',
-      url: '#',
-    }]);
-    e.target.value = '';
+    
+    try {
+      const { cloudFrontUrl } = await upload(file, lessonId);
+      
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf';
+      const type = ['png','jpg','fig','svg'].includes(ext) ? 'fig'
+                 : ['ppt','pptx'].includes(ext) ? 'pptx'
+                 : ext === 'pdf' ? 'pdf' : 'link';
+                 
+      onChange([...resources, {
+        id: Date.now().toString(),
+        title: file.name,
+        type,
+        size: (file.size / 1024 / 1024).toFixed(1) + ' MB',
+        time: '5 min',
+        url: cloudFrontUrl,
+      }]);
+    } catch (err) {
+      console.error('Resource upload failed:', err);
+    } finally {
+      e.target.value = '';
+    }
   };
 
   const remove = (id: string) => onChange(resources.filter(r => r.id !== id));
@@ -60,12 +72,18 @@ export function LearningResources({ resources, onChange }: Props) {
           <span className={styles.resourcesLabel}>3. Add Learning Resources</span>
           <span className={styles.resourcesOptional}> (Optional)</span>
         </div>
-        <button className={styles.addResourceBtn} onClick={() => fileRef.current?.click()}>
-          <Plus size={14} /> Add Resource
+        <button 
+          className={styles.addResourceBtn} 
+          onClick={() => !uploading && fileRef.current?.click()}
+          style={{ opacity: uploading ? 0.7 : 1, cursor: uploading ? 'not-allowed' : 'pointer' }}
+          disabled={uploading}
+        >
+          {uploading ? `Uploading ${progress}%` : <><Plus size={14} /> Add Resource</>}
         </button>
         <input ref={fileRef} type="file" style={{ display: 'none' }} onChange={handleFile} />
       </div>
-      <p className={styles.resourcesSubtext}>Upload supporting materials that help learners go deeper.</p>
+      <p className={styles.resourcesSubtext}>Upload supporting materials that help learners go deeper. Hosted securely on AWS S3.</p>
+      {error && <p style={{ fontSize: 12, color: '#EF4444', marginTop: 4 }}>{error}</p>}
 
       {resources.length === 0 ? (
         <div className={styles.resourcesEmpty}>No resources attached yet.</div>
