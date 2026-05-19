@@ -461,17 +461,34 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
       <div className={styles.builderLayout}>
         <header className={styles.header}>
           <div className={styles.headerLeft}>
-            <Skeleton width={120} height={24} />
+            <div className={styles.logoMark}>
+              <Skeleton width={110} height={28} />
+            </div>
+            <span className={styles.headerSeparator} />
+            <Skeleton width={150} height={20} />
+          </div>
+          <div className={styles.headerRight}>
+            <Skeleton width={100} height={36} style={{ borderRadius: 8 }} />
+            <Skeleton width={36} height={36} style={{ borderRadius: 8 }} />
           </div>
         </header>
         <main className={styles.mainContent}>
-          <Skeleton width={200} height={32} style={{ marginBottom: 24 }} />
-          <div className={styles.contentGrid}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              <Skeleton height={200} />
-              <Skeleton height={300} />
+          <div className={styles.pageHeader}>
+            <div>
+              <Skeleton width={200} height={32} style={{ marginBottom: 8 }} />
+              <Skeleton width={300} height={20} />
             </div>
-            <Skeleton height={400} />
+          </div>
+          <div className={styles.contentGrid}>
+            <div className={styles.formSection}>
+              <Skeleton height={100} style={{ marginBottom: 24 }} />
+              <Skeleton height={100} style={{ marginBottom: 24 }} />
+              <Skeleton height={150} style={{ marginBottom: 24 }} />
+              <Skeleton height={200} />
+            </div>
+            <aside className={styles.sidebar}>
+              <Skeleton height={400} />
+            </aside>
           </div>
         </main>
       </div>

@@ -26,11 +26,18 @@ const ALLOWED_CONTENT_TYPES = [
   // Videos
   'video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm', 'video/avi', 'video/mpeg',
   // Audio
-  'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/x-m4a', 'audio/m4a'
+  'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/x-m4a', 'audio/m4a',
+  // Resources
+  'application/pdf', 'application/zip', 'application/x-zip-compressed', 
+  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain', 'text/csv'
 ];
 
 const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 const MAX_AUDIO_SIZE = 500 * 1024 * 1024; // 500MB
+const MAX_RESOURCE_SIZE = 100 * 1024 * 1024; // 100MB
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
       return NextResponse.json(
-        { error: `File type ${contentType} is not allowed. Only standard video and audio files are supported.` },
+        { error: `File type ${contentType} is not allowed. Only standard video, audio, and document files are supported.` },
         { status: 400 }
       );
     }
@@ -61,10 +68,16 @@ export async function POST(req: NextRequest) {
     // Size check if provided
     if (size) {
       const isVideo = contentType.startsWith('video/');
-      const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_AUDIO_SIZE;
+      const isAudio = contentType.startsWith('audio/');
+      const maxSize = isVideo ? MAX_VIDEO_SIZE : (isAudio ? MAX_AUDIO_SIZE : MAX_RESOURCE_SIZE);
+      
       if (size > maxSize) {
+        let sizeLimitStr = '100MB';
+        if (isVideo) sizeLimitStr = '2GB';
+        if (isAudio) sizeLimitStr = '500MB';
+        
         return NextResponse.json(
-          { error: `File is too large. Max size is ${isVideo ? '2GB' : '500MB'}.` },
+          { error: `File is too large. Max size is ${sizeLimitStr}.` },
           { status: 400 }
         );
       }
@@ -76,7 +89,9 @@ export async function POST(req: NextRequest) {
     const sanitizedFilename = `${nameWithoutExt}_${Date.now()}.${ext}`;
 
     // S3 Object Key
-    const subFolder = contentType.startsWith('video/') ? 'videos' : 'audio';
+    const isVideo = contentType.startsWith('video/');
+    const isAudio = contentType.startsWith('audio/');
+    const subFolder = isVideo ? 'videos' : (isAudio ? 'audio' : 'resources');
     const s3Key = `lessons/${lessonId}/${subFolder}/${sanitizedFilename}`;
 
     // Generate PutObject command and presigned URL

@@ -189,19 +189,34 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     <div className={styles.shell}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
-          <Skeleton width={200} height={20} />
-          <Skeleton width={120} height={32} />
+          <Skeleton width={300} height={20} />
+          <Skeleton width={400} height={24} />
+        </div>
+        <div className={styles.headerMain}>
+          <div>
+            <Skeleton width={200} height={32} style={{ marginBottom: 4 }} />
+            <Skeleton width={250} height={20} />
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Skeleton width={100} height={36} style={{ borderRadius: 8 }} />
+            <Skeleton width={120} height={36} style={{ borderRadius: 8 }} />
+          </div>
+        </div>
+        <div className={styles.headerTabs}>
+          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
+          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
         </div>
       </header>
       <div className={styles.layout}>
         <div className={styles.sidebar}>
-          <Skeleton height={60} style={{ marginBottom: 12 }} />
-          <Skeleton height={60} style={{ marginBottom: 12 }} />
-          <Skeleton height={60} style={{ marginBottom: 12 }} />
-          <Skeleton height={60} />
+          <Skeleton height={80} style={{ marginBottom: 12 }} />
+          <Skeleton height={80} style={{ marginBottom: 12 }} />
+          <Skeleton height={80} style={{ marginBottom: 12 }} />
+          <Skeleton height={80} />
         </div>
         <main className={styles.main}>
-          <Skeleton height={400} />
+          <Skeleton height={150} style={{ marginBottom: 24 }} />
+          <Skeleton height={300} style={{ marginBottom: 24 }} />
         </main>
       </div>
     </div>
@@ -478,7 +493,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
                 {/* Right: resources card */}
                 <div className={styles.contentCard}>
-                  <LearningResources resources={resources} onChange={setResources} />
+                  <LearningResources resources={resources} onChange={setResources} lessonId={lessonId as string} />
                 </div>
               </div>
 
