@@ -16,9 +16,14 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
       },
       {
-        // Supabase Storage — course thumbnails
+        // Supabase Storage — legacy thumbnails
         protocol: 'https',
         hostname: 'iobdpmczxikgocvfzouo.supabase.co',
+      },
+      {
+        // AWS CloudFront CDN — course thumbnails + lesson videos/audio
+        protocol: 'https',
+        hostname: 'dhnydb8s9j6i4.cloudfront.net',
       },
     ],
   },

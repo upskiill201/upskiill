@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-// Server-side Supabase client with Service Role (bypasses RLS)
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
+const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
+const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
 
-const BUCKET = 'course-thumbnails';
+const s3Client = new S3Client({
+  region: AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.AWS_ACCESS_KEY_ID || !CLOUDFRONT_URL) {
+      return NextResponse.json({ error: 'AWS S3 is not configured on the server.' }, { status: 500 });
+    }
+
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
@@ -34,39 +43,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate a unique filename to avoid collisions
+    // Generate unique S3 key for this thumbnail
     const ext = file.name.split('.').pop() || 'jpg';
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const filePath = `thumbnails/${uniqueName}`;
+    const s3Key = `thumbnails/${uniqueName}`;
 
-    // Convert File to ArrayBuffer then Buffer
+    // Convert File to Buffer for S3 PutObject
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET)
-      .upload(filePath, buffer, {
-        contentType: file.type,
-        upsert: false,
-      });
+    // Upload directly to S3
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: AWS_S3_BUCKET,
+        Key: s3Key,
+        Body: buffer,
+        ContentType: file.type,
+      })
+    );
 
-    if (uploadError) {
-      console.error('Supabase upload error:', uploadError);
-      return NextResponse.json(
-        { error: uploadError.message },
-        { status: 500 }
-      );
-    }
+    // Return the CloudFront CDN URL
+    const cleanBase = CLOUDFRONT_URL!.endsWith('/') ? CLOUDFRONT_URL!.slice(0, -1) : CLOUDFRONT_URL;
+    const url = `${cleanBase}/${s3Key}`;
 
-    // Get the public URL
-    const { data: publicData } = supabase.storage
-      .from(BUCKET)
-      .getPublicUrl(filePath);
-
-    return NextResponse.json({ url: publicData.publicUrl });
-  } catch (err) {
+    return NextResponse.json({ url });
+  } catch (err: any) {
     console.error('Thumbnail upload route error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
