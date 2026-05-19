@@ -570,19 +570,14 @@
   font-family: inherit;
 }
 
-/* ─── THUMBNAIL UPLOAD ───────────────────────────────────── */
+/* ─── THUMBNAIL UPLOAD (Premium) ────────────────────────── */
+
+/* Legacy boxes kept for safety */
 .uploadBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 2px dashed #CBD5E1;
-  border-radius: 12px;
-  padding: 28px 16px;
-  cursor: pointer;
-  transition: all 0.15s;
-  min-height: 160px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px;
+  border: 2px dashed #CBD5E1; border-radius: 12px;
+  padding: 28px 16px; cursor: pointer; transition: all 0.15s; min-height: 160px;
 }
 .uploadBox:hover { border-color: #3D5AFE; background: #F8FAFC; }
 .uploadBoxLoading { cursor: not-allowed; opacity: 0.7; }
@@ -590,26 +585,100 @@
 .uploadLabel { font-size: 14px; font-weight: 600; color: #3D5AFE; }
 .uploadHint { font-size: 12px; color: #64748B; text-align: center; line-height: 1.5; }
 
-.thumbPreview {
-  position: relative;
-  width: 100%;
-  height: 160px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #E2E8F0;
+/* Premium upload zone */
+.thumbUploadZone {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 6px;
+  width: 100%; aspect-ratio: 16 / 9;
+  border: 1.5px dashed #93B4FF; border-radius: 12px;
+  background: #F5F8FF; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  padding: 20px; box-sizing: border-box; min-height: 140px;
 }
-.thumbEditBtn {
-  position: absolute;
-  bottom: 10px; right: 10px;
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: #fff; border: none;
-  cursor: pointer;
+.thumbUploadZone:hover { border-color: #3D5AFE; background: #EEF2FF; }
+
+.thumbUploadIconWrap {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #E8EDFF;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: transform 0.15s;
+  margin-bottom: 4px;
+}
+.thumbUploadTitle { font-size: 13px; font-weight: 700; color: #1F2A44; }
+.thumbUploadSub { font-size: 11.5px; color: #94A3B8; }
+
+.thumbChooseBtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 8px; padding: 7px 18px;
+  background: #3D5AFE; color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+  pointer-events: none;
+}
+.thumbUploadZone:hover .thumbChooseBtn { background: #2D4AEE; }
+
+/* Progress bar */
+.thumbProgressBar {
+  width: 100%; max-width: 220px; height: 6px;
+  background: #DDE4FF; border-radius: 9999px;
+  overflow: hidden; margin: 10px 0 4px;
+}
+.thumbProgressFill {
+  height: 100%; background: #3D5AFE;
+  border-radius: 9999px; transition: width 0.2s ease-out;
+}
+.thumbProgressPct { font-size: 12px; font-weight: 700; color: #3D5AFE; }
+
+/* Uploaded image preview */
+.thumbPreview {
+  position: relative; width: 100%;
+  aspect-ratio: 16 / 9; border-radius: 12px;
+  overflow: hidden; border: 1px solid #E2E8F0;
+}
+.thumbOverlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 10px 12px;
+}
+.thumbCDNBadge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(34,197,94,0.9); color: #fff;
+  font-size: 10.5px; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px;
+  width: fit-content; margin-bottom: 6px;
+}
+.thumbOverlayActions { display: flex; gap: 6px; }
+.thumbActionBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px;
+  background: rgba(255,255,255,0.92); border: none;
+  border-radius: 7px; font-size: 11.5px; font-weight: 600;
+  color: #1F2A44; cursor: pointer; transition: background 0.12s;
+}
+.thumbActionBtn:hover { background: rgba(255,255,255,1); }
+
+/* Legacy edit button */
+.thumbEditBtn {
+  position: absolute; bottom: 10px; right: 10px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: transform 0.15s;
 }
 .thumbEditBtn:hover { transform: scale(1.1); }
+
+/* Error */
+.thumbError {
+  font-size: 11.5px; color: #EF4444;
+  background: #FEF2F2; border: 1px solid #FECACA;
+  border-radius: 8px; padding: 8px 10px; margin-top: 6px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
 
 /* ─── RIGHT SIDEBAR ──────────────────────────────────────── */
 .sidebar {

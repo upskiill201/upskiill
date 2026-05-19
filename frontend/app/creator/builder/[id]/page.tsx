@@ -216,6 +216,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const [data, setData] = useState<CourseDraft>(EMPTY_DRAFT);
   const [skillInput, setSkillInput] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [thumbUploadProgress, setThumbUploadProgress] = useState(0);
+  const [thumbError, setThumbError] = useState<string | null>(null);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
@@ -341,33 +343,52 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const removeSkill = (skill: string) =>
     updateField('skills', data.skills.filter(s => s !== skill));
 
-  // ─── IMAGE UPLOAD (Supabase Storage) ───
+  // ─── IMAGE UPLOAD (AWS S3 via server-side POST, with XHR progress) ───
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingImage(true);
+    setThumbUploadProgress(0);
+    setThumbError(null);
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('/api/upload/thumbnail', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload/thumbnail', true);
+        xhr.withCredentials = true;
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            setThumbUploadProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const { url } = JSON.parse(xhr.responseText);
+            updateField('thumbnailUrl', url);
+            setThumbUploadProgress(100);
+            resolve();
+          } else {
+            const msg = JSON.parse(xhr.responseText)?.error || 'Upload failed';
+            setThumbError(msg);
+            reject(new Error(msg));
+          }
+        };
+
+        xhr.onerror = () => {
+          setThumbError('Network error during upload.');
+          reject(new Error('Network error'));
+        };
+
+        xhr.send(formData);
       });
-      if (res.ok) {
-        const { url } = await res.json();
-        updateField('thumbnailUrl', url);
-      } else {
-        const err = await res.text();
-        console.error('Upload failed:', err);
-        alert('Image upload failed. Please try again.');
-      }
-    } catch (err) {
-      console.error('Upload error:', err);
-      alert('Network error during upload.');
+    } catch (err: any) {
+      console.error('Thumbnail upload error:', err);
     } finally {
       setUploadingImage(false);
-      // Reset input so the same file can be re-selected if needed
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -752,58 +773,89 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
 
+              {/* Hidden native file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+
               <div className={styles.twoCol}>
+                {/* ── THUMBNAIL UPLOAD ── */}
                 <div className={styles.field}>
                   <label className={styles.label}>Course Thumbnail <span className={styles.req}>*</span></label>
-                  <span className={styles.hint}>This is the image learners see on your course card.</span>
-                  {/* Hidden native file input */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    style={{ display: 'none' }}
-                    onChange={handleImageUpload}
-                  />
+                  <span className={styles.hint}>The image learners see on your course card. Recommended: 1280×720px (16:9).</span>
 
-                  {data.thumbnailUrl ? (
+                  {uploadingImage ? (
+                    /* UPLOADING STATE — premium progress bar */
+                    <div className={styles.thumbUploadZone} style={{ cursor: 'default' }}>
+                      <Upload size={28} style={{ color: '#3D5AFE', animation: 'pulse 1.5s ease-in-out infinite' }} />
+                      <span className={styles.thumbUploadTitle} style={{ marginTop: 10 }}>Uploading to CloudFront CDN…</span>
+                      <div className={styles.thumbProgressBar}>
+                        <div className={styles.thumbProgressFill} style={{ width: `${thumbUploadProgress}%` }} />
+                      </div>
+                      <span className={styles.thumbProgressPct}>{thumbUploadProgress}%</span>
+                    </div>
+                  ) : data.thumbnailUrl ? (
+                    /* UPLOADED STATE — real image with overlay controls */
                     <div className={styles.thumbPreview}>
-                      <Image src={data.thumbnailUrl} alt="Thumbnail" fill style={{ objectFit: 'cover' }} />
-                      <button
-                        type="button"
-                        className={styles.thumbEditBtn}
-                        onClick={() => updateField('thumbnailUrl', '')}
-                        title="Change image"
-                      >
-                        <Edit2 size={14} />
-                      </button>
+                      <Image src={data.thumbnailUrl} alt="Course thumbnail" fill style={{ objectFit: 'cover' }} />
+                      <div className={styles.thumbOverlay}>
+                        <div className={styles.thumbCDNBadge}>
+                          <Check size={11} /> CloudFront CDN
+                        </div>
+                        <div className={styles.thumbOverlayActions}>
+                          <button
+                            type="button"
+                            className={styles.thumbActionBtn}
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Replace thumbnail"
+                          >
+                            <Edit2 size={13} /> Replace
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.thumbActionBtn}
+                            onClick={() => updateField('thumbnailUrl', '')}
+                            title="Remove thumbnail"
+                            style={{ color: '#EF4444' }}
+                          >
+                            <X size={13} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ) : (
+                    /* EMPTY STATE — structured upload zone */
                     <div
-                      className={`${styles.uploadBox} ${uploadingImage ? styles.uploadBoxLoading : ''}`}
-                      onClick={() => !uploadingImage && fileInputRef.current?.click()}
+                      className={styles.thumbUploadZone}
+                      onClick={() => fileInputRef.current?.click()}
                     >
-                      {uploadingImage ? (
-                        <Spinner size="sm" color="blue" />
-                      ) : (
-                        <Upload size={22} className={styles.uploadIcon} />
-                      )}
-                      <span className={styles.uploadLabel}>
-                        {uploadingImage ? 'Uploading...' : 'Upload new image'}
-                      </span>
-                      {!uploadingImage && (
-                        <span className={styles.uploadHint}>Recommended: 1280×720px (16:9)<br />JPG, PNG up to 5MB</span>
-                      )}
+                      <div className={styles.thumbUploadIconWrap}>
+                        <Upload size={22} style={{ color: '#3D5AFE' }} />
+                      </div>
+                      <span className={styles.thumbUploadTitle}>Upload Course Thumbnail</span>
+                      <span className={styles.thumbUploadSub}>JPG, PNG, WebP · Max 5MB</span>
+                      <button type="button" className={styles.thumbChooseBtn}>
+                        Choose File
+                      </button>
                     </div>
+                  )}
+                  {thumbError && (
+                    <div className={styles.thumbError}>{thumbError}</div>
                   )}
                 </div>
 
+                {/* ── PREVIEW LESSON SELECTOR ── */}
                 <div className={styles.field}>
-                  <label className={styles.label}>Preview Lesson (Required)</label>
-                  <span className={styles.hint}>This short lesson will be shown to learners before they enroll.</span>
+                  <label className={styles.label}>Preview Video</label>
+                  <span className={styles.hint}>Give learners a quick preview of what to expect. Select a lesson video to show before enrollment.</span>
                   <select className={styles.select} style={{ marginTop: 12 }}>
-                    <option>Select a lesson</option>
+                    <option value="">Select a lesson video</option>
                   </select>
-                  <p className={styles.hint} style={{ marginTop: 12 }}>
+                  <p className={styles.hint} style={{ marginTop: 10 }}>
                     We recommend a 2–3 min lesson that showcases the value of your course.
                   </p>
                 </div>

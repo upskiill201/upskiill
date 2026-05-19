@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
-  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2
+  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
+import { useS3Upload } from '@/hooks/useS3Upload';
 
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
@@ -31,6 +32,73 @@ const quillModules = {
 export default function LessonBuilderPage({ params }: { params: Promise<{ id: string; lessonId: string }> }) {
   const { id: courseId, lessonId } = React.use(params);
   const router = useRouter();
+
+  // Clean filename extractor helper
+  const getFileNameFromUrl = (url: string) => {
+    if (!url) return '';
+    const parts = url.split('/');
+    const lastPart = parts[parts.length - 1];
+    const match = lastPart.match(/^(.+)_\d+\.([^.]+)$/);
+    if (match) {
+      return `${match[1]}.${match[2]}`;
+    }
+    return lastPart;
+  };
+
+  // AWS S3 Direct Upload hooks
+  const {
+    upload: uploadVideo,
+    uploading: uploadingVideo,
+    progress: videoProgress,
+    error: videoError
+  } = useS3Upload();
+
+  const {
+    upload: uploadAudio,
+    uploading: uploadingAudio,
+    progress: audioProgress,
+    error: audioError
+  } = useS3Upload();
+
+  const handleVideoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      try {
+        const { cloudFrontUrl } = await uploadVideo(file, lessonId);
+        setLesson((l: any) => ({ ...l, learnVideoUrl: cloudFrontUrl }));
+        await fetch(`/api/lesson/${lessonId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            learnVideoUrl: cloudFrontUrl,
+            isLearnCompleted: !!(lesson?.title && (cloudFrontUrl || lesson?.learnText || lesson?.learnAudioUrl))
+          }),
+        });
+      } catch (err) {
+        console.error('Video upload failed:', err);
+      }
+    }
+  };
+
+  const handleAudioFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      try {
+        const { cloudFrontUrl } = await uploadAudio(file, lessonId);
+        setLesson((l: any) => ({ ...l, learnAudioUrl: cloudFrontUrl }));
+        await fetch(`/api/lesson/${lessonId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            learnAudioUrl: cloudFrontUrl,
+            isLearnCompleted: !!(lesson?.title && (lesson?.learnVideoUrl || lesson?.learnText || cloudFrontUrl))
+          }),
+        });
+      } catch (err) {
+        console.error('Audio upload failed:', err);
+      }
+    }
+  };
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -245,39 +313,67 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   {/* VIDEO TYPE */}
                   {contentType === 'video' && (
                     <>
-                      {lesson?.learnVideoUrl ? (
-                        <div>
-                          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                            <div className={styles.videoPreviewBox} style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1618761714954-0b8cd0026356?auto=format&fit=crop&q=80&w=800)', backgroundSize: 'cover', backgroundPosition: 'center', width: '200px', flexShrink: 0 }}>
-                              <div className={styles.videoPlayBtn}><Play size={18} fill="#3D5AFE" /></div>
-                              <div className={styles.videoDuration}>12:30</div>
+                      {uploadingVideo ? (
+                        /* ── UPLOADING STATE ── */
+                        <div className={styles.richUploadProgress}>
+                          <div className={styles.richUploadProgressInner}>
+                            <Film size={28} style={{ color: '#3D5AFE' }} className={styles.pulse} />
+                            <div className={styles.richUploadProgressLabel}>Uploading to AWS S3…</div>
+                            <div className={styles.richUploadBar}>
+                              <div className={styles.richUploadBarFill} style={{ width: `${videoProgress}%` }} />
                             </div>
-                            <div className={styles.videoFileMeta}>
-                              <div className={styles.videoFileName}>what-is-ui-design.mp4</div>
-                              <div className={styles.videoFileStats}>
-                                <span>24.6 MB</span><span>·</span><span>12:30</span><span>·</span><span>1280×720</span>
-                                <span className={styles.videoUploadDone}><Check size={12} /> Upload complete</span>
-                              </div>
-                              <div className={styles.videoActions} style={{ marginTop: 10 }}>
-                                <button className={styles.btnOutline} style={{ fontSize: 11.5, padding: '5px 10px' }}>Replace Video</button>
-                                <button className={styles.btnOutline} onClick={() => setLesson((l: any) => ({ ...l, learnVideoUrl: null }))} style={{ fontSize: 11.5, padding: '5px 8px', color: '#EF4444', borderColor: '#FECACA' }}>
-                                  <Trash2 size={13} />
-                                </button>
-                              </div>
+                            <div className={styles.richUploadPct}>{videoProgress}%</div>
+                            <div className={styles.richUploadSub}>Transferring directly to S3 — bypassing server · CloudFront CDN on completion</div>
+                            {videoError && <div className={styles.uploadError}>{videoError}</div>}
+                          </div>
+                        </div>
+                      ) : lesson?.learnVideoUrl ? (
+                        /* ── UPLOADED STATE ── */
+                        <div className={styles.richVideoCard}>
+                          {/* Dark video preview panel */}
+                          <div className={styles.richVideoPreviewPanel}>
+                            <div className={styles.richVideoPlayIcon}>
+                              <Play size={20} fill="#fff" color="#fff" />
+                            </div>
+                            <div className={styles.richVideoCDNBadge}>
+                              <CheckCircle2 size={11} /> CloudFront CDN
                             </div>
                           </div>
-                          <div className={styles.videoHint} style={{ marginTop: 12 }}>Recommended length: 1-5 min short, focused videos work best.</div>
+                          {/* File metadata */}
+                          <div className={styles.richVideoMeta}>
+                            <div className={styles.richVideoFileName}>
+                              {getFileNameFromUrl(lesson.learnVideoUrl)}
+                            </div>
+                            <div className={styles.richVideoStats}>
+                              <span className={styles.richVideoStatBadge} style={{ background: '#DCFCE7', color: '#16A34A' }}>
+                                <Check size={10} /> Live on S3
+                              </span>
+                              <span className={styles.richVideoStatBadge}>AWS S3 · eu-west-1</span>
+                            </div>
+                            <div className={styles.richVideoActions}>
+                              <label className={styles.richVideoBtn}>
+                                Replace Video
+                                <input type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoFileChange} />
+                              </label>
+                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                                setLesson((l: any) => ({ ...l, learnVideoUrl: null }));
+                                await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnVideoUrl: null }) });
+                              }}>
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       ) : (
-                        <label>
-                          <input type="file" accept="video/*" style={{ display: 'none' }} onChange={e => {
-                            if (e.target.files?.[0]) setTimeout(() => setLesson((l: any) => ({ ...l, learnVideoUrl: 'mock' })), 800);
-                          }} />
-                          <div className={styles.videoEmptyBox}>
-                            <UploadCloud size={32} className={styles.videoEmptyIcon} />
-                            <div className={styles.videoEmptyText}>Click to upload video</div>
-                            <div className={styles.videoHint}>MP4, MOV up to 2GB</div>
+                        /* ── EMPTY STATE ── */
+                        <label className={styles.richUploadDropZone}>
+                          <input type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoFileChange} />
+                          <div className={styles.richUploadDropIcon}>
+                            <Film size={24} style={{ color: '#3D5AFE' }} />
                           </div>
+                          <div className={styles.richUploadDropTitle}>Drop video here or click to browse</div>
+                          <div className={styles.richUploadDropSub}>MP4, MOV, MKV, WebM · Max 2GB · Uploads directly to AWS S3</div>
+                          <div className={styles.richUploadDropBtn}>Choose Video File</div>
                         </label>
                       )}
                     </>
@@ -299,35 +395,55 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   {/* AUDIO TYPE */}
                   {contentType === 'audio' && (
                     <>
-                      {lesson?.learnAudioUrl ? (
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '16px', border: '1px solid #E2E8F0', borderRadius: '12px' }}>
-                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F0F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3D5AFE' }}>
-                            <Headphones size={24} />
-                          </div>
-                          <div className={styles.videoFileMeta}>
-                            <div className={styles.videoFileName}>lesson-audio.mp3</div>
-                            <div className={styles.videoFileStats}>
-                              <span>4.2 MB</span><span>·</span><span>04:15</span>
-                              <span className={styles.videoUploadDone}><Check size={12} /> Upload complete</span>
+                      {uploadingAudio ? (
+                        <div className={styles.richUploadProgress}>
+                          <div className={styles.richUploadProgressInner}>
+                            <Headphones size={28} style={{ color: '#3D5AFE' }} className={styles.pulse} />
+                            <div className={styles.richUploadProgressLabel}>Uploading audio to AWS S3…</div>
+                            <div className={styles.richUploadBar}>
+                              <div className={styles.richUploadBarFill} style={{ width: `${audioProgress}%` }} />
                             </div>
-                            <div className={styles.videoActions} style={{ marginTop: 6 }}>
-                              <button className={styles.btnOutline} style={{ fontSize: 11.5, padding: '5px 10px' }}>Replace Audio</button>
-                              <button className={styles.btnOutline} onClick={() => setLesson((l: any) => ({ ...l, learnAudioUrl: null }))} style={{ fontSize: 11.5, padding: '5px 8px', color: '#EF4444', borderColor: '#FECACA' }}>
-                                <Trash2 size={13} />
+                            <div className={styles.richUploadPct}>{audioProgress}%</div>
+                            <div className={styles.richUploadSub}>Uploading directly to S3 · CloudFront CDN on completion</div>
+                            {audioError && <div className={styles.uploadError}>{audioError}</div>}
+                          </div>
+                        </div>
+                      ) : lesson?.learnAudioUrl ? (
+                        <div className={styles.richAudioCard}>
+                          <div className={styles.richAudioIconWrap}>
+                            <Headphones size={22} style={{ color: '#3D5AFE' }} />
+                          </div>
+                          <div className={styles.richVideoMeta}>
+                            <div className={styles.richVideoFileName}>{getFileNameFromUrl(lesson.learnAudioUrl)}</div>
+                            <div className={styles.richVideoStats}>
+                              <span className={styles.richVideoStatBadge} style={{ background: '#DCFCE7', color: '#16A34A' }}>
+                                <Check size={10} /> Live on S3
+                              </span>
+                              <span className={styles.richVideoStatBadge}>CloudFront CDN</span>
+                            </div>
+                            <div className={styles.richVideoActions}>
+                              <label className={styles.richVideoBtn}>
+                                Replace Audio
+                                <input type="file" accept="audio/*" style={{ display: 'none' }} onChange={handleAudioFileChange} />
+                              </label>
+                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                                setLesson((l: any) => ({ ...l, learnAudioUrl: null }));
+                                await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnAudioUrl: null }) });
+                              }}>
+                                <Trash2 size={12} />
                               </button>
                             </div>
                           </div>
                         </div>
                       ) : (
-                        <label>
-                          <input type="file" accept="audio/*" style={{ display: 'none' }} onChange={e => {
-                            if (e.target.files?.[0]) setTimeout(() => setLesson((l: any) => ({ ...l, learnAudioUrl: 'mock' })), 800);
-                          }} />
-                          <div className={styles.videoEmptyBox}>
-                            <UploadCloud size={32} className={styles.videoEmptyIcon} />
-                            <div className={styles.videoEmptyText}>Click to upload audio</div>
-                            <div className={styles.videoHint}>MP3, WAV up to 500MB</div>
+                        <label className={styles.richUploadDropZone}>
+                          <input type="file" accept="audio/*" style={{ display: 'none' }} onChange={handleAudioFileChange} />
+                          <div className={styles.richUploadDropIcon}>
+                            <Headphones size={24} style={{ color: '#3D5AFE' }} />
                           </div>
+                          <div className={styles.richUploadDropTitle}>Drop audio here or click to browse</div>
+                          <div className={styles.richUploadDropSub}>MP3, WAV, AAC, M4A · Max 500MB · Uploads directly to AWS S3</div>
+                          <div className={styles.richUploadDropBtn}>Choose Audio File</div>
                         </label>
                       )}
                     </>
