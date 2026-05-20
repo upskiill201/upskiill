@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, use, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   X, Check, ChevronRight, GripVertical, Plus,
@@ -220,7 +220,11 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const [thumbError, setThumbError] = useState<string | null>(null);
   const [stepsOpen, setStepsOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
-  const [activeStep, setActiveStep] = useState(1);
+  const searchParams = useSearchParams();
+  const [activeStep, setActiveStep] = useState(() => {
+    const step = searchParams?.get('step');
+    return step === '2' ? 2 : 1;
+  });
   const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -590,6 +594,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             courseId={courseId}
             onBack={() => setActiveStep(1)}
             onSaveStatus={setSaveStatus}
+            previewLessonId={previewLessonId}
+            courseLessons={courseLessons}
+            onPreviewChange={handlePreviewLessonChange}
           />
         )}
 

@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Plus, ChevronDown, ChevronUp, GripVertical, Edit2, Copy, Trash2,
   Play, Video, FileText, Clock, BookOpen, Lightbulb, Target,
-  Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X
+  Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X, HelpCircle
 } from 'lucide-react';
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
@@ -22,9 +22,10 @@ import {
   LessonType, Lesson, Section, Props
 } from './CurriculumBuilder';
 import Skeleton from '@/components/ui/Skeleton';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 // ─── MAIN CURRICULUM BUILDER ─────────────────────────────────
-export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Props) {
+export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, previewLessonId = '', courseLessons = [], onPreviewChange }: Props) {
   const router = useRouter();
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,7 +231,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
 
   const hasModule = totalModules >= 1;
   const hasLessons = totalLessons >= 3;
-  const hasPreview = false;
+  const hasPreview = !!previewLessonId;
   const hasEstimation = estDays > 0;
   const checkDone = [hasModule, hasLessons, hasPreview, hasEstimation].filter(Boolean).length;
 
@@ -343,11 +344,44 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus }: Pr
         {/* RIGHT SIDEBAR */}
         <aside className={styles.sidebar}>
           <div className={styles.widgetCard}>
-            <h3 className={styles.widgetTitle}>Preview Video</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <h3 className={styles.widgetTitle} style={{ margin: 0 }}>Preview Video</h3>
+              <Tooltip
+                content="This video is shown on the public course page before enrollment. It helps learners decide whether to join your course."
+                position="top"
+              >
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', display: 'flex', alignItems: 'center', padding: 0 }}>
+                  <HelpCircle size={14} />
+                </button>
+              </Tooltip>
+            </div>
             <p className={styles.widgetDesc}>Give learners a quick preview of what to expect.</p>
-            <div className={styles.videoPreview}><div className={styles.videoPlayIcon}><Play size={24} /></div></div>
-            <button className={styles.selectVideoBtn}>Select Video</button>
-            <div className={styles.videoHint}>Recommended: 1–2 min (16:9) · MP4, MOV up to 200MB</div>
+            {previewLessonId ? (
+              <div className={styles.videoPreview} style={{ background: '#EEF2FF', border: '2px solid #3D5AFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 4 }}>
+                <div className={styles.videoPlayIcon} style={{ color: '#3D5AFE' }}><Play size={24} /></div>
+                <span style={{ fontSize: 10, color: '#3D5AFE', fontWeight: 600 }}>Preview selected</span>
+              </div>
+            ) : (
+              <div className={styles.videoPreview}><div className={styles.videoPlayIcon}><Play size={24} /></div></div>
+            )}
+            <select
+              style={{
+                marginTop: 10, width: '100%',
+                padding: '8px 10px', borderRadius: 8,
+                border: '1px solid #E2E8F0', fontSize: 12.5,
+                color: previewLessonId ? '#1F2A44' : '#94A3B8',
+                background: '#fff', cursor: 'pointer',
+                appearance: 'auto',
+              }}
+              value={previewLessonId}
+              onChange={onPreviewChange}
+            >
+              <option value="">Select a lesson video…</option>
+              {courseLessons.map((lesson: any) => (
+                <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
+              ))}
+            </select>
+            <div className={styles.videoHint}>Recommended: 1–2 min (16:9) · MP4, MOV</div>
           </div>
 
           <div className={styles.widgetCard}>
