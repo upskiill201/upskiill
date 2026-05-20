@@ -239,20 +239,20 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           <div className={styles.breadcrumbs}>
             <Link href={`/creator/builder/${courseId}`} className={styles.breadcrumbLink}>{courseTitle}</Link>
             <span className={styles.breadcrumbSep}><ChevronRight size={14} /></span>
-            <Link href={`/creator/builder/${courseId}`} className={styles.breadcrumbLink}>{sectionTitle}</Link>
+            <Link href={`/creator/builder/${courseId}?step=2`} className={styles.breadcrumbLink}>{sectionTitle}</Link>
             <span className={styles.breadcrumbSep}><ChevronRight size={14} /></span>
             <span style={{ fontWeight: 600 }}>{lesson?.title || 'Lesson'}</span>
           </div>
           <div className={styles.stepper}>
-            <div className={`${styles.stepperItem} ${styles.done}`}>
+            <Link href={`/creator/builder/${courseId}`} className={`${styles.stepperItem} ${styles.done}`} style={{ textDecoration: 'none' }}>
               <div className={styles.stepperBadge}><Check size={10} /></div>
               Course Setup
-            </div>
+            </Link>
             <ChevronRight size={13} className={styles.stepperArrow} />
-            <div className={`${styles.stepperItem} ${styles.done}`}>
+            <Link href={`/creator/builder/${courseId}?step=2`} className={`${styles.stepperItem} ${styles.done}`} style={{ textDecoration: 'none' }}>
               <div className={styles.stepperBadge}><Check size={10} /></div>
               Build Curriculum
-            </div>
+            </Link>
             <ChevronRight size={13} className={styles.stepperArrow} />
             <div className={`${styles.stepperItem} ${styles.active}`}>
               <div className={styles.stepperBadge}>3</div>

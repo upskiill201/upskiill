@@ -44,6 +44,9 @@ type Props = {
   courseId: string;
   onBack: () => void;
   onSaveStatus: (s: 'idle' | 'saving' | 'saved' | 'error') => void;
+  previewLessonId?: string;
+  courseLessons?: any[];
+  onPreviewChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
 // ─── LESSON TYPE CONFIG ───────────────────────────────────────
