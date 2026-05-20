@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
-  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2
+  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
+  Target, Award, Info
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
@@ -202,22 +203,28 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <Skeleton width={120} height={36} style={{ borderRadius: 8 }} />
           </div>
         </div>
-        <div className={styles.headerTabs}>
-          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
-          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
-        </div>
       </header>
-      <div className={styles.layout}>
-        <div className={styles.sidebar}>
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} />
+      
+      <div className={styles.body}>
+        <div className={styles.leftCol}>
+          <div className={styles.tabs} style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+          </div>
+          
+          <Skeleton height={100} style={{ marginBottom: 24, borderRadius: 12 }} />
+          <div className={styles.contentSplit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <Skeleton height={400} style={{ borderRadius: 12 }} />
+            <Skeleton height={400} style={{ borderRadius: 12 }} />
+          </div>
         </div>
-        <main className={styles.main}>
-          <Skeleton height={150} style={{ marginBottom: 24 }} />
-          <Skeleton height={300} style={{ marginBottom: 24 }} />
-        </main>
+        
+        <aside className={styles.rightSidebar}>
+          <Skeleton height={300} style={{ marginBottom: 24, borderRadius: 12 }} />
+          <Skeleton height={400} style={{ borderRadius: 12 }} />
+        </aside>
       </div>
     </div>
   );
@@ -587,8 +594,12 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 <div className={styles.progressRingLabel}>{progressPct}%</div>
               </div>
               <div className={styles.progressInfo}>
-                <div className={styles.progressEmoji}>🎯</div>
-                <div className={styles.progressKeep}>Keep going!</div>
+                <div className={styles.progressStatusHeader}>
+                  <div className={styles.progressIconWrapper}>
+                    <Target size={13} className={styles.progressIcon} />
+                  </div>
+                  <div className={styles.progressKeep}>Keep going!</div>
+                </div>
                 <div className={styles.progressSub}>Complete all steps to publish this lesson.</div>
               </div>
             </div>
@@ -613,13 +624,23 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <p className={styles.sysInfo}>
               XP is automatically calculated by the system based on lesson content and activity type.
             </p>
-            <div className={styles.xpPill}>
-              <span className={styles.xpStar}>★</span>
-              XP will be shown to learners
-            </div>
-            <div className={styles.xpNote}>
-              <span className={styles.xpNoteIcon} title="Info">ⓘ</span>
-              Earned automatically on lesson completion
+            <div className={styles.sysInfoList}>
+              <div className={styles.sysInfoRow}>
+                <div className={`${styles.sysInfoIconWrapper} ${styles.amber}`}>
+                  <Award size={14} className={styles.sysInfoIcon} />
+                </div>
+                <div className={styles.sysInfoContent}>
+                  <div className={styles.sysInfoLabel}>XP will be shown to learners</div>
+                </div>
+              </div>
+              <div className={styles.sysInfoRow}>
+                <div className={`${styles.sysInfoIconWrapper} ${styles.blue}`}>
+                  <Info size={14} className={styles.sysInfoIcon} />
+                </div>
+                <div className={styles.sysInfoContent}>
+                  <div className={styles.sysInfoLabel}>Earned automatically on lesson completion</div>
+                </div>
+              </div>
             </div>
           </div>
         </aside>
