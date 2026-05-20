@@ -202,22 +202,28 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <Skeleton width={120} height={36} style={{ borderRadius: 8 }} />
           </div>
         </div>
-        <div className={styles.headerTabs}>
-          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
-          <Skeleton width={120} height={30} style={{ margin: '0 16px', borderRadius: '4px' }} />
-        </div>
       </header>
-      <div className={styles.layout}>
-        <div className={styles.sidebar}>
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} style={{ marginBottom: 12 }} />
-          <Skeleton height={80} />
+      
+      <div className={styles.body}>
+        <div className={styles.leftCol}>
+          <div className={styles.tabs} style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+            <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
+          </div>
+          
+          <Skeleton height={100} style={{ marginBottom: 24, borderRadius: 12 }} />
+          <div className={styles.contentSplit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <Skeleton height={400} style={{ borderRadius: 12 }} />
+            <Skeleton height={400} style={{ borderRadius: 12 }} />
+          </div>
         </div>
-        <main className={styles.main}>
-          <Skeleton height={150} style={{ marginBottom: 24 }} />
-          <Skeleton height={300} style={{ marginBottom: 24 }} />
-        </main>
+        
+        <aside className={styles.rightSidebar}>
+          <Skeleton height={300} style={{ marginBottom: 24, borderRadius: 12 }} />
+          <Skeleton height={400} style={{ borderRadius: 12 }} />
+        </aside>
       </div>
     </div>
   );
