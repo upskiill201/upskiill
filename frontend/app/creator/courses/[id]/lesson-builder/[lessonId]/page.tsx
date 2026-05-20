@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
-  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2
+  UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
+  Target, Award, Info
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
@@ -593,8 +594,12 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 <div className={styles.progressRingLabel}>{progressPct}%</div>
               </div>
               <div className={styles.progressInfo}>
-                <div className={styles.progressEmoji}>🎯</div>
-                <div className={styles.progressKeep}>Keep going!</div>
+                <div className={styles.progressStatusHeader}>
+                  <div className={styles.progressIconWrapper}>
+                    <Target size={13} className={styles.progressIcon} />
+                  </div>
+                  <div className={styles.progressKeep}>Keep going!</div>
+                </div>
                 <div className={styles.progressSub}>Complete all steps to publish this lesson.</div>
               </div>
             </div>
@@ -619,13 +624,23 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <p className={styles.sysInfo}>
               XP is automatically calculated by the system based on lesson content and activity type.
             </p>
-            <div className={styles.xpPill}>
-              <span className={styles.xpStar}>★</span>
-              XP will be shown to learners
-            </div>
-            <div className={styles.xpNote}>
-              <span className={styles.xpNoteIcon} title="Info">ⓘ</span>
-              Earned automatically on lesson completion
+            <div className={styles.sysInfoList}>
+              <div className={styles.sysInfoRow}>
+                <div className={`${styles.sysInfoIconWrapper} ${styles.amber}`}>
+                  <Award size={14} className={styles.sysInfoIcon} />
+                </div>
+                <div className={styles.sysInfoContent}>
+                  <div className={styles.sysInfoLabel}>XP will be shown to learners</div>
+                </div>
+              </div>
+              <div className={styles.sysInfoRow}>
+                <div className={`${styles.sysInfoIconWrapper} ${styles.blue}`}>
+                  <Info size={14} className={styles.sysInfoIcon} />
+                </div>
+                <div className={styles.sysInfoContent}>
+                  <div className={styles.sysInfoLabel}>Earned automatically on lesson completion</div>
+                </div>
+              </div>
             </div>
           </div>
         </aside>
