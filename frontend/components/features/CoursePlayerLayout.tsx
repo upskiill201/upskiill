@@ -223,6 +223,7 @@ export const CoursePlayerLayout = ({
         <button 
           className={styles.mobileMenuToggle} 
           onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          aria-label={isMobileSidebarOpen ? "Close course sidebar" : "Open course sidebar"}
         >
           {isMobileSidebarOpen ? <ArrowLeft size={24} /> : <AlignLeft size={24} />}
         </button>
