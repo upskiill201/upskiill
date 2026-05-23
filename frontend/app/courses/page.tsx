@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CourseCard } from '@/components/features/CourseCard';
+import { CourseCard, CourseCardProps } from '@/components/features/CourseCard';
 import { Pagination } from '@/components/ui/Pagination';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Dropdown } from '@/components/ui/Dropdown';
@@ -14,15 +14,32 @@ interface Enrollment {
   [key: string]: unknown;
 }
 
-
+export interface ApiCourse {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  shortDescription?: string;
+  thumbnailUrl?: string;
+  price: number;
+  originalPrice?: number;
+  category?: string;
+  level?: string;
+  duration?: string;
+  rating?: number;
+  reviewsCount?: number;
+  instructor?: {
+    fullName?: string;
+    avatarUrl?: string;
+  };
+}
 
 export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("popular");
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<CourseCardProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -51,12 +68,10 @@ export default function CoursesPage() {
             const enrollments = await enrollRes.json();
             // Create a map of courseId -> enrollment object for fast lookup
             const enrollMap = new Map<string, Enrollment>(
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (enrollments || []).map((e: any) => [e.courseId, e as Enrollment])
+              (enrollments || []).map((e: Enrollment) => [e.courseId, e as Enrollment])
             );
             
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const mappedCourses = data.map((c: any) => {
+            const mappedCourses: CourseCardProps[] = data.map((c: ApiCourse) => {
               const enrollment = enrollMap.get(c.id);
               return {
                 id: c.id,
@@ -67,7 +82,7 @@ export default function CoursesPage() {
                 instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
                 rating: c.rating || 4.5,
                 reviewCount: c.reviewsCount || 0,
-                totalHours: parseFloat(c.duration) || 10,
+                totalHours: c.duration ? parseFloat(c.duration) : 10,
                 totalLessons: 50, // Mock fallback for MVP
                 price: c.price,
                 originalPrice: c.originalPrice,
@@ -81,8 +96,7 @@ export default function CoursesPage() {
             setCourses(mappedCourses);
           } else {
              // Fallback if not logged in or endpoint fails
-             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-             const mappedCourses = data.map((c: any) => ({
+             const mappedCourses: CourseCardProps[] = data.map((c: ApiCourse) => ({
                id: c.id,
                slug: c.slug,
                title: c.title,
@@ -91,7 +105,7 @@ export default function CoursesPage() {
                instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
                rating: c.rating || 4.5,
                reviewCount: c.reviewsCount || 0,
-               totalHours: parseFloat(c.duration) || 10,
+               totalHours: c.duration ? parseFloat(c.duration) : 10,
                totalLessons: 50, // Mock fallback for MVP
                price: c.price,
                originalPrice: c.originalPrice,
@@ -106,8 +120,7 @@ export default function CoursesPage() {
         } catch (err) {
           console.warn('Silent skip: Could not fetch enrollments (maybe not logged in)', err);
           // Set courses anyway
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedCourses = data.map((c: any) => ({
+          const mappedCourses: CourseCardProps[] = data.map((c: ApiCourse) => ({
             id: c.id,
             slug: c.slug,
             title: c.title,
@@ -116,7 +129,7 @@ export default function CoursesPage() {
             instructorAvatar: c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
             rating: c.rating || 4.5,
             reviewCount: c.reviewsCount || 0,
-            totalHours: parseFloat(c.duration) || 10,
+            totalHours: c.duration ? parseFloat(c.duration) : 10,
             totalLessons: 50, 
             price: c.price,
             originalPrice: c.originalPrice,

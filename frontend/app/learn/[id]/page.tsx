@@ -7,6 +7,20 @@ import { CoursePlayerLayout } from '@/components/features/CoursePlayerLayout';
 import { Course } from '@/types/course';
 import Skeleton from '@/components/ui/Skeleton';
 
+interface CourseLesson {
+  id?: string;
+  index?: number;
+}
+
+interface CourseModule {
+  lessons: CourseLesson[];
+}
+
+interface CourseData {
+  curriculum: CourseModule[];
+  [key: string]: unknown;
+}
+
 export default function LearnCoursePage() {
   const params = useParams();
   const router = useRouter();
