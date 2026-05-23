@@ -16,11 +16,11 @@ export class LessonService {
               select: {
                 id: true,
                 title: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!lesson) {
@@ -43,14 +43,30 @@ export class LessonService {
     // Prepare valid fields for update (allowing partial updates)
     const validData: any = {};
     const allowedFields = [
-      'title', 'lessonType', 'isFreePreview', 'durationMinutes',
-      'learnVideoUrl', 'learnText', 'learnAudioUrl',
-      'applyType', 'applyScenario', 'applyTask', 'applyAnswer', 'applyExplanation',
-      'reflectPrompt', 'reflectChips',
+      'title',
+      'lessonType',
+      'isFreePreview',
+      'durationMinutes',
+      'learnVideoUrl',
+      'learnText',
+      'learnAudioUrl',
+      'applyType',
+      'applyScenario',
+      'applyTask',
+      'applyAnswer',
+      'applyExplanation',
+      'reflectPrompt',
+      'reflectChips',
       'deepenResources',
-      'aiSimplified', 'aiRealWorld', 'aiCommonMistakes',
-      'shortDescription', 'resources',
-      'isLearnCompleted', 'isApplyCompleted', 'isReflectCompleted', 'isDeepenCompleted'
+      'aiSimplified',
+      'aiRealWorld',
+      'aiCommonMistakes',
+      'shortDescription',
+      'resources',
+      'isLearnCompleted',
+      'isApplyCompleted',
+      'isReflectCompleted',
+      'isDeepenCompleted',
     ];
 
     for (const field of allowedFields) {

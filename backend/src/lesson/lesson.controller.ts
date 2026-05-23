@@ -1,4 +1,12 @@
-import { Controller, Get, Patch, Param, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { AuthGuard } from '@nestjs/passport';
 

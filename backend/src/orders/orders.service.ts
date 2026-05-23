@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CheckoutDto } from './dto/checkout.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class OrdersService {
@@ -32,7 +33,7 @@ export class OrdersService {
           data: {
             email,
             fullName,
-            password: 'guest_password_' + Math.random().toString(36).slice(-8), // Temporary password
+            password: 'guest_password_' + crypto.randomBytes(8).toString('hex'), // Temporary password
             role: 'STUDENT',
           },
         });

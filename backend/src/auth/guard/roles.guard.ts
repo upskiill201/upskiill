@@ -12,13 +12,13 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    
+
     if (!requiredRoles) {
       return true; // No @Roles() applied, so allow access inherently protected by JwtGuard
     }
-    
+
     const { user } = context.switchToHttp().getRequest();
-    
+
     // User must exist (guaranteed by JwtGuard running first) and have the required role
     return requiredRoles.some((role) => user?.role === role);
   }
