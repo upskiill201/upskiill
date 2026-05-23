@@ -165,13 +165,16 @@ export class CourseService {
 
     return { success: true, completedLessons: currentCompleted };
   }
-  async createCourse(userId: string, data: { title: string; category: string; creatorTimeWeekly?: string }) {
+  async createCourse(
+    userId: string,
+    data: { title: string; category: string; creatorTimeWeekly?: string },
+  ) {
     // Basic slug generation: lowercasing and replacing non-alphanumeric with hyphens
     const baseSlug = data.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '');
-      
+
     // Append a simple unique identifier just in case of clashes
     const uniqueHash = Math.random().toString(36).substring(2, 8);
     const slug = `${baseSlug}-${uniqueHash}`;
@@ -213,11 +216,8 @@ export class CourseService {
 
   async getOwnedDraft(userId: string, courseIdOrSlug: string) {
     const course = await this.prisma.course.findFirst({
-      where: { 
-        OR: [
-          { id: courseIdOrSlug },
-          { slug: courseIdOrSlug }
-        ]
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
       include: {
         instructor: { select: { id: true, fullName: true, avatarUrl: true } },
@@ -253,13 +253,10 @@ export class CourseService {
       curriculum?: unknown;
     },
   ) {
-    const course = await this.prisma.course.findFirst({ 
-      where: { 
-        OR: [
-          { id: courseIdOrSlug },
-          { slug: courseIdOrSlug }
-        ]
-      } 
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
     });
     if (!course) throw new NotFoundException('Course not found');
     if (course.instructorId !== userId) {
@@ -270,43 +267,58 @@ export class CourseService {
       where: { id: course.id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && { description: data.description }),
-        ...(data.shortDescription !== undefined && { shortDescription: data.shortDescription }),
-        ...(data.thumbnailUrl !== undefined && { thumbnailUrl: data.thumbnailUrl }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
+        ...(data.shortDescription !== undefined && {
+          shortDescription: data.shortDescription,
+        }),
+        ...(data.thumbnailUrl !== undefined && {
+          thumbnailUrl: data.thumbnailUrl,
+        }),
         ...(data.price !== undefined && { price: data.price }),
-        ...(data.originalPrice !== undefined && { originalPrice: data.originalPrice }),
+        ...(data.originalPrice !== undefined && {
+          originalPrice: data.originalPrice,
+        }),
         ...(data.level !== undefined && { level: data.level }),
         ...(data.subtitle !== undefined && { subtitle: data.subtitle }),
-        ...(data.startingPoint !== undefined && { startingPoint: data.startingPoint }),
+        ...(data.startingPoint !== undefined && {
+          startingPoint: data.startingPoint,
+        }),
         ...(data.endOutcome !== undefined && { endOutcome: data.endOutcome }),
-        ...(data.realOutputs !== undefined && { realOutputs: data.realOutputs }),
-        ...(data.subcategory !== undefined && { subcategory: data.subcategory }),
+        ...(data.realOutputs !== undefined && {
+          realOutputs: data.realOutputs,
+        }),
+        ...(data.subcategory !== undefined && {
+          subcategory: data.subcategory,
+        }),
         ...(data.language !== undefined && { language: data.language }),
         ...(data.skills !== undefined && { skills: data.skills }),
-        ...(data.requirements !== undefined && { requirements: data.requirements }),
+        ...(data.requirements !== undefined && {
+          requirements: data.requirements,
+        }),
         ...(data.outcomes !== undefined && { outcomes: data.outcomes }),
-        ...(data.curriculum !== undefined && { curriculum: data.curriculum as any }),
+        ...(data.curriculum !== undefined && {
+          curriculum: data.curriculum as any,
+        }),
       },
     });
   }
 
   async deleteCourse(userId: string, courseIdOrSlug: string) {
-    const course = await this.prisma.course.findFirst({ 
-      where: { 
-        OR: [
-          { id: courseIdOrSlug },
-          { slug: courseIdOrSlug }
-        ]
-      } 
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
     });
-    
+
     if (!course) throw new NotFoundException('Course not found');
     if (course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
 
     return await this.prisma.course.delete({
-      where: { id: course.id }
+      where: { id: course.id },
     });
   }
 
@@ -327,25 +339,25 @@ export class CourseService {
 
   async createSection(userId: string, courseId: string, title: string) {
     const course = await this.getOwnedDraft(userId, courseId);
-    
+
     // Auto-calculate orderIndex
     const count = await this.prisma.section.count({
-      where: { courseId: course.id }
+      where: { courseId: course.id },
     });
 
     return await this.prisma.section.create({
       data: {
         title,
         orderIndex: count,
-        courseId: course.id
-      }
+        courseId: course.id,
+      },
     });
   }
 
   async updateSection(userId: string, sectionId: string, title: string) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
-      include: { course: true }
+      include: { course: true },
     });
 
     if (!section) throw new NotFoundException('Section not found');
@@ -355,14 +367,14 @@ export class CourseService {
 
     return await this.prisma.section.update({
       where: { id: sectionId },
-      data: { title }
+      data: { title },
     });
   }
 
   async deleteSection(userId: string, sectionId: string) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
-      include: { course: true }
+      include: { course: true },
     });
 
     if (!section) throw new NotFoundException('Section not found');
@@ -371,14 +383,19 @@ export class CourseService {
     }
 
     return await this.prisma.section.delete({
-      where: { id: sectionId }
+      where: { id: sectionId },
     });
   }
 
-  async createLesson(userId: string, sectionId: string, title: string, lessonType?: string) {
+  async createLesson(
+    userId: string,
+    sectionId: string,
+    title: string,
+    lessonType?: string,
+  ) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
-      include: { course: true }
+      include: { course: true },
     });
 
     if (!section) throw new NotFoundException('Section not found');
@@ -387,7 +404,7 @@ export class CourseService {
     }
 
     const count = await this.prisma.lesson.count({
-      where: { sectionId }
+      where: { sectionId },
     });
 
     return await this.prisma.lesson.create({
@@ -395,21 +412,25 @@ export class CourseService {
         title,
         lessonType: lessonType || 'video',
         orderIndex: count,
-        sectionId
-      }
+        sectionId,
+      },
     });
   }
 
-  async updateLesson(userId: string, lessonId: string, data: { 
-    title?: string; 
-    description?: string; 
-    videoUrl?: string; 
-    durationMinutes?: number; 
-    isFreePreview?: boolean; 
-  }) {
+  async updateLesson(
+    userId: string,
+    lessonId: string,
+    data: {
+      title?: string;
+      description?: string;
+      videoUrl?: string;
+      durationMinutes?: number;
+      isFreePreview?: boolean;
+    },
+  ) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
-      include: { section: { include: { course: true } } }
+      include: { section: { include: { course: true } } },
     });
 
     if (!lesson) throw new NotFoundException('Lesson not found');
@@ -419,14 +440,14 @@ export class CourseService {
 
     return await this.prisma.lesson.update({
       where: { id: lessonId },
-      data
+      data,
     });
   }
 
   async deleteLesson(userId: string, lessonId: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
-      include: { section: { include: { course: true } } }
+      include: { section: { include: { course: true } } },
     });
 
     if (!lesson) throw new NotFoundException('Lesson not found');
@@ -435,7 +456,7 @@ export class CourseService {
     }
 
     return await this.prisma.lesson.delete({
-      where: { id: lessonId }
+      where: { id: lessonId },
     });
   }
 }

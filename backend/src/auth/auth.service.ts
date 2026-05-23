@@ -60,8 +60,8 @@ export class AuthService {
         fullName: dto.fullName,
         role: requestedRole as Role,
         profile: {
-          create: {}
-        }
+          create: {},
+        },
       },
     });
 
@@ -127,9 +127,9 @@ export class AuthService {
             role: requestedRole as Role,
             profile: {
               create: {
-                avatarUrl: decodedToken.picture || null
-              }
-            }
+                avatarUrl: decodedToken.picture || null,
+              },
+            },
           },
         });
       } else {

@@ -10,9 +10,9 @@ async function bootstrap() {
 
   // Allow Vercel (production), teyro.app, and localhost (any port) — blocks everything else
   const allowedOrigins: RegExp[] = [
-    /^https:\/\/upskiill\.vercel\.app$/,   // Production Vercel deployment
-    /^https:\/\/(www\.)?teyro\.app$/,       // Production custom domain — teyro.app
-    /^http:\/\/localhost:\d+$/,             // Local development
+    /^https:\/\/upskiill\.vercel\.app$/, // Production Vercel deployment
+    /^https:\/\/(www\.)?teyro\.app$/, // Production custom domain — teyro.app
+    /^http:\/\/localhost:\d+$/, // Local development
   ];
 
   app.enableCors({
