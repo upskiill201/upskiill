@@ -85,15 +85,15 @@ export async function POST(request: Request) {
     const { data } = payload;
     const fields: any[] = data?.fields || [];
 
+    // Get all form fields to ensure we don't miss anything
+    const allFields = fields.map(field => ({
+      label: field.label,
+      type: field.type,
+      value: field.value
+    }));
+
     // ─── Debug: log all incoming fields so we can see what Tally sends ────────
-    console.log(
-      '[Tally Webhook] Incoming fields:',
-      JSON.stringify(
-        fields.map((f) => ({ type: f.type, label: f.label, value: f.value })),
-        null,
-        2
-      )
-    );
+    console.log('[Webhook Debug] Raw fields received:', JSON.stringify(allFields, null, 2));
 
     // ─── Q1: What's Your Name? ────────────────────────────────────────────────
     // Type-first (INPUT_TEXT), fallback to label search

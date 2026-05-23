@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CheckoutDto } from './dto/checkout.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class OrdersService {
@@ -32,7 +33,7 @@ export class OrdersService {
           data: {
             email,
             fullName,
-            password: 'guest_password_' + Math.random().toString(36).slice(-8), // Temporary password
+            password: 'guest_password_' + crypto.randomBytes(8).toString('hex'), // Temporary password
             role: 'STUDENT',
           },
         });
@@ -71,7 +72,7 @@ export class OrdersService {
       // Create the Order
       const order = await tx.order.create({
         data: {
-          userId: finalUserId as string,
+          userId: finalUserId,
           totalAmount,
           status: 'COMPLETED', // Auto-completed for MVP
           items: {
@@ -87,21 +88,17 @@ export class OrdersService {
       // Create the Enrollments
       await tx.enrollment.createMany({
         data: courses.map((c) => ({
-          userId: finalUserId as string,
+          userId: finalUserId,
           courseId: c.id,
           progress: 0,
         })),
       });
 
       // Update student counts for courses
-      await Promise.all(
-        courseIds.map((id) =>
-          tx.course.update({
-            where: { id },
-            data: { studentsCount: { increment: 1 } },
-          }),
-        ),
-      );
+      await tx.course.updateMany({
+        where: { id: { in: courseIds } },
+        data: { studentsCount: { increment: 1 } },
+      });
 
       return {
         orderId: order.id,

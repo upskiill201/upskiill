@@ -61,6 +61,7 @@
 
 .input::placeholder {
   color: #94A3B8;
+  opacity: 1; /* Fix for iOS */
 }
 
 .submitBtn {

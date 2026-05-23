@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import styles from './FAQSection.module.css';
@@ -51,6 +51,15 @@ const faqs = [
     a: 'No. Traditional platforms are <strong>"dumb translations"</strong> of classroom lectures to video. They lack the three essentials for online success: Accountability, Active Practice, and Real-Time Interaction. Teyro is <strong>Edtech 2.0</strong>—re-imagined to catch you right before you "ghost" with guidance that actually sticks.',
   },
 ];
+
+const parseBoldText = (text: string): ReactNode[] => {
+  return text.split(/(<strong>.*?<\/strong>)/g).map((part, index) => {
+    if (part.startsWith('<strong>') && part.endsWith('</strong>')) {
+      return <strong key={index}>{part.slice(8, -9)}</strong>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -106,10 +115,9 @@ export default function FAQSection() {
                       exit={{ height: 0 }}
                       transition={{ duration: 0.28, ease: [0.04, 0.62, 0.23, 0.98] }}
                     >
-                      <div
-                        className={styles.answerInner}
-                        dangerouslySetInnerHTML={{ __html: a }}
-                      />
+                      <div className={styles.answerInner}>
+                        {parseBoldText(a)}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

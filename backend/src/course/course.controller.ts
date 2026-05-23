@@ -124,7 +124,11 @@ export class CourseController {
       curriculum?: unknown;
     },
   ) {
-    return await this.courseService.updateCourse(req.user.id as string, id, body);
+    return await this.courseService.updateCourse(
+      req.user.id as string,
+      id,
+      body,
+    );
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
@@ -140,7 +144,10 @@ export class CourseController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get(':id/curriculum')
   async getCurriculum(@Req() req: any, @Param('id') id: string) {
-    return await this.courseService.getFullCurriculum(req.user.id as string, id);
+    return await this.courseService.getFullCurriculum(
+      req.user.id as string,
+      id,
+    );
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
@@ -151,7 +158,11 @@ export class CourseController {
     @Param('id') id: string,
     @Body('title') title: string,
   ) {
-    return await this.courseService.createSection(req.user.id as string, id, title);
+    return await this.courseService.createSection(
+      req.user.id as string,
+      id,
+      title,
+    );
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
@@ -173,7 +184,10 @@ export class CourseController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete('sections/:sectionId')
   async deleteSection(@Req() req: any, @Param('sectionId') sectionId: string) {
-    return await this.courseService.deleteSection(req.user.id as string, sectionId);
+    return await this.courseService.deleteSection(
+      req.user.id as string,
+      sectionId,
+    );
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
@@ -219,6 +233,9 @@ export class CourseController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete('lessons/:lessonId')
   async deleteLesson(@Req() req: any, @Param('lessonId') lessonId: string) {
-    return await this.courseService.deleteLesson(req.user.id as string, lessonId);
+    return await this.courseService.deleteLesson(
+      req.user.id as string,
+      lessonId,
+    );
   }
 }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 
 import React, { useState } from 'react';
@@ -8,8 +8,10 @@ import {
 } from 'lucide-react';
 import styles from './CoursePlayerLayout.module.css';
 
+import { Course, CurriculumModule, CurriculumLesson } from "../../types/course";
+
 export interface CoursePlayerLayoutProps {
-  course: Record<string, any>;
+  course: Course;
   activeLesson: { moduleIndex: number; lessonIndex: number } | null;
   completedLessons: string[];
   onSelectLesson: (moduleIndex: number, lessonIndex: number) => void;
@@ -49,7 +51,7 @@ export const CoursePlayerLayout = ({
   
   // Calculate Progress
   let totalLessons = 0;
-  course?.curriculum?.forEach((mod: Record<string, any>) => {
+  course?.curriculum?.forEach((mod: CurriculumModule) => {
     totalLessons += mod.lessons?.length || 0;
   });
   const progressPercent = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
@@ -258,7 +260,7 @@ export const CoursePlayerLayout = ({
 
               {/* Modules Accordion */}
               <div className={styles.curriculumList}>
-                {course.curriculum?.map((moduleItem: Record<string, any>, mIdx: number) => (
+                {course.curriculum?.map((moduleItem: CurriculumModule, mIdx: number) => (
                   <div className={styles.moduleBox} key={`mod-${mIdx}`}>
                     <div className={styles.moduleHeader} onClick={() => toggleModule(`m${mIdx}`)}>
                       <span>{mIdx + 1}. {moduleItem.title}</span>
@@ -266,7 +268,7 @@ export const CoursePlayerLayout = ({
                     </div>
                     {expandedModules.includes(`m${mIdx}`) && (
                       <div className={styles.moduleContent}>
-                        {moduleItem.lessons.map((lesson: Record<string, any>, lIdx: number) => {
+                        {moduleItem.lessons.map((lesson: CurriculumLesson, lIdx: number) => {
                           const isActive = activeLesson?.moduleIndex === mIdx && activeLesson?.lessonIndex === lIdx;
                           const lessonId = lesson.id || String(lesson.index);
                           const isCompleted = completedLessons.includes(lessonId);

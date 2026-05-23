@@ -20,11 +20,37 @@ import { CourseCard } from '@/components/features/CourseCard';
 import { useComingSoon } from './layout';
 import styles from './Page.module.css';
 
+interface CurriculumModule {
+  lessons?: unknown[];
+}
+
+interface Course {
+  id: string;
+  slug?: string;
+  title: string;
+  category: string;
+  thumbnailUrl?: string;
+  instructor?: {
+    fullName?: string;
+    avatarUrl?: string;
+  };
+  rating?: number;
+  reviewsCount?: number;
+  duration?: string;
+  curriculum?: CurriculumModule[] | string | null;
+}
+
+interface Enrollment {
+  id: string;
+  course: Course;
+  completedLessons?: unknown[];
+  progress?: number;
+}
+
 export default function DashboardPage() {
   const { triggerComingSoon } = useComingSoon();
   const [isMobile, setIsMobile] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [enrolledCourses, setEnrolledCourses] = React.useState<any[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = React.useState<Enrollment[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = React.useState(true);
 
   React.useEffect(() => {
@@ -132,12 +158,12 @@ export default function DashboardPage() {
               <div style={{ padding: 20, color: '#94a3b8' }}>Loading your courses...</div>
             ) : enrolledCourses.length === 0 ? (
               <div style={{ padding: 20, color: '#94a3b8' }}>You are not enrolled in any courses yet.</div>
-            ) : enrolledCourses.map((enrollment: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+            ) : enrolledCourses.map((enrollment) => {
               const c = enrollment.course;
               if (!c) return null;
               
               // Safely handle curriculum JSON (sometimes Prisma returns stringified JSON, sometimes null)
-              let currArray = [];
+              let currArray: CurriculumModule[] = [];
               try {
                 if (Array.isArray(c.curriculum)) currArray = c.curriculum;
                 else if (typeof c.curriculum === 'string') currArray = JSON.parse(c.curriculum);
@@ -145,8 +171,7 @@ export default function DashboardPage() {
                 currArray = [];
               }
               
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const totalLess = currArray.reduce((acc: number, mod: any) => acc + (mod.lessons?.length || 0), 0);
+              const totalLess = currArray.reduce((acc: number, mod: CurriculumModule) => acc + (mod.lessons?.length || 0), 0);
               const completedLessArray = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
               const progressPct = totalLess > 0 ? Math.round((completedLessArray.length / totalLess) * 100) : enrollment.progress || 0;
 
@@ -161,7 +186,7 @@ export default function DashboardPage() {
                   instructorAvatar={c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"}
                   rating={c.rating || 4.8}
                   reviewCount={c.reviewsCount || 100}
-                  totalHours={parseInt(c.duration) || 0}
+                  totalHours={(c.duration ? parseInt(c.duration) : 0) || 0}
                   totalLessons={totalLess}
                   price={0}
                   isEnrolled={true}
@@ -181,7 +206,7 @@ export default function DashboardPage() {
                   price={0}
                   isEnrolled={true}
                   progress={progressPct}
-                  totalHours={parseInt(c.duration) || 0}
+                  totalHours={(c.duration ? parseInt(c.duration) : 0) || 0}
                   totalLessons={totalLess}
                 />
               );
