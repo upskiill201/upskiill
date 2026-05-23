@@ -71,7 +71,7 @@ export class OrdersService {
       // Create the Order
       const order = await tx.order.create({
         data: {
-          userId: finalUserId as string,
+          userId: finalUserId,
           totalAmount,
           status: 'COMPLETED', // Auto-completed for MVP
           items: {
@@ -87,21 +87,17 @@ export class OrdersService {
       // Create the Enrollments
       await tx.enrollment.createMany({
         data: courses.map((c) => ({
-          userId: finalUserId as string,
+          userId: finalUserId,
           courseId: c.id,
           progress: 0,
         })),
       });
 
       // Update student counts for courses
-      await Promise.all(
-        courseIds.map((id) =>
-          tx.course.update({
-            where: { id },
-            data: { studentsCount: { increment: 1 } },
-          }),
-        ),
-      );
+      await tx.course.updateMany({
+        where: { id: { in: courseIds } },
+        data: { studentsCount: { increment: 1 } },
+      });
 
       return {
         orderId: order.id,
