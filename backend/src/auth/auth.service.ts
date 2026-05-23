@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { firebaseAdmin } from './firebase-admin';
 import { Role } from '@prisma/client';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -60,8 +61,8 @@ export class AuthService {
         fullName: dto.fullName,
         role: requestedRole as Role,
         profile: {
-          create: {}
-        }
+          create: {},
+        },
       },
     });
 
@@ -117,7 +118,8 @@ export class AuthService {
         // Create user with generic password since they use social login
         // Also assign them the role they requested when signing up via social
         const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(Math.random().toString(36), salt);
+        const randomPassword = crypto.randomBytes(32).toString('hex');
+        const hash = await bcrypt.hash(randomPassword, salt);
 
         user = await this.prisma.user.create({
           data: {
@@ -127,9 +129,9 @@ export class AuthService {
             role: requestedRole as Role,
             profile: {
               create: {
-                avatarUrl: decodedToken.picture || null
-              }
-            }
+                avatarUrl: decodedToken.picture || null,
+              },
+            },
           },
         });
       } else {

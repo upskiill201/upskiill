@@ -74,19 +74,43 @@ export class PaymentService {
         },
       });
 
-      for (const c of courses) {
-        const existing = await tx.enrollment.findUnique({
-          where: { userId_courseId: { userId, courseId: c.id } },
+      // 1. Fetch existing enrollments for the provided courses in bulk
+      const courseIds = courses.map((c) => c.id);
+      const existingEnrollments = await tx.enrollment.findMany({
+        where: {
+          userId,
+          courseId: { in: courseIds },
+        },
+      });
+
+      const existingCourseIds = new Set(
+        existingEnrollments.map((e) => e.courseId),
+      );
+
+      // 2. Identify courses that don't have an enrollment yet
+      const coursesToEnroll = courses.filter(
+        (c) => !existingCourseIds.has(c.id),
+      );
+
+      if (coursesToEnroll.length > 0) {
+        // 3. Create all missing enrollments in a single batch
+        await tx.enrollment.createMany({
+          data: coursesToEnroll.map((c) => ({
+            userId,
+            courseId: c.id,
+            progress: 0,
+          })),
         });
-        if (!existing) {
-          await tx.enrollment.create({
-            data: { userId, courseId: c.id, progress: 0 },
-          });
-          await tx.course.update({
-            where: { id: c.id },
-            data: { studentsCount: { increment: 1 } },
-          });
-        }
+
+        // 4. Update the student count for all newly enrolled courses in a single batch
+        await tx.course.updateMany({
+          where: {
+            id: { in: coursesToEnroll.map((c) => c.id) },
+          },
+          data: {
+            studentsCount: { increment: 1 },
+          },
+        });
       }
       return order;
     });

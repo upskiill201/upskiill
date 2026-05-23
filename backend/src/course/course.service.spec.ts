@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseService } from './course.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ForbiddenException } from '@nestjs/common';
 
 describe('CourseService', () => {
   let service: CourseService;
@@ -24,7 +23,15 @@ describe('CourseService', () => {
         CourseService,
         {
           provide: PrismaService,
-          useValue: mockPrismaService,
+          useValue: {
+            course: {
+              findMany: jest.fn(),
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
         },
       ],
     }).compile();
