@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Injectable()
 export class LessonService {
@@ -30,7 +31,7 @@ export class LessonService {
     return lesson;
   }
 
-  async updateLesson(id: string, updateData: any) {
+  async updateLesson(id: string, updateData: UpdateLessonDto) {
     // Ensure lesson exists
     const lesson = await this.prisma.lesson.findUnique({
       where: { id },
@@ -41,7 +42,7 @@ export class LessonService {
     }
 
     // Prepare valid fields for update (allowing partial updates)
-    const validData: any = {};
+    const validData: Partial<UpdateLessonDto> = {};
     const allowedFields = [
       'title',
       'lessonType',
@@ -70,8 +71,10 @@ export class LessonService {
     ];
 
     for (const field of allowedFields) {
-      if (updateData[field] !== undefined) {
-        validData[field] = updateData[field];
+      const key = field as keyof UpdateLessonDto;
+      if (updateData[key] !== undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        validData[key] = updateData[key];
       }
     }
 

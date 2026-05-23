@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Controller('lesson')
 @UseGuards(AuthGuard('jwt'))
@@ -21,7 +22,10 @@ export class LessonController {
   }
 
   @Patch(':id')
-  async updateLesson(@Param('id') id: string, @Body() updateData: any) {
+  async updateLesson(
+    @Param('id') id: string,
+    @Body() updateData: UpdateLessonDto,
+  ) {
     return this.lessonService.updateLesson(id, updateData);
   }
 }
