@@ -91,9 +91,9 @@ export function useS3Upload(): UseS3UploadResult {
         // Send the raw binary file data
         xhr.send(file);
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setUploading(false);
-      const errMsg = err.message || 'An error occurred during S3 upload.';
+      const errMsg = err instanceof Error ? err.message : 'An error occurred during S3 upload.';
       setError(errMsg);
       throw err;
     }
