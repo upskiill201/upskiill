@@ -65,8 +65,9 @@ export class LessonService {
     ] as const;
 
     for (const field of allowedFields) {
-      if (updateData[field as keyof UpdateLessonDto] !== undefined) {
-        validData[field] = updateData[field as keyof UpdateLessonDto];
+      const value = updateData[field];
+      if (value !== undefined) {
+        (validData as any)[field] = value;
       }
     }
 
