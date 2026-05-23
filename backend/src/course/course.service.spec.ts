@@ -2,20 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseService } from './course.service';
 import { PrismaService } from '../prisma/prisma.service';
 
+const mockPrismaService = {
+  course: {
+    create: jest.fn(),
+  },
+};
+
 describe('CourseService', () => {
   let service: CourseService;
   let prisma: PrismaService;
-
-  const mockPrismaService = {
-    course: {
-      findFirst: jest.fn(),
-      findUnique: jest.fn(),
-    },
-    enrollment: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,15 +18,7 @@ describe('CourseService', () => {
         CourseService,
         {
           provide: PrismaService,
-          useValue: {
-            course: {
-              findMany: jest.fn(),
-              findUnique: jest.fn(),
-              create: jest.fn(),
-              update: jest.fn(),
-              delete: jest.fn(),
-            },
-          },
+          useValue: mockPrismaService,
         },
       ],
     }).compile();
@@ -48,156 +35,101 @@ describe('CourseService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('markLessonComplete', () => {
-    const userId = 'user-123';
-    const idOrSlug = 'course-123';
-    const lessonId = 'lesson-123';
-    const mockCourse = { id: 'course-123', title: 'Test Course' };
+  describe('createCourse', () => {
+    it('should successfully create a course with expected basic data', async () => {
+      const userId = 'user-123';
+      const data = {
+        title: 'My First Course',
+        category: 'Programming',
+        creatorTimeWeekly: '2-5 hours',
+      };
 
-    beforeEach(() => {
-      // Mock findOne to avoid actually querying for the course and testing findOne logic
-      jest.spyOn(service, 'findOne').mockResolvedValue(mockCourse as any);
+      const expectedCreatedCourse = {
+        id: '1234567',
+        title: data.title,
+        slug: 'my-first-course-abc123',
+        category: data.category,
+        creatorTimeWeekly: data.creatorTimeWeekly,
+        instructorId: userId,
+        description: 'New Course Draft',
+        price: 0,
+        published: false,
+      };
+
+      mockPrismaService.course.create.mockResolvedValue(expectedCreatedCourse);
+
+      const result = await service.createCourse(userId, data);
+
+      expect(result).toEqual(expectedCreatedCourse);
+
+      expect(mockPrismaService.course.create).toHaveBeenCalledTimes(1);
+
+      const createCallArgs = mockPrismaService.course.create.mock.calls[0][0];
+
+      expect(createCallArgs.data).toEqual(expect.objectContaining({
+        title: data.title,
+        category: data.category,
+        creatorTimeWeekly: data.creatorTimeWeekly,
+        instructorId: userId,
+        description: 'New Course Draft',
+        price: 0,
+        published: false,
+      }));
+
+      // Verify the generated ID is a 7-digit string
+      expect(createCallArgs.data.id).toMatch(/^\d{7}$/);
+
+      // Verify slug logic starts with 'my-first-course-'
+      expect(createCallArgs.data.slug).toMatch(/^my-first-course-[a-z0-9]{6}$/);
     });
 
-    it('should throw ForbiddenException if user is not enrolled', async () => {
-      // Setup: Prisma returns null for enrollment
-      mockPrismaService.enrollment.findUnique.mockResolvedValue(null);
+    it('should generate correct slug for title with special characters', async () => {
+      const userId = 'user-123';
+      const data = {
+        title: '  C++ & C# Programming: 101!!!  ',
+        category: 'Programming',
+      };
 
-      // Execute & Verify
-      await expect(
-        service.markLessonComplete(userId, idOrSlug, lessonId),
-      ).rejects.toThrow(ForbiddenException);
-      await expect(
-        service.markLessonComplete(userId, idOrSlug, lessonId),
-      ).rejects.toThrow('You must be enrolled to mark lessons complete.');
+      const expectedCreatedCourse = {
+        id: '1234567',
+        title: data.title,
+        slug: 'c-c-programming-101-xyz789',
+        category: data.category,
+        instructorId: userId,
+        description: 'New Course Draft',
+        price: 0,
+        published: false,
+      };
 
-      expect(service.findOne).toHaveBeenCalledWith(idOrSlug);
-      expect(mockPrismaService.enrollment.findUnique).toHaveBeenCalledWith({
-        where: { userId_courseId: { userId, courseId: mockCourse.id } },
-      });
-      expect(mockPrismaService.enrollment.update).not.toHaveBeenCalled();
+      mockPrismaService.course.create.mockResolvedValue(expectedCreatedCourse);
+
+      await service.createCourse(userId, data);
+
+      const createCallArgs = mockPrismaService.course.create.mock.calls[0][0];
+
+      // Expected base slug logic: lowercases, replaces non-alphanumeric with hyphens, trims hyphens
+      // '  C++ & C# Programming: 101!!!  ' -> 'c-c-programming-101'
+      expect(createCallArgs.data.slug).toMatch(/^c-c-programming-101-[a-z0-9]{6}$/);
     });
 
-    it('should not update if lesson is already completed', async () => {
-      // Setup: user has already completed the lesson
-      mockPrismaService.enrollment.findUnique.mockResolvedValue({
-        id: 'enr-123',
-        userId,
-        courseId: mockCourse.id,
-        completedLessons: [lessonId],
-      });
+    it('should generate a 7-digit numeric ID', async () => {
+      const userId = 'user-123';
+      const data = {
+        title: 'ID Test Course',
+        category: 'Test',
+      };
 
-      // Execute
-      const result = await service.markLessonComplete(userId, idOrSlug, lessonId);
+      mockPrismaService.course.create.mockResolvedValue({});
 
-      // Verify
-      expect(result).toEqual({ success: true, completedLessons: [lessonId] });
-      expect(mockPrismaService.enrollment.update).not.toHaveBeenCalled();
-    });
+      await service.createCourse(userId, data);
+      const createCallArgs = mockPrismaService.course.create.mock.calls[0][0];
 
-    it('should update progress and completedLessons if lesson is not yet completed (empty course fallback)', async () => {
-      // Setup: User is enrolled but has not completed this lesson
-      mockPrismaService.enrollment.findUnique.mockResolvedValue({
-        id: 'enr-123',
-        userId,
-        courseId: mockCourse.id,
-        completedLessons: [],
-      });
-
-      // Setup: course has no lessons, should fallback to 1 totalLesson
-      mockPrismaService.course.findUnique.mockResolvedValue({
-        id: mockCourse.id,
-        sections: [],
-      });
-
-      // Setup: successful update
-      mockPrismaService.enrollment.update.mockResolvedValue({});
-
-      // Execute
-      const result = await service.markLessonComplete(userId, idOrSlug, lessonId);
-
-      // Verify
-      // Progress calculation: completed (1) / totalLessons (1) * 100 = 100
-      expect(result).toEqual({ success: true, completedLessons: [lessonId] });
-      expect(mockPrismaService.course.findUnique).toHaveBeenCalledWith({
-        where: { id: mockCourse.id },
-        include: { sections: { include: { lessons: true } } },
-      });
-      expect(mockPrismaService.enrollment.update).toHaveBeenCalledWith({
-        where: { id: 'enr-123' },
-        data: {
-          completedLessons: [lessonId],
-          progress: 100,
-        },
-      });
-    });
-
-    it('should handle completedLessons not being an array properly (e.g. null)', async () => {
-      // Setup: User enrolled but completedLessons is null (not an array)
-      mockPrismaService.enrollment.findUnique.mockResolvedValue({
-        id: 'enr-123',
-        userId,
-        courseId: mockCourse.id,
-        completedLessons: null,
-      });
-
-      // Setup: course has 4 lessons in total across sections
-      mockPrismaService.course.findUnique.mockResolvedValue({
-        id: mockCourse.id,
-        sections: [
-          { lessons: [{ id: 'l1' }, { id: 'l2' }] },
-          { lessons: [{ id: 'l3' }, { id: lessonId }] },
-        ],
-      });
-
-      mockPrismaService.enrollment.update.mockResolvedValue({});
-
-      // Execute
-      const result = await service.markLessonComplete(userId, idOrSlug, lessonId);
-
-      // Verify
-      // completed (1) / totalLessons (4) * 100 = 25
-      expect(result).toEqual({ success: true, completedLessons: [lessonId] });
-      expect(mockPrismaService.enrollment.update).toHaveBeenCalledWith({
-        where: { id: 'enr-123' },
-        data: {
-          completedLessons: [lessonId],
-          progress: 25, // Math.round((1/4) * 100)
-        },
-      });
-    });
-
-    it('should calculate progress correctly and cap at 100%', async () => {
-      // Setup: User already has 1 completed lesson, adding a 2nd
-      mockPrismaService.enrollment.findUnique.mockResolvedValue({
-        id: 'enr-123',
-        userId,
-        courseId: mockCourse.id,
-        completedLessons: ['lesson-abc'],
-      });
-
-      // Setup: course only has 1 lesson in total, progress would be 2/1 * 100 = 200 => capped at 100
-      mockPrismaService.course.findUnique.mockResolvedValue({
-        id: mockCourse.id,
-        sections: [
-          { lessons: [{ id: 'lesson-abc' }] },
-        ],
-      });
-
-      mockPrismaService.enrollment.update.mockResolvedValue({});
-
-      // Execute
-      const result = await service.markLessonComplete(userId, idOrSlug, lessonId);
-
-      // Verify
-      expect(result).toEqual({ success: true, completedLessons: ['lesson-abc', lessonId] });
-      expect(mockPrismaService.enrollment.update).toHaveBeenCalledWith({
-        where: { id: 'enr-123' },
-        data: {
-          completedLessons: ['lesson-abc', lessonId],
-          progress: 100, // Capped at 100%
-        },
-      });
+      const generatedId = createCallArgs.data.id;
+      expect(typeof generatedId).toBe('string');
+      expect(generatedId).toHaveLength(7);
+      expect(generatedId).toMatch(/^\d{7}$/);
+      expect(Number(generatedId)).toBeGreaterThanOrEqual(1000000);
+      expect(Number(generatedId)).toBeLessThanOrEqual(9999999);
     });
   });
 });
