@@ -1,8 +1,10 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CoursePlayerLayout } from '@/components/features/CoursePlayerLayout';
+import { Course } from '@/types/course';
 import Skeleton from '@/components/ui/Skeleton';
 
 interface CourseLesson {
@@ -22,7 +24,7 @@ interface CourseData {
 export default function LearnCoursePage() {
   const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState<CourseData | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   
   // State for Player
