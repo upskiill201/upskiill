@@ -474,7 +474,7 @@ export default function ComponentsPreviewPage() {
             <div style={{ width: "100%" }}>
               <CoursePlayerLayout
                 course={{
-                  title: 'Figma UI/UX Design Masterclass',
+                  id: 'mock-1', title: 'Figma UI/UX Design Masterclass',
                   slug: 'figma-ux-design',
                   shortDescription: 'Master Figma from basics to advanced prototyping',
                   instructor: {
