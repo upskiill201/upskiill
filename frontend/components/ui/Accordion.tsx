@@ -29,20 +29,26 @@ export default function Accordion({ items }: AccordionProps) {
           className={`${styles.item} ${openIndex === index ? styles.open : ''}`}
         >
           <button 
+            id={`accordion-trigger-${index}`}
             className={styles.trigger}
             onClick={() => toggle(index)}
             aria-expanded={openIndex === index}
+            aria-controls={`accordion-content-${index}`}
           >
             <span className={styles.question}>{item.question}</span>
             <ChevronDown 
               className={styles.chevron} 
               size={20}
+              aria-hidden="true"
             />
           </button>
           
           <AnimatePresence>
             {openIndex === index && (
               <motion.div
+                id={`accordion-content-${index}`}
+                role="region"
+                aria-labelledby={`accordion-trigger-${index}`}
                 className={styles.content}
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
