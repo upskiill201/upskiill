@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Injectable()
 export class LessonService {
@@ -16,11 +17,11 @@ export class LessonService {
               select: {
                 id: true,
                 title: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!lesson) {
@@ -30,7 +31,7 @@ export class LessonService {
     return lesson;
   }
 
-  async updateLesson(id: string, updateData: any) {
+  async updateLesson(id: string, updateData: UpdateLessonDto) {
     // Ensure lesson exists
     const lesson = await this.prisma.lesson.findUnique({
       where: { id },
@@ -41,21 +42,31 @@ export class LessonService {
     }
 
     // Prepare valid fields for update (allowing partial updates)
-    const validData: any = {};
+    const validData: Partial<UpdateLessonDto> = {};
     const allowedFields = [
-      'title', 'lessonType', 'isFreePreview', 'durationMinutes',
-      'learnVideoUrl', 'learnText', 'learnAudioUrl',
-      'applyType', 'applyScenario', 'applyTask', 'applyAnswer', 'applyExplanation',
-      'reflectPrompt', 'reflectChips',
+      'title',
+      'lessonType',
+      'isFreePreview',
+      'durationMinutes',
+      'learnVideoUrl',
+      'learnText',
+      'learnAudioUrl',
+      'applyType',
+      'applyScenario',
+      'applyTask',
+      'applyAnswer',
+      'applyExplanation',
+      'reflectPrompt',
+      'reflectChips',
       'deepenResources',
       'aiSimplified', 'aiRealWorld', 'aiCommonMistakes',
       'shortDescription', 'resources',
       'isLearnCompleted', 'isApplyCompleted', 'isReflectCompleted', 'isDeepenCompleted'
-    ];
+    ] as const;
 
     for (const field of allowedFields) {
-      if (updateData[field] !== undefined) {
-        validData[field] = updateData[field];
+      if (updateData[field as keyof UpdateLessonDto] !== undefined) {
+        validData[field] = updateData[field as keyof UpdateLessonDto];
       }
     }
 
