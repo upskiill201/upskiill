@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import DOMPurify from 'isomorphic-dompurify';
 import { ChevronDown } from 'lucide-react';
 import styles from './FAQSection.module.css';
 
@@ -108,7 +109,7 @@ export default function FAQSection() {
                     >
                       <div
                         className={styles.answerInner}
-                        dangerouslySetInnerHTML={{ __html: a }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a) as string }}
                       />
                     </motion.div>
                   )}
