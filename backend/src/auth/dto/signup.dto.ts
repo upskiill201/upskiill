@@ -22,5 +22,7 @@ export class SignupDto {
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 
-  // Role must be assigned server-side (default STUDENT) in public signup.
+  @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
 }

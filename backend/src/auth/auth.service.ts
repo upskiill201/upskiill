@@ -25,7 +25,7 @@ export class AuthService {
       where: { email: dto.email },
     });
 
-    const requestedRole = (dto as any).role || 'STUDENT';
+    const requestedRole = dto.role || 'STUDENT';
 
     if (existing) {
       if (requestedRole === 'INSTRUCTOR' && existing.role !== 'INSTRUCTOR') {
