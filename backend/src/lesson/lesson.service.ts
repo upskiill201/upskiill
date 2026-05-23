@@ -59,22 +59,14 @@ export class LessonService {
       'reflectPrompt',
       'reflectChips',
       'deepenResources',
-      'aiSimplified',
-      'aiRealWorld',
-      'aiCommonMistakes',
-      'shortDescription',
-      'resources',
-      'isLearnCompleted',
-      'isApplyCompleted',
-      'isReflectCompleted',
-      'isDeepenCompleted',
-    ];
+      'aiSimplified', 'aiRealWorld', 'aiCommonMistakes',
+      'shortDescription', 'resources',
+      'isLearnCompleted', 'isApplyCompleted', 'isReflectCompleted', 'isDeepenCompleted'
+    ] as const;
 
     for (const field of allowedFields) {
-      const key = field as keyof UpdateLessonDto;
-      if (updateData[key] !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        validData[key] = updateData[key];
+      if (updateData[field as keyof UpdateLessonDto] !== undefined) {
+        validData[field] = updateData[field as keyof UpdateLessonDto];
       }
     }
 

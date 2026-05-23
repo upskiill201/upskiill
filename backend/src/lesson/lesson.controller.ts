@@ -22,10 +22,7 @@ export class LessonController {
   }
 
   @Patch(':id')
-  async updateLesson(
-    @Param('id') id: string,
-    @Body() updateData: UpdateLessonDto,
-  ) {
+  async updateLesson(@Param('id') id: string, @Body() updateData: UpdateLessonDto) {
     return this.lessonService.updateLesson(id, updateData);
   }
 }

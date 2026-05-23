@@ -54,10 +54,12 @@ export class UpdateLessonDto {
   reflectPrompt?: string;
 
   @IsOptional()
-  reflectChips?: any;
+  @IsArray() // Since it's Json in schema
+  reflectChips?: any[];
 
   @IsOptional()
-  deepenResources?: any;
+  @IsArray() // Since it's Json in schema, assuming Array of objects
+  deepenResources?: any[];
 
   @IsOptional()
   @IsString()
@@ -76,7 +78,8 @@ export class UpdateLessonDto {
   shortDescription?: string;
 
   @IsOptional()
-  resources?: any;
+  @IsArray() // Since it's Json in schema
+  resources?: any[];
 
   @IsOptional()
   @IsBoolean()
