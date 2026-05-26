@@ -78,11 +78,12 @@ export const ReviewCard = ({
             <button 
               className={`${styles.actionBtn} ${hasLiked ? styles.active : ''}`}
               onClick={handleLike}
+              aria-label={hasLiked ? "Unlike review" : "Like review"}
             >
               <ThumbsUp size={14} className={styles.icon} />
               <span>{likes}</span>
             </button>
-            <button className={styles.actionBtn}>
+            <button className={styles.actionBtn} aria-label="Dislike review">
               <ThumbsDown size={14} className={styles.icon} />
             </button>
             <button className={styles.reportBtn}>Report</button>
