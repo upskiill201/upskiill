@@ -287,7 +287,7 @@ export default function AnalyticsPage() {
                   <Badge variant={s.risk === 'high' ? 'red' : 'yellow'} size="sm">
                     {s.lastSeen}
                   </Badge>
-                  <button className={styles.nudgeBtn} onClick={() => triggerComingSoon('Student Messaging')}>
+                  <button className={styles.nudgeBtn} onClick={() => triggerComingSoon('Student Messaging')} aria-label="Message student">
                     <FaComments size={11} />
                   </button>
                 </div>
