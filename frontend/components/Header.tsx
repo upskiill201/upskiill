@@ -199,6 +199,7 @@ export default function Header() {
               <button 
                 className={styles.closeMobileMenuBtn} 
                 onClick={() => setIsMobileNavOpen(false)}
+                aria-label="Close navigation menu"
               >
                 <X size={24} />
               </button>
