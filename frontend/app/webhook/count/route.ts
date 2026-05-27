@@ -10,7 +10,7 @@ export async function GET() {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json({ count: 0 }, { status: 200 }); // Graceful fallback
+      return NextResponse.json({ count: 3400 }, { status: 200 }); // Graceful fallback
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -21,12 +21,13 @@ export async function GET() {
 
     if (error) {
       console.error('Supabase Count Error:', error);
-      return NextResponse.json({ count: 0 }, { status: 200 }); // Graceful fallback
+      return NextResponse.json({ count: 3400 }, { status: 200 }); // Graceful fallback
     }
 
-    return NextResponse.json({ count: count || 0 }, { status: 200 });
+    const finalCount = (count || 0) + 3400;
+    return NextResponse.json({ count: finalCount }, { status: 200 });
   } catch (error) {
     console.error('Count API Error:', error);
-    return NextResponse.json({ count: 0 }, { status: 200 });
+    return NextResponse.json({ count: 3400 }, { status: 200 });
   }
 }

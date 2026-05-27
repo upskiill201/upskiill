@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail } from 'lucide-react';
 import { FaTwitter, FaLinkedin, FaInstagram } from 'react-icons/fa6';
+import { useState, useEffect } from 'react';
 import styles from './JoinWaitlist.module.css';
 
 interface JoinWaitlistProps {
@@ -10,6 +11,17 @@ interface JoinWaitlistProps {
 }
 
 export default function JoinWaitlist({ onOpenModal }: JoinWaitlistProps) {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/webhook/count')
+      .then((r) => r.json())
+      .then((d) => setCount(d.count ?? 3400))
+      .catch(() => setCount(3400));
+  }, []);
+
+  const displayCount = count === null ? '...' : count.toLocaleString();
+
   return (
     <section className={styles.section}>
       <div className={styles.container}>
@@ -32,7 +44,7 @@ export default function JoinWaitlist({ onOpenModal }: JoinWaitlistProps) {
 
           <div className={styles.stats}>
             <div className={styles.statItem}>
-              <span className={styles.statNum}>23,543</span>
+              <span className={styles.statNum}>{displayCount}</span>
               <span className={styles.statLabel}>waiting</span>
             </div>
             <div className={styles.divider} />
