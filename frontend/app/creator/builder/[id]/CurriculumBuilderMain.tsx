@@ -435,7 +435,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
           <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 className={styles.modalTitle} style={{ margin: 0 }}>{editingModule ? 'Edit Module' : 'Add New Module'}</h2>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowModuleModal(false)}><X size={18} /></button>
+              <button aria-label="Close modal" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowModuleModal(false)}><X size={18} /></button>
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Module Title *</label>
@@ -483,7 +483,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
           <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 className={styles.modalTitle} style={{ margin: 0 }}>{editingLesson ? 'Edit Lesson' : 'Add Lesson'}</h2>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowLessonModal(false)}><X size={18} /></button>
+              <button aria-label="Close modal" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowLessonModal(false)}><X size={18} /></button>
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Lesson Title *</label>
