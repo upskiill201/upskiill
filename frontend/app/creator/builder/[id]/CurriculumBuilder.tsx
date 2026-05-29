@@ -144,7 +144,7 @@ function SortableLesson({
       </div>
 
       <div className={styles.moreMenuWrapper} onClick={e => e.stopPropagation()}>
-        <button className={styles.moreBtn} onClick={() => setMenuOpen(v => !v)}>
+        <button className={styles.moreBtn} onClick={() => setMenuOpen(v => !v)} aria-label="Lesson options" title="Lesson options">
           <MoreVertical size={16} />
         </button>
         {menuOpen && (
