@@ -115,7 +115,7 @@ export const CourseCard = ({
             <button 
               className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ''}`} 
               onClick={toggleWishlist}
-              aria-label="Add to wishlist"
+              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
               <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
             </button>
@@ -204,6 +204,7 @@ export const CourseCard = ({
                     className={`${styles.addToCartBtn} ${inCart ? styles.inCart : ''}`}
                     onClick={handleAddToCart}
                     title={inCart ? "In Cart" : "Add to Cart"}
+                    aria-label={inCart ? "In Cart" : "Add to Cart"}
                   >
                     {inCart ? <Check size={16} /> : <ShoppingCart size={16} />}
                   </button>
