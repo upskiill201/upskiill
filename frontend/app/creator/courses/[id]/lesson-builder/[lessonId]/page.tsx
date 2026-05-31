@@ -283,11 +283,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <button className={styles.btnOutline}><Eye size={15} /> Preview as Student</button>
             <div className={styles.btnSplitGroup}>
               <button className={styles.btnPrimaryCaret} onClick={() => handleSave()}>Save &amp; Continue</button>
-              <button className={styles.btnPrimaryCaretSplit}><ChevronDown size={14} /></button>
+              <button aria-label="More save options" className={styles.btnPrimaryCaretSplit}><ChevronDown size={14} /></button>
             </div>
             <div className={styles.paginationGroup}>
-              <button className={styles.btnOutlineSquare}><ChevronLeft size={16} /></button>
-              <button className={styles.btnOutlineSquare}><ChevronRight size={16} /></button>
+              <button aria-label="Previous lesson" className={styles.btnOutlineSquare}><ChevronLeft size={16} /></button>
+              <button aria-label="Next lesson" className={styles.btnOutlineSquare}><ChevronRight size={16} /></button>
             </div>
           </div>
         </div>

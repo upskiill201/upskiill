@@ -144,7 +144,7 @@ function SortableLesson({
       </div>
 
       <div className={styles.moreMenuWrapper} onClick={e => e.stopPropagation()}>
-        <button className={styles.moreBtn} onClick={() => setMenuOpen(v => !v)}>
+        <button aria-label="More actions" className={styles.moreBtn} onClick={() => setMenuOpen(v => !v)}>
           <MoreVertical size={16} />
         </button>
         {menuOpen && (
@@ -206,11 +206,11 @@ function SortableModule({
           <span className={styles.moduleMetaText}>{section.lessons.length} lessons • {durStr}</span>
         </div>
         <div className={styles.moduleActions} onClick={e => e.stopPropagation()}>
-          <button className={styles.moduleActionBtn} title="Edit" onClick={onEdit}><Edit2 size={14} /></button>
-          <button className={styles.moduleActionBtn} title="Duplicate" onClick={onDuplicate}><Copy size={14} /></button>
-          <button className={`${styles.moduleActionBtn} ${styles.danger}`} title="Delete" onClick={onDelete}><Trash2 size={14} /></button>
+          <button aria-label="Edit module" className={styles.moduleActionBtn} title="Edit" onClick={onEdit}><Edit2 size={14} /></button>
+          <button aria-label="Duplicate module" className={styles.moduleActionBtn} title="Duplicate" onClick={onDuplicate}><Copy size={14} /></button>
+          <button aria-label="Delete module" className={`${styles.moduleActionBtn} ${styles.danger}`} title="Delete" onClick={onDelete}><Trash2 size={14} /></button>
         </div>
-        <button className={styles.moduleChevron}>
+        <button aria-label={expanded ? 'Collapse module' : 'Expand module'} className={styles.moduleChevron}>
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
       </div>

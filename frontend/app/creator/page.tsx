@@ -205,7 +205,7 @@ export default function CreatorDashboard() {
                         ) : '—'}
                       </td>
                       <td>
-                        <button className={styles.moreBtn}><MoreVertical size={16} /></button>
+                        <button aria-label="More options for course" className={styles.moreBtn}><MoreVertical size={16} /></button>
                       </td>
                     </tr>
                   ))}
