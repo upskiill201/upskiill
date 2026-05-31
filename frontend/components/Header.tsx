@@ -71,6 +71,7 @@ export default function Header() {
           type="button"
           className={styles.mobileMenuBtn}
           aria-label="Open navigation menu"
+          aria-expanded={isMobileNavOpen}
           onClick={() => setIsMobileNavOpen(true)}
         >
           <Menu size={24} />
