@@ -128,6 +128,7 @@ export default function WaitlistHeader() {
             className={styles.hamburgerBtn}
             onClick={() => setMobileOpen(true)}
             aria-label="Open navigation menu"
+            aria-expanded={mobileOpen}
             type="button"
           >
             <Menu size={24} />
