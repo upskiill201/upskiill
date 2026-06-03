@@ -120,7 +120,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             <Link href="/creator" className={styles.logoLink} onClick={() => setIsMobileSidebarOpen(false)}>
               <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} priority className={styles.sidebarLogo} />
             </Link>
-            <button className={styles.mobileCloseBtn} onClick={() => setIsMobileSidebarOpen(false)}>
+            <button className={styles.mobileCloseBtn} onClick={() => setIsMobileSidebarOpen(false)} aria-label="Close sidebar">
               <CloseIcon size={24} />
             </button>
           </div>
@@ -162,7 +162,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           {!pathname.includes('/builder') && !pathname.includes('/lesson-builder') && (
             <header className={styles.header}>
               <div className={styles.headerLeft}>
-                <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)}>
+                <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)} aria-label="Open navigation menu">
                   <Menu size={24} />
                 </button>
                 <div className={styles.pageTitleWrapper}>
@@ -178,7 +178,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                 </button>
 
                 <div className={styles.headerControls}>
-                  <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
+                  <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
                     <Bell size={20} />
                     <span className={styles.notifBadge}>3</span>
                   </button>

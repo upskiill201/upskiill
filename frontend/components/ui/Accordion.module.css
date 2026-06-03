@@ -28,6 +28,12 @@
   cursor: pointer;
   text-align: left;
   gap: 16px;
+  outline: none;
+  border-radius: 12px;
+}
+
+.trigger:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--brand-blue-new);
 }
 
 .question {

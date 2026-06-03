@@ -139,6 +139,8 @@ export default function Header() {
                    className={styles.userProfileBtn}
                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                    aria-label="User menu"
+                   aria-haspopup="menu"
+                   aria-expanded={isDropdownOpen}
                  >
                    <Avatar 
                      src={user.avatarUrl || undefined} 
@@ -148,18 +150,18 @@ export default function Header() {
                  </button>
 
                  {isDropdownOpen && (
-                   <div className={styles.authDropdown}>
+                   <div className={styles.authDropdown} role="menu">
                      <div className={styles.userInfo}>
                        <span className={styles.userName}>{user.fullName}</span>
                        <span className={styles.userEmail}>{user.email}</span>
                      </div>
-                     <Link href="/dashboard" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                     <Link href="/dashboard" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <LayoutGrid size={16} /> Dashboard
                      </Link>
-                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <User size={16} /> Edit Profile
                      </Link>
-                     <button onClick={handleLogout} className={`${styles.dropdownItem} ${styles.logout}`}>
+                     <button onClick={handleLogout} className={`${styles.dropdownItem} ${styles.logout}`} role="menuitem">
                        <LogOut size={16} /> Logout
                      </button>
                    </div>
@@ -197,6 +199,7 @@ export default function Header() {
               <button 
                 className={styles.closeMobileMenuBtn} 
                 onClick={() => setIsMobileNavOpen(false)}
+                aria-label="Close navigation menu"
               >
                 <X size={24} />
               </button>
