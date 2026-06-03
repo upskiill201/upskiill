@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Target, Users, TrendingUp, DollarSign, ArrowRight, Clock, Star, Sparkles } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import { motion } from 'framer-motion';
 
 export default function WelcomeStep() {
   const router = useRouter();
@@ -77,7 +78,13 @@ export default function WelcomeStep() {
       />
 
       {/* Main Flex Layout: 38% Text / 62% Image */}
-      <div style={{ position: 'relative', zIndex: 10 }} className="flex flex-col lg:flex-row items-center w-full h-full px-6 md:px-12 xl:px-24">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ position: 'relative', zIndex: 10 }} 
+        className="flex flex-col lg:flex-row items-center w-full h-full px-6 md:px-12 xl:px-24"
+      >
         {/* Left Content Column (38%) */}
         <div className="w-full lg:w-[38%] flex flex-col items-start text-left">
           <p className="text-[20px] font-medium text-gray-800 mb-6 flex items-center">
@@ -163,7 +170,12 @@ export default function WelcomeStep() {
         </div>
 
         {/* Right Image Column (62%) */}
-        <div className="w-full lg:w-[62%] pr-6 md:pr-10 xl:pr-16 mt-12 lg:mt-0 flex justify-end items-center relative perspective-1000">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, x: 20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          className="w-full lg:w-[62%] pr-6 md:pr-10 xl:pr-16 mt-12 lg:mt-0 flex justify-end items-center relative perspective-1000"
+        >
           <div className="relative w-full rounded-2xl overflow-hidden shadow-[0_25px_60px_-15px_rgba(37,99,235,0.3)] ring-1 ring-gray-900/5 hover:scale-[1.01] transition-transform duration-500 bg-white">
             <Image 
               src="/creator-welcome-dashboard.png"
@@ -174,8 +186,8 @@ export default function WelcomeStep() {
               priority
             />
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   ArrowLeft, ArrowRight, ShieldCheck,
   Sprout, Users, BarChart2, TrendingUp, Star,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // ── Audience size options ─────────────────────────────────────────────────────
 const AUDIENCE_SIZES = [
@@ -52,6 +53,21 @@ const AUDIENCE_SIZES = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+};
+
 // ── Page Component ────────────────────────────────────────────────────────────
 export default function StepFourPage() {
   const router = useRouter();
@@ -90,7 +106,12 @@ export default function StepFourPage() {
       <div className="flex flex-col lg:flex-row flex-1 overflow-visible min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px] gap-8 lg:gap-0">
 
         {/* ──── LEFT PANEL ──── */}
-        <div className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]"
+        >
           <div className="lg:ml-[32px]">
             <h1 className="font-extrabold tracking-tight text-gray-900 text-[32px] lg:text-[40px] leading-[1.2]">
               Let&apos;s understand
@@ -144,10 +165,15 @@ export default function StepFourPage() {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* ──── RIGHT PANEL ──── */}
-        <div className="w-full lg:w-[70%] flex flex-col pb-8 lg:pb-12">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+          className="w-full lg:w-[70%] flex flex-col pb-8 lg:pb-12"
+        >
 
           {/* Section heading */}
           <h2 className="text-[24px] lg:text-[28px] font-bold text-slate-900 mb-2">
@@ -159,13 +185,19 @@ export default function StepFourPage() {
 
           {/* ── Card Grid (single-select, 5 cards) ── */}
           {/* Mobile: 2-col, tablet: 3-col, desktop: 5-col */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 xl:gap-5 w-full xl:max-w-[95%] 2xl:max-w-[90%] mb-[40px]">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 xl:gap-5 w-full xl:max-w-[95%] 2xl:max-w-[90%] mb-[40px]"
+          >
             {AUDIENCE_SIZES.map((size) => {
               const isSel = selected === size.id;
               const isHov = hoveredCard === size.id;
 
               return (
-                <button
+                <motion.button
+                  variants={itemVariants}
                   key={size.id}
                   onClick={() => setSelected(size.id)}
                   onMouseEnter={() => setHoveredCard(size.id)}
@@ -227,13 +259,16 @@ export default function StepFourPage() {
                       {size.description}
                     </p>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* ── Bottom Banner Card ── */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 rounded-[16px] sm:rounded-[20px] p-5 sm:p-[0_0_0_24px] w-full xl:max-w-[95%] 2xl:max-w-[90%] overflow-hidden"
             style={{
               backgroundColor: '#F2F6FE',
@@ -267,8 +302,8 @@ export default function StepFourPage() {
                 }}
               />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
