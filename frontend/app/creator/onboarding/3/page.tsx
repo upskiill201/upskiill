@@ -9,6 +9,7 @@ import {
   Briefcase, DollarSign, Film, CheckSquare,
   MessageCircle, Music, MoreHorizontal,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // ── Category definitions ────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -102,6 +103,21 @@ const CATEGORIES = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+};
+
 // ── Page Component ──────────────────────────────────────────────────────────
 export default function StepThreePage() {
   const router = useRouter();
@@ -144,7 +160,12 @@ export default function StepThreePage() {
       <div className="flex flex-col lg:flex-row flex-1 overflow-visible min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px] gap-8 lg:gap-0">
 
         {/* ──── LEFT PANEL ──── */}
-        <div className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]"
+        >
           <div className="lg:ml-[32px]">
             <h1 className="font-extrabold tracking-tight text-gray-900 text-[32px] lg:text-[40px] leading-[1.2]">
               Let&apos;s tailor Teyro
@@ -180,10 +201,15 @@ export default function StepThreePage() {
               priority
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* ──── RIGHT PANEL ──── */}
-        <div className="w-full lg:w-[70%] flex flex-col pb-8 lg:pb-12">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+          className="w-full lg:w-[70%] flex flex-col pb-8 lg:pb-12"
+        >
           {/* Section heading */}
           <h1 className="text-[24px] lg:text-[28px] font-bold text-slate-900 mb-2">
             What do you teach?
@@ -193,13 +219,19 @@ export default function StepThreePage() {
           </p>
 
           {/* ── Card Grid (multi-select) ── */}
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-y-3 gap-x-3 sm:gap-y-5 sm:gap-x-5 xl:gap-y-7 xl:gap-x-6 w-full xl:max-w-[95%] 2xl:max-w-[80%] flex-1 min-h-0 pb-4">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 xl:grid-cols-4 gap-y-3 gap-x-3 sm:gap-y-5 sm:gap-x-5 xl:gap-y-7 xl:gap-x-6 w-full xl:max-w-[95%] 2xl:max-w-[80%] flex-1 min-h-0 pb-4"
+          >
             {CATEGORIES.map((cat) => {
               const isSel = selected.includes(cat.id);
               const isHov = hoveredCard === cat.id;
 
               return (
-                <button
+                <motion.button
+                  variants={itemVariants}
                   key={cat.id}
                   onClick={() => toggleCategory(cat.id)}
                   onMouseEnter={() => setHoveredCard(cat.id)}
@@ -256,11 +288,11 @@ export default function StepThreePage() {
                   <p className="text-[10px] sm:text-[12px] lg:text-[13px] text-slate-500 m-0 leading-[1.3] font-normal w-full line-clamp-2">
                     {cat.description}
                   </p>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
