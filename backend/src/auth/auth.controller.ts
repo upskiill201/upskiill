@@ -26,6 +26,10 @@ export class FirebaseLoginDto {
   @IsString()
   @IsOptional()
   role?: string;
+
+  @IsString()
+  @IsOptional()
+  draftId?: string;
 }
 
 @Controller('auth')
@@ -62,6 +66,7 @@ export class AuthController {
     const result = await this.authService.firebaseSignIn(
       dto.idToken,
       dto.role || 'STUDENT',
+      dto.draftId,
     );
     this.setCookie(res, result.access_token);
     return result;

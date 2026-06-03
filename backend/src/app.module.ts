@@ -7,6 +7,7 @@ import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
+import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PaymentModule } from './payment/payment.module';
     LessonModule,
     OrdersModule,
     PaymentModule,
+    CreatorOnboardingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

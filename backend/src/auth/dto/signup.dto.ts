@@ -25,4 +25,8 @@ export class SignupDto {
   @IsEnum(Role)
   @IsOptional()
   role?: Role;
+
+  @IsString()
+  @IsOptional()
+  draftId?: string;
 }

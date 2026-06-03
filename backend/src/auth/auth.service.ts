@@ -40,6 +40,17 @@ export class AuthService {
           data: { role: 'INSTRUCTOR' },
         });
 
+        if (dto.draftId) {
+          try {
+            await this.prisma.creatorOnboardingDraft.update({
+              where: { id: dto.draftId },
+              data: { userId: existing.id },
+            });
+          } catch (err) {
+            console.warn(`Could not link draft ${dto.draftId} to existing user ${existing.id}:`, err);
+          }
+        }
+
         return this.signToken(
           existing.id,
           existing.email,
@@ -65,6 +76,17 @@ export class AuthService {
         },
       },
     });
+
+    if (dto.draftId) {
+      try {
+        await this.prisma.creatorOnboardingDraft.update({
+          where: { id: dto.draftId },
+          data: { userId: user.id },
+        });
+      } catch (err) {
+        console.warn(`Could not link draft ${dto.draftId} to user ${user.id}:`, err);
+      }
+    }
 
     return this.signToken(user.id, user.email, user.fullName, user.role);
   }
@@ -98,7 +120,11 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.fullName, roleToAssign);
   }
 
-  async firebaseSignIn(idToken: string, requestedRole: string) {
+  async firebaseSignIn(
+    idToken: string,
+    requestedRole: string,
+    draftId?: string,
+  ) {
     try {
       // 1. Verify token with Firebase Admin
       const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
@@ -141,6 +167,18 @@ export class AuthService {
             where: { id: user.id },
             data: { role: 'INSTRUCTOR' },
           });
+        }
+      }
+
+      // Link onboarding draft if provided
+      if (draftId) {
+        try {
+          await this.prisma.creatorOnboardingDraft.update({
+            where: { id: draftId },
+            data: { userId: user.id },
+          });
+        } catch (err) {
+          console.warn(`Could not link draft ${draftId} to user ${user.id}:`, err);
         }
       }
 

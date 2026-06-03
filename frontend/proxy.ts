@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isStudentAuthPage = path === '/login' || path === '/signup';
-  const isInstructorAuthPage = path.startsWith('/creator/login') || path.startsWith('/creator/signup');
+  const isInstructorAuthPage = path.startsWith('/creator/login') || path.startsWith('/creator/signup') || path.startsWith('/creator/onboarding');
   const isAuthPage = isStudentAuthPage || isInstructorAuthPage;
   
   const isDashboard = path.startsWith('/dashboard');

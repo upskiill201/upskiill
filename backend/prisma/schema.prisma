@@ -18,11 +18,12 @@ model User {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   
-  profile     Profile?
-  enrollments Enrollment[]
-  courses     Course[]     @relation("InstructorCourses")
-  orders      Order[]
-  reviews     Review[]
+  profile         Profile?
+  enrollments     Enrollment[]
+  courses         Course[]                @relation("InstructorCourses")
+  orders          Order[]
+  reviews         Review[]
+  onboardingDraft CreatorOnboardingDraft?
 }
 
 model Profile {
@@ -225,5 +226,14 @@ model Waitlist {
   discovery_channel String?
   role              String?
   raw_data          Json?
+}
+
+model CreatorOnboardingDraft {
+  id        String   @id @default(uuid())
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json     @default("{}") // Stores answers from steps 1-13
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 

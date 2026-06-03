@@ -35,6 +35,9 @@ describe('AuthService', () => {
             enrollment: {
               findMany: jest.fn(),
             },
+            creatorOnboardingDraft: {
+              update: jest.fn(),
+            },
           },
         },
         {
@@ -96,6 +99,26 @@ describe('AuthService', () => {
       expect(result).toEqual({
         access_token: mockToken,
         user: { id: mockUser.id, email: mockUser.email, fullName: mockUser.fullName, role: mockUser.role },
+      });
+    });
+
+    it('should successfully link creatorOnboardingDraft to user if draftId is provided', async () => {
+      const dtoWithDraft = { ...dto, draftId: 'draft-123' };
+      const mockUser = { id: '1', ...dto, role: 'STUDENT' };
+      const mockToken = 'mocked_jwt_token';
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      (bcrypt.genSalt as jest.Mock).mockResolvedValue('salt');
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
+      (jwt.signAsync as jest.Mock).mockResolvedValue(mockToken);
+      (prisma.creatorOnboardingDraft.update as jest.Mock).mockResolvedValue({});
+
+      await service.signup(dtoWithDraft);
+
+      expect(prisma.creatorOnboardingDraft.update).toHaveBeenCalledWith({
+        where: { id: 'draft-123' },
+        data: { userId: mockUser.id },
       });
     });
 
@@ -325,6 +348,24 @@ describe('AuthService', () => {
 
       await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(UnauthorizedException);
       await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow('Invalid Firebase Token: Verification failed');
+    });
+
+    it('should successfully link creatorOnboardingDraft to user if draftId is provided', async () => {
+      const decodedToken = { email: 'existing@example.com' };
+      const mockUser = { id: '1', email: decodedToken.email, fullName: 'Existing User', role: 'STUDENT' };
+      const mockToken = 'mocked_jwt_token';
+
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (jwt.signAsync as jest.Mock).mockResolvedValue(mockToken);
+      (prisma.creatorOnboardingDraft.update as jest.Mock).mockResolvedValue({});
+
+      await service.firebaseSignIn(idToken, 'STUDENT', 'draft-123');
+
+      expect(prisma.creatorOnboardingDraft.update).toHaveBeenCalledWith({
+        where: { id: 'draft-123' },
+        data: { userId: mockUser.id },
+      });
     });
   });
 

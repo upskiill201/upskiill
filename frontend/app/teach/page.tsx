@@ -118,7 +118,7 @@ export default function TeachPage() {
             Become an instructor and change lives — including your own. Publish premium learning experiences on a platform that actively scales your success.
           </p>
           <div className={styles.heroActions}>
-            <Link href="/creator/signup">
+            <Link href="/creator/onboarding/1">
               <Button size="lg" variant="primary" className={styles.btnPulse}>Get Started</Button>
             </Link>
           </div>
@@ -335,7 +335,7 @@ export default function TeachPage() {
                   <p className={styles.resultNote}>Traditional platforms could tax up to 63% on promotional sales.</p>
                 </div>
 
-                <Link href="/creator/signup" style={{width: '100%'}}>
+                <Link href="/creator/onboarding/1" style={{width: '100%'}}>
                   <Button variant="primary" style={{width: '100%', height: '52px', fontSize: '16px'}}>Start Earning Now</Button>
                 </Link>
 
@@ -415,7 +415,7 @@ export default function TeachPage() {
             Plus, get the support of experienced instructors in our globally connected online community.
           </p>
           <div className={styles.supportActions}>
-            <Link href="/creator/signup">
+            <Link href="/creator/onboarding/1">
               <Button variant="outline" size="lg" style={{borderColor:'white', color:'white'}}>Join the Community</Button>
             </Link>
           </div>
@@ -428,7 +428,7 @@ export default function TeachPage() {
         <div className={styles.ctaInner}>
           <h2 className={styles.ctaTitle}>Become an instructor today</h2>
           <p className={styles.ctaSub}>Join one of the world&apos;s most advanced and fastest growing online learning marketplaces.</p>
-          <Link href="/creator/signup">
+          <Link href="/creator/onboarding/1">
             <Button size="lg" variant="primary" className={styles.btnPulse}>Get Started Now</Button>
           </Link>
         </div>
