@@ -101,7 +101,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
   // Auth pages, the full-screen create wizard, and the curriculum builder do not need the sidebar layout
   // Note: /lesson-builder needs the sidebar, so we use exact startsWith for the curriculum builder
-  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/create') || pathname.startsWith('/creator/builder') || pathname.endsWith('/manage');
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/signup') || pathname.includes('/onboarding') || pathname.includes('/create') || pathname.startsWith('/creator/builder') || pathname.endsWith('/manage');
 
   if (isAuthPage) {
     return (
