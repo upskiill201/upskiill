@@ -156,7 +156,7 @@ export default function StepTwoPage() {
                   onClick={() => setSelected(type.id)}
                   onMouseEnter={() => setHoveredCard(type.id)}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className="relative flex flex-col items-center p-6 lg:p-[32px_24px_28px_24px] rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[240px] sm:h-[280px]"
+                  className="relative flex flex-col items-center p-4 sm:p-5 lg:p-[32px_24px_28px_24px] rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[190px] sm:h-[220px] lg:h-[280px]"
                   style={{
                     border: isSel
                       ? '2.5px solid #2563EB'
@@ -172,7 +172,7 @@ export default function StepTwoPage() {
                 >
                   {/* Checkmark badge (selected only) */}
                   {isSel && (
-                    <div className="absolute top-4 right-4 w-[22px] h-[22px] rounded-full bg-blue-600 flex items-center justify-center z-10">
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] rounded-full bg-blue-600 flex items-center justify-center z-10">
                       <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
                         <path
                           d="M1 3L3 5L7 1"
@@ -186,17 +186,17 @@ export default function StepTwoPage() {
                   )}
 
                   {/* Icon container */}
-                  <div className="w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] rounded-[14px] bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 mb-4 sm:mb-4">
+                  <div className="w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] lg:w-[64px] lg:h-[64px] rounded-[10px] sm:rounded-[12px] lg:rounded-[14px] bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 mb-3 sm:mb-4 [&>svg]:w-[24px] [&>svg]:h-[24px] sm:[&>svg]:w-[28px] sm:[&>svg]:h-[28px] lg:[&>svg]:w-[38px] lg:[&>svg]:h-[38px]">
                     {type.icon}
                   </div>
 
                   {/* Label */}
-                  <p className="text-[15px] sm:text-[16px] font-bold text-slate-900 mb-[6px] leading-[1.35] w-full">
+                  <p className="text-[14px] sm:text-[15px] lg:text-[16px] font-bold text-slate-900 mb-1 lg:mb-[6px] leading-[1.35] w-full">
                     {type.label}
                   </p>
 
                   {/* Description */}
-                  <p className="text-[13px] text-slate-500 m-0 leading-[1.4] font-normal w-full">
+                  <p className="text-[12px] sm:text-[13px] text-slate-500 m-0 leading-[1.4] font-normal w-full">
                     {type.description}
                   </p>
                 </button>
