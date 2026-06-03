@@ -145,7 +145,7 @@ export default function StepTwoPage() {
           </p>
 
           {/* ── Card Grid ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-y-5 gap-x-5 xl:gap-y-7 xl:gap-x-6 w-full xl:max-w-[95%] 2xl:max-w-[80%] flex-1 min-h-0 pb-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-y-3 gap-x-3 sm:gap-y-5 sm:gap-x-5 xl:gap-y-7 xl:gap-x-6 w-full xl:max-w-[95%] 2xl:max-w-[80%] flex-1 min-h-0 pb-4">
             {CREATOR_TYPES.map((type) => {
               const isSel = selected === type.id;
               const isHov = hoveredCard === type.id;
@@ -156,10 +156,10 @@ export default function StepTwoPage() {
                   onClick={() => setSelected(type.id)}
                   onMouseEnter={() => setHoveredCard(type.id)}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className="relative flex flex-col items-center p-4 sm:p-5 lg:p-[32px_24px_28px_24px] rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[190px] sm:h-[220px] lg:h-[280px]"
+                  className="relative flex flex-col items-center p-3 sm:p-5 lg:p-[32px_24px_28px_24px] rounded-[12px] sm:rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[160px] sm:h-[220px] lg:h-[280px]"
                   style={{
                     border: isSel
-                      ? '2.5px solid #2563EB'
+                      ? '2px solid #2563EB'
                       : isHov
                         ? '1px solid #93C5FD'
                         : '1px solid #E2E8F0',
@@ -172,12 +172,12 @@ export default function StepTwoPage() {
                 >
                   {/* Checkmark badge (selected only) */}
                   {isSel && (
-                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] rounded-full bg-blue-600 flex items-center justify-center z-10">
-                      <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 w-[16px] h-[16px] sm:w-[22px] sm:h-[22px] rounded-full bg-blue-600 flex items-center justify-center z-10">
+                      <svg width="6" height="5" viewBox="0 0 8 6" fill="none" className="sm:w-[8px] sm:h-[6px]">
                         <path
                           d="M1 3L3 5L7 1"
                           stroke="white"
-                          strokeWidth="2"
+                          strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
@@ -186,17 +186,17 @@ export default function StepTwoPage() {
                   )}
 
                   {/* Icon container */}
-                  <div className="w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] lg:w-[64px] lg:h-[64px] rounded-[10px] sm:rounded-[12px] lg:rounded-[14px] bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 mb-3 sm:mb-4 [&>svg]:w-[24px] [&>svg]:h-[24px] sm:[&>svg]:w-[28px] sm:[&>svg]:h-[28px] lg:[&>svg]:w-[38px] lg:[&>svg]:h-[38px]">
+                  <div className="w-[36px] h-[36px] sm:w-[52px] sm:h-[52px] lg:w-[64px] lg:h-[64px] rounded-[8px] sm:rounded-[12px] lg:rounded-[14px] bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 mb-2 sm:mb-4 [&>svg]:w-[18px] [&>svg]:h-[18px] sm:[&>svg]:w-[28px] sm:[&>svg]:h-[28px] lg:[&>svg]:w-[38px] lg:[&>svg]:h-[38px]">
                     {type.icon}
                   </div>
 
                   {/* Label */}
-                  <p className="text-[14px] sm:text-[15px] lg:text-[16px] font-bold text-slate-900 mb-1 lg:mb-[6px] leading-[1.35] w-full">
+                  <p className="text-[12px] sm:text-[15px] lg:text-[16px] font-bold text-slate-900 mb-0.5 lg:mb-[6px] leading-[1.3] w-full">
                     {type.label}
                   </p>
 
                   {/* Description */}
-                  <p className="text-[12px] sm:text-[13px] text-slate-500 m-0 leading-[1.4] font-normal w-full">
+                  <p className="text-[10px] sm:text-[13px] text-slate-500 m-0 leading-[1.3] font-normal w-full line-clamp-2">
                     {type.description}
                   </p>
                 </button>
