@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   // ── Primary SEO ──
   title: 'Teyro. Personalize learning for everyone',
   description:
-    'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
+    'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
 
   // ── Keywords ──
   keywords: [
@@ -79,14 +79,14 @@ export const metadata: Metadata = {
     siteName: 'Teyro',
     title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
+      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
     locale: 'en_US',
     images: [
       {
         url: '/teyro-og.png',
         width: 1200,
         height: 630,
-        alt: 'Teyro — AI-Powered Learning That Actually Works',
+        alt: 'Teyro. Personalize learning for everyone',
       },
     ],
   },
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     site: '@teyroapp',
     title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
+      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
     images: ['/teyro-og.png'],
   },
 
