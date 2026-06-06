@@ -102,7 +102,7 @@ export function VideoUploadBlock({ videoUrl, onUpload, onRemove, lessonId }: Pro
             {videoUrl ? 'Replace Video' : 'Upload Video'}
           </Button>
           {videoUrl && (
-            <Button variant="outline" size="sm" style={{ padding: '0 8px', color: '#EF4444', borderColor: '#FECACA', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onRemove}>
+            <Button variant="outline" size="sm" aria-label="Remove video" style={{ padding: '0 8px', color: '#EF4444', borderColor: '#FECACA', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onRemove}>
               <Trash2 size={15} />
             </Button>
           )}
