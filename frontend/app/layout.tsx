@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro - AI-Powered Learning That Actually Works',
+  title: 'Teyro. Personalize learning for everyone',
   description:
-    'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
+    'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
 
   // ── Keywords ──
   keywords: [
@@ -77,9 +77,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro - AI-Powered Learning That Actually Works',
+    title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
+      'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
     locale: 'en_US',
     images: [
       {
@@ -95,9 +95,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro - AI-Powered Learning That Actually Works',
+    title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start.',
+      'Teyro - ai personalized learning platform that makes sure you learn effectively and better',
     images: ['/teyro-og.png'],
   },
 
