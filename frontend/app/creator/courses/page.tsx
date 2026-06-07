@@ -93,7 +93,7 @@ export default function InstructorCoursesPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={styles.searchInput}
             />
-            <button className={styles.searchBtn}>
+            <button className={styles.searchBtn} aria-label="Search courses">
               <Search size={18} />
             </button>
           </div>
@@ -180,6 +180,7 @@ export default function InstructorCoursesPage() {
                 onClick={(e) => handleDeleteCourse(e, course.id)}
                 className={styles.deleteBtn}
                 title="Delete course"
+                aria-label="Delete course"
               >
                 <Trash2 size={20} />
               </button>
