@@ -63,13 +63,23 @@ export class AuthService {
         );
       }
 
-      throw new ForbiddenException('Email already in use');
+      if (existing.isVerified) {
+        throw new import('@nestjs/common').ConflictException('Email already in use');
+      } else {
+        // Idempotent: User exists but not verified, resend email
+        await this.resendVerification(existing.email);
+        return {
+          message: 'Account exists but is not verified. Check your email.',
+          userId: existing.id,
+          requiresVerification: true,
+        };
+      }
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(dto.password, salt);
+    const hash = await bcrypt.hash(dto.password, 12);
 
-    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const plainToken = crypto.randomBytes(32).toString('hex');
+    const verifyToken = crypto.createHash('sha256').update(plainToken).digest('hex');
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const user = await this.prisma.user.create({
@@ -109,7 +119,7 @@ export class AuthService {
     }
 
     // Send verification email
-    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+    await this.emailService.sendVerificationEmail(user.email, plainToken);
 
     return { 
       message: 'Check your email to verify your account', 
@@ -154,8 +164,9 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
     const user = await this.prisma.user.findUnique({
-      where: { verifyToken: token },
+      where: { verifyToken: hashedToken },
       include: { profile: true }
     });
 
@@ -193,15 +204,19 @@ export class AuthService {
     if (!user) throw new ForbiddenException('User not found');
     if (user.isVerified) throw new ForbiddenException('User is already verified');
 
-    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const plainToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { verifyToken, tokenExpiry },
+      data: {
+        verifyToken: hashedToken,
+        tokenExpiry,
+      },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+    await this.emailService.sendVerificationEmail(user.email, plainToken);
     return { message: 'Verification email resent' };
   }
 

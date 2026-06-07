@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Eye, EyeOff, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, AlertCircle, CheckCircle2, Send, ArrowLeft } from 'lucide-react';
 import { FaGraduationCap, FaChalkboardTeacher, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import Button from '@/components/ui/Button';
@@ -14,6 +14,8 @@ import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import posthog from 'posthog-js';
 import styles from '../../login/InstructorAuth.module.css';
 
+const COMMON_PASSWORDS = ['password123', 'qwerty', '12345678', 'password', '123456789'];
+
 export default function StepFifteenPage() {
   const router = useRouter();
 
@@ -21,6 +23,7 @@ export default function StepFifteenPage() {
   useOnboardingGuard(15);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -50,10 +53,25 @@ export default function StepFifteenPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Verification Pending State
+  const [isVerificationPending, setIsVerificationPending] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     posthog.capture('onboarding_step_viewed', { step: 15, stepName: 'signup' });
   }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   // ─── Real-time email duplicate check ───────────────────────────────────────
   const handleEmailBlur = useCallback(async () => {
@@ -77,6 +95,15 @@ export default function StepFifteenPage() {
       setError('Please choose a stronger password (Good or Strong).');
       return;
     }
+    if (COMMON_PASSWORDS.includes(password.toLowerCase())) {
+      setError('Password is too common. Please choose a different one.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setError('');
     setLoading(true);
 
@@ -101,15 +128,17 @@ export default function StepFifteenPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        // If 409 Conflict, it means the user already exists and is verified.
         const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
         throw new Error(errMsg || 'Signup failed');
       }
 
-      // ✅ ONLY clear localStorage after confirmed backend success
-      clearOnboardingData();
+      // Success or Idempotent Success (existing unverified user)
       posthog.capture('onboarding_completed', { method: 'email' });
+      posthog.capture('creator_registered');
 
-      window.location.href = `/creator/verify-pending?email=${encodeURIComponent(email)}`;
+      // DO NOT clear localStorage here
+      setIsVerificationPending(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
       setError(message);
@@ -117,6 +146,41 @@ export default function StepFifteenPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ─── Resend Verification ────────────────────────────────────────────────────
+  const handleResend = async () => {
+    if (countdown > 0 || !email) return;
+    
+    setResending(true);
+    setResendStatus('idle');
+    
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('Too many requests. Please try again later.');
+        throw new Error('Failed to resend');
+      }
+      
+      setResendStatus('success');
+      setCountdown(60); // 60 seconds cooldown
+    } catch (err) {
+      setResendStatus('error');
+    } finally {
+      setResending(false);
+    }
+  };
+
+  const maskEmail = (str: string) => {
+    if (!str || !str.includes('@')) return str;
+    const [name, domain] = str.split('@');
+    if (name.length <= 2) return `${name[0]}***@${domain}`;
+    return `${name.substring(0, 2)}***${name.substring(name.length - 1)}@${domain}`;
   };
 
   // ─── Google OAuth Signup ────────────────────────────────────────────────────
@@ -138,6 +202,7 @@ export default function StepFifteenPage() {
           idToken,
           role: 'INSTRUCTOR',
           draftId: onboardingData.draftId,
+          onboarding: onboardingData,
         }),
       });
 
@@ -146,10 +211,10 @@ export default function StepFifteenPage() {
         throw new Error(data.message || 'Social authentication failed');
       }
 
-      // ✅ Only clear after backend confirms success
-      clearOnboardingData();
       posthog.capture('onboarding_completed', { method: 'google' });
-
+      posthog.capture('creator_registered');
+      
+      // Navigate to Step 16 directly — Google accounts are pre-verified
       window.location.href = '/creator/onboarding/16';
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -162,6 +227,74 @@ export default function StepFifteenPage() {
       setLoading(false);
     }
   };
+
+  if (isVerificationPending) {
+    return (
+      <div className="min-h-[calc(100vh-88px)] flex items-center justify-center bg-[#F1EDFC] px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center relative overflow-hidden">
+          
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-purple-600" />
+          
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Mail className="w-8 h-8 text-blue-600" />
+          </div>
+          
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Check your inbox</h1>
+          
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            We've sent a verification link to <br/>
+            <strong className="text-gray-900 font-semibold">{maskEmail(email)}</strong>
+          </p>
+          
+          <div className="bg-gray-50 rounded-xl p-4 mb-8 text-sm text-gray-600 text-left flex gap-3">
+            <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <div>
+              The link will expire in 24 hours. If you don't see it, be sure to check your spam folder.
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Button 
+              variant="outline" 
+              className="w-full justify-center flex items-center gap-2"
+              onClick={handleResend}
+              disabled={resending || countdown > 0 || !email}
+            >
+              {resending ? (
+                <span className="flex items-center gap-2">Sending...</span>
+              ) : countdown > 0 ? (
+                <span className="flex items-center gap-2">Resend in {countdown}s</span>
+              ) : (
+                <span className="flex items-center gap-2"><Send className="w-4 h-4" /> Resend verification email</span>
+              )}
+            </Button>
+
+            {resendStatus === 'success' && (
+              <p className="text-sm text-green-600 flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Email resent successfully!
+              </p>
+            )}
+
+            {resendStatus === 'error' && (
+              <p className="text-sm text-red-600 flex items-center justify-center gap-1">
+                <AlertCircle className="w-4 h-4" /> Failed to resend. Please try again later.
+              </p>
+            )}
+            
+            <div className="pt-4 border-t border-gray-100">
+              <button 
+                type="button"
+                onClick={() => setIsVerificationPending(false)}
+                className="text-sm text-gray-500 hover:text-gray-900 flex items-center justify-center gap-1 transition-colors w-full bg-transparent border-none cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Wrong email? Go back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     // Override minHeight to account for the 88px progress bar header and prevent scrolling
@@ -286,6 +419,31 @@ export default function StepFifteenPage() {
                   </div>
                 );
               })()}
+            </div>
+
+            <div className={styles.inputGroup} style={{ marginTop: '16px' }}>
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <div className={styles.inputWrapper}>
+                <Lock size={18} className={styles.inputIcon} />
+                <input 
+                  id="confirmPassword" 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  placeholder="Confirm your secure password" 
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  minLength={6}
+                  required 
+                />
+                <button 
+                  type="button" 
+                  className={styles.eyeIcon} 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Hide" : "Show"}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className={styles.termsBox}>

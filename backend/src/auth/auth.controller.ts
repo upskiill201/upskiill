@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -38,6 +39,7 @@ export class FirebaseLoginDto {
   onboarding?: Record<string, unknown>;
 }
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -45,6 +47,7 @@ export class AuthController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 per 15 mins
   @Post('signup')
   async signup(@Body() dto: SignupDto) {
     // We don't set cookie here anymore, user must verify email first
@@ -57,23 +60,25 @@ export class AuthController {
     @Query('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || 'https://teyro.app';
     try {
       const result = await this.authService.verifyEmail(token);
       this.setCookie(res, result.access_token);
-      // Redirect to frontend creator studio
-      return res.redirect(`${frontendUrl}/creator`);
+      // Redirect to frontend creator studio Step 16
+      return res.redirect(`${appUrl}/creator/onboarding/16`);
     } catch (error) {
       // Redirect to a frontend failure page
-      return res.redirect(`${frontendUrl}/creator/verify-failed`);
+      return res.redirect(`${appUrl}/creator/verify-failed`);
     }
   }
 
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('resend-verification')
   async resendVerification(@Body('email') email: string) {
     return this.authService.resendVerification(email);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
