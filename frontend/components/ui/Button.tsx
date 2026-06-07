@@ -18,6 +18,7 @@ type ButtonProps = {
   className?: string;
   style?: React.CSSProperties;
   id?: string;
+  'aria-label'?: string;
 };
 
 export default function Button({
@@ -35,6 +36,7 @@ export default function Button({
   className = '',
   style,
   id,
+  'aria-label': ariaLabel,
 }: ButtonProps) {
   const classes = [
     styles.btn,
@@ -67,7 +69,7 @@ export default function Button({
 
   if (href && !disabled && !loading) {
     return (
-      <Link href={href} className={classes} style={style} id={id}>
+      <Link href={href} className={classes} style={style} id={id} aria-label={ariaLabel}>
         {content}
       </Link>
     );
@@ -80,6 +82,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       aria-busy={loading}
+      aria-label={ariaLabel}
       style={style}
       id={id}
     >

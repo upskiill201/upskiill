@@ -350,7 +350,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
                 content="This video is shown on the public course page before enrollment. It helps learners decide whether to join your course."
                 position="top"
               >
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', display: 'flex', alignItems: 'center', padding: 0 }}>
+                <button aria-label="Help with promotional video" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', display: 'flex', alignItems: 'center', padding: 0 }}>
                   <HelpCircle size={14} />
                 </button>
               </Tooltip>
