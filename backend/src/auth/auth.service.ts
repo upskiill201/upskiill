@@ -12,12 +12,16 @@ import * as bcrypt from 'bcrypt';
 import { firebaseAdmin } from './firebase-admin';
 import { Role } from '@prisma/client';
 import * as crypto from 'crypto';
+import { ProfileService } from '../profile/profile.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
+    private profileService: ProfileService,
+    private emailService: EmailService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -65,12 +69,18 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(dto.password, salt);
 
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         password: hash,
         fullName: dto.fullName,
         role: requestedRole as Role,
+        isVerified: false,
+        verifyToken,
+        tokenExpiry,
         profile: {
           create: {},
         },
@@ -88,7 +98,24 @@ export class AuthService {
       }
     }
 
-    return this.signToken(user.id, user.email, user.fullName, user.role);
+    // Hydrate the creator profile from onboarding answers if provided
+    if (dto.onboarding && requestedRole === 'INSTRUCTOR') {
+      try {
+        await this.profileService.hydrateFromOnboarding(user.id, dto.onboarding as any);
+      } catch (err) {
+        console.warn(`Profile hydration failed for user ${user.id}:`, err);
+        // Non-fatal — profile can be completed later from the settings page
+      }
+    }
+
+    // Send verification email
+    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+
+    return { 
+      message: 'Check your email to verify your account', 
+      userId: user.id,
+      requiresVerification: true 
+    };
   }
 
   async login(dto: LoginDto) {
@@ -108,16 +135,74 @@ export class AuthService {
 
     // Upgrade account to INSTRUCTOR if they logged in via the instructor portal
     // and aren't an instructor yet
-    let roleToAssign = user.role;
     if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: { role: 'INSTRUCTOR' },
       });
-      roleToAssign = 'INSTRUCTOR' as Role;
     }
 
-    return this.signToken(user.id, user.email, user.fullName, roleToAssign);
+    if (!user.isVerified) {
+      throw new ForbiddenException({
+        message: 'Email not verified',
+        requiresVerification: true,
+        email: user.email,
+      });
+    }
+
+    return this.signToken(user.id, user.email, user.fullName, user.role);
+  }
+
+  async verifyEmail(token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { verifyToken: token },
+      include: { profile: true }
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Invalid verification token');
+    }
+
+    if (user.tokenExpiry && new Date() > user.tokenExpiry) {
+      throw new ForbiddenException('Verification token expired');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verifyToken: null,
+        tokenExpiry: null,
+      },
+    });
+
+    // We hydrated onboarding answers into the profile during signup
+    // So we can extract the category from the profile for the welcome email
+    const onboardingMock = {
+      step11: { firstName: user.fullName.split(' ')[0] },
+      step3: { categories: [user.profile?.niche || 'your topic'] },
+    };
+
+    await this.emailService.sendWelcomeEmail(user.email, onboardingMock);
+
+    return this.signToken(user.id, user.email, user.fullName, user.role);
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new ForbiddenException('User not found');
+    if (user.isVerified) throw new ForbiddenException('User is already verified');
+
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { verifyToken, tokenExpiry },
+    });
+
+    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+    return { message: 'Verification email resent' };
   }
 
   async firebaseSignIn(

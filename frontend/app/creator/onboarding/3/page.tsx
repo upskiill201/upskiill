@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -9,6 +9,9 @@ import {
   Briefcase, DollarSign, Film, CheckSquare,
   MessageCircle, Music, MoreHorizontal,
 } from 'lucide-react';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import posthog from 'posthog-js';
 import { motion } from 'framer-motion';
 
 // ── Category definitions ────────────────────────────────────────────────────
@@ -125,11 +128,32 @@ export default function StepThreePage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 🛡️ Step-skip protection — redirect to Step 1 if prior steps not done
+  useOnboardingGuard(3);
+
+  // 📖 Restore previous answer on mount
+  useEffect(() => {
+    const data = getOnboardingData();
+    if (data.step3?.categories) {
+      setSelected(data.step3.categories);
+    }
+    // Track page view
+    posthog.capture('onboarding_step_viewed', { step: 3, stepName: 'teaching_categories' });
+  }, []);
+
   const toggleCategory = (id: string) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
   };
+
+
+  // 💾 Auto-save on selection
+  useEffect(() => {
+    if (selected && (Array.isArray(selected) ? selected.length > 0 : true)) {
+      saveOnboardingStep(3, { categories: selected });
+    }
+  }, [selected]);
 
   const handleContinue = async () => {
     setIsLoading(true);
@@ -150,6 +174,8 @@ export default function StepThreePage() {
       localStorage.setItem('teyro_onboarding_data', JSON.stringify({ ...existing, teachingCategories: selected }));
     } finally {
       setIsLoading(false);
+      saveOnboardingStep(3, { categories: selected });
+      posthog.capture('onboarding_step_completed', { step: 3 });
       router.push('/creator/onboarding/4');
     }
   };
@@ -234,6 +260,9 @@ export default function StepThreePage() {
                   variants={itemVariants}
                   key={cat.id}
                   onClick={() => toggleCategory(cat.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCategory(cat.id); } }}
+                  role="checkbox"
+                  aria-checked={isSel}
                   onMouseEnter={() => setHoveredCard(cat.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                   className="relative flex flex-col items-center p-3 sm:p-5 lg:p-[32px_24px_28px_24px] rounded-[12px] sm:rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[160px] sm:h-[220px] lg:h-[230px]"
@@ -296,11 +325,11 @@ export default function StepThreePage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-6 lg:p-[24px_32px] border-t border-slate-200 shrink-0 bg-white gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/2')}
-          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-blue-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-full sm:w-auto"
+          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-blue-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-auto shrink-0"
         >
           <ArrowLeft size={18} strokeWidth={2.5} />
           Back
@@ -316,7 +345,7 @@ export default function StepThreePage() {
         <button
           onClick={handleContinue}
           disabled={isLoading}
-          className={`flex items-center justify-center gap-[10px] w-full sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
+          className={`flex items-center justify-center gap-[10px] flex-1 sm:flex-none sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
             isLoading
               ? 'bg-blue-300 cursor-not-allowed'
               : 'bg-blue-600 cursor-pointer shadow-[0_4px_14px_rgba(37,99,235,0.3)] hover:bg-blue-700'

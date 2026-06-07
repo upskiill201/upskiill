@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, ArrowRight, ShieldCheck,
   PlaySquare, Video, FileText, Users, Headphones, PlusSquare, TrendingUp, Sparkles,
 } from 'lucide-react';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import posthog from 'posthog-js';
 import { motion } from 'framer-motion';
 
 // ── Content type definitions ──────────────────────────────────────────────────
@@ -101,6 +104,19 @@ export default function StepSixPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 🛡️ Step-skip protection — redirect to Step 1 if prior steps not done
+  useOnboardingGuard(6);
+
+  // 📖 Restore previous answer on mount
+  useEffect(() => {
+    const data = getOnboardingData();
+    if (data.step6?.existingContent) {
+      setSelected(data.step6.existingContent);
+    }
+    // Track page view
+    posthog.capture('onboarding_step_viewed', { step: 6, stepName: 'existing_content' });
+  }, []);
+
   const toggle = (id: string) => {
     // "Nothing yet" is mutually exclusive with everything else
     if (id === 'nothing_yet') {
@@ -112,6 +128,14 @@ export default function StepSixPage() {
       });
     }
   };
+
+
+  // 💾 Auto-save on selection
+  useEffect(() => {
+    if (selected && (Array.isArray(selected) ? selected.length > 0 : true)) {
+      saveOnboardingStep(6, { existingContent: selected });
+    }
+  }, [selected]);
 
   const handleContinue = async () => {
     setIsLoading(true);
@@ -141,6 +165,8 @@ export default function StepSixPage() {
       );
     } finally {
       setIsLoading(false);
+      saveOnboardingStep(6, { existingContent: selected });
+      posthog.capture('onboarding_step_completed', { step: 6 });
       router.push('/creator/onboarding/7');
     }
   };
@@ -394,11 +420,11 @@ export default function StepSixPage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-6 lg:p-[24px_32px] border-t border-slate-200 shrink-0 bg-white gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/5')}
-          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-blue-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-full sm:w-auto"
+          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-blue-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-auto shrink-0"
         >
           <ArrowLeft size={18} strokeWidth={2.5} />
           Back
@@ -414,7 +440,7 @@ export default function StepSixPage() {
         <button
           onClick={handleContinue}
           disabled={isLoading}
-          className={`flex items-center justify-center gap-[10px] w-full sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
+          className={`flex items-center justify-center gap-[10px] flex-1 sm:flex-none sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
             isLoading
               ? 'bg-blue-300 cursor-not-allowed'
               : 'bg-blue-600 cursor-pointer shadow-[0_4px_14px_rgba(37,99,235,0.3)] hover:bg-blue-700'

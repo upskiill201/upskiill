@@ -4,6 +4,9 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { ProfileModule } from '../profile/profile.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -12,6 +15,9 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       secret: process.env.JWT_SECRET || 'super-secret-upskiill-key-2024',
       signOptions: { expiresIn: '7d' },
     }),
+    ProfileModule,
+    PrismaModule,
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
