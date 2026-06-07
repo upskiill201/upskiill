@@ -60,7 +60,7 @@ const NAV_LINKS: NavLink[] = [
   { id: 'payouts', label: 'Payouts', href: '/creator/payouts', icon: <Wallet size={18} />, isComingSoon: true },
   { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FolderOpen size={18} />, isComingSoon: true },
   { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <Megaphone size={18} />, isComingSoon: true },
-  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <Settings size={18} />, isComingSoon: true },
+  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <Settings size={18} /> },
 ];
 
 export default function CreatorLayout({ children }: { children: React.ReactNode }) {
@@ -72,12 +72,27 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   
-  // Dummy data for design, normally fetched via API
-  const [creatorName, setCreatorName] = useState('Alex Morgan');
+  const [creatorName, setCreatorName] = useState('Creator');
   const [creatorAvatar, setCreatorAvatar] = useState('https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80');
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Fetch live user data for sidebar
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.fullName) setCreatorName(data.fullName);
+          if (data.profile?.avatarUrl) setCreatorAvatar(data.profile.avatarUrl);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch user data for sidebar', err);
+      }
+    };
+    fetchUser();
+
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -201,9 +216,9 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
                     {isMounted && isDropdownOpen && (
                       <div className={styles.profileDropdownMenu}>
-                        <button className={styles.profileDropdownItem} onClick={() => { setIsDropdownOpen(false); triggerComingSoon('Settings'); }}>
-                          <Settings size={16} /> Settings
-                        </button>
+                        <Link href="/creator/settings" className={styles.profileDropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                          <Settings size={16} /> Profile & Settings
+                        </Link>
                         <button className={styles.profileDropdownLogout} onClick={handleLogout}>
                           <LogOut size={16} /> Logout
                         </button>

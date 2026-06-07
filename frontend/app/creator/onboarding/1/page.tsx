@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Target, Users, TrendingUp, DollarSign, ArrowRight, Clock, Star, Sparkles } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { motion } from 'framer-motion';
+import { saveOnboardingStep, saveDraftId } from '@/lib/onboarding';
+import OnboardingRecoveryBanner from '@/components/features/CreatorOnboarding/OnboardingRecoveryBanner';
+import posthog from 'posthog-js';
 
 export default function WelcomeStep() {
   const router = useRouter();
@@ -13,6 +16,13 @@ export default function WelcomeStep() {
 
   const handleContinue = async () => {
     setIsLoading(true);
+    
+    // Track analytics
+    posthog.capture('onboarding_started', { step: 1 });
+    
+    // Save step 1 to unified localStorage key immediately
+    saveOnboardingStep(1, { started: true });
+    
     try {
       const res = await fetch('https://upskiill-backend.onrender.com/creator-onboarding', {
         method: 'POST',
@@ -25,23 +35,27 @@ export default function WelcomeStep() {
       if (res.ok) {
         const data = await res.json();
         if (data.id) {
-          localStorage.setItem('teyro_onboarding_draft_id', data.id);
+          saveDraftId(data.id);
         }
       } else {
         console.warn('Backend draft creation failed. Proceeding with local flow.');
-        localStorage.setItem('teyro_onboarding_draft_id', `local_${Date.now()}`);
       }
     } catch (error) {
       console.warn('Error connecting to backend:', error);
-      localStorage.setItem('teyro_onboarding_draft_id', `local_${Date.now()}`);
     } finally {
       setIsLoading(false);
+      posthog.capture('onboarding_step_completed', { step: 1 });
       router.push('/creator/onboarding/2');
     }
   };
 
   return (
     <div className="w-full py-8 md:py-12 relative flex-grow flex flex-col justify-center" style={{ background: 'transparent' }}>
+      
+      {/* Progress Recovery Banner - shown only when returning with saved progress */}
+      <div className="px-6 md:px-12 xl:px-24 w-full" style={{ position: 'relative', zIndex: 20 }}>
+        <OnboardingRecoveryBanner />
+      </div>
       
       {/* 
         Blue Background Shapes — RIGHT SIDE ONLY, matching UI design:
@@ -128,7 +142,7 @@ export default function WelcomeStep() {
             </div>
           </div>
 
-          <div className="w-full sm:w-auto flex flex-col items-start gap-3.5 mb-10">
+          <div className="w-auto shrink-0 flex flex-col items-start gap-3.5 mb-10">
             <Button 
               variant="primary" 
               size="lg" 

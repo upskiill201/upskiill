@@ -56,8 +56,17 @@ function AuthContent() {
 
       const data = await res.json();
       if (!res.ok) {
+        if (data.requiresVerification) {
+          window.location.href = `/creator/verify-pending?email=${encodeURIComponent(data.email || email)}`;
+          return;
+        }
         const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
         throw new Error(errMsg || `${mode === 'signup' ? 'Signup' : 'Login'} failed`);
+      }
+
+      if (mode === 'signup' && data.requiresVerification) {
+        window.location.href = `/creator/verify-pending?email=${encodeURIComponent(email)}`;
+        return;
       }
 
       // Success — Route directly to the instructor dashboard

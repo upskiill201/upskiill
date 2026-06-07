@@ -15,8 +15,8 @@ export default function OnboardingProgressBar() {
     <div className="w-full flex flex-col items-center bg-transparent">
       {/* Top Header Bar */}
       <div 
-        className="w-full flex items-center justify-between z-20 relative max-w-[1761px] mx-auto"
-        style={{ height: '88px', padding: '0 56px' }}
+        className="w-full flex items-center justify-between z-20 relative max-w-[1761px] mx-auto px-6 md:px-[56px]"
+        style={{ height: '88px' }}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center">

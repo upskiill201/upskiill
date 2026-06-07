@@ -15,6 +15,9 @@ model User {
   password    String
   role        Role         @default(STUDENT)
   avatarUrl   String?
+  isVerified  Boolean      @default(false)
+  verifyToken String?      @unique
+  tokenExpiry DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   
@@ -40,6 +43,19 @@ model Profile {
   linkedin  String?
   twitter   String?
   youtube   String?
+  instagram String?
+  tiktok    String?
+  facebook  String?
+
+  // Creator profile fields (hydrated from onboarding answers)
+  niche            String?   // Step 3: primary teaching category
+  subCategories    Json?     // Step 3: all selected categories
+  audienceSize     String?   // Step 4: audience scale
+  platforms        Json?     // Step 5: current platforms
+  weeklyHours      String?   // Step 9: available time per week
+  biggestChallenge String?   // Step 7: primary pain point
+  teachingStyle    String?   // Step 8: content/teaching approach
+  launchGoal       String?   // Step 12: first course launch goal
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

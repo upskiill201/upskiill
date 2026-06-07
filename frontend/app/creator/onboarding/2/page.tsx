@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
@@ -9,6 +9,9 @@ import {
   BookOpen, Users, Briefcase, Building2 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import posthog from 'posthog-js';
 
 const CREATOR_TYPES = [
   {
@@ -82,28 +85,42 @@ export default function StepTwoPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleContinue = async () => {
-    if (!selected) return;
-    setIsLoading(true);
-    try {
-      const draftId = localStorage.getItem('teyro_onboarding_draft_id');
-      if (draftId && !draftId.startsWith('local_')) {
-        await fetch(`https://upskiill-backend.onrender.com/creator-onboarding/${draftId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ creatorType: selected }),
-        });
-      } else {
-        const existing = JSON.parse(localStorage.getItem('teyro_onboarding_data') || '{}');
-        localStorage.setItem('teyro_onboarding_data', JSON.stringify({ ...existing, creatorType: selected }));
-      }
-    } catch {
-      const existing = JSON.parse(localStorage.getItem('teyro_onboarding_data') || '{}');
-      localStorage.setItem('teyro_onboarding_data', JSON.stringify({ ...existing, creatorType: selected }));
-    } finally {
-      setIsLoading(false);
-      router.push('/creator/onboarding/3');
+  // 🛡️ Step-skip protection — redirect to Step 1 if prior steps not done
+  useOnboardingGuard(2);
+
+  // 📖 Restore previous answer on mount
+  useEffect(() => {
+    const data = getOnboardingData();
+    if (data.step2?.creatorType) {
+      setSelected(data.step2.creatorType);
     }
+    // Track page view
+    posthog.capture('onboarding_step_viewed', { step: 2, stepName: 'creator_type' });
+  }, []);
+
+  // ✅ Validation — Continue button disabled until a selection is made
+  const isValid = selected !== null;
+
+  const handleSelect = (id: string) => {
+    setSelected(id);
+    saveOnboardingStep(2, { creatorType: id });
+  };
+
+
+  // 💾 Auto-save on selection
+  useEffect(() => {
+    if (selected && (Array.isArray(selected) ? selected.length > 0 : true)) {
+      saveOnboardingStep(2, { creatorType: selected });
+    }
+  }, [selected]);
+
+  const handleContinue = async () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      posthog.capture('onboarding_step_completed', { step: 2 });
+      router.push('/creator/onboarding/3');
+    }, 600);
   };
 
   return (
@@ -178,59 +195,53 @@ export default function StepTwoPage() {
             className="grid grid-cols-2 xl:grid-cols-4 gap-y-3 gap-x-3 sm:gap-y-5 sm:gap-x-5 xl:gap-y-7 xl:gap-x-6 w-full xl:max-w-[95%] 2xl:max-w-[80%] flex-1 min-h-0 pb-4"
           >
             {CREATOR_TYPES.map((type) => {
-              const isSel = selected === type.id;
-              const isHov = hoveredCard === type.id;
-
+              const isSelected = selected === type.id;
+              const isHovered = hoveredCard === type.id;
               return (
                 <motion.button
-                  variants={itemVariants}
                   key={type.id}
-                  onClick={() => setSelected(type.id)}
+                  variants={itemVariants}
+                  onClick={() => handleSelect(type.id)}
                   onMouseEnter={() => setHoveredCard(type.id)}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className="relative flex flex-col items-center p-3 sm:p-5 lg:p-[32px_24px_28px_24px] rounded-[12px] sm:rounded-[16px] bg-white cursor-pointer text-center transition-all duration-200 outline-none w-full h-[160px] sm:h-[220px] lg:h-[280px]"
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(type.id); }}
+                  role="radio"
+                  aria-checked={isSelected}
+                  className="relative flex flex-col items-start gap-3 p-4 sm:p-5 rounded-[16px] border-[2px] text-left cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
                   style={{
-                    border: isSel
-                      ? '2px solid #2563EB'
-                      : isHov
-                        ? '1px solid #93C5FD'
-                        : '1px solid #E2E8F0',
-                    boxShadow: isSel
-                      ? '0 24px 48px -8px rgba(37, 99, 235, 0.35)'
-                      : isHov
-                        ? '0 24px 48px -8px rgba(15, 23, 42, 0.16)'
-                        : '0 12px 36px -6px rgba(15, 23, 42, 0.12)',
+                    borderColor: isSelected ? '#2563EB' : isHovered ? '#93C5FD' : '#E5E7EB',
+                    background: isSelected ? '#EFF6FF' : isHovered ? '#F8FBFF' : 'white',
+                    boxShadow: isSelected
+                      ? '0 4px 20px rgba(37, 99, 235, 0.15)'
+                      : isHovered
+                      ? '0 4px 12px rgba(37, 99, 235, 0.08)'
+                      : '0 1px 3px rgba(0,0,0,0.05)',
                   }}
                 >
-                  {/* Checkmark badge (selected only) */}
-                  {isSel && (
-                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 w-[16px] h-[16px] sm:w-[22px] sm:h-[22px] rounded-full bg-blue-600 flex items-center justify-center z-10">
-                      <svg width="6" height="5" viewBox="0 0 8 6" fill="none" className="sm:w-[8px] sm:h-[6px]">
-                        <path
-                          d="M1 3L3 5L7 1"
-                          stroke="white"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
+                  <div
+                    className="w-[48px] h-[48px] rounded-[12px] flex items-center justify-center shrink-0 transition-colors duration-200"
+                    style={{
+                      background: isSelected ? '#2563EB' : '#F0F4FF',
+                      color: isSelected ? 'white' : '#2563EB',
+                    }}
+                  >
+                    {React.cloneElement(type.icon as React.ReactElement<any>, { size: 22 })}
+                  </div>
+                  <div>
+                    <p className="font-bold text-[14px] sm:text-[15px] text-gray-900 leading-snug mb-1">
+                      {type.label}
+                    </p>
+                    <p className="text-[12px] sm:text-[13px] text-gray-500 leading-snug">
+                      {type.description}
+                    </p>
+                  </div>
+                  {isSelected && (
+                    <div className="absolute top-3 right-3 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                   )}
-
-                  {/* Icon container */}
-                  <div className="w-[36px] h-[36px] sm:w-[52px] sm:h-[52px] lg:w-[64px] lg:h-[64px] rounded-[8px] sm:rounded-[12px] lg:rounded-[14px] bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 mb-2 sm:mb-4 [&>svg]:w-[18px] [&>svg]:h-[18px] sm:[&>svg]:w-[28px] sm:[&>svg]:h-[28px] lg:[&>svg]:w-[38px] lg:[&>svg]:h-[38px]">
-                    {type.icon}
-                  </div>
-
-                  {/* Label */}
-                  <p className="text-[12px] sm:text-[15px] lg:text-[16px] font-bold text-slate-900 mb-0.5 lg:mb-[6px] leading-[1.3] w-full">
-                    {type.label}
-                  </p>
-
-                  {/* Description */}
-                  <p className="text-[10px] sm:text-[13px] text-slate-500 m-0 leading-[1.3] font-normal w-full line-clamp-2">
-                    {type.description}
-                  </p>
                 </motion.button>
               );
             })}
@@ -239,35 +250,35 @@ export default function StepTwoPage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-6 lg:p-[24px_32px] border-t border-slate-200 shrink-0 bg-white gap-4 sm:gap-0 mt-auto">
-        {/* Back */}
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         <button
           onClick={() => router.push('/creator/onboarding/1')}
-          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-blue-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-full sm:w-auto"
+          className="flex items-center justify-center sm:justify-start gap-2 px-6 py-3 bg-white border border-gray-200 shadow-sm rounded-[14px] text-[15px] font-bold text-blue-700 cursor-pointer hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft size={18} strokeWidth={2.5} />
           Back
         </button>
 
-        {/* Trust badge */}
-        <div className="hidden md:flex items-center gap-2 text-slate-500 text-[13.5px] font-medium text-center">
-          <ShieldCheck size={18} />
-          Your information is secure and will never be shared.
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-[13px] text-gray-400 font-medium">
+            <ShieldCheck size={15} />
+            Your progress is auto-saved
+          </div>
+          <button
+            onClick={handleContinue}
+            disabled={!isValid || isLoading}
+            className="flex items-center gap-2 px-8 py-3 rounded-[14px] text-[15px] font-bold transition-all duration-200 border-none"
+            style={{
+              background: isValid ? '#2563EB' : '#E5E7EB',
+              color: isValid ? 'white' : '#9CA3AF',
+              cursor: isValid ? 'pointer' : 'not-allowed',
+              boxShadow: isValid ? '0 4px 14px rgba(37, 99, 235, 0.3)' : 'none',
+            }}
+          >
+            {isLoading ? 'Saving...' : 'Continue'}
+            <ArrowRight size={18} strokeWidth={2.5} />
+          </button>
         </div>
-
-        {/* Continue button */}
-        <button
-          onClick={handleContinue}
-          disabled={!selected || isLoading}
-          className={`flex items-center justify-center gap-[10px] w-full sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
-            !selected || isLoading 
-              ? 'bg-blue-300 cursor-not-allowed' 
-              : 'bg-blue-600 cursor-pointer shadow-[0_4px_14px_rgba(37,99,235,0.3)] hover:bg-blue-700'
-          }`}
-        >
-          {isLoading ? 'Saving...' : 'Continue'}
-          {!isLoading && <ArrowRight size={18} strokeWidth={2.5} />}
-        </button>
       </div>
     </div>
   );

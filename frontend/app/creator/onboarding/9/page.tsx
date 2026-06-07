@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, ArrowRight, ShieldCheck, TrendingUp, Users, MessageSquare, CircleDollarSign, Star, Gift
 } from 'lucide-react';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
+import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import posthog from 'posthog-js';
 import { motion } from 'framer-motion';
 
 const BENEFITS = [
@@ -72,12 +75,28 @@ export default function StepNinePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  // 🛡️ Step-skip protection — redirect to Step 1 if prior steps not done
+  useOnboardingGuard(9);
+
+  // 📖 Restore previous answer on mount
+  useEffect(() => {
+    // Track page view
+    posthog.capture('onboarding_step_viewed', { step: 9, stepName: 'features_intro' });
+  }, []);
+
+  // 💾 Auto-save on selection
+  useEffect(() => {
+    saveOnboardingStep(9, { viewed: true });
+  }, []);
+
   const handleContinue = async () => {
     setIsLoading(true);
     // Usually we save step data here, but this is an informational step
     // so we can just proceed to the next step (step 10)
     setTimeout(() => {
       setIsLoading(false);
+      saveOnboardingStep(9, { viewed: true });
+      posthog.capture('onboarding_step_completed', { step: 9 });
       router.push('/creator/onboarding/10');
     }, 600);
   };
@@ -85,9 +104,9 @@ export default function StepNinePage() {
   return (
     <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
-      <div className="flex flex-col flex-1 overflow-hidden min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px]">
+      <div className="flex flex-col flex-1 overflow-y-auto lg:overflow-hidden overflow-x-hidden min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px]">
         
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full max-w-[1500px] mx-auto h-full max-h-[calc(100vh-180px)]">
+        <div className="flex flex-col-reverse lg:flex-row gap-6 lg:gap-8 w-full max-w-[1500px] mx-auto h-full lg:max-h-[calc(100vh-180px)] pb-10 lg:pb-0">
           {/* ──── LEFT PANEL ──── */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -143,7 +162,7 @@ export default function StepNinePage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
-            className="w-full lg:w-[70%] flex flex-col mt-8 lg:mt-0 relative h-full min-h-[600px] max-h-full"
+            className="w-full lg:w-[70%] flex flex-col mt-0 lg:mt-0 relative h-full min-h-[400px] lg:min-h-[600px] max-h-full"
           >
             <div className="relative w-full flex-1 min-h-[450px] flex items-center justify-center scale-[1.35] z-0">
               <Image
@@ -205,11 +224,11 @@ export default function StepNinePage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-6 lg:p-[24px_32px] border-t border-slate-200 shrink-0 bg-white gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/8')}
-          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-violet-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-full sm:w-auto hover:text-violet-700 transition-colors"
+          className="flex items-center justify-center sm:justify-start gap-2 text-[16px] font-medium text-violet-600 bg-transparent border-none cursor-pointer py-2 px-4 sm:-ml-4 w-auto shrink-0 hover:text-violet-700 transition-colors"
         >
           <ArrowLeft size={18} strokeWidth={2.5} />
           Back
@@ -225,7 +244,7 @@ export default function StepNinePage() {
         <button
           onClick={handleContinue}
           disabled={isLoading}
-          className={`flex items-center justify-center gap-[10px] w-full sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
+          className={`flex items-center justify-center gap-[10px] flex-1 sm:flex-none sm:w-[180px] h-[56px] rounded-[14px] text-white text-[16.5px] font-semibold border-none transition-all duration-200 ${
             isLoading
               ? 'bg-violet-300 cursor-not-allowed'
               : 'bg-violet-600 cursor-pointer shadow-[0_4px_14px_rgba(124,58,237,0.3)] hover:bg-violet-700 hover:shadow-[0_6px_20px_rgba(124,58,237,0.4)] hover:-translate-y-[1px]'

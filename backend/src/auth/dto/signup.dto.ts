@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  IsObject,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -29,4 +30,9 @@ export class SignupDto {
   @IsString()
   @IsOptional()
   draftId?: string;
+
+  // Full onboarding answers from localStorage — sent at Step 15 registration
+  @IsOptional()
+  @IsObject()
+  onboarding?: Record<string, unknown>;
 }

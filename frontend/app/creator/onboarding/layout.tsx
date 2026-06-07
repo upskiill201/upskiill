@@ -13,7 +13,7 @@ export default function CreatorOnboardingLayout({
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(to bottom, #F0F9FF 0%, #FFFFFF 100%)',
+        backgroundColor: '#F1EDFC',
         fontFamily: 'var(--font-sans, system-ui, -apple-system, sans-serif)',
       }}
     >

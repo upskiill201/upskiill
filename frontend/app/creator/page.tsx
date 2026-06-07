@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, BookOpen, PlaySquare, DollarSign, Star, 
   Calendar, ChevronDown, CheckCircle, Upload, Tag,
-  MoreVertical
+  MoreVertical, ArrowRight
 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Creator.module.css';
 
 // Mock Data
@@ -37,13 +38,49 @@ const ACTIVITY = [
 ];
 
 export default function CreatorDashboard() {
+  const [profileData, setProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          setProfileData(data);
+        }
+      } catch (err) {
+        console.error('Failed to load profile for dashboard banner', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const needsSetup = !loading && profileData && !profileData.profile?.bio;
+  const firstName = profileData?.fullName?.split(' ')[0] || 'Alex';
+
   return (
     <div className={styles.dashboardLayout}>
       
+      {/* ─── COMPLETION BANNER ─── */}
+      {needsSetup && (
+        <div style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 100%)', border: '1.5px solid #C7D2FE', borderRadius: '16px', padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1e1b4b' }}>Finish setting up your studio</h3>
+            <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#6B7280' }}>Your profile is incomplete. Add your bio and social links to get discovered by learners.</p>
+          </div>
+          <Link href="/creator/settings" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#4F46E5', color: 'white', fontSize: '14px', fontWeight: 600, borderRadius: '10px', textDecoration: 'none' }}>
+            Complete Profile <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
+
       {/* ─── HEADER AREA ─── */}
       <div className={styles.welcomeSection}>
         <div>
-          <h2 className={styles.welcomeTitle}>Welcome back, Alex! 👋</h2>
+          <h2 className={styles.welcomeTitle}>Welcome back, {firstName}! 👋</h2>
           <p className={styles.welcomeSub}>Here&apos;s what&apos;s happening with your courses today.</p>
         </div>
         

@@ -8,6 +8,7 @@ import { LessonModule } from './lesson/lesson.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding
     OrdersModule,
     PaymentModule,
     CreatorOnboardingModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
