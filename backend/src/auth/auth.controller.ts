@@ -128,11 +128,14 @@ export class AuthController {
   @Get('me')
   async getMe(@GetUser() user: User) {
     // Return enriched user with profile — not just the raw User row
-    return this.prisma.user.findUnique({
+    const enrichedUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: { profile: true },
-      omit: { password: true } as any,
     });
+    if (enrichedUser) {
+      delete (enrichedUser as any).password;
+    }
+    return enrichedUser;
   }
 
   @UseGuards(AuthGuard('jwt'))

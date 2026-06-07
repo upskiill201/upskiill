@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Mail, ArrowLeft, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 
-export default function VerifyPendingPage() {
+function VerifyPendingContent() {
   const searchParams = useSearchParams();
   const emailParam = searchParams.get('email') || '';
   
@@ -122,5 +122,20 @@ export default function VerifyPendingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPendingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F1EDFC]">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-full mb-4"></div>
+          <div className="h-6 w-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    }>
+      <VerifyPendingContent />
+    </Suspense>
   );
 }
