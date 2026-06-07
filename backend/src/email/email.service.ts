@@ -1,24 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Resend } from 'resend';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
   private resend: Resend;
   private readonly logger = new Logger(EmailService.name);
 
-  constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
+  constructor() {
+    const apiKey = process.env.RESEND_API_KEY || '';
     this.resend = new Resend(apiKey);
   }
 
   async sendVerificationEmail(email: string, token: string) {
     // In local dev, use localhost:3001 or equivalent if needed, but we'll use frontend url
-    const appUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     
     // Notice: we point this to the backend verify endpoint directly so it sets the cookie!
     // We assume backend is running on process.env.API_URL or localhost:3001
-    const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3001';
+    const apiUrl = process.env.API_URL || 'http://localhost:3001';
     const verifyUrl = `${apiUrl}/api/auth/verify-email?token=${token}`;
 
     const html = `
@@ -59,7 +58,7 @@ export class EmailService {
   async sendWelcomeEmail(email: string, onboarding: any) {
     const firstName = onboarding?.step11?.firstName || 'Creator';
     const category = onboarding?.step3?.categories?.[0] || 'your topic';
-    const appUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const studioUrl = `${appUrl}/creator`;
 
     const html = `
