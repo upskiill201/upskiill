@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Rocket, ArrowLeft, PartyPopper } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { clearOnboardingData } from '@/lib/onboarding';
+import posthog from 'posthog-js';
 
 export default function StepSixteenPage() {
   const router = useRouter();
@@ -12,7 +14,12 @@ export default function StepSixteenPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Attempt to fetch the user's profile to display their first name
+    // 1. Analytics & Clean Up
+    posthog.capture('creator_email_verified');
+    posthog.capture('creator_studio_entered');
+    clearOnboardingData();
+
+    // 2. Attempt to fetch the user's profile to display their first name
     const fetchProfile = async () => {
       try {
         const res = await fetch('/api/profile');
