@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Zap, ChevronRight, Shield, BookOpen, Brain, Sparkles, GraduationCap } from 'lucide-react';
+import { Zap, Shield, BookOpen, Brain, Sparkles, GraduationCap } from 'lucide-react';
 import styles from './HeroSection.module.css';
 
 interface HeroSectionProps {
@@ -132,12 +132,11 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
           transition={{ duration: 0.55 }}
         >
           <h1 className={styles.headline}>
-            The Learning Platform<br />That Actually Works.
+            Learn Any Skill Faster.<br />Actually Finish This Time.
           </h1>
 
           <p className={styles.sub}>
-            Teyro automates your learning path, speeding up skill acquisition
-            while keeping you accountable to real outcomes.
+            Teyro uses AI to personalize how you learn, nudge you back when life gets busy, and make sure what you study actually stays in your head.
           </p>
 
           <div className={styles.ctas}>

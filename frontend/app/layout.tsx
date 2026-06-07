@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro - AI-Powered Learning That Actually Works',
+  title: 'Teyro. Personalize learning for everyone',
   description:
-    'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
+    'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
 
   // ── Keywords ──
   keywords: [
@@ -77,16 +77,16 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro - AI-Powered Learning That Actually Works',
+    title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start. Join the waitlist today.',
+      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
     locale: 'en_US',
     images: [
       {
         url: '/teyro-og.png',
         width: 1200,
         height: 630,
-        alt: 'Teyro — AI-Powered Learning That Actually Works',
+        alt: 'Teyro. Personalize learning for everyone',
       },
     ],
   },
@@ -95,9 +95,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro - AI-Powered Learning That Actually Works',
+    title: 'Teyro. Personalize learning for everyone',
     description:
-      'Teyro is the next generation of online learning—an AI-powered platform that guides you step by step to learn skills online, stay consistent, and actually finish what you start.',
+      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
     images: ['/teyro-og.png'],
   },
 
