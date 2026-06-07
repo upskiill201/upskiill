@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -64,7 +65,7 @@ export class AuthService {
       }
 
       if (existing.isVerified) {
-        throw new import('@nestjs/common').ConflictException('Email already in use');
+        throw new ConflictException('Email already in use');
       } else {
         // Idempotent: User exists but not verified, resend email
         await this.resendVerification(existing.email);
