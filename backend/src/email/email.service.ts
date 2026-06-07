@@ -98,7 +98,7 @@ export class EmailService {
       await this.resend.emails.send({
         from: 'Joel from Teyro <joel@teyro.app>',
         to: email,
-        subject: \`You're in, \${firstName} 🎉 Your Creator Studio is ready\`,
+        subject: `You're in, ${firstName} 🎉 Your Creator Studio is ready`,
         html,
       });
       this.logger.log(`Welcome email sent to ${email}`);
