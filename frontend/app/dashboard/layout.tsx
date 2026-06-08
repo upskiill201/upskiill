@@ -237,7 +237,7 @@ export default function DashboardLayout({
                 <input type="text" placeholder="Search..." className={styles.searchInput} />
               </div>
               
-              <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
+              <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
                 <Bell size={20} />
                 <span className={styles.notifDot} />
               </button>
