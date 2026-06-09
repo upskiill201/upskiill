@@ -208,7 +208,7 @@ function AuthContent() {
                   <input type="checkbox" />
                   <span>Remember me</span>
                 </label>
-                <Link href="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
+                <Link href="/creator/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
               </div>
             )}
 
