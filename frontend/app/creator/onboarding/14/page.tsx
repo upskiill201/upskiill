@@ -7,11 +7,29 @@ import { ArrowLeft, ArrowRight, ShieldCheck, Check, Target, DollarSign, BookOpen
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import posthog from 'posthog-js';
-import { motion } from 'framer-motion';
+import { motion, useAnimation, useInView } from 'framer-motion';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } }
+};
+
+const checkmarkDraw = {
+  hidden: { pathLength: 0, opacity: 0 },
+  show: { pathLength: 1, opacity: 1, transition: { duration: 0.4, ease: 'easeOut' as const, delay: 0.1 } }
+};
 
 export default function StepFourteenPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // 🛡️ Step-skip protection — redirect to Step 1 if prior steps not done
   useOnboardingGuard(14);
@@ -21,6 +39,25 @@ export default function StepFourteenPage() {
     const data = getOnboardingData();
     // Track page view
     posthog.capture('onboarding_step_viewed', { step: 14, stepName: 'review_progress' });
+    
+    // Animate progress to 78% over 800ms
+    let start = 0;
+    const end = 78;
+    const duration = 800; // ms
+    const startTime = performance.now();
+    
+    const animate = (time: number) => {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOut cubic
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      setProgress(Math.round(end * easeProgress));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
   }, []);
 
 
@@ -41,7 +78,7 @@ export default function StepFourteenPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
+    <motion.div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col flex-1 overflow-x-hidden min-h-0 pt-1 lg:pt-3 px-6 lg:px-[32px] max-w-[1200px] mx-auto w-full">
         
@@ -53,10 +90,23 @@ export default function StepFourteenPage() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className="w-full lg:w-[35%] flex flex-col justify-center shrink-0 z-10"
           >
-            <h1 className="text-[32px] lg:text-[46px] font-extrabold text-slate-900 leading-[1.15] tracking-tight whitespace-nowrap">
-              Your Creator Studio is<br />
-              <span className="text-violet-700">78% Ready 🚀</span>
-            </h1>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-[80px] h-[80px] lg:w-[100px] lg:h-[100px]">
+                <CircularProgressbar 
+                  value={progress} 
+                  text={`${progress}%`}
+                  styles={buildStyles({
+                    pathColor: '#6D28D9',
+                    textColor: '#6D28D9',
+                    trailColor: '#F3EFFE',
+                    textSize: '24px',
+                  })}
+                />
+              </div>
+              <h1 className="text-[32px] lg:text-[46px] font-extrabold text-slate-900 leading-[1.15] tracking-tight">
+                Ready 🚀
+              </h1>
+            </div>
             <p className="mt-4 lg:mt-6 text-[15px] lg:text-[17px] text-slate-600 font-medium leading-relaxed max-w-[400px]">
               You&apos;ve completed the essential setup steps.<br className="hidden lg:block" />
               You&apos;re almost ready to launch and start creating impact.
@@ -98,55 +148,68 @@ export default function StepFourteenPage() {
             <h2 className="text-[17px] lg:text-[19px] font-bold text-slate-900 mb-6">
               You already have 🎉
             </h2>
-            <div className="grid grid-cols-2 gap-4 lg:gap-5">
+            <motion.div 
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 gap-4 lg:gap-5"
+            >
               {/* Card 1 */}
-              <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+              <motion.div variants={staggerItem} className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
                 <div className="absolute top-3 right-3 w-[18px] h-[18px] bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <Check size={10} strokeWidth={4} className="text-white" />
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <motion.path variants={checkmarkDraw} d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
                 <div className="w-[52px] h-[52px] rounded-full bg-violet-100 text-violet-600 flex items-center justify-center mb-3">
                   <Target size={24} strokeWidth={2.5} />
                 </div>
                 <h3 className="font-bold text-[14px] text-slate-900 mb-0.5 text-center">Teaching niche</h3>
                 <p className="text-[12px] font-bold text-emerald-600">Defined</p>
-              </div>
+              </motion.div>
 
               {/* Card 2 */}
-              <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+              <motion.div variants={staggerItem} className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
                 <div className="absolute top-3 right-3 w-[18px] h-[18px] bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <Check size={10} strokeWidth={4} className="text-white" />
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <motion.path variants={checkmarkDraw} d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
                 <div className="w-[52px] h-[52px] rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
                   <DollarSign size={24} strokeWidth={2.5} />
                 </div>
                 <h3 className="font-bold text-[14px] text-slate-900 mb-0.5 text-center">Revenue goals</h3>
                 <p className="text-[12px] font-bold text-emerald-600">Set</p>
-              </div>
+              </motion.div>
 
               {/* Card 3 */}
-              <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+              <motion.div variants={staggerItem} className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
                 <div className="absolute top-3 right-3 w-[18px] h-[18px] bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <Check size={10} strokeWidth={4} className="text-white" />
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <motion.path variants={checkmarkDraw} d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
                 <div className="w-[52px] h-[52px] rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
                   <BookOpen size={24} strokeWidth={2.5} />
                 </div>
                 <h3 className="font-bold text-[14px] text-slate-900 mb-0.5 text-center">Learning strategy</h3>
                 <p className="text-[12px] font-bold text-emerald-600">Planned</p>
-              </div>
+              </motion.div>
 
               {/* Card 4 */}
-              <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+              <motion.div variants={staggerItem} className="relative flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
                 <div className="absolute top-3 right-3 w-[18px] h-[18px] bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <Check size={10} strokeWidth={4} className="text-white" />
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <motion.path variants={checkmarkDraw} d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
                 <div className="w-[52px] h-[52px] rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-3">
                   <Users size={24} strokeWidth={2.5} />
                 </div>
                 <h3 className="font-bold text-[14px] text-slate-900 mb-0.5 text-center">Audience direction</h3>
                 <p className="text-[12px] font-bold text-emerald-600">Identified</p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </motion.div>
 
           {/* Right Block: Next recommended steps */}
@@ -258,7 +321,7 @@ export default function StepFourteenPage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#FEFEFE] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-col-reverse sm:flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-transparent gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/13')}
@@ -288,6 +351,6 @@ export default function StepFourteenPage() {
           {!isLoading && <ArrowRight size={18} strokeWidth={2.5} />}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

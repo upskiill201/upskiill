@@ -8,9 +8,10 @@ import {
   PlaySquare, MonitorPlay, UserPlus, GraduationCap, 
   BookOpen, Users, Briefcase, Building2 
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import { leftPanelVariants, rightPanelVariants, cardHover, cardTap, checkmarkBounce } from '@/lib/animations';
 import posthog from 'posthog-js';
 
 const CREATOR_TYPES = [
@@ -124,15 +125,13 @@ export default function StepTwoPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)] lg:h-[calc(100vh-88px)]">
+    <motion.div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)] lg:h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col lg:flex-row flex-1 overflow-visible min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px] gap-8 lg:gap-0">
         
         {/* ──── LEFT PANEL ──── */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          variants={leftPanelVariants}
           className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]"
         >
           <div className="lg:ml-[32px]">
@@ -174,9 +173,7 @@ export default function StepTwoPage() {
 
         {/* ──── RIGHT PANEL ──── */}
         <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+          variants={rightPanelVariants}
           className="w-full lg:w-[70%] flex flex-col overflow-y-auto lg:overflow-visible pb-8 lg:pb-0"
         >
           {/* Section heading */}
@@ -201,13 +198,15 @@ export default function StepTwoPage() {
                 <motion.button
                   key={type.id}
                   variants={itemVariants}
+                  whileHover={cardHover}
+                  whileTap={cardTap}
                   onClick={() => handleSelect(type.id)}
                   onMouseEnter={() => setHoveredCard(type.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(type.id); }}
                   role="radio"
                   aria-checked={isSelected}
-                  className="relative flex flex-col items-start gap-3 p-4 sm:p-5 rounded-[16px] border-[2px] text-left cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
+                  className="relative flex flex-col items-start gap-3 p-4 sm:p-5 rounded-[16px] border-[2px] text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
                   style={{
                     borderColor: isSelected ? '#2563EB' : isHovered ? '#93C5FD' : '#E5E7EB',
                     background: isSelected ? '#EFF6FF' : isHovered ? '#F8FBFF' : 'white',
@@ -235,13 +234,30 @@ export default function StepTwoPage() {
                       {type.description}
                     </p>
                   </div>
-                  {isSelected && (
-                    <div className="absolute top-3 right-3 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {isSelected && (
+                      <motion.div 
+                        variants={checkmarkBounce}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        className="absolute top-3 right-3 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center"
+                      >
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <motion.path 
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+                            d="M1 4L3.5 6.5L9 1" 
+                            stroke="white" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.button>
               );
             })}
@@ -250,7 +266,7 @@ export default function StepTwoPage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-transparent gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         <button
           onClick={() => router.push('/creator/onboarding/1')}
           className="flex items-center justify-center sm:justify-start gap-2 px-6 py-3 bg-white border border-gray-200 shadow-sm rounded-[14px] text-[15px] font-bold text-blue-700 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -280,6 +296,6 @@ export default function StepTwoPage() {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

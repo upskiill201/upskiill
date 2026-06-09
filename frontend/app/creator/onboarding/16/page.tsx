@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Rocket, ArrowLeft, PartyPopper } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { clearOnboardingData } from '@/lib/onboarding';
 import posthog from 'posthog-js';
+import confetti from 'canvas-confetti';
 
 export default function StepSixteenPage() {
   const router = useRouter();
@@ -18,6 +19,36 @@ export default function StepSixteenPage() {
     posthog.capture('creator_email_verified');
     posthog.capture('creator_studio_entered');
     clearOnboardingData();
+
+    // Fire confetti rain
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    import('canvas-confetti').then(({ default: confetti }) => {
+      const duration = 2000;
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#7C3AED', '#3B82F6', '#10B981']
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#7C3AED', '#3B82F6', '#10B981']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      frame();
+    });
 
     // 2. Attempt to fetch the user's profile to display their first name
     const fetchProfile = async () => {
@@ -47,7 +78,7 @@ export default function StepSixteenPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)] bg-[#F1EDFC] overflow-visible">
+    <motion.div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)] bg-[#F1EDFC] overflow-visible">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col flex-1 overflow-visible min-h-0 pt-4 lg:pt-8 px-[10px] lg:px-[32px] w-full relative">
         
@@ -73,11 +104,16 @@ export default function StepSixteenPage() {
               </span>
             </motion.div>
 
-            <h1 className="w-full text-[48px] lg:text-[80px] font-extrabold text-[#1a1a2e] leading-[1.05] tracking-tight mb-6">
+            <motion.h1 
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 }}
+              className="w-full text-[48px] lg:text-[80px] font-extrabold text-[#1a1a2e] leading-[1.05] tracking-tight mb-6"
+            >
               Your Creator<br />
               Studio is<br />
               <span className="text-violet-700">Ready.</span>
-            </h1>
+            </motion.h1>
 
             <p className="text-[18px] lg:text-[24px] text-slate-500 font-medium leading-[1.6] mb-10 max-w-[500px]">
               Let's build learning experiences people actually finish.
@@ -85,14 +121,24 @@ export default function StepSixteenPage() {
 
             {/* CTA Button */}
             <motion.button
+              initial={{ scale: 1, boxShadow: '0 6px 20px rgba(124,58,237,0.3)' }}
+              animate={{ 
+                scale: [1, 1.05, 1],
+                boxShadow: [
+                  '0 6px 20px rgba(124,58,237,0.3)',
+                  '0 0 40px 10px rgba(124,58,237,0.5)',
+                  '0 6px 20px rgba(124,58,237,0.3)'
+                ]
+              }}
+              transition={{ delay: 1.5, duration: 0.8, ease: "easeInOut" }}
               whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(124, 58, 237, 0.4)' }}
-              whileTap={{ y: 0 }}
+              whileTap={{ y: 0, scale: 0.98 }}
               onClick={handleEnterStudio}
               disabled={isLoading}
               className={`flex items-center justify-center gap-4 w-full sm:w-[340px] lg:w-[400px] h-[72px] lg:h-[88px] rounded-[20px] text-white text-[20px] lg:text-[24px] font-bold border-none transition-all duration-300 relative overflow-hidden group ${
                 isLoading
                   ? 'bg-violet-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-violet-600 to-indigo-600 cursor-pointer shadow-[0_6px_20px_rgba(124,58,237,0.3)]'
+                  : 'bg-gradient-to-r from-violet-600 to-indigo-600 cursor-pointer'
               }`}
             >
               {/* Shine effect */}
@@ -147,6 +193,6 @@ export default function StepSixteenPage() {
         </button>
       </div>
 
-    </div>
+    </motion.div>
   );
 }

@@ -7,6 +7,8 @@ import { ArrowLeft, ArrowRight, ShieldCheck, Star, Rocket, X, CheckCircle2 } fro
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import posthog from 'posthog-js';
+import { leftPanelVariants, rightPanelVariants, cardHover, cardTap, checkmarkBounce } from '@/lib/animations';
+
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 
 const CARDS_DATA = [
@@ -159,7 +161,7 @@ export default function StepTenPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
+    <motion.div initial="hidden" animate="show" className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col flex-1 overflow-y-auto lg:overflow-hidden overflow-x-hidden min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px]">
         
@@ -255,6 +257,8 @@ export default function StepTenPage() {
                 <motion.div
                   key={idx}
                   variants={itemVariants}
+                  whileHover={cardHover}
+                  whileTap={cardTap}
                   onClick={() => setSelectedFeature(card)}
                   className={`flex flex-col w-full rounded-xl overflow-hidden cursor-pointer hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 border border-slate-100 ${card.cardBg}`}
                   style={{
@@ -446,6 +450,6 @@ export default function StepTenPage() {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

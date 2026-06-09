@@ -154,6 +154,31 @@ export class AuthController {
    * Real-time email duplicate check for the Step 15 signup form.
    * Called on email field blur — returns { exists: boolean }.
    */
+
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    if (!email) {
+      return { message: 'If that email exists, a reset link has been sent.' };
+    }
+    return this.authService.forgotPassword(email);
+  }
+
+  @Get('validate-token')
+  async validateResetToken(@Query('token') token: string) {
+    if (!token) return { valid: false, reason: 'invalid' };
+    return this.authService.validateResetToken(token);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: any) {
+    const { token, newPassword } = body;
+    if (!token || !newPassword) {
+      throw new Error('Token and new password are required');
+    }
+    return this.authService.resetPassword(token, newPassword);
+  }
+
   @Get('check-email')
   async checkEmail(@Query('email') email: string) {
     if (!email) return { exists: false };

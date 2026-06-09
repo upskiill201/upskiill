@@ -7,6 +7,7 @@ import { Target, Users, TrendingUp, DollarSign, ArrowRight, Clock, Star, Sparkle
 import Button from '@/components/ui/Button';
 import { motion } from 'framer-motion';
 import { saveOnboardingStep, saveDraftId } from '@/lib/onboarding';
+import { leftPanelVariants, rightPanelVariants } from '@/lib/animations';
 import OnboardingRecoveryBanner from '@/components/features/CreatorOnboarding/OnboardingRecoveryBanner';
 import posthog from 'posthog-js';
 
@@ -50,7 +51,7 @@ export default function WelcomeStep() {
   };
 
   return (
-    <div className="w-full py-8 md:py-12 relative flex-grow flex flex-col justify-center" style={{ background: 'transparent' }}>
+    <motion.div className="flex flex-col w-full max-w-[1761px] mx-auto h-[calc(100vh-88px)] flex-grow flex flex-col justify-center" style={{ background: 'transparent' }}>
       
       {/* Progress Recovery Banner - shown only when returning with saved progress */}
       <div className="px-6 md:px-12 xl:px-24 w-full" style={{ position: 'relative', zIndex: 20 }}>
@@ -93,14 +94,16 @@ export default function WelcomeStep() {
 
       {/* Main Flex Layout: 38% Text / 62% Image */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        initial="hidden"
+        animate="visible"
         style={{ position: 'relative', zIndex: 10 }} 
         className="flex flex-col lg:flex-row items-center w-full h-full px-6 md:px-12 xl:px-24"
       >
-        {/* Left Content Column (38%) */}
-        <div className="w-full lg:w-[38%] flex flex-col items-start text-left">
+        {/* ──── LEFT PANEL (Text) ──── */}
+        <motion.div 
+          variants={leftPanelVariants}
+          className="w-full lg:w-[38%] flex flex-col items-start text-left"
+        >
           <p className="text-[20px] font-medium text-gray-800 mb-6 flex items-center">
             Welcome to Teyro, <span className="text-blue-600 ml-1.5">Creator!</span> <Sparkles className="inline-block ml-2 text-yellow-400 fill-yellow-400" size={20} />
           </p>
@@ -181,13 +184,11 @@ export default function WelcomeStep() {
             </div>
           </div>
           
-        </div>
+        </motion.div>
 
         {/* Right Image Column (62%) */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, x: 20 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          variants={rightPanelVariants}
           className="w-full lg:w-[62%] pr-6 md:pr-10 xl:pr-16 mt-12 lg:mt-0 flex justify-end items-center relative perspective-1000"
         >
           <div className="relative w-full rounded-2xl overflow-hidden shadow-[0_25px_60px_-15px_rgba(37,99,235,0.3)] ring-1 ring-gray-900/5 hover:scale-[1.01] transition-transform duration-500 bg-white">
@@ -202,6 +203,6 @@ export default function WelcomeStep() {
           </div>
         </motion.div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

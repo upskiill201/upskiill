@@ -7,7 +7,9 @@ import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import posthog from 'posthog-js';
-import { motion } from 'framer-motion';
+import { leftPanelVariants, rightPanelVariants, cardHover, cardTap, checkmarkBounce } from '@/lib/animations';
+
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StepElevenPage() {
   const router = useRouter();
@@ -40,7 +42,7 @@ export default function StepElevenPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
+    <motion.div initial="hidden" animate="show" className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col flex-1 overflow-y-auto lg:overflow-hidden min-h-0 overflow-x-hidden pt-0 px-6 lg:pt-0 lg:px-[32px]">
         
@@ -157,7 +159,7 @@ export default function StepElevenPage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-transparent gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/10')}
@@ -187,6 +189,6 @@ export default function StepElevenPage() {
           {!isLoading && <ArrowRight size={18} strokeWidth={2.5} />}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

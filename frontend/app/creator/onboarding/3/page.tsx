@@ -12,7 +12,9 @@ import {
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import posthog from 'posthog-js';
-import { motion } from 'framer-motion';
+import { leftPanelVariants, rightPanelVariants, cardHover, cardTap, checkmarkBounce } from '@/lib/animations';
+
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ── Category definitions ────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -181,15 +183,13 @@ export default function StepThreePage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
+    <motion.div initial="hidden" animate="show" className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col lg:flex-row flex-1 overflow-visible min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px] gap-8 lg:gap-0">
 
         {/* ──── LEFT PANEL ──── */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          variants={leftPanelVariants}
           className="w-full lg:w-[30%] shrink-0 flex flex-col overflow-visible lg:-ml-[32px]"
         >
           <div className="lg:ml-[32px]">
@@ -231,9 +231,7 @@ export default function StepThreePage() {
 
         {/* ──── RIGHT PANEL ──── */}
         <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+          variants={rightPanelVariants}
           className="w-full lg:w-[70%] flex flex-col pb-8 lg:pb-12"
         >
           {/* Section heading */}
@@ -258,6 +256,8 @@ export default function StepThreePage() {
               return (
                 <motion.button
                   variants={itemVariants}
+                  whileHover={cardHover}
+                  whileTap={cardTap}
                   key={cat.id}
                   onClick={() => toggleCategory(cat.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCategory(cat.id); } }}
@@ -325,7 +325,7 @@ export default function StepThreePage() {
       </div>
 
       {/* ═══ BOTTOM BAR ═══ */}
-      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-[#F1EDFC] gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
+      <div className="flex flex-row items-center justify-between p-3 sm:p-4 lg:p-[16px_32px] border-t border-slate-200 shrink-0 bg-transparent gap-4 sm:gap-0 mt-auto sticky bottom-0 z-50">
         {/* Back */}
         <button
           onClick={() => router.push('/creator/onboarding/2')}
@@ -355,6 +355,6 @@ export default function StepThreePage() {
           {!isLoading && <ArrowRight size={18} strokeWidth={2.5} />}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
