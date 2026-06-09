@@ -5,6 +5,7 @@ import { useSelectedLayoutSegment } from 'next/navigation';
 import Image from 'next/image';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function OnboardingProgressBar() {
   const segment = useSelectedLayoutSegment();
@@ -40,24 +41,44 @@ export default function OnboardingProgressBar() {
 
               return (
                 <React.Fragment key={step}>
-                  <div 
-                    className={`w-[28px] h-[28px] rounded-full flex items-center justify-center text-[14px] font-semibold transition-all
-                      ${isActive 
+                  <motion.div 
+                    initial={false}
+                    animate={
+                      isActive 
+                        ? { scale: [1, 1.08, 1], transition: { duration: 1.2, ease: "easeInOut", repeat: Infinity } }
+                        : { scale: 1 }
+                    }
+                    className={`w-[28px] h-[28px] rounded-full flex items-center justify-center text-[14px] font-semibold transition-colors duration-300
+                      ${isActive || isPast 
                         ? 'bg-[#2563EB] text-white' 
-                        : isPast 
-                          ? 'bg-[#2563EB] text-white' 
-                          : 'bg-transparent border border-gray-300 text-gray-500'}`}
+                        : 'bg-transparent border border-gray-300 text-gray-500'}`}
                   >
                     {isPast ? (
                       <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                        <path d="M1 5L4 8L11 1" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <motion.path 
+                          initial={{ pathLength: 0, opacity: 0 }}
+                          animate={{ pathLength: 1, opacity: 1 }}
+                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          d="M1 5L4 8L11 1" 
+                          stroke="#FFFFFF" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                        />
                       </svg>
                     ) : (
                       step
                     )}
-                  </div>
+                  </motion.div>
                   {step < totalSteps && (
-                    <div className={`w-[8px] h-[2px] ${isPast ? 'bg-[#2563EB]' : 'bg-gray-300'}`} />
+                    <div className="w-[8px] h-[2px] bg-gray-300 overflow-hidden rounded-full">
+                      <motion.div 
+                        initial={false}
+                        animate={{ width: isPast ? '100%' : '0%' }}
+                        transition={{ duration: 0.4, ease: 'easeOut' }}
+                        className="h-full bg-[#2563EB]"
+                      />
+                    </div>
                   )}
                 </React.Fragment>
               );
@@ -85,9 +106,11 @@ export default function OnboardingProgressBar() {
             <span>Step {currentStep} of {totalSteps}</span>
          </div>
          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-blue-600 rounded-full transition-all duration-300" 
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            <motion.div 
+              initial={false}
+              animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="h-full bg-blue-600 rounded-full" 
             />
          </div>
       </div>

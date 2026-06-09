@@ -9,7 +9,8 @@ import {
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import posthog from 'posthog-js';
-import { motion } from 'framer-motion';
+import { leftPanelVariants, rightPanelVariants } from '@/lib/animations';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BENEFITS = [
   {
@@ -58,7 +59,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -102,7 +103,7 @@ export default function StepNinePage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
+    <motion.div initial="hidden" animate="show" className="flex flex-col w-full max-w-[1761px] mx-auto min-h-[calc(100vh-88px)]">
       {/* ═══ MAIN CONTENT AREA ═══ */}
       <div className="flex flex-col flex-1 overflow-y-auto lg:overflow-hidden overflow-x-hidden min-h-0 pt-8 px-6 lg:pt-[48px] lg:px-[32px]">
         
@@ -159,9 +160,9 @@ export default function StepNinePage() {
 
           {/* ──── RIGHT PANEL (Illustration & Bottom Card) ──── */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
+            initial={{ opacity: 0, scale: 0.95, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut', delay: 0.4 }}
             className="w-full lg:w-[70%] flex flex-col mt-0 lg:mt-0 relative h-full min-h-[400px] lg:min-h-[600px] max-h-full"
           >
             <div className="relative w-full flex-1 min-h-[450px] flex items-center justify-center scale-[1.35] z-0">
@@ -254,6 +255,6 @@ export default function StepNinePage() {
           {!isLoading && <ArrowRight size={18} strokeWidth={2.5} />}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

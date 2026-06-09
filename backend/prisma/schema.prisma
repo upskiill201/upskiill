@@ -9,35 +9,36 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
+  id          String    @id @default(uuid())
+  email       String    @unique
   fullName    String
   password    String
-  role        Role         @default(STUDENT)
+  role        Role      @default(STUDENT)
   avatarUrl   String?
-  isVerified  Boolean      @default(false)
-  verifyToken String?      @unique
+  isVerified  Boolean   @default(false)
+  verifyToken String?   @unique
   tokenExpiry DateTime?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  
-  profile         Profile?
-  enrollments     Enrollment[]
-  courses         Course[]                @relation("InstructorCourses")
-  orders          Order[]
-  reviews         Review[]
-  onboardingDraft CreatorOnboardingDraft?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  profile            Profile?
+  enrollments        Enrollment[]
+  courses            Course[]                @relation("InstructorCourses")
+  orders             Order[]
+  reviews            Review[]
+  onboardingDraft    CreatorOnboardingDraft?
+  PasswordResetToken PasswordResetToken[]
 }
 
 model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   headline  String?
-  bio       String?  @db.Text
+  bio       String? @db.Text
   avatarUrl String?
-  
+
   // Social Links
   website   String?
   linkedin  String?
@@ -48,109 +49,109 @@ model Profile {
   facebook  String?
 
   // Creator profile fields (hydrated from onboarding answers)
-  niche            String?   // Step 3: primary teaching category
-  subCategories    Json?     // Step 3: all selected categories
-  audienceSize     String?   // Step 4: audience scale
-  platforms        Json?     // Step 5: current platforms
-  weeklyHours      String?   // Step 9: available time per week
-  biggestChallenge String?   // Step 7: primary pain point
-  teachingStyle    String?   // Step 8: content/teaching approach
-  launchGoal       String?   // Step 12: first course launch goal
+  niche            String? // Step 3: primary teaching category
+  subCategories    Json? // Step 3: all selected categories
+  audienceSize     String? // Step 4: audience scale
+  platforms        Json? // Step 5: current platforms
+  weeklyHours      String? // Step 9: available time per week
+  biggestChallenge String? // Step 7: primary pain point
+  teachingStyle    String? // Step 8: content/teaching approach
+  launchGoal       String? // Step 12: first course launch goal
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Course {
-  id               String       @id @default(uuid())
+  id               String  @id @default(uuid())
   title            String
-  slug             String       @unique
-  description      String       @db.Text
+  slug             String  @unique
+  description      String  @db.Text
   shortDescription String?
   thumbnailUrl     String?
   price            Float
   originalPrice    Float?
-  published        Boolean      @default(false)
+  published        Boolean @default(false)
 
   // Teyro Course Transformation Engine
-  category         String       @default("Uncategorized")
-  level            String       @default("Beginner")
-  duration         String       @default("0h")
+  category          String  @default("Uncategorized")
+  level             String  @default("Beginner")
+  duration          String  @default("0h")
   creatorTimeWeekly String?
-  subtitle         String?
-  startingPoint    String?      @db.Text
-  endOutcome       String?      @db.Text
-  realOutputs      Json?
-  
-  subcategory      String?
-  language         String       @default("English")
-  skills           Json?        // Array of strings
-  requirements     Json?        // Array of strings (Prerequisites)
-  outcomes         Json?        // Array of strings (What learners will achieve)
-  
-  rating           Float        @default(0)
-  reviewsCount     Int          @default(0)
-  studentsCount    Int          @default(0)
+  subtitle          String?
+  startingPoint     String? @db.Text
+  endOutcome        String? @db.Text
+  realOutputs       Json?
 
-  curriculum       Json?        @default("[]")
+  subcategory  String?
+  language     String  @default("English")
+  skills       Json? // Array of strings
+  requirements Json? // Array of strings (Prerequisites)
+  outcomes     Json? // Array of strings (What learners will achieve)
+
+  rating        Float @default(0)
+  reviewsCount  Int   @default(0)
+  studentsCount Int   @default(0)
+
+  curriculum Json? @default("[]")
 
   // Relations
-  instructorId     String
-  instructor       User         @relation("InstructorCourses", fields: [instructorId], references: [id])
-  
-  sections         Section[]
-  reviews          Review[]
+  instructorId String
+  instructor   User   @relation("InstructorCourses", fields: [instructorId], references: [id])
 
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  
-  enrollments      Enrollment[]
-  orderItems       OrderItem[]
+  sections Section[]
+  reviews  Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+  orderItems  OrderItem[]
 }
 
 model Section {
-  id          String   @id @default(uuid())
-  title       String
-  goal        String?  @db.Text
-  orderIndex  Int      @default(0)
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons     Lesson[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  title      String
+  goal       String?  @db.Text
+  orderIndex Int      @default(0)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons    Lesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Lesson {
-  id              String   @id @default(uuid())
+  id              String  @id @default(uuid())
   title           String
-  lessonType      String   @default("video")
-  orderIndex      Int      @default(0)
-  isFreePreview   Boolean  @default(false)
-  durationMinutes Int      @default(0)
+  lessonType      String  @default("video")
+  orderIndex      Int     @default(0)
+  isFreePreview   Boolean @default(false)
+  durationMinutes Int     @default(0)
 
   // 1. LEARN (Input)
-  learnVideoUrl   String?
-  learnText       String?  @db.Text
-  learnAudioUrl   String?
+  learnVideoUrl String?
+  learnText     String? @db.Text
+  learnAudioUrl String?
 
   // 2. APPLY (Action)
-  applyType       String?  @default("TEXT") // TEXT, MULTIPLE_CHOICE, BUILD, etc.
-  applyScenario   String?  @db.Text
-  applyTask       String?  @db.Text
-  applyAnswer     String?  @db.Text
+  applyType        String? @default("TEXT") // TEXT, MULTIPLE_CHOICE, BUILD, etc.
+  applyScenario    String? @db.Text
+  applyTask        String? @db.Text
+  applyAnswer      String? @db.Text
   applyExplanation String? @db.Text
 
   // 3. REFLECT
-  reflectPrompt   String?  @db.Text
-  reflectChips    Json?    // Suggested takeaways array
+  reflectPrompt String? @db.Text
+  reflectChips  Json? // Suggested takeaways array
 
   // 4. DEEPEN
-  deepenResources Json?    // Array of resources [{title, type, url, estimatedTime}]
+  deepenResources Json? // Array of resources [{title, type, url, estimatedTime}]
 
   // 5. AI SUPPORT DATA
-  aiSimplified    String?  @db.Text
-  aiRealWorld     String?  @db.Text
+  aiSimplified     String? @db.Text
+  aiRealWorld      String? @db.Text
   aiCommonMistakes String? @db.Text
 
   // 6. UI TRACKING & RESOURCES
@@ -162,24 +163,24 @@ model Lesson {
   isDeepenCompleted  Boolean @default(false)
 
   // System
-  xpReward        Int      @default(10)
-  
-  sectionId       String
-  section         Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  xpReward Int @default(10)
+
+  sectionId String
+  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  rating    Int      // 1 to 5
-  comment   String?  @db.Text
-  userId    String
-  courseId  String
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id       String  @id @default(uuid())
+  rating   Int // 1 to 5
+  comment  String? @db.Text
+  userId   String
+  courseId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -188,14 +189,14 @@ model Review {
 }
 
 model Enrollment {
-  id        String   @id @default(uuid())
-  userId    String
+  id               String   @id @default(uuid())
+  userId           String
   courseId         String
   progress         Int      @default(0)
   completedLessons Json?    @default("[]")
   createdAt        DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  course           Course   @relation(fields: [courseId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
 }
@@ -223,7 +224,7 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id])
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id])
-  price     Float    // Price at the time of purchase
+  price     Float // Price at the time of purchase
   createdAt DateTime @default(now())
 }
 
@@ -253,3 +254,15 @@ model CreatorOnboardingDraft {
   updatedAt DateTime @updatedAt
 }
 
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([tokenHash])
+  @@index([userId])
+}
