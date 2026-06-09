@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isStudentAuthPage = path === '/login' || path === '/signup';
-  const isInstructorAuthPage = path.startsWith('/creator/login') || path.startsWith('/creator/signup') || path.startsWith('/creator/onboarding') || path.startsWith('/creator/forgot-password') || path.startsWith('/creator/reset-password');
+  const isInstructorAuthPage = path.startsWith('/creator/login') || path.startsWith('/creator/signup') || path.startsWith('/creator/onboarding') || path.startsWith('/creator/forgot-password') || path.startsWith('/creator/reset-password') || path.startsWith('/creator/verify-pending') || path.startsWith('/creator/verify-failed');
   const isAuthPage = isStudentAuthPage || isInstructorAuthPage;
   
   const isDashboard = path.startsWith('/dashboard');
