@@ -234,7 +234,13 @@ export default function DashboardPage() {
           <div className={styles.vizCard}>
             <div className={styles.vizHeader}>
               <h4 className={styles.vizTitle}>Skill Mastery</h4>
-              <MoreHorizontal size={18} className={styles.moreIcon} onClick={() => triggerComingSoon('Skill Insights')} />
+              <button
+                className={styles.moreBtn}
+                onClick={() => triggerComingSoon('Skill Insights')}
+                aria-label="More Skill Mastery options"
+              >
+                <MoreHorizontal size={18} className={styles.moreIcon} />
+              </button>
             </div>
             <div className={styles.radarWrapper}>
               <SkillRadarChart />

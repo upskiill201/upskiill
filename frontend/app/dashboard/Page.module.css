@@ -437,3 +437,25 @@
 .delay2 { animation-delay: 0.4s; }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.moreBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94A3B8;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.moreBtn:hover, .moreBtn:focus-visible {
+  color: #1F2A44;
+  background-color: #F1F5F9;
+  outline: none;
+}
+
+.moreBtn:focus-visible {
+  box-shadow: 0 0 0 2px rgba(61, 90, 254, 0.2);
+}

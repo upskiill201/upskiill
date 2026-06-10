@@ -5,3 +5,6 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+## 2024-06-10 - Wrapping Interactive Icons
+**Learning:** Found an instance where an SVG icon (`<MoreHorizontal />`) had an `onClick` handler directly attached. This creates a critically inaccessible element for screen readers and keyboard users because SVGs don't naturally accept focus (`tabIndex`) or keyboard events (`onKeyDown` for Enter/Space), and lack semantic roles.
+**Action:** Always wrap interactive icons in a native HTML `<button>` element with a descriptive `aria-label`. Ensure the button has proper focus styles in CSS to guarantee accessibility for keyboard navigation.
