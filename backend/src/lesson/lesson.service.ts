@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { UpdateLessonMetadataDto, UpdateLessonPhaseDto, AddLessonResourceDto } from './dto/update-lesson.dto';
 
 @Injectable()
 export class LessonService {
@@ -13,67 +13,91 @@ export class LessonService {
         section: {
           select: {
             title: true,
-            course: {
-              select: {
-                id: true,
-                title: true,
-              },
-            },
+            course: { select: { id: true, title: true } },
           },
         },
+        resources: {
+          orderBy: { displayOrder: 'asc' }
+        }
       },
     });
 
-    if (!lesson) {
-      throw new NotFoundException(`Lesson with ID ${id} not found`);
-    }
-
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
     return lesson;
   }
 
-  async updateLesson(id: string, updateData: UpdateLessonDto) {
-    // Ensure lesson exists
-    const lesson = await this.prisma.lesson.findUnique({
+  async updateLessonMetadata(id: string, updateData: UpdateLessonMetadataDto) {
+    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+
+    if (updateData.version !== undefined && updateData.version !== lesson.version) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+        currentServerState: lesson
+      });
+    }
+
+    const { version, ...data } = updateData;
+    
+    return this.prisma.lesson.update({
       where: { id },
+      data: {
+        ...data,
+        version: lesson.version + 1,
+      },
     });
+  }
 
-    if (!lesson) {
-      throw new NotFoundException(`Lesson with ID ${id} not found`);
+  async updateLessonPhase(id: string, phase: string, updateData: UpdateLessonPhaseDto) {
+    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+
+    if (updateData.version !== lesson.version) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+        currentServerState: lesson
+      });
     }
 
-    // Prepare valid fields for update (allowing partial updates)
-    const validData: Partial<UpdateLessonDto> = {};
-    const allowedFields = [
-      'title',
-      'lessonType',
-      'isFreePreview',
-      'durationMinutes',
-      'learnVideoUrl',
-      'learnText',
-      'learnAudioUrl',
-      'applyType',
-      'applyScenario',
-      'applyTask',
-      'applyAnswer',
-      'applyExplanation',
-      'reflectPrompt',
-      'reflectChips',
-      'deepenResources',
-      'aiSimplified', 'aiRealWorld', 'aiCommonMistakes',
-      'shortDescription', 'resources',
-      'isLearnCompleted', 'isApplyCompleted', 'isReflectCompleted', 'isDeepenCompleted'
-    ] as const;
+    // Merge content blocks
+    const currentBlocks = lesson.contentBlocks ? (typeof lesson.contentBlocks === 'string' ? JSON.parse(lesson.contentBlocks) : lesson.contentBlocks) : {};
+    const updatedBlocks = {
+      ...currentBlocks,
+      [phase]: updateData.contentBlocks
+    };
 
-    for (const field of allowedFields) {
-      const value = updateData[field];
-      if (value !== undefined) {
-        (validData as any)[field] = value;
-      }
-    }
+    // Merge completion state
+    const currentCompletion = lesson.stepCompletion ? (typeof lesson.stepCompletion === 'string' ? JSON.parse(lesson.stepCompletion) : lesson.stepCompletion) : {};
+    const updatedCompletion = {
+      ...currentCompletion,
+      [phase]: updateData.isCompleted !== undefined ? updateData.isCompleted : currentCompletion[phase] || false
+    };
 
     return this.prisma.lesson.update({
       where: { id },
-      data: validData,
+      data: {
+        contentBlocks: updatedBlocks,
+        stepCompletion: updatedCompletion,
+        version: lesson.version + 1,
+      },
+    });
+  }
+
+  async addLessonResource(id: string, data: AddLessonResourceDto) {
+    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+
+    return this.prisma.lessonResource.create({
+      data: {
+        lessonId: id,
+        ...data
+      }
+    });
+  }
+
+  async removeLessonResource(id: string, resourceId: string) {
+    return this.prisma.lessonResource.delete({
+      where: { id: resourceId }
     });
   }
 }

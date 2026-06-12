@@ -15,6 +15,7 @@ import {
   SortableContext, verticalListSortingStrategy, useSortable, arrayMove
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
 import styles from './Curriculum.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -51,7 +52,7 @@ type Props = {
 
 // ─── LESSON TYPE CONFIG ───────────────────────────────────────
 const LESSON_TYPES: { key: LessonType; label: string; icon: React.ReactNode; color: string }[] = [
-  { key: 'video',      label: 'Video',       icon: <Video size={15}/>,         color: '#4F46E5' },
+  { key: 'video',      label: 'Video',       icon: <Video size={15}/>,         color: '#3D5AFE' },
   { key: 'text',       label: 'Text',        icon: <FileText size={15}/>,      color: '#EA580C' },
   { key: 'quiz',       label: 'Quiz',        icon: <HelpCircle size={15}/>,    color: '#A855F7' },
   { key: 'assignment', label: 'Assignment',  icon: <ClipboardList size={15}/>, color: '#16A34A' },
@@ -115,7 +116,9 @@ function SortableLesson({
   }, [menuOpen]);
 
   return (
-    <div
+    <motion.div
+      layout="position"
+      whileHover={{ scale: 1.01, backgroundColor: '#F8FAFC' }}
       ref={setNodeRef} style={style}
       className={`${styles.lessonRow} ${isDragging ? styles.lessonRowDragging : ''}`}
       onClick={() => onBuildLesson(lesson.id)}
@@ -161,7 +164,7 @@ function SortableLesson({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -190,7 +193,11 @@ function SortableModule({
   const lessonSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   return (
-    <div ref={setNodeRef} style={style} className={`${styles.moduleCard} ${isDragging ? styles.moduleCardDragging : ''}`}>
+    <motion.div 
+      layout="position"
+      ref={setNodeRef} style={style} 
+      className={`${styles.moduleCard} ${isDragging ? styles.moduleCardDragging : ''}`}
+    >
       <div className={styles.moduleHeader} onClick={onToggle}>
         <div className={styles.dragHandle} {...attributes} {...listeners} onClick={e => e.stopPropagation()}>
           <GripVertical size={16} />
@@ -251,7 +258,7 @@ function SortableModule({
           </button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -276,7 +283,7 @@ function InactiveStepModal({ stepLabel, onClose }: { stepLabel: string; onClose:
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalBox} style={{ maxWidth: 380, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-        <div style={{ width: 52, height: 52, background: '#EEF2FF', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#4F46E5' }}>
+        <div style={{ width: 52, height: 52, background: '#EEF2FF', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#3D5AFE' }}>
           <Clock size={24} />
         </div>
         <h2 className={styles.modalTitle} style={{ fontSize: 17, textAlign: 'center' }}>Step not unlocked yet</h2>

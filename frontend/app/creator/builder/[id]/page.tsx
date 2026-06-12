@@ -6,8 +6,9 @@ import Image from 'next/image';
 import {
   X, Check, ChevronRight, GripVertical, Plus,
   Upload, Edit2, BookOpen, PenTool, LayoutTemplate,
-  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp
+  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp, Clock
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
@@ -198,7 +199,7 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (v: stri
         onInput={handleInput}
         data-placeholder="Write a detailed description of your course. Explain what learners will learn, why it matters, and what makes your course unique."
       />
-      <div className={styles.charCountRight}>{charCount}/2000</div>
+      <div className={styles.charCountRight} style={{ color: charCount >= 1800 ? '#EF4444' : undefined, transition: 'color 0.2s' }}>{charCount}/2000</div>
     </div>
   );
 }
@@ -225,6 +226,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
     const step = searchParams?.get('step');
     return step === '2' ? 2 : 1;
   });
+
+  useEffect(() => {
+    const step = searchParams?.get('step');
+    const stepNum = step ? parseInt(step, 10) : 1;
+    if (activeStep !== stepNum) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('step', activeStep.toString());
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [activeStep, searchParams]);
+
   const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -624,8 +636,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           <div className={styles.formCol}>
             
             {data.creatorTimeWeekly && (
-              <div className={styles.timeBanner} style={{ backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', padding: '12px 16px', borderRadius: '8px', marginBottom: '18px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <span style={{ fontSize: '20px' }}>⏱️</span>
+              <div className={styles.timeBanner} style={{ backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', padding: '12px 16px', borderRadius: '12px', marginBottom: '18px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <Clock size={22} color="#1E40AF" style={{ flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 600, color: '#1E3A8A' }}>Your Available Time</div>
                   <div style={{ fontSize: '12px', color: '#1E40AF', marginTop: '2px' }}>You mentioned having <strong>{data.creatorTimeWeekly}</strong> available. We'll keep this in mind as you build your curriculum!</div>
@@ -649,26 +661,30 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
               <div className={styles.field}>
                 <label className={styles.label}>Course Title <span className={styles.req}>*</span></label>
                 <span className={styles.hint}>Create a clear, outcome-focused title.</span>
-                <Input
-                  placeholder="e.g. UI Design Mastery: From Concept to Real Products"
-                  value={data.title}
-                  onChange={e => updateField('title', e.target.value)}
-                  maxLength={80}
-                />
-                <span className={styles.charCount}>{data.title.length}/80</span>
+                <motion.div whileFocus={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <Input
+                    placeholder="e.g. UI Design Mastery: From Concept to Real Products"
+                    value={data.title}
+                    onChange={e => updateField('title', e.target.value)}
+                    maxLength={80}
+                  />
+                </motion.div>
+                <span className={styles.charCount} style={{ color: data.title.length >= 72 ? '#EF4444' : undefined, transition: 'color 0.2s' }}>{data.title.length}/80</span>
               </div>
 
               {/* Subtitle */}
               <div className={styles.field}>
                 <label className={styles.label}>Subtitle <span className={styles.req}>*</span></label>
                 <span className={styles.hint}>A short line that explains what learners will achieve.</span>
-                <Input
-                  placeholder="e.g. Design beautiful, user-friendly interfaces and ship real-world products"
-                  value={data.subtitle}
-                  onChange={e => updateField('subtitle', e.target.value)}
-                  maxLength={120}
-                />
-                <span className={styles.charCount}>{data.subtitle.length}/120</span>
+                <motion.div whileFocus={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <Input
+                    placeholder="e.g. Design beautiful, user-friendly interfaces and ship real-world products"
+                    value={data.subtitle}
+                    onChange={e => updateField('subtitle', e.target.value)}
+                    maxLength={120}
+                  />
+                </motion.div>
+                <span className={styles.charCount} style={{ color: data.subtitle.length >= 108 ? '#EF4444' : undefined, transition: 'color 0.2s' }}>{data.subtitle.length}/120</span>
               </div>
 
               {/* Category + Subcategory */}
@@ -730,15 +746,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
               <div className={styles.field}>
                 <label className={styles.label}>Short Description <span className={styles.req}>*</span></label>
                 <span className={styles.hint}>Summarize your course in 1–2 engaging sentences.</span>
-                <textarea
-                  className={styles.textarea}
-                  placeholder="In two sentences, describe what this course is about and the main outcome."
-                  value={data.shortDescription}
-                  onChange={e => updateField('shortDescription', e.target.value)}
-                  maxLength={160}
-                  rows={3}
-                />
-                <span className={styles.charCount}>{data.shortDescription.length}/160</span>
+                <motion.div whileFocus={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <textarea
+                    className={styles.textarea}
+                    placeholder="In two sentences, describe what this course is about and the main outcome."
+                    value={data.shortDescription}
+                    onChange={e => updateField('shortDescription', e.target.value)}
+                    maxLength={160}
+                    rows={3}
+                  />
+                </motion.div>
+                <span className={styles.charCount} style={{ color: data.shortDescription.length >= 144 ? '#EF4444' : undefined, transition: 'color 0.2s' }}>{data.shortDescription.length}/160</span>
               </div>
 
               <div className={styles.field}>
@@ -766,11 +784,13 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                   <div key={idx} className={styles.outcomeRow}>
                     <GripVertical size={18} className={styles.dragIcon} />
                     <CheckCircle size={18} className={styles.checkIcon} />
-                    <Input
-                      placeholder="e.g. Design user-friendly interfaces with confidence"
-                      value={outcome}
-                      onChange={e => updateOutcome(idx, e.target.value)}
-                    />
+                    <motion.div whileFocus={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} style={{ flex: 1 }}>
+                      <Input
+                        placeholder="e.g. Design user-friendly interfaces with confidence"
+                        value={outcome}
+                        onChange={e => updateOutcome(idx, e.target.value)}
+                      />
+                    </motion.div>
                     {data.outcomes.length > 1 && (
                       <button type="button" className={styles.removeBtn} onClick={() => removeOutcome(idx)}>
                         <X size={14} />
@@ -789,7 +809,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 >
                   <Plus size={15} /> Add another outcome
                 </button>
-                <span className={styles.charCount}>{data.outcomes.length}/10</span>
+                <span className={styles.charCount} style={{ color: data.outcomes.length >= 9 ? '#EF4444' : undefined, transition: 'color 0.2s' }}>{data.outcomes.length}/10</span>
               </div>
             </section>
 
@@ -815,14 +835,16 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                     </button>
                   </span>
                 ))}
-                <input
-                  type="text"
-                  className={styles.tagInput}
-                  placeholder="+ Add skill (press Enter)"
-                  value={skillInput}
-                  onChange={e => setSkillInput(e.target.value)}
-                  onKeyDown={addSkill}
-                />
+                <motion.div whileFocus={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} style={{ flex: 1, display: 'flex' }}>
+                  <input
+                    type="text"
+                    className={styles.tagInput}
+                    placeholder="+ Add skill (press Enter)"
+                    value={skillInput}
+                    onChange={e => setSkillInput(e.target.value)}
+                    onKeyDown={addSkill}
+                  />
+                </motion.div>
               </div>
             </section>
 
@@ -914,9 +936,11 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                     </div>
                   ) : (
                     /* EMPTY STATE — structured upload zone */
-                    <div
+                    <motion.div
                       className={styles.thumbUploadZone}
                       onClick={() => fileInputRef.current?.click()}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.97 }}
                     >
                       <div className={styles.thumbUploadIconWrap}>
                         <Upload size={22} style={{ color: '#3D5AFE' }} />
@@ -926,7 +950,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                       <button type="button" className={styles.thumbChooseBtn}>
                         Choose File
                       </button>
-                    </div>
+                    </motion.div>
                   )}
                   {thumbError && (
                     <div className={styles.thumbError}>{thumbError}</div>
@@ -1005,15 +1029,29 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                     { label: 'Skills & Keywords', done: skillsDone, count: `${Math.min(data.skills.length, 3)}/3` },
                     { label: 'Course Thumbnail', done: thumbDone, count: `${thumbDone ? 1 : 0}/1` },
                   ].map(item => (
-                    <div key={item.label} className={styles.checkRow}>
+                    <motion.div key={item.label} className={styles.checkRow} layout>
                       <div className={styles.checkLeft}>
-                        <div className={`${styles.checkCircle} ${item.done ? styles.checkCircleDone : ''}`}>
-                          {item.done && <Check size={11} />}
-                        </div>
+                        <motion.div 
+                          className={`${styles.checkCircle} ${item.done ? styles.checkCircleDone : ''}`}
+                          animate={{ scale: item.done ? [1, 1.2, 1] : 1 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                        >
+                          <AnimatePresence>
+                            {item.done && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                              >
+                                <Check size={11} />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
                         <span className={styles.checkLabel}>{item.label}</span>
                       </div>
                       <span className={styles.checkCount}>{item.count}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>

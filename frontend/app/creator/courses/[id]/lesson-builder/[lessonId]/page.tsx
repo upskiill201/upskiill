@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -11,6 +11,8 @@ import {
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useSyncQueue } from '@/hooks/useSyncQueue';
 
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
@@ -112,6 +114,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const [contentType, setContentType] = useState('video');
   const [resources, setResources] = useState<ResourceItem[]>([]);
 
+  const hasInitialLoadCompleted = useRef(false);
+  const { isOnline, syncStatus, lastSavedAt, syncMetadata, syncPhase } = useSyncQueue(lessonId as string, lesson?.version || 1);
+  const debouncedLesson = useDebounce(lesson, 1000);
+
   /* fetch */
   useEffect(() => {
     (async () => {
@@ -123,38 +129,60 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           if (d.section?.course?.title) setCourseTitle(d.section.course.title);
           if (d.section?.title) setSectionTitle(d.section.title);
           if (d.lessonType) setContentType(d.lessonType);
+          
           if (d.resources) {
-            try { const p = typeof d.resources === 'string' ? JSON.parse(d.resources) : d.resources; if (Array.isArray(p)) setResources(p); } catch {}
+            setResources(d.resources);
+          }
+          
+          if (d.contentBlocks?.learn) {
+            const learnBlocks = d.contentBlocks.learn;
+            setLesson((l: any) => ({
+              ...l,
+              learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
+              learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
+              learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
+            }));
           }
         }
       } catch (e) { console.error(e); }
-      finally { setLoading(false); }
+      finally { 
+        setLoading(false); 
+        setTimeout(() => { hasInitialLoadCompleted.current = true; }, 500);
+      }
     })();
   }, [lessonId]);
 
+  /* Autosave */
+  useEffect(() => {
+    if (loading || !debouncedLesson || !hasInitialLoadCompleted.current) return;
+    const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
+    
+    syncMetadata({
+      title: debouncedLesson.title,
+      shortDescription: debouncedLesson.shortDescription,
+      lessonType: contentType,
+    });
+
+    syncPhase('learn', {
+      contentBlocks: [
+        { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
+        { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
+        { type: 'text', value: debouncedLesson.learnText },
+      ],
+      isCompleted: isLearnCompleted
+    });
+  }, [debouncedLesson, contentType, loading]);
+
   /* save */
   const handleSave = async (redirect?: string) => {
-    setSaving(true);
-    try {
-      const isLearnCompleted = !!(lesson?.title && (lesson?.learnVideoUrl || lesson?.learnText || lesson?.learnAudioUrl));
-      await fetch(`/api/lesson/${lessonId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: lesson?.title, 
-          shortDescription: lesson?.shortDescription, 
-          lessonType: contentType, 
-          learnText: lesson?.learnText, 
-          learnVideoUrl: lesson?.learnVideoUrl, 
-          learnAudioUrl: lesson?.learnAudioUrl,
-          resources, 
-          isLearnCompleted 
-        }),
-      });
-      if (redirect) router.push(redirect);
-    } catch (e) { console.error(e); }
-    finally { setSaving(false); }
+    if (redirect) router.push(redirect);
   };
+
+  const videoTime = lesson?.durationMinutes || 0;
+  const textWords = (lesson?.learnText || '').replace(/<[^>]*>?/gm, '').split(/\s+/).length;
+  const textTime = Math.ceil(textWords / 200);
+  const resourceTime = resources.reduce((acc, r) => acc + (r.estimatedReadMin || 0), 0);
+  const totalTime = videoTime + textTime + resourceTime;
 
   const hasTitle = !!lesson?.title;
   const hasContent = !!(lesson?.learnVideoUrl || lesson?.learnText || lesson?.learnAudioUrl);
@@ -279,7 +307,16 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             </p>
           </div>
           <div className={styles.headerActions}>
-            <div className={styles.autoSaved}><Check size={13} /> Auto-saved 2 min ago</div>
+            <div className={`${styles.autoSaved} ${syncStatus === 'saving' ? styles.saving : syncStatus === 'offline' ? styles.offline : syncStatus === 'error' ? styles.error : ''}`}>
+              {syncStatus === 'saving' && <span className={styles.pulse}>Saving...</span>}
+              {syncStatus === 'offline' && <span>Offline - Queued locally</span>}
+              {syncStatus === 'error' && <span>Error saving</span>}
+              {syncStatus === 'saved' && (
+                <>
+                  <Check size={13} /> {lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-saved'}
+                </>
+              )}
+            </div>
             <button className={styles.btnOutline}><Eye size={15} /> Preview as Student</button>
             <div className={styles.btnSplitGroup}>
               <button className={styles.btnPrimaryCaret} onClick={() => handleSave()}>Save &amp; Continue</button>
@@ -501,6 +538,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 {/* Right: resources card */}
                 <div className={styles.contentCard}>
                   <LearningResources resources={resources} onChange={setResources} lessonId={lessonId as string} />
+                  
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 16, marginTop: 16, borderTop: '1px solid #F1F5F9', fontSize: 12, color: '#64748B' }}>
+                    Total estimated time: <strong style={{ color: '#0F172A', marginLeft: 4 }}>~{totalTime} min</strong>
+                  </div>
                 </div>
               </div>
 
@@ -519,7 +560,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                       placeholder="What is UI Design?"
                       maxLength={100}
                     />
-                    <span className={styles.charCount}>{(lesson?.title || '').length}/100</span>
+                    <span className={styles.charCount} style={{ color: (lesson?.title || '').length >= 90 ? '#EF4444' : '#CBD5E1' }}>
+                      {(lesson?.title || '').length}/100
+                    </span>
                   </div>
                 </div>
 
@@ -527,7 +570,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   <label className={styles.inputLabel}>
                     Short Description <span className={styles.inputSub}>(Shown to students)</span>
                   </label>
-                  <div style={{ marginTop: 8 }}>
+                  <div style={{ marginTop: 8, position: 'relative' }}>
                     <ReactQuill 
                       theme="snow" 
                       value={lesson?.shortDescription || ''} 
@@ -535,6 +578,12 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                       modules={quillModules}
                       placeholder="Learn the basics of UI design and why it plays a crucial role in creating beautiful and usable digital products."
                     />
+                    <span className={styles.charCount} style={{ 
+                      position: 'absolute', bottom: -20, right: 0, 
+                      color: (lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length >= 280 ? '#EF4444' : '#94A3B8' 
+                    }}>
+                      {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
+                    </span>
                   </div>
                 </div>
               </div>
