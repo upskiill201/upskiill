@@ -31,7 +31,10 @@ async function bootstrap() {
         callback(null, true);
         return;
       }
-      const allowed = allowedOrigins.includes(origin);
+      
+      const isAllowedVercelPreview = origin.startsWith('https://upskiill') && origin.endsWith('.vercel.app');
+      const allowed = allowedOrigins.includes(origin) || isAllowedVercelPreview;
+      
       if (!allowed) {
         console.warn(`CORS blocked: ${origin}`);
       }
