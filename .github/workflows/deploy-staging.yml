@@ -1,0 +1,59 @@
+name: Deploy — Staging
+
+# Runs automatically when a PR is merged into the staging branch.
+# Applies any pending DB migrations, then triggers Render to deploy the staging backend.
+# Vercel deploys the staging frontend automatically via its own GitHub integration.
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy-staging-backend:
+    name: Deploy Backend to Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Apply staging DB migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+        run: npx prisma migrate deploy
+
+      - name: Trigger Render staging deploy
+        # Render deploy hooks are a simple GET/POST to a URL.
+        # Go to render.com → teyro-backend-staging → Settings → Deploy Hook → copy URL
+        # Add it as RENDER_STAGING_DEPLOY_HOOK_URL in GitHub repo secrets.
+        run: |
+          curl -s "${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            --fail \
+            --retry 3
+
+      - name: Wait for staging to be healthy
+        # Give Render 90 seconds to boot, then confirm the health endpoint responds.
+        run: |
+          sleep 90
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://upskiill-backend.onrender.com/health || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "⚠️  Staging backend health check returned $STATUS — check Render logs"
+          else
+            echo "✅ Staging backend is healthy"
+          fi
