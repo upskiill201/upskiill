@@ -406,7 +406,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const removeSkill = (skill: string) =>
     updateField('skills', data.skills.filter(s => s !== skill));
 
-  // ─── IMAGE UPLOAD (AWS S3 via server-side POST, with XHR progress) ───
+  // ─── IMAGE UPLOAD (AWS S3 via Presigned URL) ───
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -414,13 +414,31 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
     setThumbUploadProgress(0);
     setThumbError(null);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // 1. Get Presigned URL
+      const presignRes = await fetch('/api/upload/thumbnail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          filename: file.name, 
+          contentType: file.type, 
+          size: file.size 
+        }),
+      });
 
+      if (!presignRes.ok) {
+        const errorData = await presignRes.json();
+        throw new Error(errorData.error || 'Failed to get upload URL');
+      }
+
+      const { uploadUrl, url } = await presignRes.json();
+
+      // 2. Upload directly to S3
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/upload/thumbnail', true);
-        xhr.withCredentials = true;
+        xhr.open('PUT', uploadUrl, true);
+        xhr.setRequestHeader('Content-Type', file.type);
+        // Do NOT send withCredentials for AWS S3
+        // xhr.withCredentials = true; 
 
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
@@ -430,32 +448,30 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
         xhr.onload = () => {
           if (xhr.status === 200) {
-            const { url } = JSON.parse(xhr.responseText);
             updateField('thumbnailUrl', url);
             setThumbUploadProgress(100);
             resolve();
           } else {
-            const msg = JSON.parse(xhr.responseText)?.error || 'Upload failed';
-            setThumbError(msg);
-            reject(new Error(msg));
+            setThumbError('Upload to S3 failed');
+            reject(new Error('Upload failed'));
           }
         };
 
         xhr.onerror = () => {
-          setThumbError('Network error during upload.');
+          setThumbError('Network error during S3 upload.');
           reject(new Error('Network error'));
         };
 
-        xhr.send(formData);
+        xhr.send(file);
       });
     } catch (err: any) {
       console.error('Thumbnail upload error:', err);
+      setThumbError(err.message || 'Upload failed');
     } finally {
       setUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
-
   // ─── CHECKLIST PROGRESS ───
   const hasText = (html: string) => {
     if (!html) return false;

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
 const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
 const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
 const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
@@ -22,21 +24,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'AWS S3 is not configured on the server.' }, { status: 500 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get('file') as File | null;
+    const { filename, contentType, size } = await req.json();
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    if (!filename || !contentType) {
+      return NextResponse.json({ error: 'No filename or contentType provided' }, { status: 400 });
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!ALLOWED_TYPES.includes(contentType)) {
       return NextResponse.json(
         { error: 'Invalid file type. Only JPG, PNG, and WebP are allowed.' },
         { status: 400 }
       );
     }
 
-    if (file.size > MAX_SIZE_BYTES) {
+    if (size && size > MAX_SIZE_BYTES) {
       return NextResponse.json(
         { error: 'File too large. Maximum size is 5MB.' },
         { status: 400 }
@@ -44,29 +45,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate unique S3 key for this thumbnail
-    const ext = file.name.split('.').pop() || 'jpg';
+    const ext = filename.split('.').pop() || 'jpg';
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
     const s3Key = `thumbnails/${uniqueName}`;
 
-    // Convert File to Buffer for S3 PutObject
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const command = new PutObjectCommand({
+      Bucket: AWS_S3_BUCKET,
+      Key: s3Key,
+      ContentType: contentType,
+    });
 
-    // Upload directly to S3
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: AWS_S3_BUCKET,
-        Key: s3Key,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    );
+    // Generate the presigned URL for direct upload
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
 
     // Return the CloudFront CDN URL
     const cleanBase = CLOUDFRONT_URL!.endsWith('/') ? CLOUDFRONT_URL!.slice(0, -1) : CLOUDFRONT_URL;
     const url = `${cleanBase}/${s3Key}`;
 
-    return NextResponse.json({ url });
+    return NextResponse.json({ uploadUrl, url });
   } catch (err: unknown) {
     console.error('Thumbnail upload route error:', err);
     const errorMessage = err instanceof Error ? err.message : 'Internal server error';
