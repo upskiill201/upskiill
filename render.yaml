@@ -1,23 +1,41 @@
 services:
+
+  # ─── STAGING BACKEND ────────────────────────────────────────────────────────
+  # Repurposed from the original upskiill-backend service.
+  # URL: https://upskiill-backend.onrender.com
+  # Watches the `staging` branch. Auto-deploys on every push to staging.
   - type: web
-    name: upskiill-backend
+    name: teyro-backend-staging
     env: node
     region: oregon
     plan: free
+    branch: staging
     rootDir: backend
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start:prod
     envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENVIRONMENT
+        value: staging
+      - key: PORT
+        value: 3001
       - key: DATABASE_URL
-        sync: false
+        sync: false   # set in Render dashboard → existing Supabase project
       - key: DIRECT_URL
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: PORT
-        value: 3001
-      - key: STRIPE_SECRET_KEY
+      - key: ALLOWED_ORIGINS
+        sync: false   # set to your staging Vercel URL, e.g. https://teyro-git-staging.vercel.app
+      - key: FIREBASE_PROJECT_ID
         sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false   # sk_test_ key for staging
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: MESOMB_APP_KEY
@@ -26,9 +44,48 @@ services:
         sync: false
       - key: MESOMB_SECRET_KEY
         sync: false
+
+  # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
+  # New service created for production.
+  # URL: https://teyro-backend.onrender.com
+  # Watches the `main` branch. Auto-deploy is DISABLED — triggered via GitHub Actions deploy hook.
+  - type: web
+    name: teyro-backend
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false   # set to new teyro-production Supabase connection string
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false   # DIFFERENT from staging — generate a new strong secret
+      - key: ALLOWED_ORIGINS
+        value: https://teyro.app
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_CLIENT_EMAIL
         sync: false
       - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false   # sk_live_ key for production (sk_test_ until ready)
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false   # new webhook secret from Stripe production endpoint
+      - key: MESOMB_APP_KEY
+        sync: false
+      - key: MESOMB_ACCESS_KEY
+        sync: false
+      - key: MESOMB_SECRET_KEY
         sync: false

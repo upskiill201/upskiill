@@ -8,37 +8,65 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // Allow Vercel (production), teyro.app, and localhost (any port) — blocks everything else
-  const allowedOrigins: RegExp[] = [
-    /^https:\/\/upskiill\.vercel\.app$/, // Production Vercel deployment
-    /^https:\/\/(www\.)?teyro\.app$/, // Production custom domain — teyro.app
-    /^http:\/\/localhost:\d+$/, // Local development
-  ];
+  // ─── CORS ──────────────────────────────────────────────────────────────────
+  // Allowed origins are set per environment via the ALLOWED_ORIGINS env var.
+  // Staging:    ALLOWED_ORIGINS=https://teyro-git-staging.vercel.app,http://localhost:3000
+  // Production: ALLOWED_ORIGINS=https://teyro.app
+  // Local dev:  ALLOWED_ORIGINS is unset → falls back to localhost:3000
+  //
+  // Never use wildcard (*) — it bypasses credentials: 'include' on all clients.
+  const rawOrigins = process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001';
+  const allowedOrigins = rawOrigins
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   app.enableCors({
     origin: (
       origin: string | undefined,
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
+      // Allow server-to-server calls (no origin header) and Render health checks
       if (!origin) {
         callback(null, true);
         return;
       }
-      const allowed = allowedOrigins.some((pattern) => pattern.test(origin));
+      const allowed = allowedOrigins.includes(origin);
+      if (!allowed) {
+        console.warn(`CORS blocked: ${origin}`);
+      }
       callback(allowed ? null : new Error(`CORS blocked: ${origin}`), allowed);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   });
 
-  // Validate and strip unknown fields from incoming request bodies
+  // ─── VALIDATION PIPE ───────────────────────────────────────────────────────
+  // Strips unknown properties, throws on unexpected fields, auto-transforms types.
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
+  // ─── HEALTH ENDPOINT ───────────────────────────────────────────────────────
+  // Used by GitHub Actions to verify the backend came up cleanly after deploy.
+  // GET /health → 200 OK { status: 'ok', environment: 'staging' | 'production' }
+  app.getHttpAdapter().get('/health', (_req: unknown, res: { json: (body: object) => void }) => {
+    res.json({
+      status: 'ok',
+      environment: process.env.ENVIRONMENT ?? 'development',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // Render.com sets PORT dynamically; fallback to 3001 for local dev
   await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+
+  console.log(`[Bootstrap] Environment: ${process.env.ENVIRONMENT ?? 'development'}`);
+  console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`);
 }
 
 void bootstrap();
