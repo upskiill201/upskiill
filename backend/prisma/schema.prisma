@@ -123,50 +123,50 @@ model Section {
 }
 
 model Lesson {
-  id              String  @id @default(uuid())
-  title           String
-  lessonType      String  @default("video")
-  orderIndex      Int     @default(0)
-  isFreePreview   Boolean @default(false)
-  durationMinutes Int     @default(0)
+  id               String  @id @default(uuid())
+  title            String  @db.VarChar(100)
+  shortDescription String? @db.VarChar(300)
+  lessonType       String  @default("video")
+  orderIndex       Int     @default(0)
+  isFreePreview    Boolean @default(false)
+  durationMinutes  Int     @default(0)
 
-  // 1. LEARN (Input)
-  learnVideoUrl String?
-  learnText     String? @db.Text
-  learnAudioUrl String?
+  // Status and versioning for optimistic locking and draft support
+  status                   String    @default("draft") // draft, published, scheduled, archived
+  version                  Int       @default(1)
+  publishedAt              DateTime?
+  estimatedDurationSeconds Int       @default(0)
 
-  // 2. APPLY (Action)
-  applyType        String? @default("TEXT") // TEXT, MULTIPLE_CHOICE, BUILD, etc.
-  applyScenario    String? @db.Text
-  applyTask        String? @db.Text
-  applyAnswer      String? @db.Text
-  applyExplanation String? @db.Text
+  // Block-based content architecture
+  // Stores arrays of content blocks for learn, apply, reflect, deepen phases
+  contentBlocks Json? @default("{}")
 
-  // 3. REFLECT
-  reflectPrompt String? @db.Text
-  reflectChips  Json? // Suggested takeaways array
-
-  // 4. DEEPEN
-  deepenResources Json? // Array of resources [{title, type, url, estimatedTime}]
-
-  // 5. AI SUPPORT DATA
-  aiSimplified     String? @db.Text
-  aiRealWorld      String? @db.Text
-  aiCommonMistakes String? @db.Text
-
-  // 6. UI TRACKING & RESOURCES
-  shortDescription   String? @db.Text
-  resources          Json?   @default("[]")
-  isLearnCompleted   Boolean @default(false)
-  isApplyCompleted   Boolean @default(false)
-  isReflectCompleted Boolean @default(false)
-  isDeepenCompleted  Boolean @default(false)
+  // Phase completion state tracking
+  stepCompletion Json? @default("{\"learn\":false,\"apply\":false,\"reflect\":false,\"deepen\":false}")
 
   // System
   xpReward Int @default(10)
 
+  // Relations
   sectionId String
-  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section   Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  resources LessonResource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LessonResource {
+  id               String  @id @default(uuid())
+  lessonId         String
+  lesson           Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type             String // pdf, pptx, fig, link, video
+  title            String
+  storageUrl       String
+  sizeBytes        Int?
+  originalName     String?
+  estimatedReadMin Int     @default(0)
+  displayOrder     Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

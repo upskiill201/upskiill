@@ -104,7 +104,7 @@ upskiill/                          ← repo root
 | Vercel | Frontend hosting | All environments |
 | Render | Backend hosting | All environments |
 | Supabase | PostgreSQL database | All environments |
-| Cloudflare R2 | File and video storage | All environments |
+| AWS S3 | File and video storage | All environments |
 | Firebase Auth | User authentication | All environments |
 | Stripe | Payments (global) | Production |
 | Paystack | Payments (Africa) | Production |
@@ -462,7 +462,7 @@ File bytes must NEVER transit through the NestJS backend. The upload flow is alw
 
 ```
 1. Frontend → POST /api/v1/uploads/presign   (get signed URL + pending_asset_id)
-2. Frontend → PUT {signedUrl}                (upload directly to Cloudflare R2)
+2. Frontend → PUT {signedUrl}                (upload directly to AWS S3)
 3. Frontend → POST /api/v1/lessons/:id/resources  (confirm upload, create record)
 ```
 

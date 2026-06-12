@@ -97,3 +97,21 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* Mobile responsive fix for overflowing tooltips */
+@media (max-width: 768px) {
+  .tooltip {
+    max-width: 220px;
+  }
+  .top {
+    bottom: calc(100% + 8px);
+    left: auto;
+    right: -10px; /* Align near the right edge */
+    transform: none;
+  }
+  .topArrow {
+    left: auto;
+    right: 20px;
+    transform: none;
+  }
+}
