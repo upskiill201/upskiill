@@ -9,6 +9,29 @@ import {
   Play, Video, FileText, Clock, BookOpen, Lightbulb, Target,
   Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X, HelpCircle
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Tiny sound util for haptics
+const playPop = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+};
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
   DragEndEvent
@@ -35,15 +58,22 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   const [showModuleModal, setShowModuleModal] = useState(false);
   const [editingModule, setEditingModule] = useState<Section | null>(null);
   const [moduleForm, setModuleForm] = useState({ title: '', goal: '', duration: '', difficulty: 'Beginner' });
+  const moduleModalJustOpened = React.useRef(false);
 
   // Lesson Modal
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [lessonModalSectionId, setLessonModalSectionId] = useState('');
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [lessonForm, setLessonForm] = useState({ title: '', lessonType: 'video' as LessonType });
+  const lessonModalJustOpened = React.useRef(false);
 
   // Confirm Modal
   const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void } | null>(null);
+
+  // Inline form errors
+  const [moduleError, setModuleError] = useState<string | null>(null);
+  const [lessonError, setLessonError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Premium / Coming Soon modal
   const [premiumModal, setPremiumModal] = useState<{ title: string; desc: string } | null>(null);
@@ -53,7 +83,8 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   // ─── FETCH ───
   const fetchCurriculum = useCallback(async () => {
     try {
-      const res = await fetch(`/api/courses/${courseId}/curriculum`, { credentials: 'include' });
+      const ts = new Date().getTime(); // Cache busting
+      const res = await fetch(`/api/courses/${courseId}/curriculum?t=${ts}`, { credentials: 'include', cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         const sorted = (data as Section[]).sort((a, b) => a.orderIndex - b.orderIndex);
@@ -76,29 +107,93 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   };
 
   // ─── MODULE CRUD ───
-  const openAddModule = () => { setEditingModule(null); setModuleForm({ title: '', goal: '', duration: '', difficulty: 'Beginner' }); setShowModuleModal(true); };
-  const openEditModule = (s: Section) => { setEditingModule(s); setModuleForm({ title: s.title, goal: s.goal || '', duration: '', difficulty: 'Beginner' }); setShowModuleModal(true); };
+  const openAddModule = (e?: React.MouseEvent) => { 
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    moduleModalJustOpened.current = true;
+    setEditingModule(null); 
+    setModuleForm({ title: '', goal: '', duration: '', difficulty: 'Beginner' });
+    setModuleError(null);
+    setShowModuleModal(true);
+    setTimeout(() => { moduleModalJustOpened.current = false; }, 50);
+  };
+  const openEditModule = (s: Section, e?: React.MouseEvent) => { 
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    moduleModalJustOpened.current = true;
+    setEditingModule(s); 
+    setModuleForm({ title: s.title, goal: s.goal || '', duration: '', difficulty: 'Beginner' });
+    setModuleError(null);
+    setShowModuleModal(true);
+    setTimeout(() => { moduleModalJustOpened.current = false; }, 50);
+  };
 
   const submitModule = async () => {
-    if (!moduleForm.title.trim()) return;
+    const trimmedTitle = moduleForm.title.trim();
+    if (!trimmedTitle) {
+      setModuleError('Module title is required.');
+      return;
+    }
+    setModuleError(null);
+    setSubmitting(true);
     onSaveStatus('saving');
     try {
+      let res: Response;
       if (editingModule) {
-        await fetch(`/api/courses/sections/${editingModule.id}`, {
+        res = await fetch(`/api/courses/sections/${editingModule.id}`, {
           method: 'PATCH', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: moduleForm.title, goal: moduleForm.goal }),
+          body: JSON.stringify({ title: trimmedTitle, goal: moduleForm.goal }),
         });
       } else {
-        await fetch(`/api/courses/${courseId}/sections`, {
+        res = await fetch(`/api/courses/${courseId}/sections`, {
           method: 'POST', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: moduleForm.title }),
+          body: JSON.stringify({ title: trimmedTitle }),
         });
       }
-      await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
-    } catch { onSaveStatus('error'); }
-    setShowModuleModal(false);
+
+      if (!res.ok) {
+        const errText = await res.text();
+        setModuleError(`Failed to save: ${errText || res.statusText}`);
+        onSaveStatus('error');
+        return;
+      }
+
+      const savedSection = await res.json();
+
+      // OPTIMISTIC UPDATE — show the result immediately without waiting for re-fetch
+      if (editingModule) {
+        setSections(prev => prev.map(s =>
+          s.id === editingModule.id
+            ? { ...s, title: trimmedTitle, goal: moduleForm.goal }
+            : s
+        ));
+      } else {
+        const newSection: Section = {
+          ...savedSection,
+          lessons: savedSection.lessons ?? [],
+          goal: moduleForm.goal || '',
+        };
+        setSections(prev => [...prev, newSection]);
+        // Auto-expand the new module
+        setExpandedIds(prev => new Set(prev).add(savedSection.id));
+      }
+
+      // Close modal immediately — user sees result right away
+      setShowModuleModal(false);
+      playPop();
+      onSaveStatus('saved');
+      setTimeout(() => onSaveStatus('idle'), 3000);
+
+      // Background sync to reconcile server state (non-blocking)
+      fetchCurriculum().catch(console.error);
+
+    } catch (err) {
+      console.error('submitModule error:', err);
+      setModuleError('Network error. Please check your connection and try again.');
+      onSaveStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const deleteModule = (sectionId: string) => setConfirmModal({
@@ -135,40 +230,100 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   };
 
   // ─── LESSON CRUD ───
-  const openAddLesson = (sectionId: string) => {
+  const openAddLesson = (sectionId: string, e?: React.MouseEvent) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    lessonModalJustOpened.current = true;
     setLessonModalSectionId(sectionId);
     setEditingLesson(null);
     setLessonForm({ title: '', lessonType: 'video' });
+    setLessonError(null);
     setShowLessonModal(true);
+    setTimeout(() => { lessonModalJustOpened.current = false; }, 50);
   };
 
-  const openEditLesson = (lesson: Lesson) => {
+  const openEditLesson = (lesson: Lesson, e?: React.MouseEvent) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    lessonModalJustOpened.current = true;
     setEditingLesson(lesson);
     setLessonForm({ title: lesson.title, lessonType: lesson.lessonType });
+    setLessonError(null);
     setShowLessonModal(true);
+    setTimeout(() => { lessonModalJustOpened.current = false; }, 50);
   };
 
   const submitLesson = async () => {
-    if (!lessonForm.title.trim()) return;
+    const trimmedTitle = lessonForm.title.trim();
+    if (!trimmedTitle) {
+      setLessonError('Lesson title is required.');
+      return;
+    }
+    setLessonError(null);
+    setSubmitting(true);
     onSaveStatus('saving');
     try {
+      let res: Response;
       if (editingLesson) {
-        await fetch(`/api/courses/lessons/${editingLesson.id}`, {
+        res = await fetch(`/api/courses/lessons/${editingLesson.id}`, {
           method: 'PATCH', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: lessonForm.title }),
+          body: JSON.stringify({ title: trimmedTitle }),
         });
       } else {
-        await fetch(`/api/courses/sections/${lessonModalSectionId}/lessons`, {
+        res = await fetch(`/api/courses/sections/${lessonModalSectionId}/lessons`, {
           method: 'POST', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: lessonForm.title, lessonType: lessonForm.lessonType }),
+          body: JSON.stringify({ title: trimmedTitle, lessonType: lessonForm.lessonType }),
         });
+      }
+
+      if (!res.ok) {
+        const errText = await res.text();
+        setLessonError(`Failed to save: ${errText || res.statusText}`);
+        onSaveStatus('error');
+        return;
+      }
+
+      const savedLesson = await res.json();
+
+      // OPTIMISTIC UPDATE
+      if (editingLesson) {
+        setSections(prev => prev.map(sec => ({
+          ...sec,
+          lessons: sec.lessons.map(l =>
+            l.id === editingLesson.id ? { ...l, title: trimmedTitle } : l
+          )
+        })));
+      } else {
+        const newLesson: Lesson = {
+          ...savedLesson,
+          durationMinutes: savedLesson.durationMinutes ?? 0,
+          status: savedLesson.status ?? 'not_started',
+          isFreePreview: savedLesson.isFreePreview ?? false,
+        };
+        setSections(prev => prev.map(sec =>
+          sec.id === lessonModalSectionId
+            ? { ...sec, lessons: [...sec.lessons, newLesson] }
+            : sec
+        ));
         setExpandedIds(prev => new Set(prev).add(lessonModalSectionId));
       }
-      await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
-    } catch { onSaveStatus('error'); }
-    setShowLessonModal(false);
+
+      // Close modal immediately
+      setShowLessonModal(false);
+      playPop();
+      onSaveStatus('saved');
+      setTimeout(() => onSaveStatus('idle'), 3000);
+
+      // Background sync
+      fetchCurriculum().catch(console.error);
+
+    } catch (err) {
+      console.error('submitLesson error:', err);
+      setLessonError('Network error. Please check your connection and try again.');
+      onSaveStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const deleteLesson = (lessonId: string) => setConfirmModal({
@@ -290,12 +445,12 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
               <span className={styles.structureTitle}>Course Structure</span>
             </div>
             <div className={styles.structureActions}>
-              <button className={styles.expandAllBtn} onClick={expandAll}>
+              <motion.button whileTap={{ scale: 0.95 }} className={styles.expandAllBtn} onClick={expandAll}>
                 {expandedIds.size === sections.length && sections.length > 0 ? 'Collapse all' : 'Expand all'}
-              </button>
-              <button className={styles.addModuleBtn} onClick={openAddModule}>
+              </motion.button>
+              <motion.button type="button" whileTap={{ scale: 0.95 }} className={styles.addModuleBtn} onClick={openAddModule}>
                 <Plus size={14} /> Add Module
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -303,7 +458,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
             <div className={styles.emptyState}>
               <div className={styles.emptyStateTitle}>No modules yet</div>
               <div className={styles.emptyStateDesc}>Start by adding your first module to organize your curriculum.</div>
-              <button className={styles.addModuleBtn} onClick={openAddModule}><Plus size={14} /> Add Your First Module</button>
+              <button type="button" className={styles.addModuleBtn} onClick={openAddModule}><Plus size={14} /> Add Your First Module</button>
             </div>
           ) : (
             <DndContext sensors={moduleSensors} collisionDetection={closestCenter} onDragEnd={handleModuleDragEnd}>
@@ -331,13 +486,18 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
           )}
 
           {sections.length > 0 && (
-            <div className={styles.addModuleBottom} onClick={openAddModule}>
-              <Plus size={16} color="#4F46E5" />
+            <motion.div 
+              whileHover={{ scale: 1.01, backgroundColor: '#F8FAFC' }} 
+              whileTap={{ scale: 0.98 }} 
+              className={styles.addModuleBottom} 
+              onClick={openAddModule}
+            >
+              <Plus size={16} color="#3D5AFE" />
               <div>
                 <div className={styles.addModuleBottomText}>Add Module</div>
                 <div className={styles.addModuleBottomHint}>Create a new module to organize more lessons</div>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 
@@ -430,16 +590,41 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       </div>
 
       {/* ─── MODULE MODAL ─── */}
+      <AnimatePresence mode="wait">
       {showModuleModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowModuleModal(false)}>
-          <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
+        <motion.div 
+          key="module-modal"
+          className={styles.modalOverlay} 
+          onClick={(e) => {
+            if (moduleModalJustOpened.current) return;
+            if (e.target === e.currentTarget) setShowModuleModal(false);
+          }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
+          <motion.div 
+            className={styles.modalBox} 
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.92, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.92, y: 20, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 className={styles.modalTitle} style={{ margin: 0 }}>{editingModule ? 'Edit Module' : 'Add New Module'}</h2>
-              <button aria-label="Close modal" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowModuleModal(false)}><X size={18} /></button>
+              <button type="button" aria-label="Close modal" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowModuleModal(false)}><X size={18} /></button>
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Module Title *</label>
-              <input className={styles.modalInput} placeholder="e.g. Introduction to UI Design" value={moduleForm.title} onChange={e => setModuleForm(p => ({ ...p, title: e.target.value }))} autoFocus onKeyDown={e => e.key === 'Enter' && submitModule()} />
+              <input
+                className={styles.modalInput}
+                style={moduleError && !moduleForm.title.trim() ? { borderColor: '#EF4444' } : {}}
+                placeholder="e.g. Introduction to UI Design"
+                value={moduleForm.title}
+                onChange={e => { setModuleForm(p => ({ ...p, title: e.target.value })); setModuleError(null); }}
+                autoFocus
+                onKeyDown={e => e.key === 'Enter' && submitModule()}
+              />
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Learning Outcome</label>
@@ -462,7 +647,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
               <div className={styles.aiSectionTitle}><Sparkles size={14} /> Smart Teyro AI Features</div>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {['Generate Outline', 'Suggest Lessons', 'Estimate Duration'].map(label => (
-                  <button key={label} className={styles.aiBtn} onClick={() => setPremiumModal({
+                  <button type="button" key={label} className={styles.aiBtn} onClick={() => setPremiumModal({
                     title: 'AI Features Coming Soon',
                     desc: 'Teyro AI will help you generate outlines, suggest lessons, and build better learning journeys. Available in our upcoming Pro plan.'
                   })}><Brain size={12} /> {label}</button>
@@ -470,30 +655,61 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
               </div>
             </div>
             <div className={styles.modalActions}>
-              <button className={styles.modalCancelBtn} onClick={() => setShowModuleModal(false)}>Cancel</button>
-              <button className={styles.modalSubmitBtn} onClick={submitModule}>{editingModule ? 'Save Changes' : 'Add Module'}</button>
+              {moduleError && (
+                <p style={{ flex: 1, fontSize: 12, color: '#EF4444', margin: 0, alignSelf: 'center' }}>{moduleError}</p>
+              )}
+              <button type="button" className={styles.modalCancelBtn} onClick={() => setShowModuleModal(false)} disabled={submitting}>Cancel</button>
+              <motion.button
+                type="button"
+                whileTap={!submitting ? { scale: 0.95 } : {}}
+                className={styles.modalSubmitBtn}
+                onClick={submitModule}
+                disabled={submitting}
+                style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+              >
+                {submitting ? 'Saving…' : editingModule ? 'Save Changes' : 'Add Module'}
+              </motion.button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* ─── LESSON MODAL ─── */}
+      <AnimatePresence mode="wait">
       {showLessonModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowLessonModal(false)}>
-          <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
+        <motion.div 
+          key="lesson-modal"
+          className={styles.modalOverlay} 
+          onClick={(e) => {
+            if (lessonModalJustOpened.current) return;
+            if (e.target === e.currentTarget) setShowLessonModal(false);
+          }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
+          <motion.div 
+            className={styles.modalBox} 
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.92, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.92, y: 20, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <h2 className={styles.modalTitle} style={{ margin: 0 }}>{editingLesson ? 'Edit Lesson' : 'Add Lesson'}</h2>
               <button aria-label="Close modal" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }} onClick={() => setShowLessonModal(false)}><X size={18} /></button>
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Lesson Title *</label>
-              <input className={styles.modalInput} placeholder="e.g. What is UI Design?" value={lessonForm.title} onChange={e => setLessonForm(p => ({ ...p, title: e.target.value }))} autoFocus onKeyDown={e => e.key === 'Enter' && submitLesson()} />
+              <motion.input whileFocus={{ scale: 1.01 }} className={styles.modalInput} placeholder="e.g. What is UI Design?" value={lessonForm.title} onChange={e => setLessonForm(p => ({ ...p, title: e.target.value }))} autoFocus onKeyDown={e => e.key === 'Enter' && submitLesson()} />
             </div>
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Lesson Type</label>
               <div className={styles.lessonTypePicker}>
                 {LESSON_TYPES.map(t => (
-                  <button key={t.key} type="button"
+                  <motion.button key={t.key} type="button"
+                    whileTap={{ scale: 0.95 }}
                     className={`${styles.lessonTypeCard} ${lessonForm.lessonType === t.key ? styles.lessonTypeCardActive : ''}`}
                     onClick={() => setLessonForm(p => ({ ...p, lessonType: t.key }))}
                   >
@@ -501,17 +717,30 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
                       {t.icon}
                     </div>
                     <span className={styles.lessonTypeName}>{t.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
             <div className={styles.modalActions}>
-              <button className={styles.modalCancelBtn} onClick={() => setShowLessonModal(false)}>Cancel</button>
-              <button className={styles.modalSubmitBtn} onClick={submitLesson}>{editingLesson ? 'Save Changes' : 'Add Lesson'}</button>
+              {lessonError && (
+                <p style={{ flex: 1, fontSize: 12, color: '#EF4444', margin: 0, alignSelf: 'center' }}>{lessonError}</p>
+              )}
+              <button type="button" className={styles.modalCancelBtn} onClick={() => setShowLessonModal(false)} disabled={submitting}>Cancel</button>
+              <motion.button
+                type="button"
+                whileTap={!submitting ? { scale: 0.95 } : {}}
+                className={styles.modalSubmitBtn}
+                onClick={submitLesson}
+                disabled={submitting}
+                style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+              >
+                {submitting ? 'Saving…' : editingLesson ? 'Save Changes' : 'Add Lesson'}
+              </motion.button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* ─── CONFIRM MODAL ─── */}
       {confirmModal && (
