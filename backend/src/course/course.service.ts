@@ -339,19 +339,21 @@ export class CourseService {
   }
 
   async createSection(userId: string, courseId: string, title: string) {
+    const trimmedTitle = (title || '').trim();
+    if (!trimmedTitle) throw new Error('Module title is required');
+
     const course = await this.getOwnedDraft(userId, courseId);
 
-    // Auto-calculate orderIndex
-    const count = await this.prisma.section.count({
-      where: { courseId: course.id },
-    });
-
-    return await this.prisma.section.create({
-      data: {
-        title,
-        orderIndex: count,
-        courseId: course.id,
-      },
+    return await this.prisma.$transaction(async (tx) => {
+      const count = await tx.section.count({ where: { courseId: course.id } });
+      return await tx.section.create({
+        data: {
+          title: trimmedTitle,
+          orderIndex: count,
+          courseId: course.id,
+        },
+        include: { lessons: true },
+      });
     });
   }
 
@@ -394,9 +396,22 @@ export class CourseService {
     title: string,
     lessonType?: string,
   ) {
+    // Validate and sanitize title
+    const trimmedTitle = (title || '').trim();
+    if (!trimmedTitle) {
+      throw new Error('Lesson title is required');
+    }
+    if (trimmedTitle.length > 100) {
+      throw new Error('Lesson title must be 100 characters or less');
+    }
+
+    // Validate lessonType against allowed values
+    const ALLOWED_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
+    const safeType = ALLOWED_TYPES.includes(lessonType || '') ? lessonType : 'video';
+
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
-      include: { course: true },
+      include: { course: { select: { instructorId: true } } },
     });
 
     if (!section) throw new NotFoundException('Section not found');
@@ -404,17 +419,21 @@ export class CourseService {
       throw new ForbiddenException('You do not own this course');
     }
 
-    const count = await this.prisma.lesson.count({
-      where: { sectionId },
-    });
+    // Use transaction to atomically count + create (prevents orderIndex races)
+    return await this.prisma.$transaction(async (tx) => {
+      const count = await tx.lesson.count({ where: { sectionId } });
 
-    return await this.prisma.lesson.create({
-      data: {
-        title,
-        lessonType: lessonType || 'video',
-        orderIndex: count,
-        sectionId,
-      },
+      return await tx.lesson.create({
+        data: {
+          title: trimmedTitle,
+          lessonType: safeType,
+          orderIndex: count,
+          sectionId,
+          status: 'draft',
+          contentBlocks: {},
+          stepCompletion: { learn: false, apply: false, reflect: false, deepen: false },
+        },
+      });
     });
   }
 
