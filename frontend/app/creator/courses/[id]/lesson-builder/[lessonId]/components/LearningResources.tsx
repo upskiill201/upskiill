@@ -12,6 +12,7 @@ export interface ResourceItem {
   size?: string;
   time?: string;
   url: string;
+  estimatedReadMin?: number;
 }
 
 interface Props {
