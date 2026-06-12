@@ -102,17 +102,18 @@ export default function Button({
   };
 
   if (href && !disabled && !loading) {
+    // Cast MotionLink to any here or use ts-ignore if there are type issues, but typically it works.
+    const MotionLink = motion.create ? motion.create(Link) : (motion as any)(Link);
     return (
-      <Link href={href} passHref legacyBehavior>
-        <motion.a 
-          className={classes} 
-          id={id}
-          aria-label={ariaLabel}
-          {...motionProps}
-        >
-          {content}
-        </motion.a>
-      </Link>
+      <MotionLink 
+        href={href}
+        className={classes} 
+        id={id}
+        aria-label={ariaLabel}
+        {...motionProps}
+      >
+        {content}
+      </MotionLink>
     );
   }
 

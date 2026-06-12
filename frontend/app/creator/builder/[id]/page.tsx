@@ -1034,7 +1034,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                         <motion.div 
                           className={`${styles.checkCircle} ${item.done ? styles.checkCircleDone : ''}`}
                           animate={{ scale: item.done ? [1, 1.2, 1] : 1 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                          transition={item.done ? { type: "tween", duration: 0.3 } : { type: "spring", stiffness: 300, damping: 15 }}
                         >
                           <AnimatePresence>
                             {item.done && (
