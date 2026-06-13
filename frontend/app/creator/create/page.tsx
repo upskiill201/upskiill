@@ -39,6 +39,7 @@ export default function CourseCreationWizard() {
   const { triggerComingSoon } = useComingSoon(); // ✅ Initialize global coming soon trigger
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // Form State
   const [courseType, setCourseType] = useState<'course' | 'test' | null>(null);
@@ -67,6 +68,7 @@ export default function CourseCreationWizard() {
   const submitCourse = async () => {
     if (!title) return;
     setIsSubmitting(true);
+    setErrorMsg(null);
     try {
       // IMPORTANT: Must use /api/ proxy so the httpOnly session cookie is forwarded correctly.
       // Direct calls to NEXT_PUBLIC_API_URL across domains will strip the cookie.
@@ -89,11 +91,11 @@ export default function CourseCreationWizard() {
       } else {
         const err = await res.json().catch(() => ({}));
         console.error('Failed to create course:', res.status, err);
-        alert(`There was an error creating your course (${res.status}). Please try again.`);
+        setErrorMsg(`There was an error creating your course (${res.status}). Please verify your session and try again.`);
       }
     } catch (err) {
       console.error('Network error:', err);
-      alert('A network error occurred. Please check your connection and try again.');
+      setErrorMsg('A network error occurred. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -129,6 +131,13 @@ export default function CourseCreationWizard() {
       {/* Main Content Area */}
       <main className={styles.contentWrapper}>
         <div className={styles.stepContainer} key={step}>
+          
+          {errorMsg && (
+            <div style={{ padding: '12px 16px', background: '#FEE2E2', color: '#EF4444', borderRadius: '10px', marginBottom: '24px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #FCA5A5' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              {errorMsg}
+            </div>
+          )}
           
           {step === 1 && (
             <>
