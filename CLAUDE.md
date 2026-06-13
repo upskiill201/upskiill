@@ -118,14 +118,25 @@ Teyro has **three environments**. Always confirm which environment you are targe
 
 ```
 Development  →  localhost:3000 (frontend)  +  localhost:3001 (backend)
-Staging      →  upskiill-git-staging-upskiill201s-projects.vercel.app  +  upskiill-backend.onrender.com  +  teyro-staging Supabase
-Production   →  teyro.app                     +  teyro-backend.onrender.com     +  teyro-production Supabase
+Staging      →  upskiill-git-staging-upskiill201s-projects.vercel.app  +  upskiill-backend.onrender.com  +  iobdpmczxikgocvfzouo (Supabase staging project)
+Production   →  teyro.app (+ upskiill.vercel.app)                      +  teyro-backend.onrender.com    +  lemajgyltvxjqvwjqvtg (Supabase production project)
 ```
 
 > **Note on naming:** 
-> - The staging backend URL still says "upskiill" because Render does not allow renaming the subdomain of an existing service. The service is labelled `teyro-backend-staging` in the Render dashboard. 
-> - The staging frontend URL is `upskiill-git-staging-upskiill201s-projects.vercel.app`.
+> - The staging backend service on Render is named `teyro-backend-staging` in the Render dashboard but its public subdomain is `upskiill-backend.onrender.com` (Render does not allow renaming existing subdomains). 
+> - The staging Vercel URL is a Preview deployment generated from the `staging` branch — it will always contain `upskiill-git-staging` in the URL.
 > - This is intentional — staging is for testing, not for users to see.
+
+### Verified Infrastructure (as of 2026-06-12)
+
+| Layer | Staging | Production |
+|---|---|---|
+| **Frontend URL** | `upskiill-git-staging-upskiill201s-projects.vercel.app` | `teyro.app` / `upskiill.vercel.app` |
+| **Backend URL** | `https://upskiill-backend.onrender.com` | `https://teyro-backend.onrender.com` |
+| **Database** | Supabase project `iobdpmczxikgocvfzouo` (pooler: `aws-1-eu-west-1`) | Supabase project `lemajgyltvxjqvwjqvtg` (pooler: `aws-0-eu-west-1`) |
+| **File Storage** | AWS S3 bucket `teyro-course-videos`, CloudFront `dhnydb8s9j6i4.cloudfront.net` | Same S3 bucket and CloudFront |
+| **Render service** | `teyro-backend-staging` | `teyro-backend` |
+| **Vercel branch** | `staging` | `main` |
 
 ### Deployment Flow & CI/CD
 
@@ -154,18 +165,28 @@ NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
-**Vercel Preview environment (staging branch):**
+**Vercel Preview environment (staging branch — set in Vercel Dashboard):**
 ```
 NEXT_PUBLIC_API_URL=https://upskiill-backend.onrender.com
 NEXT_PUBLIC_ENVIRONMENT=staging
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+AWS_ACCESS_KEY_ID=...          ← server-side only (no NEXT_PUBLIC_ prefix)
+AWS_SECRET_ACCESS_KEY=...      ← server-side only
+AWS_REGION=eu-west-1
+AWS_S3_BUCKET=teyro-course-videos
+CLOUDFRONT_URL=https://dhnydb8s9j6i4.cloudfront.net
 ```
 
-**Vercel Production environment (main branch → teyro.app):**
+**Vercel Production environment (main branch → teyro.app — set in Vercel Dashboard):**
 ```
 NEXT_PUBLIC_API_URL=https://teyro-backend.onrender.com
 NEXT_PUBLIC_ENVIRONMENT=production
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+AWS_ACCESS_KEY_ID=...          ← same AWS account, same values
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=eu-west-1
+AWS_S3_BUCKET=teyro-course-videos
+CLOUDFRONT_URL=https://dhnydb8s9j6i4.cloudfront.net
 ```
 
 ### The API URL Rule (Hard Stop)
@@ -188,15 +209,57 @@ const response = await fetch('http://localhost:3001/courses');
 
 ### GitHub Secrets Required
 
-For GitHub Actions CI/CD to work, these secrets must be set in GitHub → repo → Settings → Secrets:
+For GitHub Actions CI/CD to work, these secrets must be set in GitHub → repo → Settings → Secrets → Actions:
 ```
-STAGING_DATABASE_URL              ← Supabase teyro-staging connection string (transaction mode)
-STAGING_DIRECT_URL                ← Supabase teyro-staging direct URL
-PRODUCTION_DATABASE_URL           ← Supabase teyro-production connection string
-PRODUCTION_DIRECT_URL             ← Supabase teyro-production direct URL
-RENDER_STAGING_DEPLOY_HOOK_URL    ← from Render teyro-backend-staging → Settings → Deploy Hook
-RENDER_PRODUCTION_DEPLOY_HOOK_URL ← from Render teyro-backend → Settings → Deploy Hook
+STAGING_DATABASE_URL              ← postgresql://postgres.iobdpmczxikgocvfzouo:...@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+STAGING_DIRECT_URL                ← postgresql://postgres.iobdpmczxikgocvfzouo:...@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+PRODUCTION_DATABASE_URL           ← postgresql://postgres.lemajgyltvxjqvwjqvtg:...@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+PRODUCTION_DIRECT_URL             ← postgresql://postgres.lemajgyltvxjqvwjqvtg:...@aws-0-eu-west-1.pooler.supabase.com:5432/postgres
+RENDER_STAGING_DEPLOY_HOOK_URL    ← from Render → teyro-backend-staging → Settings → Deploy Hook
+RENDER_PRODUCTION_DEPLOY_HOOK_URL ← from Render → teyro-backend → Settings → Deploy Hook
 ```
+
+> **DB URL note:** Supabase passwords containing special characters like `!`, `@`, `#` must be URL-encoded in connection strings. `!` → `%21`, `@` → `%40`, `#` → `%23`. Never use quotes around the URL in Render or GitHub Secrets.
+
+### AWS S3 CORS Policy (Required)
+
+The S3 bucket `teyro-course-videos` must have this CORS policy set in AWS Console → S3 → Permissions → CORS:
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+    "AllowedOrigins": [
+      "http://localhost:3000",
+      "https://teyro.app",
+      "https://*.vercel.app"
+    ],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+### Render Staging Backend Environment Variables (Required)
+
+Set in Render Dashboard → teyro-backend-staging → Environment:
+```
+DATABASE_URL=postgresql://postgres.iobdpmczxikgocvfzouo:...@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+DIRECT_URL=postgresql://postgres.iobdpmczxikgocvfzouo:...@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+ALLOWED_ORIGINS=https://upskiill-git-staging-upskiill201s-projects.vercel.app,http://localhost:3000
+FIREBASE_PROJECT_ID=upskiill
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@upskiill.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
+JWT_SECRET=...
+```
+
+### Firebase Authorized Domains (Required)
+
+In Firebase Console → Authentication → Settings → Authorized Domains, these must be listed:
+- `localhost`
+- `teyro.app`
+- `upskiill.vercel.app`
+- `upskiill-git-staging-upskiill201s-projects.vercel.app`
 
 ---
 
