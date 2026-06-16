@@ -543,7 +543,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           <div className={styles.stepsDrawer} onClick={e => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
               <span className={styles.drawerTitle}>Course Steps</span>
-              <button className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
+              <button aria-label="Close steps menu" className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
             </div>
             {STEPS.map(step => (
               <div key={step.num} className={`${styles.drawerStep} ${step.num === activeStep ? styles.drawerStepActive : ''}`}>
@@ -607,7 +607,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           <button className={styles.saveDraftBtn} onClick={saveDraft} disabled={saving}>
             {saving ? 'Saving...' : 'Save draft'}
           </button>
-          <button className={styles.closeBtn} onClick={() => router.push('/creator/courses')}>
+          <button aria-label="Close course builder" className={styles.closeBtn} onClick={() => router.push('/creator/courses')}>
             <X size={20} />
           </button>
         </div>
@@ -808,7 +808,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                       />
                     </motion.div>
                     {data.outcomes.length > 1 && (
-                      <button type="button" className={styles.removeBtn} onClick={() => removeOutcome(idx)}>
+                      <button aria-label="Remove outcome" type="button" className={styles.removeBtn} onClick={() => removeOutcome(idx)}>
                         <X size={14} />
                       </button>
                     )}
@@ -846,7 +846,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 {data.skills.map(skill => (
                   <span key={skill} className={styles.tag}>
                     {skill}
-                    <button type="button" className={styles.tagRemove} onClick={() => removeSkill(skill)}>
+                    <button aria-label="Remove skill" type="button" className={styles.tagRemove} onClick={() => removeSkill(skill)}>
                       <X size={12} />
                     </button>
                   </span>
@@ -939,6 +939,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                             <Edit2 size={13} /> Replace
                           </button>
                           <button
+                            aria-label="Remove thumbnail"
                             type="button"
                             className={styles.thumbActionBtn}
                             onClick={() => updateField('thumbnailUrl', '')}
