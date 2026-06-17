@@ -234,7 +234,7 @@ export default function DashboardLayout({
             <div className={styles.headerRight}>
               <div className={styles.searchWrapper}>
                 <Search size={18} className={styles.searchIcon} />
-                <input type="text" placeholder="Search..." className={styles.searchInput} />
+                <input type="text" placeholder="Search..." className={styles.searchInput} aria-label="Search dashboard" />
               </div>
               
               <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>

@@ -103,6 +103,7 @@ export default function Header() {
               type="text" 
               placeholder="What do you want to learn today?" 
               className={styles.searchInput}
+              aria-label="Search courses"
             />
           </div>
         </div>
