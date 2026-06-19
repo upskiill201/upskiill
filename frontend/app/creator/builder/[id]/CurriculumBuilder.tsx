@@ -91,9 +91,21 @@ function SortableLesson({
   const style = { transform: CSS.Transform.toString(transform), transition };
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const hasContent = !!(lesson.learnVideoUrl || lesson.learnText || lesson.applyScenario);
+  let parsedBlocks: any = (lesson as any).contentBlocks || {};
+  if (typeof parsedBlocks === 'string') {
+    try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+  }
+
+  let stepCompletion: any = (lesson as any).stepCompletion || {};
+  if (typeof stepCompletion === 'string') {
+    try { stepCompletion = JSON.parse(stepCompletion); } catch (e) { stepCompletion = {}; }
+  }
+
+  const hasContent = Object.keys(parsedBlocks).length > 0 || Object.keys(stepCompletion).length > 0;
+  const isFullyComplete = stepCompletion?.learn === true && stepCompletion?.apply === true && stepCompletion?.reflect === true;
+
   const status: 'not_started' | 'in_progress' | 'complete' =
-    hasContent && lesson.applyScenario && lesson.learnVideoUrl ? 'complete'
+    isFullyComplete ? 'complete'
     : hasContent ? 'in_progress'
     : 'not_started';
 

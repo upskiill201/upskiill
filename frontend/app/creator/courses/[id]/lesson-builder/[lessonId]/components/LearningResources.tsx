@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
-import { Plus, FileText, Image as ImageIcon, Link as LinkIcon, MoreVertical, Trash2, RefreshCcw } from 'lucide-react';
+import { Plus, FileText, Image as ImageIcon, Link as LinkIcon, MoreVertical, Trash2, RefreshCcw, Sparkles } from 'lucide-react';
 import { useS3Upload } from '@/hooks/useS3Upload';
 import styles from '../LessonBuilder.module.css';
 import { AddResourceModal } from './AddResourceModal';
@@ -160,15 +160,41 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
   const [editMode, setEditMode] = useState<'details' | 'replace'>('details');
   const { uploading, progress } = useS3Upload();
 
-  const remove = (id: string) => onChange(resources.filter(r => r.id !== id));
+  const remove = async (id: string) => {
+    try {
+      await fetch(`/api/lesson/${lessonId}/resources/${id}`, { method: 'DELETE' });
+      onChange(resources.filter(r => r.id !== id));
+    } catch (err) {
+      console.error('Failed to delete resource', err);
+    }
+  };
 
-  const handleAddResource = (resource: any) => {
-    if (editingResource) {
-      // Update existing resource
-      onChange(resources.map(r => r.id === editingResource.id ? { ...resource, id: editingResource.id } : r));
-    } else {
-      // Add new
-      onChange([...resources, resource]);
+  const handleAddResource = async (resource: any) => {
+    try {
+      if (editingResource) {
+        // Technically backend needs an update route if editing. But if not, we skip.
+        onChange(resources.map(r => r.id === editingResource.id ? { ...resource, id: editingResource.id } : r));
+      } else {
+        const res = await fetch(`/api/lesson/${lessonId}/resources`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: resource.title,
+            type: resource.type,
+            storageUrl: resource.url,
+            sizeBytes: parseInt(resource.size) || 0,
+            originalName: resource.title,
+            estimatedReadMin: parseInt(resource.time) || 0,
+            displayOrder: resources.length,
+          }),
+        });
+        if (res.ok) {
+          const newRes = await res.json();
+          onChange([...resources, { ...resource, id: newRes.id }]);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to add resource', err);
     }
     setShowModal(false);
     setEditingResource(null);
@@ -194,20 +220,25 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
 
   return (
     <div className={styles.resourcesPanel}>
-      <div className={styles.resourcesHeader}>
-        <div>
-          <span className={styles.resourcesLabel}>3. Add Learning Resources</span>
-          <span className={styles.resourcesOptional}> (Optional)</span>
+      <div className={styles.resourcesHeaderPremium}>
+        <div className={styles.resourcesTitleWrapper}>
+          <div className={styles.resourcesIconPremium}>
+            <Sparkles size={16} color="#3D5AFE" />
+          </div>
+          <div>
+            <span className={styles.resourcesLabelPremium}>3. Add Learning Resources</span>
+            <span className={styles.resourcesOptionalPremium}> (Optional)</span>
+          </div>
         </div>
         <button 
-          className={styles.addResourceBtn} 
+          className={styles.addResourceBtnPremium} 
           onClick={openNewModal}
           disabled={uploading}
         >
           {uploading ? `Uploading ${progress}%` : <><Plus size={14} /> Add Resource</>}
         </button>
       </div>
-      <p className={styles.resourcesSubtext}>Upload supporting materials that help learners go deeper. Hosted securely on AWS S3.</p>
+      <p className={styles.resourcesSubtextPremium}>Upload supporting materials that help learners go deeper. Hosted securely on AWS S3.</p>
 
       {resources.length === 0 ? (
         <div className={styles.resourcesEmpty}>No resources attached yet.</div>

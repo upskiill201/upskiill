@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
   UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
-  Target, Award, Info
+  Target, Award, Info, WifiOff, AlertCircle
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
@@ -19,6 +19,12 @@ import 'react-quill-new/dist/quill.snow.css';
 
 /* ── sub-components ── */
 import { LearningResources, ResourceItem } from './components/LearningResources';
+import { ApplyTab, MCQActivity } from './components/ApplyTab';
+import { ApplySidebar } from './components/ApplySidebar';
+import { ReflectTab, ReflectActivity } from './components/ReflectTab';
+import { ReflectSidebar } from './components/ReflectSidebar';
+import { DeepenTab, DeepenConfig } from './components/DeepenTab';
+import { DeepenSidebar } from './components/DeepenSidebar';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
@@ -113,10 +119,64 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const [currentTab, setCurrentTab] = useState('learn');
   const [contentType, setContentType] = useState('video');
   const [resources, setResources] = useState<ResourceItem[]>([]);
+  const [mcqActivity, setMcqActivity] = useState<MCQActivity>({
+    scenario: '',
+    passingScore: 70,
+    allowRetries: true,
+    difficultyLevel: 'medium',
+    questions: [],
+  });
+  const [reflectActivity, setReflectActivity] = useState<ReflectActivity>({
+    prompt: '',
+    type: 'open',
+    openConfig: {
+      useStarters: false,
+      starters: [
+        { id: 's_1', text: 'I learned that...' },
+        { id: 's_2', text: 'This will help me...' },
+        { id: 's_3', text: 'I want to try...' }
+      ],
+      minWordCount: 20,
+      required: true,
+      peerVisibility: false,
+      allowComments: false,
+      allowAttachments: false,
+    },
+    guidedConfig: {
+      questions: [{ id: 'q_1', text: '' }],
+      minWordCountPerQuestion: 10,
+      required: true,
+      allowAttachments: false,
+    }
+  });
+  const [deepenConfig, setDeepenConfig] = useState<DeepenConfig>({
+    collectionTitle: '',
+    collectionDescription: '',
+    resourceSettings: {
+      makeRequired: false,
+      trackCompletion: false,
+      allowDownloads: true,
+      openInNewTab: true,
+    },
+    recommendedNextStep: { type: 'continue' },
+    showLearningPathSuggestions: false,
+    learningPathSuggestions: [],
+  });
 
   const hasInitialLoadCompleted = useRef(false);
-  const { isOnline, syncStatus, lastSavedAt, syncMetadata, syncPhase } = useSyncQueue(lessonId as string, lesson?.version || 1);
+  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty } = useSyncQueue(lessonId as string, lesson?.version || 1);
   const debouncedLesson = useDebounce(lesson, 1000);
+  const debouncedMcqActivity = useDebounce(mcqActivity, 1000);
+  const debouncedReflectActivity = useDebounce(reflectActivity, 1000);
+  const debouncedDeepenConfig = useDebounce(deepenConfig, 1000);
+  const debouncedResources = useDebounce(resources, 1000);
+
+  // Track dirty state when user makes changes
+  useEffect(() => {
+    if (hasInitialLoadCompleted.current) {
+      setDirty();
+    }
+  }, [lesson, mcqActivity, reflectActivity, deepenConfig, resources, contentType, setDirty]);
 
   /* fetch */
   useEffect(() => {
@@ -134,14 +194,43 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             setResources(d.resources);
           }
           
-          if (d.contentBlocks?.learn) {
-            const learnBlocks = d.contentBlocks.learn;
-            setLesson((l: any) => ({
-              ...l,
-              learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
-              learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
-              learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
-            }));
+          if (d.contentBlocks) {
+            let parsedBlocks = d.contentBlocks;
+            if (typeof parsedBlocks === 'string') {
+              try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+            }
+            d.contentBlocks = parsedBlocks; // Ensure other parts of the app use the parsed object
+            
+            if (parsedBlocks?.learn) {
+              const learnBlocks = parsedBlocks.learn;
+              setLesson((l: any) => ({
+                ...l,
+                learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
+                learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
+                learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
+              }));
+            }
+            if (parsedBlocks?.apply) {
+              const applyBlocks = parsedBlocks.apply;
+              const mcqBlock = Array.isArray(applyBlocks)
+                ? applyBlocks.find((b: any) => b.type === 'mcqActivity')?.value
+                : applyBlocks?.mcqActivity;
+              if (mcqBlock) setMcqActivity(mcqBlock);
+            }
+            if (parsedBlocks?.reflect) {
+              const reflectBlocks = parsedBlocks.reflect;
+              const reflectBlock = Array.isArray(reflectBlocks)
+                ? reflectBlocks.find((b: any) => b.type === 'reflectActivity')?.value
+                : reflectBlocks?.reflectActivity;
+              if (reflectBlock) setReflectActivity(reflectBlock);
+            }
+            if (parsedBlocks?.deepen) {
+              const deepenBlocks = parsedBlocks.deepen;
+              const deepenBlock = Array.isArray(deepenBlocks)
+                ? deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value
+                : deepenBlocks?.deepenActivity;
+              if (deepenBlock) setDeepenConfig(deepenBlock);
+            }
           }
         }
       } catch (e) { console.error(e); }
@@ -154,29 +243,138 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
   /* Autosave */
   useEffect(() => {
-    if (loading || !debouncedLesson || !hasInitialLoadCompleted.current) return;
-    const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
+    if (loading || !debouncedLesson || !debouncedMcqActivity || !debouncedReflectActivity || !debouncedDeepenConfig || !hasInitialLoadCompleted.current) return;
     
-    syncMetadata({
-      title: debouncedLesson.title,
-      shortDescription: debouncedLesson.shortDescription,
-      lessonType: contentType,
-    });
+    const runAutosave = async () => {
+      const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
+      
+      await syncMetadata({
+        title: debouncedLesson.title,
+        shortDescription: debouncedLesson.shortDescription,
+        lessonType: contentType,
+      });
 
-    syncPhase('learn', {
-      contentBlocks: [
-        { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
-        { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
-        { type: 'text', value: debouncedLesson.learnText },
-      ],
-      isCompleted: isLearnCompleted
-    });
-  }, [debouncedLesson, contentType, loading]);
+      await syncPhase('learn', {
+        contentBlocks: [
+          { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
+          { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
+          { type: 'text', value: debouncedLesson.learnText },
+        ],
+        isCompleted: isLearnCompleted
+      });
+
+      const isApplyCompleted = debouncedMcqActivity.questions.length > 0 &&
+        debouncedMcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
+      await syncPhase('apply', {
+        contentBlocks: [{ type: 'mcqActivity', value: debouncedMcqActivity }],
+        isCompleted: isApplyCompleted
+      });
+
+      const isReflectCompleted = debouncedReflectActivity.prompt.trim().length > 0 && 
+        (debouncedReflectActivity.type === 'open' ? (!debouncedReflectActivity.openConfig.useStarters || debouncedReflectActivity.openConfig.starters.length > 0) : 
+        (debouncedReflectActivity.guidedConfig.questions.length > 0 && debouncedReflectActivity.guidedConfig.questions.every(q => q.text.trim())));
+      await syncPhase('reflect', {
+        contentBlocks: [{ type: 'reflectActivity', value: debouncedReflectActivity }],
+        isCompleted: isReflectCompleted
+      });
+
+      const isDeepenCompleted = debouncedDeepenConfig.collectionTitle.trim().length > 0 && debouncedResources.length > 0 && debouncedResources.every(r => (r.url || '').trim());
+      await syncPhase('deepen', {
+        contentBlocks: [{ type: 'deepenActivity', value: debouncedDeepenConfig }],
+        isCompleted: isDeepenCompleted
+      });
+      
+      // We also update the lesson resources
+      await fetch(`/api/lesson/${lessonId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resources: debouncedResources }),
+      });
+    };
+
+    runAutosave();
+  }, [debouncedLesson, debouncedMcqActivity, debouncedReflectActivity, debouncedDeepenConfig, debouncedResources, contentType, loading]);
 
   /* save */
+  const forceManualSave = async () => {
+    setSaving(true);
+    try {
+      const isLearnCompleted = !!(debouncedLesson?.title && (debouncedLesson?.learnVideoUrl || debouncedLesson?.learnText || debouncedLesson?.learnAudioUrl));
+      
+      await syncMetadata({
+        title: debouncedLesson?.title || '',
+        shortDescription: debouncedLesson?.shortDescription || '',
+        lessonType: contentType,
+      });
+
+      await syncPhase('learn', {
+        contentBlocks: [
+          { type: 'videoUrl', value: debouncedLesson?.learnVideoUrl || '' },
+          { type: 'audioUrl', value: debouncedLesson?.learnAudioUrl || '' },
+          { type: 'text', value: debouncedLesson?.learnText || '' },
+        ],
+        isCompleted: isLearnCompleted
+      });
+
+      const isApplyCompleted = mcqActivity.questions.length > 0 &&
+        mcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
+      await syncPhase('apply', {
+        contentBlocks: [{ type: 'mcqActivity', value: mcqActivity }],
+        isCompleted: isApplyCompleted
+      });
+
+      const isReflectCompleted = reflectActivity.prompt.trim().length > 0 && 
+        (reflectActivity.type === 'open' ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0) : 
+        (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every(q => q.text.trim())));
+      await syncPhase('reflect', {
+        contentBlocks: [{ type: 'reflectActivity', value: reflectActivity }],
+        isCompleted: isReflectCompleted
+      });
+
+      const isDeepenCompleted = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every(r => (r.url || '').trim());
+      await syncPhase('deepen', {
+        contentBlocks: [{ type: 'deepenActivity', value: deepenConfig }],
+        isCompleted: isDeepenCompleted
+      });
+      
+      await fetch(`/api/lesson/${lessonId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resources: resources }),
+      });
+
+      // Small artificial delay to show user it saved successfully
+      await new Promise(r => setTimeout(r, 600));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSave = async (redirect?: string) => {
+    await forceManualSave();
     if (redirect) router.push(redirect);
   };
+
+  /* Interval Autosave */
+  useEffect(() => {
+    if (!isDirty || saving) return;
+    const interval = setInterval(() => {
+      forceManualSave();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [isDirty, saving, debouncedLesson, contentType]);
+
+  /* Keyboard Shortcut for Save */
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (isDirty && !saving) forceManualSave();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDirty, saving, debouncedLesson, contentType]);
 
   const videoTime = lesson?.durationMinutes || 0;
   const textWords = (lesson?.learnText || '').replace(/<[^>]*>?/gm, '').split(/\s+/).length;
@@ -187,11 +385,20 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const hasTitle = !!lesson?.title;
   const hasContent = !!(lesson?.learnVideoUrl || lesson?.learnText || lesson?.learnAudioUrl);
   
+  const isApplyComplete = mcqActivity.questions.length > 0 &&
+    mcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
+
+  const isReflectComplete = reflectActivity.prompt.trim().length > 0 && 
+    (reflectActivity.type === 'open' ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0) : 
+    (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every(q => q.text.trim())));
+
+  const isDeepenComplete = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every(r => (r.url || r.title || '').trim());
+
   const completedStepsCount = [
     hasTitle && hasContent, // Learn
-    lesson?.isApplyCompleted || false, // Apply
-    lesson?.isReflectCompleted || false, // Reflect
-    lesson?.isDeepenCompleted || resources.length > 0, // Deepen
+    isApplyComplete, // Apply
+    isReflectComplete, // Reflect
+    isDeepenComplete, // Deepen
   ].filter(Boolean).length;
   
   const progressPct = Math.round((completedStepsCount / 4) * 100);
@@ -206,9 +413,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
   const FLOW_STEPS = [
     { id: 'learn',   num: '1', title: 'Learn',   sub: 'Teach the concept',    status: isLearnComplete ? 'Completed' : 'Current step' },
-    { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: 'Not started' },
-    { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: 'Not started' },
-    { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: 'Not started' },
+    { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: isApplyComplete ? 'Completed' : 'Not started' },
+    { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: isReflectComplete ? 'Completed' : 'Not started' },
+    { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: isDeepenComplete ? 'Completed' : 'Not started' },
   ];
 
   const radius = 20;
@@ -592,16 +799,32 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             </>
           )}
 
-          {currentTab !== 'learn' && (
-            <div style={{ padding: '64px 0', textAlign: 'center', color: '#94A3B8' }}>
-              <BookOpen size={32} style={{ marginBottom: 12, opacity: .4 }} />
-              <p style={{ fontSize: 15 }}>{currentTab.charAt(0).toUpperCase() + currentTab.slice(1)} step coming soon.</p>
-            </div>
+          {currentTab === 'apply' && (
+            <ApplyTab activity={mcqActivity} onChange={setMcqActivity} />
+          )}
+
+          {currentTab === 'reflect' && (
+            <ReflectTab activity={reflectActivity} onChange={setReflectActivity} />
+          )}
+
+          {currentTab === 'deepen' && (
+            <DeepenTab 
+              config={deepenConfig} 
+              onChangeConfig={setDeepenConfig} 
+              resources={resources} 
+              onChangeResources={setResources} 
+              lessonId={lessonId as string} 
+            />
           )}
         </div>
 
         {/* RIGHT SIDEBAR */}
         <aside className={styles.rightSidebar}>
+          {currentTab === 'apply' && <ApplySidebar activity={mcqActivity} />}
+          {currentTab === 'reflect' && <ReflectSidebar activity={reflectActivity} />}
+          {currentTab === 'deepen' && <DeepenSidebar config={deepenConfig} resources={resources} />}
+          
+          {currentTab === 'learn' && (<>
           {/* Flow preview */}
           <div className={styles.sideCard}>
             <h3 className={styles.sideCardTitle}>Lesson Flow Preview</h3>
@@ -655,9 +878,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <div className={styles.checkList}>
               {[
                 { label: 'Learn content', done: isLearnComplete },
-                { label: 'Apply activity', done: lesson?.isApplyCompleted || false },
-                { label: 'Reflect prompt', done: lesson?.isReflectCompleted || false },
-                { label: 'Deepen resources', done: lesson?.isDeepenCompleted || resources.length > 0 },
+                { label: 'Apply activity', done: isApplyComplete },
+                { label: 'Reflect prompt', done: isReflectComplete },
+                { label: 'Deepen resources', done: isDeepenComplete },
               ].map(item => (
                 <div key={item.label} className={`${styles.checkRow} ${item.done ? styles.checkDone : ''}`}>
                   <div className={styles.checkCircle}>{item.done && <Check size={10} />}</div>
@@ -692,6 +915,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               </div>
             </div>
           </div>
+          </>)}
         </aside>
       </div>
 
@@ -715,8 +939,18 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   }
                   <div className={styles.footerStepText}>
                     <span className={styles.footerStepTitle}>{s.title}</span>
-                    <span className={`${styles.footerStepStatus} ${s.id !== 'learn' || !isLearnComplete ? styles.pending : ''}`}>
-                      {s.id === 'learn' && isLearnComplete ? 'Completed' : s.id === currentTab ? 'In progress' : 'Not started'}
+                    <span className={`${styles.footerStepStatus} ${
+                      (s.id === 'learn' && isLearnComplete) ||
+                      (s.id === 'apply' && isApplyComplete) ||
+                      (s.id === 'reflect' && isReflectComplete) ||
+                      (s.id === 'deepen' && isDeepenComplete)
+                        ? '' : styles.pending
+                    }`}>
+                      {s.id === 'learn' && isLearnComplete ? 'Completed' :
+                       s.id === 'apply' && isApplyComplete ? 'Completed' :
+                       s.id === 'reflect' && isReflectComplete ? 'Completed' :
+                       s.id === 'deepen' && isDeepenComplete ? 'Completed' :
+                       s.id === currentTab ? 'In progress' : 'Not started'}
                     </span>
                   </div>
                 </div>
@@ -726,18 +960,44 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
         <div className={styles.footerRight}>
-          <button className={styles.btnSaveExit} onClick={() => handleSave(`/creator/builder/${courseId}`)}>
+          <div className={styles.saveStatusWrapper}>
+            {syncStatus === 'offline' && <span className={styles.statusError}><WifiOff size={12}/> Offline</span>}
+            {syncStatus === 'error' && <span className={styles.statusError}><AlertCircle size={12}/> Save failed</span>}
+            {syncStatus === 'saving' && <span className={styles.statusSaving}>Saving...</span>}
+            {syncStatus === 'saved' && isDirty && <span className={styles.statusDirty}><span className={styles.amberDot} /> Unsaved changes</span>}
+            {syncStatus === 'saved' && !isDirty && lastSavedAt && <span className={styles.statusSaved}><Check size={12}/> Saved</span>}
+          </div>
+          <button className={styles.btnSaveExit} onClick={() => handleSave()} disabled={saving || !isDirty}>
+            {saving ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+              </svg>
+            ) : (
+              <Check size={14} />
+            )}
+            {currentTab === 'deepen' ? 'Save & Publish' : 'Save as Draft'}
+          </button>
+          <button className={styles.btnSaveExit} onClick={() => handleSave(`/creator/builder/${courseId}`)} disabled={saving}>
             <BookOpen size={14} /> Save &amp; Exit
-            <span style={{ fontSize: 11, color: '#94A3B8', display: 'block' }}>All progress will be saved</span>
           </button>
           <button
             className={styles.btnNextStep}
-            disabled={!isLearnComplete && currentTab === 'learn'}
-            onClick={() => {
+            disabled={(!isLearnComplete && currentTab === 'learn') || saving}
+            onClick={async () => {
+              if (isDirty) await handleSave();
               if (currentTab === 'learn') setCurrentTab('apply');
+              else if (currentTab === 'apply') setCurrentTab('reflect');
+              else if (currentTab === 'reflect') setCurrentTab('deepen');
             }}
           >
-            Save &amp; Back to Curriculum <ArrowRight size={14} />
+            Save &amp; Continue <ArrowRight size={14} />
           </button>
         </div>
       </footer>

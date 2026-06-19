@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 type SyncStatus = 'saved' | 'saving' | 'offline' | 'error';
 
@@ -6,8 +6,15 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
   const [isOnline, setIsOnline] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('saved');
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
-  const [version, setVersion] = useState(initialVersion);
   
+  // Use a ref for version to avoid stale closures in back-to-back await calls
+  const versionRef = useRef(initialVersion);
+  
+  // Keep it synced if the parent passes a new initialVersion
+  useEffect(() => {
+    versionRef.current = initialVersion;
+  }, [initialVersion]);
+
   // Track dirty state
   const [isDirty, setIsDirty] = useState(false);
 
@@ -51,6 +58,22 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     }
   };
 
+  const syncLock = useRef<Promise<void>>(Promise.resolve());
+
+  const executeWithLock = async (fn: () => Promise<void>) => {
+    const previousPromise = syncLock.current;
+    let resolveLock: () => void;
+    syncLock.current = new Promise((resolve) => {
+      resolveLock = resolve;
+    });
+    try {
+      await previousPromise;
+      await fn();
+    } finally {
+      resolveLock!();
+    }
+  };
+
   const syncMetadata = async (data: any) => {
     setIsDirty(true);
     setSyncStatus('saving');
@@ -58,34 +81,33 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
 
     if (!isOnline) {
       setSyncStatus('offline');
-      // In a real app, queue this in IndexedDB for the background sync worker
       return;
     }
 
-    try {
-      const res = await fetch(`/api/lesson/${lessonId}/metadata`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, version }),
-      });
+    await executeWithLock(async () => {
+      try {
+        const res = await fetch(`/api/lesson/${lessonId}/metadata`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, version: versionRef.current }),
+        });
 
-      if (!res.ok) {
-        if (res.status === 409) {
-          // Conflict
-          throw new Error('Conflict detected');
+        if (!res.ok) {
+          if (res.status === 409) throw new Error('Conflict detected');
+          throw new Error('Failed to save');
         }
-        throw new Error('Failed to save');
-      }
 
-      setVersion(prev => prev + 1);
-      setSyncStatus('saved');
-      setLastSavedAt(new Date());
-      setIsDirty(false);
-      localStorage.removeItem(`lesson_${lessonId}_metadata`);
-    } catch (err) {
-      console.error(err);
-      setSyncStatus('error');
-    }
+        versionRef.current += 1;
+        setSyncStatus('saved');
+        setLastSavedAt(new Date());
+        setIsDirty(false);
+        localStorage.removeItem(`lesson_${lessonId}_metadata`);
+      } catch (err) {
+        console.error(err);
+        setSyncStatus('error');
+        throw err;
+      }
+    });
   };
 
   const syncPhase = async (phase: string, data: any) => {
@@ -98,24 +120,30 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
       return;
     }
 
-    try {
-      const res = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, version }),
-      });
+    await executeWithLock(async () => {
+      try {
+        const res = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, version: versionRef.current }),
+        });
 
-      if (!res.ok) throw new Error('Failed to save phase');
+        if (!res.ok) {
+          if (res.status === 409) throw new Error('Conflict detected');
+          throw new Error('Failed to save phase');
+        }
 
-      setVersion(prev => prev + 1);
-      setSyncStatus('saved');
-      setLastSavedAt(new Date());
-      setIsDirty(false);
-      localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
-    } catch (err) {
-      console.error(err);
-      setSyncStatus('error');
-    }
+        versionRef.current += 1;
+        setSyncStatus('saved');
+        setLastSavedAt(new Date());
+        setIsDirty(false);
+        localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
+      } catch (err) {
+        console.error(err);
+        setSyncStatus('error');
+        throw err;
+      }
+    });
   };
 
   const flushQueue = useCallback(async () => {
@@ -141,6 +169,6 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     isDirty,
     syncMetadata,
     syncPhase,
-    setDirty: () => setIsDirty(true)
+    setDirty: useCallback(() => setIsDirty(true), [])
   };
 }
