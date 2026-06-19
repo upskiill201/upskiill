@@ -25,7 +25,7 @@ export default function WelcomeStep() {
     saveOnboardingStep(1, { started: true });
     
     try {
-      const res = await fetch('https://upskiill-backend.onrender.com/creator-onboarding', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/creator-onboarding`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

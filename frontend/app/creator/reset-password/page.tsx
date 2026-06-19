@@ -95,7 +95,7 @@ function ResetPasswordForm() {
 
     const checkToken = async () => {
       try {
-        const res = await fetch(`https://upskiill-backend.onrender.com/auth/validate-token?token=${token}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/validate-token?token=${token}`);
         const data = await res.json();
         if (res.ok && data.valid) {
           setStatus('valid');
@@ -133,7 +133,7 @@ function ResetPasswordForm() {
     setLoading(true);
 
     try {
-      const res = await fetch('https://upskiill-backend.onrender.com/auth/reset-password', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword: password }),

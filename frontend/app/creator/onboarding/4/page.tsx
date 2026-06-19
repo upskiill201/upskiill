@@ -107,7 +107,7 @@ export default function StepFourPage() {
     try {
       const draftId = localStorage.getItem('teyro_onboarding_draft_id');
       if (draftId && !draftId.startsWith('local_')) {
-        await fetch(`https://upskiill-backend.onrender.com/creator-onboarding/${draftId}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/creator-onboarding/${draftId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ audienceSize: selected }),

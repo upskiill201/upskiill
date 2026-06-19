@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
 
     try {
       // Use full Render URL as requested by production principles
-      const res = await fetch('https://upskiill-backend.onrender.com/auth/forgot-password', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
