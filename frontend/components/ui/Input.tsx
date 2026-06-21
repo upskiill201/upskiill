@@ -18,11 +18,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   error,
   hint,
   className = '',
+  required,
   ...props
 }, ref) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label} {required && <span className="text-red-500" aria-hidden="true">*</span>}
+        </label>
+      )}
       
       <div className={styles.inputContainer}>
         {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}
@@ -31,6 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           ref={ref}
           id={id}
           name={name}
+          required={required}
           className={`
             ${styles.input}
             ${leftIcon ? styles.hasLeftIcon : ''}
@@ -46,7 +52,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <span id={`${id}-error`} className={styles.errorText} role="alert">{error}</span>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}
