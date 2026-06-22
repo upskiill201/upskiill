@@ -87,3 +87,8 @@
   pointer-events: none;
   border-radius: 4px;
 }
+
+.asterisk {
+  color: var(--error-red);
+  margin-left: 3px;
+}
