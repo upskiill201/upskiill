@@ -277,7 +277,7 @@
 .leftCol {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 5px;
   background: transparent;
   border-right: 1px solid rgba(226, 232, 240, 0.5);
 }
@@ -629,9 +629,9 @@
   width: 320px;
   flex-shrink: 0;
   overflow-y: auto;
-  padding: 24px;
+  padding: 5px;
   background: transparent;
-  display: flex; flex-direction: column; gap: 16px;
+  display: flex; flex-direction: column; gap: 5px;
 }
 .rightSidebar::-webkit-scrollbar { width: 4px; }
 .rightSidebar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }

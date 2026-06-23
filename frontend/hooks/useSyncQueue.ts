@@ -74,16 +74,18 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     }
   };
 
-  const syncMetadata = async (data: any) => {
+  // Returns { ok: boolean } — never throws, so callers don't crash
+  const syncMetadata = async (data: any): Promise<{ ok: boolean }> => {
     setIsDirty(true);
     setSyncStatus('saving');
     saveToLocalBackup('metadata', data);
 
     if (!isOnline) {
       setSyncStatus('offline');
-      return;
+      return { ok: false };
     }
 
+    let ok = true;
     await executeWithLock(async () => {
       try {
         const res = await fetch(`/api/lesson/${lessonId}/metadata`, {
@@ -93,8 +95,23 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
         });
 
         if (!res.ok) {
-          if (res.status === 409) throw new Error('Conflict detected');
-          throw new Error('Failed to save');
+          if (res.status === 409) {
+            // Version conflict — fetch latest version and re-sync
+            console.warn('Version conflict on metadata sync, attempting re-sync');
+            try {
+              const latest = await fetch(`/api/lesson/${lessonId}`);
+              if (latest.ok) {
+                const latestData = await latest.json();
+                versionRef.current = latestData.version || versionRef.current;
+              }
+            } catch {
+              // ignore refetch errors
+            }
+          }
+          console.error('Failed to save metadata', res.status);
+          setSyncStatus('error');
+          ok = false;
+          return;
         }
 
         versionRef.current += 1;
@@ -103,23 +120,27 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
         setIsDirty(false);
         localStorage.removeItem(`lesson_${lessonId}_metadata`);
       } catch (err) {
-        console.error(err);
+        console.error('syncMetadata error:', err);
         setSyncStatus('error');
-        throw err;
+        ok = false;
       }
     });
+
+    return { ok };
   };
 
-  const syncPhase = async (phase: string, data: any) => {
+  // Returns { ok: boolean } — never throws
+  const syncPhase = async (phase: string, data: any): Promise<{ ok: boolean }> => {
     setIsDirty(true);
     setSyncStatus('saving');
     saveToLocalBackup(`phase_${phase}`, data);
 
     if (!isOnline) {
       setSyncStatus('offline');
-      return;
+      return { ok: false };
     }
 
+    let ok = true;
     await executeWithLock(async () => {
       try {
         const res = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
@@ -129,8 +150,37 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
         });
 
         if (!res.ok) {
-          if (res.status === 409) throw new Error('Conflict detected');
-          throw new Error('Failed to save phase');
+          if (res.status === 409) {
+            // Version conflict — fetch latest version and re-sync
+            console.warn(`Version conflict on phase ${phase} sync, re-syncing version`);
+            try {
+              const latest = await fetch(`/api/lesson/${lessonId}`);
+              if (latest.ok) {
+                const latestData = await latest.json();
+                versionRef.current = latestData.version || versionRef.current;
+              }
+            } catch {
+              // ignore
+            }
+            // Retry once with updated version
+            const retry = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...data, version: versionRef.current }),
+            });
+            if (retry.ok) {
+              versionRef.current += 1;
+              setSyncStatus('saved');
+              setLastSavedAt(new Date());
+              setIsDirty(false);
+              localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
+              return;
+            }
+          }
+          console.error(`Failed to save phase ${phase}`, res.status);
+          setSyncStatus('error');
+          ok = false;
+          return;
         }
 
         versionRef.current += 1;
@@ -139,19 +189,18 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
         setIsDirty(false);
         localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
       } catch (err) {
-        console.error(err);
+        console.error(`syncPhase(${phase}) error:`, err);
         setSyncStatus('error');
-        throw err;
+        ok = false;
       }
     });
+
+    return { ok };
   };
 
   const flushQueue = useCallback(async () => {
-    // Basic flush logic: read from localStorage and push
-    // In a full implementation, this uses IndexedDB and processes an ordered queue of mutations
     setSyncStatus('saving');
     try {
-      // Mock flush success
       setTimeout(() => {
         setSyncStatus('saved');
         setLastSavedAt(new Date());

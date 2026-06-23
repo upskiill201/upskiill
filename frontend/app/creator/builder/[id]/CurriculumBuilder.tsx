@@ -102,7 +102,7 @@ function SortableLesson({
   }
 
   const hasContent = Object.keys(parsedBlocks).length > 0 || Object.keys(stepCompletion).length > 0;
-  const isFullyComplete = stepCompletion?.learn === true && stepCompletion?.apply === true && stepCompletion?.reflect === true;
+  const isFullyComplete = (lesson as any).status === 'published';
 
   const status: 'not_started' | 'in_progress' | 'complete' =
     isFullyComplete ? 'complete'

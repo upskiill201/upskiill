@@ -25,6 +25,8 @@ import { ReflectTab, ReflectActivity } from './components/ReflectTab';
 import { ReflectSidebar } from './components/ReflectSidebar';
 import { DeepenTab, DeepenConfig } from './components/DeepenTab';
 import { DeepenSidebar } from './components/DeepenSidebar';
+import { ReviewPublishTab } from './components/ReviewPublishTab';
+import { ReviewPublishSidebar } from './components/ReviewPublishSidebar';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
@@ -112,6 +114,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [lesson, setLesson] = useState<any>(null);
   const [courseTitle, setCourseTitle] = useState('Course');
   const [sectionTitle, setSectionTitle] = useState('Section');
@@ -295,65 +300,114 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     runAutosave();
   }, [debouncedLesson, debouncedMcqActivity, debouncedReflectActivity, debouncedDeepenConfig, debouncedResources, contentType, loading]);
 
-  /* save */
-  const forceManualSave = async () => {
+  /**
+   * buildSavePayload — constructs the full-save payload from current live state.
+   * Used by both forceManualSave and handlePublish.
+   */
+  const buildSavePayload = () => {
+    const currentLesson = lesson;
+    const isLearnCompleted = !!(currentLesson?.title && (currentLesson?.learnVideoUrl || currentLesson?.learnText || currentLesson?.learnAudioUrl));
+    const isApplyCompleted = mcqActivity.questions.length > 0 &&
+      mcqActivity.questions.every((q: any) => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
+    const isReflectCompleted = reflectActivity.prompt.trim().length > 0 &&
+      (reflectActivity.type === 'open'
+        ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0)
+        : (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every((q: any) => q.text.trim())));
+    const isDeepenCompleted = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every((r: any) => (r.url || '').trim());
+
+    return {
+      // Metadata
+      title: currentLesson?.title || '',
+      shortDescription: currentLesson?.shortDescription || '',
+      lessonType: contentType,
+      // Phase blocks
+      learnBlocks: [
+        { type: 'videoUrl', value: currentLesson?.learnVideoUrl || '' },
+        { type: 'audioUrl', value: currentLesson?.learnAudioUrl || '' },
+        { type: 'text', value: currentLesson?.learnText || '' },
+      ],
+      applyBlocks: [{ type: 'mcqActivity', value: mcqActivity }],
+      reflectBlocks: [{ type: 'reflectActivity', value: reflectActivity }],
+      deepenBlocks: [{ type: 'deepenActivity', value: deepenConfig }],
+      // Completion
+      isLearnCompleted,
+      isApplyCompleted,
+      isReflectCompleted,
+      isDeepenCompleted,
+    };
+  };
+
+  /* save — ONE request, optimistic UI so creator sees result immediately */
+  const forceManualSave = async (): Promise<{ ok: boolean }> => {
+    // Optimistic: show Saved immediately before backend confirms
+    setSaveSuccess(true);
     setSaving(true);
+
     try {
-      const isLearnCompleted = !!(debouncedLesson?.title && (debouncedLesson?.learnVideoUrl || debouncedLesson?.learnText || debouncedLesson?.learnAudioUrl));
-      
-      await syncMetadata({
-        title: debouncedLesson?.title || '',
-        shortDescription: debouncedLesson?.shortDescription || '',
-        lessonType: contentType,
-      });
+      const payload = buildSavePayload();
 
-      await syncPhase('learn', {
-        contentBlocks: [
-          { type: 'videoUrl', value: debouncedLesson?.learnVideoUrl || '' },
-          { type: 'audioUrl', value: debouncedLesson?.learnAudioUrl || '' },
-          { type: 'text', value: debouncedLesson?.learnText || '' },
-        ],
-        isCompleted: isLearnCompleted
-      });
-
-      const isApplyCompleted = mcqActivity.questions.length > 0 &&
-        mcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
-      await syncPhase('apply', {
-        contentBlocks: [{ type: 'mcqActivity', value: mcqActivity }],
-        isCompleted: isApplyCompleted
-      });
-
-      const isReflectCompleted = reflectActivity.prompt.trim().length > 0 && 
-        (reflectActivity.type === 'open' ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0) : 
-        (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every(q => q.text.trim())));
-      await syncPhase('reflect', {
-        contentBlocks: [{ type: 'reflectActivity', value: reflectActivity }],
-        isCompleted: isReflectCompleted
-      });
-
-      const isDeepenCompleted = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every(r => (r.url || '').trim());
-      await syncPhase('deepen', {
-        contentBlocks: [{ type: 'deepenActivity', value: deepenConfig }],
-        isCompleted: isDeepenCompleted
-      });
-      
-      await fetch(`/api/lesson/${lessonId}`, {
+      const res = await fetch(`/api/lesson/${lessonId}/full-save`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resources: resources }),
+        body: JSON.stringify(payload),
       });
 
-      // Small artificial delay to show user it saved successfully
-      await new Promise(r => setTimeout(r, 600));
+      if (!res.ok) {
+        // Revert optimistic state on failure
+        setSaveSuccess(false);
+        console.error('full-save failed:', res.status);
+        return { ok: false };
+      }
+
+      // Keep success state for 2.5s
+      setTimeout(() => setSaveSuccess(false), 2500);
+      return { ok: true };
+    } catch (err) {
+      setSaveSuccess(false);
+      console.error('forceManualSave error:', err);
+      return { ok: false };
     } finally {
       setSaving(false);
     }
   };
 
   const handleSave = async (redirect?: string) => {
-    await forceManualSave();
+    const result = await forceManualSave();
     if (redirect) router.push(redirect);
+    return result;
   };
+
+  const handlePublish = async (_options: any) => {
+    setIsPublishing(true);
+    setPublishError(null);
+
+    try {
+      const payload = buildSavePayload();
+
+      // Single request: save + publish atomically
+      const res = await fetch(`/api/lesson/${lessonId}/full-save-publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        const msg = errorData.errors?.join(' · ') || errorData.message || 'Failed to publish. Please check all required sections.';
+        setPublishError(msg);
+        return;
+      }
+
+      // Success! Navigate to curriculum builder
+      router.push(`/creator/builder/${courseId}?step=2`);
+    } catch (err) {
+      console.error('Publish error:', err);
+      setPublishError('A network error occurred. Please check your connection and try again.');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
 
   /* Interval Autosave */
   useEffect(() => {
@@ -416,7 +470,24 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: isApplyComplete ? 'Completed' : 'Not started' },
     { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: isReflectComplete ? 'Completed' : 'Not started' },
     { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: isDeepenComplete ? 'Completed' : 'Not started' },
+    { id: 'review',  num: '5', title: 'Review & Publish', sub: 'Finalize and publish', status: 'Not started' },
   ];
+
+  // Calculate Quality Score dynamically
+  const calculateQualityScore = () => {
+    let score = 0;
+    if (lesson?.title?.trim()) score += 10;
+    if (lesson?.shortDescription?.trim()) score += 10;
+    if (lesson?.learnVideoUrl) score += 20;
+    else if (lesson?.learnText?.trim()) score += 10;
+    else if (lesson?.learnAudioUrl) score += 10;
+    
+    if (mcqActivity?.questions?.length > 0) score += 30;
+    if (reflectActivity?.prompt?.trim()) score += 20;
+    if (resources?.length > 0) score += 10;
+    return score;
+  };
+  const currentQualityScore = calculateQualityScore();
 
   const radius = 20;
   const circumference = 2 * Math.PI * radius;
@@ -816,6 +887,18 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               lessonId={lessonId as string} 
             />
           )}
+
+          {currentTab === 'review' && (
+            <ReviewPublishTab 
+              lessonData={debouncedLesson || lesson} 
+              mcqActivity={mcqActivity} 
+              reflectActivity={reflectActivity} 
+              deepenConfig={deepenConfig} 
+              resources={resources} 
+              onEditPhase={setCurrentTab} 
+              qualityScore={currentQualityScore} 
+            />
+          )}
         </div>
 
         {/* RIGHT SIDEBAR */}
@@ -823,6 +906,21 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           {currentTab === 'apply' && <ApplySidebar activity={mcqActivity} />}
           {currentTab === 'reflect' && <ReflectSidebar activity={reflectActivity} />}
           {currentTab === 'deepen' && <DeepenSidebar config={deepenConfig} resources={resources} />}
+          {currentTab === 'review' && (
+            <ReviewPublishSidebar 
+              lessonData={debouncedLesson || lesson} 
+              mcqActivity={mcqActivity} 
+              reflectActivity={reflectActivity} 
+              deepenConfig={deepenConfig} 
+              resources={resources} 
+              qualityScore={currentQualityScore} 
+              onPublish={handlePublish}
+              onSaveDraft={() => forceManualSave()}
+              isPublishing={isPublishing}
+              publishError={publishError}
+              onClearPublishError={() => setPublishError(null)}
+            />
+          )}
           
           {currentTab === 'learn' && (<>
           {/* Flow preview */}
@@ -967,38 +1065,46 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             {syncStatus === 'saved' && isDirty && <span className={styles.statusDirty}><span className={styles.amberDot} /> Unsaved changes</span>}
             {syncStatus === 'saved' && !isDirty && lastSavedAt && <span className={styles.statusSaved}><Check size={12}/> Saved</span>}
           </div>
-          <button className={styles.btnSaveExit} onClick={() => handleSave()} disabled={saving || !isDirty}>
-            {saving ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                <line x1="12" y1="2" x2="12" y2="6"></line>
-                <line x1="12" y1="18" x2="12" y2="22"></line>
-                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                <line x1="2" y1="12" x2="6" y2="12"></line>
-                <line x1="18" y1="12" x2="22" y2="12"></line>
-                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-              </svg>
-            ) : (
-              <Check size={14} />
-            )}
-            {currentTab === 'deepen' ? 'Save & Publish' : 'Save as Draft'}
-          </button>
+          {currentTab !== 'review' && (
+            <button className={styles.btnSaveExit} onClick={() => forceManualSave()} disabled={saving}>
+              {saving ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                  <line x1="12" y1="2" x2="12" y2="6"></line>
+                  <line x1="12" y1="18" x2="12" y2="22"></line>
+                  <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                  <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                  <line x1="2" y1="12" x2="6" y2="12"></line>
+                  <line x1="18" y1="12" x2="22" y2="12"></line>
+                  <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                  <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+              ) : saveSuccess ? (
+                <Check size={14} />
+              ) : (
+                <Check size={14} />
+              )}
+              {saving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save Draft'}
+            </button>
+          )}
           <button className={styles.btnSaveExit} onClick={() => handleSave(`/creator/builder/${courseId}`)} disabled={saving}>
             <BookOpen size={14} /> Save &amp; Exit
           </button>
-          <button
-            className={styles.btnNextStep}
-            disabled={(!isLearnComplete && currentTab === 'learn') || saving}
-            onClick={async () => {
-              if (isDirty) await handleSave();
-              if (currentTab === 'learn') setCurrentTab('apply');
-              else if (currentTab === 'apply') setCurrentTab('reflect');
-              else if (currentTab === 'reflect') setCurrentTab('deepen');
-            }}
-          >
-            Save &amp; Continue <ArrowRight size={14} />
-          </button>
+          {currentTab !== 'review' && (
+            <button
+              className={styles.btnNextStep}
+              disabled={(!isLearnComplete && currentTab === 'learn') || saving}
+              onClick={async () => {
+                // Always save current live state before navigating
+                await forceManualSave();
+                if (currentTab === 'learn') setCurrentTab('apply');
+                else if (currentTab === 'apply') setCurrentTab('reflect');
+                else if (currentTab === 'reflect') setCurrentTab('deepen');
+                else if (currentTab === 'deepen') setCurrentTab('review');
+              }}
+            >
+              {saving ? 'Saving...' : 'Save & Continue'} <ArrowRight size={14} />
+            </button>
+          )}
         </div>
       </footer>
     </div>
