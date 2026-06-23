@@ -298,7 +298,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                     title: l.title,
                     learnVideoUrl,
                     sectionTitle: s.title,
-                    durationMinutes: l.durationMinutes || 0
+                    durationMinutes: l.durationMinutes || 0,
+                    isFreePreview: !!l.isFreePreview
                   });
                 }
               });

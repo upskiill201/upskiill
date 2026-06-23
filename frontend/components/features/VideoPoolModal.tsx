@@ -9,6 +9,7 @@ export interface PoolLesson {
   learnVideoUrl: string;
   sectionTitle?: string;
   durationMinutes?: number;
+  isFreePreview?: boolean;
 }
 
 interface VideoPoolModalProps {
