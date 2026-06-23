@@ -12,6 +12,11 @@
   color: var(--text-primary);
 }
 
+.requiredAsterisk {
+  color: var(--error-red);
+  margin-left: 2px;
+}
+
 .textareaContainer {
   position: relative;
   width: 100%;
