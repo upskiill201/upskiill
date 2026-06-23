@@ -13,6 +13,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
+import { Toast } from '@/components/ui/Toast';
 
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
@@ -537,6 +538,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className={styles.shell}>
+      {saveSuccess && (
+        <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999 }}>
+          <Toast message="Changes saved successfully" type="success" duration={2500} onClose={() => setSaveSuccess(false)} />
+        </div>
+      )}
 
       {/* ── HEADER ── */}
       <header className={styles.header}>
