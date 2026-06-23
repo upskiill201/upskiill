@@ -7,9 +7,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Plus, ChevronDown, ChevronUp, GripVertical, Edit2, Copy, Trash2,
   Play, Video, FileText, Clock, BookOpen, Lightbulb, Target,
-  Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X, HelpCircle
+  Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X, HelpCircle,
+  Lock, CheckCircle2, PenTool, LayoutTemplate, ShieldCheck, List, Film
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Button from '@/components/ui/Button';
+import { VideoPoolModal, VideoPreviewCard, PoolLesson } from '@/components/features/VideoPoolModal';
+import styles from './Curriculum.module.css';
+
+interface Props {
+  courseId: string;
+  onBack: () => void;
+  onSaveStatus: (status: string) => void;
+  previewLessonId?: string;
+  courseLessons?: PoolLesson[];
+  onPreviewChange?: (id: string) => void;
+  courseThumbnailUrl?: string;
+}
 
 // Tiny sound util for haptics
 const playPop = () => {
@@ -39,18 +53,18 @@ import {
 import {
   SortableContext, verticalListSortingStrategy, arrayMove
 } from '@dnd-kit/sortable';
-import styles from './Curriculum.module.css';
 import {
   ConfirmModal, SortableModule, LESSON_TYPES,
-  LessonType, Lesson, Section, Props
+  LessonType, Lesson, Section
 } from './CurriculumBuilder';
 import Skeleton from '@/components/ui/Skeleton';
 import { Tooltip } from '@/components/ui/Tooltip';
 
 // ─── MAIN CURRICULUM BUILDER ─────────────────────────────────
-export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, previewLessonId = '', courseLessons = [], onPreviewChange }: Props) {
+export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, previewLessonId = '', courseLessons = [], onPreviewChange, courseThumbnailUrl }: Props) {
   const router = useRouter();
   const [sections, setSections] = useState<Section[]>([]);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
@@ -516,31 +530,53 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
               </Tooltip>
             </div>
             <p className={styles.widgetDesc}>Give learners a quick preview of what to expect.</p>
-            {previewLessonId ? (
-              <div className={styles.videoPreview} style={{ background: '#EEF2FF', border: '2px solid #3D5AFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 4 }}>
-                <div className={styles.videoPlayIcon} style={{ color: '#3D5AFE' }}><Play size={24} /></div>
-                <span style={{ fontSize: 10, color: '#3D5AFE', fontWeight: 600 }}>Preview selected</span>
-              </div>
-            ) : (
-              <div className={styles.videoPreview}><div className={styles.videoPlayIcon}><Play size={24} /></div></div>
-            )}
-            <select
-              style={{
-                marginTop: 10, width: '100%',
-                padding: '8px 10px', borderRadius: 8,
-                border: '1px solid #E2E8F0', fontSize: 12.5,
-                color: previewLessonId ? '#1F2A44' : '#94A3B8',
-                background: '#fff', cursor: 'pointer',
-                appearance: 'auto',
-              }}
-              value={previewLessonId}
-              onChange={onPreviewChange}
-            >
-              <option value="">Select a lesson video…</option>
-              {courseLessons.map((lesson: any) => (
-                <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
-              ))}
-            </select>
+            
+            <div style={{ marginTop: 12 }}>
+              {previewLessonId && courseLessons.find(l => l.id === previewLessonId) ? (
+                <VideoPreviewCard 
+                  lesson={courseLessons.find(l => l.id === previewLessonId)!}
+                  courseThumbnailUrl={courseThumbnailUrl}
+                  onChangeClick={() => setIsVideoModalOpen(true)}
+                  onClearClick={() => onPreviewChange && onPreviewChange('')}
+                />
+              ) : (
+                <button 
+                  type="button" 
+                  onClick={() => setIsVideoModalOpen(true)}
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    background: '#F8FAFC',
+                    border: '2px dashed #CBD5E1',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    color: '#3D5AFE'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = '#3D5AFE'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#CBD5E1'}
+                >
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Film size={18} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1F2A44' }}>Select Video</span>
+                </button>
+              )}
+            </div>
+
+            <VideoPoolModal 
+              isOpen={isVideoModalOpen}
+              onClose={() => setIsVideoModalOpen(false)}
+              lessons={courseLessons}
+              selectedLessonId={previewLessonId}
+              onSelect={(id) => onPreviewChange && onPreviewChange(id)}
+              courseThumbnailUrl={courseThumbnailUrl}
+            />
+
             <div className={styles.videoHint}>Recommended: 1–2 min (16:9) · MP4, MOV</div>
           </div>
 

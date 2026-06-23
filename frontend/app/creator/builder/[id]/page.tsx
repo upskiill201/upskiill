@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
   X, Check, ChevronRight, GripVertical, Plus,
   Upload, Edit2, BookOpen, PenTool, LayoutTemplate,
-  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp, Clock
+  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp, Clock, Tag, Unlock, Film
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Input from '@/components/ui/Input';
@@ -15,6 +15,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { Tooltip } from '@/components/ui/Tooltip';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
+import { VideoPoolModal, VideoPreviewCard, PoolLesson } from '@/components/features/VideoPoolModal';
 import styles from './Builder.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -32,6 +33,7 @@ type CourseDraft = {
   requirements: string[];
   thumbnailUrl: string;
   creatorTimeWeekly?: string;
+  price: number;
 };
 
 const EMPTY_DRAFT: CourseDraft = {
@@ -47,6 +49,7 @@ const EMPTY_DRAFT: CourseDraft = {
   skills: [],
   requirements: [''],
   thumbnailUrl: '',
+  price: 0,
 };
 
 const CATEGORIES = [
@@ -241,8 +244,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // For Preview Video selector
-  const [courseLessons, setCourseLessons] = useState<any[]>([]);
+  const [courseLessons, setCourseLessons] = useState<PoolLesson[]>([]);
   const [previewLessonId, setPreviewLessonId] = useState<string>('');
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   // ─── LOAD EXISTING DRAFT ───
   useEffect(() => {
@@ -266,6 +270,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             requirements: Array.isArray(fetched.requirements) && fetched.requirements.length > 0 ? fetched.requirements : [''],
             thumbnailUrl: fetched.thumbnailUrl || '',
             creatorTimeWeekly: fetched.creatorTimeWeekly,
+            price: typeof fetched.price === 'number' ? fetched.price : 0,
           });
         }
         
@@ -273,10 +278,30 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
         const curRes = await fetch(`/api/courses/${courseId}/curriculum`, { credentials: 'include' });
         if (curRes.ok) {
           const sections = await curRes.json();
-          const lessons: any[] = [];
+          const lessons: PoolLesson[] = [];
           sections.forEach((s: any) => {
             if (Array.isArray(s.lessons)) {
-              lessons.push(...s.lessons.filter((l: any) => l.learnVideoUrl));
+              s.lessons.forEach((l: any) => {
+                let parsedBlocks = l.contentBlocks;
+                if (typeof parsedBlocks === 'string') {
+                  try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+                }
+                
+                let learnVideoUrl = null;
+                if (parsedBlocks && Array.isArray(parsedBlocks.learn)) {
+                  learnVideoUrl = parsedBlocks.learn.find((b: any) => b.type === 'videoUrl')?.value;
+                }
+                
+                if (learnVideoUrl) {
+                  lessons.push({
+                    id: l.id,
+                    title: l.title,
+                    learnVideoUrl,
+                    sectionTitle: s.title,
+                    durationMinutes: l.durationMinutes || 0
+                  });
+                }
+              });
             }
           });
           setCourseLessons(lessons);
@@ -295,21 +320,20 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   }, [courseId, isNew]);
 
   // Handle preview lesson change
-  const handlePreviewLessonChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
+  const handlePreviewLessonChange = async (selectedId: string) => {
     setPreviewLessonId(selectedId);
     
     // Optimistically update backend (mark selected as true, previous as false)
     try {
       if (previewLessonId) {
-        await fetch(`/api/lessons/${previewLessonId}`, {
+        await fetch(`/api/courses/lessons/${previewLessonId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isFreePreview: false })
         });
       }
       if (selectedId) {
-        await fetch(`/api/lessons/${selectedId}`, {
+        await fetch(`/api/courses/lessons/${selectedId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isFreePreview: true })
@@ -317,6 +341,20 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
       }
     } catch (err) {
       console.error('Failed to update preview lesson', err);
+    }
+  };
+
+  const handleClearPreview = async () => {
+    if (!previewLessonId) return;
+    try {
+      await fetch(`/api/courses/lessons/${previewLessonId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isFreePreview: false })
+      });
+      setPreviewLessonId('');
+    } catch (err) {
+      console.error('Failed to clear preview lesson', err);
     }
   };
 
@@ -625,6 +663,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             previewLessonId={previewLessonId}
             courseLessons={courseLessons}
             onPreviewChange={handlePreviewLessonChange}
+            courseThumbnailUrl={data.thumbnailUrl}
           />
         )}
 
@@ -974,28 +1013,61 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 </div>
 
                 {/* ── PREVIEW LESSON SELECTOR ── */}
-                <div className={styles.field}>
+                <div className={styles.field} style={{ marginTop: 24 }}>
                   <label className={styles.label}>Preview Video</label>
-                  <span className={styles.hint}>Give learners a quick preview of what to expect. Select a lesson video to show before enrollment.</span>
-                  <select 
-                    className={styles.select} 
-                    style={{ marginTop: 12 }}
-                    value={previewLessonId}
-                    onChange={handlePreviewLessonChange}
-                  >
-                    <option value="">Select a lesson video</option>
-                    {courseLessons.map(lesson => (
-                      <option key={lesson.id} value={lesson.id}>
-                        {lesson.title}
-                      </option>
-                    ))}
-                  </select>
-                  <p className={styles.hint} style={{ marginTop: 10 }}>
-                    We recommend a 2–3 min lesson that showcases the value of your course.
-                  </p>
+                  <span className={styles.hint}>Give learners a quick preview of what to expect before enrollment.</span>
+                  
+                  <div style={{ marginTop: 16 }}>
+                    {previewLessonId && courseLessons.find(l => l.id === previewLessonId) ? (
+                      <VideoPreviewCard 
+                        lesson={courseLessons.find(l => l.id === previewLessonId)!}
+                        courseThumbnailUrl={data.thumbnailUrl}
+                        onChangeClick={() => setIsVideoModalOpen(true)}
+                        onClearClick={handleClearPreview}
+                      />
+                    ) : (
+                      <button 
+                        type="button" 
+                        onClick={() => setIsVideoModalOpen(true)}
+                        style={{
+                          width: '100%',
+                          padding: '20px',
+                          background: '#F8FAFC',
+                          border: '2px dashed #CBD5E1',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '8px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          color: '#3D5AFE'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.borderColor = '#3D5AFE'}
+                        onMouseLeave={e => e.currentTarget.style.borderColor = '#CBD5E1'}
+                      >
+                        <div style={{ width: 44, height: 44, borderRadius: 10, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Film size={22} />
+                        </div>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2A44' }}>Select from Video Library</span>
+                        <span style={{ fontSize: 13, color: '#64748B' }}>Choose an existing lesson video to feature as the trailer.</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </section>
+
+            <VideoPoolModal 
+              isOpen={isVideoModalOpen}
+              onClose={() => setIsVideoModalOpen(false)}
+              lessons={courseLessons}
+              selectedLessonId={previewLessonId}
+              onSelect={handlePreviewLessonChange}
+              courseThumbnailUrl={data.thumbnailUrl}
+            />
+
+
 
           </div>
 
@@ -1011,6 +1083,105 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             </button>
 
             <div className={`${styles.sidebarInner} ${guideOpen ? styles.sidebarInnerOpen : ''}`}>
+              
+              {/* ── COURSE PRICING WIDGET ── */}
+              <div className={styles.widgetCard} style={{ overflow: 'hidden', padding: 0 }}>
+                <div style={{ padding: '20px 24px', background: 'linear-gradient(145deg, #F8FAFC 0%, #ffffff 100%)', borderBottom: '1px solid rgba(226, 232, 240, 0.6)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3D5AFE', boxShadow: '0 2px 6px rgba(61,90,254,0.1)' }}>
+                      <Tag size={16} />
+                    </div>
+                    <h3 className={styles.widgetTitle} style={{ margin: 0, fontSize: 16 }}>Course Pricing</h3>
+                  </div>
+                  <p className={styles.widgetDesc} style={{ margin: 0, marginTop: 6, fontSize: 13 }}>Set your enrollment fee strategy.</p>
+                </div>
+                
+                <div style={{ padding: '24px' }}>
+                  <div style={{ 
+                    display: 'flex', background: '#F1F5F9', borderRadius: 10, padding: 5, marginBottom: 20,
+                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' 
+                  }}>
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => updateField('price', 0)}
+                      style={{ 
+                        flex: 1, padding: '12px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
+                        fontSize: 13.5, fontWeight: 600, transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                        background: data.price === 0 ? '#fff' : 'transparent',
+                        color: data.price === 0 ? '#3D5AFE' : '#64748B',
+                        boxShadow: data.price === 0 ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                      }}
+                    >
+                      Free
+                    </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => updateField('price', data.price === 0 ? 49.99 : data.price)}
+                      style={{ 
+                        flex: 1, padding: '12px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
+                        fontSize: 13.5, fontWeight: 600, transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                        background: data.price > 0 ? '#fff' : 'transparent',
+                        color: data.price > 0 ? '#3D5AFE' : '#64748B',
+                        boxShadow: data.price > 0 ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                      }}
+                    >
+                      Paid
+                    </motion.button>
+                  </div>
+
+                  <AnimatePresence>
+                    {data.price > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
+                        animate={{ opacity: 1, height: 'auto', scale: 1, y: 0 }}
+                        exit={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        style={{ transformOrigin: 'top center', overflow: 'hidden' }}
+                      >
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#64748B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Price Amount (USD)
+                        </label>
+                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                          <span style={{ position: 'absolute', left: 16, fontSize: 18, color: '#94A3B8', fontWeight: 500, pointerEvents: 'none' }}>$</span>
+                          <input 
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            style={{ 
+                              width: '100%', height: 48, paddingLeft: 36, paddingRight: 16, 
+                              fontSize: 16, fontWeight: 600, color: '#1F2A44',
+                              borderRadius: 10, border: '2px solid #E2E8F0', outline: 'none',
+                              backgroundColor: '#fff',
+                              transition: 'all 0.2s ease',
+                              boxSizing: 'border-box'
+                            }}
+                            placeholder="49.99"
+                            value={data.price || ''}
+                            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = '#3D5AFE';
+                              e.target.style.boxShadow = '0 0 0 4px rgba(61,90,254,0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = '#E2E8F0';
+                              e.target.style.boxShadow = 'none';
+                            }}
+                          />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '12px 14px', background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                          <div style={{ background: '#10B981', borderRadius: '50%', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Check size={10} color="#fff" strokeWidth={3} />
+                          </div>
+                          <span style={{ fontSize: 11.5, color: '#059669', lineHeight: 1.4, fontWeight: 500 }}>
+                            Students get lifetime access
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
               {/* Help links */}
               <div className={styles.widgetCard}>
                 <h3 className={styles.widgetTitle}>Need help?</h3>
