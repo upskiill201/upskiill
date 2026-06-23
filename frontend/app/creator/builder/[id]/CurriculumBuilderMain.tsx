@@ -18,7 +18,7 @@ import styles from './Curriculum.module.css';
 interface Props {
   courseId: string;
   onBack: () => void;
-  onSaveStatus: (status: string) => void;
+  onSaveStatus: (status: 'idle' | 'saving' | 'saved' | 'error') => void;
   previewLessonId?: string;
   courseLessons?: PoolLesson[];
   onPreviewChange?: (id: string) => void;
