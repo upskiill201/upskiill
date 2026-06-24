@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import styles from './Textarea.module.css';
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -13,6 +14,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   label,
   error,
   hint,
+  required,
   className = '',
   maxLength,
   onChange,
@@ -31,13 +33,19 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && <span aria-hidden="true" className={styles.requiredAsterisk}>*</span>}
+        </label>
+      )}
       
       <div className={styles.textareaContainer}>
         <textarea
           ref={ref}
           id={id}
           name={name}
+          required={required}
           maxLength={maxLength}
           value={value}
           onChange={handleChange}
@@ -59,7 +67,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <span id={`${id}-error`} className={styles.errorText} role="alert">
+          <AlertCircle size={14} />
+          {error}
+        </span>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}
