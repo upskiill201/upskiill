@@ -90,8 +90,16 @@
   padding-right: 44px;
 }
 
+.requiredAsterisk {
+  color: var(--error-red);
+  margin-left: 2px;
+}
+
 /* ─── BOTTOM TEXT ─────────────────────────────────────────── */
 .errorText {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   color: var(--error-red);
   font-weight: 500;
