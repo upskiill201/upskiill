@@ -12,6 +12,11 @@
   color: var(--text-primary);
 }
 
+.requiredAsterisk {
+  color: var(--error-red);
+  margin-left: 4px;
+}
+
 .textareaContainer {
   position: relative;
   width: 100%;
@@ -67,6 +72,9 @@
   color: var(--error-red);
   font-weight: 500;
   margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .hintText {
