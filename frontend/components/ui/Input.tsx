@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { AlertCircle } from 'lucide-react';
 import styles from './Input.module.css';
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -46,7 +47,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <span id={`${id}-error`} className={`${styles.errorText} flex items-center gap-1`} role="alert">
+          <AlertCircle size={14} aria-hidden="true" />
+          {error}
+        </span>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}
