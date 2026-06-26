@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import styles from './Textarea.module.css';
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -18,6 +19,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   onChange,
   value,
   rows = 4,
+  required,
   ...props
 }, ref) => {
   const [charCount, setCharCount] = useState(
@@ -31,7 +33,16 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && (
+            <span aria-hidden="true" style={{ color: 'var(--error-red, #ef4444)', marginLeft: '4px' }}>
+              *
+            </span>
+          )}
+        </label>
+      )}
       
       <div className={styles.textareaContainer}>
         <textarea
@@ -48,6 +59,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
           `}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+          required={required}
           {...props}
         />
         
@@ -59,7 +71,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <div id={`${id}-error`} className={styles.errorText} role="alert" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <AlertTriangle size={14} aria-hidden="true" />
+          <span>{error}</span>
+        </div>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}

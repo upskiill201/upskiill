@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import styles from './Input.module.css';
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -18,11 +19,21 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   error,
   hint,
   className = '',
+  required,
   ...props
 }, ref) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && (
+            <span aria-hidden="true" style={{ color: 'var(--error-red, #ef4444)', marginLeft: '4px' }}>
+              *
+            </span>
+          )}
+        </label>
+      )}
       
       <div className={styles.inputContainer}>
         {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}
@@ -39,6 +50,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           `}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+          required={required}
           {...props}
         />
         
@@ -46,7 +58,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <div id={`${id}-error`} className={styles.errorText} role="alert" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <AlertTriangle size={14} aria-hidden="true" />
+          <span>{error}</span>
+        </div>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}
