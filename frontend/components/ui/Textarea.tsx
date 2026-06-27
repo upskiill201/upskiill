@@ -18,6 +18,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   onChange,
   value,
   rows = 4,
+  required,
   ...props
 }, ref) => {
   const [charCount, setCharCount] = useState(
@@ -31,7 +32,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && (
+            <span aria-hidden="true" style={{ color: 'var(--error-red, #ef4444)', marginLeft: '4px' }}>*</span>
+          )}
+        </label>
+      )}
       
       <div className={styles.textareaContainer}>
         <textarea
@@ -42,6 +50,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
           value={value}
           onChange={handleChange}
           rows={rows}
+          required={required}
           className={`
             ${styles.textarea}
             ${error ? styles.errorTextarea : ''}
