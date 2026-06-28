@@ -62,14 +62,25 @@ git push origin feature/your-feature
 ```
 
 ### Deploy to Staging (After I Merge Your PR)
-```bash
-git checkout staging
-git pull origin staging
-git merge main
-git push origin staging
-```
 
-Then test on: https://upskiill-git-staging-upskiill201s-projects.vercel.app/
+Deploying to staging is **fully automated** from end to end once you push to the `staging` branch. Follow these steps:
+
+1. **Pull Main & Push to Staging:**
+   Bring the approved code from `main` into your local `staging` branch and push it:
+   ```bash
+   git checkout staging
+   git pull origin staging
+   git merge main
+   git push origin staging
+   ```
+
+2. **Wait for Auto-Deployments:**
+   Unlike production, **both the Frontend and Backend deploy automatically** as soon as you push to `staging`:
+   - **Frontend:** Vercel immediately starts building the frontend.
+   - **Backend:** A GitHub Action (`Deploy — Staging`) runs automatically to apply DB migrations and trigger the Render backend deployment.
+
+3. **Test End-to-End:**
+   Wait 1-2 minutes, then test your feature on: https://upskiill-git-staging-upskiill201s-projects.vercel.app/
 
 ### Deploy to Production (Admin Only)
 
