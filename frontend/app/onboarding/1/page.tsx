@@ -3,22 +3,25 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { StepSkeleton } from '@/components/onboarding/StepSkeleton';
 
 // ─── Headline word stagger ───────────────────────────────────────────────────
-const headlineContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.055, delayChildren: 0.2 } }
+const headlineContainer: any = {
+  hidden: { opacity: 0 },
+  show: { 
+    opacity: 1,
+    transition: { staggerChildren: 0.055, delayChildren: 0.1 } 
+  }
 };
-const wordVariant = {
+const wordVariant: any = {
   hidden: { y: 20, opacity: 0 },
   show:  { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 28 } }
 };
-const accentVariant = {
+const accentVariant: any = {
   hidden: { y: 20, opacity: 0, scale: 0.75 },
   show:  { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 20 } }
 };

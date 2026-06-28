@@ -23,19 +23,28 @@ const SKILLS = [
 ];
 
 // ─── Animation variants ──────────────────────────────────────────────────────
-
-// Headline — word stagger
-const headlineContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.055, delayChildren: 0.15 } }
+const containerVariants: any = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+  }
 };
-const wordVariant = {
+const cardVariants: any = {
+  hidden: { scale: 0.8, y: 20, opacity: 0 },
+  show: { scale: 1, y: 0, opacity: 1, transition: { type: 'spring', stiffness: 350, damping: 25 } }
+};
+const headlineVariants: any = {
+  hidden: { y: -20, opacity: 0 },
+  show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 25 } }
+};
+const subtitleVariants: any = {
+  hidden: { y: -10, opacity: 0 },
+  show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 25, delay: 0.1 } }
+};
+const buttonRowVariants: any = {
   hidden: { y: 20, opacity: 0 },
-  show:   { y: 0,  opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 28 } }
-};
-const accentVariant = {
-  hidden: { y: 20, opacity: 0, scale: 0.75 },
-  show:   { y: 0,  opacity: 1, scale: 1,    transition: { type: 'spring', stiffness: 500, damping: 20 } }
+  show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 30, delay: 0.2 } }
 };
 
 // Cards — dealt stagger. NOTE: these go on WRAPPER divs, NOT on the buttons themselves,
