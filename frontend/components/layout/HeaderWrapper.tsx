@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Header from '../Header';
 import WaitlistHeader from './WaitlistHeader';
+import OnboardingHeader from './OnboardingHeader';
 
 export default function HeaderWrapper() {
   const pathname = usePathname();
@@ -21,6 +22,10 @@ export default function HeaderWrapper() {
     pathname.startsWith('/creator');
 
   if (isHiddenRoute) return null;
+
+  if (pathname?.startsWith('/onboarding')) {
+    return <OnboardingHeader />;
+  }
 
   if (isWaitlistRoute) {
     return <WaitlistHeader />;
