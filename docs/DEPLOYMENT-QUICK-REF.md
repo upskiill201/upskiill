@@ -73,15 +73,28 @@ Then test on: https://upskiill-git-staging-upskiill201s-projects.vercel.app/
 
 ### Deploy to Production (Admin Only)
 
-When code is merged to `main`, the **Frontend** (Vercel) auto-deploys immediately. However, the **Backend** (Render) and Database Migrations require a manual trigger via GitHub Actions as a safety gate.
+Deploying to production requires updating the `main` branch and then manually triggering the backend deploy. Follow these exact steps:
 
-To trigger the backend production deployment:
-1. Open the repository on **GitHub.com**.
-2. Go to the **Actions** tab at the top.
-3. On the left sidebar, select **Deploy — Production**.
-4. Click the **Run workflow** dropdown on the right.
-5. Type **`DEPLOY`** in the confirmation field.
-6. Click **Run workflow**.
+1. **Push or Merge to Main:**
+   Ensure your local `main` branch is up to date and push it to GitHub:
+   ```bash
+   git checkout main
+   git pull origin main
+   git merge staging   # (or merge your approved PR on GitHub)
+   git push origin main
+   ```
+
+2. **Frontend Auto-Deploys:**
+   As soon as `main` is pushed, **Vercel automatically deploys the Frontend**. You don't need to do anything else for the frontend.
+
+3. **Trigger Backend & Migrations (Manual Safety Gate):**
+   The **Backend** (Render) and Database Migrations do *not* auto-deploy. You must manually trigger them via GitHub Actions:
+   - Open the repository on **GitHub.com**.
+   - Go to the **Actions** tab at the top.
+   - On the left sidebar, select **Deploy — Production**.
+   - Click the **Run workflow** dropdown on the right.
+   - Type **`DEPLOY`** in the confirmation field.
+   - Click **Run workflow**.
 
 This safely runs `prisma migrate deploy` on the production database and triggers Render to restart the backend API.
 
