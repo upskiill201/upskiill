@@ -10,6 +10,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding.module';
 import { ProfileModule } from './profile/profile.module';
+import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ProfileModule } from './profile/profile.module';
     PaymentModule,
     CreatorOnboardingModule,
     ProfileModule,
+    UserOnboardingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

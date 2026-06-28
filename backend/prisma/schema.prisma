@@ -21,13 +21,14 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  profile            Profile?
-  enrollments        Enrollment[]
-  courses            Course[]                @relation("InstructorCourses")
-  orders             Order[]
-  reviews            Review[]
-  onboardingDraft    CreatorOnboardingDraft?
-  PasswordResetToken PasswordResetToken[]
+  profile             Profile?
+  enrollments         Enrollment[]
+  courses             Course[]                @relation("InstructorCourses")
+  orders              Order[]
+  reviews             Review[]
+  onboardingDraft     CreatorOnboardingDraft?
+  PasswordResetToken  PasswordResetToken[]
+  onboardingSession   OnboardingSession?
 }
 
 model Profile {
@@ -265,4 +266,19 @@ model PasswordResetToken {
 
   @@index([tokenHash])
   @@index([userId])
+}
+
+model OnboardingSession {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStep    Int       @default(1)
+  completedSteps Int[]     @default([])
+  answers        Json      @default("{}")
+  onboardingComplete Boolean @default(false)
+  startedAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  completedAt    DateTime?
+
+  @@map("onboarding_sessions")
 }
