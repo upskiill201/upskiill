@@ -259,9 +259,9 @@ export default function OnboardingStep3() {
 
           {/* Desktop Mascot */}
           <div className="hidden md:flex relative w-full h-full items-center justify-start -ml-[15%] lg:-ml-[10%] xl:ml-0 z-10">
-             <div className="relative w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] xl:w-[950px] xl:h-[950px] translate-y-[8%] lg:translate-y-[12%]">
+             <div className="relative w-[600px] h-[600px] lg:w-[900px] lg:h-[900px] xl:w-[1100px] xl:h-[1100px] translate-y-[15%] lg:translate-y-[20%] scale-[1.15] lg:scale-[1.25]">
                 <MascotBackground />
-                <div className="absolute inset-0 z-10 scale-[0.95]">
+                <div className="absolute inset-0 z-10 scale-[1.1] lg:scale-[1.15]">
                   <Image
                      src="/User%20onbarding%20Assets/Tey_step3_desktop.PNG"
                      alt="Teyro Mascot Pointing"
