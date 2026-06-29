@@ -121,13 +121,13 @@ export default function OnboardingStep3() {
           whileHover={!anySelected || isSelected ? { scale: 1.04, y: -4 } : {}}
           whileTap={{ scale: 0.96, transition: { type: 'spring', stiffness: 600, damping: 18 } }}
           onClick={() => handleSelect(goal.id)}
-          className={`relative flex flex-col items-center p-6 lg:p-8 rounded-[2rem] border-2 transition-colors duration-200 w-full h-full bg-white ${
-            isSelected ? 'border-[#0172FD] bg-blue-50/30' : 'border-transparent'
+          className={`relative flex flex-col items-center p-6 lg:p-8 rounded-[2rem] border-[3px] transition-all duration-300 w-full h-full bg-white ${
+            isSelected ? 'border-[#0172FD] bg-blue-50/20' : 'border-transparent'
           }`}
           style={{
             boxShadow: isSelected
-              ? '0 0 30px rgba(255,255,255,1), 0 10px 25px rgba(1,114,253,0.15)'
-              : '0 0 20px rgba(255,255,255,0.9), 0 8px 20px rgba(0,0,0,0.04)'
+              ? '0 0 30px rgba(255,255,255,1), 0 24px 48px -12px rgba(1,114,253,0.25)'
+              : '0 0 20px rgba(255,255,255,0.9), 0 24px 48px -12px rgba(20,50,100,0.15)'
           }}
         >
           {/* 3D icon image */}
@@ -243,27 +243,33 @@ export default function OnboardingStep3() {
         >
           {/* Mobile Mascot */}
           <div className="md:hidden relative w-full h-full flex items-center justify-center mt-2">
-             <div className="relative w-[280px] h-[280px]">
-                <Image
-                   src="/User%20onbarding%20Assets/Tey_step3_mobile.PNG"
-                   alt="Teyro Mascot"
-                   fill
-                   className="object-contain"
-                   priority
-                />
+             <div className="relative w-[320px] h-[320px] scale-[1.15]">
+                <MascotBackground />
+                <div className="absolute inset-0 z-10 scale-[0.85] translate-y-2">
+                  <Image
+                     src="/User%20onbarding%20Assets/Tey_step3_mobile.PNG"
+                     alt="Teyro Mascot"
+                     fill
+                     className="object-contain"
+                     priority
+                  />
+                </div>
              </div>
           </div>
 
           {/* Desktop Mascot */}
-          <div className="hidden md:flex relative w-full h-full items-center justify-end -mr-12 lg:-mr-16 xl:-mr-24 z-10">
-             <div className="relative w-[450px] h-[450px] lg:w-[550px] lg:h-[550px] xl:w-[650px] xl:h-[650px] translate-x-12 lg:translate-x-16 translate-y-8">
-                <Image
-                   src="/User%20onbarding%20Assets/Tey_step3_desktop.PNG"
-                   alt="Teyro Mascot Pointing"
-                   fill
-                   className="object-contain"
-                   priority
-                />
+          <div className="hidden md:flex relative w-full h-full items-center justify-start -ml-[15%] lg:-ml-[10%] xl:ml-0 z-10">
+             <div className="relative w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] xl:w-[950px] xl:h-[950px] translate-y-[8%] lg:translate-y-[12%]">
+                <MascotBackground />
+                <div className="absolute inset-0 z-10 scale-[0.95]">
+                  <Image
+                     src="/User%20onbarding%20Assets/Tey_step3_desktop.PNG"
+                     alt="Teyro Mascot Pointing"
+                     fill
+                     className="object-contain"
+                     priority
+                  />
+                </div>
              </div>
           </div>
         </motion.div>
