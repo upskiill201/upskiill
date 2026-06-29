@@ -18,6 +18,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   onChange,
   value,
   rows = 4,
+  required,
   ...props
 }, ref) => {
   const [charCount, setCharCount] = useState(
@@ -31,13 +32,23 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && (
+            <span className="text-red-500 ml-1" aria-hidden="true">
+              *
+            </span>
+          )}
+        </label>
+      )}
       
       <div className={styles.textareaContainer}>
         <textarea
           ref={ref}
           id={id}
           name={name}
+          required={required}
           maxLength={maxLength}
           value={value}
           onChange={handleChange}
