@@ -221,7 +221,7 @@ export default function OnboardingStep3() {
       <div className="flex-1 w-full max-w-[1440px] mx-auto flex flex-col md:flex-row relative min-h-0">
 
         {/* MOBILE PROGRESS BAR */}
-        <div className="md:hidden flex items-center gap-4 px-6 pt-8 pb-2 relative z-20 w-full">
+        <div className="md:hidden flex items-center gap-4 px-6 pt-8 pb-2 relative z-20 w-full translate-y-[20px]">
           <div className="flex-1 h-3 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
             <motion.div
               initial={{ width: `${(2 / 15) * 100}%` }}
@@ -278,7 +278,7 @@ export default function OnboardingStep3() {
         <div className="w-full h-[68vh] md:h-screen md:w-[55%] lg:w-[60%] flex flex-col order-2 relative z-20">
           
           {/* Desktop Progress Bar */}
-          <div className="hidden md:flex items-center gap-5 px-10 lg:px-12 xl:px-16 pt-12 pb-4 w-full max-w-[850px]">
+          <div className="hidden md:flex items-center gap-5 px-10 lg:px-12 xl:px-16 pt-12 pb-4 w-full max-w-[850px] translate-y-[20px]">
             <div className="flex-1 h-4 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner relative">
               <motion.div
                 initial={{ width: `${(2 / 15) * 100}%` }}
