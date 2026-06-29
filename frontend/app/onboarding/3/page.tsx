@@ -259,7 +259,7 @@ export default function OnboardingStep3() {
 
           {/* Desktop Mascot */}
           <div className="hidden md:flex relative w-full h-full items-center justify-start -ml-[15%] lg:-ml-[10%] xl:ml-0 z-10">
-             <div className="relative w-[600px] h-[600px] lg:w-[900px] lg:h-[900px] xl:w-[1100px] xl:h-[1100px] translate-y-[15%] lg:translate-y-[20%] scale-[1.15] lg:scale-[1.25]">
+             <div className="relative w-[600px] h-[600px] lg:w-[900px] lg:h-[900px] xl:w-[1100px] xl:h-[1100px] translate-y-[-5%] lg:translate-y-0 scale-[1.15] lg:scale-[1.25]">
                 <MascotBackground />
                 <div className="absolute inset-0 z-10 scale-[1.1] lg:scale-[1.15]">
                   <Image
@@ -349,44 +349,39 @@ export default function OnboardingStep3() {
 
              {/* Action Buttons */}
              <motion.div
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 22, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30, delay: 0.4 }}
-                className="flex items-center gap-3 md:gap-4 mt-auto pt-4 relative z-20 w-full max-w-[400px] mx-auto md:mx-0 md:max-w-[850px]"
+                transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.58 }}
+                className="flex items-center gap-4 mt-auto pt-4 relative z-20 w-full max-w-[400px] mx-auto md:mx-0 md:max-w-[850px]"
               >
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.92 }}
+                  whileTap={{ scale: 0.91, transition: { type: 'spring', stiffness: 600, damping: 18 } }}
                   onClick={handleBack}
-                  className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 bg-white border-2 border-slate-200 text-slate-500 rounded-2xl md:rounded-[2rem] flex items-center justify-center hover:border-slate-300 hover:bg-slate-50 transition-colors shadow-sm"
+                  className="w-16 h-14 md:w-auto md:px-8 md:h-16 flex items-center justify-center rounded-2xl md:rounded-[2rem] bg-white border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50"
+                  style={{ boxShadow: '0 0 15px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)' }}
                 >
-                  <ArrowLeft className="w-6 h-6 md:w-7 md:h-7 stroke-[2.5]" />
+                  <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
+                  <span className="hidden md:block ml-2 font-bold text-lg">Back</span>
                 </motion.button>
                 
                 <motion.button
-                  whileHover={selectedGoal ? { scale: 1.02, backgroundColor: '#0160D6' } : {}}
-                  whileTap={selectedGoal ? { scale: 0.97 } : {}}
-                  animate={
-                    idle && selectedGoal
-                      ? { scale: [1, 1.03, 1], boxShadow: ['0 10px 25px rgba(1,114,253,0.3)', '0 15px 35px rgba(1,114,253,0.5)', '0 10px 25px rgba(1,114,253,0.3)'] }
-                      : { scale: 1 }
+                  animate={selectedGoal && idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+                  transition={selectedGoal && idle
+                    ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] }
+                    : { type: 'spring', stiffness: 300, damping: 20 }
                   }
-                  transition={
-                    idle && selectedGoal
-                      ? { repeat: Infinity, repeatType: 'reverse', duration: 1.5, ease: 'easeInOut' }
-                      : { type: 'spring', stiffness: 400, damping: 25 }
-                  }
+                  whileHover={selectedGoal ? { scale: 1.02 } : {}}
+                  whileTap={selectedGoal ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
                   onClick={handleNext}
                   disabled={!selectedGoal}
-                  className={`flex-1 h-14 md:h-16 rounded-2xl md:rounded-[2rem] flex items-center justify-center gap-2 font-bold text-[1.1rem] md:text-[1.25rem] transition-all duration-300 ${
-                    selectedGoal
-                      ? 'bg-[#0172FD] text-white shadow-[0_10px_25px_rgba(1,114,253,0.3)] cursor-pointer'
-                      : 'bg-[#0172FD]/30 text-white/70 cursor-not-allowed border-none'
+                  className={`flex-1 md:flex-none relative md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-2xl md:rounded-[2rem] font-bold text-lg md:text-xl transition-all ${
+                    selectedGoal ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                   }`}
-                  style={{ fontFamily: 'var(--font-jakarta)' }}
+                  style={selectedGoal ? { boxShadow: '0 0 25px rgba(255,255,255,1), 0 16px 32px -8px rgba(1,114,253,0.5), inset 0px -6px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' } : { boxShadow: '0 0 15px rgba(255,255,255,0.8)' }}
                 >
-                  Continue
-                  <ArrowRight className="w-5 h-5 md:w-6 md:h-6 stroke-[2.5]" />
+                  <span>Continue</span>
+                  <ArrowRight className={`absolute right-6 md:right-8 w-6 h-6 stroke-[3] ${!selectedGoal && 'opacity-50'}`} />
                 </motion.button>
               </motion.div>
           </div>
