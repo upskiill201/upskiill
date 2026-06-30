@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { AlertCircle } from 'lucide-react';
 import styles from './Input.module.css';
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -22,7 +23,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
 }, ref) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {props.required && (
+            <span aria-hidden="true" style={{ color: 'var(--error-red, #ef4444)', marginLeft: '4px' }}>*</span>
+          )}
+        </label>
+      )}
       
       <div className={styles.inputContainer}>
         {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}
@@ -46,7 +54,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       </div>
       
       {error ? (
-        <span id={`${id}-error`} className={styles.errorText}>{error}</span>
+        <span id={`${id}-error`} className={styles.errorText} role="alert" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <AlertCircle size={14} aria-hidden="true" />
+          {error}
+        </span>
       ) : hint ? (
         <span id={`${id}-hint`} className={styles.hintText}>{hint}</span>
       ) : null}
