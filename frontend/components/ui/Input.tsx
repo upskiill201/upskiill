@@ -22,7 +22,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
 }, ref) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label htmlFor={id} className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label} {props.required && <span aria-hidden="true" style={{color: 'var(--error-red, #ef4444)'}}>*</span>}
+        </label>
+      )}
       
       <div className={styles.inputContainer}>
         {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}

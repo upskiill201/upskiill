@@ -5,3 +5,6 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+## 2024-05-31 - [aria-hidden on Form Required Indicators]
+**Learning:** When using Playwright (or screen readers) to select elements by accessible name (e.g., `get_by_role("textbox", name="Label")`), elements embedded within the label that have `aria-hidden="true"` (such as a decorative required asterisk `*`) are explicitly excluded from the accessible name computation. Searching for `name="Label *"` will cause a TimeoutError because the accessible tree only sees `"Label"`.
+**Action:** When writing Playwright tests or ensuring accessibility, query elements using their clean accessible name (ignoring `aria-hidden` content). Conditionally append required indicators (like asterisks) inside labels with `aria-hidden="true"` so screen readers rely on the native HTML `required` attribute instead of redundantly announcing "star".
