@@ -242,7 +242,7 @@ export default function CreatorDashboard() {
                         ) : '—'}
                       </td>
                       <td>
-                        <button className={styles.moreBtn}><MoreVertical size={16} /></button>
+                        <button className={styles.moreBtn} aria-label="More options"><MoreVertical size={16} /></button>
                       </td>
                     </tr>
                   ))}
