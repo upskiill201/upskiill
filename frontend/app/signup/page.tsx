@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { FaGraduationCap, FaRocket, FaVideo, FaAward } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
@@ -90,7 +90,12 @@ export default function Signup() {
           <h1 className={styles.title}>Start your journey</h1>
           <p className={styles.subtitle}>Create your account and unlock your potential.</p>
 
-          {error && <div style={{ color: 'red', marginBottom: '16px', fontSize: '14px', fontWeight: '500' }}>{error}</div>}
+          {error && (
+            <div role="alert" style={{ color: 'var(--error-red, #ef4444)', marginBottom: '16px', fontSize: '14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={16} aria-hidden="true" />
+              {error}
+            </div>
+          )}
 
           <form className={styles.form} onSubmit={handleSignup}>
             <div className={styles.inputGroup}>
