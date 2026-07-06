@@ -5,3 +5,7 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+
+## 2024-07-06 - Form Validation Accessibility Enhancement
+**Learning:** React custom form components (`Input`, `Textarea`) relied solely on a red border and red text color to communicate validation errors, which violates WCAG 1.4.1 (Use of Color).
+**Action:** Always include a visual icon (`AlertCircle` from `lucide-react`) inside error messages and wrap them in a container with `role="alert"` so screen readers dynamically announce the validation failure when it appears.
