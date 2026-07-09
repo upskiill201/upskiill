@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
-import { pageVariants } from '@/lib/animations';
 
 export default function OnboardingBackgroundProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,18 +28,7 @@ export default function OnboardingBackgroundProvider({ children }: { children: R
         transition: 'background-color 0.3s ease',
       }}
     >
-      <AnimatePresence mode="wait">
-        <motion.div 
-          key={pathname}
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+      {children}
     </div>
   );
 }
