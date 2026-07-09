@@ -158,7 +158,6 @@ export default function OnboardingStep2() {
               />
             </motion.div>
           </div>
-
           <span
             className={`font-bold ${isMobile ? 'text-[11px]' : 'text-base'} tracking-tight ${isSelected ? 'text-[#0172FD]' : 'text-[#0b132b]'}`}
             style={{ fontFamily: 'var(--font-jakarta)' }}
@@ -171,46 +170,140 @@ export default function OnboardingStep2() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col">
-      <div className="flex-1 w-full max-w-[1440px] mx-auto flex flex-col md:flex-row relative min-h-0">
-
-        {/* MOBILE PROGRESS BAR */}
-        <div className="md:hidden flex items-center gap-4 px-6 pt-8 pb-4 relative z-20 w-full">
-          <div className="flex-1 h-3 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${(2 / 15) * 100}%` }}
-              transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 0.8, delay: 0.25 }}
-              className="h-full rounded-full relative"
-              style={{ background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)', boxShadow: 'inset 0px -3px 0px rgba(0,0,0,0.1), inset 0px 3px 0px rgba(255,255,255,0.3)' }}
-            />
+    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative">
+      
+      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
+        <div className="w-full h-[40dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible shrink-0">
+          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+            <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${(2 / 15) * 100}%` }}
+                transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 0.8, delay: 0.25 }}
+                className="h-full rounded-full"
+                style={{ background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)', boxShadow: 'inset 0px -2px 0px rgba(0,0,0,0.1), inset 0px 2px 0px rgba(255,255,255,0.3)' }}
+              />
+            </div>
+            <span className="text-sm font-[800] text-[#0172FD] shrink-0" style={{ textShadow: '0 0 10px rgba(255,255,255,1)' }}>2/15</span>
           </div>
-          <span className="text-sm font-bold" style={{ color: '#0172FD', textShadow: '0 0 10px rgba(255,255,255,1)' }}>2/15</span>
+
+          <motion.div
+            initial={{ scale: 0.6, y: -20 }}
+            animate={{ scale: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            className="w-full flex-1 flex items-center justify-center relative select-none mt-2 px-0"
+          >
+            {/* Bubble background spans 100% of container width */}
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
+              <MascotBackground />
+            </div>
+            {/* Mascot image is centered vertically and horizontally, taking 80% width with scale-[1.4] */}
+            <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[80vw] z-10 scale-[1.4] origin-center">
+              <Image src="/User%20onbarding%20Assets/Tey_thinking%20_Mobile.PNG" alt="Tey Thinking Mobile" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
+            </motion.div>
+          </motion.div>
         </div>
 
-        {/* LEFT COLUMN — Mascot drops in */}
+        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative z-20 pb-4 px-6 bg-white pt-2">
+          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+
+          <div className="w-full flex flex-col items-center text-center mt-1 mb-3 px-2 z-20 shrink-0">
+            {/* Relative scaled heading - constrained to 80% width */}
+            <motion.h1
+              variants={headlineContainer}
+              initial="hidden"
+              animate="show"
+              className="text-[10vw] xs:text-[11vw] sm:text-4xl font-[900] leading-[1.08] mb-1.5 tracking-tight text-[#071233] w-[80%] mx-auto"
+              style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
+            >
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>What</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>skill</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>do</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>you</motion.span>
+              <br />
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>want</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>to</motion.span>
+              <motion.span variants={accentVariant} style={{ display: 'inline-block', color: '#0172FD', textShadow: accentShadow }}>master?</motion.span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ y: 14, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.42 }}
+              className="text-[3.8vw] xs:text-[4vw] sm:text-base font-medium text-slate-500 leading-tight max-w-[90%]"
+              style={{ fontFamily: 'var(--font-jakarta)' }}
+            >
+              Choose a skill to create your personalized path.
+            </motion.p>
+          </div>
+
+          <motion.div
+            variants={deckContainer}
+            initial="hidden"
+            animate="show"
+            className="w-full flex-1 overflow-y-auto min-h-0 mb-4 z-20"
+          >
+            <div className="grid grid-cols-3 gap-2 pb-2">
+              {SKILLS.map(skill => renderCard(skill, true))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 22, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.58 }}
+            className="w-full flex items-center gap-3 justify-center relative z-30 mb-6 shrink-0"
+          >
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
+              onClick={handleBack}
+              className="w-14 h-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-700 transition-colors"
+              style={{ boxShadow: 'inset 0px -4px 0px rgba(0,0,0,0.06), inset 0px 2px 0px rgba(255,255,255,0.8)' }}
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+            </motion.button>
+
+            <motion.button
+              animate={selectedSkill && idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+              transition={selectedSkill && idle
+                ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] }
+                : { type: 'spring', stiffness: 300, damping: 20 }
+              }
+              whileHover={selectedSkill ? { scale: 1.02 } : {}}
+              whileTap={selectedSkill ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
+              onClick={handleNext}
+              disabled={!selectedSkill}
+              className={`flex-1 relative flex items-center justify-center h-12 rounded-xl font-bold text-base transition-all ${
+                selectedSkill ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
+              }`}
+              style={selectedSkill ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' } : { boxShadow: '0 0 10px rgba(255,255,255,0.8)' }}
+            >
+              <span>Continue</span>
+              <ArrowRight className={`absolute right-4 w-5 h-5 stroke-[3] ${!selectedSkill && 'opacity-50'}`} />
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="hidden md:flex flex-1 w-full max-w-[1440px] mx-auto flex-row relative min-h-0">
         <motion.div
           initial={{ scale: 0.65, y: -30 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-          className="w-full h-[45vh] md:h-screen md:w-1/2 lg:w-5/12 flex items-center justify-center order-1 relative"
+          className="w-1/2 lg:w-5/12 flex items-center justify-center relative"
         >
-          <div className="relative w-full max-w-[550px] md:w-full md:max-w-[900px] aspect-square scale-[1.4] sm:scale-[1.5] md:scale-[1.4] lg:scale-[1.65] translate-y-20 sm:translate-y-24 md:translate-y-0 md:-translate-x-16 lg:-translate-x-[10.5rem] md:origin-left transition-transform">
+          {/* Desktop mascot container size reduced to 90% width of its column container, removing scale overrides */}
+          <div className="relative w-[90%] aspect-square transition-transform z-10">
             <MascotBackground />
-            <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[1.15] lg:scale-[1.25]">
-              <Image src="/User%20onbarding%20Assets/Tey_thinking_desktop.PNG" alt="Tey Thinking Desktop" fill className="hidden md:block object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
-              <Image src="/User%20onbarding%20Assets/Tey_thinking%20_Mobile.PNG" alt="Tey Thinking Mobile" fill className="block md:hidden object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
+            <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10">
+              <Image src="/User%20onbarding%20Assets/Tey_thinking_desktop.PNG" alt="Tey Thinking Desktop" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
             </motion.div>
           </div>
         </motion.div>
 
-        {/* RIGHT COLUMN */}
-        <div className="w-full flex flex-col order-2 md:order-2 md:justify-center relative px-6 md:px-10 lg:px-12 z-20 flex-1 -mt-24 md:mt-0 pb-8 md:pb-10">
-          {/* Mobile white fade */}
-          <div className="absolute top-[-3rem] left-0 right-0 bottom-0 bg-gradient-to-b from-transparent via-white to-white via-[10%] md:hidden -z-10 pointer-events-none" />
-
-          {/* DESKTOP PROGRESS BAR */}
-          <div className="hidden md:flex items-center gap-5 mb-10 relative z-10 w-full">
+        <div className="w-full flex flex-col md:justify-center relative px-6 md:px-10 lg:px-12 z-20 flex-1 pb-8 md:pb-10">
+          <div className="flex items-center gap-5 mb-10 relative z-10 w-full">
             <div className="flex-1 h-4 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
@@ -223,83 +316,62 @@ export default function OnboardingStep2() {
             <span className="text-lg font-bold" style={{ color: '#0172FD', textShadow: '0 0 10px rgba(255,255,255,1)' }}>2/15</span>
           </div>
 
-          {/* Content wrapper */}
           <div className="relative z-10 w-full max-w-2xl mx-auto md:mx-0 pt-6 md:pt-0">
-
-            {/* ── HEADLINE ── */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[2.25rem] leading-[1.1] md:text-[3.5rem] lg:text-[4rem] font-[800] mb-4 tracking-tight text-[#071233] text-center md:text-left"
+              className="text-[2.25rem] leading-[1.1] md:text-[3.5rem] lg:text-[4rem] font-[800] mb-4 tracking-tight text-[#071233] text-left"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>What</motion.span>
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>skill</motion.span>
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>do</motion.span>
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>you</motion.span>
-              <br className="hidden md:block" />
+              <br />
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>want</motion.span>
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>to</motion.span>
               <motion.span variants={accentVariant} style={{ display: 'inline-block', color: '#0172FD', textShadow: accentShadow }}>master?</motion.span>
             </motion.h1>
 
-            {/* ── SUBTITLE ── */}
             <motion.p
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.42 }}
-              className="text-base md:text-xl lg:text-[1.35rem] mb-10 font-medium text-center md:text-left text-slate-600 leading-snug"
+              className="text-base md:text-xl lg:text-[1.35rem] mb-10 font-medium text-left text-slate-600 leading-snug"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)' }}
             >
-              Choose a skill you&apos;re passionate about.<br className="hidden md:block" />
+              Choose a skill you&apos;re passionate about.<br />
               We&apos;ll create a personalized learning path just for you.
             </motion.p>
 
-            {/* ── CARDS: Mobile (scrollable) ── */}
             <motion.div
               variants={deckContainer}
               initial="hidden"
               animate="show"
-              className="md:hidden overflow-y-auto"
-              style={{ maxHeight: 'calc(2 * (((100vw - 3rem) / 3) + 0.5rem) + 2px)' }}
-            >
-              <div className="grid grid-cols-3 gap-2 pb-2">
-                {SKILLS.map(skill => renderCard(skill, true))}
-              </div>
-            </motion.div>
-
-            {/* ── CARDS: Desktop ── */}
-            <motion.div
-              variants={deckContainer}
-              initial="hidden"
-              animate="show"
-              className="hidden md:grid md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10"
+              className="grid md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10"
             >
               {SKILLS.map(skill => renderCard(skill, false))}
             </motion.div>
 
-            {/* ── ACTION BUTTONS: arrive last ── */}
             <motion.div
               initial={{ y: 22, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.58 }}
-              className="flex items-center gap-4 justify-center md:justify-start mb-10 md:mb-0 pt-4 md:pt-0 relative z-30"
-              style={{ marginTop: '-20px' }}
+              className="flex items-center gap-4 justify-start pt-4 md:pt-0 relative z-30"
             >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.91, transition: { type: 'spring', stiffness: 600, damping: 18 } }}
                 onClick={handleBack}
-                className="w-16 h-14 md:w-auto md:px-8 md:h-16 flex items-center justify-center rounded-2xl md:rounded-[2rem] bg-white border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50"
+                className="px-8 h-16 flex items-center justify-center rounded-[2rem] bg-white border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50"
                 style={{ boxShadow: '0 0 15px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05)' }}
               >
                 <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
-                <span className="hidden md:block ml-2 font-bold text-lg">Back</span>
+                <span className="ml-2 font-bold text-lg">Back</span>
               </motion.button>
 
               <motion.button
-                /* idle nudge — tween so multi-keyframe works */
                 animate={selectedSkill && idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
                 transition={selectedSkill && idle
                   ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] }
@@ -309,16 +381,15 @@ export default function OnboardingStep2() {
                 whileTap={selectedSkill ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
                 onClick={handleNext}
                 disabled={!selectedSkill}
-                className={`flex-1 md:flex-none relative md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-2xl md:rounded-[2rem] font-bold text-lg md:text-xl transition-all ${
+                className={`relative w-[240px] flex items-center justify-center h-16 rounded-[2rem] font-bold text-xl transition-all ${
                   selectedSkill ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                 }`}
                 style={selectedSkill ? { boxShadow: '0 0 25px rgba(255,255,255,1), 0 16px 32px -8px rgba(1,114,253,0.5), inset 0px -6px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' } : { boxShadow: '0 0 15px rgba(255,255,255,0.8)' }}
               >
                 <span>Continue</span>
-                <ArrowRight className={`absolute right-6 md:right-8 w-6 h-6 stroke-[3] ${!selectedSkill && 'opacity-50'}`} />
+                <ArrowRight className={`absolute right-8 w-6 h-6 stroke-[3] ${!selectedSkill && 'opacity-50'}`} />
               </motion.button>
             </motion.div>
-
           </div>
         </div>
       </div>

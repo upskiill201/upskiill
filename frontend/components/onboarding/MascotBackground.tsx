@@ -127,18 +127,16 @@ export const MascotBackground = () => {
       />
 
       {/* === LARGE BUBBLES === */}
-      {/* Top-right */}
       <Bubble size="52px" top="8%" right="12%" opacity={0.75} />
-      {/* Mid-right */}
       <Bubble size="44px" top="38%" right="4%" opacity={0.65} />
-      {/* Bottom-right */}
       <Bubble size="38px" bottom="22%" right="18%" opacity={0.65} />
-      {/* Mid-left */}
       <Bubble size="36px" top="50%" left="4%" opacity={0.6} />
-      {/* Bottom-center */}
       <Bubble size="32px" bottom="12%" left="30%" opacity={0.6} />
-      {/* Top-center */}
       <Bubble size="24px" top="6%" left="42%" opacity={0.55} />
+      <Bubble size="60px" top="15%" left="8%" opacity={0.7} />
+      <Bubble size="48px" bottom="30%" left="15%" opacity={0.6} />
+      <Bubble size="40px" top="65%" right="25%" opacity={0.5} />
+      <Bubble size="55px" bottom="5%" right="5%" opacity={0.55} />
 
       {/* === MEDIUM BUBBLES === */}
       <Bubble size="20px" top="22%" right="8%" opacity={0.5} />
@@ -148,6 +146,11 @@ export const MascotBackground = () => {
       <Bubble size="20px" top="70%" left="20%" opacity={0.55} />
       <Bubble size="14px" bottom="8%" left="50%" opacity={0.4} />
       <Bubble size="18px" top="15%" left="20%" opacity={0.45} />
+      <Bubble size="24px" top="45%" right="15%" opacity={0.6} />
+      <Bubble size="18px" top="10%" right="35%" opacity={0.5} />
+      <Bubble size="22px" bottom="45%" left="8%" opacity={0.55} />
+      <Bubble size="16px" bottom="25%" left="45%" opacity={0.45} />
+      <Bubble size="20px" top="85%" left="35%" opacity={0.4} />
 
       {/* === SMALL BUBBLES === */}
       <Bubble size="10px" top="28%" left="38%" opacity={0.4} />
@@ -155,18 +158,23 @@ export const MascotBackground = () => {
       <Bubble size="12px" bottom="35%" left="35%" opacity={0.4} />
       <Bubble size="10px" top="42%" left="15%" opacity={0.35} />
       <Bubble size="8px" bottom="45%" right="12%" opacity={0.35} />
+      <Bubble size="12px" top="20%" left="28%" opacity={0.5} />
+      <Bubble size="8px" top="60%" left="8%" opacity={0.4} />
+      <Bubble size="10px" bottom="15%" right="40%" opacity={0.45} />
+      <Bubble size="14px" bottom="55%" right="28%" opacity={0.5} />
+      <Bubble size="9px" top="8%" right="45%" opacity={0.3} />
 
       {/* === HEXAGONS === */}
-      {/* Large hex top-left area */}
       <Hex size={40} top="18%" left="22%" opacity={0.65} />
-      {/* Medium hex center */}
       <Hex size={28} top="32%" left="38%" opacity={0.55} />
-      {/* Large hex lower-left */}
       <Hex size={44} top="58%" left="12%" opacity={0.65} />
-      {/* Small hex top-right */}
       <Hex size={20} top="12%" right="28%" opacity={0.45} />
-      {/* Tiny hex bottom-center */}
       <Hex size={18} bottom="25%" left="48%" opacity={0.4} />
+      <Hex size={36} bottom="15%" right="25%" opacity={0.6} />
+      <Hex size={24} top="45%" right="35%" opacity={0.5} />
+      <Hex size={32} top="75%" right="15%" opacity={0.55} />
+      <Hex size={42} bottom="40%" left="25%" opacity={0.45} />
+      <Hex size={22} top="5%" left="45%" opacity={0.4} />
 
       {/* === TINY DOTS === */}
       <Dot top="5%" left="30%" size="5px" opacity={0.4} />
@@ -178,6 +186,14 @@ export const MascotBackground = () => {
       <Dot bottom="38%" left="22%" size="5px" opacity={0.3} />
       <Dot top="75%" right="15%" size="4px" opacity={0.35} />
       <Dot bottom="5%" right="28%" size="5px" opacity={0.3} />
+      <Dot top="12%" left="15%" size="6px" opacity={0.45} />
+      <Dot top="35%" left="8%" size="4px" opacity={0.35} />
+      <Dot top="55%" left="42%" size="5px" opacity={0.4} />
+      <Dot bottom="28%" right="8%" size="6px" opacity={0.5} />
+      <Dot bottom="48%" right="42%" size="4px" opacity={0.3} />
+      <Dot top="85%" left="25%" size="5px" opacity={0.4} />
+      <Dot top="92%" right="45%" size="4px" opacity={0.35} />
+      <Dot bottom="65%" left="35%" size="6px" opacity={0.45} />
 
       {/* === SPARKLES === */}
       <Sparkle size={14} top="12%" left="10%" opacity={0.55} />
@@ -186,6 +202,12 @@ export const MascotBackground = () => {
       <Sparkle size={10} bottom="20%" left="28%" opacity={0.45} />
       <Sparkle size={12} top="48%" right="8%" opacity={0.4} />
       <Sparkle size={14} top="65%" left="32%" opacity={0.45} />
+      <Sparkle size={18} top="5%" right="35%" opacity={0.6} />
+      <Sparkle size={14} bottom="10%" right="45%" opacity={0.5} />
+      <Sparkle size={20} top="38%" left="15%" opacity={0.65} />
+      <Sparkle size={12} top="80%" right="25%" opacity={0.4} />
+      <Sparkle size={16} bottom="50%" left="40%" opacity={0.55} />
+      <Sparkle size={14} bottom="85%" left="48%" opacity={0.5} />
     </div>
   );
 };

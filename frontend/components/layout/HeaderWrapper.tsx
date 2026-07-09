@@ -24,7 +24,7 @@ export default function HeaderWrapper() {
   if (isHiddenRoute) return null;
 
   if (pathname?.startsWith('/onboarding')) {
-    return <OnboardingHeader />;
+    return null;
   }
 
   if (isWaitlistRoute) {

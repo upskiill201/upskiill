@@ -11,6 +11,7 @@ import { PaymentModule } from './payment/payment.module';
 import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
     CreatorOnboardingModule,
     ProfileModule,
     UserOnboardingModule,
+    WhatsappModule,
   ],
   controllers: [AppController],
   providers: [AppService],
