@@ -41,7 +41,7 @@ export class UserOnboardingController {
     body: {
       currentStep?: number;
       completedSteps?: number[];
-      answers?: Record<string, unknown>;
+      answers?: any;
       onboardingComplete?: boolean;
     },
   ) {
