@@ -22,7 +22,7 @@ export class UserOnboardingService {
     payload: {
       currentStep?: number;
       completedSteps?: number[];
-      answers?: any;
+      answers?: Record<string, unknown>;
       onboardingComplete?: boolean;
       completedAt?: Date | null;
     },
