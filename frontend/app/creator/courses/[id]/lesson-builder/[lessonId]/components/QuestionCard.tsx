@@ -115,6 +115,7 @@ export function QuestionCard({
             onClick={onMoveUp}
             disabled={index === 0}
             title="Move up"
+            aria-label="Move up"
           >
             <ChevronUp size={14} />
           </button>
@@ -123,6 +124,7 @@ export function QuestionCard({
             onClick={onMoveDown}
             disabled={index === total - 1}
             title="Move down"
+            aria-label="Move down"
           >
             <ChevronDown size={14} />
           </button>
@@ -134,7 +136,7 @@ export function QuestionCard({
             {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
             {showPreview ? 'Hide Preview' : 'Preview'}
           </button>
-          <button className={styles.deleteBtn} onClick={onDelete} title="Delete question">
+          <button className={styles.deleteBtn} onClick={onDelete} title="Delete question" aria-label="Delete question">
             <Trash2 size={14} />
           </button>
         </div>
@@ -190,6 +192,7 @@ export function QuestionCard({
                   className={`${styles.radioBtn} ${isCorrect ? styles.radioBtnActive : ''}`}
                   onClick={() => onChange({ ...question, correctOptionId: opt.id })}
                   title="Mark as correct answer"
+                  aria-label="Mark as correct answer"
                   type="button"
                 >
                   {isCorrect && <span className={styles.radioDot} />}
@@ -221,6 +224,7 @@ export function QuestionCard({
                   onClick={() => removeOption(opt.id, optRef.current)}
                   disabled={question.options.length <= 2}
                   title="Delete option"
+                  aria-label="Delete option"
                   type="button"
                 >
                   <Trash2 size={12} />
