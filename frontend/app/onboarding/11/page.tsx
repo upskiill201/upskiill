@@ -185,13 +185,13 @@ export default function OnboardingStep11() {
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-            className="relative w-[100%] h-[100%] z-10 flex items-center justify-center p-12"
+            className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
           >
             <Image 
               src="/User onbarding Assets/Step_11_image_desktop.PNG" 
               alt="Tey Mascot Desktop" 
               fill 
-              className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)] scale-[1.05]" 
+              className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
               priority 
             />
           </motion.div>
