@@ -89,17 +89,15 @@ export default function OnboardingStep1() {
             initial={{ scale: 0.6, y: -20 }}
             animate={{ scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-stretch justify-center relative select-none mt-2 px-0"
+            className="w-full flex-1 flex items-center justify-center relative select-none mt-2 px-0"
           >
             {/* Bubble background spans 100% of container width */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              <div className="absolute inset-0 w-full h-full">
-                <MascotBackground />
-              </div>
-              {/* Mascot image is exactly 90% of its container width and height, upscaled to look massive */}
-              <motion.div layoutId="tey-mascot" className="absolute w-[90%] h-[90%] z-10 scale-[1.3] origin-center">
-                <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
-              </motion.div>
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
+              <MascotBackground />
+            </div>
+            {/* Mascot image is exactly 85% of device width and 35dvh height, centered vertically and horizontally, scale-zoomed to 1.2x */}
+            <div className="absolute w-[85vw] h-[35dvh] z-10 origin-center">
+              <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" priority />
             </div>
           </motion.div>
         </div>
