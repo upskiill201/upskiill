@@ -91,7 +91,7 @@ export default function OnboardingStep11() {
             {/* Mascot image is exactly 80% of device width and container height, centered vertically and horizontally */}
             <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[80%] z-10 scale-[1.2] origin-center">
               <Image 
-                src="/User onboarding Assets/Step_11_image_mobile.PNG" 
+                src="/User onbarding Assets/Step_11_image_mobile.PNG" 
                 alt="Tey Mascot Mobile" 
                 fill 
                 className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" 
@@ -109,12 +109,12 @@ export default function OnboardingStep11() {
 
           {/* Typography container - aligned top */}
           <div className="w-full flex flex-col items-center text-center mt-1 mb-3 px-2 z-20 shrink-0">
-            {/* Relative scaled heading - constrained to 80% of device width */}
+            {/* Relative scaled heading - constrained to 70% of device width */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[9.5vw] xs:text-[10vw] sm:text-4xl font-[900] leading-[1.08] mb-1.5 tracking-tight text-[#071233] w-[80vw] mx-auto text-center"
+              className="text-[11.5vw] xs:text-[12vw] sm:text-5xl font-[900] leading-[1.08] mb-2 tracking-tight text-[#071233] w-[70vw] mx-auto text-center"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <div className="whitespace-nowrap">
@@ -173,10 +173,10 @@ export default function OnboardingStep11() {
       </div>
 
       {/* 🖥️ DESKTOP-ONLY LAYOUT */}
-      <div className="hidden md:flex flex-row w-full h-screen relative z-10 overflow-hidden items-stretch justify-center">
+      <div className="hidden md:flex flex-row w-full h-screen relative z-10 overflow-hidden items-stretch justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF]">
         
         {/* Left Column (50%): Mascot Container with bubble background */}
-        <div className="w-1/2 h-full flex items-center justify-center relative bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden select-none">
+        <div className="w-1/2 h-full flex items-center justify-center relative bg-transparent overflow-hidden select-none">
           <div className="absolute inset-0 w-full h-full pointer-events-none">
             <MascotBackground />
           </div>
@@ -188,7 +188,7 @@ export default function OnboardingStep11() {
             className="relative w-[100%] h-[100%] z-10 flex items-center justify-center p-12"
           >
             <Image 
-              src="/User onboarding Assets/Step_11_image_desktop.PNG" 
+              src="/User onbarding Assets/Step_11_image_desktop.PNG" 
               alt="Tey Mascot Desktop" 
               fill 
               className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)] scale-[1.05]" 
@@ -198,7 +198,7 @@ export default function OnboardingStep11() {
         </div>
 
         {/* Right Column (50%): Content Container */}
-        <div className="w-1/2 h-full bg-white flex flex-col justify-between p-12 lg:p-20 relative select-none">
+        <div className="w-1/2 h-full bg-transparent flex flex-col justify-between p-12 lg:p-20 relative select-none">
           
           {/* Progress row */}
           <div className="w-full flex items-center gap-5 relative z-10 pt-4 shrink-0">
@@ -248,20 +248,15 @@ export default function OnboardingStep11() {
               </div>
             </motion.h1>
 
-            {/* Desktop Subtext with soft white character-hugging shadow glow wrapper */}
+            {/* Desktop Subtext with soft white character-hugging shadow glow effect */}
             <motion.p
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.4 }}
-              className="text-[1.25rem] lg:text-3xl font-medium text-left text-slate-500 leading-snug"
+              className="text-[1.25rem] lg:text-3xl font-medium text-left text-slate-600 leading-snug relative z-10"
               style={{
                 fontFamily: 'var(--font-jakarta)',
-                display: 'inline',
-                boxShadow: '0 0 15px 10px rgba(255,255,255,0.95)',
-                WebkitBoxDecorationBreak: 'clone',
-                boxDecorationBreak: 'clone',
-                borderRadius: '4px',
-                padding: '2px 4px',
+                textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)',
               }}
             >
               Build momentum and unlock your potential. Consistency today, mastery tomorrow.
