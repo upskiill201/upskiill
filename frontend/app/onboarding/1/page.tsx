@@ -46,10 +46,7 @@ export default function OnboardingStep1() {
   if (isLoading) return <StepSkeleton />;
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden relative">
-      
-      {/* Mobile bottom white soft fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-[50dvh] bg-gradient-to-b from-transparent via-[#F7F8FC] to-[#F7F8FC] via-[20%] md:hidden z-0" />
+    <div className="w-full relative bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden">
 
       {/* Decorative background */}
       <div className="absolute top-10 left-10 w-6 h-6 text-white opacity-60 z-0">
@@ -65,13 +62,14 @@ export default function OnboardingStep1() {
         <svg viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M12 2.5L21.5 8v11L12 24.5 2.5 19V8L12 2.5z" /></svg>
       </div>
 
-      {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
-        
-        {/* Top 60% Image Container - 100% of device width */}
-        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible">
-          {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+      {/* 📱 MOBILE-ONLY LAYOUT: Strict 60/40 Flex Split — 100dvh hard lock, no scroll */}
+      <div className="flex flex-col w-full relative z-10 md:hidden" style={{ height: '100dvh', overflow: 'hidden' }}>
+
+        {/* Top 60% Image Container */}
+        <div className="flex-[6] w-full flex flex-col justify-start items-center relative overflow-hidden">
+
+          {/* Mobile Progress Bar */}
+          <div className="w-full px-6 flex items-center gap-4 shrink-0 relative z-20 pt-[max(env(safe-area-inset-top),12px)] pb-3">
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
@@ -84,40 +82,36 @@ export default function OnboardingStep1() {
             <span className="text-sm font-[800] text-[#0172FD] shrink-0" style={{ textShadow: '0 0 10px rgba(255,255,255,1)' }}>1/15</span>
           </div>
 
-          {/* Mascot Section inside top container - stretches to 100% width of device */}
-          <motion.div
-            initial={{ scale: 0.6, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-stretch justify-center relative select-none mt-2 px-0"
-          >
-            {/* Bubble background spans 100% of container width */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              <div className="absolute inset-0 w-full h-full">
-                <MascotBackground />
-              </div>
-              {/* Mascot image is exactly 90% of its container width and height, upscaled to look massive */}
-              <motion.div layoutId="tey-mascot" className="absolute w-[90%] h-[90%] z-10 scale-[1.3] origin-center">
-                <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
-              </motion.div>
+          {/* Mascot area — fills remaining top flex space */}
+          <div className="w-full flex-1 flex items-center justify-center relative min-h-0">
+            <div className="absolute inset-0 w-full h-full">
+              <MascotBackground />
             </div>
-          </motion.div>
+            <motion.div
+              layoutId="tey-mascot"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className="relative w-[80%] h-[85%] z-10"
+            >
+              <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
+            </motion.div>
+          </div>
         </div>
 
-        {/* Bottom 40% Text & CTA Container - padded horizontally with white background and soft top fade */}
-        <div className="w-full h-[40dvh] flex flex-col justify-between items-center relative z-20 pb-4 px-6 bg-white">
-          
-          {/* Soft white shadow fade overlay at the top boundary */}
-          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+        {/* Bottom 40% Text & CTA Container */}
+        <div className="flex-[4] w-full flex flex-col justify-between items-center relative z-20 overflow-hidden bg-white px-6" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}>
+
+          {/* Soft white fade - inset at top of container */}
+          <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-white/0 to-white pointer-events-none z-10" />
 
           {/* Centered Typography container */}
-          <div className="w-full flex-1 flex flex-col justify-center items-center text-center mt-2 mb-4 px-2 z-20">
-            {/* Relative scaled heading - constrained to 80% width */}
+          <div className="w-full flex-1 flex flex-col justify-center items-center text-center pt-2 px-2 z-20">
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[16vw] xs:text-[17vw] sm:text-6xl font-[900] leading-[0.98] mb-3 tracking-tighter text-[#071233] w-[80%] mx-auto"
+              className="text-[14vw] xs:text-[15vw] sm:text-6xl font-[900] leading-[0.98] mb-2 tracking-tighter text-[#071233] w-[80%] mx-auto"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
@@ -132,24 +126,23 @@ export default function OnboardingStep1() {
               </motion.span>
             </motion.h1>
 
-            {/* Relative scaled subtitle */}
             <motion.p
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
-              className="text-[4.5vw] xs:text-[4.8vw] sm:text-lg font-medium text-slate-600 leading-snug max-w-[90%]"
+              className="text-[4vw] xs:text-[4.2vw] sm:text-lg font-medium text-slate-600 leading-snug max-w-[90%]"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9)' }}
             >
               Your journey to mastering<br /> new skills starts here.
             </motion.p>
           </div>
 
-          {/* CTA: Continue Button with explicit margin bottom */}
+          {/* CTA: Get Started Button */}
           <motion.div
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.65 }}
-            className="w-full max-w-[340px] px-2 mb-6 z-20"
+            className="w-full max-w-[340px] px-2 z-20 shrink-0"
           >
             <motion.button
               animate={idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}

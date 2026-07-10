@@ -49,7 +49,7 @@ export default function OnboardingStep11() {
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
   return (
-    <div className="w-full relative select-none bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF]">
+    <div className="w-full relative select-none bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden">
       
       {/* 📱 MOBILE-ONLY LAYOUT: Strict 60/40 Flex Split - 100dvh hard lock, no scroll */}
       <div className="flex flex-col w-full relative z-10 md:hidden" style={{ height: '100dvh', overflow: 'hidden' }}>
@@ -101,11 +101,11 @@ export default function OnboardingStep11() {
           </div>
         </div>
 
-        {/* Bottom 40% Text & CTA Container */}
-        <div className="flex-[4] w-full flex flex-col items-center relative z-20 bg-white" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)', overflow: 'visible' }}>
+        {/* Bottom 40% Text & CTA Container - overflow-hidden keeps content contained */}
+        <div className="flex-[4] w-full flex flex-col items-center relative z-20 bg-white overflow-hidden" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}>
           
-          {/* Soft white fade — bleeds upward 40px above the container top edge */}
-          <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+          {/* Soft white fade - inset at top of white container, fades in the white */}
+          <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-white/0 to-white pointer-events-none z-10" />
 
           {/* Typography container */}
           <div className="w-full flex flex-col items-center text-center pt-2 px-4 z-20 shrink-0">
