@@ -49,16 +49,16 @@ export default function OnboardingStep11() {
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative select-none">
+    <div className="w-full relative select-none bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF]">
       
-      {/* 📱 MOBILE-ONLY LAYOUT: Strict 60/40 Split */}
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
+      {/* 📱 MOBILE-ONLY LAYOUT: Strict 60/40 Flex Split - 100dvh hard lock, no scroll */}
+      <div className="flex flex-col w-full relative z-10 md:hidden" style={{ height: '100dvh', overflow: 'hidden' }}>
         
-        {/* Top 60% Image Container - 100% of device width */}
-        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible shrink-0">
+        {/* Top 60% Image Container */}
+        <div className="flex-[6] w-full flex flex-col justify-start items-center relative overflow-hidden">
           
-          {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+          {/* Mobile Progress Bar */}
+          <div className="w-full px-6 flex items-center gap-4 shrink-0 relative z-20 pt-[max(env(safe-area-inset-top),12px)] pb-3">
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: `${(10 / 15) * 100}%` }}
@@ -76,45 +76,45 @@ export default function OnboardingStep11() {
             </span>
           </div>
 
-          {/* Mascot Section inside top container - stretches to 100% width of device */}
-          <motion.div
-            initial={{ scale: 0.6, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-center justify-center relative select-none mt-2 px-0"
-          >
-            {/* Bubble background spans 100% of container width */}
+          {/* Mascot area - fills remaining top flex space */}
+          <div className="w-full flex-1 flex items-center justify-center relative min-h-0">
+            {/* Bubble background */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
               <MascotBackground />
             </div>
-            
-            {/* Mascot image is exactly 80% of device width and container height, centered vertically and horizontally */}
-            <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[80%] z-10 scale-[1.2] origin-center">
+            {/* Mascot image - 75% of container width, contained within bounds */}
+            <motion.div
+              layoutId="tey-mascot"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className="relative w-[75vw] h-[90%] z-10"
+            >
               <Image 
                 src="/User onbarding Assets/Step_11_image_mobile.PNG" 
                 alt="Tey Mascot Mobile" 
                 fill 
-                className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" 
+                className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.1)]" 
                 priority 
               />
             </motion.div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Bottom 40% Text & CTA Container - padded horizontally with white background and soft top fade */}
-        <div className="w-full h-[40dvh] flex flex-col justify-start items-center relative z-20 pb-4 px-6 bg-white pt-2">
+        {/* Bottom 40% Text & CTA Container */}
+        <div className="flex-[4] w-full flex flex-col items-center relative z-20 bg-white" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)', overflow: 'visible' }}>
           
-          {/* Soft white shadow fade overlay at the top boundary */}
-          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+          {/* Soft white fade — bleeds upward 40px above the container top edge */}
+          <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
-          {/* Typography container - aligned top */}
-          <div className="w-full flex flex-col items-center text-center mt-1 mb-3 px-2 z-20 shrink-0">
-            {/* Relative scaled heading - constrained to 70% of device width */}
+          {/* Typography container */}
+          <div className="w-full flex flex-col items-center text-center pt-2 px-4 z-20 shrink-0">
+            {/* Heading - 70vw wide, scales with viewport */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[11.5vw] xs:text-[12vw] sm:text-5xl font-[900] leading-[1.08] mb-2 tracking-tight text-[#071233] w-[70vw] mx-auto text-center"
+              className="text-[11.5vw] xs:text-[12vw] sm:text-5xl font-[900] leading-[1.05] mb-1 tracking-tight text-[#071233] w-[70vw] mx-auto text-center"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <div className="whitespace-nowrap">
@@ -126,24 +126,24 @@ export default function OnboardingStep11() {
               </div>
             </motion.h1>
 
-            {/* Relative scaled subtitle */}
+            {/* Subtitle */}
             <motion.p
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.3 }}
-              className="text-[3.6vw] xs:text-[3.9vw] sm:text-base font-medium text-slate-500 leading-tight max-w-[90%]"
+              className="text-[3.4vw] xs:text-[3.6vw] sm:text-sm font-medium text-slate-500 leading-tight max-w-[85%]"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
               Your daily practice builds momentum. Keep it going and unlock your potential!
             </motion.p>
           </div>
 
-          {/* CTA Buttons: Side by side row, constrained to 80vw, and anchored above the page bottom */}
+          {/* CTA Buttons - flex-1 pushes to bottom, safe-area bottom inset respected */}
           <motion.div
             initial={{ y: 22, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.4 }}
-            className="w-[80vw] mx-auto flex items-center gap-3 justify-center relative z-30 mb-[4vh] mt-auto shrink-0"
+            className="w-[80vw] mx-auto flex items-center gap-3 justify-center relative z-30 mt-auto shrink-0"
           >
             {/* Back Button */}
             <motion.button
@@ -156,14 +156,14 @@ export default function OnboardingStep11() {
               <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
             </motion.button>
 
-            {/* Continue Button */}
+            {/* Let's Go Button */}
             <motion.button
               animate={idle ? { scale: [1, 1.025, 1] } : { scale: 1 }}
               transition={idle ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] } : { type: 'spring', stiffness: 300, damping: 20 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
               onClick={handleNext}
-              className="flex-1 h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] active:h-[10px] transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)] gap-2"
+              className="flex-1 h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)] gap-2"
             >
               <span>Let&apos;s Go!</span>
               <ArrowRight className="w-5 h-5 stroke-[2.8]" />
