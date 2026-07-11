@@ -175,39 +175,37 @@ export default function OnboardingStep13() {
       {/* 🖥️ DESKTOP-ONLY LAYOUT */}
       <div className="hidden md:flex w-full h-screen items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] p-8 lg:p-12 relative z-10">
         
-        {/* Main 80vw transparent layout container */}
-        <div className="w-[80vw] h-full flex flex-row-reverse relative overflow-hidden items-center justify-between">
+        {/* Main 65vw transparent layout container */}
+        <div className="w-[65vw] h-full flex flex-row-reverse relative overflow-hidden items-center justify-center gap-12 lg:gap-20">
           
           {/* Right Column (45%): Mascot Container with bubble background floating directly */}
-          <div className="w-[45%] flex items-center justify-center relative select-none">
-            <div className="relative w-full aspect-square z-10 flex items-center justify-center">
-              <div className="absolute inset-0">
-                <MascotBackground />
-              </div>
-              <motion.div
-                layoutId="tey-mascot-desktop"
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-                className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
-              >
-                <Image 
-                  src="/User onbarding Assets/Step-13_img.PNG" 
-                  alt="Tey Mascot Desktop" 
-                  fill 
-                  className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
-                  priority 
-                />
-              </motion.div>
+          <div className="w-[45%] h-full flex items-center justify-start relative select-none">
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
+              <MascotBackground />
             </div>
+            <motion.div
+              layoutId="tey-mascot-desktop"
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+              className="relative w-full h-full z-10 flex items-center justify-center"
+            >
+              <Image 
+                src="/User onbarding Assets/Step-13_img.PNG" 
+                alt="Tey Mascot Desktop" 
+                fill 
+                className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
+                priority 
+              />
+            </motion.div>
           </div>
 
           {/* Left Column (50%): Content Container without background */}
           <div className="w-[50%] h-full flex flex-col justify-center items-start py-12 relative select-none pl-4">
             
             {/* Progress row - top left aligned with text content */}
-            <div className="w-[85%] flex flex-col items-start gap-2 relative z-10 mb-10 shrink-0">
-              <div className="w-full h-3 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
+            <div className="w-[85%] flex flex-row items-center gap-5 relative z-10 mb-10 shrink-0">
+              <div className="flex-1 h-5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
                 <motion.div
                   initial={{ width: `${(12 / 15) * 100}%` }}
                   animate={{ width: `${(13 / 15) * 100}%` }}
@@ -215,11 +213,11 @@ export default function OnboardingStep13() {
                   className="h-full rounded-full"
                   style={{
                     background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)',
-                    boxShadow: 'inset 0px -2px 0px rgba(0,0,0,0.1), inset 0px 2px 0px rgba(255,255,255,0.3)',
+                    boxShadow: 'inset 0px -2.5px 0px rgba(0,0,0,0.1), inset 0px 2.5px 0px rgba(255,255,255,0.3)',
                   }}
                 />
               </div>
-              <span className="text-sm font-extrabold text-[#0172FD]">
+              <span className="text-lg font-extrabold text-[#0172FD] shrink-0">
                 13/15
               </span>
             </div>
