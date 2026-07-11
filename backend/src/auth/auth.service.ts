@@ -120,7 +120,7 @@ export class AuthService {
     }
 
     // Send verification email
-    await this.emailService.sendVerificationEmail(user.email, plainToken);
+    await this.emailService.sendVerificationEmail(user.email, plainToken, user.fullName);
 
     return { 
       message: 'Check your email to verify your account', 
@@ -319,7 +319,7 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, plainToken);
+    await this.emailService.sendVerificationEmail(user.email, plainToken, user.fullName);
     return { message: 'Verification email resent' };
   }
 

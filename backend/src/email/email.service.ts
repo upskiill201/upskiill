@@ -11,27 +11,57 @@ export class EmailService {
     this.resend = new Resend(apiKey);
   }
 
-  async sendVerificationEmail(email: string, token: string) {
+  async sendVerificationEmail(email: string, token: string, fullName?: string) {
     const appUrl = process.env.APP_URL || 'https://teyro.app';
     const verifyUrl = `${appUrl}/api/auth/verify-email?token=${token}`;
+    const name = fullName ? fullName.split(' ')[0] : 'there';
+    const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
 
     const html = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1e293b;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <img src="https://teyro.app/teyro-logo-blue.png" alt="Teyro Logo" width="140" style="margin: 0 auto; display: block;" />
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1e293b; background-color: #f8fafc;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <img src="${teyImageUrl}" alt="Tey Mascot" width="150" style="margin: 0 auto; display: block;" />
         </div>
         <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 16px;">Verify your email address</h1>
-          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 32px;">
-            Welcome to Teyro! You're just one step away from joining the ultimate platform for creators. Click the button below to verify your email address and enter your Creator Studio.
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-top: 0; margin-bottom: 16px;">
+            Hey there! 👋
           </p>
-          <div style="text-align: center;">
-            <a href="${verifyUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-weight: 600; font-size: 16px; text-decoration: none; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);">
-              Verify Email & Enter Studio
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 16px;">
+            It’s Tey here.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+            Before we unlock your learning adventure, I just need to make sure this email belongs to you.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 32px;">
+            Tap the button below and we’ll be ready to learn together.
+          </p>
+          <div style="text-align: center; margin-bottom: 32px;">
+            <a href="${verifyUrl}" style="display: inline-block; background-color: #0172FD; color: #ffffff; font-weight: 700; font-size: 16px; text-decoration: none; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 14px rgba(1, 114, 253, 0.3);">
+              Verify my email
             </a>
           </div>
-          <p style="font-size: 14px; color: #94a3b8; margin-top: 32px; text-align: center;">
-            This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.
+          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 32px;">
+            This link expires in 10 minutes.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 16px; font-weight: 600;">
+            After verification:
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 16px;">
+            🎉 Awesome!
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+            Your progress, streaks, achievements, and future rewards will now be safely tied to your account.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 16px;">
+            Now let’s get back to learning.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; color: #0f172a; font-weight: 700; margin-bottom: 0;">
+            — Tey 💙
+          </p>
+          <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 32px 0;" />
+          <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 0;">
+            Didn’t create a Teyro account?<br/>
+            You can safely ignore this email.
           </p>
         </div>
       </div>
@@ -39,9 +69,9 @@ export class EmailService {
 
     try {
       await this.resend.emails.send({
-        from: 'Teyro <noreply@teyro.app>',
+        from: 'Tey from Teyro <noreply@teyro.app>',
         to: email,
-        subject: 'Verify your Teyro account',
+        subject: `Hey ${name}! Is this really your email? 👀`,
         html,
       });
       this.logger.log(`Verification email sent to ${email}`);
