@@ -5,3 +5,7 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+
+## 2024-05-31 - [Custom Component Focus States]
+**Learning:** Many custom interactive UI components (like Tabs, Pagination, StarRating) built with native `<button>` elements had their default outlines removed via `border: none; background: none;` without replacing them, leaving keyboard users with no visual indication of focus.
+**Action:** Always ensure that custom button-like components include a `:focus-visible` state (e.g. `outline: 2px solid var(--brand-blue); outline-offset: 2px; border-radius: 4px;`) when stripping native browser styles.
