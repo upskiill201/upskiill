@@ -72,6 +72,17 @@ export class AuthController {
     }
   }
 
+  @Post('verify-code')
+  async verifyCode(
+    @Body('email') email: string,
+    @Body('code') code: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.verifyCode(email, code);
+    this.setCookie(res, result.access_token);
+    return result;
+  }
+
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('resend-verification')
   async resendVerification(@Body('email') email: string) {

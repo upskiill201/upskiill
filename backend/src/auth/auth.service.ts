@@ -79,9 +79,9 @@ export class AuthService {
 
     const hash = await bcrypt.hash(dto.password, 12);
 
-    const plainToken = crypto.randomBytes(32).toString('hex');
-    const verifyToken = crypto.createHash('sha256').update(plainToken).digest('hex');
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const verifyToken = crypto.createHash('sha256').update(code).digest('hex');
+    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
     const user = await this.prisma.user.create({
       data: {
@@ -120,7 +120,7 @@ export class AuthService {
     }
 
     // Send verification email
-    await this.emailService.sendVerificationEmail(user.email, plainToken, user.fullName);
+    await this.emailService.sendVerificationEmail(user.email, code, user.fullName);
 
     return { 
       message: 'Check your email to verify your account', 
@@ -302,14 +302,51 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.fullName, user.role);
   }
 
+  async verifyCode(email: string, code: string) {
+    const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
+    const user = await this.prisma.user.findFirst({
+      where: { 
+        email,
+        verifyToken: hashedToken,
+      },
+      include: { profile: true }
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Invalid verification code');
+    }
+
+    if (user.tokenExpiry && new Date() > user.tokenExpiry) {
+      throw new ForbiddenException('Verification code expired');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verifyToken: null,
+        tokenExpiry: null,
+      },
+    });
+
+    const onboardingMock = {
+      step11: { firstName: user.fullName.split(' ')[0] },
+      step3: { categories: [user.profile?.niche || 'your topic'] },
+    };
+
+    await this.emailService.sendWelcomeEmail(user.email, onboardingMock);
+
+    return this.signToken(user.id, user.email, user.fullName, user.role);
+  }
+
   async resendVerification(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new ForbiddenException('User not found');
     if (user.isVerified) throw new ForbiddenException('User is already verified');
 
-    const plainToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
+    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -319,7 +356,7 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, plainToken, user.fullName);
+    await this.emailService.sendVerificationEmail(user.email, code, user.fullName);
     return { message: 'Verification email resent' };
   }
 

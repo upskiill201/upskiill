@@ -11,9 +11,8 @@ export class EmailService {
     this.resend = new Resend(apiKey);
   }
 
-  async sendVerificationEmail(email: string, token: string, fullName?: string) {
+  async sendVerificationEmail(email: string, code: string, fullName?: string) {
     const appUrl = process.env.APP_URL || 'https://teyro.app';
-    const verifyUrl = `${appUrl}/api/auth/verify-email?token=${token}`;
     const name = fullName ? fullName.split(' ')[0] : 'there';
     const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
 
@@ -32,16 +31,16 @@ export class EmailService {
           <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
             Before we unlock your learning adventure, I just need to make sure this email belongs to you.
           </p>
-          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 32px;">
-            Tap the button below and we’ll be ready to learn together.
+          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+            Enter this 6-digit code on the verification screen to unlock your journey:
           </p>
-          <div style="text-align: center; margin-bottom: 32px;">
-            <a href="${verifyUrl}" style="display: inline-block; background-color: #0172FD; color: #ffffff; font-weight: 700; font-size: 16px; text-decoration: none; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 14px rgba(1, 114, 253, 0.3);">
-              Verify my email
-            </a>
+          <div style="text-align: center; margin: 32px 0;">
+            <span style="display: inline-block; background-color: #f1f5f9; border: 2px dashed #0172FD; color: #0172FD; font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 6px; padding: 12px 28px; border-radius: 12px;">
+              ${code}
+            </span>
           </div>
           <p style="font-size: 14px; color: #94a3b8; margin-bottom: 32px;">
-            This link expires in 10 minutes.
+            This code expires in 10 minutes.
           </p>
           <p style="font-size: 16px; line-height: 1.6; color: #0f172a; font-weight: 700; margin-bottom: 0;">
             — Tey 💙

@@ -43,6 +43,9 @@ export default function OnboardingStep12() {
   const [resending, setResending] = useState(false);
   const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [countdown, setCountdown] = useState(0);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [verificationError, setVerificationError] = useState('');
 
   useEffect(() => {
     const t = setTimeout(() => setIdle(true), 1500);
@@ -152,6 +155,40 @@ export default function OnboardingStep12() {
       setResendStatus('error');
     } finally {
       setResending(false);
+    }
+  };
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.trim().length !== 6) {
+      setVerificationError('Please enter a 6-digit code');
+      return;
+    }
+    setVerifyingCode(true);
+    setVerificationError('');
+
+    try {
+      const res = await fetch(`/api/auth/verify-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          code: verificationCode.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Invalid verification code');
+      }
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      void advance();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Verification failed';
+      setVerificationError(msg);
+    } finally {
+      setVerifyingCode(false);
     }
   };
 
@@ -440,29 +477,52 @@ export default function OnboardingStep12() {
                 className="w-full h-full flex flex-col justify-between pt-4 px-6 relative z-20 text-center"
               >
                 <div className="w-full flex-1 flex flex-col justify-center items-center gap-3 pt-2">
-                  <div className="w-16 h-16 bg-[#EBF3FE] rounded-full flex items-center justify-center mb-1">
-                    <Mail className="w-8 h-8 text-[#0172FD]" />
+                  <div className="w-12 h-12 bg-[#EBF3FE] rounded-full flex items-center justify-center mb-1">
+                    <Mail className="w-6 h-6 text-[#0172FD]" />
                   </div>
 
-                  <h2 className="text-xl font-[900] text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>
+                  <h2 className="text-lg font-[900] text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>
                     Check your email!
                   </h2>
 
-                  <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-[85%]">
-                    I just sent a verification link to <br/>
-                    <strong className="text-[#0172FD]">{maskEmail(email)}</strong>.
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-[85%]">
+                    We sent a 6-digit code to <strong className="text-[#0172FD]">{maskEmail(email)}</strong>.
                   </p>
 
-                  {/* Sarcastic Tey statement */}
-                  <div className="bg-[#F8F9FC] border border-slate-200/60 rounded-xl p-3 text-xs text-slate-500 font-semibold max-w-[85%] mt-2 italic">
-                    "Go check your spam folder! Or did you just type a fake email to get rid of me? 🤖"
-                  </div>
+                  {/* Code Input Form */}
+                  <form onSubmit={handleVerifyCode} className="w-[80vw] flex flex-col gap-3 mt-2">
+                    {verificationError && (
+                      <div className="text-xs text-red-500 font-semibold text-center bg-red-50 p-2 rounded-xl">
+                        {verificationError}
+                      </div>
+                    )}
+                    <div className="w-full relative">
+                      <input 
+                        type="text"
+                        maxLength={6}
+                        placeholder="123456"
+                        required
+                        value={verificationCode}
+                        onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                        className="w-full h-12 text-center text-xl font-mono tracking-[8px] bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 font-bold transition-all"
+                      />
+                    </div>
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.96 }}
+                      disabled={verifyingCode}
+                      className="w-full h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-sm flex items-center justify-center gap-2 hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all shadow-[0_4px_15px_rgba(1,114,253,0.25)]"
+                    >
+                      <span>{verifyingCode ? 'Verifying...' : 'Verify Code & Continue'}</span>
+                    </motion.button>
+                  </form>
                 </div>
 
-                <div className="w-full flex flex-col items-center gap-4 shrink-0 mt-auto pb-4">
+                <div className="w-full flex flex-col items-center gap-3 shrink-0 mt-auto pb-4">
                   {resendStatus === 'success' && (
                     <div className="text-xs text-green-600 font-bold flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4" /> Link resent! (Check spam too)
+                      <CheckCircle2 className="w-4 h-4" /> Code resent! (Check spam too)
                     </div>
                   )}
 
@@ -481,7 +541,7 @@ export default function OnboardingStep12() {
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>
-                      {resending ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend verification email'}
+                      {resending ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
                     </span>
                   </motion.button>
 
@@ -773,19 +833,43 @@ export default function OnboardingStep12() {
                   </h2>
 
                   <p className="text-lg text-slate-500 font-medium leading-relaxed mb-4">
-                    I just sent a verification link to <br/>
+                    We sent a 6-digit verification code to <br/>
                     <strong className="text-[#0172FD] font-extrabold">{maskEmail(email)}</strong>.
                   </p>
 
-                  {/* Sarcastic Tey statement */}
-                  <div className="bg-[#F8F9FC] border border-slate-200/60 rounded-xl p-4 text-sm text-slate-500 font-semibold w-full md:w-[70%] mb-8 italic">
-                    "Go check your spam folder! Or did you just type a fake email to get rid of me? 🤖"
-                  </div>
+                  {/* Desktop Code Input Form */}
+                  <form onSubmit={handleVerifyCode} className="w-full md:w-[70%] flex flex-col gap-4 mb-4">
+                    {verificationError && (
+                      <div className="text-sm text-red-500 font-semibold bg-red-50 p-3 rounded-xl">
+                        {verificationError}
+                      </div>
+                    )}
+                    <div className="w-full relative">
+                      <input 
+                        type="text"
+                        maxLength={6}
+                        placeholder="123456"
+                        required
+                        value={verificationCode}
+                        onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                        className="w-full h-14 text-center text-2xl font-mono tracking-[12px] bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 font-bold transition-all"
+                      />
+                    </div>
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={verifyingCode}
+                      className="w-full h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
+                    >
+                      <span>{verifyingCode ? 'Verifying...' : 'Verify Code & Continue'}</span>
+                    </motion.button>
+                  </form>
 
                   <div className="w-full flex flex-col gap-4 w-full md:w-[70%]">
                     {resendStatus === 'success' && (
                       <div className="text-sm text-green-600 font-bold flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4.5 h-4.5" /> Link resent! (Check spam too)
+                        <CheckCircle2 className="w-4.5 h-4.5" /> Code resent! (Check spam too)
                       </div>
                     )}
 
@@ -804,7 +888,7 @@ export default function OnboardingStep12() {
                     >
                       <Send className="w-4 h-4" />
                       <span>
-                        {resending ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend verification email'}
+                        {resending ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
                       </span>
                     </motion.button>
 
