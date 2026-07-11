@@ -180,14 +180,16 @@ export default function OnboardingStep13() {
           
           {/* Right Column (45%): Mascot Container with bubble background floating directly */}
           <div className="w-[45%] flex items-center justify-center relative select-none">
-            <div className="relative w-[85%] aspect-square z-10">
-              <MascotBackground />
+            <div className="relative w-full aspect-square z-10 flex items-center justify-center">
+              <div className="absolute inset-0">
+                <MascotBackground />
+              </div>
               <motion.div
                 layoutId="tey-mascot-desktop"
                 initial={{ scale: 0.7, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-                className="absolute inset-0 z-10 flex items-center justify-center"
+                className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
               >
                 <Image 
                   src="/User onbarding Assets/Step-13_img.PNG" 
@@ -228,7 +230,7 @@ export default function OnboardingStep13() {
                 variants={headlineContainer}
                 initial="hidden"
                 animate="show"
-                className="text-[3.8rem] lg:text-[4.8rem] font-[900] leading-[1.05] mb-6 tracking-tighter text-[#071233] text-left w-[85%]"
+                className="text-[4.5rem] lg:text-[5.8rem] font-[900] leading-[1.05] mb-6 tracking-tighter text-[#071233] text-left w-full"
                 style={{
                   fontFamily: 'var(--font-jakarta)',
                   textShadow: headlineShadow,
@@ -253,13 +255,14 @@ export default function OnboardingStep13() {
                 initial={{ y: 14, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.4 }}
-                className="text-[1.15rem] lg:text-2xl font-medium text-left text-slate-600 leading-snug mb-10 w-[85%]"
+                className="text-[1.25rem] lg:text-3xl font-medium text-left text-slate-600 leading-snug mb-10 w-full"
                 style={{
                   fontFamily: 'var(--font-jakarta)',
                   textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)',
                 }}
               >
-                You’re making great progress. Keep going and achieve more!
+                You{"'"}re making great progress.<br />
+                Keep going and achieve more!
               </motion.p>
 
               <div className="w-full flex flex-col gap-4">
@@ -270,7 +273,7 @@ export default function OnboardingStep13() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleNext}
-                  className="w-[85%] h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-3 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
+                  className="w-full max-w-[360px] h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-3 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
                 >
                   <span>Continue Your Journey</span>
                   <ArrowRight className="w-5 h-5 stroke-[3]" />
@@ -281,7 +284,7 @@ export default function OnboardingStep13() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBack}
-                  className="w-[85%] h-14 bg-white border-2 border-slate-200 text-slate-700 rounded-[1.2rem] font-[800] text-base flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm cursor-pointer"
+                  className="w-full max-w-[360px] h-14 bg-white border-2 border-slate-200 text-slate-700 rounded-[1.2rem] font-[800] text-base flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm cursor-pointer"
                 >
                   <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
                   <span>Back</span>
