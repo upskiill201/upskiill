@@ -175,37 +175,37 @@ export default function OnboardingStep13() {
       {/* 🖥️ DESKTOP-ONLY LAYOUT */}
       <div className="hidden md:flex w-full h-screen items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] p-8 lg:p-12 relative z-10">
         
-        {/* Main Card Container */}
-        <div className="w-[85vw] max-w-[1100px] h-[80vh] max-h-[720px] bg-white rounded-[2.5rem] shadow-[0_24px_70px_rgba(0,114,253,0.08)] border border-slate-100 flex flex-row-reverse relative overflow-hidden items-stretch justify-between">
+        {/* Main 80vw transparent layout container */}
+        <div className="w-[80vw] h-full flex flex-row-reverse relative overflow-hidden items-center justify-between">
           
-          {/* Right Column (48%): Mascot Container with bubble background */}
-          <div className="w-[48%] relative bg-gradient-to-b from-[#EBF3FE] to-[#F4F8FF] overflow-hidden select-none flex items-center justify-center">
-            <div className="absolute inset-0 w-full h-full pointer-events-none">
+          {/* Right Column (45%): Mascot Container with bubble background floating directly */}
+          <div className="w-[45%] flex items-center justify-center relative select-none">
+            <div className="relative w-[85%] aspect-square z-10">
               <MascotBackground />
+              <motion.div
+                layoutId="tey-mascot-desktop"
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                className="absolute inset-0 z-10 flex items-center justify-center"
+              >
+                <Image 
+                  src="/User onbarding Assets/Step-13_img.PNG" 
+                  alt="Tey Mascot Desktop" 
+                  fill 
+                  className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
+                  priority 
+                />
+              </motion.div>
             </div>
-            <motion.div
-              layoutId="tey-mascot-desktop"
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-              className="relative w-[85%] h-[85%] z-10 flex items-center justify-center"
-            >
-              <Image 
-                src="/User onbarding Assets/Step-13_img.PNG" 
-                alt="Tey Mascot Desktop" 
-                fill 
-                className="object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.12)]" 
-                priority 
-              />
-            </motion.div>
           </div>
 
-          {/* Left Column (52%): Content Container */}
-          <div className="w-[52%] h-full bg-white flex flex-col justify-between pl-12 lg:pl-16 pr-4 py-12 relative select-none">
+          {/* Left Column (50%): Content Container without background */}
+          <div className="w-[50%] h-full flex flex-col justify-center items-start py-12 relative select-none pl-4">
             
             {/* Progress row - top left aligned with text content */}
-            <div className="w-[85%] flex flex-col items-start gap-1.5 relative z-10 pt-2 shrink-0">
-              <div className="w-full h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
+            <div className="w-[85%] flex flex-col items-start gap-2 relative z-10 mb-10 shrink-0">
+              <div className="w-full h-3 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
                 <motion.div
                   initial={{ width: `${(12 / 15) * 100}%` }}
                   animate={{ width: `${(13 / 15) * 100}%` }}
@@ -217,18 +217,18 @@ export default function OnboardingStep13() {
                   }}
                 />
               </div>
-              <span className="text-xs font-extrabold text-[#0172FD]">
+              <span className="text-sm font-extrabold text-[#0172FD]">
                 13/15
               </span>
             </div>
 
             {/* Core Content Box */}
-            <div className="w-full flex-1 flex flex-col justify-center items-start relative z-10">
+            <div className="w-full flex-grow flex flex-col justify-center items-start relative z-10">
               <motion.h1
                 variants={headlineContainer}
                 initial="hidden"
                 animate="show"
-                className="text-[3.2rem] lg:text-[4rem] font-[900] leading-[1.05] mb-4 tracking-tighter text-[#071233] text-left w-[85%]"
+                className="text-[3.8rem] lg:text-[4.8rem] font-[900] leading-[1.05] mb-6 tracking-tighter text-[#071233] text-left w-[85%]"
                 style={{
                   fontFamily: 'var(--font-jakarta)',
                   textShadow: headlineShadow,
@@ -253,15 +253,16 @@ export default function OnboardingStep13() {
                 initial={{ y: 14, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.4 }}
-                className="text-[1.05rem] lg:text-xl font-medium text-left text-slate-500 leading-snug mb-8 w-[85%]"
+                className="text-[1.15rem] lg:text-2xl font-medium text-left text-slate-600 leading-snug mb-10 w-[85%]"
                 style={{
                   fontFamily: 'var(--font-jakarta)',
+                  textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)',
                 }}
               >
                 You’re making great progress. Keep going and achieve more!
               </motion.p>
 
-              <div className="w-full flex flex-col gap-3.5">
+              <div className="w-full flex flex-col gap-4">
                 {/* Continue Button */}
                 <motion.button
                   animate={idle ? { scale: [1, 1.02, 1] } : { scale: 1 }}
@@ -289,7 +290,7 @@ export default function OnboardingStep13() {
             </div>
 
             {/* Bottom space for visual alignment */}
-            <div className="h-2"></div>
+            <div className="h-4"></div>
 
           </div>
 
