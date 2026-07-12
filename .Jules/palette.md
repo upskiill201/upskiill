@@ -5,3 +5,7 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+
+## 2024-07-12 - [Form Validation Error Accessibility]
+**Learning:** Providing form validation error states by only turning the input border and text red violates WCAG 1.4.1 (Use of Color), which states that color should not be used as the only visual means of conveying information, indicating an action, prompting a response, or distinguishing a visual element. Screen readers may also miss dynamic error appearances without proper roles.
+**Action:** Always include a visual indicator (like an icon, e.g., `AlertTriangle`) alongside the error text. Ensure the error message container has `role="alert"` for dynamic screen reader announcements.
