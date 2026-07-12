@@ -582,7 +582,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           <div className={styles.stepsDrawer} onClick={e => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
               <span className={styles.drawerTitle}>Course Steps</span>
-              <button className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
+              <button className={styles.drawerClose} onClick={() => setStepsOpen(false)} aria-label="Close menu"><X size={18} /></button>
             </div>
             {STEPS.map(step => (
               <div key={step.num} className={`${styles.drawerStep} ${step.num === activeStep ? styles.drawerStepActive : ''}`}>
