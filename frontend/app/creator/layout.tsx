@@ -177,7 +177,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           {!pathname.includes('/builder') && !pathname.includes('/lesson-builder') && (
             <header className={styles.header}>
               <div className={styles.headerLeft}>
-                <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)} aria-label="Open navigation menu">
+                <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)} aria-label="Open navigation menu" aria-expanded={isMobileSidebarOpen}>
                   <Menu size={24} />
                 </button>
                 <div className={styles.pageTitleWrapper}>
@@ -200,9 +200,11 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
                   {/* Profile Wrapper - using a div to handle outside click */}
                   <div className={styles.creatorProfileWrapper} ref={dropdownRef}>
-                    <div 
+                    <button
                       className={styles.userProfile}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      aria-haspopup="menu"
+                      aria-expanded={isDropdownOpen}
                     >
                       <Avatar src={creatorAvatar} name={creatorName} size="sm" />
                       <div className={styles.userInfo}>
@@ -212,7 +214,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                         </div>
                         <span className={styles.userRole}>Instructor</span>
                       </div>
-                    </div>
+                    </button>
 
                     {isMounted && isDropdownOpen && (
                       <div className={styles.profileDropdownMenu}>

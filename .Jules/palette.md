@@ -5,3 +5,6 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+## 2024-05-31 - [Semantic Button Conversion for Dropdowns]
+**Learning:** When a dropdown trigger is implemented as a `<div>` with an `onClick` handler, it breaks keyboard accessibility (cannot be tabbed to or activated with Enter/Space). Converting it to a native `<button>` fixes this, but you must reset default browser button styles (e.g., `background: none; border: none; text-align: left; padding: 4px;`) to maintain visual consistency while providing excellent `:hover` and `:focus-visible` feedback.
+**Action:** Always use native `<button>` elements for interactive triggers like custom dropdowns or toggles, reset their default styles, and attach `aria-haspopup` and `aria-expanded` attributes correctly.
