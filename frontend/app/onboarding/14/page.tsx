@@ -152,20 +152,24 @@ export default function OnboardingStep14() {
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[9.5vw] xs:text-[10vw] sm:text-5xl font-[900] leading-[1.05] mb-2 tracking-tighter text-[#071233] w-[70%] mx-auto"
+              className="text-[13vw] xs:text-[14vw] sm:text-5xl font-[900] leading-[0.98] mb-2 tracking-tighter text-[#071233] w-[70%] mx-auto"
               style={{
                 fontFamily: 'var(--font-jakarta)',
                 textShadow: headlineShadow,
               }}
             >
-              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>Learn</motion.span>
-              <motion.span 
-                variants={accentVariant} 
-                className="text-[#0172FD]" 
-                style={{ display: 'inline-block', textShadow: accentShadow }}
-              >
-                with friends
-              </motion.span>
+              <div className="block">
+                <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>Learn</motion.span>
+              </div>
+              <div className="block">
+                <motion.span 
+                  variants={accentVariant} 
+                  className="text-[#0172FD]" 
+                  style={{ display: 'inline-block', textShadow: accentShadow }}
+                >
+                  with friends
+                </motion.span>
+              </div>
             </motion.h1>
 
             <motion.p
