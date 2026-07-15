@@ -163,7 +163,7 @@ export class AuthService {
     });
 
     // 4. Send Email
-    await this.emailService.sendPasswordResetEmail(user.email, plainToken, user.fullName.split(' ')[0]);
+    await this.emailService.sendPasswordResetEmail(user.email, plainToken, user.fullName.split(' ')[0], user.role);
 
     return message;
   }
