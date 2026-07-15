@@ -189,7 +189,6 @@ export default function OnboardingStep15() {
 
           {/* 3D Action Buttons */}
           <div className="w-full flex flex-col gap-3 shrink-0 items-center">
-            {/* Go to Dashboard Button */}
             <motion.button
               animate={idle ? { scale: [1, 1.02, 1] } : { scale: 1 }}
               transition={idle ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] } : { type: 'spring', stiffness: 300, damping: 20 }}
@@ -198,7 +197,7 @@ export default function OnboardingStep15() {
               onClick={handleNext}
               className="w-[70%] h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
             >
-              <span>Go to Dashboard</span>
+              <span>Enter Teyro</span>
               <ArrowRight className="w-4.5 h-4.5 stroke-[3]" />
             </motion.button>
 
@@ -359,7 +358,7 @@ export default function OnboardingStep15() {
                   onClick={handleNext}
                   className="flex-grow h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-3 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
                 >
-                  <span>Go to Dashboard</span>
+                  <span>Enter Teyro</span>
                   <ArrowRight className="w-5 h-5 stroke-[3]" />
                 </motion.button>
               </div>
