@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Users, MessageCircle, Trophy } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { StepSkeleton } from '@/components/onboarding/StepSkeleton';
@@ -23,7 +23,7 @@ const accentVariant: any = {
   show:   { y: 0,  opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 20 } }
 };
 
-// Confetti Particle Settings
+// Celebration Confetti Particles Configuration
 const confettiColors = ['#0172FD', '#FBBF24', '#F97316', '#A855F7', '#22D3EE', '#EC4899', '#10B981'];
 const particles = Array.from({ length: 45 }).map((_, i) => {
   const angle = (i / 45) * 360;
@@ -41,9 +41,9 @@ const particles = Array.from({ length: 45 }).map((_, i) => {
   };
 });
 
-export default function OnboardingStep14() {
+export default function OnboardingStep15() {
   const router = useRouter();
-  const { isLoading, advance } = useOnboardingSession(14);
+  const { isLoading, advance } = useOnboardingSession(15);
   const [idle, setIdle] = useState(false);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function OnboardingStep14() {
 
   const handleBack = () => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-    router.push('/onboarding/13');
+    router.push('/onboarding/14');
   };
 
   const headlineShadow = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.15), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
@@ -79,8 +79,8 @@ export default function OnboardingStep14() {
           <div className="w-full px-6 flex items-center gap-4 shrink-0 relative z-30 pt-[max(env(safe-area-inset-top),12px)] pb-3">
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
-                initial={{ width: `${(13 / 15) * 100}%` }}
-                animate={{ width: `${(14 / 15) * 100}%` }}
+                initial={{ width: `${(14 / 15) * 100}%` }}
+                animate={{ width: `${(15 / 15) * 100}%` }}
                 transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 0.8, delay: 0.25 }}
                 className="h-full rounded-full"
                 style={{
@@ -90,7 +90,7 @@ export default function OnboardingStep14() {
               />
             </div>
             <span className="text-sm font-[800] text-[#0172FD] shrink-0" style={{ textShadow: '0 0 10px rgba(255,255,255,1)' }}>
-              14/15
+              15/15
             </span>
           </div>
 
@@ -131,8 +131,8 @@ export default function OnboardingStep14() {
             className="relative w-[80%] h-[80%] mt-auto z-20 flex items-center justify-center"
           >
             <Image 
-              src="/User onbarding Assets/Step_14_image_mobile.PNG" 
-              alt="Leaderboard Mascot Mobile" 
+              src="/User onbarding Assets/step_15_image_mobile.png" 
+              alt="You're All Set Mascot Mobile" 
               fill 
               className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" 
               priority 
@@ -158,14 +158,18 @@ export default function OnboardingStep14() {
                 textShadow: headlineShadow,
               }}
             >
-              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>Learn</motion.span>
-              <motion.span 
-                variants={accentVariant} 
-                className="text-[#0172FD]" 
-                style={{ display: 'inline-block', textShadow: accentShadow }}
-              >
-                with friends
-              </motion.span>
+              <div className="block">
+                <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>You{"'"}re</motion.span>
+              </div>
+              <div className="block">
+                <motion.span 
+                  variants={accentVariant} 
+                  className="text-[#0172FD]" 
+                  style={{ display: 'inline-block', textShadow: accentShadow }}
+                >
+                  all set!
+                </motion.span>
+              </div>
             </motion.h1>
 
             <motion.p
@@ -178,14 +182,14 @@ export default function OnboardingStep14() {
                 textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9)',
               }}
             >
-              Share progress, celebrate wins,<br />
-              and reach new heights together.
+              Your dashboard is ready.<br />
+              Let{"'"}s achieve great things together.
             </motion.p>
           </div>
 
           {/* 3D Action Buttons */}
           <div className="w-full flex flex-col gap-3 shrink-0 items-center">
-            {/* Next Button */}
+            {/* Go to Dashboard Button */}
             <motion.button
               animate={idle ? { scale: [1, 1.02, 1] } : { scale: 1 }}
               transition={idle ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] } : { type: 'spring', stiffness: 300, damping: 20 }}
@@ -194,7 +198,7 @@ export default function OnboardingStep14() {
               onClick={handleNext}
               className="w-[70%] h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
             >
-              <span>Next</span>
+              <span>Go to Dashboard</span>
               <ArrowRight className="w-4.5 h-4.5 stroke-[3]" />
             </motion.button>
 
@@ -261,8 +265,8 @@ export default function OnboardingStep14() {
               className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/Step_14_image_desktop.PNG" 
-                alt="Leaderboard Mascot Desktop" 
+                src="/User onbarding Assets/step_15_image_desktop.png" 
+                alt="You're All Set Mascot Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
                 priority 
@@ -277,8 +281,8 @@ export default function OnboardingStep14() {
             <div className="w-[85%] max-w-[360px] flex flex-row items-center gap-5 relative z-10 mb-8 shrink-0">
               <div className="flex-1 h-5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
                 <motion.div
-                  initial={{ width: `${(13 / 15) * 100}%` }}
-                  animate={{ width: `${(14 / 15) * 100}%` }}
+                  initial={{ width: `${(14 / 15) * 100}%` }}
+                  animate={{ width: `${(15 / 15) * 100}%` }}
                   transition={{ type: 'spring', stiffness: 280, damping: 24, delay: 0.25 }}
                   className="h-full rounded-full"
                   style={{
@@ -288,7 +292,7 @@ export default function OnboardingStep14() {
                 />
               </div>
               <span className="text-lg font-extrabold text-[#0172FD] shrink-0">
-                14/15
+                15/15
               </span>
             </div>
 
@@ -307,7 +311,7 @@ export default function OnboardingStep14() {
                 }}
               >
                 <div className="whitespace-nowrap">
-                  <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>Learn</motion.span>
+                  <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>You{"'"}re</motion.span>
                 </div>
                 <div className="whitespace-nowrap">
                   <motion.span 
@@ -315,7 +319,7 @@ export default function OnboardingStep14() {
                     className="text-[#0172FD]" 
                     style={{ display: 'inline-block', textShadow: accentShadow }}
                   >
-                    with friends
+                    all set!
                   </motion.span>
                 </div>
               </motion.h1>
@@ -331,44 +335,8 @@ export default function OnboardingStep14() {
                   textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9)',
                 }}
               >
-                Learning is more fun together. Compete, collaborate, and celebrate progress as a team.
+                Your dashboard is ready. Start exploring and keep leveling up!
               </motion.p>
-
-              {/* Features List */}
-              <div className="w-full flex flex-col gap-5 mb-8">
-                {/* Item 1 */}
-                <div className="flex items-start gap-3 w-full">
-                  <div className="w-10 h-10 bg-[#EBF3FE] rounded-full flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-[#0172FD]" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-800">Friendly Competition</h4>
-                    <p className="text-xs font-semibold text-slate-400">Climb the leaderboard and challenge your friends.</p>
-                  </div>
-                </div>
-
-                {/* Item 2 */}
-                <div className="flex items-start gap-3 w-full">
-                  <div className="w-10 h-10 bg-[#EBF3FE] rounded-full flex items-center justify-center shrink-0">
-                    <MessageCircle className="w-5 h-5 text-[#0172FD]" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-800">Share & Collaborate</h4>
-                    <p className="text-xs font-semibold text-slate-400">Discuss ideas and learn together in real time.</p>
-                  </div>
-                </div>
-
-                {/* Item 3 */}
-                <div className="flex items-start gap-3 w-full">
-                  <div className="w-10 h-10 bg-[#EBF3FE] rounded-full flex items-center justify-center shrink-0">
-                    <Trophy className="w-5 h-5 text-[#0172FD]" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-800">Celebrate Wins</h4>
-                    <p className="text-xs font-semibold text-slate-400">Unlock achievements and reward your progress.</p>
-                  </div>
-                </div>
-              </div>
 
               {/* Action Buttons Row */}
               <div className="w-full max-w-[360px] flex flex-row items-center gap-4">
@@ -391,7 +359,7 @@ export default function OnboardingStep14() {
                   onClick={handleNext}
                   className="flex-grow h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-3 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
                 >
-                  <span>Continue</span>
+                  <span>Go to Dashboard</span>
                   <ArrowRight className="w-5 h-5 stroke-[3]" />
                 </motion.button>
               </div>
