@@ -5,3 +5,7 @@
 ## 2024-05-31 - [aria-expanded on Navigation Toggles]
 **Learning:** Mobile hamburger toggles that open/close navigation panels often have aria-label but miss aria-expanded. This attribute is critical as it tells screen readers the current open/closed state of the menu dynamically.
 **Action:** When implementing responsive headers, always ensure the mobile menu toggle button binds its `aria-expanded` state to the same boolean used to render the nav panel.
+
+## 2025-01-28 - [Accessible Form Error States]
+**Learning:** Adding `role="alert"` and a visual icon (`AlertCircle`) to form validation error states ensures the UI doesn't rely solely on color for accessibility and is properly announced by screen readers. Moving inline styles to CSS Modules improves code maintainability.
+**Action:** Always include an icon alongside text for error states to comply with WCAG 1.4.1 (Use of Color), and ensure `role="alert"` is used.
