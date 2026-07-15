@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { StepSkeleton } from '@/components/onboarding/StepSkeleton';
@@ -71,7 +71,13 @@ export default function OnboardingStep1() {
         {/* Top 60% Image Container - 100% of device width */}
         <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible">
           {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+          <div className="w-full px-6 flex items-center gap-3.5 mb-4 shrink-0 relative z-20">
+            <button 
+              onClick={() => router.push('/onboarding/0')} 
+              className="w-10 h-10 bg-white/95 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shrink-0 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
@@ -195,7 +201,13 @@ export default function OnboardingStep1() {
         <div className="w-full flex flex-col justify-center order-2 relative">
 
           {/* DESKTOP PROGRESS BAR */}
-          <div className="flex items-center gap-5 mb-10 relative z-10">
+          <div className="flex items-center gap-4 mb-10 relative z-10">
+            <button 
+              onClick={() => router.push('/onboarding/0')} 
+              className="w-12 h-12 bg-white border border-slate-200 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm shrink-0 cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
             <div className="flex-1 h-4 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}

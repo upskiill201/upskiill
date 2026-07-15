@@ -25,8 +25,8 @@ export default function OnboardingRoot() {
       return;
     }
 
-    // Resume from where they left off
-    const step = state.currentStep ?? 1;
+    // Resume from where they left off (default to step 0 entry screen)
+    const step = state.currentStep ?? 0;
     router.replace(`/onboarding/${step}`);
   }, [router]);
 
