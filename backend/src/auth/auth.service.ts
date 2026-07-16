@@ -28,6 +28,7 @@ export class AuthService {
   async signup(dto: SignupDto) {
     let existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      include: { studentProfile: true },
     });
 
     const requestedRole = dto.role || 'STUDENT';
@@ -39,10 +40,18 @@ export class AuthService {
           throw new ForbiddenException('Incorrect credentials');
         }
 
-        // Upgrade account to INSTRUCTOR
+        // Upgrade account to INSTRUCTOR, set creator access flag
         existing = await this.prisma.user.update({
           where: { id: existing.id },
-          data: { role: 'INSTRUCTOR' },
+          data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
+          include: { studentProfile: true },
+        });
+
+        // Ensure creator profile row exists
+        await this.prisma.profile.upsert({
+          where: { userId: existing.id },
+          create: { userId: existing.id },
+          update: {},
         });
 
         if (dto.draftId) {
@@ -56,12 +65,38 @@ export class AuthService {
           }
         }
 
-        return this.signToken(
-          existing.id,
-          existing.email,
-          existing.fullName,
-          existing.role,
-        );
+        const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
+        return {
+          ...await this.signToken(existing.id, existing.email, existing.fullName, existing.role),
+          hasBothRoles,
+        };
+      }
+
+      if (requestedRole === 'STUDENT' && !existing.hasStudentAccess) {
+        const pwMatches = await bcrypt.compare(dto.password, existing.password);
+        if (!pwMatches) {
+          throw new ForbiddenException('Incorrect credentials');
+        }
+
+        // Enable student access on existing user
+        existing = await this.prisma.user.update({
+          where: { id: existing.id },
+          data: { hasStudentAccess: true },
+          include: { studentProfile: true },
+        });
+
+        // Ensure student profile row exists
+        await this.prisma.studentProfile.upsert({
+          where: { userId: existing.id },
+          create: { userId: existing.id },
+          update: {},
+        });
+
+        const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
+        return {
+          ...await this.signToken(existing.id, existing.email, existing.fullName, existing.role),
+          hasBothRoles,
+        };
       }
 
       if (existing.isVerified) {
@@ -83,6 +118,9 @@ export class AuthService {
     const verifyToken = crypto.createHash('sha256').update(code).digest('hex');
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
+    const isStudent = requestedRole === 'STUDENT';
+    const isInstructor = requestedRole === 'INSTRUCTOR';
+
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -92,9 +130,13 @@ export class AuthService {
         isVerified: false,
         verifyToken,
         tokenExpiry,
+        hasStudentAccess: isStudent,
+        hasCreatorAccess: isInstructor,
         profile: {
           create: {},
         },
+        // Create StudentProfile row for student signups
+        ...(isStudent ? { studentProfile: { create: {} } } : {}),
       },
     });
 
@@ -130,7 +172,7 @@ export class AuthService {
   }
 
   
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string, requestedRole?: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -162,8 +204,11 @@ export class AuthService {
       },
     });
 
+    // Use requestedRole if provided, otherwise default to user's database role
+    const roleForEmail = requestedRole || user.role;
+
     // 4. Send Email
-    await this.emailService.sendPasswordResetEmail(user.email, plainToken, user.fullName.split(' ')[0], user.role);
+    await this.emailService.sendPasswordResetEmail(user.email, plainToken, user.fullName.split(' ')[0], roleForEmail);
 
     return message;
   }
@@ -251,7 +296,7 @@ export class AuthService {
     if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
       user = await this.prisma.user.update({
         where: { id: user.id },
-        data: { role: 'INSTRUCTOR' },
+        data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
       });
     }
 
@@ -263,7 +308,11 @@ export class AuthService {
       });
     }
 
-    return this.signToken(user.id, user.email, user.fullName, user.role);
+    const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
+    return {
+      ...await this.signToken(user.id, user.email, user.fullName, user.role),
+      hasBothRoles,
+    };
   }
 
   async verifyEmail(token: string) {
@@ -375,6 +424,9 @@ export class AuthService {
         throw new UnauthorizedException('No email found in Firebase token');
       }
 
+      const isInstructor = requestedRole === 'INSTRUCTOR';
+      const isStudent = requestedRole === 'STUDENT';
+
       // 2. Find or create user
       let user = await this.prisma.user.findUnique({
         where: { email },
@@ -382,7 +434,6 @@ export class AuthService {
 
       if (!user) {
         // Create user with generic password since they use social login
-        // Also assign them the role they requested when signing up via social
         const salt = await bcrypt.genSalt(10);
         const randomPassword = crypto.randomBytes(32).toString('hex');
         const hash = await bcrypt.hash(randomPassword, salt);
@@ -393,19 +444,41 @@ export class AuthService {
             password: hash,
             fullName: name,
             role: requestedRole as Role,
+            hasStudentAccess: isStudent,
+            hasCreatorAccess: isInstructor,
             profile: {
               create: {
                 avatarUrl: decodedToken.picture || null,
               },
             },
+            ...(isStudent ? { studentProfile: { create: {} } } : {}),
           },
         });
       } else {
-        // User exists! If they are logging into the instructor portal, upgrade them!
-        if (requestedRole === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
+        // User exists — update role and access flags as needed
+        const updates: any = {};
+        if (isInstructor && user.role !== 'INSTRUCTOR') {
+          updates.role = 'INSTRUCTOR';
+          updates.hasCreatorAccess = true;
+          // Ensure creator Profile row exists
+          await this.prisma.profile.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id, avatarUrl: decodedToken.picture || null },
+            update: {},
+          });
+        }
+        if (isStudent && !user.hasStudentAccess) {
+          updates.hasStudentAccess = true;
+          await this.prisma.studentProfile.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id },
+            update: {},
+          });
+        }
+        if (Object.keys(updates).length > 0) {
           user = await this.prisma.user.update({
             where: { id: user.id },
-            data: { role: 'INSTRUCTOR' },
+            data: updates,
           });
         }
       }
@@ -422,8 +495,11 @@ export class AuthService {
         }
       }
 
-      // 3. Issue the standard JWT session token
-      return this.signToken(user.id, user.email, user.fullName, user.role);
+      const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
+      return {
+        ...await this.signToken(user.id, user.email, user.fullName, user.role),
+        hasBothRoles,
+      };
     } catch (error: any) {
       throw new UnauthorizedException(
         'Invalid Firebase Token: ' + error.message,
@@ -454,6 +530,37 @@ export class AuthService {
         role,
       },
     };
+  }
+
+  /**
+   * Issues a new JWT with a different role for dual-role users.
+   * Called by POST /auth/switch-role.
+   */
+  async switchRole(userId: string, targetRole: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new ForbiddenException('User not found');
+    if (!user.hasStudentAccess && !user.hasCreatorAccess) {
+      throw new ForbiddenException('Insufficient access');
+    }
+
+    const roleEnum = targetRole.toUpperCase();
+    if (roleEnum === 'INSTRUCTOR' && !user.hasCreatorAccess) {
+      throw new ForbiddenException('No creator profile found for this account');
+    }
+    if (roleEnum === 'STUDENT' && !user.hasStudentAccess) {
+      throw new ForbiddenException('No student profile found for this account');
+    }
+
+    // Update the stored role so future logins default to the switched role
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role: roleEnum as Role },
+    });
+
+    return this.signToken(updated.id, updated.email, updated.fullName, updated.role);
   }
 
   async getMyEnrollments(userId: string) {

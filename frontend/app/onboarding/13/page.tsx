@@ -89,7 +89,7 @@ export default function OnboardingStep13() {
               className="relative w-[80vw] h-[80%] z-10"
             >
               <Image 
-                src="/User onbarding Assets/Step-13_img.PNG" 
+                src="/User onbarding Assets/Step-13_img.webp" 
                 alt="Tey Mascot Mobile" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.1)]" 
@@ -191,7 +191,7 @@ export default function OnboardingStep13() {
               className="relative w-full h-full z-10 flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/Step-13_img.PNG" 
+                src="/User onbarding Assets/Step-13_img.webp" 
                 alt="Tey Mascot Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 

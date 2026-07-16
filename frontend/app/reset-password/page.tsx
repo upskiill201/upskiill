@@ -107,7 +107,7 @@ function ResetPasswordForm() {
           <div className="relative w-full flex-grow flex items-center justify-center z-20 min-h-0">
             <div className="relative w-[80%] h-[80%] flex items-center justify-center">
               <Image 
-                src="/User onbarding Assets/Step_7_tey_verified_state.PNG" 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
                 alt="Tey Mascot Verified Mobile" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.12)]" 
@@ -253,7 +253,7 @@ function ResetPasswordForm() {
             {/* Mascot Container */}
             <div className="relative w-[80%] h-[80%] z-10 flex items-center justify-center">
               <Image 
-                src="/User onbarding Assets/Step_7_tey_verified_state.PNG" 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
                 alt="Tey Mascot Verified Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.12)]" 

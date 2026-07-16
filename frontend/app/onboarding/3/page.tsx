@@ -272,7 +272,7 @@ export default function OnboardingStep3() {
             </div>
             {/* Mascot image is centered vertically and horizontally, taking 80% width with scale-[1.4] */}
             <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[80vw] z-10 scale-[1.4] origin-center">
-              <Image src="/User%20onbarding%20Assets/Tey_step3_mobile.PNG" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
+              <Image src="/User%20onbarding%20Assets/Tey_step3_mobile.webp" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
             </motion.div>
           </motion.div>
         </div>
@@ -379,7 +379,7 @@ export default function OnboardingStep3() {
           <div className="relative w-[90%] aspect-square transition-transform z-10">
             <MascotBackground />
             <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10">
-              <Image src="/User%20onbarding%20Assets/Tey_step3_desktop.PNG" alt="Teyro Mascot Pointing" fill className="object-contain" priority />
+              <Image src="/User%20onbarding%20Assets/Tey_step3_desktop.webp" alt="Teyro Mascot Pointing" fill className="object-contain" priority />
             </motion.div>
           </div>
         </motion.div>

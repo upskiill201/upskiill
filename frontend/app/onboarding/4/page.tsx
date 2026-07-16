@@ -113,7 +113,7 @@ export default function OnboardingStep4() {
             </div>
             {/* Mascot image is exactly 80% of device width and 40dvh height, centered vertically and horizontally with 1.2x scale */}
             <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[40dvh] z-10 scale-[1.4] origin-center">
-              <Image src="/User onbarding Assets/Tey_step4_mobile.PNG" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" priority />
+              <Image src="/User onbarding Assets/Tey_step4_mobile.webp" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" priority />
             </motion.div>
           </motion.div>
         </div>
@@ -335,7 +335,7 @@ export default function OnboardingStep4() {
               <MascotBackground />
               <div className="absolute inset-0 z-10 scale-[1.4] lg:scale-[1.6] origin-bottom">
                 <Image 
-                  src="/User onbarding Assets/Tey_step4_desktop.PNG" 
+                  src="/User onbarding Assets/Tey_step4_desktop.webp" 
                   alt="Tey Looking with Magnifying Glass" 
                   fill 
                   className="object-contain" 

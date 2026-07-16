@@ -147,7 +147,7 @@ export default function OnboardingStep8() {
                 {/* Mobile version has Tey pointing at a round "Start" button */}
                 <div className="md:hidden absolute inset-0">
                   <Image 
-                    src="/User onbarding Assets/Step_8_mascot_Mobile.PNG" 
+                    src="/User onbarding Assets/Step_8_mascot_Mobile.webp" 
                     alt="Tey Mascot pointing to Start" 
                     fill 
                     className="object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.12)]" 
@@ -157,7 +157,7 @@ export default function OnboardingStep8() {
                 {/* Desktop version has Tey pointing to the left toward text options */}
                 <div className="hidden md:block absolute inset-0">
                   <Image 
-                    src="/User onbarding Assets/Step_8_mascot_desktop.PNG" 
+                    src="/User onbarding Assets/Step_8_mascot_desktop.webp" 
                     alt="Tey Mascot challenge preview" 
                     fill 
                     className="object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.12)]" 

@@ -27,6 +27,7 @@ import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
+import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -56,6 +57,8 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userName, setUserName] = useState('Student');
   const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100');
+  const [hasStudentAccess, setHasStudentAccess] = useState(false);
+  const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -70,6 +73,8 @@ export default function DashboardLayout({
           const data = await res.json();
           if (data?.fullName) setUserName(data.fullName);
           if (data?.avatarUrl) setUserAvatar(data.avatarUrl);
+          if (data?.hasStudentAccess) setHasStudentAccess(data.hasStudentAccess);
+          if (data?.hasCreatorAccess) setHasCreatorAccess(data.hasCreatorAccess);
         }
       } catch (err) {
         console.error('Failed to load user data', err);
@@ -166,6 +171,15 @@ export default function DashboardLayout({
           </nav>
 
           <div className={styles.sidebarFooter}>
+            {/* Role switcher — only visible to dual-role users */}
+            <div style={{ padding: '0 8px 8px', width: '100%' }}>
+              <RoleSwitcher
+                activeRole="STUDENT"
+                hasStudentAccess={hasStudentAccess}
+                hasCreatorAccess={hasCreatorAccess}
+                collapsed={isSidebarCollapsed}
+              />
+            </div>
             <Link 
               href="/dashboard" 
               onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 

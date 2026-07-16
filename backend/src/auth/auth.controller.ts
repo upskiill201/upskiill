@@ -125,6 +125,24 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
+  /**
+   * POST /auth/switch-role
+   * Issues a fresh JWT for the requested role (STUDENT or INSTRUCTOR).
+   * Only succeeds if the user has the corresponding access flag set.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @Post('switch-role')
+  async switchRole(
+    @Body('role') role: string,
+    @GetUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.switchRole(user.id, role);
+    this.setCookie(res, result.access_token);
+    return result;
+  }
+
   private setCookie(res: Response, token: string) {
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -143,10 +161,10 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async getMe(@GetUser() user: User) {
-    // Return enriched user with profile — not just the raw User row
+    // Return enriched user with both profiles — not just the raw User row
     const enrichedUser = await this.prisma.user.findUnique({
       where: { id: user.id },
-      include: { profile: true },
+      include: { profile: true, studentProfile: true },
     });
     if (enrichedUser) {
       delete (enrichedUser as any).password;
@@ -168,11 +186,14 @@ export class AuthController {
 
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('forgot-password')
-  async forgotPassword(@Body('email') email: string) {
+  async forgotPassword(
+    @Body('email') email: string,
+    @Body('role') role?: string,
+  ) {
     if (!email) {
       return { message: 'If that email exists, a reset link has been sent.' };
     }
-    return this.authService.forgotPassword(email);
+    return this.authService.forgotPassword(email, role);
   }
 
   @Get('validate-token')

@@ -108,8 +108,8 @@ export default function OnboardingStep7() {
                 <Image
                   src={
                     isVerified
-                      ? '/User onbarding Assets/Step_7_tey_verified_state.PNG'
-                      : '/User onbarding Assets/Step_7_tey_skiped_state.PNG'
+                      ? '/User onbarding Assets/Step_7_tey_verified_state.webp'
+                      : '/User onbarding Assets/Step_7_tey_skiped_state.webp'
                   }
                   alt="Tey Mascot Reaction"
                   fill

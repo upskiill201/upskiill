@@ -69,8 +69,8 @@ function AuthContent() {
         return;
       }
 
-      // Success — Route directly to the instructor dashboard
-      window.location.href = '/creator';
+      // Success — creator portal: route to role-select if dual-role, otherwise directly to creator
+      window.location.href = data.hasBothRoles ? '/role-select' : '/creator';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
       setError(message);
@@ -100,7 +100,7 @@ function AuthContent() {
         throw new Error(data.message || 'Social authentication failed');
       }
 
-      window.location.href = '/creator';
+      window.location.href = data.hasBothRoles ? '/role-select' : '/creator';
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {

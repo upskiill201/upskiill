@@ -131,7 +131,7 @@ export default function OnboardingStep15() {
             className="relative w-[80%] h-[80%] mt-auto z-20 flex items-center justify-center"
           >
             <Image 
-              src="/User onbarding Assets/step_15_image_mobile.png" 
+              src="/User onbarding Assets/step_15_image_mobile.webp" 
               alt="You're All Set Mascot Mobile" 
               fill 
               className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" 
@@ -264,7 +264,7 @@ export default function OnboardingStep15() {
               className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/step_15_image_desktop.png" 
+                src="/User onbarding Assets/step_15_image_desktop.webp" 
                 alt="You're All Set Mascot Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 

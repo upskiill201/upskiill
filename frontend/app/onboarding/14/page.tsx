@@ -131,7 +131,7 @@ export default function OnboardingStep14() {
             className="relative w-[80%] h-[80%] mt-auto z-20 flex items-center justify-center"
           >
             <Image 
-              src="/User onbarding Assets/Step_14_image_mobile.PNG" 
+              src="/User onbarding Assets/Step_14_image_mobile.webp" 
               alt="Leaderboard Mascot Mobile" 
               fill 
               className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" 
@@ -261,7 +261,7 @@ export default function OnboardingStep14() {
               className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/Step_14_image_desktop.PNG" 
+                src="/User onbarding Assets/Step_14_image_desktop.webp" 
                 alt="Leaderboard Mascot Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 

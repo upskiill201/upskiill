@@ -205,7 +205,7 @@ export default function OnboardingStep6() {
                 <MascotBackground />
                 <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 scale-[1.15]">
                   <Image 
-                    src="/User onbarding Assets/Step_6_mascot.PNG" 
+                    src="/User onbarding Assets/Step_6_mascot.webp" 
                     alt="Connect with Tey" 
                     fill 
                     className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" 
@@ -425,7 +425,7 @@ export default function OnboardingStep6() {
               <MascotBackground />
               <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[0.95] lg:scale-[1.0]">
                 <Image 
-                  src="/User onbarding Assets/Step_6_mascot.PNG" 
+                  src="/User onbarding Assets/Step_6_mascot.webp" 
                   alt="Connect with Tey" 
                   fill 
                   className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" 

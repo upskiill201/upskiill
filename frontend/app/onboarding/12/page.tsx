@@ -256,7 +256,7 @@ export default function OnboardingStep12() {
               className="relative w-[80vw] h-[80%] z-10"
             >
               <Image 
-                src="/User onbarding Assets/Step_12_image_mobile.PNG" 
+                src="/User onbarding Assets/Step_12_image_mobile.webp" 
                 alt="Tey Mascot Mobile" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.1)]" 
@@ -334,7 +334,7 @@ export default function OnboardingStep12() {
                     className="w-[80vw] h-12 bg-white border-2 border-slate-200 text-slate-700 rounded-[1.2rem] font-[800] text-sm flex items-center justify-center gap-3 shadow-sm hover:bg-slate-50 transition-all"
                   >
                     <Image 
-                      src="/User onbarding Assets/google.png" 
+                      src="/User onbarding Assets/google.webp" 
                       alt="Google Logo" 
                       width={18} 
                       height={18} 
@@ -585,7 +585,7 @@ export default function OnboardingStep12() {
             className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
           >
             <Image 
-              src="/User onbarding Assets/Step_12_image_desktop.PNG" 
+              src="/User onbarding Assets/Step_12_image_desktop.webp" 
               alt="Tey Mascot Desktop" 
               fill 
               className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.15)]" 
@@ -682,7 +682,7 @@ export default function OnboardingStep12() {
                       className="w-full md:w-[70%] h-14 bg-white border-2 border-slate-200 text-slate-700 rounded-[1.2rem] font-[800] text-base flex items-center justify-center gap-3 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
                     >
                       <Image 
-                        src="/User onbarding Assets/google.png" 
+                        src="/User onbarding Assets/google.webp" 
                         alt="Google Logo" 
                         width={22} 
                         height={22} 

@@ -87,8 +87,8 @@ export default function OnboardingStep0() {
 
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
       
-      // Successfully authenticated — navigate to dashboard
-      window.location.href = '/dashboard';
+      // If user has both profiles, let them pick their mode first
+      window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -108,7 +108,10 @@ export default function OnboardingStep0() {
       const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail.toLowerCase().trim() }),
+        body: JSON.stringify({ 
+          email: resetEmail.toLowerCase().trim(),
+          role: 'STUDENT'
+        }),
       });
 
       if (!res.ok) {
@@ -149,7 +152,7 @@ export default function OnboardingStep0() {
       }
 
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
-      window.location.href = '/dashboard';
+      window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
     } catch (err: unknown) {
       console.error(err);
       const message = err instanceof Error ? err.message : 'Google authentication failed';
@@ -201,7 +204,7 @@ export default function OnboardingStep0() {
               className="relative w-[80%] h-[80%] flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/Step_7_tey_verified_state.PNG" 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
                 alt="Tey Mascot Verified Mobile" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.12)]" 
@@ -511,7 +514,7 @@ export default function OnboardingStep0() {
               className="relative w-[80%] h-[80%] z-10 flex items-center justify-center"
             >
               <Image 
-                src="/User onbarding Assets/Step_7_tey_verified_state.PNG" 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
                 alt="Tey Mascot Verified Desktop" 
                 fill 
                 className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.12)]" 

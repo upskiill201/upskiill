@@ -28,6 +28,7 @@ import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import styles from './Creator.module.css';
+import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 
 // ─── COMING SOON CONTEXT ───
 interface ComingSoonContextType {
@@ -74,6 +75,8 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
   
   const [creatorName, setCreatorName] = useState('Creator');
   const [creatorAvatar, setCreatorAvatar] = useState('https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80');
+  const [hasStudentAccess, setHasStudentAccess] = useState(false);
+  const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -81,11 +84,13 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
     // Fetch live user data for sidebar
     const fetchUser = async () => {
       try {
-        const res = await fetch('/api/profile');
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           if (data.fullName) setCreatorName(data.fullName);
           if (data.profile?.avatarUrl) setCreatorAvatar(data.profile.avatarUrl);
+          if (data.hasStudentAccess) setHasStudentAccess(data.hasStudentAccess);
+          if (data.hasCreatorAccess) setHasCreatorAccess(data.hasCreatorAccess);
         }
       } catch (err) {
         console.warn('Failed to fetch user data for sidebar', err);
@@ -164,6 +169,15 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
               })}
             </div>
           </nav>
+
+          {/* Role switcher — only visible to dual-role users */}
+          <div style={{ padding: '0 12px 16px' }}>
+            <RoleSwitcher
+              activeRole="INSTRUCTOR"
+              hasStudentAccess={hasStudentAccess}
+              hasCreatorAccess={hasCreatorAccess}
+            />
+          </div>
         </aside>
 
         {/* Overlay for mobile sidebar */}

@@ -21,7 +21,12 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  // Dual-role access flags — the canonical source of truth for which profiles exist
+  hasStudentAccess Boolean @default(false)
+  hasCreatorAccess Boolean @default(false)
+
   profile             Profile?
+  studentProfile      StudentProfile?
   enrollments         Enrollment[]
   courses             Course[]                @relation("InstructorCourses")
   orders              Order[]
@@ -281,4 +286,20 @@ model OnboardingSession {
   completedAt    DateTime?
 
   @@map("onboarding_sessions")
+}
+
+model StudentProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Learning progress data
+  xp           Int       @default(0)
+  streakDays   Int       @default(0)
+  lastActiveAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("student_profiles")
 }

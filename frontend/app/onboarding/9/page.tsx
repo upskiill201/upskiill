@@ -32,9 +32,9 @@ interface Sparkle {
 }
 
 const SHAPES: Record<ShapeId, string> = {
-  cube: '/User onbarding Assets/step 9 shapes/step_9_square.PNG',
-  pyramid: '/User onbarding Assets/step 9 shapes/step_9_triangle.PNG',
-  cylinder: '/User onbarding Assets/step 9 shapes/step_9_cylinder.PNG',
+  cube: '/User onbarding Assets/step 9 shapes/step_9_square.webp',
+  pyramid: '/User onbarding Assets/step 9 shapes/step_9_triangle.webp',
+  cylinder: '/User onbarding Assets/step 9 shapes/step_9_cylinder.webp',
 };
 
 const DRAGGABLES: DraggableShape[] = [
@@ -297,7 +297,7 @@ export default function OnboardingStep9() {
                   className="w-full h-full relative"
                 >
                   <Image 
-                    src="/User onbarding Assets/Tey_step_9_img.PNG" 
+                    src="/User onbarding Assets/Tey_step_9_img.webp" 
                     alt="Tey Celebrating" 
                     fill 
                     className="object-contain" 
@@ -480,7 +480,7 @@ export default function OnboardingStep9() {
                   className="absolute inset-0"
                 >
                   <Image 
-                    src="/User onbarding Assets/Tey_step_9_img.PNG" 
+                    src="/User onbarding Assets/Tey_step_9_img.webp" 
                     alt="Tey Mascot" 
                     fill 
                     className="object-contain" 
@@ -566,7 +566,7 @@ export default function OnboardingStep9() {
                 className="absolute inset-0 z-10"
               >
                 <Image 
-                  src="/User onbarding Assets/Tey_step_9_img.PNG" 
+                  src="/User onbarding Assets/Tey_step_9_img.webp" 
                   alt="Tey Victorious Mascot" 
                   fill 
                   className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.12)]"

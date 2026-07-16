@@ -212,7 +212,7 @@ export default function OnboardingStep10() {
               className="w-full h-full relative"
             >
               <Image 
-                src="/User onbarding Assets/Step_10_image.PNG" 
+                src="/User onbarding Assets/Step_10_image.webp" 
                 alt="Tey Victorious Robot" 
                 fill 
                 className="object-contain drop-shadow-[0_20px_45px_rgba(1,114,253,0.15)]"
@@ -390,7 +390,7 @@ export default function OnboardingStep10() {
                 className="w-full h-full relative"
               >
                 <Image 
-                  src="/User onbarding Assets/Step_10_image.PNG" 
+                  src="/User onbarding Assets/Step_10_image.webp" 
                   alt="Tey Victorious Robot" 
                   width={500}
                   height={500}

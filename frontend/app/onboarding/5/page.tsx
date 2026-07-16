@@ -118,7 +118,7 @@ export default function OnboardingStep5() {
                 <MascotBackground />
                 <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 scale-[1.15]">
                   <Image 
-                    src="/User onbarding Assets/Step_5_mobile_mascot.PNG" 
+                    src="/User onbarding Assets/Step_5_mobile_mascot.webp" 
                     alt="Tey Mascot Time" 
                     fill 
                     className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" 
@@ -179,7 +179,7 @@ export default function OnboardingStep5() {
               <MascotBackground />
               <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[0.85] lg:scale-[0.85]">
                 <Image 
-                  src="/User onbarding Assets/step_5_desktop_mascot.PNG" 
+                  src="/User onbarding Assets/step_5_desktop_mascot.webp" 
                   alt="Tey Mascot Time" 
                   fill 
                   className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" 
