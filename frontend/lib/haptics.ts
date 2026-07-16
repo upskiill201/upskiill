@@ -12,8 +12,48 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export function playHaptic(type: 'success' | 'warning' | 'error' | 'light' | 'medium' | 'heavy' | 'selection' | number | number[]) {
+export type HapticType =
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'light'
+  | 'medium'
+  | 'heavy'
+  | 'selection'
+  | 'rigid'
+  | 'soft'
+  | 'teyroBounce'
+  | 'teyroSnap'
+  | 'teyroCelebration'
+  | number
+  | number[];
+
+/**
+ * Triggers a web haptic feedback pattern.
+ * Supports built-in web-haptics presets, numbers/arrays for legacy fallback,
+ * and custom Teyro-voiced haptic macro presets for playful/premium game feel.
+ */
+export function playHaptic(type: HapticType) {
   if (typeof window === 'undefined') return;
+
+  // Handle Teyro Custom Macros
+  if (type === 'teyroBounce') {
+    playHaptic('selection');
+    setTimeout(() => playHaptic('selection'), 80);
+    return;
+  }
+
+  if (type === 'teyroSnap') {
+    playHaptic('rigid');
+    return;
+  }
+
+  if (type === 'teyroCelebration') {
+    playHaptic('success');
+    setTimeout(() => playHaptic('medium'), 150);
+    setTimeout(() => playHaptic('light'), 300);
+    return;
+  }
 
   if (hapticsInstance) {
     try {
@@ -28,6 +68,7 @@ export function playHaptic(type: 'success' | 'warning' | 'error' | 'light' | 'me
       } else if (Array.isArray(type)) {
         hapticsInstance.trigger('buzz');
       } else {
+        // web-haptics supports 'success', 'warning', 'error', 'light', 'medium', 'heavy', 'selection', 'rigid', 'soft'
         hapticsInstance.trigger(type);
       }
       return;
@@ -50,6 +91,8 @@ export function playHaptic(type: 'success' | 'warning' | 'error' | 'light' | 'me
           medium: 15,
           heavy: 25,
           selection: 5,
+          rigid: 15,
+          soft: 8,
         };
         const pattern = vibrationDurations[type as keyof typeof vibrationDurations] || 10;
         navigator.vibrate(pattern);

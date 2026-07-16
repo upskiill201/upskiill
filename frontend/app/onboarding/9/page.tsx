@@ -117,19 +117,19 @@ export default function OnboardingStep9() {
   }, []);
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/8');
   };
 
   const handleContinue = () => {
     if (!finished) return;
-    playHaptic(12);
+    playHaptic('medium');
     saveAnswer({ skipped: false, completed: true });
     void advance();
   };
 
   const handleSkip = () => {
-    playHaptic(10);
+    playHaptic('light');
     saveAnswer({ skipped: true });
     void advance();
   };
@@ -149,7 +149,7 @@ export default function OnboardingStep9() {
         setFeedbackToast({ message: completeMessage, type: 'complete' });
 
         // Play completion vibration chord pattern
-        playHaptic([30, 80, 40, 100, 50])
+        playHaptic('teyroCelebration')
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -216,7 +216,7 @@ export default function OnboardingStep9() {
       setTimeout(() => setFeedbackToast(null), 3000);
 
       // Haptic correct pulse (light tap)
-      playHaptic(8)
+      playHaptic('teyroSnap')
 
       // Sparkles
       triggerSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);

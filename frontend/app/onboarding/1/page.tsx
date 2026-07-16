@@ -165,7 +165,7 @@ export default function OnboardingStep1() {
               whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
               onClick={() => {
                 setIdle(false);
-                playHaptic(12);
+                playHaptic('medium');
                 void advance();
               }}
               className="relative z-10 w-full flex items-center justify-center py-4 rounded-[1.5rem] text-white font-bold text-lg"
@@ -265,7 +265,7 @@ export default function OnboardingStep1() {
               whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
               onClick={() => {
                 setIdle(false);
-                playHaptic(12);
+                playHaptic('medium');
                 void advance();
               }}
               className="relative z-10 w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] text-white font-bold text-xl md:text-2xl"

@@ -16,12 +16,12 @@ export default function OnboardingStep8() {
   const mascotRef = useRef<HTMLDivElement>(null);
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/7');
   };
 
   const handleStart = () => {
-    playHaptic(12);
+    playHaptic('medium');
     void advance();
   };
 

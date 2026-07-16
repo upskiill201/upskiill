@@ -86,7 +86,7 @@ export default function OnboardingStep3() {
   if (isLoading) return <StepSkeleton />;
 
   const handleSelect = (id: string) => {
-    playHaptic(10);
+    playHaptic('teyroBounce');
     setSelectedGoal(id);
     saveAnswer({ primaryGoal: id });
     setIdle(false);
@@ -94,12 +94,12 @@ export default function OnboardingStep3() {
 
   const handleNext = () => {
     if (!selectedGoal) return;
-    playHaptic(12);
+    playHaptic('medium');
     void advance();
   };
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/2');
   };
 

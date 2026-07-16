@@ -38,12 +38,12 @@ export default function OnboardingStep7() {
   const isVerified = !!answers['6']?.whatsappNumber;
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/6');
   };
 
   const handleContinue = () => {
-    playHaptic(12);
+    playHaptic('medium');
     void advance();
   };
 

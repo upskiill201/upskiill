@@ -52,7 +52,7 @@ export default function OnboardingStep6() {
 
   const handleGetStarted = async () => {
     if (!phoneNumber || phoneNumber.length < 5) return;
-    playHaptic(10);
+    playHaptic('medium');
     
     setOtpStatus('sent');
     setCountdown(30);
@@ -103,7 +103,7 @@ export default function OnboardingStep6() {
     const fullOtp = otp.join('');
     if (fullOtp.length !== 6) return;
     
-    playHaptic(12);
+    playHaptic('medium');
     
     // Explicit bypass for local staging testing
     if (fullOtp === '123456') {
@@ -141,7 +141,7 @@ export default function OnboardingStep6() {
   };
 
   const handleSkip = () => {
-    playHaptic(10);
+    playHaptic('light');
     saveAnswer({ whatsappNumber: '' });
     void advance();
   };
@@ -300,7 +300,7 @@ export default function OnboardingStep6() {
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                         onClick={() => {
-                          playHaptic(10);
+                          playHaptic('light');
                           router.push('/onboarding/5');
                         }}
                         className="w-full md:w-[70px] h-[60px] shrink-0 flex items-center justify-center rounded-[1.2rem] bg-white border-[1.5px] border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 transition-colors shadow-[0_6px_0_0_#E2E8F0,0_15px_25px_-5px_rgba(0,0,0,0.05)] cursor-pointer"
@@ -370,7 +370,7 @@ export default function OnboardingStep6() {
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                         onClick={() => {
-                          playHaptic(10);
+                          playHaptic('light');
                           setOtpStatus('idle'); // Just reset form instead of hard push if they are verifying
                         }}
                         className="w-full md:w-[70px] h-[60px] shrink-0 flex items-center justify-center rounded-[1.2rem] bg-white border-[1.5px] border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 transition-colors shadow-[0_6px_0_0_#E2E8F0,0_15px_25px_-5px_rgba(0,0,0,0.05)] cursor-pointer"

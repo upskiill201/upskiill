@@ -55,12 +55,12 @@ export default function OnboardingStep14() {
   if (isLoading) return <StepSkeleton />;
 
   const handleNext = () => {
-    playHaptic(12);
+    playHaptic('medium');
     void advance();
   };
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/13');
   };
 

@@ -78,7 +78,7 @@ export default function OnboardingStep10() {
     // Trigger confetti explosion after exactly 2.0 seconds delay
     const timer = setTimeout(() => {
       setShowConfetti(true);
-      playHaptic([30, 80, 40])
+      playHaptic('teyroCelebration')
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -87,12 +87,12 @@ export default function OnboardingStep10() {
   if (isLoading) return <StepSkeleton />;
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/9');
   };
 
   const handleContinue = () => {
-    playHaptic(12);
+    playHaptic('medium');
     saveAnswer({ completed: true });
     void advance();
   };

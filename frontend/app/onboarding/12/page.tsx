@@ -88,7 +88,7 @@ export default function OnboardingStep12() {
         throw new Error(data.message || 'Social sign up failed');
       }
 
-      playHaptic(12);
+      playHaptic('medium');
       void advance();
     } catch (err: unknown) {
       console.error(err);
@@ -183,7 +183,7 @@ export default function OnboardingStep12() {
         throw new Error(data.message || 'Invalid verification code');
       }
 
-      playHaptic(12);
+      playHaptic('medium');
       void advance();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Verification failed';
@@ -194,7 +194,7 @@ export default function OnboardingStep12() {
   };
 
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     if (view === 'signup') {
       setView('options');
       setAuthError('');

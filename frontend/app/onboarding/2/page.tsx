@@ -74,7 +74,7 @@ export default function OnboardingStep2() {
   if (isLoading) return <StepSkeleton />;
 
   const handleSelect = (id: string) => {
-    playHaptic(10);
+    playHaptic('teyroBounce');
     setSelectedSkill(id);
     // Save instantly to localStorage — the hook does it here
     saveAnswer({ skill: id });
@@ -82,11 +82,11 @@ export default function OnboardingStep2() {
   };
   const handleNext = () => {
     if (!selectedSkill) return;
-    playHaptic(12);
+    playHaptic('medium');
     void advance();
   };
   const handleBack = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/1');
   };
 

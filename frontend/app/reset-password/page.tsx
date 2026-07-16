@@ -63,7 +63,7 @@ function ResetPasswordForm() {
         throw new Error(data.message || 'Failed to reset password');
       }
 
-      playHaptic(12);
+      playHaptic('medium');
       setSuccess(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Reset failed. Token might be expired.';
@@ -74,7 +74,7 @@ function ResetPasswordForm() {
   };
 
   const handleBackToSignIn = () => {
-    playHaptic(10);
+    playHaptic('light');
     router.push('/onboarding/0');
   };
 
