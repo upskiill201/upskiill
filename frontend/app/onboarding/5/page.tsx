@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -54,7 +55,7 @@ export default function OnboardingStep5() {
   if (isLoading) return <StepSkeleton />;
 
   const handleSelect = (idx: number) => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     setSelectedIndex(idx);
     saveAnswer({ dailyGoal: GOALS[idx].id });
     setIdle(false);
@@ -62,12 +63,12 @@ export default function OnboardingStep5() {
 
   const handleNext = () => {
     if (selectedIndex === null) return;
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     void advance();
   };
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/4');
   };
 

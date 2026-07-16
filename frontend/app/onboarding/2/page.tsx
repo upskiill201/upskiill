@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -73,7 +74,7 @@ export default function OnboardingStep2() {
   if (isLoading) return <StepSkeleton />;
 
   const handleSelect = (id: string) => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     setSelectedSkill(id);
     // Save instantly to localStorage — the hook does it here
     saveAnswer({ skill: id });
@@ -81,11 +82,11 @@ export default function OnboardingStep2() {
   };
   const handleNext = () => {
     if (!selectedSkill) return;
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     void advance();
   };
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/1');
   };
 

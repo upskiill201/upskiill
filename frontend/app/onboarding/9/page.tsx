@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -116,19 +117,19 @@ export default function OnboardingStep9() {
   }, []);
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/8');
   };
 
   const handleContinue = () => {
     if (!finished) return;
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     saveAnswer({ skipped: false, completed: true });
     void advance();
   };
 
   const handleSkip = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     saveAnswer({ skipped: true });
     void advance();
   };
@@ -148,9 +149,7 @@ export default function OnboardingStep9() {
         setFeedbackToast({ message: completeMessage, type: 'complete' });
 
         // Play completion vibration chord pattern
-        if (typeof navigator !== 'undefined' && navigator.vibrate) {
-          navigator.vibrate([30, 80, 40, 100, 50]);
-        }
+        playHaptic([30, 80, 40, 100, 50])
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -217,9 +216,7 @@ export default function OnboardingStep9() {
       setTimeout(() => setFeedbackToast(null), 3000);
 
       // Haptic correct pulse (light tap)
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate(8);
-      }
+      playHaptic(8)
 
       // Sparkles
       triggerSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);

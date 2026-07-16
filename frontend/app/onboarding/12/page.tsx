@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -87,7 +88,7 @@ export default function OnboardingStep12() {
         throw new Error(data.message || 'Social sign up failed');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       void advance();
     } catch (err: unknown) {
       console.error(err);
@@ -182,7 +183,7 @@ export default function OnboardingStep12() {
         throw new Error(data.message || 'Invalid verification code');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       void advance();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Verification failed';
@@ -193,7 +194,7 @@ export default function OnboardingStep12() {
   };
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     if (view === 'signup') {
       setView('options');
       setAuthError('');

@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -85,7 +86,7 @@ export default function OnboardingStep3() {
   if (isLoading) return <StepSkeleton />;
 
   const handleSelect = (id: string) => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     setSelectedGoal(id);
     saveAnswer({ primaryGoal: id });
     setIdle(false);
@@ -93,12 +94,12 @@ export default function OnboardingStep3() {
 
   const handleNext = () => {
     if (!selectedGoal) return;
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     void advance();
   };
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/2');
   };
 

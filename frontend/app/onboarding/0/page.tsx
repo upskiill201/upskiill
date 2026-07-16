@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -45,12 +46,12 @@ export default function OnboardingStep0() {
   if (isLoading) return <StepSkeleton />;
 
   const handleGetStarted = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     router.push('/onboarding/1');
   };
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     setError('');
     setSuccess('');
     
@@ -85,7 +86,7 @@ export default function OnboardingStep0() {
         throw new Error(errMsg || 'Login failed');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       
       // If user has both profiles, let them pick their mode first
       window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
@@ -121,7 +122,7 @@ export default function OnboardingStep0() {
         throw new Error('Something went wrong. Please try again.');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       setView('forgot-success');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to send reset link';
@@ -151,7 +152,7 @@ export default function OnboardingStep0() {
         throw new Error(data.message || 'Social login failed');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
     } catch (err: unknown) {
       console.error(err);
@@ -246,7 +247,7 @@ export default function OnboardingStep0() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.96 }}
                     onClick={() => {
-                      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                      playHaptic(10);
                       setView('signin');
                     }}
                     className="w-[70%] h-11 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.1rem] font-[900] text-sm tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(1,114,253,0.2)] cursor-pointer"
@@ -559,7 +560,7 @@ export default function OnboardingStep0() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
-                          if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                          playHaptic(10);
                           setView('signin');
                         }}
                         className="w-full max-w-[320px] h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-3 shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"

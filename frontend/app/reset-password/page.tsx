@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
@@ -62,7 +63,7 @@ function ResetPasswordForm() {
         throw new Error(data.message || 'Failed to reset password');
       }
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+      playHaptic(12);
       setSuccess(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Reset failed. Token might be expired.';
@@ -73,7 +74,7 @@ function ResetPasswordForm() {
   };
 
   const handleBackToSignIn = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/0');
   };
 

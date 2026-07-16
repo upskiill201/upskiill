@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -77,9 +78,7 @@ export default function OnboardingStep10() {
     // Trigger confetti explosion after exactly 2.0 seconds delay
     const timer = setTimeout(() => {
       setShowConfetti(true);
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate([30, 80, 40]);
-      }
+      playHaptic([30, 80, 40])
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -88,12 +87,12 @@ export default function OnboardingStep10() {
   if (isLoading) return <StepSkeleton />;
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/9');
   };
 
   const handleContinue = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     saveAnswer({ completed: true });
     void advance();
   };

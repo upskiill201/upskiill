@@ -1,4 +1,5 @@
 'use client';
+import { playHaptic } from '@/lib/haptics';
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
@@ -37,12 +38,12 @@ export default function OnboardingStep7() {
   const isVerified = !!answers['6']?.whatsappNumber;
 
   const handleBack = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+    playHaptic(10);
     router.push('/onboarding/6');
   };
 
   const handleContinue = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(12);
+    playHaptic(12);
     void advance();
   };
 
