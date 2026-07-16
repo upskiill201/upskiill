@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Zap, Shield, BookOpen, Brain, Sparkles, GraduationCap } from 'lucide-react';
-import styles from './HeroSection.module.css';
+import { Zap, ChevronRight } from 'lucide-react';
+import { MascotBackground } from '../onboarding/MascotBackground';
+import { SpeechBubble } from '../onboarding/SpeechBubble';
 
 interface HeroSectionProps {
   onOpenModal: () => void;
@@ -12,6 +13,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onOpenModal }: HeroSectionProps) {
   const [count, setCount] = useState<number | null>(null);
+  const mascotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/webhook/count')
@@ -23,275 +25,165 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
   const countLabel =
     count === null ? '...' : count === 0 ? 'Be first' : `${count.toLocaleString()} joined`;
 
-  /* Reliable Unsplash face photo IDs */
-  const studentPhotos = [
-    '1507003211169-0a1dd7228f2d', // man (top-right)
-    '1517841905240-472988babdf9', // woman (mid-left) - fixed
-    '1544005313-94ddf0286df2',    // man (mid-right)
-    '1534528741775-53994a69daeb', // woman (bot-left)
-  ];
-
-  const creatorPhotos = [
-    '1472099645785-5658abf4ff4e', // man creator 1
-    '1573496359142-b8d87734a5a2', // woman creator 2 (center big)
-    '1534528741775-53994a69daeb', // woman creator 3
+  // Speech bubble text for Tey
+  const teyQuote = [
+    `<strong>You’re early… and I like that. 😄</strong>`,
+    `We’re building something that makes learning hard to put down. Join the waitlist, and you’ll be one of the first to experience it! ✨`,
   ];
 
   return (
-    <section className={styles.hero}>
-      {/* ── Blueprint grid overlay ── */}
-      <div className={styles.grid} aria-hidden="true" />
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden pt-28 pb-16 px-6 z-10">
+      
+      {/* 📱 Bubbles and decorative shapes background */}
+      <MascotBackground />
 
-      {/* ── Connecting Background Structural Lines ── */}
-      <div className={styles.bgStructuralLinesWrap}>
-        <svg viewBox="0 0 1440 800" preserveAspectRatio="xMidYMin slice" className={styles.bgStructuralLinesSvg}>
-          {/* Top Left to Left Card */}
-          <line x1="140" y1="0" x2="140" y2="180" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" />
-          <circle cx="140" cy="180" r="3" fill="#3B82F6" />
-
-          {/* Left Card down to Students Card */}
-          <path d="M 140 280 L 140 450 Q 140 470 160 470 L 350 470" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" fill="none" />
-          
-          {/* Center Header down to Center Hub */}
-          <path d="M 720 0 L 720 130" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" fill="none" />
-          <circle cx="720" cy="130" r="3" fill="#3B82F6" />
-
-          {/* Center Hub down to bottom */}
-          <path d="M 720 660 L 720 800" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" fill="none" />
-          <polygon points="716,780 724,780 720,788" fill="#3B82F6" />
-
-          {/* Top Right to Right Card */}
-          <line x1="1300" y1="0" x2="1300" y2="170" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" />
-
-          {/* Right Card down to Creators Card */}
-          <path d="M 1300 280 L 1300 450 Q 1300 470 1280 470 L 1090 470" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="6 4" fill="none" />
-        </svg>
-      </div>
-
-      {/* Removed old decorative vertical connectors to use the SVG above */}
-
-      {/* ── LEFT CARD — Completion rate comparison ── */}
-      <motion.div
-        className={styles.cardLeft}
-        initial={{ opacity: 0, x: -24 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.7, duration: 0.5 }}
-      >
-        <div className={styles.statRow}>
-          <div className={styles.statNumBox}>
-            <span className={styles.statNum}>8</span>
-            <div className={styles.statSymbols}>
-              <span>*</span><span>%</span>
-            </div>
-          </div>
-          <span className={styles.statRowLabel}>Without Teyro</span>
-          <div className={styles.toggleOff}>
-            <div className={styles.toggleKnob} />
-          </div>
-        </div>
-        <div className={styles.statRow}>
-          <div className={styles.statNumBox}>
-            <span className={`${styles.statNum} ${styles.statBlue}`}>75</span>
-            <div className={`${styles.statSymbols} ${styles.statBlue}`}>
-              <span>*</span><span>%</span>
-            </div>
-          </div>
-          <span className={styles.statRowLabel}>With Teyro</span>
-          <div className={styles.toggleOn}>
-            <div className={styles.toggleKnob} />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── RIGHT CARD — AI Shield ── */}
-      <motion.div
-        className={styles.cardRight}
-        initial={{ opacity: 0, x: 24 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <div className={styles.cardRightBadge}>
-          <span className={styles.greenDot} />
-          AI-Powered Learning
-        </div>
-        <div className={styles.shieldBox}>
-          <div className={styles.shieldRipple} />
-          <div className={styles.shieldRipple2} />
-          <div className={styles.shieldBtn}>
-            <Shield size={18} strokeWidth={2.5} />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── HERO CONTENT — centered ── */}
-      <div className={styles.content}>
-
+      <div className="max-w-[1280px] w-full mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center relative z-10">
+        
+        {/* ── LEFT COLUMN: Text & Actions ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
+          initial={{ opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.2 }}
+          className="flex flex-col items-start text-left"
         >
-          <h1 className={styles.headline}>
-            Learn Any Skill Faster.<br />Actually Finish This Time.
+          {/* Timeline Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#EBF3FE] border-2 border-white rounded-full text-xs font-bold text-[#0172FD] mb-6 shadow-[0_4px_12px_rgba(1,114,253,0.06)]">
+            <span className="w-2 h-2 rounded-full bg-[#0172FD] animate-pulse" />
+            <span>Beta Launching Nov / Dec 2026</span>
+          </div>
+
+          {/* Primary Headline */}
+          <h1 
+            className="text-[10vw] xs:text-[9vw] md:text-5xl lg:text-6xl font-[900] leading-[1.05] tracking-tight text-[#071233] mb-6"
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+          >
+            The learning app you’ll{' '}
+            <span className="text-[#0172FD]" style={{ textShadow: '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.2)' }}>
+              actually
+            </span>{' '}
+            come back to.
           </h1>
 
-          <p className={styles.sub}>
-            Teyro uses AI to personalize how you learn, nudge you back when life gets busy, and make sure what you study actually stays in your head.
+          {/* Core Subtitle / Thesis */}
+          <p className="text-[4.5vw] xs:text-[4vw] md:text-lg lg:text-xl font-semibold text-slate-500 leading-relaxed mb-10 max-w-xl">
+            We’re making practical skill learning as engaging as social media and mobile games. Powered by AI, built for consistency.
           </p>
 
-          <div className={styles.ctas}>
-            <button className={styles.btnPrimary} onClick={onOpenModal} id="hero-join-waitlist-btn">
-              <Zap size={15} />
-              Join the waitlist
-              <span className={styles.chip}>
-                <span className={styles.chipDot} />
+          {/* Actions & Live Counter */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={onOpenModal}
+              id="hero-join-waitlist-btn"
+              className="h-14 sm:h-16 px-8 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(1,114,253,0.3)] cursor-pointer"
+            >
+              <Zap className="w-5 h-5 fill-white stroke-[2.5]" />
+              <span>JOIN THE WAITLIST</span>
+              <span className="bg-white/20 backdrop-blur-sm px-2.5 py-0.5 rounded-full text-xs font-extrabold ml-2 border border-white/20">
                 {countLabel}
               </span>
-            </button>
+            </motion.button>
+
             <button
-              className={styles.btnGhost}
               onClick={() => document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="h-14 sm:h-16 px-6 bg-white/70 hover:bg-white text-slate-700 font-extrabold text-base rounded-[1.2rem] border border-slate-200/80 hover:border-slate-300 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
-              See what&apos;s coming
+              <span>See how we do it</span>
+              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
         </motion.div>
+
+        {/* ── RIGHT COLUMN: Speech Bubble & Mascot ── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.4 }}
+          className="relative w-full flex flex-col items-center gap-4"
+        >
+          {/* Tey's Onboarding Speech Bubble */}
+          <div className="w-full max-w-[420px] z-20 flex justify-center lg:justify-start">
+            <SpeechBubble
+              lines={teyQuote}
+              tailAlign={0.5}
+              mascotRef={mascotRef}
+              disableTypewriter={true}
+            />
+          </div>
+
+          {/* Scaled-up Tey Frame */}
+          <div 
+            ref={mascotRef}
+            className="relative w-full max-w-[500px] aspect-square flex items-center justify-center overflow-visible"
+          >
+            
+            {/* Mascot Image */}
+            <motion.div 
+              animate={{ 
+                y: [0, -10, 0],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative w-[95%] h-[95%] z-10 flex items-center justify-center"
+            >
+              <Image 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
+                alt="Tey AI Mascot" 
+                fill 
+                className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
+                priority
+                unoptimized
+              />
+            </motion.div>
+
+            {/* 🎮 Duolingo-style 3D gamification badges floating around Tey */}
+            
+            {/* 1. Streak Flame Badge */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-2 right-4 bg-white border-2 border-orange-100 border-b-4 border-orange-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
+            >
+              <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(249,115,22,0.2)]">🔥</span>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] font-black text-orange-400 uppercase tracking-wide leading-none">STREAK</span>
+                <span className="text-sm font-black text-slate-800 leading-none mt-1">7 Days</span>
+              </div>
+            </motion.div>
+
+            {/* 2. XP Star Badge */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              className="absolute top-1/2 -left-6 bg-white border-2 border-amber-100 border-b-4 border-amber-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
+            >
+              <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(245,158,11,0.2)]">⭐</span>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] font-black text-amber-500 uppercase tracking-wide leading-none">XP EARNED</span>
+                <span className="text-sm font-black text-[#0172FD] leading-none mt-1">+120 XP</span>
+              </div>
+            </motion.div>
+
+            {/* 3. Skill Badge */}
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+              className="absolute -bottom-2 left-1/4 bg-white border-2 border-emerald-100 border-b-4 border-emerald-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
+            >
+              <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(16,185,129,0.2)]">✅</span>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-wide leading-none">VERIFIED</span>
+                <span className="text-sm font-black text-slate-800 leading-none mt-1">Skill Mastered</span>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
       </div>
-
-      {/* ── BOTTOM PLATFORM DIAGRAM ── */}
-      <motion.div
-        className={styles.diagram}
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
-      >
-        {/* Students Card — Exact 3x3 Grid */}
-        <div className={styles.diagramCard}>
-          <p className={styles.diagramCardLabel}>Students</p>
-          <div className={styles.studentsGrid3x3}>
-            {/* Row 1 */}
-            <div className={styles.cellEmpty} />
-            <div className={styles.cellPhoto}>
-              <Image src={`https://images.unsplash.com/photo-${studentPhotos[0]}?w=300&h=300&fit=crop&crop=face`} alt="Student" fill className={styles.studentPhoto} unoptimized />
-            </div>
-            <div className={styles.cellEmpty} />
-            {/* Row 2 */}
-            <div className={styles.cellPhoto}>
-              <Image src={`https://images.unsplash.com/photo-${studentPhotos[1]}?w=300&h=300&fit=crop&crop=face`} alt="Student" fill className={styles.studentPhoto} unoptimized />
-            </div>
-            <div className={styles.cellEmpty} />
-            <div className={styles.cellPhoto}>
-              <Image src={`https://images.unsplash.com/photo-${studentPhotos[2]}?w=300&h=300&fit=crop&crop=face`} alt="Student" fill className={styles.studentPhoto} unoptimized />
-            </div>
-            {/* Row 3 */}
-            <div className={styles.cellEmpty} />
-            <div className={styles.cellPhoto}>
-              <Image src={`https://images.unsplash.com/photo-${studentPhotos[3]}?w=300&h=300&fit=crop&crop=face`} alt="Student" fill className={styles.studentPhoto} unoptimized />
-            </div>
-            <div className={styles.cellEmpty} />
-          </div>
-        </div>
-
-        {/* Center — Connection area */}
-        <div className={styles.connectionArea}>
-          <div className={styles.connLeftGroup}>
-            <div className={`${styles.iconCircle} ${styles.iconRed}`}>
-              <div className={styles.iconInnerCircle} />
-            </div>
-            <div className={`${styles.iconCircle} ${styles.iconBlueCircle}`}>
-              <BookOpen size={12} strokeWidth={3} />
-            </div>
-            <div className={`${styles.iconCircle} ${styles.iconPurpleCircle}`}>
-              <Sparkles size={12} />
-            </div>
-          </div>
-          
-          <div className={styles.connLinesToCenter}>
-            <svg width="60" height="120" viewBox="0 0 60 120" fill="none" className={styles.svgLines}>
-              <path d="M0 20 C 30 20, 30 60, 60 60" stroke="#CBD5E1" strokeWidth="1.5" fill="none" />
-              <path d="M0 60 L 60 60" stroke="#CBD5E1" strokeWidth="1.5" fill="none" />
-              <path d="M0 100 C 30 100, 30 60, 60 60" stroke="#CBD5E1" strokeWidth="1.5" fill="none" />
-            </svg>
-          </div>
-
-          <div className={styles.hubPill}>
-            <Zap size={14} fill="white" />
-            Teyro
-          </div>
-
-          <div className={styles.connRightLine}>
-            <div className={styles.lineDashed} />
-            <div className={styles.yellowStar}>
-              <Sparkles size={10} color="#F59E0B" fill="#F59E0B" />
-            </div>
-            <div className={styles.lineDashed} />
-          </div>
-        </div>
-
-        {/* Creators — Hub and Spoke diagram */}
-        <div className={styles.creatorsWrap}>
-          <div className={styles.diagramCard} style={{ marginTop: '16px' }}>
-            <div className={styles.cxBadgeFloat}>
-              <GraduationCap size={13} color="#D97706" />
-              Your Creators
-            </div>
-            <div className={styles.creatorsHub}>
-              <div className={styles.hubCenter}>
-                <div className={styles.hubCenterIcon}>
-                  <Sparkles size={20} color="#F59E0B" fill="#F59E0B" />
-                </div>
-              </div>
-              
-              {/* Spoke Items */}
-              <div className={`${styles.spokeItem} ${styles.spokeTL}`}>
-                <div className={styles.creatorCircle}>
-                  <Image src={`https://images.unsplash.com/photo-${creatorPhotos[0]}?w=300&h=300&fit=crop&crop=face`} alt="Creator" fill className={styles.creatorPhoto} unoptimized />
-                </div>
-                <span>Creator 1</span>
-              </div>
-              
-              <div className={`${styles.spokeItem} ${styles.spokeTR}`}>
-                <div className={styles.creatorCircle}>
-                  <Image src={`https://images.unsplash.com/photo-${creatorPhotos[2]}?w=300&h=300&fit=crop&crop=face`} alt="Creator" fill className={styles.creatorPhoto} unoptimized />
-                </div>
-                <span>Creator 3</span>
-              </div>
-              
-              <div className={`${styles.spokeItem} ${styles.spokeBL}`}>
-                <div className={styles.creatorSquareIcon}>
-                  <Brain size={16} color="#8B5CF6" />
-                </div>
-                <span>AI</span>
-              </div>
-              
-              <div className={`${styles.spokeItem} ${styles.spokeBC}`}>
-                <div className={styles.creatorCircle}>
-                  <Image src={`https://images.unsplash.com/photo-${creatorPhotos[1]}?w=300&h=300&fit=crop&crop=face`} alt="Creator" fill className={styles.creatorPhoto} unoptimized />
-                </div>
-                <span>Creator 2</span>
-              </div>
-              
-              <div className={`${styles.spokeItem} ${styles.spokeBR}`}>
-                <div className={styles.creatorSquareIcon}>
-                  <Sparkles size={16} color="#10B981" />
-                </div>
-                <span>Brain</span>
-              </div>
-
-              {/* Connecting SVG Lines */}
-              <svg className={styles.hubSvg} viewBox="0 0 200 160">
-                <line x1="100" y1="80" x2="40" y2="30" stroke="#E2E8F0" strokeWidth="1.5" strokeDasharray="4 2" />
-                <line x1="100" y1="80" x2="160" y2="30" stroke="#E2E8F0" strokeWidth="1.5" strokeDasharray="4 2" />
-                <line x1="100" y1="80" x2="40" y2="130" stroke="#E2E8F0" strokeWidth="1.5" strokeDasharray="4 2" />
-                <line x1="100" y1="80" x2="100" y2="130" stroke="#E2E8F0" strokeWidth="1.5" strokeDasharray="4 2" />
-                <line x1="100" y1="80" x2="160" y2="130" stroke="#E2E8F0" strokeWidth="1.5" strokeDasharray="4 2" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Removed old decorative vertical connector — bottom to use SVG */}
     </section>
   );
-}
+}

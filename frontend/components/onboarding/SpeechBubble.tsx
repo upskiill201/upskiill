@@ -19,6 +19,7 @@ interface SpeechBubbleProps {
   /** Reference to the mascot container div for the arm-raise gesture */
   mascotRef?: React.RefObject<HTMLDivElement | null>;
   onComplete?: () => void;
+  disableTypewriter?: boolean;
 }
 
 export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
@@ -26,6 +27,7 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   tailAlign = 0.18,
   mascotRef,
   onComplete,
+  disableTypewriter = false,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -37,11 +39,15 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   const PADDING_X = 28;
   const PADDING_Y = 24;
 
-  const { visibleLines, currentText, isTyping } = useTypewriter({
+  const { visibleLines: typedLines, currentText: typingText, isTyping: typingActive } = useTypewriter({
     lines,
     onComplete,
-    skip,
+    skip: disableTypewriter || skip,
   });
+
+  const visibleLines = disableTypewriter ? lines : typedLines;
+  const currentText = disableTypewriter ? '' : typingText;
+  const isTyping = disableTypewriter ? false : typingActive;
 
   // ResizeObserver: auto-size the SVG to fit text content
   useEffect(() => {

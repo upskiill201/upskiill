@@ -3,12 +3,11 @@
 import { useState, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import styles from './FAQSection.module.css';
 
 const faqs = [
   {
     q: 'When does Teyro launch?',
-    a: '<strong>Phase 1 MVP</strong> will launch in August, and we will launch <strong>Beta</strong> in July. Waitlist members get early access to the beta platform, insider insights, and testing opportunities while we develop.',
+    a: 'The official <strong>Teyro Beta</strong> is launching in <strong>late 2026 (November/December)</strong>. Waitlist members get early access to the beta platform, exclusive initial badges, and priority testing invites.',
   },
   {
     q: 'Is it really free to join the waitlist?',
@@ -55,7 +54,7 @@ const faqs = [
 const parseBoldText = (text: string): ReactNode[] => {
   return text.split(/(<strong>.*?<\/strong>)/g).map((part, index) => {
     if (part.startsWith('<strong>') && part.endsWith('</strong>')) {
-      return <strong key={index}>{part.slice(8, -9)}</strong>;
+      return <strong key={index} className="font-extrabold text-slate-800">{part.slice(8, -9)}</strong>;
     }
     return <span key={index}>{part}</span>;
   });
@@ -67,23 +66,28 @@ export default function FAQSection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section id="faq" className={styles.section} ref={ref}>
-      <div className={styles.container}>
+    <section id="faq" className="relative w-full py-24 bg-slate-50/50" ref={ref}>
+      <div className="max-w-[800px] w-full mx-auto px-6">
         <motion.div
-          className={styles.header}
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
-          <div className={styles.eyebrow}>Got Questions?</div>
-          <h2 className={styles.heading}>Frequently Asked Questions</h2>
-          <p className={styles.subheading}>
+          <div className="text-xs font-black text-[#0172FD] uppercase tracking-wider mb-2">Got Questions?</div>
+          <h2 
+            className="text-3xl md:text-4xl font-[900] text-[#071233]"
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+          >
+            Frequently Asked Questions
+          </h2>
+          <p className="text-sm font-semibold text-slate-400 mt-2">
             Everything you need to know about Teyro — honestly answered.
           </p>
         </motion.div>
 
         <motion.div
-          className={styles.list}
+          className="flex flex-col gap-4"
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.15 }}
@@ -91,31 +95,33 @@ export default function FAQSection() {
           {faqs.map(({ q, a }, i) => {
             const isOpen = openIndex === i;
             return (
-              <div key={i} className={`${styles.item} ${isOpen ? styles.open : ''}`}>
+              <div 
+                key={i} 
+                className={`border border-slate-200/80 bg-white rounded-[1.2rem] overflow-hidden transition-all duration-300 hover:border-slate-300/80 shadow-[0_4px_12px_rgba(0,0,0,0.01)] ${isOpen ? 'ring-2 ring-blue-50/50 border-[#0172FD]' : ''}`}
+              >
                 <button
-                  className={styles.questionBtn}
+                  className="w-full flex items-center justify-between p-5 text-left font-black text-[#071233] text-sm md:text-base cursor-pointer focus:outline-none"
                   onClick={() => setOpenIndex(isOpen ? null : i)}
                   aria-expanded={isOpen}
                   id={`faq-q-${i}`}
                 >
-                  <span className={styles.question}>{q}</span>
+                  <span>{q}</span>
                   <ChevronDown
-                    size={20}
-                    className={`${styles.chevron} ${isOpen ? styles.rotated : ''}`}
+                    size={18}
+                    className={`text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#0172FD]' : ''}`}
                   />
                 </button>
-
+ 
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
-                      className={styles.answer}
                       key="answer"
                       initial={{ height: 0 }}
                       animate={{ height: 'auto' }}
                       exit={{ height: 0 }}
-                      transition={{ duration: 0.28, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      transition={{ duration: 0.25, ease: [0.04, 0.62, 0.23, 0.98] }}
                     >
-                      <div className={styles.answerInner}>
+                      <div className="p-5 pt-0 text-xs md:text-sm font-semibold text-slate-500 leading-relaxed border-t border-slate-50">
                         {parseBoldText(a)}
                       </div>
                     </motion.div>
@@ -129,3 +135,4 @@ export default function FAQSection() {
     </section>
   );
 }
+

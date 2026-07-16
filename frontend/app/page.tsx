@@ -2,11 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import HeroSection from '../components/homepage/HeroSection';
+import StatsSection from '../components/homepage/StatsSection';
+import VisionSection1 from '../components/homepage/VisionSection1';
 import ProblemsSolutions from '../components/homepage/ProblemsSolutions';
+import VisionSection2 from '../components/homepage/VisionSection2';
 import WhyTeyro from '../components/homepage/WhyTeyro';
 import RoleSolutions from '../components/homepage/RoleSolutions';
+import VisionSection3 from '../components/homepage/VisionSection3';
 import Marketplace from '../components/homepage/Marketplace';
-import StatsSection from '../components/homepage/StatsSection';
 import FAQSection from '../components/homepage/FAQSection';
 import FinalCTA from '../components/homepage/FinalCTA';
 
@@ -17,28 +20,37 @@ export default function Home() {
 
   return (
     <main>
-      {/* 1. Hero — Dark, Scribe gradient */}
+      {/* 1. Hero — Onboarding style welcome */}
       <HeroSection onOpenModal={openModal} />
 
-      {/* 2. Stats — Social proof numbers + comparison table */}
+      {/* 2. Stats — Key outcome numbers and platform comparison */}
       <StatsSection />
 
-      {/* 3. Problems & Solutions — 5 red/purple card pairs */}
+      {/* 3. Vision Section 1 — The Attention Paradox */}
+      <VisionSection1 />
+
+      {/* 4. Problems & Solutions — The 5 core edtech flaws & fixes */}
       <ProblemsSolutions onOpenModal={openModal} />
 
-      {/* 4. Why Teyro — 6 feature cards */}
+      {/* 5. Vision Section 2 — Gamifying Repetition */}
+      <VisionSection2 />
+
+      {/* 6. Why Teyro — Platform feature cards horizontal slider */}
       <WhyTeyro onOpenModal={openModal} />
 
-      {/* 5. Role Solutions — Student vs Instructor two columns */}
+      {/* 7. Role Solutions — Personalized pathways for Students & Creators */}
       <RoleSolutions onOpenModal={openModal} />
 
-      {/* 6. Marketplace — Dark section */}
+      {/* 8. Vision Section 3 — High Quality Education & Bridge to Earning */}
+      <VisionSection3 />
+
+      {/* 9. Marketplace — Step-by-step freelance timeline */}
       <Marketplace onOpenModal={openModal} />
 
-      {/* 7. FAQ — Accordion */}
+      {/* 10. FAQ — General questions and answers */}
       <FAQSection />
 
-      {/* 8. Final CTA — Dark, glowing button */}
+      {/* 11. Final CTA — Celebratory onboarding action banner */}
       <FinalCTA onOpenModal={openModal} />
     </main>
   );
