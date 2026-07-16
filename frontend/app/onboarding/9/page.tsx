@@ -242,7 +242,8 @@ export default function OnboardingStep9() {
         setIsShaking(prev => ({ ...prev, [id]: false }));
       }, 350);
 
-      // Near-silent haptics (no vibration for mistakes, as requested)
+      // Play custom incorrect haptics
+      playHaptic('teyroIncorrect');
     }
   };
 
