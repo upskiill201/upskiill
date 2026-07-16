@@ -92,6 +92,9 @@ export function RoleSwitcher({
         onClick={() => setOpen((o) => !o)}
         disabled={switching}
         title={collapsed ? `Active: ${active.label}` : undefined}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={collapsed ? `Switch role, currently in ${active.label} mode` : undefined}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -120,6 +123,7 @@ export function RoleSwitcher({
             <span style={{ flex: 1 }}>{active.label} mode</span>
             <ChevronDown
               size={13}
+              aria-hidden="true"
               style={{
                 transition: 'transform 0.2s',
                 flexShrink: 0,
@@ -134,6 +138,7 @@ export function RoleSwitcher({
       <AnimatePresence>
         {open && (
           <motion.div
+            role="menu"
             initial={{ opacity: 0, y: 6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
@@ -152,6 +157,7 @@ export function RoleSwitcher({
             }}
           >
             <p
+              aria-hidden="true"
               style={{
                 fontSize: '0.7rem',
                 color: '#94a3b8',
@@ -163,6 +169,7 @@ export function RoleSwitcher({
               Switch to
             </p>
             <button
+              role="menuitem"
               onClick={handleSwitch}
               style={{
                 display: 'flex',
