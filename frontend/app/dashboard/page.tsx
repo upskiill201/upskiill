@@ -116,7 +116,7 @@ export default function DashboardPage() {
 
   const handleViewAllJourneys = () => {
     playHaptic('medium');
-    router.push('/dashboard/journeys');
+    router.push('/dashboard/my-learning');
   };
 
   const currentEnrollment = enrollments.length > 0 ? enrollments[0] : null;

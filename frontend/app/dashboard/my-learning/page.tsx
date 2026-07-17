@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
-import styles from './Journeys.module.css';
+import styles from './MyLearning.module.css';
 
-export default function JourneysPage() {
+export default function MyLearningPage() {
   const router = useRouter();
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ export default function JourneysPage() {
     return (
       <div className={styles.container}>
         <div className={styles.pageHeader}>
-          <h2 className={styles.pageTitle}>My Journeys</h2>
+          <h2 className={styles.pageTitle}>My Learning</h2>
           <p className={styles.pageSubtitle}>Loading active learning paths…</p>
         </div>
         <div className={styles.journeysList}>
@@ -73,7 +73,7 @@ export default function JourneysPage() {
   return (
     <div className={styles.container}>
       <div className={styles.pageHeader}>
-        <h2 className={styles.pageTitle}>My Journeys</h2>
+        <h2 className={styles.pageTitle}>My Learning</h2>
         <p className={styles.pageSubtitle}>All your active learning paths and progress indicators.</p>
       </div>
 

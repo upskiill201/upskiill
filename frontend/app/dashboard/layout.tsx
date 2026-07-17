@@ -116,8 +116,8 @@ export default function DashboardLayout({
     },
     { 
       id: 'journeys', 
-      label: 'Journeys', 
-      href: '/dashboard/journeys', 
+      label: 'My Learning', 
+      href: '/dashboard/my-learning', 
       icon: <Layers size={20} className={styles.journeysIcon} />, 
       isComingSoon: false 
     },
