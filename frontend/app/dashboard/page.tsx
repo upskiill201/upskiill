@@ -1,437 +1,352 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   ChevronRight, 
-  ArrowUpRight, 
-  Award,
-  Zap,
-  MoreHorizontal,
-  Download,
-  Share2,
-  Bot,
-  Layers
+  ArrowRight, 
+  Lock, 
+  Flame, 
+  Zap, 
+  Heart,
+  Bot
 } from 'lucide-react';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
-import { ProgressBar } from '@/components/ui/ProgressBar';
-import { CourseCardHorizontal } from '@/components/features/CourseCardHorizontal';
-import { CourseCard } from '@/components/features/CourseCard';
+import Image from 'next/image';
+import Link from 'next/link';
+import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from './layout';
+import { getOnboardingState } from '@/lib/user-onboarding';
 import styles from './Page.module.css';
-
-interface CurriculumModule {
-  lessons?: unknown[];
-}
-
-interface Course {
-  id: string;
-  slug?: string;
-  title: string;
-  category: string;
-  thumbnailUrl?: string;
-  instructor?: {
-    fullName?: string;
-    avatarUrl?: string;
-  };
-  rating?: number;
-  reviewsCount?: number;
-  duration?: string;
-  curriculum?: CurriculumModule[] | string | null;
-}
-
-interface Enrollment {
-  id: string;
-  course: Course;
-  completedLessons?: unknown[];
-  progress?: number;
-}
 
 export default function DashboardPage() {
   const { triggerComingSoon } = useComingSoon();
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [enrolledCourses, setEnrolledCourses] = React.useState<Enrollment[]>([]);
-  const [isLoadingCourses, setIsLoadingCourses] = React.useState(true);
+  const [userName, setUserName] = useState('Joel');
+  const [userFullName, setUserFullName] = useState('Joel Ndakwe');
+  const [streakDays, setStreakDays] = useState(12);
+  const [xpPoints, setXpPoints] = useState(505);
+  const [livesCount, setLivesCount] = useState(5);
 
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    const fetchEnrollments = async () => {
+  useEffect(() => {
+    // 1. Try to fetch user name from backend auth
+    const fetchMe = async () => {
       try {
-        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
-          setEnrolledCourses(data);
+          if (data?.fullName) {
+            setUserFullName(data.fullName);
+            setUserName(data.fullName.split(' ')[0]);
+          }
         }
       } catch (err) {
-        console.error('Failed to fetch enrolled courses', err);
-      } finally {
-        setIsLoadingCourses(false);
+        console.error('Failed to load user info', err);
       }
     };
-    fetchEnrollments();
+    fetchMe();
 
-    return () => window.removeEventListener('resize', handleResize);
+    // 2. Read onboarding answers from localStorage to align state
+    const state = getOnboardingState();
+    if (state) {
+      // If they completed onboarding steps, check for any custom stored values
+      // We can also default to design mock values to guarantee visual alignment
+      if (state.answers?.['1']?.name) {
+        const localName = state.answers['1'].name as string;
+        setUserName(localName.split(' ')[0]);
+        setUserFullName(localName);
+      }
+    }
   }, []);
-  
-  const heatmapData = [0.1, 0.6, 0.3, 1, 0.1, 1, 0.6, 0.3, 0.1, 0.6, 0.1, 0.3, 1, 0.6, 0.3, 0.1, 1, 0.6, 0.3, 0.1, 0.6, 0.1, 1, 0.3, 0.6, 0.1, 0.3, 1, 0.1, 0.6, 1, 0.3, 0.1, 0.6, 0.3];
+
+  const handleContinueLearning = () => {
+    playHaptic('medium');
+    triggerComingSoon('Continue Learning: UI/UX Design');
+  };
+
+  const handleJumpToUnit = (journeyName: string) => {
+    playHaptic('medium');
+    triggerComingSoon(`Jump to Unit: ${journeyName}`);
+  };
+
+  const handleLetsGo = () => {
+    playHaptic('medium');
+    triggerComingSoon('Tey\'s Challenge: Let\'s Go!');
+  };
+
+  const handleClaimReward = () => {
+    playHaptic('medium');
+    triggerComingSoon('Daily Chest Reward');
+  };
 
   return (
     <div className={styles.container}>
-      {/* ─── TOP SECTION ─── */}
-      <div className={`${styles.topSection} ${styles.animateIn}`}>
-        <div className={styles.welcomeCard}>
-          <div className={styles.welcomeInfo}>
-            <h2 className={styles.welcomeTitle}>Welcome back, Alex! 👋</h2>
-            <p className={styles.welcomeText}>
-              You&apos;ve learned for <strong>14 hours</strong> this week. Keep up the momentum to reach your monthly goal.
-            </p>
-            <div className={styles.weeklyGoalWrapper}>
-              <div className={styles.goalHeaders}>
-                <span className={styles.goalLabel}>Weekly Goal</span>
-                <span className={styles.goalVal}>14h / 20h</span>
-              </div>
-              <ProgressBar value={70} color="blue" size="sm" />
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.statsColumn}>
-          <div className={styles.statCard}>
-            <div className={styles.statContent}>
-              <span className={styles.statLabel}>Enrolled Courses</span>
-              <div className={styles.statLine}>
-                <span className={styles.statValue}>{enrolledCourses.length || 0}</span>
-                <Badge variant="green" size="sm">Active</Badge>
-              </div>
-            </div>
-            <div className={styles.statIconBlue}><Layers size={20} /></div>
-          </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statContent}>
-              <span className={styles.statLabel}>Certificates Earned</span>
-              <div className={styles.statLine}>
-                <span className={styles.statValue}>4</span>
-              </div>
-            </div>
-            <div className={styles.statIconPurple}><Award size={20} /></div>
-          </div>
-        </div>
-
-        <div className={styles.aiAdvisorCard}>
-          <div className={styles.aiHeader}>
-            <div className={styles.aiIconWrapper}><Bot size={22} /></div>
-            <div className={styles.aiLabelWrapper}>
-               <span className={styles.aiTitle}>AI Growth Advisor</span>
-               <span className={styles.aiSubtitle}>Smart Insights</span>
-            </div>
-          </div>
-          <p className={styles.aiText}>
-            Based on your recent activity, you&apos;re excelling in React. Let&apos;s analyze your CV to find specific skill gaps for Senior roles.
-          </p>
-          <Button 
-            variant="primary" 
-            fullWidth 
-            leftIcon={<Zap size={16} />}
-            onClick={() => triggerComingSoon('AI Skill Gap Analyzer')}
-          >
-            Analyze My CV
-          </Button>
-        </div>
-      </div>
-
-      {/* ─── MIDDLE SECTION ─── */}
-      <div className={`${styles.middleSection} ${styles.animateIn} ${styles.delay1}`}>
-        <div className={styles.mainColumn}>
-          <div className={styles.sectionHeader}>
-            <h3 className={styles.sectionTitle}>Pick Up Where You Left Off</h3>
-            <button className={styles.viewAll} onClick={() => triggerComingSoon('Course Library')}>
-              View all <ChevronRight size={16} />
-            </button>
+      {/* THREE-COLUMN GRID CONTAINER (Desktop/Tablet) */}
+      <div className={styles.dashboardGrid}>
+        
+        {/* MIDDLE COLUMN: Focus Content (approx 65% width on desktop) */}
+        <div className={styles.middleColumn}>
+          {/* Welcome back greeting */}
+          <div className={styles.welcomeBanner}>
+            <h2 className={styles.welcomeTitle}>Welcome back, {userName}! 👋</h2>
+            <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
           </div>
 
-          <div className={isMobile ? styles.courseGridMobile : styles.activeCoursesGrid}>
-            {isLoadingCourses ? (
-              <div style={{ padding: 20, color: '#94a3b8' }}>Loading your courses...</div>
-            ) : enrolledCourses.length === 0 ? (
-              <div style={{ padding: 20, color: '#94a3b8' }}>You are not enrolled in any courses yet.</div>
-            ) : enrolledCourses.map((enrollment) => {
-              const c = enrollment.course;
-              if (!c) return null;
+          {/* CURRENT FOCUS CARD */}
+          <div className={styles.focusCard}>
+            <div className={styles.focusCardLeft}>
+              <span className={styles.focusHeader}>CURRENT FOCUS</span>
+              <h3 className={styles.focusCourseTitle}>UI/UX Design</h3>
+              <p className={styles.focusCourseDesc}>Mastering the fundamentals of digital interfaces.</p>
               
-              // Safely handle curriculum JSON (sometimes Prisma returns stringified JSON, sometimes null)
-              let currArray: CurriculumModule[] = [];
-              try {
-                if (Array.isArray(c.curriculum)) currArray = c.curriculum;
-                else if (typeof c.curriculum === 'string') currArray = JSON.parse(c.curriculum);
-              } catch {
-                currArray = [];
-              }
-              
-              const totalLess = currArray.reduce((acc: number, mod: CurriculumModule) => acc + (mod.lessons?.length || 0), 0);
-              const completedLessArray = Array.isArray(enrollment.completedLessons) ? enrollment.completedLessons : [];
-              const progressPct = totalLess > 0 ? Math.round((completedLessArray.length / totalLess) * 100) : enrollment.progress || 0;
+              {/* Focus Progress Bar */}
+              <div className={styles.progressContainer}>
+                <div className={styles.progressBarWrapper}>
+                  <div className={styles.progressBarFill} style={{ width: '65%' }} />
+                </div>
+                <div className={styles.progressLabels}>
+                  <span className={styles.progressPct}>65% COMPLETE</span>
+                  <span className={styles.progressUnit}>UNIT 4 / 12</span>
+                </div>
+              </div>
 
-              return !isMobile ? (
-                <CourseCardHorizontal 
-                  key={enrollment.id}
-                  id={c.slug || c.id}
-                  title={c.title} 
-                  category={c.category}
-                  thumbnail={c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"}
-                  instructorName={c.instructor?.fullName || "Instructor"}
-                  instructorAvatar={c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"}
-                  rating={c.rating || 4.8}
-                  reviewCount={c.reviewsCount || 100}
-                  totalHours={(c.duration ? parseInt(c.duration) : 0) || 0}
-                  totalLessons={totalLess}
-                  price={0}
-                  isEnrolled={true}
-                  progress={progressPct}
+              {/* 3D Action Button */}
+              <button 
+                onClick={handleContinueLearning}
+                className={styles.button3dPrimary}
+              >
+                <span>Continue Learning</span>
+                <span className={styles.buttonIconCircle}>
+                  <ArrowRight size={16} />
+                </span>
+              </button>
+            </div>
+
+            {/* Focus Mascot Section */}
+            <div className={styles.focusCardRight}>
+              <div className={styles.mascotBubble}>
+                <span>I can create intuitive user experiences with Figma.</span>
+                <div className={styles.mascotBubbleTail} />
+              </div>
+              <div className={styles.focusMascotImageWrapper}>
+                <Image 
+                  src="/dashboard tey.png" 
+                  alt="Tey Mascot" 
+                  width={150} 
+                  height={150} 
+                  priority
+                  className={styles.focusMascotImage}
                 />
-              ) : (
-                <CourseCard 
-                  key={enrollment.id}
-                  id={c.slug || c.id}
-                  title={c.title}
-                  category={c.category}
-                  thumbnail={c.thumbnailUrl || "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"}
-                  instructorName={c.instructor?.fullName || "Instructor"}
-                  instructorAvatar={c.instructor?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"}
-                  rating={c.rating || 4.8}
-                  reviewCount={c.reviewsCount || 100}
-                  price={0}
-                  isEnrolled={true}
-                  progress={progressPct}
-                  totalHours={(c.duration ? parseInt(c.duration) : 0) || 0}
-                  totalLessons={totalLess}
-                />
-              );
-            })}
+              </div>
+            </div>
           </div>
 
-          <div className={styles.activitySection}>
+          {/* MY JOURNEYS SECTION */}
+          <div className={styles.journeysSection}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Learning Activity</h3>
-              <div className={styles.tabFilters}>
-                <span className={styles.activeTab}>Week</span>
-                <span onClick={() => triggerComingSoon('Monthly Analytics')}>Month</span>
+              <h4 className={styles.sectionTitle}>MY JOURNEYS</h4>
+              <button 
+                onClick={() => triggerComingSoon('My Journeys Library')}
+                className={styles.viewAllBtn}
+              >
+                View All
+              </button>
+            </div>
+
+            <div className={styles.journeysList}>
+              {/* Journey 1 */}
+              <div className={styles.journeyCard}>
+                <div className={styles.journeyCardLeft}>
+                  <div className={styles.journeyIconWrapper}>
+                    <span className={styles.journeyIcon}>🚀</span>
+                  </div>
+                  <div className={styles.journeyInfo}>
+                    <h5 className={styles.journeyTitle}>Startup Fundamentals</h5>
+                    <span className={styles.journeySubtitle}>280 UNITS</span>
+                  </div>
+                </div>
+                <div className={styles.journeyCardRight}>
+                  <div className={styles.journeyProgressWrapper}>
+                    <div className={styles.journeyProgressBar}>
+                      <div className={styles.journeyProgressFill} style={{ width: '30%', backgroundColor: '#FF8A00' }} />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleJumpToUnit('Startup Fundamentals')}
+                    className={styles.button3dOutline}
+                  >
+                    Jump to Unit
+                  </button>
+                </div>
+              </div>
+
+              {/* Journey 2 */}
+              <div className={styles.journeyCard}>
+                <div className={styles.journeyCardLeft}>
+                  <div className={styles.journeyIconWrapper}>
+                    <span className={styles.journeyIcon}>🧠</span>
+                  </div>
+                  <div className={styles.journeyInfo}>
+                    <h5 className={styles.journeyTitle}>AI for Beginners</h5>
+                    <span className={styles.journeySubtitle}>150 UNITS</span>
+                  </div>
+                </div>
+                <div className={styles.journeyCardRight}>
+                  <div className={styles.journeyProgressWrapper}>
+                    <div className={styles.journeyProgressBar}>
+                      <div className={styles.journeyProgressFill} style={{ width: '15%', backgroundColor: '#8B5CF6' }} />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleJumpToUnit('AI for Beginners')}
+                    className={styles.button3dOutline}
+                  >
+                    Jump to Unit
+                  </button>
+                </div>
               </div>
             </div>
-            <div className={styles.chartArea}>
-               <ActivitySVGChart />
-               <div className={styles.chartXLabels}>
-                 <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-               </div>
+          </div>
+
+          {/* MASCOT CONSISTENCY MOTIVATION CARD */}
+          <div className={styles.motivationCard}>
+            <div className={styles.motivationMascotWrapper}>
+              <Image 
+                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
+                alt="Tey Verified" 
+                width={80} 
+                height={80} 
+                className={styles.motivationMascot}
+              />
+            </div>
+            <div className={styles.motivationBubble}>
+              <p>&ldquo;Consistency is the secret to mastery! You&apos;ve maintained your streak for 12 days. Keep it up!&rdquo;</p>
+              <div className={styles.motivationBubbleTail} />
             </div>
           </div>
         </div>
 
+        {/* RIGHT COLUMN: Sidebar Stats & Quests (approx 35% width on desktop) */}
         <div className={styles.rightColumn}>
-          <div className={styles.vizCard}>
-            <div className={styles.vizHeader}>
-              <h4 className={styles.vizTitle}>Skill Mastery</h4>
-              <MoreHorizontal size={18} className={styles.moreIcon} onClick={() => triggerComingSoon('Skill Insights')} />
+          {/* HEADER STATS ROW */}
+          <div className={styles.statsRow}>
+            {/* Streak */}
+            <div className={styles.statPill} onClick={() => triggerComingSoon('Streak History')}>
+              <Flame size={18} className={styles.statIconStreak} />
+              <div className={styles.statPillText}>
+                <span className={styles.statPillVal}>{streakDays}</span>
+                <span className={styles.statPillLabel}>Day Streak</span>
+              </div>
             </div>
-            <div className={styles.radarWrapper}>
-              <SkillRadarChart />
+
+            {/* XP Balance */}
+            <div className={styles.statPill} onClick={() => triggerComingSoon('XP Analytics')}>
+              <div className={styles.statIconXp}>
+                <span className={styles.diamondPillIcon}>🔷</span>
+              </div>
+              <div className={styles.statPillText}>
+                <span className={styles.statPillVal}>{xpPoints}</span>
+                <span className={styles.statPillLabel}>XP Balance</span>
+              </div>
+            </div>
+
+            {/* Lives */}
+            <div className={styles.statPill} onClick={() => triggerComingSoon('Lives Refill')}>
+              <Heart size={18} className={styles.statIconLives} />
+              <div className={styles.statPillText}>
+                <span className={styles.statPillVal}>{livesCount}</span>
+                <span className={styles.statPillLabel}>Lives</span>
+              </div>
             </div>
           </div>
 
-          <div className={styles.heatmapCard}>
-            <div className={styles.vizHeader}>
-              <h4 className={styles.vizTitle}>Study Heatmap</h4>
-              <span className={styles.heatmapLegend}>Last 30 Days</span>
+          {/* TEY'S MESSAGE CARD */}
+          <div className={styles.messageCard}>
+            {/* Outline mascot watermark */}
+            <div className={styles.messageCardWatermark}>
+              <Bot size={120} />
             </div>
-            <div className={styles.heatmapGrid}>
-              {heatmapData.map((opacity, i) => (
-                <div key={i} className={styles.heatmapSquare} style={{ opacity: opacity }} />
-              ))}
-            </div>
-            <div className={styles.heatmapFooter}>
-               <span>Less</span>
-               <div className={styles.heatLegendColors}>
-                 <div style={{opacity: 0.1}}></div>
-                 <div style={{opacity: 0.3}}></div>
-                 <div style={{opacity: 0.6}}></div>
-                 <div style={{opacity: 1}}></div>
-               </div>
-               <span>More</span>
+            
+            <div className={styles.messageCardContent}>
+              <span className={styles.messageHeader}>TEY&apos;S MESSAGE</span>
+              <p className={styles.messageText}>
+                &ldquo;Ready to earn 50 XP today? You&apos;re so close to the next league!&rdquo;
+              </p>
+              <button 
+                onClick={handleLetsGo}
+                className={styles.button3dWhite}
+              >
+                Let&apos;s Go! 🚀
+              </button>
             </div>
           </div>
 
-          <div className={styles.paceCard}>
-             <div className={styles.paceIconWrapper}><Zap size={16} /></div>
-             <div className={styles.paceInfo}>
-                <h4 className={styles.paceTitle}>Pace Prediction</h4>
-                <p className={styles.paceText}>At your current velocity, you earn your <strong>React Professional Certificate</strong> by <strong>May 15th</strong>.</p>
-             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── BOTTOM SECTION ─── */}
-      <div className={`${styles.bottomSection} ${styles.animateIn} ${styles.delay2}`}>
-        <div className={styles.certListColumn}>
-          <h3 className={styles.sectionTitle}>Certificates</h3>
-          <div className={styles.certGrid}>
-            <div className={styles.certCard}>
-               <div className={`${styles.certIconBg} ${styles.purple}`}>
-                  <Award size={20} />
-               </div>
-               <div className={styles.certMeta}>
-                  <h4 className={styles.certTitle}>UX Research Fundamentals</h4>
-                  <span className={styles.certDate}>Issued: Oct 12, 2023</span>
-               </div>
-               <div className={styles.certActions}>
-                  <button className={styles.certBtn} onClick={() => triggerComingSoon('Certificate Download')}><Download size={14} /> PDF</button>
-                  <button className={styles.certBtn} onClick={() => triggerComingSoon('Certificate Sharing')}><Share2 size={14} /> Share</button>
-               </div>
+          {/* DAILY QUESTS CARD */}
+          <div className={styles.questsCard}>
+            <div className={styles.cardHeaderWithLink}>
+              <h4 className={styles.cardSectionTitle}>DAILY QUESTS</h4>
+              <button 
+                onClick={() => triggerComingSoon('All Quests')}
+                className={styles.cardViewAllBtn}
+              >
+                View All
+              </button>
             </div>
-            <div className={styles.certCard}>
-               <div className={`${styles.certIconBg} ${styles.blue}`}>
-                  <Award size={20} />
-               </div>
-               <div className={styles.certMeta}>
-                  <h4 className={styles.certTitle}>Figma Advanced Prototyping</h4>
-                  <span className={styles.certDate}>Issued: Sep 04, 2023</span>
-               </div>
-               <div className={styles.certActions}>
-                  <button className={styles.certBtn} onClick={() => triggerComingSoon('Certificate Download')}><Download size={14} /> PDF</button>
-                  <button className={styles.certBtn} onClick={() => triggerComingSoon('Certificate Sharing')}><Share2 size={14} /> Share</button>
-               </div>
+
+            <div className={styles.questItem}>
+              <div className={styles.questIconWrapper}>
+                <Zap size={18} className={styles.questLightningIcon} />
+              </div>
+              <div className={styles.questContent}>
+                <div className={styles.questInfoRow}>
+                  <span className={styles.questTitle}>Earn 10 XP</span>
+                  <span className={styles.questProgressText}>10/10</span>
+                </div>
+                <div className={styles.questProgressBar}>
+                  <div className={styles.questProgressFill} style={{ width: '100%' }} />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.recommendedColumn}>
-          <div className={styles.sectionHeader}>
-            <h3 className={styles.sectionTitle}>Recommended for You</h3>
-            <button className={styles.viewAll} onClick={() => triggerComingSoon('Course Recommendations')}>
-              See all <ArrowUpRight size={16} />
+          {/* UNLOCK LEADERBOARDS CARD */}
+          <div className={styles.leaderboardsCard}>
+            <div className={styles.lockIconOuter}>
+              <div className={styles.lockIconInner}>
+                <Lock size={18} className={styles.lockSvg} />
+              </div>
+            </div>
+            <h4 className={styles.leaderboardCardTitle}>UNLOCK LEADERBOARDS!</h4>
+            <p className={styles.leaderboardCardDesc}>
+              Complete 2 more lessons to start competing!
+            </p>
+            <div className={styles.leaderboardProgressContainer}>
+              <div className={styles.leaderboardProgressBar}>
+                <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
+              </div>
+              <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
+            </div>
+          </div>
+
+          {/* DAILY REWARD CARD */}
+          <div className={styles.rewardCard}>
+            <span className={styles.rewardHeader}>DAILY REWARD</span>
+            <div className={styles.treasureBoxWrapper}>
+              <Image 
+                src="/Tressure box.png" 
+                alt="Treasure Box" 
+                width={120} 
+                height={100}
+                className={styles.treasureBoxImage}
+              />
+            </div>
+            <button 
+              onClick={handleClaimReward}
+              className={styles.button3dWhiteReward}
+            >
+              Claim Reward
             </button>
           </div>
-          <div className={isMobile ? styles.courseGridMobile : styles.recommendedGrid}>
-             {!isMobile ? (
-                <>
-                  <CourseCardHorizontal 
-                    id="rec1"
-                    title="Design System with Figma" 
-                    category="Design"
-                    thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80"
-                    instructorName="Daniel Scott"
-                    rating={4.7}
-                    reviewCount={320}
-                    totalHours={8}
-                    totalLessons={24}
-                    price={49.99}
-                  />
-                  <CourseCardHorizontal 
-                    id="rec2"
-                    title="Microservices architecture" 
-                    category="Architecture"
-                    thumbnail="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"
-                    instructorName="Stephen Grider"
-                    rating={4.9}
-                    reviewCount={2100}
-                    totalHours={18}
-                    totalLessons={56}
-                    price={89.99}
-                  />
-                </>
-             ) : (
-                <>
-                  <CourseCard 
-                    id="rec1"
-                    title="Design System with Figma"
-                    category="Design"
-                    thumbnail="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80"
-                    instructorName="Daniel Scott"
-                    rating={4.7}
-                    reviewCount={320}
-                    price={49.99}
-                    totalHours={8}
-                    totalLessons={24}
-                  />
-                   <CourseCard 
-                    id="rec2"
-                    title="Microservices architecture"
-                    category="Architecture"
-                    thumbnail="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"
-                    instructorName="Stephen Grider"
-                    rating={4.9}
-                    reviewCount={2100}
-                    price={89.99}
-                    totalHours={18}
-                    totalLessons={56}
-                  />
-                </>
-             )}
-          </div>
         </div>
+
       </div>
     </div>
-  );
-}
-
-/* ─── HELPERS (Static SVGs) ─── */
-
-function ActivitySVGChart() {
-  return (
-    <svg width="100%" height="180" viewBox="0 0 800 200" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3D5AFE" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#3D5AFE" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <line x1="0" y1="180" x2="800" y2="180" stroke="#E2E8F0" strokeWidth="1" />
-      <line x1="0" y1="120" x2="800" y2="120" stroke="#F1F5F9" strokeWidth="1" />
-      <line x1="0" y1="60" x2="800" y2="60" stroke="#F1F5F9" strokeWidth="1" />
-      <path d="M0,130 C100,130 150,110 200,120 C250,130 300,160 400,110 C500,60 600,150 700,60 C750,20 800,80 800,80 L800,200 L0,200 Z" fill="url(#chartGradient)" />
-      <path d="M0,130 C100,130 150,110 200,120 C250,130 300,160 400,110 C500,60 600,150 700,60 C750,20 800,80 800,80" fill="none" stroke="#3D5AFE" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="100" cy="130" r="5" fill="white" stroke="#3D5AFE" strokeWidth="2" />
-      <circle cx="200" cy="120" r="5" fill="white" stroke="#3D5AFE" strokeWidth="2" />
-      <circle cx="400" cy="110" r="5" fill="white" stroke="#3D5AFE" strokeWidth="2" />
-      <circle cx="550" cy="100" r="5" fill="white" stroke="#3D5AFE" strokeWidth="2" />
-      <circle cx="700" cy="60" r="5" fill="white" stroke="#3D5AFE" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function SkillRadarChart() {
-  return (
-    <svg width="240" height="240" viewBox="0 0 240 240">
-      {/* Outer Grey boundary circle */}
-      <circle cx="120" cy="120" r="100" fill="none" stroke="#E2E8F0" strokeWidth="1.5" />
-      
-      {/* Background Grid Circles */}
-      <circle cx="120" cy="120" r="80" fill="none" stroke="#F1F5F9" strokeWidth="1" />
-      <circle cx="120" cy="120" r="60" fill="none" stroke="#F1F5F9" strokeWidth="1" />
-      <circle cx="120" cy="120" r="40" fill="none" stroke="#F1F5F9" strokeWidth="1" />
-      
-      {/* Dynamic Skill Polygons */}
-      <polygon 
-        points="120,40 180,90 200,160 140,200 60,150 40,80" 
-        fill="rgba(61, 90, 254, 0.2)" 
-        stroke="#3D5AFE" 
-        strokeWidth="2.5" 
-        strokeLinejoin="round"
-      />
-      
-      {/* Data Points */}
-      <circle cx="120" cy="40" r="3" fill="#3D5AFE" />
-      <circle cx="180" cy="90" r="3" fill="#3D5AFE" />
-      <circle cx="200" cy="160" r="3" fill="#3D5AFE" />
-      
-      {/* Skill Labels */}
-      <text x="120" y="15" textAnchor="middle" fontSize="11" fontWeight="700" fill="#1F2A44">React</text>
-      <text x="235" y="125" textAnchor="end" fontSize="11" fontWeight="700" fill="#1F2A44">UI/UX</text>
-      <text x="120" y="235" textAnchor="middle" fontSize="11" fontWeight="700" fill="#1F2A44">Mobile Dev</text>
-      <text x="10" y="130" textAnchor="start" fontSize="11" fontWeight="700" fill="#1F2A44">AI Tools</text>
-    </svg>
   );
 }

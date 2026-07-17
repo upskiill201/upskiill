@@ -3,24 +3,22 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import { 
-  LayoutGrid, 
-  Book, 
-  BarChart2, 
-  Bot, 
-  Route, 
-  Users, 
-  Award, 
-  MessageSquare, 
-  Settings, 
-  Search, 
-  Bell, 
-  LogOut,
-  Sparkles,
-  Rocket,
-  Menu,
   ChevronLeft,
   ChevronRight,
-  X
+  Menu,
+  X,
+  Sparkles,
+  Rocket,
+  BookOpen,
+  Layers,
+  Search,
+  Trophy,
+  Target,
+  User,
+  MoreHorizontal,
+  Flame,
+  Settings,
+  LogOut
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -55,8 +53,8 @@ export default function DashboardLayout({
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userName, setUserName] = useState('Student');
-  const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100');
+  const [userName, setUserName] = useState('Joel Ndakwe');
+  const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100');
   const [hasStudentAccess, setHasStudentAccess] = useState(false);
   const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
 
@@ -93,15 +91,15 @@ export default function DashboardLayout({
     window.location.href = '/login';
   };
 
+  // Gamified sidebar menu navigation links from the design mockup
   const dashboardLinks: EnhancedDashboardLink[] = [
-    { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: <LayoutGrid size={20} /> },
-    { id: 'courses', label: 'My Courses', href: '/dashboard', icon: <Book size={20} />, isComingSoon: true },
-    { id: 'skill-gap', label: 'AI Skill Gap Analyzer', href: '/dashboard', icon: <BarChart2 size={20} />, isComingSoon: true },
-    { id: 'ai-tutor', label: 'AI Tutor', href: '/dashboard', icon: <Bot size={20} />, isComingSoon: true },
-    { id: 'learning-path', label: 'My Learning Path', href: '/dashboard', icon: <Route size={20} />, isComingSoon: true },
-    { id: 'community', label: 'Community Hub', href: '/dashboard', icon: <Users size={20} />, isComingSoon: true },
-    { id: 'certificates', label: 'Certificates & Rewards', href: '/dashboard', icon: <Award size={20} />, isComingSoon: true },
-    { id: 'messages', label: 'Messages', href: '/dashboard', icon: <div className={styles.messageIconWrapper}><MessageSquare size={20} /><span className={styles.messageBadge}>3</span></div>, isComingSoon: true },
+    { id: 'learn', label: 'Learn', href: '/dashboard', icon: <BookOpen size={20} /> },
+    { id: 'journeys', label: 'Journeys', href: '/dashboard', icon: <Layers size={20} />, isComingSoon: true },
+    { id: 'explore', label: 'Explore', href: '/dashboard', icon: <Search size={20} />, isComingSoon: true },
+    { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard', icon: <Trophy size={20} />, isComingSoon: true },
+    { id: 'quests', label: 'Quests', href: '/dashboard', icon: <Target size={20} />, isComingSoon: true },
+    { id: 'profile', label: 'Profile', href: '/dashboard', icon: <User size={20} />, isComingSoon: true },
+    { id: 'more', label: 'More', href: '/dashboard', icon: <MoreHorizontal size={20} />, isComingSoon: true },
   ];
 
   const handleLinkClick = (e: React.MouseEvent, link: EnhancedDashboardLink) => {
@@ -114,22 +112,22 @@ export default function DashboardLayout({
   return (
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>
       <div className={styles.dashboardContainer}>
-        {/* SIDEBAR */}
+        {/* SIDEBAR CONTAINER */}
         <aside className={`${styles.sidebarWrapper} ${isSidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
           <div className={styles.sidebarHeader}>
             <div className={styles.logoContainer}>
-              <Link href="/" className={styles.logoLink}>
+              <Link href="/dashboard" className={styles.logoLink}>
                 {!isSidebarCollapsed ? (
                   <Image 
-                    src="/logo.png" 
-                    alt="Upskiill" 
-                    width={100} 
-                    height={28} 
+                    src="/Teyro Logo.png" 
+                    alt="Teyro" 
+                    width={105} 
+                    height={30} 
                     priority 
                     className={styles.sidebarLogo}
                   />
                 ) : (
-                  <div className={styles.compactLogo}>U</div>
+                  <div className={styles.compactLogo}>T</div>
                 )}
               </Link>
             </div>
@@ -139,7 +137,7 @@ export default function DashboardLayout({
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               aria-label="Toggle Sidebar"
             >
-              {isSidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+              {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
 
             <button 
@@ -147,10 +145,11 @@ export default function DashboardLayout({
               onClick={() => setIsMobileMenuOpen(false)}
               aria-label="Close Mobile Menu"
             >
-              <X size={24} />
+              <X size={22} />
             </button>
           </div>
           
+          {/* NAVIGATION LINKS */}
           <nav className={styles.nav}>
             {dashboardLinks.map((link) => (
               <Link 
@@ -160,19 +159,46 @@ export default function DashboardLayout({
                   handleLinkClick(e, link);
                   setIsMobileMenuOpen(false);
                 }}
-                className={`${styles.navItem} ${link.id === 'dashboard' ? styles.active : ''}`}
+                className={`${styles.navItem} ${link.id === 'learn' ? styles.active : ''}`}
                 title={isSidebarCollapsed ? link.label : ''}
               >
                 <span className={styles.icon}>{link.icon}</span>
                 {!isSidebarCollapsed && <span className={styles.label}>{link.label}</span>}
-                {!isSidebarCollapsed && link.isComingSoon && <span className={styles.comingSoonBadge}>Soon</span>}
               </Link>
             ))}
           </nav>
 
+          {/* SIDEBAR FOOTER & CARDS */}
           <div className={styles.sidebarFooter}>
+            {/* Streak & User Cards (shown when expanded) */}
+            {!isSidebarCollapsed && (
+              <div className={styles.footerCardsWrapper}>
+                {/* 12 Days Streak Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Streaks')}>
+                  <div className={`${styles.sidebarCardIconBg} ${styles.streakBg}`}>
+                    <Flame size={18} className={styles.streakFlameIcon} />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle}>12 Days Streak</span>
+                    <span className={styles.sidebarCardSubtitle}>Keep it going!</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                </div>
+
+                {/* Profile Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Profile Settings')}>
+                  <Avatar src={userAvatar} name={userName} size="sm" className={styles.profileAvatar} />
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle}>{userName}</span>
+                    <span className={styles.sidebarCardSubtitle}>Level 5 👑</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                </div>
+              </div>
+            )}
+
             {/* Role switcher — only visible to dual-role users */}
-            <div style={{ padding: '0 8px 8px', width: '100%' }}>
+            <div className={styles.switcherContainer}>
               <RoleSwitcher
                 activeRole="STUDENT"
                 hasStudentAccess={hasStudentAccess}
@@ -180,24 +206,27 @@ export default function DashboardLayout({
                 collapsed={isSidebarCollapsed}
               />
             </div>
-            <Link 
-              href="/dashboard" 
-              onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 
-              className={styles.navItem}
-              title={isSidebarCollapsed ? 'Settings' : ''}
-            >
-              <span className={styles.icon}><Settings size={20} /></span>
-              {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
-            </Link>
-            <button 
-              onClick={handleLogout} 
-              className={`${styles.navItem} ${styles.logoutBtn}`}
-              title={isSidebarCollapsed ? 'Logout' : ''}
-              style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
-            >
-              <span className={styles.icon}><LogOut size={20} /></span>
-              {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
-            </button>
+
+            <div className={styles.utilityActions}>
+              <Link 
+                href="/dashboard" 
+                onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 
+                className={styles.navItemCompact}
+                title={isSidebarCollapsed ? 'Settings' : ''}
+              >
+                <span className={styles.icon}><Settings size={20} /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
+              </Link>
+              <button 
+                onClick={handleLogout} 
+                className={`${styles.navItemCompact} ${styles.logoutBtn}`}
+                title={isSidebarCollapsed ? 'Logout' : ''}
+                style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
+              >
+                <span className={styles.icon}><LogOut size={20} /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Logout</span>}
+              </button>
+            </div>
           </div>
         </aside>
 
@@ -205,64 +234,25 @@ export default function DashboardLayout({
 
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
-          {/* DASHBOARD HEADER */}
-          <header className={styles.header}>
-            <div className={styles.headerLeft}>
-              <button 
-                className={styles.mobileToggle} 
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open Menu"
-              >
-                <Menu size={24} />
-              </button>
-              <h1 className={styles.pageTitle}>Dashboard</h1>
-              
-              {/* Gamification Bar (Desktop Only) */}
-              <div className={styles.gamificationBar}>
-                {/* ... existing gamification bar content ... */}
-                <div className={styles.gamiItem}>
-                  <div className={styles.levelBadge}>12</div>
-                  <div className={styles.gamiText}>
-                    <span className={styles.gamiLabel}>Pro Learner</span>
-                    <span className={styles.gamiSub}>Lvl 12</span>
-                  </div>
-                </div>
-                <div className={styles.gamiDivider} />
-                <div className={styles.gamiItem}>
-                  <div className={styles.streakIcon}>🔥</div>
-                  <div className={styles.gamiText}>
-                    <span className={styles.gamiLabel}>12-Day</span>
-                    <span className={styles.gamiSub}>Streak</span>
-                  </div>
-                </div>
-                <div className={styles.gamiDivider} />
-                <div className={styles.gamiItem}>
-                  <button className={styles.nextBadgeBtn} onClick={() => triggerComingSoon('Gamification Rewards')}>
-                     <div className={styles.lockIcon}><Award size={14} /></div>
-                     <span className={styles.gamiSub}>Badge</span>
-                  </button>
-                </div>
-              </div>
+          {/* MOBILE-ONLY STICKY HEADER */}
+          <header className={styles.mobileHeader}>
+            <button 
+              className={styles.mobileToggle} 
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open Menu"
+            >
+              <Menu size={22} />
+            </button>
+            <div className={styles.mobileLogoContainer}>
+              <Image 
+                src="/Teyro Logo.png" 
+                alt="Teyro" 
+                width={85} 
+                height={24} 
+                priority 
+              />
             </div>
-
-            <div className={styles.headerRight}>
-              <div className={styles.searchWrapper}>
-                <Search size={18} className={styles.searchIcon} />
-                <input type="text" placeholder="Search..." className={styles.searchInput} />
-              </div>
-              
-              <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')}>
-                <Bell size={20} />
-                <span className={styles.notifDot} />
-              </button>
-
-              <div className={styles.userProfile}>
-                <div className={styles.userInfo}>
-                  <span className={styles.userName}>{userName.split(' ')[0]}</span>
-                </div>
-                <Avatar src={userAvatar} name={userName} size="sm" />
-              </div>
-            </div>
+            <Avatar src={userAvatar} name={userName} size="sm" />
           </header>
 
           {/* PAGE CONTENT */}
