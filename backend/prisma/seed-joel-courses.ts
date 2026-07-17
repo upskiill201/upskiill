@@ -460,6 +460,41 @@ async function main() {
     console.log(`   └─ Successfully seeded 5 modules and 25 fully completed published lessons (Learn, Apply, Reflect, Deepen + Resources) for: "${course.title}"`);
   }
 
+  // Enroll Joel Ndakwe in the three published seed courses
+  console.log('📦 Enrolling Joel Ndakwe in the published seed courses...');
+  const enrolledCourseSlugs = [
+    'figma-ui-ux-essentials-zero-to-hero',
+    'full-stack-web-development-modern-html-css-js',
+    'startup-pitch-deck-design-presentation-blueprint'
+  ];
+  for (const slug of enrolledCourseSlugs) {
+    const course = await prisma.course.findUnique({ where: { slug } });
+    if (!course) {
+      console.warn(`⚠️ Course with slug ${slug} not found for enrollment.`);
+      continue;
+    }
+    const enrollmentId = `enroll-${joel.id}-${course.id}`;
+    await runWithRetry(() => prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: joel.id,
+          courseId: course.id,
+        },
+      },
+      update: {
+        progress: 15, // set a test progress
+      },
+      create: {
+        id: enrollmentId,
+        userId: joel.id,
+        courseId: course.id,
+        progress: 15,
+        completedLessons: [],
+      },
+    }));
+    console.log(`   └─ Successfully enrolled Joel Ndakwe in course: "${course.title}" (ID: ${course.id})`);
+  }
+
   console.log('🎉 Seeding successfully completed!');
 }
 

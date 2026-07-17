@@ -117,9 +117,9 @@ export default function DashboardLayout({
     { 
       id: 'journeys', 
       label: 'Journeys', 
-      href: '/dashboard', 
+      href: '/dashboard/journeys', 
       icon: <Layers size={20} className={styles.journeysIcon} />, 
-      isComingSoon: true 
+      isComingSoon: false 
     },
     { 
       id: 'explore', 
