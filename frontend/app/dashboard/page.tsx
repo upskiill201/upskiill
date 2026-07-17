@@ -5,13 +5,10 @@ import {
   ChevronRight, 
   ArrowRight, 
   Lock, 
-  Flame, 
   Zap, 
-  Heart,
   Bot
 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
@@ -20,9 +17,8 @@ import styles from './Page.module.css';
 export default function DashboardPage() {
   const { triggerComingSoon } = useComingSoon();
   const [userName, setUserName] = useState('Joel');
-  const [userFullName, setUserFullName] = useState('Joel Ndakwe');
-  const [streakDays, setStreakDays] = useState(12);
-  const [xpPoints, setXpPoints] = useState(505);
+  const [streakDays, setStreakDays] = useState(0);
+  const [xpPoints, setXpPoints] = useState(0);
   const [livesCount, setLivesCount] = useState(5);
 
   useEffect(() => {
@@ -33,7 +29,6 @@ export default function DashboardPage() {
         if (res.ok) {
           const data = await res.json();
           if (data?.fullName) {
-            setUserFullName(data.fullName);
             setUserName(data.fullName.split(' ')[0]);
           }
         }
@@ -43,15 +38,12 @@ export default function DashboardPage() {
     };
     fetchMe();
 
-    // 2. Read onboarding answers from localStorage to align state
+    // 2. Read onboarding answers from localStorage to check user setup
     const state = getOnboardingState();
     if (state) {
-      // If they completed onboarding steps, check for any custom stored values
-      // We can also default to design mock values to guarantee visual alignment
       if (state.answers?.['1']?.name) {
         const localName = state.answers['1'].name as string;
         setUserName(localName.split(' ')[0]);
-        setUserFullName(localName);
       }
     }
   }, []);
@@ -78,17 +70,50 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.container}>
-      {/* THREE-COLUMN GRID CONTAINER (Desktop/Tablet) */}
-      <div className={styles.dashboardGrid}>
-        
-        {/* MIDDLE COLUMN: Focus Content (approx 65% width on desktop) */}
-        <div className={styles.middleColumn}>
-          {/* Welcome back greeting */}
-          <div className={styles.welcomeBanner}>
-            <h2 className={styles.welcomeTitle}>Welcome back, {userName}! 👋</h2>
-            <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
+      
+      {/* TOP HEADER ROW: Welcome greeting on left, Borderless Stats on right */}
+      <div className={styles.topHeaderRow}>
+        <div className={styles.welcomeBanner}>
+          <h2 className={styles.welcomeTitle}>Welcome back, {userName}! 👋</h2>
+          <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
+        </div>
+
+        {/* BORDERLESS TOP-RIGHT STATS ROW */}
+        <div className={styles.statsRow}>
+          {/* Streak */}
+          <div className={styles.statItem} onClick={() => triggerComingSoon('Streak History')}>
+            <span className={styles.statEmoji}>🔥</span>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{streakDays}</span>
+              <span className={styles.statLabel}>Day Streak</span>
+            </div>
           </div>
 
+          {/* XP Balance */}
+          <div className={styles.statItem} onClick={() => triggerComingSoon('XP Analytics')}>
+            <span className={styles.statEmoji}>💎</span>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{xpPoints}</span>
+              <span className={styles.statLabel}>XP Balance</span>
+            </div>
+          </div>
+
+          {/* Lives */}
+          <div className={styles.statItem} onClick={() => triggerComingSoon('Lives Refill')}>
+            <span className={styles.statEmoji}>❤️</span>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{livesCount}</span>
+              <span className={styles.statLabel}>Lives</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TWO-COLUMN GRID CONTAINER (Desktop/Tablet) */}
+      <div className={styles.dashboardGrid}>
+        
+        {/* MIDDLE COLUMN: Focus Content */}
+        <div className={styles.middleColumn}>
           {/* CURRENT FOCUS CARD */}
           <div className={styles.focusCard}>
             <div className={styles.focusCardLeft}>
@@ -217,46 +242,14 @@ export default function DashboardPage() {
               />
             </div>
             <div className={styles.motivationBubble}>
-              <p>&ldquo;Consistency is the secret to mastery! You&apos;ve maintained your streak for 12 days. Keep it up!&rdquo;</p>
+              <p>&ldquo;Consistency is the secret to mastery! You&apos;ve maintained your streak for {streakDays} {streakDays === 1 ? 'day' : 'days'}. Keep it up!&rdquo;</p>
               <div className={styles.motivationBubbleTail} />
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Sidebar Stats & Quests (approx 35% width on desktop) */}
+        {/* RIGHT COLUMN: Sidebar Stats & Quests */}
         <div className={styles.rightColumn}>
-          {/* HEADER STATS ROW */}
-          <div className={styles.statsRow}>
-            {/* Streak */}
-            <div className={styles.statPill} onClick={() => triggerComingSoon('Streak History')}>
-              <Flame size={18} className={styles.statIconStreak} />
-              <div className={styles.statPillText}>
-                <span className={styles.statPillVal}>{streakDays}</span>
-                <span className={styles.statPillLabel}>Day Streak</span>
-              </div>
-            </div>
-
-            {/* XP Balance */}
-            <div className={styles.statPill} onClick={() => triggerComingSoon('XP Analytics')}>
-              <div className={styles.statIconXp}>
-                <span className={styles.diamondPillIcon}>🔷</span>
-              </div>
-              <div className={styles.statPillText}>
-                <span className={styles.statPillVal}>{xpPoints}</span>
-                <span className={styles.statPillLabel}>XP Balance</span>
-              </div>
-            </div>
-
-            {/* Lives */}
-            <div className={styles.statPill} onClick={() => triggerComingSoon('Lives Refill')}>
-              <Heart size={18} className={styles.statIconLives} />
-              <div className={styles.statPillText}>
-                <span className={styles.statPillVal}>{livesCount}</span>
-                <span className={styles.statPillLabel}>Lives</span>
-              </div>
-            </div>
-          </div>
-
           {/* TEY'S MESSAGE CARD */}
           <div className={styles.messageCard}>
             {/* Outline mascot watermark */}
@@ -319,7 +312,9 @@ export default function DashboardPage() {
             </p>
             <div className={styles.leaderboardProgressContainer}>
               <div className={styles.leaderboardProgressBar}>
-                <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
+                <div className={styles.leaderboardProgressBar} style={{ backgroundColor: '#F1F5F9' }}>
+                  <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
+                </div>
               </div>
               <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
             </div>
@@ -329,6 +324,9 @@ export default function DashboardPage() {
           <div className={styles.rewardCard}>
             <span className={styles.rewardHeader}>DAILY REWARD</span>
             <div className={styles.treasureBoxWrapper}>
+              <span className={`${styles.sparkleStar} ${styles.sparkle1}`}>✨</span>
+              <span className={`${styles.sparkleStar} ${styles.sparkle2}`}>✨</span>
+              <span className={`${styles.sparkleStar} ${styles.sparkle3}`}>✨</span>
               <Image 
                 src="/Tressure box.png" 
                 alt="Treasure Box" 
