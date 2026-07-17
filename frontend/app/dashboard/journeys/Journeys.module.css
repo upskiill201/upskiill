@@ -1,0 +1,252 @@
+.container {
+  padding: 40px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  margin-bottom: 36px;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 900;
+  color: #071233;
+  margin: 0 0 6px;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.pageSubtitle {
+  font-size: 16px;
+  color: #5C6F84;
+  margin: 0;
+  font-weight: 500;
+}
+
+.journeysList {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* HIGH FIDELITY CURRENT FOCUS CARD (DUPLICATED & ADAPTED FOR JOURNEYS) */
+.focusCard {
+  background: linear-gradient(135deg, #E6F0FA 0%, #F5F9FE 100%);
+  border: 1px solid rgba(1, 114, 253, 0.15);
+  border-radius: 20px;
+  padding: 28px 36px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 10px 25px rgba(1, 114, 253, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.focusCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(1, 114, 253, 0.06);
+}
+
+.focusCardLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.focusHeader {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0172FD;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.focusCourseTitle {
+  font-size: 28px;
+  font-weight: 900;
+  color: #071233;
+  margin: 0 0 8px;
+  line-height: 1.2;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.focusCourseDesc {
+  font-size: 14px;
+  color: #5C6F84;
+  margin: 0 0 24px;
+  font-weight: 500;
+  max-width: 600px;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+  max-width: 320px;
+}
+
+.progressBarWrapper {
+  background-color: rgba(7, 18, 51, 0.08);
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.progressBarFill {
+  background-color: #22C55E;
+  height: 100%;
+  border-radius: 999px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressPct {
+  font-size: 11px;
+  font-weight: 800;
+  color: #22C55E;
+}
+
+.progressUnit {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+}
+
+/* 3D Action Button */
+.button3dPrimary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  color: white;
+  background-color: #0172FD;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  width: fit-content;
+  box-shadow: 0 4px 0 #0056c6, 0 8px 16px rgba(1, 114, 253, 0.2);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.button3dPrimary:active {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 #0056c6, 0 2px 4px rgba(1, 114, 253, 0.1);
+}
+
+.buttonIconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Focus Card Mascot Column */
+.focusCardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 240px;
+  justify-content: flex-end;
+}
+
+.focusMascotImageWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.focusMascotImage {
+  object-fit: contain;
+}
+
+/* SPEECH BUBBLES */
+.mascotBubble {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 6px 18px rgba(7, 18, 51, 0.06);
+  border: 1px solid #E2E8F0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #071233;
+  position: absolute;
+  top: -25px;
+  right: -5px;
+  width: 220px;
+  line-height: 1.4;
+  z-index: 20;
+}
+
+.mascotBubbleTail {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-right: 1px solid #E2E8F0;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+/* Empty State Styling */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px;
+  background: #F8FAFC;
+  border: 2px dashed #E2E8F0;
+  border-radius: 20px;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.emptyStateTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #071233;
+  margin: 16px 0 8px;
+}
+
+.emptyStateDesc {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0 0 24px;
+  max-width: 320px;
+}
+
+/* Grid of Loading skeletons */
+.skeletonCard {
+  height: 240px;
+  background: #F1F5F9;
+  border-radius: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
