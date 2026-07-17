@@ -9,7 +9,7 @@ import {
   X,
   Sparkles,
   Rocket,
-  BookOpen,
+  Home,
   Layers,
   Search,
   Trophy,
@@ -26,6 +26,7 @@ import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
+import { getOnboardingState } from '@/lib/user-onboarding';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -57,6 +58,8 @@ export default function DashboardLayout({
   const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100');
   const [hasStudentAccess, setHasStudentAccess] = useState(false);
   const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
+  const [streakDays, setStreakDays] = useState(0);
+  const [userLevel, setUserLevel] = useState(0);
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -79,6 +82,14 @@ export default function DashboardLayout({
       }
     };
     fetchMe();
+
+    // Read onboarding answers from localStorage to align stats state
+    const state = getOnboardingState();
+    if (state) {
+      // By default new users start with 0 streak and level 0
+      setStreakDays(0);
+      setUserLevel(0);
+    }
   }, []);
 
   const handleLogout = async (e: React.MouseEvent) => {
@@ -91,15 +102,60 @@ export default function DashboardLayout({
     window.location.href = '/login';
   };
 
-  // Gamified sidebar menu navigation links from the design mockup
+  // Gamified sidebar menu navigation links with exact custom colored icons from design mockup
   const dashboardLinks: EnhancedDashboardLink[] = [
-    { id: 'learn', label: 'Learn', href: '/dashboard', icon: <BookOpen size={20} /> },
-    { id: 'journeys', label: 'Journeys', href: '/dashboard', icon: <Layers size={20} />, isComingSoon: true },
-    { id: 'explore', label: 'Explore', href: '/dashboard', icon: <Search size={20} />, isComingSoon: true },
-    { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard', icon: <Trophy size={20} />, isComingSoon: true },
-    { id: 'quests', label: 'Quests', href: '/dashboard', icon: <Target size={20} />, isComingSoon: true },
-    { id: 'profile', label: 'Profile', href: '/dashboard', icon: <User size={20} />, isComingSoon: true },
-    { id: 'more', label: 'More', href: '/dashboard', icon: <MoreHorizontal size={20} />, isComingSoon: true },
+    { 
+      id: 'learn', 
+      label: 'Learn', 
+      href: '/dashboard', 
+      icon: (
+        <div className={styles.activeIconCircle}>
+          <Home size={14} className={styles.activeHomeIcon} />
+        </div>
+      ) 
+    },
+    { 
+      id: 'journeys', 
+      label: 'Journeys', 
+      href: '/dashboard', 
+      icon: <Layers size={20} className={styles.journeysIcon} />, 
+      isComingSoon: true 
+    },
+    { 
+      id: 'explore', 
+      label: 'Explore', 
+      href: '/dashboard', 
+      icon: <Search size={20} className={styles.exploreIcon} />, 
+      isComingSoon: true 
+    },
+    { 
+      id: 'leaderboards', 
+      label: 'Leaderboards', 
+      href: '/dashboard', 
+      icon: <Trophy size={20} className={styles.leaderboardsIcon} />, 
+      isComingSoon: true 
+    },
+    { 
+      id: 'quests', 
+      label: 'Quests', 
+      href: '/dashboard', 
+      icon: <Target size={20} className={styles.questsIcon} />, 
+      isComingSoon: true 
+    },
+    { 
+      id: 'profile', 
+      label: 'Profile', 
+      href: '/dashboard', 
+      icon: <User size={20} className={styles.profileIcon} />, 
+      isComingSoon: true 
+    },
+    { 
+      id: 'more', 
+      label: 'More', 
+      href: '/dashboard', 
+      icon: <MoreHorizontal size={20} className={styles.moreIcon} />, 
+      isComingSoon: true 
+    },
   ];
 
   const handleLinkClick = (e: React.MouseEvent, link: EnhancedDashboardLink) => {
@@ -173,13 +229,13 @@ export default function DashboardLayout({
             {/* Streak & User Cards (shown when expanded) */}
             {!isSidebarCollapsed && (
               <div className={styles.footerCardsWrapper}>
-                {/* 12 Days Streak Card */}
+                {/* Streak Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Streaks')}>
                   <div className={`${styles.sidebarCardIconBg} ${styles.streakBg}`}>
                     <Flame size={18} className={styles.streakFlameIcon} />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle}>12 Days Streak</span>
+                    <span className={styles.sidebarCardTitle}>{streakDays} Days Streak</span>
                     <span className={styles.sidebarCardSubtitle}>Keep it going!</span>
                   </div>
                   <ChevronRight size={14} className={styles.sidebarCardChevron} />
@@ -190,7 +246,7 @@ export default function DashboardLayout({
                   <Avatar src={userAvatar} name={userName} size="sm" className={styles.profileAvatar} />
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{userName}</span>
-                    <span className={styles.sidebarCardSubtitle}>Level 5 👑</span>
+                    <span className={styles.sidebarCardSubtitle}>Level {userLevel} 👑</span>
                   </div>
                   <ChevronRight size={14} className={styles.sidebarCardChevron} />
                 </div>

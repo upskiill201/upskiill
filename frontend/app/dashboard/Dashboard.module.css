@@ -126,8 +126,51 @@
   font-weight: 700;
 }
 
+/* CUSTOM SIDEBAR MENUS ICONS DESIGN STYLES */
+.activeIconCircle {
+  background-color: #0172FD;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.25);
+}
+
+.activeHomeIcon {
+  color: white;
+  fill: white;
+}
+
+.journeysIcon {
+  color: #FF5A00; /* Orange/Coral Journeys */
+}
+
+.exploreIcon {
+  color: #38BDF8; /* Sky Blue Explore magnifying glass */
+}
+
+.leaderboardsIcon {
+  color: #F59E0B; /* Golden Trophy */
+}
+
+.questsIcon {
+  color: #EF4444; /* Red Target */
+}
+
+.profileIcon {
+  color: #0172FD; /* Blue Profile Silhouette */
+}
+
+.moreIcon {
+  color: #64748B; /* Grey Three-dots */
+}
+
 .icon {
-  width: 20px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
