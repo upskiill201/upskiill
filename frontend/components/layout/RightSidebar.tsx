@@ -1,0 +1,434 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Bot, Lock, BookOpen } from 'lucide-react';
+import { playHaptic } from '@/lib/haptics';
+import { useComingSoon } from '@/app/dashboard/layout';
+import styles from './RightSidebar.module.css';
+
+export interface RightSidebarProps {
+  course?: any;
+  completedLessons?: string[];
+  section?: any;
+  sectionIndex?: number;
+  userName?: string;
+}
+
+export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLessons, section, sectionIndex, userName }) => {
+  const { triggerComingSoon } = useComingSoon();
+
+  const handleLetsGo = () => {
+    playHaptic('medium');
+    triggerComingSoon("Tey's Challenge: Let's Go!");
+  };
+
+  const handleClaimReward = () => {
+    playHaptic('medium');
+    triggerComingSoon('Daily Chest Reward');
+  };
+
+  // Section-level progress
+  const hasSection = !!section;
+  let sectionLessons: any[] = [];
+  let sectionCompletedCount = 0;
+  let sectionTotalLessons = 0;
+  let sectionProgressPercent = 0;
+  let sectionXpEarned = 0;
+  let sectionComplete = false;
+
+  if (hasSection) {
+    sectionLessons = section.lessons || [];
+    sectionTotalLessons = sectionLessons.length;
+    sectionCompletedCount = sectionLessons.filter((l: any) => completedLessons?.includes(l.id)).length;
+    sectionProgressPercent = sectionTotalLessons > 0 ? Math.round((sectionCompletedCount / sectionTotalLessons) * 100) : 0;
+    sectionXpEarned = sectionLessons
+      .filter((l: any) => completedLessons?.includes(l.id))
+      .reduce((acc: number, l: any) => acc + (l.xpReward || 10), 0);
+    sectionComplete = sectionCompletedCount === sectionTotalLessons && sectionTotalLessons > 0;
+  }
+
+  // Calculate Course Progress if course and completedLessons are passed
+  const hasCourse = !!course;
+  let totalSections = 0;
+  let totalLessons = 0;
+  let completedLessonsCount = 0;
+  let completedSectionsCount = 0;
+  let progressPercent = 0;
+  let totalXp = 0;
+
+  if (hasCourse) {
+    const sectionsList = course.sections || [];
+    const curriculumList = course.curriculum || [];
+    
+    totalSections = sectionsList.length || curriculumList.length || 0;
+    completedLessonsCount = completedLessons?.length || 0;
+    totalXp = completedLessonsCount * 15; // 15 XP per lesson completed
+
+    if (sectionsList.length > 0) {
+      totalLessons = sectionsList.reduce((acc: number, s: any) => acc + (s.lessons?.length || 0), 0);
+      completedSectionsCount = sectionsList.filter((s: any) => {
+        if (!s.lessons || s.lessons.length === 0) return false;
+        return s.lessons.every((l: any) => completedLessons?.includes(l.id));
+      }).length;
+    } else if (curriculumList.length > 0) {
+      totalLessons = curriculumList.reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0);
+      completedSectionsCount = curriculumList.filter((m: any) => {
+        if (!m.lessons || m.lessons.length === 0) return false;
+        return m.lessons.every((l: any) => completedLessons?.includes(l.id || String(l.index)));
+      }).length;
+    }
+
+    progressPercent = totalLessons > 0 ? Math.round((completedLessonsCount / totalLessons) * 100) : 0;
+  }
+
+  return (
+    <div className={styles.rightColumn}>
+      {/* SECTION PROGRESS CARD (Only shown if section prop is provided) */}
+      {hasSection && (
+        <div className={styles.courseProgressCard}>
+          <h4 className={styles.cardSectionTitle}>Section Progress</h4>
+
+          <div className={styles.progressHeaderRow}>
+            <div className={styles.donutContainer}>
+              <svg width="100" height="100" viewBox="0 0 100 100" className={styles.donutSvg}>
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  className={styles.donutBg}
+                  strokeWidth="8"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  className={sectionComplete ? styles.donutFillGreen : styles.donutFill}
+                  strokeWidth="8"
+                  strokeDasharray="263.89"
+                  strokeDashoffset={263.89 - (263.89 * sectionProgressPercent) / 100}
+                  transform="rotate(-90 50 50)"
+                />
+              </svg>
+              <div className={styles.donutText}>
+                <span className={styles.donutPct}>{sectionProgressPercent}%</span>
+                <span className={styles.donutLabel}>COMPLETE</span>
+              </div>
+            </div>
+
+            <div className={styles.courseStatsList}>
+              <div className={styles.courseStatItem}>
+                <span className={styles.courseStatVal}>
+                  <strong>{sectionCompletedCount} / {sectionTotalLessons}</strong>
+                </span>
+                <span className={styles.courseStatSubLabel}>Lessons Completed</span>
+              </div>
+
+              <div className={styles.courseStatItem}>
+                <span className={styles.courseStatVal}>
+                  <strong>{sectionXpEarned} XP</strong>
+                </span>
+                <span className={styles.courseStatSubLabel}>Earned</span>
+              </div>
+            </div>
+          </div>
+
+          {sectionComplete && (
+            <p className={styles.sectionCompleteMsg}>
+              Amazing! 🎉 You&apos;ve completed this section.
+            </p>
+          )}
+
+          <button
+            className={styles.button3dOutlineFull}
+            onClick={() => triggerComingSoon(sectionComplete ? 'Review Section' : 'Continue Learning')}
+          >
+            {sectionComplete ? 'Review Section' : 'Continue Learning'}
+          </button>
+        </div>
+      )}
+
+      {/* TEY'S MESSAGE CARD (contextual for section view) */}
+      {hasSection && (
+        <div className={styles.messageCard}>
+          <div className={styles.messageCardMascot}>
+            <Image
+              src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+              alt="Tey"
+              width={80}
+              height={80}
+              className={styles.messageCardMascotImg}
+            />
+          </div>
+
+          <div className={styles.messageCardContent}>
+            <span className={styles.messageHeader}>Tey&apos;s Message</span>
+            <p className={styles.messageText}>
+              {sectionComplete
+                ? `"Excellent work${userName ? `, ${userName}` : ''}! You've completed this section. You're one step closer to becoming a pro! 🎉"`
+                : `"Keep going${userName ? `, ${userName}` : ''}! You're making great progress. ${sectionTotalLessons - sectionCompletedCount} more lesson${sectionTotalLessons - sectionCompletedCount !== 1 ? 's' : ''} to go!"`
+              }
+            </p>
+            <button
+              onClick={handleLetsGo}
+              className={styles.button3dWhite}
+            >
+              Let&apos;s Continue!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* DAILY QUESTS CARD (section view) */}
+      {hasSection && (
+        <div className={styles.questsCard}>
+          <div className={styles.cardHeaderWithLink}>
+            <h4 className={styles.cardSectionTitle}>Daily Quests</h4>
+            <button
+              onClick={() => triggerComingSoon('All Quests')}
+              className={styles.cardViewAllBtn}
+            >
+              View All
+            </button>
+          </div>
+
+          <div className={styles.questItem}>
+            <div className={styles.questIconWrapper}>
+              <span>💎</span>
+            </div>
+            <div className={styles.questContent}>
+              <div className={styles.questInfoRow}>
+                <span className={styles.questTitle}>Earn 20 XP</span>
+                <span className={styles.questProgressText}>{Math.min(sectionXpEarned, 20)} / 20</span>
+              </div>
+              <div className={styles.questProgressBar}>
+                <div className={styles.questProgressFill} style={{ width: `${Math.min((sectionXpEarned / 20) * 100, 100)}%` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* UNLOCK BONUS REWARD CARD (section view) */}
+      {hasSection && (
+        <div className={styles.rewardCard}>
+          <span className={styles.rewardHeader}>Unlock Bonus Reward!</span>
+          <p className={styles.rewardSubtext}>
+            Complete all lessons in this section to unlock a mystery chest.
+          </p>
+          <div className={styles.bonusProgressRow}>
+            <div className={styles.questProgressBar}>
+              <div className={styles.questProgressFill} style={{ width: `${sectionProgressPercent}%` }} />
+            </div>
+            <span className={styles.bonusProgressText}>{sectionCompletedCount} / {sectionTotalLessons}</span>
+          </div>
+          <div className={styles.treasureBoxWrapper}>
+            <Image
+              src="/Tressure box.png"
+              alt="Mystery Chest"
+              width={100}
+              height={80}
+              className={styles.treasureBoxImage}
+            />
+          </div>
+          <button
+            onClick={handleClaimReward}
+            className={sectionComplete ? styles.button3dBlue : styles.button3dWhiteReward}
+            disabled={!sectionComplete}
+          >
+            {sectionComplete ? 'Claim Reward' : 'Complete Section to Unlock'}
+          </button>
+        </div>
+      )}
+
+      {/* ─── COURSE-LEVEL CARDS (shown when no section prop) ─── */}
+
+      {/* COURSE PROGRESS CARD (Only shown if course prop is provided and no section) */}
+      {hasCourse && !hasSection && (
+        <div className={styles.courseProgressCard}>
+          <h4 className={styles.cardSectionTitle}>Course Progress</h4>
+          
+          <div className={styles.progressHeaderRow}>
+            {/* SVG Donut Chart */}
+            <div className={styles.donutContainer}>
+              <svg width="100" height="100" viewBox="0 0 100 100" className={styles.donutSvg}>
+                <circle
+                  cx="50"
+                  cy="54"
+                  r="42"
+                  className={styles.donutBgShadow}
+                  strokeWidth="8"
+                />
+                <circle 
+                  cx="50" 
+                  cy="50" 
+                  r="42" 
+                  className={styles.donutBg} 
+                  strokeWidth="8"
+                />
+                <circle 
+                  cx="50" 
+                  cy="54" 
+                  r="42" 
+                  className={styles.donutFillShadow} 
+                  strokeWidth="8"
+                  strokeDasharray="263.89"
+                  strokeDashoffset={263.89 - (263.89 * progressPercent) / 100}
+                  transform="rotate(-90 50 52)"
+                />
+                <circle 
+                  cx="50" 
+                  cy="50" 
+                  r="42" 
+                  className={styles.donutFill} 
+                  strokeWidth="8"
+                  strokeDasharray="263.89"
+                  strokeDashoffset={263.89 - (263.89 * progressPercent) / 100}
+                  transform="rotate(-90 50 50)"
+                />
+                <circle cx="50" cy="50" r="42" className={styles.donutGloss} strokeWidth="8" />
+              </svg>
+              <div className={styles.donutText}>
+                <span className={styles.donutPct}>{progressPercent}%</span>
+                <span className={styles.donutLabel}>COMPLETE</span>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className={styles.courseStatsList}>
+              <div className={styles.courseStatItem}>
+                <span className={styles.courseStatLabel}>Completed</span>
+                <span className={styles.courseStatVal}>
+                  <strong>{completedSectionsCount} / {totalSections}</strong>
+                </span>
+                <span className={styles.courseStatSubLabel}>Sections</span>
+              </div>
+              
+              <div className={styles.courseStatItem}>
+                <span className={styles.courseStatLabel}>Lessons Done</span>
+                <span className={styles.courseStatVal}>
+                  <strong>{completedLessonsCount} / {totalLessons}</strong>
+                </span>
+              </div>
+
+              <div className={styles.courseStatItem}>
+                <span className={styles.courseStatLabel}>Total XP Earned</span>
+                <span className={styles.courseStatVal}>
+                  💎 <strong>{totalXp} XP</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <Link href={`/courses/${course.slug || course.id}`} style={{ textDecoration: 'none' }}>
+            <button className={styles.button3dOutlineFull}>
+              View Course Overview
+            </button>
+          </Link>
+        </div>
+      )}
+
+      {/* TEY'S MESSAGE CARD (default - non-section view) */}
+      {!hasSection && (
+      <div className={styles.messageCard}>
+        {/* Outline mascot watermark */}
+        <div className={styles.messageCardWatermark}>
+          <Bot size={120} />
+        </div>
+
+        <div className={styles.messageCardContent}>
+          <span className={styles.messageHeader}>TEY&apos;S MESSAGE</span>
+          <p className={styles.messageText}>
+            &ldquo;Ready to earn 50 XP today? You&apos;re so close to the next league!&rdquo;
+          </p>
+          <button
+            onClick={handleLetsGo}
+            className={styles.button3dWhite}
+          >
+            Let&apos;s Go! 🚀
+          </button>
+        </div>
+      </div>
+      )}
+
+      {/* DAILY QUESTS CARD (default) */}
+      {!hasSection && (
+      <div className={styles.questsCard}>
+        <div className={styles.cardHeaderWithLink}>
+          <h4 className={styles.cardSectionTitle}>DAILY QUESTS</h4>
+          <button
+            onClick={() => triggerComingSoon('All Quests')}
+            className={styles.cardViewAllBtn}
+          >
+            View All
+          </button>
+        </div>
+
+        <div className={styles.questItem}>
+          <div className={styles.questIconWrapper}>
+            <span>💎</span>
+          </div>
+          <div className={styles.questContent}>
+            <div className={styles.questInfoRow}>
+              <span className={styles.questTitle}>Earn 10 XP</span>
+              <span className={styles.questProgressText}>10/10</span>
+            </div>
+            <div className={styles.questProgressBar}>
+              <div className={styles.questProgressFill} style={{ width: '100%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {/* UNLOCK LEADERBOARDS CARD (default) */}
+      {!hasSection && (
+      <div className={styles.leaderboardsCard}>
+        <div className={styles.lockIconOuter}>
+          <div className={styles.lockIconInner}>
+            <Lock size={18} className={styles.lockSvg} />
+          </div>
+        </div>
+        <h4 className={styles.leaderboardCardTitle}>UNLOCK LEADERBOARDS!</h4>
+        <p className={styles.leaderboardCardDesc}>
+          Complete 2 more lessons to start competing!
+        </p>
+        <div className={styles.leaderboardProgressContainer}>
+          <div className={styles.leaderboardProgressBar}>
+            <div className={styles.leaderboardProgressBar} style={{ backgroundColor: '#F1F5F9' }}>
+              <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
+            </div>
+          </div>
+          <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
+        </div>
+      </div>
+      )}
+
+      {/* DAILY REWARD CARD (default) */}
+      {!hasSection && (
+      <div className={styles.rewardCard}>
+        <span className={styles.rewardHeader}>DAILY REWARD</span>
+        <div className={styles.treasureBoxWrapper}>
+          <span className={`${styles.sparkleStar} ${styles.sparkle1}`}>✨</span>
+          <span className={`${styles.sparkleStar} ${styles.sparkle2}`}>✨</span>
+          <span className={`${styles.sparkleStar} ${styles.sparkle3}`}>✨</span>
+          <Image
+            src="/Tressure box.png"
+            alt="Treasure Box"
+            width={120}
+            height={100}
+            className={styles.treasureBoxImage}
+          />
+        </div>
+        <button
+          onClick={handleClaimReward}
+          className={styles.button3dWhiteReward}
+        >
+          Claim Reward
+        </button>
+      </div>
+      )}
+    </div>
+  );
+};

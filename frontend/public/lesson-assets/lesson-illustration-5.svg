@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- Background page -->
+  <rect x="14" y="8" width="52" height="64" rx="4" fill="white"/>
+  <rect x="14" y="8" width="52" height="64" rx="4" stroke="#E2E8F0" stroke-width="1.5"/>
+  <!-- Large Aa -->
+  <text x="24" y="42" font-family="serif" font-size="28" font-weight="bold" fill="#3D5AFE">Aa</text>
+  <!-- Underline decorative -->
+  <path d="M24 46 Q40 50 56 46" stroke="#6C8CFF" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Text lines below -->
+  <rect x="22" y="52" width="28" height="3" rx="1.5" fill="#CBD5E1"/>
+  <rect x="22" y="58" width="36" height="3" rx="1.5" fill="#E2E8F0"/>
+  <rect x="22" y="64" width="20" height="3" rx="1.5" fill="#CBD5E1"/>
+  <!-- Font size indicators -->
+  <text x="52" y="22" font-family="sans-serif" font-size="8" fill="#94A3B8">H1</text>
+  <text x="52" y="32" font-family="sans-serif" font-size="7" fill="#94A3B8">H2</text>
+  <!-- Corner fold -->
+  <path d="M52 8 L66 8 L66 22 Z" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="0.5"/>
+</svg>

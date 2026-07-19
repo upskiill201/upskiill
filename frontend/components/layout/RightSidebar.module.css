@@ -1,0 +1,668 @@
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* COURSE PROGRESS CARD */
+.courseProgressCard {
+  background: linear-gradient(135deg, #0172FD 0%, #3A96FF 100%);
+  border: none;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.progressHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  margin-bottom: 18px;
+}
+
+.donutContainer {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+.donutSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.donutBgShadow {
+  fill: none;
+  stroke: #04461f;
+  stroke-linecap: round;
+}
+
+.donutBg {
+  fill: none;
+  stroke: #1f6b3a;
+  stroke-linecap: round;
+}
+
+.donutFillShadow {
+  fill: none;
+  stroke: #46a302;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.donutFill {
+  fill: none;
+  stroke: #58cc02;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.donutGloss {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 60 200;
+  transform: rotate(135deg);
+  transform-origin: center;
+}
+
+.donutText {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donutPct {
+  font-size: 18px;
+  font-weight: 950;
+  color: #d7ffb0;
+  line-height: 1.1;
+  font-family: var(--font-jakarta), sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.donutLabel {
+  font-size: 8px;
+  font-weight: 800;
+  color: #8df0a8;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.courseStatsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+.courseStatItem {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  border-radius: 12px;
+  padding: 9px 14px;
+}
+
+.courseStatVal {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.courseStatVal strong {
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.courseStatLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1px;
+}
+
+.courseStatSubLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1px;
+  letter-spacing: 0.02em;
+}
+
+.button3dOutlineFull {
+  background-color: white;
+  color: #0172FD;
+  border: 2px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+  width: 100%;
+  box-shadow: inset 0px -3px 0px rgba(7, 18, 51, 0.05);
+}
+
+.button3dOutlineFull:hover {
+  border-color: #0172FD;
+  background-color: #F4F8FF;
+}
+
+.button3dOutlineFull:active {
+  transform: translateY(3px);
+  box-shadow: inset 0px 0px 0px rgba(7, 18, 51, 0.05);
+}
+
+/* White flat variant when button sits on the blue course progress card */
+.courseProgressCard .button3dOutlineFull {
+  background-color: #FFFFFF;
+  color: #0172FD;
+  border: none;
+  box-shadow: none;
+}
+
+.courseProgressCard .button3dOutlineFull:hover {
+  background-color: #F2F7FF;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.courseProgressCard .button3dOutlineFull:active {
+  transform: none;
+  box-shadow: none;
+}
+
+/* TEY'S MESSAGE CARD */
+.messageCard {
+  background: linear-gradient(135deg, #0172FD 0%, #3A96FF 100%);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 12px 26px -6px rgba(1, 114, 253, 0.45),
+    inset 0px 2px 0px rgba(255, 255, 255, 0.35),
+    inset 0px -5px 0px rgba(0, 0, 0, 0.18);
+  color: white;
+  min-height: 160px;
+}
+
+.messageCardWatermark {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  color: rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+}
+
+.messageCardContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.messageHeader {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 8px;
+}
+
+.messageText {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 85%;
+}
+
+/* DAILY QUESTS CARD */
+.questsCard {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow:
+    0 12px 26px -6px rgba(7, 18, 51, 0.12),
+    inset 0px 2px 0px rgba(255, 255, 255, 0.9),
+    inset 0px -5px 0px rgba(7, 18, 51, 0.05);
+}
+
+.cardHeaderWithLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cardSectionTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: #071233;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.cardViewAllBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0172FD;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.cardViewAllBtn:hover {
+  text-decoration: underline;
+}
+
+.questItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.questIconWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: #E6F0FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.questLightningIcon {
+  color: #F59E0B;
+}
+
+.questContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.questInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.questTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #071233;
+}
+
+.questProgressText {
+  font-size: 11px;
+  font-weight: 700;
+  color: #22C55E;
+}
+
+.questProgressBar {
+  height: 12px;
+  background-color: #E5EAEF;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.10);
+}
+
+.questProgressFill {
+  background: linear-gradient(90deg, #22C55E 0%, #4ADE80 100%);
+  height: 100%;
+  border-radius: 999px;
+  box-shadow: inset 0px -3px 0px rgba(0, 0, 0, 0.10), inset 0px 3px 0px rgba(255, 255, 255, 0.30);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* UNLOCK LEADERBOARDS CARD */
+.leaderboardsCard {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow:
+    0 12px 26px -6px rgba(7, 18, 51, 0.12),
+    inset 0px 2px 0px rgba(255, 255, 255, 0.9),
+    inset 0px -5px 0px rgba(7, 18, 51, 0.05);
+}
+
+.lockIconOuter {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.lockIconInner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lockSvg {
+  color: #64748B;
+}
+
+.leaderboardCardTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: #071233;
+  letter-spacing: 0.05em;
+  margin: 0 0 6px;
+}
+
+.leaderboardCardDesc {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 500;
+  margin: 0 0 16px;
+  max-width: 200px;
+}
+
+.leaderboardProgressContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboardProgressBar {
+  height: 12px;
+  background-color: #E5EAEF;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.10);
+}
+
+.leaderboardProgressFill {
+  background: linear-gradient(90deg, #0172FD 0%, #3A96FF 100%);
+  height: 100%;
+  border-radius: 999px;
+  box-shadow: inset 0px -3px 0px rgba(0, 0, 0, 0.10), inset 0px 3px 0px rgba(255, 255, 255, 0.30);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.leaderboardProgressText {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.leaderboardProgressText strong {
+  color: #071233;
+}
+
+/* DAILY REWARD CARD */
+.rewardCard {
+  background: linear-gradient(135deg, #FFB800 0%, #FF9900 100%);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow:
+    0 12px 26px -6px rgba(255, 153, 0, 0.45),
+    inset 0px 2px 0px rgba(255, 255, 255, 0.45),
+    inset 0px -5px 0px rgba(0, 0, 0, 0.18);
+  color: white;
+}
+
+.rewardHeader {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.9);
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+
+.treasureBoxWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 20px;
+  height: 100px;
+  width: 100%;
+  filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.12));
+}
+
+.treasureBoxImage {
+  object-fit: contain;
+  z-index: 10;
+}
+
+.sparkleStar {
+  position: absolute;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+  pointer-events: none;
+  animation: pulseSparkle 2.2s infinite ease-in-out;
+  z-index: 5;
+}
+
+.sparkle1 {
+  left: 20%;
+  top: 15%;
+  animation-delay: 0s;
+}
+
+.sparkle2 {
+  right: 22%;
+  top: 10%;
+  font-size: 16px;
+  animation-delay: 0.6s;
+}
+
+.sparkle3 {
+  right: 18%;
+  bottom: 25%;
+  font-size: 22px;
+  animation-delay: 1.2s;
+}
+
+@keyframes pulseSparkle {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* 3D Premium Action Buttons */
+.button3dWhite {
+  background-color: white;
+  color: #0172FD;
+  border: none;
+  border-radius: 1rem;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05),
+              inset 0px -4px 0px rgba(7, 18, 51, 0.1);
+  align-self: flex-start;
+}
+
+.button3dWhite:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08),
+              inset 0px -4px 0px rgba(7, 18, 51, 0.12);
+}
+
+.button3dWhite:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02),
+              inset 0px 0px 0px rgba(7, 18, 51, 0.1);
+}
+
+.button3dWhiteReward {
+  background-color: white;
+  color: #FF9900;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05),
+              inset 0px -4px 0px #E28700;
+}
+
+.button3dWhiteReward:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08),
+              inset 0px -4px 0px #E28700;
+}
+
+.button3dWhiteReward:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02),
+              inset 0px 0px 0px transparent;
+}
+
+/* ─── SECTION VIEW ADDITIONS ─── */
+
+.donutFillGreen {
+  fill: none;
+  stroke: #22C55E;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease-in-out;
+}
+
+.sectionCompleteMsg {
+  font-size: 13px;
+  font-weight: 600;
+  color: #22C55E;
+  text-align: center;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.messageCardMascot {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  z-index: 2;
+}
+
+.messageCardMascotImg {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.rewardSubtext {
+  font-size: 12px;
+  color: #64748B;
+  text-align: center;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.bonusProgressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.bonusProgressText {
+  font-size: 12px;
+  font-weight: 700;
+  color: #071233;
+  white-space: nowrap;
+}
+
+.button3dBlue {
+  background: #3D5AFE;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(61, 90, 254, 0.25),
+              inset 0px -4px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button3dBlue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 90, 254, 0.35),
+              inset 0px -4px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button3dBlue:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 4px rgba(61, 90, 254, 0.1),
+              inset 0px 0px 0px transparent;
+}
+
+.button3dBlue:disabled,
+.button3dWhiteReward:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

@@ -3,16 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { 
   ChevronRight, 
-  ArrowRight, 
-  Lock, 
-  Zap, 
-  Bot
+  ArrowRight
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
+import { RightSidebar } from '@/components/layout/RightSidebar';
+import { StatPill } from '@/components/ui/StatPill';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
@@ -91,27 +90,17 @@ export default function DashboardPage() {
     if (enrollments.length > 0) {
       router.push(`/learn/${enrollments[0].course.id}`);
     } else {
-      triggerComingSoon('Continue Learning: UI/UX Design');
+      router.push('/learn/advanced-product-design-ux-strategy');
     }
   };
 
   const handleJumpToUnit = (courseIdOrName: string) => {
     playHaptic('medium');
-    if (courseIdOrName.includes('-')) {
+    if (courseIdOrName && (courseIdOrName.includes('-') || courseIdOrName.startsWith('sec-') || courseIdOrName.length > 15)) {
       router.push(`/learn/${courseIdOrName}`);
     } else {
-      triggerComingSoon(`Jump to Unit: ${courseIdOrName}`);
+      router.push('/learn/advanced-product-design-ux-strategy');
     }
-  };
-
-  const handleLetsGo = () => {
-    playHaptic('medium');
-    triggerComingSoon('Tey\'s Challenge: Let\'s Go!');
-  };
-
-  const handleClaimReward = () => {
-    playHaptic('medium');
-    triggerComingSoon('Daily Chest Reward');
   };
 
   const handleViewAllJourneys = () => {
@@ -134,32 +123,9 @@ export default function DashboardPage() {
 
         {/* BORDERLESS TOP-RIGHT STATS ROW */}
         <div className={styles.statsRow}>
-          {/* Streak */}
-          <div className={styles.statItem} onClick={() => triggerComingSoon('Streak History')}>
-            <span className={styles.statEmoji}>🔥</span>
-            <div className={styles.statText}>
-              <span className={styles.statVal}>{streakDays}</span>
-              <span className={styles.statLabel}>Day Streak</span>
-            </div>
-          </div>
-
-          {/* XP Balance */}
-          <div className={styles.statItem} onClick={() => triggerComingSoon('XP Analytics')}>
-            <span className={styles.statEmoji}>💎</span>
-            <div className={styles.statText}>
-              <span className={styles.statVal}>{xpPoints}</span>
-              <span className={styles.statLabel}>XP Balance</span>
-            </div>
-          </div>
-
-          {/* Lives */}
-          <div className={styles.statItem} onClick={() => triggerComingSoon('Lives Refill')}>
-            <span className={styles.statEmoji}>❤️</span>
-            <div className={styles.statText}>
-              <span className={styles.statVal}>{livesCount}</span>
-              <span className={styles.statLabel}>Lives</span>
-            </div>
-          </div>
+          <StatPill type="streak" value={streakDays} onClick={() => triggerComingSoon('Streak History')} />
+          <StatPill type="gem" value={xpPoints} onClick={() => triggerComingSoon('XP Analytics')} />
+          <StatPill type="lives" value={livesCount} onClick={() => triggerComingSoon('Lives Refill')} />
         </div>
       </div>
 
@@ -396,100 +362,7 @@ export default function DashboardPage() {
         </div>
 
         {/* RIGHT COLUMN: Sidebar Stats & Quests */}
-        <div className={styles.rightColumn}>
-          {/* TEY'S MESSAGE CARD */}
-          <div className={styles.messageCard}>
-            {/* Outline mascot watermark */}
-            <div className={styles.messageCardWatermark}>
-              <Bot size={120} />
-            </div>
-            
-            <div className={styles.messageCardContent}>
-              <span className={styles.messageHeader}>TEY&apos;S MESSAGE</span>
-              <p className={styles.messageText}>
-                &ldquo;Ready to earn 50 XP today? You&apos;re so close to the next league!&rdquo;
-              </p>
-              <button 
-                onClick={handleLetsGo}
-                className={styles.button3dWhite}
-              >
-                Let&apos;s Go! 🚀
-              </button>
-            </div>
-          </div>
-
-          {/* DAILY QUESTS CARD */}
-          <div className={styles.questsCard}>
-            <div className={styles.cardHeaderWithLink}>
-              <h4 className={styles.cardSectionTitle}>DAILY QUESTS</h4>
-              <button 
-                onClick={() => triggerComingSoon('All Quests')}
-                className={styles.cardViewAllBtn}
-              >
-                View All
-              </button>
-            </div>
-
-            <div className={styles.questItem}>
-              <div className={styles.questIconWrapper}>
-                <Zap size={18} className={styles.questLightningIcon} />
-              </div>
-              <div className={styles.questContent}>
-                <div className={styles.questInfoRow}>
-                  <span className={styles.questTitle}>Earn 10 XP</span>
-                  <span className={styles.questProgressText}>10/10</span>
-                </div>
-                <div className={styles.questProgressBar}>
-                  <div className={styles.questProgressFill} style={{ width: '100%' }} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* UNLOCK LEADERBOARDS CARD */}
-          <div className={styles.leaderboardsCard}>
-            <div className={styles.lockIconOuter}>
-              <div className={styles.lockIconInner}>
-                <Lock size={18} className={styles.lockSvg} />
-              </div>
-            </div>
-            <h4 className={styles.leaderboardCardTitle}>UNLOCK LEADERBOARDS!</h4>
-            <p className={styles.leaderboardCardDesc}>
-              Complete 2 more lessons to start competing!
-            </p>
-            <div className={styles.leaderboardProgressContainer}>
-              <div className={styles.leaderboardProgressBar}>
-                <div className={styles.leaderboardProgressBar} style={{ backgroundColor: '#F1F5F9' }}>
-                  <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
-                </div>
-              </div>
-              <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
-            </div>
-          </div>
-
-          {/* DAILY REWARD CARD */}
-          <div className={styles.rewardCard}>
-            <span className={styles.rewardHeader}>DAILY REWARD</span>
-            <div className={styles.treasureBoxWrapper}>
-              <span className={`${styles.sparkleStar} ${styles.sparkle1}`}>✨</span>
-              <span className={`${styles.sparkleStar} ${styles.sparkle2}`}>✨</span>
-              <span className={`${styles.sparkleStar} ${styles.sparkle3}`}>✨</span>
-              <Image 
-                src="/Tressure box.png" 
-                alt="Treasure Box" 
-                width={120} 
-                height={100}
-                className={styles.treasureBoxImage}
-              />
-            </div>
-            <button 
-              onClick={handleClaimReward}
-              className={styles.button3dWhiteReward}
-            >
-              Claim Reward
-            </button>
-          </div>
-        </div>
+        <RightSidebar />
 
       </div>
     </div>

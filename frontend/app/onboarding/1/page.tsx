@@ -118,13 +118,13 @@ export default function OnboardingStep1() {
           <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
           {/* Centered Typography container */}
-          <div className="w-full flex-1 flex flex-col justify-center items-center text-center mt-2 mb-4 px-2 z-20">
+          <div className="w-full flex-1 flex flex-col justify-center items-center text-center mt-1 mb-1 px-1 z-10">
             {/* Relative scaled heading - constrained to 80% width */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[16vw] xs:text-[17vw] sm:text-6xl font-[900] leading-[0.98] mb-3 tracking-tighter text-[#071233] w-[80%] mx-auto"
+              className="text-[8vw] xs:text-[9vw] sm:text-3xl font-[900] leading-[1.3] mb-1 text-[#071233]"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
@@ -144,8 +144,8 @@ export default function OnboardingStep1() {
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
-              className="text-[4.5vw] xs:text-[4.8vw] sm:text-lg font-medium text-slate-600 leading-snug max-w-[90%]"
-              style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9)' }}
+              className="text-[4vw] xs:text-[4.5vw] sm:text-xl font-medium text-slate-600 leading-tight max-w-[90%]"
+              style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1), 0 0 15px rgba(255,255,255,0.9)' }}
             >
               Your journey to mastering<br /> new skills starts here.
             </motion.p>
@@ -226,7 +226,7 @@ export default function OnboardingStep1() {
             variants={headlineContainer}
             initial="hidden"
             animate="show"
-            className="text-[4.5rem] leading-[0.95] md:text-[7.5rem] lg:text-[8.5rem] font-[800] mb-6 tracking-tighter text-[#071233] text-left relative z-10"
+            className="text-[6rem] md:text-[9rem] lg:text-[10rem] font-[800] mb-6 tracking-tighter text-[#071233] text-left relative z-10"
             style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
           >
             <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>

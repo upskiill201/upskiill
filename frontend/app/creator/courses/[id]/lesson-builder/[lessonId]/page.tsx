@@ -125,6 +125,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const [currentTab, setCurrentTab] = useState('learn');
   const [contentType, setContentType] = useState('video');
   const [resources, setResources] = useState<ResourceItem[]>([]);
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
   const [mcqActivity, setMcqActivity] = useState<MCQActivity>({
     scenario: '',
     passingScore: 70,
@@ -176,13 +177,14 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const debouncedReflectActivity = useDebounce(reflectActivity, 1000);
   const debouncedDeepenConfig = useDebounce(deepenConfig, 1000);
   const debouncedResources = useDebounce(resources, 1000);
+  const debouncedWhatYouWillLearn = useDebounce(whatYouWillLearn, 1000);
 
   // Track dirty state when user makes changes
   useEffect(() => {
     if (hasInitialLoadCompleted.current) {
       setDirty();
     }
-  }, [lesson, mcqActivity, reflectActivity, deepenConfig, resources, contentType, setDirty]);
+  }, [lesson, mcqActivity, reflectActivity, deepenConfig, resources, contentType, whatYouWillLearn, setDirty]);
 
   /* fetch */
   useEffect(() => {
@@ -199,7 +201,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           if (d.resources) {
             setResources(d.resources);
           }
-          
           if (d.contentBlocks) {
             let parsedBlocks = d.contentBlocks;
             if (typeof parsedBlocks === 'string') {
@@ -215,6 +216,8 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
                 learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
               }));
+              const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn')?.value;
+              setWhatYouWillLearn(Array.isArray(wylBlock) ? wylBlock : []);
             }
             if (parsedBlocks?.apply) {
               const applyBlocks = parsedBlocks.apply;
@@ -265,6 +268,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
           { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
           { type: 'text', value: debouncedLesson.learnText },
+          { type: 'whatYouWillLearn', value: debouncedWhatYouWillLearn },
         ],
         isCompleted: isLearnCompleted
       });
@@ -299,7 +303,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     };
 
     runAutosave();
-  }, [debouncedLesson, debouncedMcqActivity, debouncedReflectActivity, debouncedDeepenConfig, debouncedResources, contentType, loading]);
+  }, [debouncedLesson, debouncedMcqActivity, debouncedReflectActivity, debouncedDeepenConfig, debouncedResources, contentType, loading, debouncedWhatYouWillLearn]);
 
   /**
    * buildSavePayload — constructs the full-save payload from current live state.
@@ -326,6 +330,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         { type: 'videoUrl', value: currentLesson?.learnVideoUrl || '' },
         { type: 'audioUrl', value: currentLesson?.learnAudioUrl || '' },
         { type: 'text', value: currentLesson?.learnText || '' },
+        { type: 'whatYouWillLearn', value: whatYouWillLearn },
       ],
       applyBlocks: [{ type: 'mcqActivity', value: mcqActivity }],
       reflectBlocks: [{ type: 'reflectActivity', value: reflectActivity }],
@@ -868,6 +873,51 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                     }}>
                       {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
                     </span>
+                  </div>
+                </div>
+
+                <div className={styles.inputGroup} style={{ marginTop: 32 }}>
+                  <label className={styles.inputLabel}>
+                    What You&apos;ll Learn <span className={styles.inputSub}>(Add up to 5 key learning points)</span>
+                  </label>
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {whatYouWillLearn.map((item, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>{idx + 1}.</span>
+                        <input
+                          className={styles.inputField}
+                          style={{ flex: 1 }}
+                          value={item}
+                          onChange={e => {
+                            const newPoints = [...whatYouWillLearn];
+                            newPoints[idx] = e.target.value;
+                            setWhatYouWillLearn(newPoints);
+                          }}
+                          placeholder={`e.g. Learn how to define your unique value`}
+                          maxLength={100}
+                        />
+                        <button
+                          className={styles.btnOutlineSquare}
+                          type="button"
+                          onClick={() => {
+                            setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== idx));
+                          }}
+                          style={{ borderColor: '#EF4444', color: '#EF4444', height: 48, width: 48, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    {whatYouWillLearn.length < 5 && (
+                      <button
+                        className={styles.btnOutline}
+                        type="button"
+                        onClick={() => setWhatYouWillLearn([...whatYouWillLearn, ''])}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'fit-content', marginTop: 4 }}
+                      >
+                        <Plus size={14} /> Add Learning Point ({whatYouWillLearn.length}/5)
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -129,8 +129,21 @@ export class CourseService {
       ? (enrollment.completedLessons as string[])
       : [];
 
+    let isNewCompletion = false;
+    let xpEarned = 0;
+    let sectionCompleted = false;
+
     if (!currentCompleted.includes(lessonId)) {
+      isNewCompletion = true;
       currentCompleted.push(lessonId);
+
+      // Fetch the lesson to retrieve its xpReward value
+      const lesson = await this.prisma.lesson.findUnique({
+        where: { id: lessonId },
+        include: { section: { include: { lessons: true } } },
+      });
+
+      xpEarned = lesson?.xpReward ?? 10;
 
       let totalLessons = 0;
       const courseWithLessons = await this.prisma.course.findUnique({
@@ -155,6 +168,13 @@ export class CourseService {
         Math.round((currentCompleted.length / totalLessons) * 100),
       );
 
+      // Check if all lessons in this section are completed
+      if (lesson?.section?.lessons) {
+        sectionCompleted = lesson.section.lessons.every((l) =>
+          currentCompleted.includes(l.id),
+        );
+      }
+
       await this.prisma.enrollment.update({
         where: { id: enrollment.id },
         data: {
@@ -162,9 +182,60 @@ export class CourseService {
           progress,
         },
       });
+
+      // Update StudentProfile for XP and daily activity streaks
+      const now = new Date();
+      let newStreak = 1;
+
+      const profile = await this.prisma.studentProfile.upsert({
+        where: { userId },
+        create: { userId, xp: 0, streakDays: 0 },
+        update: {},
+      });
+
+      if (profile.lastActiveAt) {
+        const lastActive = new Date(profile.lastActiveAt);
+
+        const todayMidnight = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        ).getTime();
+        const lastActiveMidnight = new Date(
+          lastActive.getFullYear(),
+          lastActive.getMonth(),
+          lastActive.getDate(),
+        ).getTime();
+
+        const diffDays = Math.round(
+          (todayMidnight - lastActiveMidnight) / (1000 * 60 * 60 * 24),
+        );
+
+        if (diffDays === 1) {
+          newStreak = (profile.streakDays || 0) + 1;
+        } else if (diffDays === 0) {
+          newStreak = profile.streakDays || 1;
+        } else {
+          newStreak = 1;
+        }
+      }
+
+      await this.prisma.studentProfile.update({
+        where: { userId },
+        data: {
+          xp: { increment: xpEarned },
+          streakDays: newStreak,
+          lastActiveAt: now,
+        },
+      });
     }
 
-    return { success: true, completedLessons: currentCompleted };
+    return {
+      success: true,
+      completedLessons: currentCompleted,
+      xpEarned: isNewCompletion ? xpEarned : 0,
+      sectionCompleted,
+    };
   }
   async createCourse(
     userId: string,

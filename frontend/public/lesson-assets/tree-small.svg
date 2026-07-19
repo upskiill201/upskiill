@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 44" fill="none">
+  <!-- Trunk -->
+  <rect x="14" y="32" width="8" height="10" rx="2" fill="#92400E"/>
+  <!-- Base -->
+  <ellipse cx="18" cy="35" rx="9" ry="3" fill="#15803D" opacity="0.4"/>
+  <!-- Layer 2 -->
+  <polygon points="18,8 4,30 32,30" fill="#22C55E"/>
+  <!-- Layer 1 top -->
+  <polygon points="18,2 6,20 30,20" fill="#4ADE80"/>
+  <!-- Highlight -->
+  <polygon points="18,2 14,14 18,12" fill="#86EFAC" opacity="0.5"/>
+</svg>

@@ -10,7 +10,13 @@ export default function FooterWrapper() {
   // Define routes that should display the dedicated Waitlist Footer
   const isWaitlistRoute = pathname === '/' || pathname === '/terms' || pathname === '/privacy';
 
-  if (pathname === '/join' || pathname?.startsWith('/onboarding')) return null;
+  if (
+    pathname === '/join' || 
+    pathname?.startsWith('/onboarding') ||
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/learn') ||
+    pathname?.startsWith('/creator')
+  ) return null;
 
   if (isWaitlistRoute) {
     return <WaitlistFooter />;
