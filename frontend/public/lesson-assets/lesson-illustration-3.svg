@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- Glow aura -->
+  <circle cx="40" cy="36" r="28" fill="#FDE047" opacity="0.2"/>
+  <!-- Bulb glass -->
+  <circle cx="40" cy="32" r="18" fill="#FEF08A"/>
+  <circle cx="40" cy="32" r="18" fill="url(#bulbGrad)"/>
+  <!-- Glass highlight -->
+  <ellipse cx="34" cy="26" rx="5" ry="7" fill="white" opacity="0.4"/>
+  <!-- Filament -->
+  <path d="M36 34 Q38 28 40 34 Q42 28 44 34" stroke="#F59E0B" stroke-width="2" fill="none"/>
+  <!-- Screw base -->
+  <rect x="34" y="48" width="12" height="4" rx="1" fill="#94A3B8"/>
+  <rect x="35" y="52" width="10" height="3" rx="1" fill="#64748B"/>
+  <rect x="36" y="55" width="8" height="3" rx="1" fill="#94A3B8"/>
+  <rect x="37" y="58" width="6" height="2" rx="1" fill="#64748B"/>
+  <!-- Rays -->
+  <line x1="40" y1="6" x2="40" y2="2" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"/>
+  <line x1="56" y1="12" x2="59" y2="9" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24" y1="12" x2="21" y2="9" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"/>
+  <line x1="62" y1="26" x2="66" y2="25" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"/>
+  <line x1="18" y1="26" x2="14" y2="25" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"/>
+  <defs>
+    <radialGradient id="bulbGrad" cx="40%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FEF08A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

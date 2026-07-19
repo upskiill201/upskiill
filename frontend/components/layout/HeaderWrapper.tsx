@@ -19,6 +19,7 @@ export default function HeaderWrapper() {
     pathname === '/creator/login' ||
     pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/learn') ||
     pathname.startsWith('/creator');
 
   if (isHiddenRoute) return null;

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- Grid background panel -->
+  <rect x="10" y="10" width="60" height="60" rx="6" fill="#EEF2FF"/>
+  <rect x="10" y="10" width="60" height="60" rx="6" stroke="#E2E8F0" stroke-width="1.5"/>
+  <!-- Grid lines vertical -->
+  <line x1="25" y1="10" x2="25" y2="70" stroke="#CBD5E1" stroke-width="0.8"/>
+  <line x1="40" y1="10" x2="40" y2="70" stroke="#CBD5E1" stroke-width="0.8"/>
+  <line x1="55" y1="10" x2="55" y2="70" stroke="#CBD5E1" stroke-width="0.8"/>
+  <!-- Grid lines horizontal -->
+  <line x1="10" y1="25" x2="70" y2="25" stroke="#CBD5E1" stroke-width="0.8"/>
+  <line x1="10" y1="40" x2="70" y2="40" stroke="#CBD5E1" stroke-width="0.8"/>
+  <line x1="10" y1="55" x2="70" y2="55" stroke="#CBD5E1" stroke-width="0.8"/>
+  <!-- Colored blocks on grid -->
+  <rect x="12" y="12" width="12" height="12" rx="2" fill="#3D5AFE" opacity="0.8"/>
+  <rect x="27" y="12" width="12" height="12" rx="2" fill="#6C8CFF" opacity="0.6"/>
+  <rect x="42" y="27" width="12" height="12" rx="2" fill="#A855F7" opacity="0.7"/>
+  <rect x="12" y="42" width="12" height="12" rx="2" fill="#22C55E" opacity="0.6"/>
+  <rect x="57" y="42" width="12" height="12" rx="2" fill="#F59E0B" opacity="0.7"/>
+  <rect x="27" y="57" width="12" height="12" rx="2" fill="#EF4444" opacity="0.5"/>
+  <rect x="57" y="57" width="12" height="12" rx="2" fill="#3D5AFE" opacity="0.4"/>
+  <!-- Cursor pointer -->
+  <path d="M50 18 L50 30 L54 27 L58 34 L61 32 L57 25 L62 24 Z" fill="#1F2A44"/>
+</svg>

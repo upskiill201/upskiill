@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import { 
   ChevronLeft,
@@ -46,11 +47,16 @@ interface EnhancedDashboardLink extends DashboardLink {
   isComingSoon?: boolean;
 }
 
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  isWide?: boolean;
+}
+
 export default function DashboardLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  isWide = false,
+}: DashboardLayoutProps) {
+  const pathname = usePathname();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -106,13 +112,9 @@ export default function DashboardLayout({
   const dashboardLinks: EnhancedDashboardLink[] = [
     { 
       id: 'learn', 
-      label: 'Learn', 
+      label: 'Home', 
       href: '/dashboard', 
-      icon: (
-        <div className={styles.activeIconCircle}>
-          <Home size={14} className={styles.activeHomeIcon} />
-        </div>
-      ) 
+      icon: <Home size={20} /> 
     },
     { 
       id: 'journeys', 
@@ -207,21 +209,37 @@ export default function DashboardLayout({
           
           {/* NAVIGATION LINKS */}
           <nav className={styles.nav}>
-            {dashboardLinks.map((link) => (
-              <Link 
-                key={link.id} 
-                href={link.href} 
-                onClick={(e) => {
-                  handleLinkClick(e, link);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`${styles.navItem} ${link.id === 'learn' ? styles.active : ''}`}
-                title={isSidebarCollapsed ? link.label : ''}
-              >
+            {dashboardLinks.map((link) => {
+              const isActive = !link.isComingSoon && (
+                link.href === '/dashboard' 
+                  ? pathname === '/dashboard' 
+                  : pathname.startsWith(link.href)
+              );
+
+              const renderedIcon = link.id === 'learn' ? (
+                <div className={isActive ? styles.activeIconCircle : styles.icon}>
+                  <Home size={isActive ? 14 : 20} className={isActive ? styles.activeHomeIcon : ''} />
+                </div>
+              ) : (
                 <span className={styles.icon}>{link.icon}</span>
-                {!isSidebarCollapsed && <span className={styles.label}>{link.label}</span>}
-              </Link>
-            ))}
+              );
+
+              return (
+                <Link 
+                  key={link.id} 
+                  href={link.href} 
+                  onClick={(e) => {
+                    handleLinkClick(e, link);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+                  title={isSidebarCollapsed ? link.label : ''}
+                >
+                  {renderedIcon}
+                  {!isSidebarCollapsed && <span className={styles.label}>{link.label}</span>}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* SIDEBAR FOOTER & CARDS */}
@@ -288,6 +306,34 @@ export default function DashboardLayout({
 
         {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
 
+        {/* MOBILE BOTTOM NAVIGATION BAR */}
+        <nav className={styles.mobileBottomNav}>
+          <Link href="/dashboard" className={`${styles.bottomNavItem} ${pathname === '/dashboard' ? styles.activeBottomItem : ''}`}>
+            <Home size={20} />
+            <span className={styles.bottomNavLabel}>Home</span>
+          </Link>
+          <Link href="/dashboard/my-learning" className={`${styles.bottomNavItem} ${pathname === '/dashboard/my-learning' ? styles.activeBottomItem : ''}`}>
+            <Layers size={20} />
+            <span className={styles.bottomNavLabel}>My Learning</span>
+          </Link>
+          <a 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); triggerComingSoon('Leaderboards'); }} 
+            className={styles.bottomNavItem}
+          >
+            <Trophy size={20} />
+            <span className={styles.bottomNavLabel}>Leaderboards</span>
+          </a>
+          <a 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); triggerComingSoon('Profile Settings'); }} 
+            className={styles.bottomNavItem}
+          >
+            <User size={20} />
+            <span className={styles.bottomNavLabel}>Profile</span>
+          </a>
+        </nav>
+
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
           {/* MOBILE-ONLY STICKY HEADER */}
@@ -312,7 +358,7 @@ export default function DashboardLayout({
           </header>
 
           {/* PAGE CONTENT */}
-          <div className={styles.content}>
+          <div className={`${styles.content} ${isWide ? styles.wideContent : ''}`}>
             {children}
           </div>
         </main>

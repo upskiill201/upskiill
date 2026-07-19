@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+  <!-- Shadow -->
+  <ellipse cx="60" cy="96" rx="44" ry="6" fill="rgba(0,0,0,0.08)"/>
+  <!-- Cylinder side (dark green) -->
+  <rect x="16" y="52" width="88" height="36" rx="4" fill="#16A34A"/>
+  <!-- Cylinder front face bottom arc -->
+  <ellipse cx="60" cy="88" rx="44" ry="8" fill="#15803D"/>
+  <!-- Cylinder top surface -->
+  <ellipse cx="60" cy="52" rx="44" ry="14" fill="#4ADE80"/>
+  <!-- Top surface highlight -->
+  <ellipse cx="60" cy="50" rx="34" ry="9" fill="#86EFAC" opacity="0.5"/>
+  <!-- Inner ring -->
+  <ellipse cx="60" cy="52" rx="28" ry="9" fill="#22C55E" opacity="0.7"/>
+</svg>

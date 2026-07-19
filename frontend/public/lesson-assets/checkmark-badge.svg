@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <circle cx="20" cy="20" r="18" fill="#22C55E"/>
+  <circle cx="20" cy="20" r="18" fill="url(#badgeGrad)"/>
+  <circle cx="20" cy="20" r="16" fill="#16A34A"/>
+  <circle cx="20" cy="18" r="14" fill="#22C55E"/>
+  <polyline points="12,20 18,26 28,14" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <radialGradient id="badgeGrad" cx="40%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- Puzzle piece 1 - top left (blue) -->
+  <path d="M12 16 H32 V12 C32 8, 38 8, 38 12 V16 H38 V12 C38 8, 44 8, 44 12 V16 H44 V32 H40 C36 32, 36 38, 40 38 H44 V38 H12 Z" fill="#3D5AFE"/>
+  <!-- Puzzle piece 2 - top right (purple) -->
+  <path d="M44 16 H68 V38 H64 C60 38, 60 44, 64 44 H68 V44 H44 V40 C44 36, 38 36, 38 40 V44 H38 V38 H40 C44 38, 44 32, 40 32 H44 V16 Z" fill="#A855F7" opacity="0.85"/>
+  <!-- Puzzle piece 3 - bottom left (green) -->
+  <path d="M12 38 H38 V40 C38 44, 44 44, 44 40 V38 H44 V44 H40 C36 44, 36 50, 40 50 H44 V64 H12 V50 H16 C20 50, 20 44, 16 44 H12 Z" fill="#22C55E" opacity="0.85"/>
+  <!-- Puzzle piece 4 - bottom right (orange) -->
+  <path d="M44 44 H64 C68 44, 68 38, 64 38 H68 V64 H44 V50 H40 C36 50, 36 44, 40 44 H44 Z" fill="#F59E0B" opacity="0.85"/>
+  <!-- Highlight accents -->
+  <circle cx="26" cy="26" r="3" fill="white" opacity="0.3"/>
+  <circle cx="56" cy="26" r="2" fill="white" opacity="0.3"/>
+  <circle cx="26" cy="52" r="2" fill="white" opacity="0.3"/>
+</svg>
