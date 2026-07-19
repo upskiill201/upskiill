@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* ─── TOP ROW ─── */
@@ -1328,8 +1330,11 @@
   box-sizing: border-box;
 }
 
-/* Eliminate mainColumn default bottom padding when lesson player is active */
+/* Stretch mainColumn and eliminate bottom padding when lesson player is active */
 .mainColumn:has(.lessonPlayerInnerContainer) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   padding-bottom: 0 !important;
 }
 
@@ -1420,15 +1425,16 @@
 
 .startScreenBody {
   display: grid;
-  grid-template-columns: 32% 1fr; /* Flexible responsive grid columns */
-  gap: 40px; /* Comfortable gap spacing */
+  grid-template-columns: 42% 1fr; /* Enlarged flexible responsive grid columns for larger mascot */
+  gap: 48px; /* Comfortable layout gaps */
   background: transparent;
   border: none;
   border-radius: 0;
-  padding: 16px 0;
+  padding: 24px 0; /* Breathing room padding */
   align-items: center;
   width: 100%;
   min-height: auto;
+  flex-grow: 1; /* Allow body content to spread into available vertical space */
 }
 
 .mascotLeftCol {
@@ -1444,7 +1450,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 320px;
+  max-width: 460px; /* Taller and larger mascot sizing for big screens */
 }
 
 .mascotStar {
@@ -1492,13 +1498,13 @@
 }
 
 .lessonPlayerTitle {
-  font-size: 34px; /* Bigger on desktop */
+  font-size: 38px; /* Bigger visual weight */
   font-weight: 800;
   color: #071233;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.15;
   font-family: var(--font-jakarta), sans-serif;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -1516,9 +1522,9 @@
 
 .statsCardsRow {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
-  max-width: 380px; /* Constrain width of cards row exactly like design */
+  max-width: 310px; /* Constrain width of cards row exactly like design */
 }
 
 .statsCard {
@@ -1527,7 +1533,8 @@
   gap: 12px;
   border: 2px solid #E2E8F0;
   border-radius: 16px;
-  padding: 10px 14px; /* Tighter padding for compact look */
+  padding: 8px 16px; /* Precise layout spacing */
+  height: 58px; /* Standardize card heights */
   flex: 1;
   min-width: 0;
   box-shadow: 0 4px 0 #F1F5F9;
@@ -1587,7 +1594,7 @@
 .pointsList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px; /* Comfortable vertical spacing between points */
   width: 100%;
 }
 
@@ -1599,32 +1606,33 @@
 }
 
 .emojiCircle {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 15px;
   flex-shrink: 0;
 }
 
 .pointTextContainer {
   display: flex;
   flex-direction: column;
-  line-height: 1.3;
+  line-height: 1.45; /* Better line height readability */
 }
 
 .pointTitle {
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 800;
   color: #071233;
 }
 
 .pointDesc {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: #64748B;
   font-weight: 500;
+  margin-top: 2px;
 }
 
 .btnContainerCentred {
@@ -1632,7 +1640,8 @@
   justify-content: center;
   width: 100%;
   margin-top: auto; /* Push start button container directly to the bottom */
-  padding-top: 24px; /* Safe padding space above button */
+  padding-top: 20px;
+  padding-bottom: 28px; /* Bottom spacing offset to give button breathing space */
   flex-shrink: 0;
 }
 

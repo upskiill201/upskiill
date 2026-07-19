@@ -14,17 +14,54 @@ import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
   if (!rawStr) return '';
-  // Remove actual HTML tags
-  let cleaned = rawStr.replace(/<\/?[^>]+(>|$)/g, '');
-  // Replace common HTML entities
-  cleaned = cleaned
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-  return cleaned;
+  const div = document.createElement('div');
+  div.innerHTML = rawStr;
+  return div.textContent || div.innerText || '';
+};
+
+const parsePoint = (pointStr: string, index: number) => {
+  const clean = cleanHtml(pointStr);
+  
+  // Regex to extract emoji at the start of the string
+  const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji})/u;
+  const match = clean.match(emojiRegex);
+  
+  let emoji = '';
+  let rest = clean;
+  
+  if (match) {
+    emoji = match[1];
+    rest = clean.slice(emoji.length).trim();
+  }
+  
+  let title = rest;
+  let desc = '';
+  
+  const separators = [' - ', ' : ', ': ', ' -'];
+  for (const sep of separators) {
+    if (rest.includes(sep)) {
+      const parts = rest.split(sep);
+      title = parts[0].trim();
+      desc = parts.slice(1).join(sep).trim();
+      break;
+    }
+  }
+  
+  const defaultEmojis = ['🎯', '💎', '⭐', '🔥', '🚀'];
+  if (!emoji) {
+    emoji = defaultEmojis[index % defaultEmojis.length];
+  }
+  
+  const bgColors: { [key: string]: string } = {
+    '🎯': '#F3E8FF',
+    '💎': '#DCFCE7',
+    '⭐': '#FEF9C3',
+    '🔥': '#FFEDD5',
+    '🚀': '#DBEAFE',
+  };
+  const bg = bgColors[emoji] || '#F1F5F9';
+  
+  return { emoji, title, desc, bg };
 };
 
 const SPRING_BOUNCE = { type: 'spring', stiffness: 400, damping: 22 } as const;
@@ -492,7 +529,11 @@ function SectionViewContent({
 
                   {activeLesson.shortDescription && (
                     <div className={styles.lessonPlayerDesc}>
-                      {cleanHtml(activeLesson.shortDescription)}
+                      {(() => {
+                        const textarea = document.createElement('textarea');
+                        textarea.innerHTML = activeLesson.shortDescription;
+                        return textarea.value;
+                      })()}
                     </div>
                   )}
 
@@ -527,55 +568,12 @@ function SectionViewContent({
                       <h3 className={styles.pointsListHeader}>You&apos;ll learn to:</h3>
                       <div className={styles.pointsList}>
                         {wylList.filter(Boolean).slice(0, 5).map((point: string, idx: number) => {
-                          const parts = point.split(' - ');
-                          const title = parts[0];
-                          const desc = parts.slice(1).join(' - ');
-                          
-                          // Style config per point
-                          const colors = [
-                            { bg: '#F3E8FF' }, // Purple - Target
-                            { bg: '#DCFCE7' }, // Green - Diamond
-                            { bg: '#FEF9C3' }, // Yellow - Star
-                            { bg: '#FFEDD5' }, // Orange - Fire
-                            { bg: '#DBEAFE' }, // Blue - Rocket
-                          ];
-                          const config = colors[idx % colors.length];
-
-                          const getIconForIndex = (index: number) => {
-                            switch (index % 5) {
-                              case 0:
-                                return (
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7e22ce" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <circle cx="12" cy="12" r="6" />
-                                    <circle cx="12" cy="12" r="2" />
-                                  </svg>
-                                );
-                              case 1:
-                                return (
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fillRule="evenodd">
-                                    <path d="M6 12L12 4L18 12L12 20L6 12Z" />
-                                  </svg>
-                                );
-                              case 2:
-                                return (
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a16207" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                  </svg>
-                                );
-                              case 3:
-                                return <span style={{ fontSize: '15px' }}>🔥</span>;
-                              case 4:
-                                return <span style={{ fontSize: '15px' }}>🚀</span>;
-                              default:
-                                return <span style={{ fontSize: '15px' }}>🎯</span>;
-                            }
-                          };
+                          const { emoji, title, desc, bg } = parsePoint(point, idx);
 
                           return (
                             <div key={idx} className={styles.pointsListItem}>
-                              <div className={styles.emojiCircle} style={{ backgroundColor: config.bg }}>
-                                {getIconForIndex(idx)}
+                              <div className={styles.emojiCircle} style={{ backgroundColor: bg }}>
+                                <span style={{ fontSize: '15px' }}>{emoji}</span>
                               </div>
                               <div className={styles.pointTextContainer}>
                                 <span className={styles.pointTitle} style={{ fontWeight: 800 }}>{title}</span>
@@ -823,7 +821,7 @@ function SectionViewContent({
                                   <>
                                     <h4 className={styles.popoverThemedTitle}>{item.title}</h4>
                                     {item.shortDescription && (
-                                      <p className={styles.popoverThemedDesc}>{item.shortDescription}</p>
+                                      <p className={styles.popoverThemedDesc}>{cleanHtml(item.shortDescription)}</p>
                                     )}
                                     <button 
                                       className={styles.popoverThemedBtn}
@@ -841,7 +839,7 @@ function SectionViewContent({
                                 // Fallback default rendering for challenges, trophies, etc.
                                 <>
                                   <h4 className={styles.bubbleLessonTitle}>{item.title}</h4>
-                                  <p className={styles.bubbleLessonDesc}>{item.shortDescription}</p>
+                                  <p className={styles.bubbleLessonDesc}>{cleanHtml(item.shortDescription)}</p>
                                   
                                   <div className={styles.bubbleFooter}>
                                     <span className={styles.bubbleRewardLabel}>
