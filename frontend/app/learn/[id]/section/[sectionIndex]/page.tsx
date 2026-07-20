@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen } from 'lucide-react';
+import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
@@ -284,6 +284,7 @@ interface SectionViewContentProps {
   section: any;
   sectionIndex: number;
   completedLessons: string[];
+  setCompletedLessons: React.Dispatch<React.SetStateAction<string[]>>;
   streakDays: number;
   xpPoints: number;
   livesCount: number;
@@ -294,6 +295,7 @@ function SectionViewContent({
   section,
   sectionIndex,
   completedLessons,
+  setCompletedLessons,
   streakDays,
   xpPoints,
   livesCount,
@@ -452,6 +454,150 @@ function SectionViewContent({
       setIsAnswerCorrect(false);
     } else if (lessonPhase === 'deepen') {
       setLessonPhase('reflect');
+    }
+  };
+
+  const [selectedResource, setSelectedResource] = useState<any>(null);
+
+  const deepenData = React.useMemo(() => {
+    if (!activeLesson) return null;
+    let parsedBlocks = activeLesson.contentBlocks;
+    if (typeof parsedBlocks === 'string') {
+      try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) {}
+    }
+    const deepenBlocks = parsedBlocks?.deepen;
+    if (Array.isArray(deepenBlocks)) {
+      return deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value;
+    }
+    return deepenBlocks?.deepenActivity || null;
+  }, [activeLesson]);
+
+  const deepenTitle = deepenData?.collectionTitle || 'More Rabbit Holes! 🐰';
+  const deepenDesc = deepenData?.collectionDescription || 'Explore these helpful resources to master the topic.';
+  const nextStepConfig = deepenData?.recommendedNextStep || { type: 'practice' };
+
+  const handleFinishLesson = async () => {
+    playHaptic('success');
+    try {
+      const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonId: activeLesson.id })
+      });
+      if (res.ok) {
+        if (!completedLessons.includes(activeLesson.id)) {
+          setCompletedLessons(prev => [...prev, activeLesson.id]);
+        }
+      }
+    } catch (e) {
+      console.error('Error completing lesson:', e);
+    }
+    setActiveLesson(null);
+    setLessonPhase('start');
+  };
+
+  const getSerpentineRows = (items: any[]) => {
+    const rows: any[][] = [];
+    let currentRow: any[] = [];
+    for (let i = 0; i < items.length; i++) {
+      currentRow.push(items[i]);
+      if (currentRow.length === 3 || i === items.length - 1) {
+        const rowIndex = rows.length;
+        if (rowIndex % 2 === 1) {
+          rows.push([...currentRow].reverse());
+        } else {
+          rows.push(currentRow);
+        }
+        currentRow = [];
+      }
+    }
+    return rows;
+  };
+
+  const getNextStepInfo = (type: string) => {
+    switch (type) {
+      case 'continue':
+        return {
+          title: 'Next Lesson!',
+          desc: 'Keep moving forward to the next lesson.'
+        };
+      case 'practice':
+        return {
+          title: 'Practice what you\'ve learned!',
+          desc: 'Reinforce your knowledge with a quick challenge.'
+        };
+      case 'project':
+        return {
+          title: 'Submit your project!',
+          desc: 'Upload your work to apply what you\'ve learned.'
+        };
+      case 'explore':
+      default:
+        return {
+          title: 'Explore more topics!',
+          desc: 'Check out other courses or lessons.'
+        };
+    }
+  };
+
+  const getResourceIconInfo = (type: string) => {
+    const t = type?.toLowerCase() || 'link';
+    if (t.includes('fig') || t.includes('design') || t.includes('template')) {
+      return {
+        bg: '#A259FF',
+        shadow: '#883EFF',
+        icon: <LayoutTemplate size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Template'
+      };
+    } else if (t.includes('pdf') || t.includes('doc') || t.includes('docx')) {
+      return {
+        bg: '#FF4B4B',
+        shadow: '#EA2B2B',
+        icon: <FileText size={32} strokeWidth={2.5} color="white" />,
+        badge: 'PDF Guide'
+      };
+    } else if (t.includes('video') || t.includes('mp4') || t.includes('youtube')) {
+      return {
+        bg: '#7C5CFF',
+        shadow: '#613EEA',
+        icon: <Video size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Video Tutorial'
+      };
+    } else if (t.includes('xls') || t.includes('xlsx') || t.includes('csv') || t.includes('sheet') || t.includes('data')) {
+      return {
+        bg: '#1EBE5D',
+        shadow: '#119D48',
+        icon: <FileText size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Data Sheet'
+      };
+    } else if (t.includes('link') || t.includes('url') || t.includes('website')) {
+      return {
+        bg: '#FFC800',
+        shadow: '#E6B000',
+        icon: <LinkIcon size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Useful Link'
+      };
+    } else if (t.includes('zip') || t.includes('rar') || t.includes('folder') || t.includes('source') || t.includes('file')) {
+      return {
+        bg: '#1CB0F6',
+        shadow: '#0F9BD8',
+        icon: <Folder size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Source Files'
+      };
+    } else if (t.includes('ppt') || t.includes('pptx') || t.includes('slides') || t.includes('presentation')) {
+      return {
+        bg: '#00C9A7',
+        shadow: '#009E83',
+        icon: <BookText size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Slide Deck'
+      };
+    } else {
+      return {
+        bg: '#FF6B8B',
+        shadow: '#E04B6B',
+        icon: <BookOpen size={32} strokeWidth={2.5} color="white" />,
+        badge: 'Quick Notes'
+      };
     }
   };
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -1133,6 +1279,159 @@ function SectionViewContent({
             </>
           )}
 
+          {/* DEEPEN PHASE */}
+          {lessonPhase === 'deepen' && (
+            <>
+              {/* TOP AND MIDDLE CONTAINERS */}
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }} className={styles.deepenContentScroll}>
+                <div className={styles.deepenHeader}>
+                  <span className={styles.applyBadge}>DEEPEN</span>
+                  <h2 className={styles.deepenTitle}>{deepenTitle}</h2>
+                  <div className={styles.deepenDescription} dangerouslySetInnerHTML={{ __html: cleanHtml(deepenDesc) }} />
+                </div>
+
+                {/* Serpentine Pathway Grid */}
+                {activeLesson?.resources && activeLesson.resources.length > 0 ? (
+                  <div className={styles.deepenPathContainer}>
+                    {/* SVG Connector Path Behind Buttons */}
+                    <svg className={styles.deepenPathSvg} viewBox="0 0 600 400" fill="none" preserveAspectRatio="none">
+                      <path 
+                        d="M 100 60 C 250 60, 350 60, 500 60 C 560 60, 560 180, 500 180 C 350 180, 250 180, 100 180 C 40 180, 40 300, 100 300 C 250 300, 350 300, 500 300"
+                        stroke="#E2E8F0"
+                        strokeWidth="4"
+                        strokeDasharray="8 8"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+
+                    <div className={styles.deepenGrid}>
+                      {getSerpentineRows(activeLesson.resources.slice(0, 8)).map((rowItems, rowIndex) => (
+                        <div key={rowIndex} className={styles.deepenGridRow}>
+                          {rowItems.map((res: any) => {
+                            const iconInfo = getResourceIconInfo(res.type);
+                            return (
+                              <div key={res.id} className={styles.deepenGridItem}>
+                                <motion.button
+                                  type="button"
+                                  onClick={() => { playHaptic('medium'); setSelectedResource(res); }}
+                                  className={styles.deepenNodeBtn}
+                                  style={{
+                                    backgroundColor: iconInfo.bg,
+                                    boxShadow: `0 8px 0 ${iconInfo.shadow}`
+                                  }}
+                                  whileTap={{
+                                    y: 8,
+                                    boxShadow: '0 0px 0 transparent'
+                                  }}
+                                >
+                                  {iconInfo.icon}
+                                </motion.button>
+                                <span className={styles.deepenNodeTitle}>{res.title || 'Resource'}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ padding: '40px 24px', textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: '16px', border: '1px dashed #E2E8F0', color: '#64748B', margin: '24px 0' }}>
+                    <p style={{ margin: 0, fontSize: '15px' }}>No additional resources uploaded by the creator.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* RECOMMENDED NEXT STEP & FINISH LESSON BOTTOM AREA */}
+              <div className={styles.deepenBottomArea}>
+                {/* Recommended Next Step Banner */}
+                <div className={styles.nextStepBanner}>
+                  <div className={styles.nextStepIconCircle}>
+                    {nextStepConfig.type === 'practice' ? '🎯' : nextStepConfig.type === 'project' ? '🏆' : nextStepConfig.type === 'explore' ? '🔍' : '🚀'}
+                  </div>
+                  <div className={styles.nextStepTextGroup}>
+                    <span className={styles.nextStepBadge}>RECOMMENDED NEXT STEP</span>
+                    <h5 className={styles.nextStepTitle}>{getNextStepInfo(nextStepConfig.type).title}</h5>
+                    <p className={styles.nextStepDesc}>{getNextStepInfo(nextStepConfig.type).desc}</p>
+                  </div>
+                  <button className={styles.nextStepArrowBtn} onClick={handleFinishLesson}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+
+                {/* Bottom CTA Button row with Mascot */}
+                <div className={styles.deepenCtaRow}>
+                  <img 
+                    src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
+                    alt="Tey Verified" 
+                    className={styles.deepenMascot} 
+                  />
+                  <button 
+                    className={styles.finishLessonBtn3D}
+                    onClick={handleFinishLesson}
+                  >
+                    FINISH LESSON
+                  </button>
+                </div>
+              </div>
+
+              {/* Resource Details Pop-up Modal */}
+              <AnimatePresence>
+                {selectedResource && (
+                  <motion.div 
+                    className={styles.modalOverlay}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSelectedResource(null)}
+                  >
+                    <motion.div 
+                      className={styles.resourceModal}
+                      initial={{ scale: 0.9, y: 20 }}
+                      animate={{ scale: 1, y: 0 }}
+                      exit={{ scale: 0.9, y: 20 }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button className={styles.modalCloseBtn} onClick={() => setSelectedResource(null)}>
+                        <X size={20} strokeWidth={2.5} />
+                      </button>
+
+                      <div className={styles.modalHeaderIcon} style={{ backgroundColor: getResourceIconInfo(selectedResource.type).bg }}>
+                        {getResourceIconInfo(selectedResource.type).icon}
+                      </div>
+
+                      <span className={styles.modalBadge}>
+                        {getResourceIconInfo(selectedResource.type).badge}
+                      </span>
+
+                      <h3 className={styles.modalResourceTitle}>{selectedResource.title || selectedResource.originalName}</h3>
+                      
+                      {selectedResource.description && (
+                        <p className={styles.modalResourceDesc}>{selectedResource.description}</p>
+                      )}
+
+                      <div className={styles.modalMetaInfo}>
+                        {selectedResource.sizeBytes && (
+                          <span>Size: {(selectedResource.sizeBytes / (1024 * 1024)).toFixed(2)} MB</span>
+                        )}
+                        <span>Format: {selectedResource.type?.toUpperCase()}</span>
+                      </div>
+
+                      <a 
+                        href={selectedResource.storageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.modalDownloadBtn3D}
+                        onClick={() => setSelectedResource(null)}
+                      >
+                        DOWNLOAD RESOURCE
+                      </a>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+
         </div>
           ) : (
             <>
@@ -1608,6 +1907,7 @@ export default function SectionViewPage() {
         section={section}
         sectionIndex={sectionIndex}
         completedLessons={completedLessons}
+        setCompletedLessons={setCompletedLessons}
         streakDays={streakDays}
         xpPoints={xpPoints}
         livesCount={livesCount}

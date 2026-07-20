@@ -3312,19 +3312,433 @@
   .startScreenBody {
     gap: 16px !important;
   }
+  .grid:has(.lessonPlayerInnerContainer),
+  .grid:has(.lessonLearnContainer) {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
 }
 
 /* Stretch the grid to take full height when lesson player is active */
 .grid:has(.lessonPlayerInnerContainer),
 .grid:has(.lessonLearnContainer) {
   align-items: stretch !important;
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-  min-height: 0 !important;
-  height: auto !important;
 }
 
 .infoRightCol {
   gap: 18px;
+}
+
+/* ─── DEEPEN STEP STYLES ─── */
+.deepenContentScroll {
+  padding: 24px 32px;
+  box-sizing: border-box;
+}
+
+.deepenHeader {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.deepenTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: #071233;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.deepenDescription {
+  font-size: 15px;
+  color: #64748B;
+  font-weight: 500;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+.deepenPathContainer {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 380px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.deepenPathSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.deepenGrid {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+
+.deepenGridRow {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.deepenGridItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 110px;
+}
+
+.deepenNodeBtn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.deepenNodeBtn:hover {
+  transform: translateY(-2px);
+}
+
+.deepenNodeTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3C4D6E;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deepenBottomArea {
+  border-top: 2px solid #E2E8F0;
+  padding: 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #FFFFFF;
+}
+
+.nextStepBanner {
+  display: flex;
+  align-items: center;
+  background-color: #0172FD;
+  border-radius: 16px;
+  padding: 16px 20px;
+  color: #FFFFFF;
+  gap: 16px;
+}
+
+.nextStepIconCircle {
+  width: 48px;
+  height: 48px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.nextStepTextGroup {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.nextStepBadge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  opacity: 0.85;
+  margin-bottom: 2px;
+}
+
+.nextStepTitle {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.nextStepDesc {
+  font-size: 13px;
+  margin: 2px 0 0;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.nextStepArrowBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #0172FD;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.nextStepArrowBtn:hover {
+  transform: scale(1.05);
+}
+
+.deepenCtaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.deepenMascot {
+  height: 100px;
+  object-fit: contain;
+}
+
+.finishLessonBtn3D {
+  background-color: #58CC02;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 16px 40px;
+  text-transform: uppercase;
+  box-shadow: 0 6px 0 #46A302;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.finishLessonBtn3D:hover {
+  filter: brightness(1.05);
+}
+
+.finishLessonBtn3D:active {
+  transform: translateY(6px);
+  box-shadow: 0 0px 0 transparent;
+}
+
+/* ─── RESOURCE POPUP MODAL ─── */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(7, 18, 51, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.resourceModal {
+  background-color: #FFFFFF;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 28px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.modalCloseBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.modalCloseBtn:hover {
+  background-color: #F1F5F9;
+  color: #64748B;
+}
+
+.modalHeaderIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.modalBadge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+
+.modalResourceTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #071233;
+  margin: 0 0 12px;
+  line-height: 1.3;
+}
+
+.modalResourceDesc {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 0 20px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.modalMetaInfo {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.modalDownloadBtn3D {
+  width: 100%;
+  background-color: #0172FD;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 16px;
+  text-transform: uppercase;
+  box-shadow: 0 6px 0 #0056C6;
+  text-decoration: none;
+  box-sizing: border-box;
+  display: inline-block;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.modalDownloadBtn3D:hover {
+  filter: brightness(1.05);
+}
+
+.modalDownloadBtn3D:active {
+  transform: translateY(6px);
+  box-shadow: 0 0px 0 transparent;
+}
+
+/* ─── RESPONSIVE DEEPEN STEP ─── */
+@media (max-width: 768px) {
+  .deepenContentScroll {
+    padding: 16px 20px;
+  }
+
+  .deepenTitle {
+    font-size: 21px;
+  }
+
+  .deepenDescription {
+    font-size: 13.5px;
+  }
+
+  .deepenPathContainer {
+    min-height: 300px;
+  }
+
+  .deepenNodeBtn {
+    width: 64px;
+    height: 64px;
+  }
+
+  .deepenNodeBtn svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .deepenNodeTitle {
+    font-size: 11px;
+    max-width: 80px;
+  }
+
+  .deepenBottomArea {
+    padding: 16px 20px max(16px, env(safe-area-inset-bottom));
+    gap: 12px;
+  }
+
+  .nextStepBanner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .nextStepIconCircle {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  .nextStepTitle {
+    font-size: 14px;
+  }
+
+  .nextStepDesc {
+    font-size: 11.5px;
+  }
+
+  .nextStepArrowBtn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .deepenMascot {
+    height: 75px;
+  }
+
+  .finishLessonBtn3D {
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 12px;
+  }
 }
