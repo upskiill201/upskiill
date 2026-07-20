@@ -3439,9 +3439,10 @@
   border-top: 2px solid #E2E8F0;
   padding: 20px 32px;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background-color: #FFFFFF;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  background: transparent;
 }
 
 .nextStepBanner {
@@ -3512,16 +3513,27 @@
   transform: scale(1.05);
 }
 
-.deepenCtaRow {
+.deepenMascotCol {
+  flex: 0 0 120px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: center;
 }
 
-.deepenMascot {
-  height: 100px;
+.deepenMascotImg {
+  width: 80%;
+  height: auto;
+  max-height: 110px;
   object-fit: contain;
+}
+
+.deepenTextCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
 }
 
 .finishLessonBtn3D {
@@ -3704,13 +3716,33 @@
   }
 
   .deepenBottomArea {
-    padding: 16px 20px max(16px, env(safe-area-inset-bottom));
-    gap: 12px;
+    padding: 16px 20px max(16px, env(safe-area-inset-bottom)) !important;
+    gap: 16px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .deepenMascotCol {
+    flex: 0 0 80px !important;
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  .deepenMascotImg {
+    width: 80% !important;
+    max-height: 80px !important;
+  }
+
+  .deepenTextCol {
+    width: 100% !important;
+    gap: 12px !important;
+    align-items: center !important;
   }
 
   .nextStepBanner {
     padding: 12px 16px;
     gap: 12px;
+    width: 100%;
   }
 
   .nextStepIconCircle {
@@ -3732,13 +3764,11 @@
     height: 34px;
   }
 
-  .deepenMascot {
-    height: 75px;
-  }
-
   .finishLessonBtn3D {
-    font-size: 14px;
-    padding: 12px 24px;
-    border-radius: 12px;
+    font-size: 14px !important;
+    padding: 14px 28px !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    max-width: 280px !important;
   }
 }

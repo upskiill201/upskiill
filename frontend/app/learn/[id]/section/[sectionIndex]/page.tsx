@@ -1343,28 +1343,33 @@ function SectionViewContent({
 
               {/* RECOMMENDED NEXT STEP & FINISH LESSON BOTTOM AREA */}
               <div className={styles.deepenBottomArea}>
-                {/* Recommended Next Step Banner */}
-                <div className={styles.nextStepBanner}>
-                  <div className={styles.nextStepIconCircle}>
-                    {nextStepConfig.type === 'practice' ? '🎯' : nextStepConfig.type === 'project' ? '🏆' : nextStepConfig.type === 'explore' ? '🔍' : '🚀'}
-                  </div>
-                  <div className={styles.nextStepTextGroup}>
-                    <span className={styles.nextStepBadge}>RECOMMENDED NEXT STEP</span>
-                    <h5 className={styles.nextStepTitle}>{getNextStepInfo(nextStepConfig.type).title}</h5>
-                    <p className={styles.nextStepDesc}>{getNextStepInfo(nextStepConfig.type).desc}</p>
-                  </div>
-                  <button className={styles.nextStepArrowBtn} onClick={handleFinishLesson}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </button>
-                </div>
-
-                {/* Bottom CTA Button row with Mascot */}
-                <div className={styles.deepenCtaRow}>
+                {/* Image container carrying the mascot image */}
+                <div className={styles.deepenMascotCol}>
                   <img 
                     src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
                     alt="Tey Verified" 
-                    className={styles.deepenMascot} 
+                    className={styles.deepenMascotImg} 
                   />
+                </div>
+
+                {/* Text container carrying the recommended step banner and finish lesson button */}
+                <div className={styles.deepenTextCol}>
+                  {/* Recommended Next Step Banner */}
+                  <div className={styles.nextStepBanner}>
+                    <div className={styles.nextStepIconCircle}>
+                      {nextStepConfig.type === 'practice' ? '🎯' : nextStepConfig.type === 'project' ? '🏆' : nextStepConfig.type === 'explore' ? '🔍' : '🚀'}
+                    </div>
+                    <div className={styles.nextStepTextGroup}>
+                      <span className={styles.nextStepBadge}>RECOMMENDED NEXT STEP</span>
+                      <h5 className={styles.nextStepTitle}>{getNextStepInfo(nextStepConfig.type).title}</h5>
+                      <p className={styles.nextStepDesc}>{getNextStepInfo(nextStepConfig.type).desc}</p>
+                    </div>
+                    <button className={styles.nextStepArrowBtn} onClick={handleFinishLesson}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+
+                  {/* Finish Lesson Button */}
                   <button 
                     className={styles.finishLessonBtn3D}
                     onClick={handleFinishLesson}
