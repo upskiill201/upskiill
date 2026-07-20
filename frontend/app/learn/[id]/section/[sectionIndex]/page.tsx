@@ -319,7 +319,7 @@ function SectionViewContent({
   const [activePopoverIndex, setActivePopoverIndex] = useState<number | null>(null);
   const [showGuidebook, setShowGuidebook] = useState(false);
   const [activeLesson, setActiveLesson] = useState<any>(null);
-  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
+  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen' | 'celebrate'>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
@@ -476,7 +476,7 @@ function SectionViewContent({
   const deepenDesc = deepenData?.collectionDescription || 'Explore these helpful resources to master the topic.';
   const nextStepConfig = deepenData?.recommendedNextStep || { type: 'practice' };
 
-  const handleFinishLesson = async () => {
+  const handleDeepenFinish = async () => {
     playHaptic('success');
     try {
       const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
@@ -492,6 +492,11 @@ function SectionViewContent({
     } catch (e) {
       console.error('Error completing lesson:', e);
     }
+    setLessonPhase('celebrate');
+  };
+
+  const handleCelebrateFinish = () => {
+    playHaptic('medium');
     setActiveLesson(null);
     setLessonPhase('start');
   };
@@ -539,6 +544,56 @@ function SectionViewContent({
         };
     }
   };
+
+  const confettiParticles = React.useMemo(() => {
+    const colors = ['#FF4B4B', '#FFC800', '#58CC02', '#00C9A7', '#FF6B8B', '#0172FD', '#A259FF'];
+    
+    // 170 Quick Explosive Burst particles
+    const burstList = Array.from({ length: 170 }).map((_, i) => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 100 + Math.random() * 320;
+      const destX = Math.cos(angle) * speed;
+      const destY = Math.sin(angle) * speed - 60; // Bias upward
+      return {
+        id: `b-${i}`,
+        color: colors[i % colors.length],
+        shape: ['circle', 'square', 'streamer'][i % 3],
+        size: 5 + Math.random() * 9,
+        startX: 0,
+        startY: 50,
+        destX,
+        destY,
+        rotate: Math.random() * 1080,
+        delay: Math.random() * 0.25,
+        duration: 1.0 + Math.random() * 1.5,
+        type: 'burst' as const
+      };
+    });
+
+    // 80 Continuous cascading falling particles
+    const fallingList = Array.from({ length: 80 }).map((_, i) => {
+      const startX = -200 + Math.random() * 400;
+      const startY = -300 - Math.random() * 150;
+      const destX = startX + (-60 + Math.random() * 120);
+      const destY = 500 + Math.random() * 150;
+      return {
+        id: `f-${i}`,
+        color: colors[i % colors.length],
+        shape: ['circle', 'square', 'streamer'][i % 3],
+        size: 5 + Math.random() * 9,
+        startX,
+        startY,
+        destX,
+        destY,
+        rotate: Math.random() * 1440,
+        delay: Math.random() * 4,
+        duration: 4.5 + Math.random() * 4.0,
+        type: 'falling' as const
+      };
+    });
+
+    return [...burstList, ...fallingList];
+  }, []);
 
   const getResourceIconInfo = (type: string) => {
     const t = type?.toLowerCase() || 'link';
@@ -948,36 +1003,38 @@ function SectionViewContent({
           ) : activeLesson && lessonPhase !== 'start' ? (
             <div className={styles.lessonLearnContainer}>
               {/* Stepper Progress Indicator (reusing same logic) */}
-              <div className={styles.stepperContainer}>
-                <div className={styles.stepperWrapper}>
-                  <div className={styles.stepperLineBg}></div>
-                  <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
+              {lessonPhase !== 'celebrate' && (
+                <div className={styles.stepperContainer}>
+                  <div className={styles.stepperWrapper}>
+                    <div className={styles.stepperLineBg}></div>
+                    <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
+                    <div className={styles.stepperItem}>
+                      <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
+                      <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
+                    </div>
+                    <div className={styles.stepperItem}>
+                      <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
+                      <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
+                    </div>
+                    <div className={styles.stepperItem}>
+                      <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
+                      <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
+                    </div>
+                    <div className={styles.stepperItem}>
+                      <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
+                      <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
+                    </div>
                   </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
-                  </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
-                  </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
-                  </div>
+                  
+                  {/* Close Button on Right side of Stepper */}
+                  <button 
+                    onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+                    className={styles.closeLearnBtn}
+                  >
+                    <X size={20} strokeWidth={2.5} color="#AFBFCF" />
+                  </button>
                 </div>
-                
-                {/* Close Button on Right side of Stepper */}
-                <button 
-                  onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
-                  className={styles.closeLearnBtn}
-                >
-                  <X size={20} strokeWidth={2.5} color="#AFBFCF" />
-                </button>
-              </div>
+              )}
 
               {/* LEARN PHASE */}
               {lessonPhase === 'learn' && (
@@ -1364,7 +1421,7 @@ function SectionViewContent({
                       <h5 className={styles.nextStepTitle}>{getNextStepInfo(nextStepConfig.type).title}</h5>
                       <p className={styles.nextStepDesc}>{getNextStepInfo(nextStepConfig.type).desc}</p>
                     </div>
-                    <button className={styles.nextStepArrowBtn} onClick={handleFinishLesson}>
+                    <button className={styles.nextStepArrowBtn} onClick={handleDeepenFinish}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </button>
                   </div>
@@ -1372,7 +1429,7 @@ function SectionViewContent({
                   {/* Finish Lesson Button */}
                   <button 
                     className={styles.finishLessonBtn3D}
-                    onClick={handleFinishLesson}
+                    onClick={handleDeepenFinish}
                   >
                     FINISH LESSON
                   </button>
@@ -1435,6 +1492,143 @@ function SectionViewContent({
                 )}
               </AnimatePresence>
             </>
+          )}
+
+          {/* CELEBRATION PHASE */}
+          {lessonPhase === 'celebrate' && (
+            <div className={styles.celebrateContent}>
+              {/* Confetti Explosion Burst */}
+              <div className={styles.confettiWrapper}>
+                {confettiParticles.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    className={`${styles.confettiPiece} ${styles[p.shape]}`}
+                    style={{
+                      backgroundColor: p.shape !== 'streamer' ? p.color : undefined,
+                      borderColor: p.shape === 'streamer' ? p.color : undefined,
+                      width: p.size,
+                      height: p.shape === 'streamer' ? p.size * 2 : p.size,
+                      position: 'absolute',
+                      top: p.type === 'burst' ? '55%' : '0%',
+                      left: p.type === 'burst' ? '50%' : '50%',
+                      zIndex: 3,
+                    }}
+                    initial={{ 
+                      x: p.startX, 
+                      y: p.startY, 
+                      scale: p.type === 'burst' ? 0.1 : 1, 
+                      opacity: p.type === 'burst' ? 0 : 0.8, 
+                      rotate: 0 
+                    }}
+                    animate={{
+                      x: p.destX,
+                      y: p.destY,
+                      scale: p.type === 'burst' ? [0.1, 1, 1, 0.8, 0] : 1,
+                      opacity: p.type === 'burst' ? [0, 1, 1, 0.8, 0] : [0, 0.9, 0.9, 0],
+                      rotate: p.rotate,
+                    }}
+                    transition={{
+                      duration: p.duration,
+                      delay: p.delay,
+                      ease: p.type === 'burst' ? 'easeOut' : 'linear',
+                      repeat: Infinity,
+                      repeatDelay: p.type === 'burst' ? Math.random() * 1.5 : 0.5,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* TOP CONTAINER - Mascot & Curved Title */}
+              <div className={styles.celebrateTop}>
+                {/* Duolingo style 3D Multi-colored SVG Curved Title */}
+                <svg viewBox="0 0 500 160" className={styles.celebrateTitleSvg}>
+                  <defs>
+                    <path id="curveLesson" d="M 60 70 Q 250 15, 440 70" fill="none" />
+                    <path id="curveComplete" d="M 40 145 Q 250 85, 460 145" fill="none" />
+                  </defs>
+                  <text className={styles.svgTextLesson}>
+                    <textPath href="#curveLesson" startOffset="50%" textAnchor="middle">
+                      <tspan fill="#FF4B4B">L</tspan>
+                      <tspan fill="#FFC800">E</tspan>
+                      <tspan fill="#58CC02">S</tspan>
+                      <tspan fill="#00C9A7">S</tspan>
+                      <tspan fill="#FF6B8B">O</tspan>
+                      <tspan fill="#0172FD">N</tspan>
+                    </textPath>
+                  </text>
+                  <text className={styles.svgTextComplete}>
+                    <textPath href="#curveComplete" startOffset="50%" textAnchor="middle">
+                      <tspan fill="#0172FD">C</tspan>
+                      <tspan fill="#FF6B8B">O</tspan>
+                      <tspan fill="#FF4B4B">M</tspan>
+                      <tspan fill="#1CB0F6">P</tspan>
+                      <tspan fill="#58CC02">L</tspan>
+                      <tspan fill="#FFC800">E</tspan>
+                      <tspan fill="#A259FF">T</tspan>
+                      <tspan fill="#00C9A7">E</tspan>
+                      <tspan fill="#FF4B4B">!</tspan>
+                    </textPath>
+                  </text>
+                </svg>
+
+                {/* Big Celebration Mascot Image */}
+                <div className={styles.celebrateMascotContainer}>
+                  <img 
+                    src="/User onbarding Assets/Step_10_image.webp" 
+                    alt="Lesson Complete Mascot" 
+                    className={styles.celebrateMascotImg}
+                  />
+                </div>
+              </div>
+
+              {/* BOTTOM CONTAINER - Stats, Progress & Let's Go Button */}
+              <div className={styles.celebrateBottom}>
+                {/* Stats row */}
+                <div className={styles.celebrateStatsRow}>
+                  {/* Card 1: XP */}
+                  <div className={styles.celebrateStatCard} style={{ borderColor: '#84D8FF' }}>
+                    <div className={styles.celebrateStatIconWrap}>
+                      <Image src="/gem-icon.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
+                    </div>
+                    <div className={styles.celebrateStatTextGroup}>
+                      <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{activeLesson?.xpReward || 20} XP</span>
+                      <span className={styles.celebrateStatLabel}>Earned</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Streak */}
+                  <div className={styles.celebrateStatCard} style={{ borderColor: '#FFC800' }}>
+                    <div className={styles.celebrateStatIconWrap}>
+                      <Image src="/flame-icon.png" width={42} height={42} alt="Flame Streak Icon" className={styles.statIconImg} />
+                    </div>
+                    <div className={styles.celebrateStatTextGroup}>
+                      <span className={styles.celebrateStatValue} style={{ color: '#FF9600' }}>{streakDays || 1}-Day</span>
+                      <span className={styles.celebrateStatLabel}>Streak Active</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress bar card */}
+                <div className={styles.celebrateProgressCard}>
+                  <div className={styles.celebrateProgressBarContainer}>
+                    <div className={styles.celebrateProgressBarFill} style={{ width: '100%' }}>
+                      <span className={styles.celebrateProgressPercentText}>100%</span>
+                    </div>
+                  </div>
+                  <p className={styles.celebrateProgressSub}>
+                    All <strong style={{ color: '#58CC02' }}>4 lesson phases</strong> completed!
+                  </p>
+                </div>
+
+                {/* LET'S GO! 3D Button */}
+                <button 
+                  className={styles.letsGoBtn3D}
+                  onClick={handleCelebrateFinish}
+                >
+                  LET&apos;S GO!
+                </button>
+              </div>
+            </div>
           )}
 
         </div>

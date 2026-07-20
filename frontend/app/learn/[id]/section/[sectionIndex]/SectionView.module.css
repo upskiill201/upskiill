@@ -3515,15 +3515,15 @@
 
 .deepenMascotCol {
   flex: 0 0 120px;
+  height: 120px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
 .deepenMascotImg {
-  width: 80%;
-  height: auto;
-  max-height: 110px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -3771,4 +3771,320 @@
     width: 100% !important;
     max-width: 280px !important;
   }
+
+  /* Celebrate responsive overrides */
+  .celebrateContent {
+    padding: 16px 16px max(1rem, env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    box-sizing: border-box !important;
+    flex: 1 !important;
+    gap: 0 !important;
+  }
+
+  .celebrateTop {
+    margin-bottom: 0 !important;
+    gap: 12px !important;
+  }
+
+  .celebrateTitleSvg {
+    width: 85vw !important;
+    max-width: 360px !important;
+    height: auto !important;
+  }
+
+  .svgTextLesson, .svgTextComplete {
+    font-size: 40px !important;
+    stroke-width: 9px !important;
+  }
+
+  .celebrateMascotImg {
+    width: 65vw !important;
+    max-width: 210px !important;
+    height: auto !important;
+  }
+
+  .celebrateBottom {
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 400px !important;
+  }
+
+  .celebrateStatsRow {
+    gap: 10px !important;
+  }
+
+  .celebrateStatCard {
+    padding: 12px 14px !important;
+    gap: 10px !important;
+    border-width: 2px !important;
+    border-radius: 16px !important;
+  }
+
+  .celebrateStatValue {
+    font-size: 16.5px !important;
+  }
+
+  .celebrateStatIconWrap {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .celebrateProgressCard {
+    border-width: 2px !important;
+    border-radius: 16px !important;
+    padding: 12px 16px !important;
+  }
+
+  .celebrateProgressBarContainer {
+    height: 26px !important;
+  }
+
+  .celebrateProgressPercentText {
+    font-size: 12px !important;
+  }
+
+  .letsGoBtn3D {
+    padding: 14px !important;
+    font-size: 15px !important;
+    border-radius: 14px !important;
+    border-bottom-width: 4px !important;
+  }
 }
+
+/* ─── CELEBRATION PHASE STYLES ─── */
+.celebrateContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  justify-content: center; /* Vertically center all elements */
+  align-items: center;
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1;
+  gap: 16px; /* Tight stack spacing, no huge gap! */
+}
+
+.celebrateTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  gap: 8px;
+  margin-bottom: -10px; /* Reduced margin bottom */
+}
+
+.confettiWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.confettiPiece {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Shapes styling for confetti explosion */
+.confettiPiece.circle {
+  border-radius: 50%;
+}
+.confettiPiece.square {
+  border-radius: 2px;
+}
+.confettiPiece.streamer {
+  background: transparent !important;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 3px;
+  width: 6px !important;
+  height: 16px !important;
+}
+
+.celebrateTitleSvg {
+  width: 80%;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 500 / 160;
+  z-index: 2;
+  filter: drop-shadow(0 4px 0 rgba(7, 18, 51, 0.08));
+}
+
+.svgTextLesson, .svgTextComplete {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 50px;
+  font-weight: 900;
+  stroke: #FFFFFF;
+  stroke-width: 12px;
+  paint-order: stroke fill;
+  letter-spacing: 2px;
+}
+
+.celebrateMascotContainer {
+  position: relative;
+  z-index: 2;
+  margin-top: -10px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.celebrateMascotImg {
+  width: 70%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.celebrateBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  gap: 16px;
+  z-index: 2;
+}
+
+.celebrateStatsRow {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.celebrateStatCard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border: 3px solid #E2E8F0; /* Thicker border */
+  border-radius: 20px;
+  padding: 16px 20px;
+  gap: 16px;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 0 #E2E8F0; /* Thicker lip shadow */
+}
+
+.celebrateStatIconWrap {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconImg {
+  object-fit: contain;
+}
+
+.celebrateStatTextGroup {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.celebrateStatValue {
+  font-size: 22px; /* Bigger number values */
+  font-weight: 900;
+  line-height: 1.1;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.celebrateStatLabel {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.celebrateProgressCard {
+  width: 100%;
+  border: 3px solid #E2E8F0; /* Thicker border */
+  border-radius: 20px;
+  padding: 16px 20px;
+  background-color: #FFFFFF;
+  text-align: center;
+  box-shadow: 0 4px 0 #E2E8F0;
+  box-sizing: border-box;
+}
+
+.celebrateProgressBarContainer {
+  width: 100%;
+  height: 32px; /* Taller progress bar */
+  background-color: #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.celebrateProgressBarFill {
+  height: 100%;
+  background-color: #58CC02;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+
+.celebrateProgressPercentText {
+  color: #FFFFFF;
+  font-size: 14px; /* Larger percent font */
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.celebrateProgressSub {
+  font-size: 13.5px;
+  color: #64748B;
+  margin: 0;
+  font-weight: 700;
+}
+
+.letsGoBtn3D {
+  width: 100%;
+  background-color: #1CB0F6; /* Perfect Duolingo blue */
+  border: none;
+  border-radius: 18px;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  padding: 18px;
+  text-transform: uppercase;
+  border-bottom: 5px solid #1899D6; /* Darker lip */
+  box-shadow: 0 4px 0 #1899D6;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  outline: none;
+}
+
+.letsGoBtn3D:hover {
+  filter: brightness(1.05);
+}
+
+.letsGoBtn3D:active {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 transparent;
+  border-bottom-width: 1px;
+}
+
