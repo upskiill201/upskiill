@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords } from 'lucide-react';
+import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
@@ -14,9 +14,11 @@ import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
   if (!rawStr) return '';
-  const div = document.createElement('div');
-  div.innerHTML = rawStr;
-  return div.textContent || div.innerText || '';
+  // Safely strip HTML tags using regex
+  let cleaned = rawStr.replace(/<\/?[^>]+(>|$)/g, '');
+  // Decode common HTML entities
+  cleaned = cleaned.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  return cleaned;
 };
 
 const parsePoint = (pointStr: string, index: number) => {
@@ -315,7 +317,144 @@ function SectionViewContent({
   const [activePopoverIndex, setActivePopoverIndex] = useState<number | null>(null);
   const [showGuidebook, setShowGuidebook] = useState(false);
   const [activeLesson, setActiveLesson] = useState<any>(null);
+  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
+  const [isAnswerChecked, setIsAnswerChecked] = useState(false);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
 
+  let applyData = null;
+  if (activeLesson?.contentBlocks?.apply && Array.isArray(activeLesson.contentBlocks.apply)) {
+    applyData = activeLesson.contentBlocks.apply.find((b: any) => b.type === 'mcqActivity')?.value;
+  }
+
+  const applyQuestions = applyData?.questions && Array.isArray(applyData.questions) && applyData.questions.length > 0 
+    ? applyData.questions 
+    : [
+        {
+          questionText: "Which of the following is the main purpose of personal branding?",
+          options: [
+            { id: "opt_1", text: "To become famous on social media" },
+            { id: "opt_2", text: "To copy other people and fit in" },
+            { id: "opt_3", text: "To communicate your unique value and build trust" },
+            { id: "opt_4", text: "To get more followers as quickly as possible" }
+          ],
+          correctOptionId: "opt_3",
+          explanation: "Personal branding helps people understand who you are, what you stand for, and why you're different."
+        }
+      ];
+
+  const applyScenario = applyData?.scenario || '';
+  const currentQuestion = applyQuestions[currentQuestionIndex] || applyQuestions[0];
+
+  const handleCheckAnswer = () => {
+    if (selectedOptionIndex === null) return;
+    playHaptic('medium');
+    setIsAnswerChecked(true);
+    const selectedOption = currentQuestion.options[selectedOptionIndex];
+    setIsAnswerCorrect(selectedOption.id === currentQuestion.correctOptionId);
+  };
+
+  const handleApplyContinue = () => {
+    playHaptic('medium');
+    if (currentQuestionIndex < applyQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedOptionIndex(null);
+      setIsAnswerChecked(false);
+      setIsAnswerCorrect(false);
+    } else {
+      setLessonPhase('reflect');
+      setCurrentQuestionIndex(0);
+      setSelectedOptionIndex(null);
+      setIsAnswerChecked(false);
+    }
+  };
+
+  // REFLECT STATE & LOGIC
+  const [reflectionText, setReflectionText] = useState('');
+  const [guidedAnswers, setGuidedAnswers] = useState<string[]>([]);
+
+  let reflectData = null;
+  if (activeLesson?.contentBlocks?.reflect && Array.isArray(activeLesson.contentBlocks.reflect)) {
+    reflectData = activeLesson.contentBlocks.reflect.find((b: any) => b.type === 'reflectActivity')?.value;
+  }
+  
+  const reflectPrompt = reflectData?.prompt || "What's one key takeaway from this lesson?";
+  const reflectType = reflectData?.type || 'open';
+  
+  // Open config
+  const reflectOpenConfig = reflectData?.openConfig || { useStarters: true, starters: [], minWordCount: 20 };
+  const reflectMinWords = reflectOpenConfig.minWordCount;
+  const reflectStarters = reflectOpenConfig.useStarters ? reflectOpenConfig.starters : [];
+  
+  // Guided config
+  const reflectGuidedConfig = reflectData?.guidedConfig || { questions: [], minWordCountPerQuestion: 10 };
+  
+  useEffect(() => {
+    if (reflectType === 'guided' && reflectGuidedConfig.questions.length > 0 && guidedAnswers.length === 0) {
+      setGuidedAnswers(new Array(reflectGuidedConfig.questions.length).fill(''));
+    }
+  }, [reflectType, reflectGuidedConfig, guidedAnswers.length]);
+
+  const handleGuidedAnswerChange = (index: number, text: string) => {
+    setGuidedAnswers(prev => {
+      const newArr = [...prev];
+      newArr[index] = text;
+      return newArr;
+    });
+  };
+
+  const handleStarterClick = (starterText: string) => {
+    setReflectionText(prev => {
+      if (prev.includes(starterText)) return prev;
+      return prev ? `${prev}\n${starterText} ` : `${starterText} `;
+    });
+  };
+
+  let canSubmitReflect = false;
+  if (reflectType === 'open') {
+    const wordCount = reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length;
+    canSubmitReflect = wordCount >= reflectMinWords;
+  } else if (reflectType === 'guided') {
+    canSubmitReflect = guidedAnswers.length > 0 && guidedAnswers.every(ans => {
+      const wc = ans.trim().split(/\s+/).filter(w => w.length > 0).length;
+      return wc >= reflectGuidedConfig.minWordCountPerQuestion;
+    });
+  }
+
+  const handleReflectSubmit = () => {
+    if (canSubmitReflect) {
+      playHaptic('success');
+      setLessonPhase('deepen');
+    }
+  };
+
+  const handleStepBack = () => {
+    playHaptic('medium');
+    if (lessonPhase === 'learn') {
+      setLessonPhase('start');
+    } else if (lessonPhase === 'apply') {
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(prev => prev - 1);
+        setSelectedOptionIndex(null);
+        setIsAnswerChecked(false);
+        setIsAnswerCorrect(false);
+      } else {
+        setLessonPhase('learn');
+      }
+    } else if (lessonPhase === 'reflect') {
+      setLessonPhase('apply');
+      // Go back to the last question of the apply step
+      setCurrentQuestionIndex(applyQuestions.length - 1);
+      setSelectedOptionIndex(null);
+      setIsAnswerChecked(false);
+      setIsAnswerCorrect(false);
+    } else if (lessonPhase === 'deepen') {
+      setLessonPhase('reflect');
+    }
+  };
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   // Close speech bubble when clicking outside the map area
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -382,6 +521,43 @@ function SectionViewContent({
     return [];
   }, [activeLesson]);
 
+  // CAROUSEL AUTO-PLAY INTERACTION
+  useEffect(() => {
+    if (!wylList || wylList.length <= 1 || lessonPhase !== 'start') return;
+    const slideCount = wylList.filter(Boolean).slice(0, 5).length;
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % slideCount);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [wylList, lessonPhase]);
+
+  const handleDragEnd = (event: any, info: any) => {
+    const offset = info.offset.x;
+    const threshold = 50;
+    const slideCount = wylList.filter(Boolean).slice(0, 5).length;
+    if (offset < -threshold) {
+      setCurrentSlide(prev => (prev + 1) % slideCount);
+    } else if (offset > threshold) {
+      setCurrentSlide(prev => (prev - 1 + slideCount) % slideCount);
+    }
+  };
+
+  const videoUrl = React.useMemo(() => {
+    if (!activeLesson || !activeLesson.contentBlocks) return null;
+    let parsedBlocks = activeLesson.contentBlocks;
+    if (typeof parsedBlocks === 'string') {
+      try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) {}
+    }
+    const learnBlocks = parsedBlocks?.learn;
+    if (Array.isArray(learnBlocks)) {
+      const videoBlock = learnBlocks.find((b: any) => b.type === 'videoUrl');
+      if (videoBlock && typeof videoBlock.value === 'string' && videoBlock.value.trim() !== '') {
+        return videoBlock.value;
+      }
+    }
+    return null;
+  }, [activeLesson]);
+
   const handleNodeClick = (idx: number, isLocked: boolean) => {
     playHaptic('medium');
     setActivePopoverIndex(activePopoverIndex === idx ? null : idx);
@@ -415,18 +591,19 @@ function SectionViewContent({
       initial="hidden"
       animate="visible"
     >
-      {/* Stats bar */}
+       {/* Stats bar */}
       <div className={styles.topRow}>
-        <Link href={`/learn/${params.id}`} className={styles.backLink}>
-          <ArrowLeft size={16} />
-          <span>Back to Course</span>
-        </Link>
-
-        <div className={styles.statsRow}>
-          <StatPill type="streak" value={streakDays} />
-          <StatPill type="gem" value={xpPoints} />
-          <StatPill type="lives" value={livesCount} />
-        </div>
+        {activeLesson && lessonPhase !== 'start' ? (
+          <button onClick={handleStepBack} className={styles.backLink} style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+            <ArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+        ) : (
+          <Link href={`/learn/${params.id}`} className={styles.backLink}>
+            <ArrowLeft size={16} />
+            <span>Back to Course</span>
+          </Link>
+        )}
       </div>
 
       {/* Grid */}
@@ -434,7 +611,7 @@ function SectionViewContent({
         
         {/* Main Column */}
         <div className={styles.mainColumn}>
-          {activeLesson ? (
+          {activeLesson && lessonPhase === 'start' ? (
             <div className={styles.lessonPlayerInnerContainer}>
               {/* Duolingo Green Header matching design */}
               <div className={styles.duolingoHeader}>
@@ -529,19 +706,15 @@ function SectionViewContent({
 
                   {activeLesson.shortDescription && (
                     <div className={styles.lessonPlayerDesc}>
-                      {(() => {
-                        const textarea = document.createElement('textarea');
-                        textarea.innerHTML = activeLesson.shortDescription;
-                        return textarea.value;
-                      })()}
+                      {cleanHtml(activeLesson.shortDescription)}
                     </div>
                   )}
 
                   {/* Stats Cards */}
                   <div className={styles.statsCardsRow}>
                     <div className={styles.statsCard}>
-                      <div className={`${styles.statsCardIconWrap} ${styles.iconXpWrap}`}>
-                        ⚡
+                      <div className={`${styles.statsCardIconWrap} ${styles.iconXpWrap}`} style={{ background: 'transparent' }}>
+                        <Image src="/gem-icon.png" width={28} height={28} alt="XP Gem" style={{ objectFit: 'contain' }} />
                       </div>
                       <div className={styles.statsCardText}>
                         <span className={styles.statsCardVal}>+{activeLesson.xpReward || 40} XP</span>
@@ -562,28 +735,53 @@ function SectionViewContent({
                     </div>
                   </div>
 
-                  {/* What you'll learn list */}
+                  {/* What you'll learn Carousel Slider */}
                   {wylList && Array.isArray(wylList) && wylList.filter(Boolean).length > 0 && (
-                    <>
+                    <div className={styles.carouselContainer}>
                       <h3 className={styles.pointsListHeader}>You&apos;ll learn to:</h3>
-                      <div className={styles.pointsList}>
-                        {wylList.filter(Boolean).slice(0, 5).map((point: string, idx: number) => {
-                          const { emoji, title, desc, bg } = parsePoint(point, idx);
+                      <div className={styles.carouselWrapper}>
+                        <AnimatePresence mode="wait">
+                          {wylList.filter(Boolean).slice(0, 5).map((point: string, idx: number) => {
+                            if (idx !== currentSlide) return null;
+                            const { emoji, title, desc, bg } = parsePoint(point, idx);
 
-                          return (
-                            <div key={idx} className={styles.pointsListItem}>
-                              <div className={styles.emojiCircle} style={{ backgroundColor: bg }}>
-                                <span style={{ fontSize: '15px' }}>{emoji}</span>
-                              </div>
-                              <div className={styles.pointTextContainer}>
-                                <span className={styles.pointTitle} style={{ fontWeight: 800 }}>{title}</span>
-                                {desc && <span className={styles.pointDesc} style={{ color: '#64748B', fontSize: '12px' }}>{desc}</span>}
-                              </div>
-                            </div>
-                          );
-                        })}
+                            return (
+                              <motion.div
+                                key={idx}
+                                className={styles.carouselCard}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.2}
+                                onDragEnd={handleDragEnd}
+                                initial={{ opacity: 0, x: 80, scale: 0.92 }}
+                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                exit={{ opacity: 0, x: -80, scale: 0.92 }}
+                                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                              >
+                                <div className={styles.emojiCircle} style={{ backgroundColor: bg }}>
+                                  <span style={{ fontSize: '18px' }}>{emoji}</span>
+                                </div>
+                                <div className={styles.carouselTextContainer}>
+                                  <span className={styles.carouselTitle}>{title}</span>
+                                  {desc && <span className={styles.carouselDesc}>{desc}</span>}
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </AnimatePresence>
                       </div>
-                    </>
+
+                      {/* Dots indicators */}
+                      <div className={styles.carouselDots}>
+                        {wylList.filter(Boolean).slice(0, 5).map((_, idx: number) => (
+                          <button
+                            key={idx}
+                            className={`${styles.carouselDot} ${idx === currentSlide ? styles.carouselDotActive : ''}`}
+                            onClick={() => setCurrentSlide(idx)}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -593,7 +791,7 @@ function SectionViewContent({
                 <button 
                   onClick={() => {
                     playHaptic('medium');
-                    triggerComingSoon('Lesson Player: Next steps coming soon!');
+                    setLessonPhase('learn');
                   }}
                   className={styles.startLessonBtn3D}
                 >
@@ -601,6 +799,341 @@ function SectionViewContent({
                 </button>
               </div>
             </div>
+          ) : activeLesson && lessonPhase !== 'start' ? (
+            <div className={styles.lessonLearnContainer}>
+              {/* Stepper Progress Indicator (reusing same logic) */}
+              <div className={styles.stepperContainer}>
+                <div className={styles.stepperWrapper}>
+                  <div className={styles.stepperLineBg}></div>
+                  <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
+                  </div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
+                  </div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
+                  </div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
+                  </div>
+                </div>
+                
+                {/* Close Button on Right side of Stepper */}
+                <button 
+                  onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+                  className={styles.closeLearnBtn}
+                >
+                  <X size={20} strokeWidth={2.5} color="#AFBFCF" />
+                </button>
+              </div>
+
+              {/* LEARN PHASE */}
+              {lessonPhase === 'learn' && (
+                <>
+                  <div className={styles.learnContentScroll}>
+                <div className={styles.learnHeader}>
+                  <span className={styles.letsLearnText}>Let&apos;s learn!</span>
+                  <h2 className={styles.learnTitle}>{activeLesson.title}</h2>
+                </div>
+
+                {videoUrl ? (
+                  <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
+                    <video 
+                      src={videoUrl} 
+                      controls 
+                      controlsList="nodownload"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  </div>
+                ) : (
+                  <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F5F9', boxShadow: 'none', border: '2px dashed #E2E8F0' }}>
+                    <div style={{ textAlign: 'center', color: '#64748B' }}>
+                      <Info size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
+                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No video uploaded</h3>
+                      <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached a video to this lesson yet.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Resources Section */}
+                <div className={styles.resourcesSection}>
+                  <div className={styles.resourcesHeader}>
+                    <div className={styles.resourcesTitleBox}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#64748B"><path d="M4 6h16v12H4z" /></svg>
+                      <h4>Resources</h4>
+                    </div>
+                    {activeLesson?.resources && activeLesson.resources.length > 0 && (
+                      <button className={styles.downloadAllBtn}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m7-5l5 5 5-5m-5 5V3"/></svg>
+                        Download all
+                      </button>
+                    )}
+                  </div>
+
+                  {activeLesson?.resources && activeLesson.resources.length > 0 ? (
+                    <div className={styles.resourcesGrid}>
+                      {activeLesson.resources.map((resource: any) => {
+                        const type = resource.type?.toLowerCase() || 'unknown';
+                        let iconClass = styles.resourceIconImg;
+                        if (type.includes('pdf')) iconClass = styles.resourceIconPdf;
+                        else if (type.includes('doc')) iconClass = styles.resourceIconDoc;
+                        else if (type.includes('png') || type.includes('jpg') || type.includes('jpeg')) iconClass = styles.resourceIconImg;
+
+                        const sizeText = resource.sizeBytes 
+                          ? (resource.sizeBytes > 1024 * 1024 
+                              ? `${(resource.sizeBytes / (1024 * 1024)).toFixed(1)} MB` 
+                              : `${Math.round(resource.sizeBytes / 1024)} KB`)
+                          : 'Unknown size';
+
+                        return (
+                          <a 
+                            key={resource.id}
+                            href={resource.storageUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.resourceCard}
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <div className={iconClass}>{type.substring(0, 4).toUpperCase()}</div>
+                            <div className={styles.resourceInfo}>
+                              <span className={styles.resourceName}>{resource.title || resource.originalName || 'Resource'}</span>
+                              <span className={styles.resourceMeta}>{type.toUpperCase()} • {sizeText}</span>
+                            </div>
+                            <button className={styles.downloadIconBtn} type="button">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m7-5l5 5 5-5m-5 5V3"/></svg>
+                            </button>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div style={{ padding: '24px', textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: '16px', border: '1px dashed #E2E8F0', color: '#64748B' }}>
+                      <p style={{ margin: 0, fontSize: '14px' }}>No resources attached to this lesson.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.stickyBottomBanner}>
+                <div className={styles.bannerLeft}>
+                  <Image src="/lesson Player/Hi there tey.png" width={100} height={100} alt="Tey" className={styles.bannerMascot} />
+                  <div className={styles.bannerTextGroup}>
+                    <h5>Watch the full lesson to continue</h5>
+                    <p>You&apos;ll unlock the next step once you finish.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles.reflectBottomBtnWrap}>
+                <button 
+                  className={styles.reflectSubmitBtn}
+                  onClick={() => { playHaptic('medium'); setLessonPhase('apply'); }}
+                >
+                  CONTINUE
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* APPLY PHASE */}
+          {lessonPhase === 'apply' && (
+            <>
+              <div className={styles.learnContentScroll}>
+                <div className={styles.applyHeaderRow}>
+                  <span className={styles.applyBadge}>QUESTION {currentQuestionIndex + 1} OF {applyQuestions.length}</span>
+                </div>
+                {applyScenario && (
+                  <div className={styles.applyScenarioBox}>
+                    <p className={styles.applyScenarioText}>{applyScenario}</p>
+                  </div>
+                )}
+                <div className={styles.applyQuestionContainer}>
+                  <h2 className={styles.applyQuestionTitle}>{currentQuestion?.questionText || 'Question unavailable'}</h2>
+                  <div className={styles.applyMascotWrap}>
+                    <Image src="/lesson Player/Hi there tey.png" width={160} height={160} alt="Tey Quiz" className={styles.applyMascotImg} />
+                    <div className={styles.questionMarkBubble}>?</div>
+                  </div>
+                </div>
+                <div className={styles.applyOptionsGrid}>
+                  {(currentQuestion?.options || []).map((option: any, idx: number) => {
+                    const isSelected = selectedOptionIndex === idx;
+                    return (
+                      <button 
+                        key={idx}
+                        className={`${styles.applyOptionCard} ${isSelected ? styles.optionSelected : ''}`}
+                        onClick={() => {
+                          if (!isAnswerChecked) {
+                            playHaptic('light');
+                            setSelectedOptionIndex(idx);
+                          }
+                        }}
+                        disabled={isAnswerChecked}
+                      >
+                        <div className={`${styles.optionLetter} ${isSelected ? styles.optionLetterSelected : ''}`}>
+                          {String.fromCharCode(65 + idx)}
+                        </div>
+                        <span className={styles.optionText}>{option.text}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* CELEBRATION INLINE BANNER & BOTTOM AREA */}
+              <div className={styles.applyBottomArea}>
+                <div 
+                  className={`${styles.applyBottomBtnWrap} ${isAnswerChecked && isAnswerCorrect ? styles.applyBottomBtnWrapCorrect : ''} ${isAnswerChecked && !isAnswerCorrect ? styles.applyBottomBtnWrapWrong : ''}`}
+                >
+                  <AnimatePresence>
+                    {isAnswerChecked && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className={styles.celebrationHeaderRow}
+                      >
+                        <div className={styles.celebrationHeaderLeft}>
+                          <div className={isAnswerCorrect ? styles.celebrationIconCircleCorrect : styles.celebrationIconCircleWrong}>
+                            {isAnswerCorrect ? <Check size={20} strokeWidth={4} /> : <X size={20} strokeWidth={4} />}
+                          </div>
+                          <div>
+                            <h4 className={isAnswerCorrect ? styles.celebrationTitleCorrect : styles.celebrationTitleWrong}>
+                              {isAnswerCorrect ? 'Awesome!' : 'Incorrect'}
+                            </h4>
+                            <p className={isAnswerCorrect ? styles.celebrationExplanation : styles.celebrationExplanationWrong}>
+                              {isAnswerCorrect 
+                                ? currentQuestion.explanation 
+                                : (selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex]?.misconception 
+                                    ? currentQuestion.options[selectedOptionIndex].misconception 
+                                    : currentQuestion.explanation)
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  {!isAnswerChecked ? (
+                    <button 
+                      className={`${styles.checkAnswerBtn} ${selectedOptionIndex === null ? styles.btnDisabled : ''}`}
+                      onClick={handleCheckAnswer}
+                      disabled={selectedOptionIndex === null}
+                    >
+                      CHECK ANSWER
+                    </button>
+                  ) : (
+                    <button 
+                      className={isAnswerCorrect ? styles.continueBtnCorrect : styles.continueBtnWrong}
+                      onClick={isAnswerCorrect ? handleApplyContinue : () => { setIsAnswerChecked(false); setSelectedOptionIndex(null); }}
+                    >
+                      {isAnswerCorrect ? 'CONTINUE' : 'GOT IT'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {lessonPhase === 'reflect' && (
+            <>
+              {/* TOP AND MIDDLE CONTAINERS */}
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
+                <div className={styles.reflectTitleRow}>
+                  <div>
+                    <span className={styles.applyBadge}>REFLECTION</span>
+                    <h2 className={styles.reflectTitle}>Take a moment to reflect ✨</h2>
+                    <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: cleanHtml(reflectPrompt) }} />
+                  </div>
+                  <Image src="/lesson Player/Hi there tey.png" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
+                </div>
+
+                {reflectType === 'open' ? (
+                  <>
+                    {reflectStarters.length > 0 && (
+                      <div style={{ marginTop: '24px' }}>
+                        <p className={styles.reflectStartersTitle}>Need a little inspiration? Try these starters</p>
+                        <div className={styles.reflectStartersWrap}>
+                          {reflectStarters.map((starter: any, idx: number) => (
+                            <button key={idx} className={styles.reflectStarterPill} onClick={() => handleStarterClick(starter.text)}>
+                              <span className={styles.reflectStarterIcon}>+</span>
+                              <span>{starter.text}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className={styles.reflectTextareaWrap}>
+                      <textarea 
+                        className={styles.reflectTextarea} 
+                        placeholder="Write your reflection here..."
+                        value={reflectionText}
+                        onChange={(e) => setReflectionText(e.target.value)}
+                      />
+                      <div className={`${styles.reflectWordCount} ${reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length >= reflectMinWords ? styles.reflectWordCountSuccess : ''}`}>
+                        {reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length} / {reflectMinWords} words
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className={styles.guidedQuestionsContainer}>
+                    {reflectGuidedConfig.questions.map((q: any, idx: number) => {
+                      const text = guidedAnswers[idx] || '';
+                      const wc = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+                      const hasMet = wc >= reflectGuidedConfig.minWordCountPerQuestion;
+                      return (
+                        <div key={idx} className={styles.guidedQuestionCard}>
+                          <h4 className={styles.guidedQuestionTitle}>
+                            <span className={styles.guidedQuestionNum}>{idx + 1}.</span> {q.text}
+                          </h4>
+                          <div className={styles.reflectTextareaWrap}>
+                            <textarea 
+                              className={styles.reflectTextarea} 
+                              placeholder="Type your answer here..."
+                              value={text}
+                              onChange={(e) => handleGuidedAnswerChange(idx, e.target.value)}
+                            />
+                            <div className={`${styles.reflectWordCount} ${hasMet ? styles.reflectWordCountSuccess : ''}`}>
+                              {wc} / {reflectGuidedConfig.minWordCountPerQuestion} words
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className={styles.reflectGrowthBanner}>
+                  <img src="/lesson Player/Hi there tey.png" alt="Growth Mascot" className={styles.reflectGrowthMascot} />
+                  <p className={styles.reflectGrowthText}>
+                    Your reflection helps you turn knowledge into growth.<br/>
+                    Be honest. Be thoughtful. Be you. 💙
+                  </p>
+                </div>
+              </div>
+
+              {/* BOTTOM CONTAINER (Submit Button) */}
+              <div className={styles.reflectBottomBtnWrap}>
+                <button 
+                  className={`${styles.reflectSubmitBtn} ${!canSubmitReflect ? styles.reflectBtnDisabled : ''}`}
+                  onClick={handleReflectSubmit}
+                  disabled={!canSubmitReflect}
+                >
+                  {!canSubmitReflect && <Lock size={18} strokeWidth={2.5} />}
+                  SUBMIT REFLECTION
+                </button>
+              </div>
+            </>
+          )}
+
+        </div>
           ) : (
             <>
               {/* Duolingo Green Header */}
@@ -869,8 +1402,25 @@ function SectionViewContent({
           )}
         </div>
 
-        {/* Sidebar - Fixed */}
-        <div className={styles.rightColumn}>
+        {/* Sidebar - Fixed (drawer on mobile) */}
+        <div
+          className={`${styles.rightColumn} ${mobileSidebarOpen ? styles.mobileSidebarOpen : ''}`}
+        >
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(false)}
+            className={styles.mobileSidebarClose}
+            aria-label="Close panel"
+          >
+            <X size={20} />
+          </button>
+
+          <div className={styles.drawerStatsRow}>
+            <StatPill type="streak" value={streakDays} />
+            <StatPill type="gem" value={xpPoints} />
+            <StatPill type="lives" value={livesCount} />
+          </div>
+
           <SectionSidebar
             completedCount={completedInSection}
             totalLessons={totalLessons}
@@ -879,8 +1429,28 @@ function SectionViewContent({
             triggerComingSoon={triggerComingSoon}
           />
         </div>
-
       </div>
+
+      {/* Mobile gamified toggle for the progress/reward panel */}
+      <button
+        type="button"
+        onClick={() => setMobileSidebarOpen(true)}
+        className={styles.mobileSidebarFab}
+        aria-label="Open progress panel"
+      >
+        <PanelRightOpen size={22} />
+        {progressPercent > 0 && (
+          <span className={styles.mobileSidebarFabBadge}>{progressPercent}%</span>
+        )}
+      </button>
+
+      {/* Mobile drawer backdrop */}
+      {mobileSidebarOpen && (
+        <div
+          className={styles.mobileSidebarBackdrop}
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
 
       {/* Guidebook Modal */}
       <AnimatePresence>
@@ -1032,7 +1602,7 @@ export default function SectionViewPage() {
 
 
   return (
-    <DashboardLayout isWide>
+    <DashboardLayout isWide hideMobileChrome>
       <SectionViewContent
         course={course}
         section={section}

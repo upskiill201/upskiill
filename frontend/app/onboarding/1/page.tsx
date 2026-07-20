@@ -40,6 +40,21 @@ export default function OnboardingStep1() {
     return () => clearTimeout(t);
   }, []);
 
+  // iOS Safari viewport height fix: set --vh from the real visualViewport
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    setVH();
+    window.visualViewport?.addEventListener('resize', setVH);
+    window.addEventListener('resize', setVH);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', setVH);
+      window.removeEventListener('resize', setVH);
+    };
+  }, []);
+
   const headlineShadow = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.15), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
@@ -47,7 +62,7 @@ export default function OnboardingStep1() {
   if (isLoading) return <StepSkeleton />;
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden md:overflow-visible relative">
+    <div className="min-h-[100svh] min-h-[100dvh] min-h-screen md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden md:overflow-visible relative">
       
       {/* Mobile bottom white soft fade */}
       <div className="absolute bottom-0 left-0 right-0 h-[50dvh] bg-gradient-to-b from-transparent via-[#F7F8FC] to-[#F7F8FC] via-[20%] md:hidden z-0" />
@@ -72,12 +87,12 @@ export default function OnboardingStep1() {
       </div>
 
       {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-visible pb-2 pt-2 justify-between">
+      <div className="flex flex-col w-full relative z-10 md:hidden overflow-visible pb-2 pt-2 justify-between" style={{ height: 'var(--vh, 100dvh)' }}>
         
         {/* Top 60% Image Container - 100% of device width */}
-        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible">
+        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-4 overflow-visible">
           {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-3.5 mb-2 shrink-0 relative z-20">
+          <div className="w-full px-6 flex items-center gap-3.5 mb-2 shrink-0 sticky top-0 z-30 bg-gradient-to-b from-[#F5F8FF] to-transparent pt-2 pb-1">
             <button 
               onClick={() => router.push('/onboarding/0')} 
               className="w-10 h-10 bg-white/95 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shrink-0 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
@@ -117,7 +132,7 @@ export default function OnboardingStep1() {
         </div>
 
         {/* Bottom 40% Text & CTA Container - padded horizontally with white background and soft top fade */}
-        <div className="w-full h-[40dvh] flex flex-col justify-between items-center relative z-20 pb-2 px-6 bg-white">
+        <div className="w-full flex-shrink-0 flex flex-col justify-between items-center relative z-20 pb-2 px-6 bg-white">
           
           {/* Soft white shadow fade overlay at the top boundary */}
           <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />

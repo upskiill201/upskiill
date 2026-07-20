@@ -84,6 +84,7 @@ export class CourseService {
           include: {
             lessons: {
               orderBy: { orderIndex: 'asc' },
+              include: { resources: true },
             },
           },
         },

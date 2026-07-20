@@ -464,6 +464,20 @@
   }
 }
 
+/* Immersive mode (e.g. lesson player): hide mobile chrome, use full height */
+.immersiveContent {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .immersiveContent {
+    padding: 0 16px !important;
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
 /* COMING SOON MODAL & OTHERS */
 .modalBody { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; }
 .modalIconWrapper { width: 80px; height: 80px; background: rgba(1, 114, 253, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #0172FD; }

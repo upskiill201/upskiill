@@ -50,11 +50,13 @@ interface EnhancedDashboardLink extends DashboardLink {
 interface DashboardLayoutProps {
   children: React.ReactNode;
   isWide?: boolean;
+  hideMobileChrome?: boolean;
 }
 
 export default function DashboardLayout({
   children,
   isWide = false,
+  hideMobileChrome = false,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
@@ -177,12 +179,13 @@ export default function DashboardLayout({
               <Link href="/dashboard" className={styles.logoLink}>
                 {!isSidebarCollapsed ? (
                   <Image 
-                    src="/Teyro Logo.png" 
+                    src="/teyro-logo-blue.png" 
                     alt="Teyro" 
                     width={105} 
                     height={30} 
                     priority 
                     className={styles.sidebarLogo}
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                 ) : (
                   <div className={styles.compactLogo}>T</div>
@@ -307,6 +310,7 @@ export default function DashboardLayout({
         {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
 
         {/* MOBILE BOTTOM NAVIGATION BAR */}
+        {!hideMobileChrome && (
         <nav className={styles.mobileBottomNav}>
           <Link href="/dashboard" className={`${styles.bottomNavItem} ${pathname === '/dashboard' ? styles.activeBottomItem : ''}`}>
             <Home size={20} />
@@ -333,10 +337,12 @@ export default function DashboardLayout({
             <span className={styles.bottomNavLabel}>Profile</span>
           </a>
         </nav>
+        )}
 
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
           {/* MOBILE-ONLY STICKY HEADER */}
+          {!hideMobileChrome && (
           <header className={styles.mobileHeader}>
             <button 
               className={styles.mobileToggle} 
@@ -347,18 +353,20 @@ export default function DashboardLayout({
             </button>
             <div className={styles.mobileLogoContainer}>
               <Image 
-                src="/Teyro Logo.png" 
+                src="/teyro-logo-blue.png" 
                 alt="Teyro" 
                 width={85} 
                 height={24} 
                 priority 
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
             <Avatar src={userAvatar} name={userName} size="sm" />
           </header>
+          )}
 
           {/* PAGE CONTENT */}
-          <div className={`${styles.content} ${isWide ? styles.wideContent : ''}`}>
+          <div className={`${styles.content} ${isWide ? styles.wideContent : ''} ${hideMobileChrome ? styles.immersiveContent : ''}`}>
             {children}
           </div>
         </main>
