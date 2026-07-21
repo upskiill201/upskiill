@@ -12,15 +12,14 @@ import { useComingSoon } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatPill } from '@/components/ui/StatPill';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
+  const { streakDays, xp: xpPoints, lives: livesCount } = useGamification();
   const [userName, setUserName] = useState('Joel');
-  const [streakDays, setStreakDays] = useState(0);
-  const [xpPoints, setXpPoints] = useState(0);
-  const [livesCount, setLivesCount] = useState(5);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
