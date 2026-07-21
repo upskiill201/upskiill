@@ -10,6 +10,7 @@ import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
 import { StatPill } from '@/components/ui/StatPill';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
@@ -285,9 +286,6 @@ interface SectionViewContentProps {
   sectionIndex: number;
   completedLessons: string[];
   setCompletedLessons: React.Dispatch<React.SetStateAction<string[]>>;
-  streakDays: number;
-  xpPoints: number;
-  livesCount: number;
 }
 
 function SectionViewContent({
@@ -296,10 +294,9 @@ function SectionViewContent({
   sectionIndex,
   completedLessons,
   setCompletedLessons,
-  streakDays,
-  xpPoints,
-  livesCount,
 }: SectionViewContentProps) {
+  // Use global gamification context for live XP, streak, and lives
+  const { xp: xpPoints, streakDays, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp } = useGamification();
   const params = useParams();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
@@ -355,7 +352,12 @@ function SectionViewContent({
     playHaptic('medium');
     setIsAnswerChecked(true);
     const selectedOption = currentQuestion.options[selectedOptionIndex];
-    setIsAnswerCorrect(selectedOption.id === currentQuestion.correctOptionId);
+    const correct = selectedOption.id === currentQuestion.correctOptionId;
+    setIsAnswerCorrect(correct);
+    // Deduct a life on wrong answer (global context + backend)
+    if (!correct) {
+      loseLife();
+    }
   };
 
   const handleApplyContinue = () => {
@@ -485,8 +487,13 @@ function SectionViewContent({
         body: JSON.stringify({ lessonId: activeLesson.id })
       });
       if (res.ok) {
+        const data = await res.json();
         if (!completedLessons.includes(activeLesson.id)) {
           setCompletedLessons(prev => [...prev, activeLesson.id]);
+        }
+        // Instantly update global context with server-confirmed new totals
+        if (data.newXp !== undefined && data.newStreakDays !== undefined) {
+          applyLessonReward(data.newXp, data.newStreakDays);
         }
       }
     } catch (e) {
@@ -792,20 +799,51 @@ function SectionViewContent({
       initial="hidden"
       animate="visible"
     >
-       {/* Stats bar */}
-      <div className={styles.topRow}>
-        {activeLesson && lessonPhase !== 'start' ? (
-          <button onClick={handleStepBack} className={styles.backLink} style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
-            <ArrowLeft size={16} />
-            <span>Back</span>
-          </button>
-        ) : (
+       {/* Stats bar — only shown on the milestone map screen */}
+      {!activeLesson && (
+        <div className={styles.topRow}>
           <Link href={`/learn/${params.id}`} className={styles.backLink}>
             <ArrowLeft size={16} />
             <span>Back to Course</span>
           </Link>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Out-of-lives overlay — blocks Apply phase when lives are 0 */}
+      {livesCount === 0 && lessonPhase === 'apply' && (
+        <div className={styles.outOfLivesOverlay}>
+          <div className={styles.outOfLivesCard}>
+            <Image src="/heart-icon.png" width={72} height={72} alt="No lives" priority />
+            <h2 className={styles.outOfLivesTitle}>Out of Lives!</h2>
+            <p className={styles.outOfLivesDesc}>
+              Your lives refill automatically (1 life every 4 hours).
+              Or, restore full lives instantly using your XP!
+            </p>
+
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              <button
+                disabled={xpPoints < 100}
+                onClick={async () => {
+                  playHaptic('success');
+                  await refillLivesWithXp();
+                }}
+                className={xpPoints >= 100 ? styles.outOfLivesBtn : styles.outOfLivesBtnDisabled}
+                style={{ width: '100%' }}
+              >
+                {xpPoints >= 100 ? '⚡ REFILL FULL LIVES (100 XP)' : `🔒 NEED 100 XP (YOU HAVE ${xpPoints} XP)`}
+              </button>
+
+              <button
+                className={styles.outOfLivesBtnSecondary}
+                onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+                style={{ width: '100%', backgroundColor: 'transparent', border: '2px solid #CBD5E1', color: '#64748B', borderBottomWidth: '4px' }}
+              >
+                Back to Lessons
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Grid */}
       <div className={styles.grid}>
@@ -834,13 +872,16 @@ function SectionViewContent({
                   </button>
                 </div>
                 
-                <button 
-                  onClick={() => setShowGuidebook(true)}
-                  className={styles.guidebookBtn}
-                >
-                  <BookOpen size={18} />
-                  <span>GUIDEBOOK</span>
-                </button>
+                {/* Guidebook button on the right */}
+                <div className={styles.headerRightGroup} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  <button 
+                    onClick={() => setShowGuidebook(true)}
+                    className={styles.guidebookBtn}
+                  >
+                    <BookOpen size={18} />
+                    <span>GUIDEBOOK</span>
+                  </button>
+                </div>
               </div>
 
               {/* Stepper Progress Indicator */}
@@ -910,31 +951,6 @@ function SectionViewContent({
                       {cleanHtml(activeLesson.shortDescription)}
                     </div>
                   )}
-
-                  {/* Stats Cards */}
-                  <div className={styles.statsCardsRow}>
-                    <div className={styles.statsCard}>
-                      <div className={`${styles.statsCardIconWrap} ${styles.iconXpWrap}`} style={{ background: 'transparent' }}>
-                        <Image src="/gem-icon.png" width={28} height={28} alt="XP Gem" style={{ objectFit: 'contain' }} />
-                      </div>
-                      <div className={styles.statsCardText}>
-                        <span className={styles.statsCardVal}>+{activeLesson.xpReward || 40} XP</span>
-                        <span className={styles.statsCardLabel}>Reward</span>
-                      </div>
-                    </div>
-
-                    <div className={styles.statsCard}>
-                      <div className={`${styles.statsCardIconWrap} ${styles.iconTimeWrap}`}>
-                        ⏱️
-                      </div>
-                      <div className={styles.statsCardText}>
-                        <span className={styles.statsCardVal}>
-                          {activeLesson.duration || (activeLesson.durationMinutes ? `${activeLesson.durationMinutes} min` : '10-12 min')}
-                        </span>
-                        <span className={styles.statsCardLabel}>Estimated time</span>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* What you'll learn Carousel Slider */}
                   {wylList && Array.isArray(wylList) && wylList.filter(Boolean).length > 0 && (
@@ -2008,9 +2024,6 @@ export default function SectionViewPage() {
   const router = useRouter();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [streakDays, setStreakDays] = useState(0);
-  const [xpPoints, setXpPoints] = useState(0);
-  const [livesCount] = useState(5);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
   const sectionIndex = parseInt(params.sectionIndex as string, 10);
@@ -2030,15 +2043,6 @@ export default function SectionViewPage() {
         if (progRes.ok) {
           const pd = await progRes.json();
           setCompletedLessons(pd.completedLessons || []);
-        }
-
-        const profileRes = await fetch('/api/auth/me', { credentials: 'include' });
-        if (profileRes.ok) {
-          const pf = await profileRes.json();
-          if (pf?.studentProfile) {
-            setStreakDays(pf.studentProfile.streakDays || 0);
-            setXpPoints(pf.studentProfile.xp || 0);
-          }
         }
       } catch (e) {
         console.error('Failed to load course:', e);
@@ -2097,8 +2101,6 @@ export default function SectionViewPage() {
     );
   }
 
-
-
   return (
     <DashboardLayout isWide hideMobileChrome>
       <SectionViewContent
@@ -2107,9 +2109,6 @@ export default function SectionViewPage() {
         sectionIndex={sectionIndex}
         completedLessons={completedLessons}
         setCompletedLessons={setCompletedLessons}
-        streakDays={streakDays}
-        xpPoints={xpPoints}
-        livesCount={livesCount}
       />
     </DashboardLayout>
   );

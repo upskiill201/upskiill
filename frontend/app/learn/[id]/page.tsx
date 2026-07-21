@@ -11,6 +11,7 @@ import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import Skeleton from '@/components/ui/Skeleton';
 import { StatPill } from '@/components/ui/StatPill';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './LearnCourse.module.css';
 
 /* ─── Spring constants ───────────────────────────────────────────── */
@@ -59,16 +60,17 @@ const popoverItemVariants = {
 interface LearnCourseContentProps {
   course: any;
   completedLessons: string[];
-  streakDays: number;
-  xpPoints: number;
-  livesCount: number;
 }
 
-function LearnCourseContent({ course, completedLessons, streakDays, xpPoints, livesCount }: LearnCourseContentProps) {
+function LearnCourseContent({ course, completedLessons }: LearnCourseContentProps) {
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
+  
+  // Use global gamification context for synchronized stats
+  const { xp: xpPoints, streakDays, lives: livesCount } = useGamification();
+
   const sections = course.sections || course.curriculum || [];
   const totalLessons = sections.reduce((acc: number, s: any) => acc + (s.lessons?.length || 0), 0);
   const completedLessonCount = sections.reduce((acc: number, s: any) => {
@@ -120,13 +122,9 @@ function LearnCourseContent({ course, completedLessons, streakDays, xpPoints, li
           <ArrowLeft size={16} />
           <span>Back to My Learning</span>
         </Link>
-
-        <div className={styles.statsRow}>
-          <StatPill type="streak" value={streakDays} />
-          <StatPill type="gem" value={xpPoints} />
-          <StatPill type="lives" value={livesCount} />
-        </div>
       </motion.div>
+      
+      {/* Rest of JSX... */}
 
       {/* ── TWO-COLUMN GRID ───────────────────────────────── */}
       <div className={styles.dashboardGrid}>
@@ -527,9 +525,6 @@ export default function LearnCoursePage() {
   const router = useRouter();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [streakDays, setStreakDays] = useState(0);
-  const [xpPoints, setXpPoints] = useState(0);
-  const [livesCount] = useState(5);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
   useEffect(() => {
@@ -547,15 +542,6 @@ export default function LearnCoursePage() {
         if (progRes.ok) {
           const pd = await progRes.json();
           setCompletedLessons(pd.completedLessons || []);
-        }
-
-        const profileRes = await fetch('/api/auth/me', { credentials: 'include' });
-        if (profileRes.ok) {
-          const pf = await profileRes.json();
-          if (pf?.studentProfile) {
-            setStreakDays(pf.studentProfile.streakDays || 0);
-            setXpPoints(pf.studentProfile.xp || 0);
-          }
         }
       } catch (e) {
         console.error('Failed to load course:', e);
@@ -595,16 +581,11 @@ export default function LearnCoursePage() {
     );
   }
 
-
-
   return (
     <DashboardLayout>
       <LearnCourseContent
         course={course}
         completedLessons={completedLessons}
-        streakDays={streakDays}
-        xpPoints={xpPoints}
-        livesCount={livesCount}
       />
     </DashboardLayout>
   );
