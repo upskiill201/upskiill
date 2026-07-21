@@ -301,39 +301,62 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       )}
 
       {/* DAILY REWARD LOGIN CHEST CARD */}
-      <div className={styles.rewardCard} style={{ filter: isEligibleForReward ? 'none' : 'grayscale(15%) brightness(95%)' }}>
+      <div 
+        style={{ 
+          backgroundColor: '#FFFDF5', 
+          border: '2px solid #E2E8F0', 
+          borderRadius: '16px', 
+          padding: '16px', 
+          marginBottom: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: 'none',
+          position: 'relative'
+        }}
+      >
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes chestIdle {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-6px) scale(1.03); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
           }
           .chestAnimate {
-            animation: chestIdle 2.2s infinite ease-in-out;
+            animation: chestIdle 2s infinite ease-in-out;
           }
         `}} />
 
-        <span className={styles.rewardHeader}>Daily Reward</span>
-        <p className={styles.rewardSubtext} style={{ minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          {(() => {
-            if (isEligibleForReward) {
-              if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
-              const unclaimedSubtexts = [
-                "Ready to grab today's reward?",
-                "Your chest is waiting!",
-                "Don't leave me hanging — claim your reward!",
-                "A gift from Tey: keep the habit strong!",
-                "Crack open today's reward chest!"
-              ];
-              return unclaimedSubtexts[dailyRewardCyclePosition % unclaimedSubtexts.length];
-            } else {
-              if (dailyRewardCyclePosition === 1) return "Nice! You unlocked the Mystery Chest! 🎉";
-              return `Come back in ${countdownStr}`;
-            }
-          })()}
-        </p>
+        {/* Top Side-by-Side row: Text on left, Chest badge on right */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+            <span style={{ fontWeight: 800, fontSize: '18px', color: '#3C3C3C', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+              Daily Reward
+            </span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#777777', fontFamily: 'var(--font-jakarta), sans-serif', lineHeight: '1.4' }}>
+              {(() => {
+                if (isEligibleForReward) {
+                  if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
+                  return "Claim your reward to build a daily habit!";
+                } else {
+                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked! 🎉";
+                  return `Next chest in ${countdownStr}`;
+                }
+              })()}
+            </span>
+          </div>
+          
+          <div style={{ width: '64px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Image
+              src="/Tressure box.png"
+              alt="Mystery Chest"
+              width={64}
+              height={52}
+              className={isEligibleForReward ? 'chestAnimate' : ''}
+              style={{ objectFit: 'contain', filter: isEligibleForReward ? 'none' : 'grayscale(30%) opacity(85%)' }}
+            />
+          </div>
+        </div>
 
-        {/* 7-pip streak tracker */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '12px 0 16px', width: '100%', gap: '6px' }}>
+        {/* 7-pip calendar-style streak tracker */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '8px 0 16px', width: '100%', gap: '6px' }}>
           {Array.from({ length: 7 }).map((_, i) => {
             const dayNum = i + 1;
             const isActive = dayNum === dailyRewardCyclePosition && isEligibleForReward;
@@ -354,63 +377,65 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '6px'
                 }}
               >
+                <span style={{ fontSize: '10px', fontWeight: 800, color: '#A0A0A0', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+                  D{dayNum}
+                </span>
                 <div
                   style={{
-                    width: '26px',
-                    height: '26px',
+                    width: '28px',
+                    height: '28px',
                     borderRadius: '50%',
                     backgroundColor: isCompleted ? '#58cc02' : isActive ? '#FF8A00' : '#E2E8F0',
                     border: isActive ? '2px solid white' : 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: isCompleted || isActive ? 'white' : '#94A3B8',
+                    color: isCompleted || isActive ? 'white' : '#A0A0A0',
                     fontWeight: 800,
-                    fontSize: '10px',
-                    boxShadow: isActive ? '0 0 8px rgba(255, 138, 0, 0.7)' : 'none',
+                    fontSize: '11px',
+                    boxShadow: isActive ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
                     transition: 'all 0.2s ease'
                   }}
                 >
                   {isCompleted ? '✓' : dayNum === 7 ? '🎁' : dayNum}
                 </div>
-                <span style={{ fontSize: '8px', fontWeight: 800, color: '#94A3B8' }}>
-                  D{dayNum}
-                </span>
               </div>
             );
           })}
         </div>
 
-        <div className={styles.treasureBoxWrapper}>
-          <Image
-            src="/Tressure box.png"
-            alt="Mystery Chest"
-            width={95}
-            height={76}
-            className={isEligibleForReward ? 'chestAnimate' : ''}
-            style={{ objectFit: 'contain' }}
-          />
-        </div>
-
         <button
           onClick={handleClaimReward}
           disabled={!isEligibleForReward}
-          className={isEligibleForReward ? styles.button3dBlue : ''}
-          style={!isEligibleForReward ? {
+          style={isEligibleForReward ? {
             width: '100%',
-            backgroundColor: '#CBD5E1',
+            backgroundColor: '#0172FD',
             border: 'none',
-            borderBottom: '4px solid #94A3B8',
-            color: '#64748B',
-            borderRadius: '10px',
+            borderBottom: '4px solid #0050B3',
+            color: 'white',
+            borderRadius: '12px',
             fontWeight: 800,
-            fontSize: '14px',
+            fontSize: '13px',
             padding: '12px',
-            cursor: 'not-allowed'
-          } : { width: '100%' }}
+            cursor: 'pointer',
+            fontFamily: 'var(--font-jakarta), sans-serif',
+            transition: 'transform 0.1s ease'
+          } : {
+            width: '100%',
+            backgroundColor: '#E2E8F0',
+            border: 'none',
+            borderBottom: '4px solid #CBD5E1',
+            color: '#A0A0A0',
+            borderRadius: '12px',
+            fontWeight: 800,
+            fontSize: '13px',
+            padding: '12px',
+            cursor: 'not-allowed',
+            fontFamily: 'var(--font-jakarta), sans-serif'
+          }}
         >
           {isEligibleForReward
             ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
