@@ -126,6 +126,12 @@ export class CourseService {
       );
     }
 
+    const profile = await this.prisma.studentProfile.upsert({
+      where: { userId },
+      create: { userId }, // Prisma uses schema defaults (e.g. 30 XP, 1 freeze, 5 lives)
+      update: {},
+    });
+
     const currentCompleted = Array.isArray(enrollment.completedLessons)
       ? (enrollment.completedLessons as string[])
       : [];
@@ -133,6 +139,8 @@ export class CourseService {
     let isNewCompletion = false;
     let xpEarned = 0;
     let sectionCompleted = false;
+    let newXpTotal = profile.xp;
+    let newStreakDaysTotal = profile.streakDays;
 
     if (!currentCompleted.includes(lessonId)) {
       isNewCompletion = true;
@@ -144,7 +152,16 @@ export class CourseService {
         include: { section: { include: { lessons: true } } },
       });
 
-      xpEarned = lesson?.xpReward ?? 10;
+      let baseLessonXp = 10; // Flat 10 XP per lesson completion
+
+      // Check if all lessons in this section are completed
+      if (lesson?.section?.lessons) {
+        sectionCompleted = lesson.section.lessons.every((l) =>
+          currentCompleted.includes(l.id),
+        );
+      }
+
+      xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
 
       let totalLessons = 0;
       const courseWithLessons = await this.prisma.course.findUnique({
@@ -158,23 +175,16 @@ export class CourseService {
 
       if (courseWithLessons) {
         totalLessons = courseWithLessons.sections.reduce(
-          (acc, section) => acc + section.lessons.length,
+          (acc, s) => acc + s.lessons.length,
           0,
         );
       }
-      totalLessons = totalLessons || 1; // Fallback to 1
+      totalLessons = totalLessons || 1;
 
       const progress = Math.min(
         100,
         Math.round((currentCompleted.length / totalLessons) * 100),
       );
-
-      // Check if all lessons in this section are completed
-      if (lesson?.section?.lessons) {
-        sectionCompleted = lesson.section.lessons.every((l) =>
-          currentCompleted.includes(l.id),
-        );
-      }
 
       await this.prisma.enrollment.update({
         where: { id: enrollment.id },
@@ -187,12 +197,6 @@ export class CourseService {
       // Update StudentProfile for XP and daily activity streaks
       const now = new Date();
       let newStreak = 1;
-
-      const profile = await this.prisma.studentProfile.upsert({
-        where: { userId },
-        create: { userId, xp: 0, streakDays: 0 },
-        update: {},
-      });
 
       if (profile.lastActiveAt) {
         const lastActive = new Date(profile.lastActiveAt);
@@ -221,7 +225,7 @@ export class CourseService {
         }
       }
 
-      await this.prisma.studentProfile.update({
+      const updatedProfile = await this.prisma.studentProfile.update({
         where: { userId },
         data: {
           xp: { increment: xpEarned },
@@ -229,12 +233,18 @@ export class CourseService {
           lastActiveAt: now,
         },
       });
+      newXpTotal = updatedProfile.xp;
+      newStreakDaysTotal = updatedProfile.streakDays;
+
     }
 
     return {
       success: true,
       completedLessons: currentCompleted,
       xpEarned: isNewCompletion ? xpEarned : 0,
+      // Updated totals — use these to refresh frontend state without extra API call
+      newXp: newXpTotal,
+      newStreakDays: newStreakDaysTotal,
       sectionCompleted,
     };
   }

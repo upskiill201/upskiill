@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Bot, Lock, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './RightSidebar.module.css';
 
 export interface RightSidebarProps {
@@ -18,6 +19,7 @@ export interface RightSidebarProps {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLessons, section, sectionIndex, userName }) => {
   const { triggerComingSoon } = useComingSoon();
+  const { xp: userXpTotal, completedQuests, claimQuest } = useGamification();
 
   const handleLetsGo = () => {
     playHaptic('medium');
@@ -56,7 +58,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
   let completedLessonsCount = 0;
   let completedSectionsCount = 0;
   let progressPercent = 0;
-  let totalXp = 0;
+  let totalXp = userXpTotal; // Use unified XP from context instead of local formula
 
   if (hasCourse) {
     const sectionsList = course.sections || [];
@@ -64,7 +66,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     
     totalSections = sectionsList.length || curriculumList.length || 0;
     completedLessonsCount = completedLessons?.length || 0;
-    totalXp = completedLessonsCount * 15; // 15 XP per lesson completed
 
     if (sectionsList.length > 0) {
       totalLessons = sectionsList.reduce((acc: number, s: any) => acc + (s.lessons?.length || 0), 0);
@@ -182,31 +183,82 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
       {/* DAILY QUESTS CARD (section view) */}
       {hasSection && (
-        <div className={styles.questsCard}>
+        <div className={styles.questsCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className={styles.cardHeaderWithLink}>
             <h4 className={styles.cardSectionTitle}>Daily Quests</h4>
-            <button
-              onClick={() => triggerComingSoon('All Quests')}
-              className={styles.cardViewAllBtn}
-            >
-              View All
-            </button>
           </div>
 
-          <div className={styles.questItem}>
-            <div className={styles.questIconWrapper}>
-              <span>💎</span>
-            </div>
-            <div className={styles.questContent}>
-              <div className={styles.questInfoRow}>
-                <span className={styles.questTitle}>Earn 20 XP</span>
-                <span className={styles.questProgressText}>{Math.min(sectionXpEarned, 20)} / 20</span>
+          {/* Quest 1: Complete 1 Lesson */}
+          {(() => {
+            const isFinished = sectionCompletedCount >= 1;
+            const isClaimed = completedQuests.includes('daily-lesson');
+            return (
+              <div className={styles.questItem} style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
+                <div className={styles.questIconWrapper}>
+                  <span>🎯</span>
+                </div>
+                <div className={styles.questContent} style={{ width: '100%' }}>
+                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Complete 1 Lesson</span>
+                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
+                      {Math.min(sectionCompletedCount, 1)} / 1
+                    </span>
+                  </div>
+                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
+                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#58cc02', width: `${isFinished ? 100 : 0}%` }} />
+                  </div>
+                  {isClaimed ? (
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02' }}>Claimed! ✓</span>
+                  ) : isFinished ? (
+                    <button
+                      onClick={() => claimQuest('daily-lesson')}
+                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      CLAIM +20 XP
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
+                  )}
+                </div>
               </div>
-              <div className={styles.questProgressBar}>
-                <div className={styles.questProgressFill} style={{ width: `${Math.min((sectionXpEarned / 20) * 100, 100)}%` }} />
+            );
+          })()}
+
+          {/* Quest 2: Earn 10 XP */}
+          {(() => {
+            const isFinished = sectionXpEarned >= 10;
+            const isClaimed = completedQuests.includes('daily-consistent');
+            return (
+              <div className={styles.questItem}>
+                <div className={styles.questIconWrapper}>
+                  <span>💎</span>
+                </div>
+                <div className={styles.questContent} style={{ width: '100%' }}>
+                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Earn 10 XP Today</span>
+                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
+                      {Math.min(sectionXpEarned, 10)} / 10
+                    </span>
+                  </div>
+                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
+                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#0172FD', width: `${Math.min((sectionXpEarned / 10) * 100, 100)}%` }} />
+                  </div>
+                  {isClaimed ? (
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD' }}>Claimed! ✓</span>
+                  ) : isFinished ? (
+                    <button
+                      onClick={() => claimQuest('daily-consistent')}
+                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      CLAIM +10 XP
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       )}
 

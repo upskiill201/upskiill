@@ -144,28 +144,16 @@
   fill: white;
 }
 
-.journeysIcon {
-  color: #FF5A00; /* Orange/Coral Journeys */
+.navIcon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
-.exploreIcon {
-  color: #38BDF8; /* Sky Blue Explore magnifying glass */
-}
-
-.leaderboardsIcon {
-  color: #F59E0B; /* Golden Trophy */
-}
-
-.questsIcon {
-  color: #EF4444; /* Red Target */
-}
-
-.profileIcon {
-  color: #0172FD; /* Blue Profile Silhouette */
-}
-
-.moreIcon {
-  color: #64748B; /* Grey Three-dots */
+.bottomNavIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .icon {

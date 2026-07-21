@@ -294,9 +294,21 @@ model StudentProfile {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Learning progress data
-  xp           Int       @default(0)
+  xp           Int       @default(30) // 30 XP starter grant
   streakDays   Int       @default(0)
   lastActiveAt DateTime?
+
+  // Lives system — lose a life on wrong Apply answer, refill 1 per 4h
+  lives           Int       @default(5)
+  maxLives        Int       @default(5)
+  livesLastLostAt DateTime?  // timestamp of when the last life was lost
+
+  // Streak freezes (banked freezes)
+  streakFreezeBank Int       @default(1)
+
+  // Daily quests log
+  completedQuests  Json      @default("[]")
+  lastQuestResetAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

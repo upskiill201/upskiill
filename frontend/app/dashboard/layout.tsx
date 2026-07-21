@@ -3,23 +3,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
-import { 
+import {
   ChevronLeft,
   ChevronRight,
   Menu,
   X,
   Sparkles,
   Rocket,
-  Home,
-  Layers,
-  Search,
-  Trophy,
-  Target,
-  User,
-  MoreHorizontal,
   Flame,
   Settings,
-  LogOut
+  LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,6 +21,7 @@ import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -59,6 +53,7 @@ export default function DashboardLayout({
   hideMobileChrome = false,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
+  const { streakDays, xp, lives } = useGamification();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -66,8 +61,8 @@ export default function DashboardLayout({
   const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100');
   const [hasStudentAccess, setHasStudentAccess] = useState(false);
   const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
-  const [streakDays, setStreakDays] = useState(0);
-  const [userLevel, setUserLevel] = useState(0);
+
+  const userLevel = Math.floor(xp / 100) + 1;
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -90,14 +85,6 @@ export default function DashboardLayout({
       }
     };
     fetchMe();
-
-    // Read onboarding answers from localStorage to align stats state
-    const state = getOnboardingState();
-    if (state) {
-      // By default new users start with 0 streak and level 0
-      setStreakDays(0);
-      setUserLevel(0);
-    }
   }, []);
 
   const handleLogout = async (e: React.MouseEvent) => {
@@ -116,48 +103,48 @@ export default function DashboardLayout({
       id: 'learn', 
       label: 'Home', 
       href: '/dashboard', 
-      icon: <Home size={20} /> 
+      icon: <Image src="/Icons/home-button.png" alt="Home" width={28} height={28} className={styles.navIcon} />
     },
     { 
       id: 'journeys', 
       label: 'My Learning', 
       href: '/dashboard/my-learning', 
-      icon: <Layers size={20} className={styles.journeysIcon} />, 
+      icon: <Image src="/Icons/my-learning.png" alt="My Learning" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: false 
     },
     { 
       id: 'explore', 
       label: 'Explore', 
       href: '/dashboard', 
-      icon: <Search size={20} className={styles.exploreIcon} />, 
+      icon: <Image src="/Icons/explore.png" alt="Explore" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'leaderboards', 
       label: 'Leaderboards', 
       href: '/dashboard', 
-      icon: <Trophy size={20} className={styles.leaderboardsIcon} />, 
+      icon: <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'quests', 
       label: 'Quests', 
       href: '/dashboard', 
-      icon: <Target size={20} className={styles.questsIcon} />, 
+      icon: <Image src="/Icons/Quests.png" alt="Quests" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'profile', 
       label: 'Profile', 
       href: '/dashboard', 
-      icon: <User size={20} className={styles.profileIcon} />, 
+      icon: <Image src="/Icons/user-profile.png" alt="Profile" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'more', 
       label: 'More', 
       href: '/dashboard', 
-      icon: <MoreHorizontal size={20} className={styles.moreIcon} />, 
+      icon: <Image src="/Icons/more.png" alt="More" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
   ];
@@ -221,7 +208,7 @@ export default function DashboardLayout({
 
               const renderedIcon = link.id === 'learn' ? (
                 <div className={isActive ? styles.activeIconCircle : styles.icon}>
-                  <Home size={isActive ? 14 : 20} className={isActive ? styles.activeHomeIcon : ''} />
+                  <Image src="/Icons/home-button.png" alt="Home" width={isActive ? 14 : 20} height={isActive ? 14 : 20} className={styles.navIcon} />
                 </div>
               ) : (
                 <span className={styles.icon}>{link.icon}</span>
@@ -258,6 +245,30 @@ export default function DashboardLayout({
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{streakDays} Days Streak</span>
                     <span className={styles.sidebarCardSubtitle}>Keep it going!</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                </div>
+
+                {/* XP Balance Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('XP Details')}>
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/gem-icon.png" width={18} height={18} alt="XP Gem" style={{ objectFit: 'contain' }} />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle}>{xp} XP</span>
+                    <span className={styles.sidebarCardSubtitle}>Total Balance</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                </div>
+
+                {/* Lives Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Lives Details')}>
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/heart-icon.png" width={18} height={18} alt="Lives" style={{ objectFit: 'contain' }} />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle}>{lives} / 5 Lives</span>
+                    <span className={styles.sidebarCardSubtitle}>Hearts remaining</span>
                   </div>
                   <ChevronRight size={14} className={styles.sidebarCardChevron} />
                 </div>
@@ -313,11 +324,11 @@ export default function DashboardLayout({
         {!hideMobileChrome && (
         <nav className={styles.mobileBottomNav}>
           <Link href="/dashboard" className={`${styles.bottomNavItem} ${pathname === '/dashboard' ? styles.activeBottomItem : ''}`}>
-            <Home size={20} />
+            <Image src="/Icons/home-button.png" alt="Home" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Home</span>
           </Link>
           <Link href="/dashboard/my-learning" className={`${styles.bottomNavItem} ${pathname === '/dashboard/my-learning' ? styles.activeBottomItem : ''}`}>
-            <Layers size={20} />
+            <Image src="/Icons/my-learning.png" alt="My Learning" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>My Learning</span>
           </Link>
           <a 
@@ -325,7 +336,7 @@ export default function DashboardLayout({
             onClick={(e) => { e.preventDefault(); triggerComingSoon('Leaderboards'); }} 
             className={styles.bottomNavItem}
           >
-            <Trophy size={20} />
+            <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Leaderboards</span>
           </a>
           <a 
@@ -333,7 +344,7 @@ export default function DashboardLayout({
             onClick={(e) => { e.preventDefault(); triggerComingSoon('Profile Settings'); }} 
             className={styles.bottomNavItem}
           >
-            <User size={20} />
+            <Image src="/Icons/user-profile.png" alt="Profile" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Profile</span>
           </a>
         </nav>

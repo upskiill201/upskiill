@@ -12,6 +12,7 @@ import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding
 import { ProfileModule } from './profile/profile.module';
 import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { GamificationModule } from './gamification/gamification.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { WhatsappModule } from './whatsapp/whatsapp.module';
     ProfileModule,
     UserOnboardingModule,
     WhatsappModule,
+    GamificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

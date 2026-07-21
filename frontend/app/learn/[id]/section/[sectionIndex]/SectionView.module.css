@@ -72,7 +72,7 @@
   gap: 16px;
   min-width: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
   padding-right: 12px;
   padding-bottom: 0px;
 }
@@ -4087,4 +4087,131 @@
   box-shadow: 0 0px 0 transparent;
   border-bottom-width: 1px;
 }
+
+/* ─── GAMIFICATION STYLES ─── */
+.statPillsRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@keyframes pulse-low-lives {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(255, 75, 75, 0.4)); }
+  50% { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(255, 75, 75, 0.8)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(255, 75, 75, 0.4)); }
+}
+
+.livesLow {
+  animation: pulse-low-lives 1.2s infinite ease-in-out;
+}
+
+.outOfLivesOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(7, 18, 51, 0.85); /* Slick dark background */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+}
+
+.outOfLivesCard {
+  background: white;
+  border-radius: 16px;
+  border: 3px solid #E2E8F0;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.outOfLivesTitle {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #FF4B4B;
+  margin: 24px 0 12px;
+}
+
+.outOfLivesDesc {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748B;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.outOfLivesBtn {
+  width: 100%;
+  background-color: #0172FD;
+  border: none;
+  border-bottom: 4px solid #0054B8;
+  color: white;
+  border-radius: 12px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.outOfLivesBtn:hover {
+  filter: brightness(1.05);
+}
+
+.outOfLivesBtn:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.outOfLivesBtnDisabled {
+  width: 100%;
+  background-color: #E2E8F0;
+  border: none;
+  border-bottom: 4px solid #CBD5E1;
+  color: #94A3B8;
+  border-radius: 12px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 16px;
+  cursor: not-allowed;
+}
+
+.outOfLivesBtnSecondary {
+  width: 100%;
+  background-color: transparent;
+  border: 2px solid #CBD5E1;
+  border-bottom: 4px solid #94A3B8;
+  color: #64748B;
+  border-radius: 12px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.outOfLivesBtnSecondary:hover {
+  background-color: #F8FAFC;
+}
+
+.outOfLivesBtnSecondary:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+
 
