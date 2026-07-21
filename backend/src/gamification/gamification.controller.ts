@@ -67,4 +67,18 @@ export class GamificationController {
     const offset = body.timezoneOffset ?? 0;
     return this.gamificationService.claimQuest(req.user.id as string, body.questId, offset);
   }
+
+  /**
+   * POST /api/gamification/claim-daily-reward
+   * Claims the login chest daily reward.
+   * Body: { timezoneOffset? }
+   */
+  @Post('claim-daily-reward')
+  async claimDailyReward(
+    @Req() req: any,
+    @Body() body: { timezoneOffset?: number },
+  ) {
+    const offset = body.timezoneOffset ?? 0;
+    return this.gamificationService.claimDailyReward(req.user.id as string, offset);
+  }
 }

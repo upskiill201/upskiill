@@ -310,6 +310,10 @@ model StudentProfile {
   completedQuests  Json      @default("[]")
   lastQuestResetAt DateTime?
 
+  // Daily Reward (Login Chest)
+  lastRewardClaimedAt      DateTime?
+  dailyRewardCyclePosition Int       @default(1)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

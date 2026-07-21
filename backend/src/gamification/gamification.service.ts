@@ -7,8 +7,8 @@ export class GamificationService {
 
   /**
    * Returns the student's current gamification state.
-   * Creates a StudentProfile with defaults (30 XP starter grant) if one doesn't exist.
-   * Reconciles daily streak resets (with auto-consume freezes) and daily quests reset.
+   * Creates a StudentProfile with defaults if one doesn't exist.
+   * Reconciles daily streak resets, daily quests, and daily login rewards.
    */
   async getMyStats(userId: string, timezoneOffsetMinutes = 0) {
     let profile = await this.prisma.studentProfile.upsert({
@@ -29,16 +29,12 @@ export class GamificationService {
       if (diffDays > 1) {
         // Missed a day! Check if they have a streak freeze banked
         if (profile.streakFreezeBank > 0) {
-          // Consume 1 freeze
           updatedFields.streakFreezeBank = profile.streakFreezeBank - 1;
-          
-          // "Cheat" the lastActiveAt timestamp to yesterday midnight UTC to maintain the streak
+          // Set lastActiveAt to yesterday to preserve streak
           const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           updatedFields.lastActiveAt = yesterday;
-          
-          console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained at ${profile.streakDays} days.`);
+          console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained.`);
         } else {
-          // No freeze left — streak resets to 0
           updatedFields.streakDays = 0;
         }
       }
@@ -63,6 +59,29 @@ export class GamificationService {
       updatedFields.livesLastLostAt = refilled.lives >= profile.maxLives ? null : profile.livesLastLostAt;
     }
 
+    // 4. Timezone-aware Daily Login Reward Missed-Day Verification (Freeze Protection)
+    if (profile.lastRewardClaimedAt) {
+      const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
+      const diffClaims = this.getDaysDiff(todayStr, lastClaimStr);
+
+      // If they missed at least one calendar day of claiming
+      if (diffClaims > 1) {
+        // Does the user have a streak freeze banked to protect their reward cycle position?
+        if (profile.streakFreezeBank > 0) {
+          // Consume 1 freeze to protect the daily reward cycle position
+          updatedFields.streakFreezeBank = (updatedFields.streakFreezeBank ?? profile.streakFreezeBank) - 1;
+          
+          // Set lastRewardClaimedAt to yesterday to prevent resetting the cycle
+          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          updatedFields.lastRewardClaimedAt = yesterday;
+          console.log(`[Gamification] Streak freeze consumed to protect Daily Reward cycle for user ${userId}.`);
+        } else {
+          // No freeze left — cycle resets to Day 1
+          updatedFields.dailyRewardCyclePosition = 1;
+        }
+      }
+    }
+
     // Save profile updates if any changed
     if (Object.keys(updatedFields).length > 0) {
       profile = await this.prisma.studentProfile.update({
@@ -71,7 +90,7 @@ export class GamificationService {
       });
     }
 
-    return this.buildResponse(profile);
+    return this.buildResponse(profile, timezoneOffsetMinutes);
   }
 
   /**
@@ -126,7 +145,7 @@ export class GamificationService {
   }
 
   /**
-   * Alternative refill: refilling lives using 100 XP points.
+   * Refilling lives using 100 XP points.
    */
   async refillLivesWithXp(userId: string) {
     const profile = await this.prisma.studentProfile.upsert({
@@ -194,7 +213,6 @@ export class GamificationService {
       throw new BadRequestException('Daily quest reward already claimed today.');
     }
 
-    // Quest config
     const rewards: Record<string, number> = {
       'daily-study': 10,
       'daily-lesson': 20,
@@ -204,7 +222,6 @@ export class GamificationService {
     const xpReward = rewards[questId] || 10;
     completed.push(questId);
 
-    // Any quest claim counts as an XP-earning activity to update/increment the streak
     const now = new Date();
     const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
     let newStreak = profile.streakDays;
@@ -216,10 +233,8 @@ export class GamificationService {
       if (diffDays === 1) {
         newStreak = profile.streakDays + 1;
       } else if (diffDays === 0) {
-        // Already active today
         newStreak = profile.streakDays || 1;
       } else {
-        // Reset/start new streak
         newStreak = 1;
       }
     } else {
@@ -237,7 +252,90 @@ export class GamificationService {
       },
     });
 
-    return this.buildResponse(updated);
+    return this.buildResponse(updated, timezoneOffsetMinutes);
+  }
+
+  /**
+   * Claims the Daily Login Reward (chest).
+   * Verifies timezone eligibility, applies streak freeze protection if they missed a day,
+   * awards the day's XP, and updates their cycle position (1 to 7).
+   */
+  async claimDailyReward(userId: string, timezoneOffsetMinutes = 0) {
+    const profile = await this.prisma.studentProfile.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
+
+    const now = new Date();
+    const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
+
+    // 1. Check eligibility
+    if (profile.lastRewardClaimedAt) {
+      const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
+      if (todayStr === lastClaimStr) {
+        throw new BadRequestException('Daily reward already claimed today.');
+      }
+    }
+
+    // 2. Resolve cycle position after potential missed day(s)
+    let currentPosition = profile.dailyRewardCyclePosition;
+    let newFreezeCount = profile.streakFreezeBank;
+    let cheatLastClaimedDate: Date | null = null;
+
+    if (profile.lastRewardClaimedAt) {
+      const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
+      const diffClaims = this.getDaysDiff(todayStr, lastClaimStr);
+
+      if (diffClaims > 1) {
+        // Missed a day! Does freeze bank protect it?
+        if (profile.streakFreezeBank > 0) {
+          newFreezeCount = profile.streakFreezeBank - 1;
+          // Freeze consumed — do not reset position!
+          console.log(`[Gamification] Freeze consumed to protect Daily Reward claim for user ${userId}.`);
+        } else {
+          // Reset cycle position to 1
+          currentPosition = 1;
+        }
+      }
+    }
+
+    // 3. Compute day's reward XP
+    const rewardsMap: Record<number, number> = {
+      1: 5,
+      2: 10,
+      3: 15,
+      4: 20,
+      5: 25,
+      6: 30,
+    };
+
+    let xpReward = rewardsMap[currentPosition] || 5;
+
+    // Day 7 is the Mystery Chest (randomized 50-100 XP)
+    if (currentPosition === 7) {
+      xpReward = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
+    }
+
+    // 4. Update cycle position for next claim
+    const nextPosition = currentPosition === 7 ? 1 : currentPosition + 1;
+
+    // 5. Commit state updates
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: {
+        xp: { increment: xpReward },
+        lastRewardClaimedAt: now,
+        dailyRewardCyclePosition: nextPosition,
+        streakFreezeBank: newFreezeCount,
+      },
+    });
+
+    return {
+      ...(await this.buildResponse(updated, timezoneOffsetMinutes)),
+      justClaimedXp: xpReward,
+      justClaimedCycleDay: currentPosition,
+    };
   }
 
   // ─── Private Helpers ────────────────────────────────────────────────────────
@@ -246,7 +344,6 @@ export class GamificationService {
    * Converts a date to client local calendar day string (YYYY-MM-DD).
    */
   private getLocalDayString(utcDate: Date, timezoneOffsetMinutes: number): string {
-    // client timezoneOffsetMinutes: positive if behind UTC, negative if ahead
     const localTime = new Date(utcDate.getTime() - timezoneOffsetMinutes * 60 * 1000);
     return `${localTime.getUTCFullYear()}-${String(localTime.getUTCMonth() + 1).padStart(2, '0')}-${String(localTime.getUTCDate()).padStart(2, '0')}`;
   }
@@ -272,24 +369,41 @@ export class GamificationService {
     const lostAt = new Date(profile.livesLastLostAt).getTime();
     const msElapsed = now - lostAt;
     const hoursElapsed = msElapsed / (1000 * 60 * 60);
-    const livesRestored = Math.floor(hoursElapsed / 4); // 1 life per 4 hours
+    const livesRestored = Math.floor(hoursElapsed / 4);
 
     const newLives = Math.min(profile.lives + livesRestored, profile.maxLives);
     return { lives: newLives };
   }
 
   /**
+   * Calculates milliseconds remaining until the user's next local midnight.
+   */
+  private getNextMidnightMs(now: Date, timezoneOffsetMinutes: number): number {
+    const localTime = new Date(now.getTime() - timezoneOffsetMinutes * 60 * 1000);
+    const nextDay = new Date(localTime.getTime());
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    nextDay.setUTCHours(0, 0, 0, 0);
+    const nextLocalMidnightUtc = nextDay.getTime() + timezoneOffsetMinutes * 60 * 1000;
+    return Math.max(0, nextLocalMidnightUtc - now.getTime());
+  }
+
+  /**
    * Builds the formatted API payload.
    */
-  private buildResponse(profile: {
-    xp: number;
-    streakDays: number;
-    lives: number;
-    maxLives: number;
-    livesLastLostAt: Date | null;
-    streakFreezeBank: number;
-    completedQuests: any;
-  }) {
+  private async buildResponse(
+    profile: {
+      xp: number;
+      streakDays: number;
+      lives: number;
+      maxLives: number;
+      livesLastLostAt: Date | null;
+      streakFreezeBank: number;
+      completedQuests: any;
+      lastRewardClaimedAt: Date | null;
+      dailyRewardCyclePosition: number;
+    },
+    timezoneOffsetMinutes = 0,
+  ) {
     let livesRefillAt: string | null = null;
 
     if (profile.livesLastLostAt && profile.lives < profile.maxLives) {
@@ -301,6 +415,17 @@ export class GamificationService {
       livesRefillAt = new Date(nextRefillMs).toISOString();
     }
 
+    // Daily login reward eligibility and countdown
+    const now = new Date();
+    let isEligibleForReward = true;
+    if (profile.lastRewardClaimedAt) {
+      const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
+      const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
+      isEligibleForReward = todayStr !== lastClaimStr;
+    }
+
+    const nextRewardClaimInMs = this.getNextMidnightMs(now, timezoneOffsetMinutes);
+
     return {
       xp: profile.xp,
       streakDays: profile.streakDays,
@@ -309,6 +434,11 @@ export class GamificationService {
       streakFreezeBank: profile.streakFreezeBank,
       completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       livesRefillAt,
+      // Daily reward fields
+      lastRewardClaimedAt: profile.lastRewardClaimedAt ? profile.lastRewardClaimedAt.toISOString() : null,
+      dailyRewardCyclePosition: profile.dailyRewardCyclePosition,
+      isEligibleForReward,
+      nextRewardClaimInMs,
     };
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bot, Lock, BookOpen } from 'lucide-react';
@@ -19,16 +19,54 @@ export interface RightSidebarProps {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLessons, section, sectionIndex, userName }) => {
   const { triggerComingSoon } = useComingSoon();
-  const { xp: userXpTotal, completedQuests, claimQuest } = useGamification();
+  const {
+    xp: userXpTotal,
+    completedQuests,
+    claimQuest,
+    lastRewardClaimedAt,
+    dailyRewardCyclePosition,
+    isEligibleForReward,
+    nextRewardClaimInMs,
+    claimDailyReward,
+  } = useGamification();
+
+  const [countdownStr, setCountdownStr] = useState('');
+
+  useEffect(() => {
+    if (isEligibleForReward || !nextRewardClaimInMs) {
+      setCountdownStr('');
+      return;
+    }
+
+    let remainingMs = nextRewardClaimInMs;
+    // Tick immediately
+    const updateTick = () => {
+      if (remainingMs <= 0) {
+        setCountdownStr('00:00:00');
+        return;
+      }
+      const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+      setCountdownStr(
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+      );
+      remainingMs -= 1000;
+    };
+
+    updateTick();
+    const interval = setInterval(updateTick, 1000);
+    return () => clearInterval(interval);
+  }, [isEligibleForReward, nextRewardClaimInMs]);
+
+  const handleClaimReward = async () => {
+    playHaptic('success');
+    await claimDailyReward();
+  };
 
   const handleLetsGo = () => {
     playHaptic('medium');
     triggerComingSoon("Tey's Challenge: Let's Go!");
-  };
-
-  const handleClaimReward = () => {
-    playHaptic('medium');
-    triggerComingSoon('Daily Chest Reward');
   };
 
   // Section-level progress
@@ -262,37 +300,124 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </div>
       )}
 
-      {/* UNLOCK BONUS REWARD CARD (section view) */}
-      {hasSection && (
-        <div className={styles.rewardCard}>
-          <span className={styles.rewardHeader}>Unlock Bonus Reward!</span>
-          <p className={styles.rewardSubtext}>
-            Complete all lessons in this section to unlock a mystery chest.
-          </p>
-          <div className={styles.bonusProgressRow}>
-            <div className={styles.questProgressBar}>
-              <div className={styles.questProgressFill} style={{ width: `${sectionProgressPercent}%` }} />
-            </div>
-            <span className={styles.bonusProgressText}>{sectionCompletedCount} / {sectionTotalLessons}</span>
-          </div>
-          <div className={styles.treasureBoxWrapper}>
-            <Image
-              src="/Tressure box.png"
-              alt="Mystery Chest"
-              width={100}
-              height={80}
-              className={styles.treasureBoxImage}
-            />
-          </div>
-          <button
-            onClick={handleClaimReward}
-            className={sectionComplete ? styles.button3dBlue : styles.button3dWhiteReward}
-            disabled={!sectionComplete}
-          >
-            {sectionComplete ? 'Claim Reward' : 'Complete Section to Unlock'}
-          </button>
+      {/* DAILY REWARD LOGIN CHEST CARD */}
+      <div className={styles.rewardCard} style={{ filter: isEligibleForReward ? 'none' : 'grayscale(15%) brightness(95%)' }}>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes chestIdle {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); }
+          }
+          .chestAnimate {
+            animation: chestIdle 2.2s infinite ease-in-out;
+          }
+        `}} />
+
+        <span className={styles.rewardHeader}>Daily Reward</span>
+        <p className={styles.rewardSubtext} style={{ minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          {(() => {
+            if (isEligibleForReward) {
+              if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
+              const unclaimedSubtexts = [
+                "Ready to grab today's reward?",
+                "Your chest is waiting!",
+                "Don't leave me hanging — claim your reward!",
+                "A gift from Tey: keep the habit strong!",
+                "Crack open today's reward chest!"
+              ];
+              return unclaimedSubtexts[dailyRewardCyclePosition % unclaimedSubtexts.length];
+            } else {
+              if (dailyRewardCyclePosition === 1) return "Nice! You unlocked the Mystery Chest! 🎉";
+              return `Come back in ${countdownStr}`;
+            }
+          })()}
+        </p>
+
+        {/* 7-pip streak tracker */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '12px 0 16px', width: '100%', gap: '6px' }}>
+          {Array.from({ length: 7 }).map((_, i) => {
+            const dayNum = i + 1;
+            const isActive = dayNum === dailyRewardCyclePosition && isEligibleForReward;
+            
+            let isCompleted = false;
+            if (isEligibleForReward) {
+              isCompleted = dayNum < dailyRewardCyclePosition;
+            } else {
+              const dayJustClaimed = dailyRewardCyclePosition === 1 ? 7 : dailyRewardCyclePosition - 1;
+              isCompleted = dayNum <= dayJustClaimed;
+            }
+
+            return (
+              <div
+                key={dayNum}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <div
+                  style={{
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '50%',
+                    backgroundColor: isCompleted ? '#58cc02' : isActive ? '#FF8A00' : '#E2E8F0',
+                    border: isActive ? '2px solid white' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: isCompleted || isActive ? 'white' : '#94A3B8',
+                    fontWeight: 800,
+                    fontSize: '10px',
+                    boxShadow: isActive ? '0 0 8px rgba(255, 138, 0, 0.7)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {isCompleted ? '✓' : dayNum === 7 ? '🎁' : dayNum}
+                </div>
+                <span style={{ fontSize: '8px', fontWeight: 800, color: '#94A3B8' }}>
+                  D{dayNum}
+                </span>
+              </div>
+            );
+          })}
         </div>
-      )}
+
+        <div className={styles.treasureBoxWrapper}>
+          <Image
+            src="/Tressure box.png"
+            alt="Mystery Chest"
+            width={95}
+            height={76}
+            className={isEligibleForReward ? 'chestAnimate' : ''}
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
+
+        <button
+          onClick={handleClaimReward}
+          disabled={!isEligibleForReward}
+          className={isEligibleForReward ? styles.button3dBlue : ''}
+          style={!isEligibleForReward ? {
+            width: '100%',
+            backgroundColor: '#CBD5E1',
+            border: 'none',
+            borderBottom: '4px solid #94A3B8',
+            color: '#64748B',
+            borderRadius: '10px',
+            fontWeight: 800,
+            fontSize: '14px',
+            padding: '12px',
+            cursor: 'not-allowed'
+          } : { width: '100%' }}
+        >
+          {isEligibleForReward
+            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
+            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED ✓' : 'CLAIMED ✓')
+          }
+        </button>
+      </div>
 
       {/* ─── COURSE-LEVEL CARDS (shown when no section prop) ─── */}
 
