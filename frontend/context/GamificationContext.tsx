@@ -18,6 +18,11 @@ export interface GamificationState {
   livesRefillAt: string | null;
   streakFreezeBank: number;
   completedQuests: string[];
+  // Daily Reward (Login Chest)
+  lastRewardClaimedAt: string | null;
+  dailyRewardCyclePosition: number;
+  isEligibleForReward: boolean;
+  nextRewardClaimInMs: number;
   isLoading: boolean;
 }
 
@@ -28,6 +33,7 @@ interface GamificationContextValue extends GamificationState {
   claimQuest: (questId: string) => Promise<void>;
   buyStreakFreeze: () => Promise<void>;
   refillLivesWithXp: () => Promise<void>;
+  claimDailyReward: () => Promise<void>;
   userLevel: number;
   xpInCurrentLevel: number;
 }
@@ -44,6 +50,11 @@ const DEFAULT_STATE: GamificationState = {
   livesRefillAt: null,
   streakFreezeBank: 1, // Start with 1 starter freeze banked
   completedQuests: [],
+  // Daily Reward
+  lastRewardClaimedAt: null,
+  dailyRewardCyclePosition: 1,
+  isEligibleForReward: true,
+  nextRewardClaimInMs: 0,
   isLoading: true,
 };
 
@@ -66,6 +77,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       const res = await fetch(`/api/gamification/me?timezoneOffset=${tzOffset}`, {
         credentials: 'include',
         headers: { 'Cache-Control': 'no-cache' },
+        cache: 'no-store',
       });
 
       if (!res.ok) {
@@ -82,6 +94,11 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         livesRefillAt: data.livesRefillAt ?? null,
         streakFreezeBank: data.streakFreezeBank ?? 1,
         completedQuests: Array.isArray(data.completedQuests) ? data.completedQuests : [],
+        // Daily Reward
+        lastRewardClaimedAt: data.lastRewardClaimedAt ?? null,
+        dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
+        isEligibleForReward: data.isEligibleForReward ?? true,
+        nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
         isLoading: false,
       });
     } catch {
@@ -195,6 +212,32 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  const claimDailyReward = useCallback(async () => {
+    try {
+      const tzOffset = new Date().getTimezoneOffset();
+      const res = await fetch('/api/gamification/claim-daily-reward', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ timezoneOffset: tzOffset }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setState((prev) => ({
+          ...prev,
+          xp: data.xp ?? prev.xp,
+          lastRewardClaimedAt: data.lastRewardClaimedAt ?? prev.lastRewardClaimedAt,
+          dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? prev.dailyRewardCyclePosition,
+          isEligibleForReward: data.isEligibleForReward ?? false,
+          nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
+          streakFreezeBank: data.streakFreezeBank ?? prev.streakFreezeBank,
+        }));
+      }
+    } catch (e) {
+      console.error('Failed to claim daily reward:', e);
+    }
+  }, []);
+
   // level logic: 1 level per 100 XP
   const userLevel = Math.floor(state.xp / 100) + 1;
   const xpInCurrentLevel = state.xp % 100;
@@ -209,6 +252,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         claimQuest,
         buyStreakFreeze,
         refillLivesWithXp,
+        claimDailyReward,
         userLevel,
         xpInCurrentLevel,
       }}
