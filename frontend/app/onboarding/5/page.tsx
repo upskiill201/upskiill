@@ -176,7 +176,7 @@ export default function OnboardingStep5() {
 
         {/* Desktop Mascot (Vertically Centered) */}
         <div className="hidden md:flex absolute left-[-7vw] lg:left-[-2vw] top-1/2 -translate-y-1/2 w-[55%] justify-center z-10 pointer-events-none">
-           <div className="relative w-full md:max-w-[900px] aspect-square scale-[1.4] lg:scale-[1.65] -translate-x-16 lg:-translate-x-[10.5rem] origin-left">
+           <div className="relative w-[40vw] h-[40vw] scale-[1.2] -translate-x-16 lg:-translate-x-[10.5rem] origin-left">
               <MascotBackground />
               <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[0.85] lg:scale-[0.85]">
                 <Image 

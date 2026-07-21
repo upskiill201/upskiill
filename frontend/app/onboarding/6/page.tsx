@@ -422,7 +422,7 @@ export default function OnboardingStep6() {
 
         {/* Desktop Mascot (Left) */}
         <div className="hidden md:flex absolute ml-[-15rem] top-1/2 -translate-y-1/2 w-[55%] items-center justify-start z-10 pointer-events-none">
-           <div className="relative w-full md:max-w-[700px] aspect-square scale-[1.25] lg:scale-[1.3] origin-left">
+           <div className="relative w-[40vw] h-[40vw] scale-[1.2] origin-left">
               <MascotBackground />
               <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[0.95] lg:scale-[1.0]">
                 <Image 
