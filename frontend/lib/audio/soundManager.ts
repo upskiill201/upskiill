@@ -186,10 +186,22 @@ class SoundManager {
     this.lastPlayTimes.set(id, now);
 
     const ctx = this.initContext();
-    if (!ctx) return;
 
     const buffer = await this.getAudioBuffer(cfg.src);
-    if (!buffer) return;
+    if (!buffer || !ctx) {
+      // HTML5 Audio element fallback (guarantees playback without file downloads)
+      try {
+        const audio = new Audio(cfg.src);
+        const catVol = this.volumes[cfg.category as keyof CategoryVolumes] ?? 1.0;
+        audio.volume = Math.max(0, Math.min(1, cfg.volume * catVol * (this.isMuted ? 0 : this.volumes.master)));
+        audio.playbackRate = cfg.speed || 1.0;
+        audio.loop = cfg.loop || false;
+        void audio.play().catch(e => console.warn('[SoundManager] HTML5 audio play prevented:', e));
+      } catch (err) {
+        console.warn(`[SoundManager] HTML5 fallback failed for ${id}:`, err);
+      }
+      return;
+    }
 
     // Route music separately
     if (cfg.category === 'music' || cfg.loop) {
