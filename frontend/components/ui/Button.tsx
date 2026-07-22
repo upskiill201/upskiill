@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Spinner from './Spinner';
 import styles from './Button.module.css';
+import { emitAudioEvent } from '@/lib/audio/audioEvents';
 
 type ButtonProps = {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
@@ -101,6 +102,16 @@ export default function Button({
     style: { ...style, overflow: 'hidden' } as any, // Needed for shimmer
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled || loading) return;
+    if (variant === 'primary' || variant === 'danger') {
+      void emitAudioEvent('BUTTON_PRIMARY_CLICK');
+    } else {
+      void emitAudioEvent('BUTTON_SECONDARY_CLICK');
+    }
+    if (onClick) onClick();
+  };
+
   if (href && !disabled && !loading) {
     // Cast MotionLink to any here or use ts-ignore if there are type issues, but typically it works.
     const MotionLink = motion.create ? motion.create(Link) : (motion as any)(Link);
@@ -110,6 +121,13 @@ export default function Button({
         className={classes} 
         id={id}
         aria-label={ariaLabel}
+        onClick={() => {
+          if (variant === 'primary' || variant === 'danger') {
+            void emitAudioEvent('BUTTON_PRIMARY_CLICK');
+          } else {
+            void emitAudioEvent('BUTTON_SECONDARY_CLICK');
+          }
+        }}
         {...motionProps}
       >
         {content}
@@ -121,7 +139,7 @@ export default function Button({
     <motion.button
       type={type}
       className={classes}
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled || loading}
       aria-busy={loading}
       aria-label={ariaLabel}
