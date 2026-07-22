@@ -301,26 +301,21 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       )}
 
       {/* DAILY REWARD LOGIN CHEST CARD */}
-      <div 
-        style={{ 
-          backgroundColor: '#FFFDF5', 
-          border: '2px solid #E2E8F0', 
-          borderRadius: '16px', 
-          padding: '16px', 
-          marginBottom: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: 'none',
-          position: 'relative'
-        }}
-      >
+      <div className={styles.dailyRewardCard}>
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes chestIdle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-2deg); }
+          }
+          @keyframes pulseGold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 184, 0, 0.6); }
+            50% { transform: scale(1.1); box-shadow: 0 0 16px rgba(255, 184, 0, 0.95); }
           }
           .chestAnimate {
-            animation: chestIdle 2s infinite ease-in-out;
+            animation: chestIdle 2.2s infinite ease-in-out;
+          }
+          .day7Glow {
+            animation: pulseGold 1.8s infinite ease-in-out;
           }
         `}} />
 
@@ -369,6 +364,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
               isCompleted = dayNum <= dayJustClaimed;
             }
 
+            const isDay7 = dayNum === 7;
+
             return (
               <div
                 key={dayNum}
@@ -380,27 +377,47 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   gap: '6px'
                 }}
               >
-                <span style={{ fontSize: '10px', fontWeight: 800, color: '#A0A0A0', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: isDay7 ? '#FF8A00' : '#A0A0A0', fontFamily: 'var(--font-jakarta), sans-serif' }}>
                   D{dayNum}
                 </span>
                 <div
+                  className={isDay7 && !isCompleted ? 'day7Glow' : ''}
                   style={{
-                    width: '28px',
-                    height: '28px',
+                    width: isDay7 ? '32px' : '28px',
+                    height: isDay7 ? '32px' : '28px',
                     borderRadius: '50%',
-                    backgroundColor: isCompleted ? '#58cc02' : isActive ? '#FF8A00' : '#E2E8F0',
-                    border: isActive ? '2px solid white' : 'none',
+                    background: isCompleted
+                      ? '#58cc02'
+                      : isDay7
+                        ? 'linear-gradient(135deg, #FFC700 0%, #FF8A00 100%)'
+                        : isActive
+                          ? '#FF8A00'
+                          : '#E2E8F0',
+                    border: isActive || (isDay7 && !isCompleted) ? '2px solid white' : 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: isCompleted || isActive ? 'white' : '#A0A0A0',
+                    color: isCompleted || isActive || isDay7 ? 'white' : '#A0A0A0',
                     fontWeight: 800,
                     fontSize: '11px',
-                    boxShadow: isActive ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
+                    boxShadow: isActive && !isDay7 ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  {isCompleted ? '✓' : dayNum === 7 ? '🎁' : dayNum}
+                  {isCompleted ? (
+                    '✓'
+                  ) : isDay7 ? (
+                    <div style={{ position: 'relative', width: 20, height: 18 }}>
+                      <Image
+                        src="/Tressure box.png"
+                        alt="Day 7 Chest"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                  ) : (
+                    dayNum
+                  )}
                 </div>
               </div>
             );
@@ -410,32 +427,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         <button
           onClick={handleClaimReward}
           disabled={!isEligibleForReward}
-          style={isEligibleForReward ? {
-            width: '100%',
-            backgroundColor: '#0172FD',
-            border: 'none',
-            borderBottom: '4px solid #0050B3',
-            color: 'white',
-            borderRadius: '12px',
-            fontWeight: 800,
-            fontSize: '13px',
-            padding: '12px',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-jakarta), sans-serif',
-            transition: 'transform 0.1s ease'
-          } : {
-            width: '100%',
-            backgroundColor: '#E2E8F0',
-            border: 'none',
-            borderBottom: '4px solid #CBD5E1',
-            color: '#A0A0A0',
-            borderRadius: '12px',
-            fontWeight: 800,
-            fontSize: '13px',
-            padding: '12px',
-            cursor: 'not-allowed',
-            fontFamily: 'var(--font-jakarta), sans-serif'
-          }}
+          className={isEligibleForReward ? styles.dailyRewardClaimBtn : styles.dailyRewardClaimBtnDisabled}
         >
           {isEligibleForReward
             ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
