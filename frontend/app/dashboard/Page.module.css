@@ -904,7 +904,12 @@
     margin-bottom: 24px;
   }
 
+  .welcomeBanner {
+    order: 2;
+  }
+
   .statsRow {
+    order: 1;
     width: 100%;
     justify-content: space-between;
     gap: 12px;
