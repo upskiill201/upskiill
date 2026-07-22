@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Header } from '@nestjs/common';
+import { Controller, Post, Get, Body, Header, Req } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/decorator/get-user.decorator';
@@ -7,19 +7,18 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('send-otp')
   async sendOtp(@Body('phone') phone: string) {
     return this.whatsappService.sendOtp(phone);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('verify-otp')
   async verifyOtp(
     @Body('phone') phone: string,
     @Body('code') code: string,
-    @GetUser('id') userId: string,
+    @Req() req: any,
   ) {
+    const userId = req?.user?.id;
     return this.whatsappService.verifyOtp(phone, code, userId);
   }
 
