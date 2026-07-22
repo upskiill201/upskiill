@@ -323,3 +323,11 @@ model StudentProfile {
 
   @@map("student_profiles")
 }
+
+model WhatsappAuthStore {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("whatsapp_auth_store")
+}

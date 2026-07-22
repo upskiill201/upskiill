@@ -1,14 +1,15 @@
 import { Injectable, Logger, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import makeWASocket, {
-  useMultiFileAuthState,
   DisconnectReason,
   fetchLatestBaileysVersion,
   WASocket,
+  BufferJSON,
+  initAuthCreds,
+  proto,
 } from '@whiskeysockets/baileys';
-import * as qrcode from 'qrcode-terminal';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as qrcodeTerminal from 'qrcode-terminal';
+import * as QRCode from 'qrcode';
 
 // ─── OTP Store Entry ─────────────────────────────────────────────────────────
 interface OtpEntry {
@@ -31,27 +32,95 @@ export class WhatsappService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    // Initialise Baileys when NestJS module starts
     await this.initBaileys();
   }
 
-  /** Initialises the Baileys WhatsApp Web socket */
+  /**
+   * Database-backed Auth State handler for Baileys.
+   * Stores all credentials & keys in the `whatsapp_auth_store` table in PostgreSQL.
+   * This ensures that Render redeployments or container restarts NEVER lose your login session!
+   */
+  private async usePrismaAuthState() {
+    const writeData = async (data: any, key: string) => {
+      try {
+        await this.prisma.whatsappAuthStore.upsert({
+          where: { key },
+          create: { key, value: JSON.stringify(data, BufferJSON.replacer) },
+          update: { value: JSON.stringify(data, BufferJSON.replacer) },
+        });
+      } catch (err: any) {
+        this.logger.error(`[WhatsApp DB Auth] Write failed for key ${key}: ${err?.message}`);
+      }
+    };
+
+    const readData = async (key: string) => {
+      try {
+        const res = await this.prisma.whatsappAuthStore.findUnique({ where: { key } });
+        if (res?.value) {
+          return JSON.parse(res.value, BufferJSON.reviver);
+        }
+      } catch {
+        return null;
+      }
+      return null;
+    };
+
+    const removeData = async (key: string) => {
+      try {
+        await this.prisma.whatsappAuthStore.delete({ where: { key } });
+      } catch {}
+    };
+
+    const creds = (await readData('creds')) || initAuthCreds();
+
+    return {
+      state: {
+        creds,
+        keys: {
+          get: async (type: string, ids: string[]) => {
+            const data: { [id: string]: any } = {};
+            await Promise.all(
+              ids.map(async (id) => {
+                let value = await readData(`${type}-${id}`);
+                if (type === 'app-state-sync-key' && value) {
+                  value = proto.Message.AppStateSyncKeyData.fromObject(value);
+                }
+                if (value) {
+                  data[id] = value;
+                }
+              }),
+            );
+            return data;
+          },
+          set: async (data: any) => {
+            const tasks: Promise<any>[] = [];
+            for (const category in data) {
+              for (const id in data[category]) {
+                const value = data[category][id];
+                const key = `${category}-${id}`;
+                tasks.push(value ? writeData(value, key) : removeData(key));
+              }
+            }
+            await Promise.all(tasks);
+          },
+        },
+      },
+      saveCreds: () => writeData(creds, 'creds'),
+    };
+  }
+
+  /** Initialises the Baileys WhatsApp Web socket using database-backed auth */
   private async initBaileys() {
     try {
-      const authDir = path.join(process.cwd(), 'whatsapp_auth');
-      if (!fs.existsSync(authDir)) {
-        fs.mkdirSync(authDir, { recursive: true });
-      }
-
-      const { state, saveCreds } = await useMultiFileAuthState(authDir);
+      const { state, saveCreds } = await this.usePrismaAuthState();
       const { version } = await fetchLatestBaileysVersion();
 
-      this.logger.log(`[WhatsApp Baileys] Starting WhatsApp Web client v${version.join('.')}...`);
+      this.logger.log(`[WhatsApp Baileys] Initialising client v${version.join('.')} (DB-backed Auth)...`);
 
       this.sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: false, // We render manually with qrcode-terminal for clear logging
+        printQRInTerminal: false,
         syncFullHistory: false,
       });
 
@@ -63,19 +132,19 @@ export class WhatsappService implements OnModuleInit {
         if (qr) {
           this.qrCodeStr = qr;
           this.logger.log('====================================================');
-          this.logger.log('  📱 SCAN THIS QR CODE WITH YOUR WHATSAPP PHONE APP 📱  ');
+          this.logger.log('  📱 SCAN QR CODE TO CONNECT TEY WHATSAPP CLIENT   ');
           this.logger.log('====================================================');
-          qrcode.generate(qr, { small: true }, (terminalQr) => {
+          qrcodeTerminal.generate(qr, { small: true }, (terminalQr) => {
             console.log(terminalQr);
           });
-          this.logger.log('Open WhatsApp on your phone -> Linked Devices -> Link a Device & scan the QR above!');
+          this.logger.log('Or visit: https://upskiill-backend.onrender.com/whatsapp/qr-page to scan on web!');
         }
 
         if (connection === 'close') {
           this.isConnected = false;
           const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
           const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-          
+
           this.logger.warn(
             `[WhatsApp Baileys] Connection closed (status: ${statusCode}). Reconnecting: ${shouldReconnect}`,
           );
@@ -83,7 +152,7 @@ export class WhatsappService implements OnModuleInit {
           if (shouldReconnect) {
             setTimeout(() => this.initBaileys(), 3000);
           } else {
-            this.logger.error('[WhatsApp Baileys] Device logged out. Please restart server & scan QR again.');
+            this.logger.error('[WhatsApp Baileys] Device logged out. Please re-scan QR code.');
           }
         } else if (connection === 'open') {
           this.isConnected = true;
@@ -98,7 +167,7 @@ export class WhatsappService implements OnModuleInit {
     }
   }
 
-  // ─── Status & QR Endpoint Support ──────────────────────────────────────────
+  // ─── Status & QR Page Helpers ──────────────────────────────────────────────
 
   getStatus() {
     return {
@@ -106,6 +175,99 @@ export class WhatsappService implements OnModuleInit {
       hasQrCode: !!this.qrCodeStr,
       qrCodeStr: this.qrCodeStr,
     };
+  }
+
+  /** Generates a self-contained HTML page rendering the QR Code image for web scanning */
+  async getQrPageHtml(): Promise<string> {
+    if (this.isConnected) {
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Tey WhatsApp Client — Connected</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+              body { font-family: sans-serif; background: #0F172A; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+              .card { background: #1E293B; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-w: 400px; }
+              .badge { display: inline-block; background: #10B981; color: white; padding: 0.5rem 1rem; border-radius: 9999px; font-weight: bold; margin-bottom: 1rem; }
+              h1 { margin: 0 0 0.5rem 0; font-size: 1.5rem; }
+              p { color: #94A3B8; font-size: 0.9rem; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <div class="badge">Connected ✅</div>
+              <h1>Tey WhatsApp is Ready!</h1>
+              <p>Your Teyro WhatsApp client is connected and ready to deliver real-time OTPs, notifications, and reminders.</p>
+            </div>
+          </body>
+        </html>
+      `;
+    }
+
+    if (!this.qrCodeStr) {
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Tey WhatsApp Client — Initialising</title>
+            <meta http-equiv="refresh" content="3">
+            <style>
+              body { font-family: sans-serif; background: #0F172A; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+              .card { background: #1E293B; padding: 2rem; border-radius: 1rem; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h2>Initialising Tey WhatsApp Socket...</h2>
+              <p>Please wait a moment while the QR code generates (refreshing in 3s)...</p>
+            </div>
+          </body>
+        </html>
+      `;
+    }
+
+    // Convert QR string to Data URL image
+    const dataUrl = await QRCode.toDataURL(this.qrCodeStr, { width: 300, margin: 2 });
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Scan QR — Tey WhatsApp</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="refresh" content="15">
+          <style>
+            body { font-family: system-ui, -apple-system, sans-serif; background: #0F172A; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; padding: 1rem; }
+            .card { background: #1E293B; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 420px; width: 100%; border: 1px solid #334155; }
+            h1 { font-size: 1.5rem; font-weight: 800; color: #38BDF8; margin-top: 0; }
+            p { color: #94A3B8; font-size: 0.95rem; line-height: 1.5; }
+            .qr-wrapper { background: white; padding: 1rem; border-radius: 1rem; display: inline-block; margin: 1.5rem 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+            img { display: block; max-width: 100%; height: auto; }
+            .instructions { text-align: left; background: #0F172A; padding: 1rem 1.25rem; border-radius: 0.75rem; font-size: 0.85rem; color: #CBD5E1; margin-top: 1rem; border: 1px solid #334155; }
+            .instructions ol { margin: 0; padding-left: 1.25rem; }
+            .instructions li { margin-bottom: 0.4rem; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>Link Tey WhatsApp Account</h1>
+            <p>Scan this QR code with WhatsApp on Tey's dedicated phone to enable automated OTPs & reminders.</p>
+            <div class="qr-wrapper">
+              <img src="${dataUrl}" alt="WhatsApp QR Code" />
+            </div>
+            <div class="instructions">
+              <strong>Instructions:</strong>
+              <ol>
+                <li>Open <strong>WhatsApp</strong> on Tey's phone</li>
+                <li>Tap <strong>Settings</strong> -> <strong>Linked Devices</strong></li>
+                <li>Tap <strong>Link a Device</strong> and scan this code</li>
+              </ol>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
   }
 
   // ─── Send OTP ──────────────────────────────────────────────────────────────
@@ -136,7 +298,7 @@ export class WhatsappService implements OnModuleInit {
       }
     } else {
       this.logger.warn(
-        `[WhatsApp Baileys] Client not connected yet. OTP for ${phone} is: ${code} (Scan QR code to activate real delivery)`,
+        `[WhatsApp Baileys] Client not connected yet. OTP for ${phone} is: ${code} (Visit https://upskiill-backend.onrender.com/whatsapp/qr-page to scan QR)`,
       );
     }
 
@@ -144,7 +306,7 @@ export class WhatsappService implements OnModuleInit {
       success: true,
       message: this.isConnected
         ? 'OTP sent to your WhatsApp number!'
-        : 'OTP generated. Please scan the backend QR code to enable direct WhatsApp delivery.',
+        : 'OTP generated. Please visit the backend QR page to connect WhatsApp.',
     };
   }
 
