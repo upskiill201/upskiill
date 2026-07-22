@@ -12,6 +12,7 @@ import {
   Rocket,
   Flame,
   Settings,
+  Headphones,
   LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -297,13 +298,13 @@ export default function DashboardLayout({
 
             <div className={styles.utilityActions}>
               <Link 
-                href="/dashboard" 
-                onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 
+                href="/audio-settings" 
+                onClick={() => setIsMobileMenuOpen(false)} 
                 className={styles.navItemCompact}
-                title={isSidebarCollapsed ? 'Settings' : ''}
+                title={isSidebarCollapsed ? 'Audio Settings' : ''}
               >
-                <span className={styles.icon}><Settings size={20} /></span>
-                {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
+                <span className={styles.icon}><Headphones size={20} className="text-[#0172FD]" /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Audio Settings</span>}
               </Link>
               <button 
                 onClick={handleLogout} 
