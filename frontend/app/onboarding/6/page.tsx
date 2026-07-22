@@ -58,14 +58,14 @@ export default function OnboardingStep6() {
     setCountdown(30);
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-otp`, {
+      await fetch('/api/whatsapp/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ phone: phoneNumber.replace(/\D/g, '') })
+        body: JSON.stringify({ phone: phoneNumber }),
       });
     } catch (e) {
-      console.warn('Backend send-otp failed, continuing in mock/simulation mode:', e);
+      console.warn('[WhatsApp] send-otp request failed, continuing in offline mode:', e);
     }
   };
 
@@ -113,30 +113,32 @@ export default function OnboardingStep6() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/verify-otp`, {
+      const res = await fetch('/api/whatsapp/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ 
-          phone: phoneNumber.replace(/\D/g, ''),
-          code: fullOtp 
-        })
+        body: JSON.stringify({
+          phone: phoneNumber,
+          code: fullOtp,
+        }),
       });
 
       if (res.ok) {
-        setOtpStatus('verified');
-        saveAnswer({ whatsappNumber: phoneNumber.replace(/\D/g, '') });
-      } else {
-        // Fallback for staging environment if route doesn't exist
-        console.warn('API returned non-ok, falling back to successful mock verification for code:', fullOtp);
-        setOtpStatus('verified');
-        saveAnswer({ whatsappNumber: phoneNumber.replace(/\D/g, '') });
+        const data = await res.json();
+        if (data.success) {
+          setOtpStatus('verified');
+          saveAnswer({ whatsappNumber: data.phone ?? phoneNumber });
+          return;
+        }
       }
+
+      // Non-ok or backend explicitly rejected — show error
+      const errData = await res.json().catch(() => ({}));
+      const errMsg = errData?.message ?? 'Incorrect code. Please try again.';
+      alert(errMsg);
     } catch (e) {
-      console.warn('Verification API threw, performing local mock fallback:', e);
-      // Fallback for local testing/dev
-      setOtpStatus('verified');
-      saveAnswer({ whatsappNumber: phoneNumber.replace(/\D/g, '') });
+      console.warn('[WhatsApp] verify-otp request failed:', e);
+      alert('Could not verify your code. Please check your connection and try again.');
     }
   };
 
@@ -341,7 +343,7 @@ export default function OnboardingStep6() {
                     className="w-full flex flex-col items-center"
                   >
                     <p className="text-sm font-medium text-slate-400 mb-4 text-center">
-                      Tey will send you a 6-digit code to verify your number. <span className="text-[#0172FD] font-extrabold block mt-1">(Demo Code: 123456)</span>
+                      Tey just sent a 6-digit code to your WhatsApp. Enter it below to verify your number.
                     </p>
                     
                     <div className="flex gap-2 md:gap-3 w-full justify-between mb-6">

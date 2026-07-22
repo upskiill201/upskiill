@@ -1,123 +1,128 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import Twilio from 'twilio';
+
+// ─── OTP Store Entry ─────────────────────────────────────────────────────────
+interface OtpEntry {
+  code: string;
+  expiresAt: number; // Unix ms timestamp
+}
 
 @Injectable()
 export class WhatsappService {
   private readonly logger = new Logger(WhatsappService.name);
-  
-  // In-memory store for OTPs (phone -> { otp, expiresAt })
-  private otpStore = new Map<string, { otp: string; expiresAt: number }>();
 
-  constructor(private prisma: PrismaService) {}
+  /** In-memory OTP store with TTL. In production, replace with Redis. */
+  private otpStore = new Map<string, OtpEntry>();
 
-  /**
-   * Sends a 6-digit verification code to the given phone number.
-   * Integrates with Meta Cloud API (works with Meta Test Numbers and Production Numbers).
-   */
-  async sendOtp(phone: string) {
-    if (!phone) {
-      throw new BadRequestException('Phone number is required');
+  /** Twilio client — only initialised when env vars are present. */
+  private readonly twilioClient: ReturnType<typeof Twilio> | null;
+  private readonly fromNumber: string;
+
+  constructor(private prisma: PrismaService) {
+    const sid = process.env.TWILIO_ACCOUNT_SID;
+    const token = process.env.TWILIO_AUTH_TOKEN;
+    this.fromNumber = process.env.TWILIO_WHATSAPP_FROM ?? 'whatsapp:+14155238886';
+
+    if (sid && token) {
+      this.twilioClient = Twilio(sid, token);
+      this.logger.log('[WhatsApp] Twilio client initialised ✅');
+    } else {
+      this.twilioClient = null;
+      this.logger.warn('[WhatsApp] Twilio credentials not set — running in MOCK mode 🔶');
+    }
+  }
+
+  // ─── Send OTP ──────────────────────────────────────────────────────────────
+
+  async sendOtp(rawPhone: string) {
+    if (!rawPhone) {
+      throw new BadRequestException('Phone number is required.');
     }
 
-    const cleanPhone = phone.replace(/\D/g, '');
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    // Normalise to E.164 (strip everything except digits and leading +)
+    const phone = this.normalisePhone(rawPhone);
 
-    this.otpStore.set(cleanPhone, { otp, expiresAt });
+    // Generate a 6-digit OTP
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const token = process.env.WHATSAPP_TOKEN;
-    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-    const templateName = process.env.WHATSAPP_TEMPLATE_NAME || 'teyro_otp_verification';
+    // Store with a 10-minute TTL
+    this.otpStore.set(phone, {
+      code,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    });
 
-    if (token && phoneNumberId) {
+    if (this.twilioClient) {
+      // ── Real WhatsApp message via Twilio ──
       try {
-        const response = await fetch(
-          `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              messaging_product: 'whatsapp',
-              to: cleanPhone,
-              type: 'template',
-              template: {
-                name: templateName,
-                language: { code: 'en_US' },
-                components: [
-                  {
-                    type: 'body',
-                    parameters: [{ type: 'text', text: otp }],
-                  },
-                ],
-              },
-            }),
-          },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          this.logger.warn(`[WHATSAPP META API NOTICE] Primary template failed: ${JSON.stringify(data)}. Executing test number fallback...`);
-          await this.sendFallbackTextMessage(phoneNumberId, token, cleanPhone, otp);
-        } else {
-          this.logger.log(`[WHATSAPP META API] Sent OTP code ${otp} to ${cleanPhone}`);
-        }
-      } catch (err) {
-        this.logger.error(`[WHATSAPP META API EXCEPTION]:`, err);
+        await this.twilioClient.messages.create({
+          from: this.fromNumber,
+          to: `whatsapp:${phone}`,
+          body: this.buildOtpMessage(code),
+        });
+        this.logger.log(`[WhatsApp] OTP sent to ${phone} via Twilio ✅`);
+      } catch (err: any) {
+        this.logger.error(`[WhatsApp] Twilio send failed for ${phone}: ${err?.message}`);
+        // Don't throw — fall through so the UI still transitions to OTP entry.
+        // The user can request a resend.
       }
     } else {
-      this.logger.log(`[MOCK WHATSAPP] Meta credentials missing in .env. Dev mode active. Generated OTP for ${cleanPhone}: ${otp}`);
+      // ── Mock mode (no Twilio credentials) ──
+      this.logger.log(`[WhatsApp MOCK] OTP for ${phone} is: ${code}`);
     }
 
     return {
       success: true,
-      message: 'OTP sent successfully via WhatsApp',
-      ...(process.env.NODE_ENV !== 'production' && !token ? { devOtp: otp } : {}),
+      message: this.twilioClient
+        ? 'OTP sent to your WhatsApp number.'
+        : 'OTP generated (mock mode — check server logs).',
     };
   }
 
-  /**
-   * Verifies the 6-digit OTP code entered by the user.
-   */
-  async verifyOtp(phone: string, code: string, userId?: string) {
-    if (!phone || !code) {
-      throw new BadRequestException('Phone and code are required');
+  // ─── Verify OTP ────────────────────────────────────────────────────────────
+
+  async verifyOtp(rawPhone: string, code: string, userId: string) {
+    if (!rawPhone || !code) {
+      throw new BadRequestException('Phone number and OTP code are required.');
     }
 
-    const cleanPhone = phone.replace(/\D/g, '');
-    const stored = this.otpStore.get(cleanPhone);
+    const phone = this.normalisePhone(rawPhone);
+    const entry = this.otpStore.get(phone);
 
-    // Bypass code for local dev/staging testing
-    const isBypass = code === '123456';
-
-    if (!isBypass) {
-      if (!stored) {
-        throw new BadRequestException('No OTP found or it has expired. Please request a new code.');
-      }
-
-      if (Date.now() > stored.expiresAt) {
-        this.otpStore.delete(cleanPhone);
-        throw new BadRequestException('OTP has expired. Please request a new code.');
-      }
-
-      if (stored.otp !== code) {
-        throw new BadRequestException('Invalid OTP code');
-      }
+    if (!entry) {
+      throw new BadRequestException('No OTP found for this number. Please request a new one.');
     }
 
-    this.otpStore.delete(cleanPhone);
+    if (Date.now() > entry.expiresAt) {
+      this.otpStore.delete(phone);
+      throw new BadRequestException('OTP has expired. Please request a new one.');
+    }
 
+    if (entry.code !== code) {
+      throw new BadRequestException('Incorrect OTP code. Please try again.');
+    }
+
+    // ✅ OTP matched — clear it
+    this.otpStore.delete(phone);
+    this.logger.log(`[WhatsApp] OTP verified for ${phone} ✅`);
+
+    // ── Persist verified number to the User record ──
     if (userId) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          whatsappPhone: phone,
+          whatsappVerified: true,
+        },
+      });
+
+      // Also save to the onboarding session answers if one exists
       const session = await this.prisma.onboardingSession.findUnique({
         where: { userId },
       });
       if (session) {
         const answers = (session.answers as Record<string, any>) || {};
-        answers.whatsappNumber = cleanPhone;
-        answers.whatsappVerified = true;
+        answers.whatsappNumber = phone;
         await this.prisma.onboardingSession.update({
           where: { userId },
           data: { answers },
@@ -125,65 +130,32 @@ export class WhatsappService {
       }
     }
 
-    this.logger.log(`[WHATSAPP] Phone ${cleanPhone} verified successfully.`);
-
     return {
       success: true,
-      message: 'Phone verified successfully',
+      message: 'WhatsApp number verified successfully.',
+      phone,
     };
   }
 
-  /**
-   * Fallback strategy for Meta Test Numbers:
-   * Try text message first, then fallback to Meta's built-in 'hello_world' test template.
-   */
-  private async sendFallbackTextMessage(phoneNumberId: string, token: string, to: string, otp: string) {
-    try {
-      const textRes = await fetch(
-        `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messaging_product: 'whatsapp',
-            recipient_type: 'individual',
-            to,
-            type: 'text',
-            text: { body: `Your Teyro verification code is ${otp}. Valid for 10 minutes.` },
-          }),
-        },
-      );
+  // ─── Private Helpers ────────────────────────────────────────────────────────
 
-      if (!textRes.ok) {
-        // Fallback to Meta's built-in hello_world template for test numbers
-        await fetch(
-          `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              messaging_product: 'whatsapp',
-              to,
-              type: 'template',
-              template: {
-                name: 'hello_world',
-                language: { code: 'en_US' },
-              },
-            }),
-          },
-        );
-        this.logger.log(`[WHATSAPP META TEST NUMBER] Sent built-in hello_world template to ${to}. OTP Code is: ${otp}`);
-      } else {
-        this.logger.log(`[WHATSAPP META TEST NUMBER] Sent text message OTP to ${to}`);
-      }
-    } catch (e) {
-      this.logger.error('Failed to send fallback message:', e);
-    }
+  /**
+   * Normalise any phone string to E.164 format (e.g. +2347012345678).
+   * Keeps a leading + if present; otherwise prepends it.
+   */
+  private normalisePhone(raw: string): string {
+    const digits = raw.replace(/[^\d+]/g, '');
+    return digits.startsWith('+') ? digits : `+${digits}`;
+  }
+
+  /** Tey-branded OTP message sent via WhatsApp. */
+  private buildOtpMessage(code: string): string {
+    return (
+      `👋 Hey! Tey here from Teyro.\n\n` +
+      `Your verification code is:\n\n` +
+      `*${code}*\n\n` +
+      `This code expires in 10 minutes. Don't share it with anyone.\n\n` +
+      `Once verified, I'll check in with streak reminders, XP updates, and daily nudges to keep you learning! 🔥`
+    );
   }
 }

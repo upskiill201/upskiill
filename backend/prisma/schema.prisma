@@ -21,6 +21,10 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  // WhatsApp verification (set on onboarding Step 6)
+  whatsappPhone    String?  // E.164 format, e.g. +2347012345678
+  whatsappVerified Boolean  @default(false)
+
   // Dual-role access flags — the canonical source of truth for which profiles exist
   hasStudentAccess Boolean @default(false)
   hasCreatorAccess Boolean @default(false)
