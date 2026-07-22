@@ -239,8 +239,8 @@ export default function DashboardLayout({
               <div className={styles.footerCardsWrapper}>
                 {/* Streak Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Streaks')}>
-                  <div className={`${styles.sidebarCardIconBg} ${styles.streakBg}`}>
-                    <Flame size={18} className={styles.streakFlameIcon} />
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/Icons/burn.png" width={20} height={20} alt="Streak Burn Icon" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{streakDays} Days Streak</span>
@@ -252,7 +252,7 @@ export default function DashboardLayout({
                 {/* XP Balance Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('XP Details')}>
                   <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Image src="/gem-icon.png" width={18} height={18} alt="XP Gem" style={{ objectFit: 'contain' }} />
+                    <Image src="/Icons/gem.png" width={20} height={20} alt="XP Gem" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{xp} XP</span>
@@ -264,7 +264,7 @@ export default function DashboardLayout({
                 {/* Lives Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Lives Details')}>
                   <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Image src="/heart-icon.png" width={18} height={18} alt="Lives" style={{ objectFit: 'contain' }} />
+                    <Image src="/Icons/heart.png" width={20} height={20} alt="Lives" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{lives} / 5 Lives</span>

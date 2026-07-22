@@ -19,19 +19,19 @@ interface StatPillProps {
 
 const STAT_CONFIG: Record<StatType, { icon: string; defaultLabel: string; color: string; glow: string }> = {
   streak: {
-    icon: '/flame-icon.png',
+    icon: '/Icons/burn.png',
     defaultLabel: 'Day Streak',
     color: '#FF9600',
     glow: 'rgba(255,150,0,0.30)',
   },
   gem: {
-    icon: '/gem-icon.png',
+    icon: '/Icons/gem.png',
     defaultLabel: 'XP Balance',
     color: '#0172FD',
     glow: 'rgba(1,114,253,0.22)',
   },
   lives: {
-    icon: '/heart-icon.png',
+    icon: '/Icons/heart.png',
     defaultLabel: 'Lives',
     color: '#FF4B4B',
     glow: 'rgba(255,75,75,0.22)',
