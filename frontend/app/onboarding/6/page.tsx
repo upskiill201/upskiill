@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Lock, CheckCircle2, XCircle } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
@@ -34,7 +34,8 @@ export default function OnboardingStep6() {
   
   const [phoneNumber, setPhoneNumber] = useState('');
   
-  const [otpStatus, setOtpStatus] = useState<'idle' | 'sent' | 'verified'>('idle');
+  const [otpStatus, setOtpStatus] = useState<'idle' | 'sent' | 'verified' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -132,13 +133,17 @@ export default function OnboardingStep6() {
         }
       }
 
-      // Non-ok or backend explicitly rejected — show error
+      // Non-ok or backend explicitly rejected — show red error drawer
       const errData = await res.json().catch(() => ({}));
-      const errMsg = errData?.message ?? 'Incorrect code. Please try again.';
-      alert(errMsg);
+      const errMsg = errData?.message ?? "Tey checked his notes — that code doesn't match! Double check WhatsApp and try again.";
+      playHaptic('error');
+      setErrorMessage(errMsg);
+      setOtpStatus('error');
     } catch (e) {
       console.warn('[WhatsApp] verify-otp request failed:', e);
-      alert('Could not verify your code. Please check your connection and try again.');
+      playHaptic('error');
+      setErrorMessage("Could not connect to verify your code. Please check your internet and try again!");
+      setOtpStatus('error');
     }
   };
 
@@ -335,7 +340,7 @@ export default function OnboardingStep6() {
                   </motion.div>
                 )}
 
-                {(otpStatus === 'sent' || otpStatus === 'verified') && (
+                {(otpStatus === 'sent' || otpStatus === 'verified' || otpStatus === 'error') && (
                   <motion.div
                     key="otp-input"
                     initial={{ opacity: 0, x: 20 }}
@@ -358,9 +363,11 @@ export default function OnboardingStep6() {
                           onChange={(e) => handleOtpChange(i, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(i, e)}
                           className={`w-12 h-14 md:w-14 md:h-16 border-2 text-center text-2xl font-[900] rounded-xl md:rounded-2xl transition-all duration-150 outline-none ${
-                            digit
-                              ? 'border-[#0172FD] bg-[#F0F7FF] text-[#0172FD] shadow-[0_4px_12px_rgba(1,114,253,0.15)]'
-                              : 'border-slate-300/80 bg-slate-50 text-slate-700 shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] focus:border-[#0172FD]/60 focus:bg-white'
+                            otpStatus === 'error'
+                              ? 'border-[#FF4B4B] bg-[#FFF0F0] text-[#FF4B4B] shadow-[0_4px_12px_rgba(255,75,75,0.15)]'
+                              : digit
+                                ? 'border-[#0172FD] bg-[#F0F7FF] text-[#0172FD] shadow-[0_4px_12px_rgba(1,114,253,0.15)]'
+                                : 'border-slate-300/80 bg-slate-50 text-slate-700 shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] focus:border-[#0172FD]/60 focus:bg-white'
                           }`}
                         />
                       ))}
@@ -469,7 +476,7 @@ export default function OnboardingStep6() {
               className="absolute bottom-0 left-0 right-0 bg-[#E6F0FF] border-t-2 border-[#0172FD]/20 z-50 p-6 md:py-8 md:px-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_-10px_35px_-5px_rgba(1,114,253,0.15)]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#0172FD] flex items-center justify-center text-white shadow-md shadow-[#0172FD]/20">
+                <div className="w-10 h-10 rounded-full bg-[#0172FD] flex items-center justify-center text-white shadow-md shadow-[#0172FD]/20 shrink-0">
                   <CheckCircle2 className="w-6 h-6 stroke-[3]" />
                 </div>
                 <div className="flex flex-col text-left">
@@ -482,12 +489,56 @@ export default function OnboardingStep6() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                 onClick={() => void advance()}
-                className="w-full md:w-[240px] h-[55px] bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-lg tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-1 transition-all cursor-pointer flex items-center justify-center"
+                className="w-full md:w-[240px] h-[55px] bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-lg tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-1 transition-all cursor-pointer flex items-center justify-center shrink-0"
                 style={{
                   boxShadow: '0 4px 15px rgba(1,114,253,0.25)'
                 }}
               >
                 CONTINUE
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Duolingo Red Error Drawer */}
+        <AnimatePresence>
+          {otpStatus === 'error' && (
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 250, damping: 26 }}
+              className="absolute bottom-0 left-0 right-0 bg-[#FFF0F0] border-t-2 border-[#FF4B4B]/30 z-50 p-6 md:py-8 md:px-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_-10px_35px_-5px_rgba(255,75,75,0.2)]"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#FF4B4B] flex items-center justify-center text-white shadow-md shadow-[#FF4B4B]/20 shrink-0">
+                  <XCircle className="w-6 h-6 stroke-[3]" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[#D32F2F] font-[900] text-2xl tracking-tight leading-none mb-1" style={{ fontFamily: 'var(--font-jakarta)' }}>
+                    Nice try! 🙈
+                  </span>
+                  <span className="text-[#E53935] font-bold text-sm" style={{ fontFamily: 'var(--font-jakarta)' }}>
+                    {errorMessage}
+                  </span>
+                </div>
+              </div>
+              
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
+                onClick={() => {
+                  playHaptic('medium');
+                  setOtpStatus('sent');
+                  setOtp(['', '', '', '', '', '']);
+                  setTimeout(() => otpRefs.current[0]?.focus(), 100);
+                }}
+                className="w-full md:w-[240px] h-[55px] bg-[#FF4B4B] border-b-4 border-[#C62828] text-white rounded-[1.2rem] font-[900] text-lg tracking-wider hover:bg-[#E53935] active:border-b-0 active:translate-y-1 transition-all cursor-pointer flex items-center justify-center shrink-0"
+                style={{
+                  boxShadow: '0 4px 15px rgba(255,75,75,0.25)'
+                }}
+              >
+                TRY AGAIN
               </motion.button>
             </motion.div>
           )}
