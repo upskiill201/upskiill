@@ -23,6 +23,7 @@ import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
+import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -151,6 +152,7 @@ export default function DashboardLayout({
   ];
 
   const handleLinkClick = (e: React.MouseEvent, link: EnhancedDashboardLink) => {
+    void emitAudioEvent('TAB_SWITCH');
     if (link.isComingSoon) {
       e.preventDefault();
       triggerComingSoon(link.label);
