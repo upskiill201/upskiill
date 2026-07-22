@@ -118,12 +118,13 @@ export const StatPill: React.FC<StatPillProps> = ({
         <motion.span
           key={String(value)}
           initial={{ scale: 1.4, color: cfg.color }}
-          animate={{ scale: 1, color: '#071233' }}
+          animate={{ scale: 1, color: cfg.color }}
           transition={{ type: 'spring', stiffness: 500, damping: 18 }}
           style={{
             fontSize: 17,
             fontWeight: 800,
             lineHeight: 1.1,
+            color: cfg.color,
             fontFamily: 'var(--font-jakarta), sans-serif',
           }}
         >
@@ -134,8 +135,9 @@ export const StatPill: React.FC<StatPillProps> = ({
           <span
             style={{
               fontSize: 10.5,
-              fontWeight: 600,
-              color: '#94A3B8',
+              fontWeight: 700,
+              color: cfg.color,
+              opacity: 0.85,
               whiteSpace: 'nowrap',
               marginTop: 1,
             }}

@@ -243,10 +243,10 @@ export default function DashboardLayout({
                     <Image src="/Icons/burn.png" width={20} height={20} alt="Streak Burn Icon" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle}>{streakDays} Days Streak</span>
-                    <span className={styles.sidebarCardSubtitle}>Keep it going!</span>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#FF9600', fontWeight: 800 }}>{streakDays} Days Streak</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(255,150,0,0.85)', fontWeight: 600 }}>Keep it going!</span>
                   </div>
-                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF9600' }} />
                 </div>
 
                 {/* XP Balance Card */}
@@ -255,10 +255,10 @@ export default function DashboardLayout({
                     <Image src="/Icons/gem.png" width={20} height={20} alt="XP Gem" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle}>{xp} XP</span>
-                    <span className={styles.sidebarCardSubtitle}>Total Balance</span>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#0172FD', fontWeight: 800 }}>{xp} XP</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(1,114,253,0.85)', fontWeight: 600 }}>Total Balance</span>
                   </div>
-                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#0172FD' }} />
                 </div>
 
                 {/* Lives Card */}
@@ -267,10 +267,10 @@ export default function DashboardLayout({
                     <Image src="/Icons/heart.png" width={20} height={20} alt="Lives" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle}>{lives} / 5 Lives</span>
-                    <span className={styles.sidebarCardSubtitle}>Hearts remaining</span>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#FF4B4B', fontWeight: 800 }}>{lives} / 5 Lives</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(255,75,75,0.85)', fontWeight: 600 }}>Hearts remaining</span>
                   </div>
-                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF4B4B' }} />
                 </div>
 
                 {/* Profile Card */}
