@@ -149,13 +149,13 @@ export class WhatsappService {
   }
 
   /** Tey-branded OTP message sent via WhatsApp. */
-  private buildOtpMessage(code: string): string {
+  private buildOtpMessage(code: string, expiryMinutes = 10): string {
     return (
-      `👋 Hey! Tey here from Teyro.\n\n` +
-      `Your verification code is:\n\n` +
-      `*${code}*\n\n` +
-      `This code expires in 10 minutes. Don't share it with anyone.\n\n` +
-      `Once verified, I'll check in with streak reminders, XP updates, and daily nudges to keep you learning! 🔥`
+      `💙 Hey, I'm Tey!\n\n` +
+      `I brought your login code:\n\n` +
+      `🔐 *${code}*\n\n` +
+      `Use it within ${expiryMinutes} minutes so we can get back to making learning dangerously fun. 😏\n\n` +
+      `Didn't ask for this? You can safely ignore this message.`
     );
   }
 }
