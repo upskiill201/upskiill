@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Header } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/decorator/get-user.decorator';
@@ -26,5 +26,11 @@ export class WhatsappController {
   @Get('status')
   async getStatus() {
     return this.whatsappService.getStatus();
+  }
+
+  @Get('qr-page')
+  @Header('Content-Type', 'text/html')
+  async getQrPage() {
+    return this.whatsappService.getQrPageHtml();
   }
 }
