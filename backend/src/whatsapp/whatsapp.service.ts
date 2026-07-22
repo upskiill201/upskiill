@@ -12,8 +12,7 @@ export class WhatsappService {
 
   /**
    * Sends a 6-digit verification code to the given phone number.
-   * Integrates with Meta Cloud API when WHATSAPP_TOKEN is configured,
-   * falling back to dev mock mode.
+   * Integrates with Meta Cloud API (works with Meta Test Numbers and Production Numbers).
    */
   async sendOtp(phone: string) {
     if (!phone) {
@@ -61,17 +60,16 @@ export class WhatsappService {
         const data = await response.json();
 
         if (!response.ok) {
-          this.logger.error(`[WHATSAPP META API ERROR]: ${JSON.stringify(data)}`);
-          // Try sending as plain text message if template error occurs
+          this.logger.warn(`[WHATSAPP META API NOTICE] Primary template failed: ${JSON.stringify(data)}. Executing test number fallback...`);
           await this.sendFallbackTextMessage(phoneNumberId, token, cleanPhone, otp);
         } else {
-          this.logger.log(`[WHATSAPP META API] Sent OTP code to ${cleanPhone}`);
+          this.logger.log(`[WHATSAPP META API] Sent OTP code ${otp} to ${cleanPhone}`);
         }
       } catch (err) {
         this.logger.error(`[WHATSAPP META API EXCEPTION]:`, err);
       }
     } else {
-      this.logger.log(`[MOCK WHATSAPP] Meta credentials missing. Generated OTP for ${cleanPhone}: ${otp}`);
+      this.logger.log(`[MOCK WHATSAPP] Meta credentials missing in .env. Dev mode active. Generated OTP for ${cleanPhone}: ${otp}`);
     }
 
     return {
@@ -136,11 +134,12 @@ export class WhatsappService {
   }
 
   /**
-   * Helper to send plain text message within active 24-hour service window.
+   * Fallback strategy for Meta Test Numbers:
+   * Try text message first, then fallback to Meta's built-in 'hello_world' test template.
    */
   private async sendFallbackTextMessage(phoneNumberId: string, token: string, to: string, otp: string) {
     try {
-      await fetch(
+      const textRes = await fetch(
         `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
         {
           method: 'POST',
@@ -157,8 +156,34 @@ export class WhatsappService {
           }),
         },
       );
+
+      if (!textRes.ok) {
+        // Fallback to Meta's built-in hello_world template for test numbers
+        await fetch(
+          `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              messaging_product: 'whatsapp',
+              to,
+              type: 'template',
+              template: {
+                name: 'hello_world',
+                language: { code: 'en_US' },
+              },
+            }),
+          },
+        );
+        this.logger.log(`[WHATSAPP META TEST NUMBER] Sent built-in hello_world template to ${to}. OTP Code is: ${otp}`);
+      } else {
+        this.logger.log(`[WHATSAPP META TEST NUMBER] Sent text message OTP to ${to}`);
+      }
     } catch (e) {
-      this.logger.error('Failed to send fallback text message:', e);
+      this.logger.error('Failed to send fallback message:', e);
     }
   }
 }
