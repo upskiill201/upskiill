@@ -1,6 +1,7 @@
 'use client';
 
 import { WebHaptics } from 'web-haptics';
+import { emitAudioEvent, AppAudioEvent } from '@/lib/audio/audioEvents';
 
 let hapticsInstance: any = null;
 
@@ -30,12 +31,25 @@ export type HapticType =
   | number[];
 
 /**
- * Triggers a web haptic feedback pattern.
- * Supports built-in web-haptics presets, numbers/arrays for legacy fallback,
- * and custom Teyro-voiced haptic presets for playful/premium game feel.
+ * Triggers a web haptic feedback pattern & audio effect synchronously.
+ * Connects tactile game-feel with the Teyro Centralized Sound Engine.
  */
-export function playHaptic(type: HapticType) {
+export function playHaptic(type: HapticType, playAudio = true) {
   if (typeof window === 'undefined') return;
+
+  // Sync with Audio Engine
+  if (playAudio) {
+    let audioEvent: AppAudioEvent | null = null;
+    if (type === 'medium' || type === 'heavy') audioEvent = 'BUTTON_PRIMARY_CLICK';
+    else if (type === 'light' || type === 'soft' || type === 'rigid') audioEvent = 'BUTTON_SECONDARY_CLICK';
+    else if (type === 'selection' || type === 'teyroBounce') audioEvent = 'SELECTION_CHANGE';
+    else if (type === 'success' || type === 'teyroCelebration') audioEvent = 'QUIZ_CORRECT';
+    else if (type === 'error' || type === 'teyroIncorrect' || type === 'warning') audioEvent = 'ACTION_ERROR';
+
+    if (audioEvent) {
+      void emitAudioEvent(audioEvent);
+    }
+  }
 
   // Handle Teyro Custom Macros
   if (type === 'teyroBounce') {
