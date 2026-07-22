@@ -136,6 +136,7 @@ import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { IntercomProvider } from "../components/providers/IntercomProvider";
 import { GamificationProvider } from "../context/GamificationContext";
+import { AudioProvider } from "../context/AudioContext";
 
 export default function RootLayout({
   children,
@@ -151,13 +152,15 @@ export default function RootLayout({
         <PostHogProvider>
           <IntercomProvider>
             <CartProvider>
-              <GamificationProvider>
-                <HeaderWrapper />
-                <main className="flex-1" style={{ overflow: 'visible' }}>
-                  {children}
-                </main>
-                <FooterWrapper />
-              </GamificationProvider>
+              <AudioProvider>
+                <GamificationProvider>
+                  <HeaderWrapper />
+                  <main className="flex-1" style={{ overflow: 'visible' }}>
+                    {children}
+                  </main>
+                  <FooterWrapper />
+                </GamificationProvider>
+              </AudioProvider>
             </CartProvider>
           </IntercomProvider>
         </PostHogProvider>
