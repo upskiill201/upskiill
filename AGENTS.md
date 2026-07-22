@@ -51,11 +51,18 @@ Only TWO icon libraries are used across the entire codebase:
 - **React Icons FA6** (`react-icons/fa`): For feature, brand & social icons.
 No other icon library. No emojis as icons.
 
-### 6. LOGO ASSET PRINCIPLE
+### 6. GAMIFICATION ASSET PRINCIPLE
+The official Teyro gamification icons are located at:
+- **Streak Icon:** `frontend/public/Icons/burn.png` (`/Icons/burn.png`)
+- **XP Icon:** `frontend/public/Icons/gem.png` (`/Icons/gem.png`)
+- **Lives / Heart Icon:** `frontend/public/Icons/heart.png` (`/Icons/heart.png`)
+All references to gamification stats MUST use these exact asset paths or the `<GamificationIcon />` UI component (`components/ui/GamificationIcon.tsx`).
+
+### 7. LOGO ASSET PRINCIPLE
 The official Teyro logo asset is located at `frontend/public/Teyro Logo.png`.
 All references to the logo must use this exact path.
 
-### 7. SEEDING POLICY ⛔ Hard Stop
+### 8. SEEDING POLICY ⛔ Hard Stop
 Every seed script must check `NODE_ENV` and throw immediately if it is `'production'`.
 Use `upsert()` for all seed data — never `deleteMany()` followed by `create()`.
 

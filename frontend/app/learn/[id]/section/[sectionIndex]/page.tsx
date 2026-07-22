@@ -813,7 +813,7 @@ function SectionViewContent({
       {livesCount === 0 && lessonPhase === 'apply' && (
         <div className={styles.outOfLivesOverlay}>
           <div className={styles.outOfLivesCard}>
-            <Image src="/heart-icon.png" width={72} height={72} alt="No lives" priority />
+            <Image src="/Icons/heart.png" width={72} height={72} alt="No lives" priority />
             <h2 className={styles.outOfLivesTitle}>Out of Lives!</h2>
             <p className={styles.outOfLivesDesc}>
               Your lives refill automatically (1 life every 4 hours).
@@ -1604,7 +1604,7 @@ function SectionViewContent({
                   {/* Card 1: XP */}
                   <div className={styles.celebrateStatCard} style={{ borderColor: '#84D8FF' }}>
                     <div className={styles.celebrateStatIconWrap}>
-                      <Image src="/gem-icon.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
+                      <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
                     </div>
                     <div className={styles.celebrateStatTextGroup}>
                       <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{activeLesson?.xpReward || 20} XP</span>
@@ -1615,7 +1615,7 @@ function SectionViewContent({
                   {/* Card 2: Streak */}
                   <div className={styles.celebrateStatCard} style={{ borderColor: '#FFC800' }}>
                     <div className={styles.celebrateStatIconWrap}>
-                      <Image src="/flame-icon.png" width={42} height={42} alt="Flame Streak Icon" className={styles.statIconImg} />
+                      <Image src="/Icons/burn.png" width={42} height={42} alt="Flame Streak Icon" className={styles.statIconImg} />
                     </div>
                     <div className={styles.celebrateStatTextGroup}>
                       <span className={styles.celebrateStatValue} style={{ color: '#FF9600' }}>{streakDays || 1}-Day</span>
