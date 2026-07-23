@@ -32,4 +32,9 @@ export class WhatsappController {
   async getQrPage() {
     return this.whatsappService.getQrPageHtml();
   }
+
+  @Get('reset')
+  async resetConnection() {
+    return this.whatsappService.resetConnection();
+  }
 }

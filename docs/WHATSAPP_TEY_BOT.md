@@ -101,5 +101,28 @@ You mentioned Tey will send **3 or more reminders per day** (e.g. morning check-
 
 ---
 
+## 6. Render Free Tier 24/7 Keep-Alive & Auto-Reconnect System
+
+### ❓ Why did Tey WhatsApp disconnect on Render Free Tier?
+Render's free web service automatically enters **sleep mode after 15 minutes of inactivity** (0 incoming HTTP requests). When Render spins down the container:
+1. The process terminates, severing the WebSocket connection to `web.whatsapp.com`.
+2. Tey is offline during the sleep period.
+3. When traffic wakes Render up (taking 30-50s), Baileys attempts to reconnect. If a stream conflict or `401 Logged Out` occurred while sleeping, stale keys in PostgreSQL prevented automatic re-linking.
+
+### 🛡️ How We Fixed It (100% Online Guarantee):
+
+1. **Automated Self-Pinging Keep-Alive**:
+   The `WhatsappService` now runs an internal timer that pings the backend's public endpoint (`https://teyro-backend-staging.onrender.com/health`) every **4 minutes**. Because the request hits Render's public URL from the network, Render registers incoming HTTP traffic and **NEVER goes to sleep!**
+2. **Auto-Purging Stale Auth Keys**:
+   If a `DisconnectReason.loggedOut` (401) is received, `WhatsappService` automatically purges stale `whatsapp_auth_store` keys from PostgreSQL and re-initializes `initBaileys()`, serving a fresh QR code immediately.
+3. **1-Click Web Reset & Re-Link (`/whatsapp/reset`)**:
+   Visiting `https://upskiill-backend.onrender.com/whatsapp/qr-page` provides a **Disconnect & Re-link Device** button so you can reset session credentials with 1 click anytime.
+4. **Backup External Pinger (Recommended)**:
+   To guarantee 100% uptime even if Render restarts, you can add a free 5-minute external monitor on [Cron-job.org](https://cron-job.org) or [UptimeRobot.com](https://uptimerobot.com) targeting:
+   `https://teyro-backend-staging.onrender.com/health`
+
+
+---
+
 ## Summary
 Tey on WhatsApp is a **full 2-way conversational AI coach**. Tey can text users 3+ times a day with personalized reminders, quiz them on their last lesson's Apply step, evaluate their replies, and award bonus XP — all with **$0 fees, zero message caps, and 100% safe execution**! 🚀
