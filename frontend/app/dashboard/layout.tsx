@@ -185,7 +185,7 @@ export default function DashboardLayout({
             
             <button 
               className={styles.sidebarToggle} 
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsSidebarCollapsed(!isSidebarCollapsed); }}
               aria-label="Toggle Sidebar"
             >
               {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -193,7 +193,7 @@ export default function DashboardLayout({
 
             <button 
               className={styles.mobileClose} 
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(false); }}
               aria-label="Close Mobile Menu"
             >
               <X size={22} />
@@ -360,7 +360,7 @@ export default function DashboardLayout({
           <header className={styles.mobileHeader}>
             <button 
               className={styles.mobileToggle} 
-              onClick={() => setIsMobileMenuOpen(true)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(true); }}
               aria-label="Open Menu"
             >
               <Menu size={22} />
