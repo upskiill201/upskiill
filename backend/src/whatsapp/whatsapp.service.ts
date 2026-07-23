@@ -28,11 +28,35 @@ export class WhatsappService implements OnModuleInit {
   private sock: WASocket | null = null;
   private isConnected = false;
   private qrCodeStr: string | null = null;
+  private keepAliveInterval: NodeJS.Timeout | null = null;
 
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
     await this.initBaileys();
+    this.startKeepAlivePinger();
+  }
+
+  /**
+   * Self-pinging Keep-Alive Timer for Render Free Tier.
+   * Hits the backend's public /health URL every 4 minutes to reset Render's
+   * 15-minute inactivity sleep timer, keeping Tey WhatsApp online 24/7!
+   */
+  private startKeepAlivePinger() {
+    if (this.keepAliveInterval) return;
+
+    this.keepAliveInterval = setInterval(async () => {
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+      const targetUrl = `${backendUrl.replace(/\/$/, '')}/health`;
+      try {
+        const res = await fetch(targetUrl);
+        if (res.ok) {
+          this.logger.log(`[WhatsApp Keep-Alive] Self-pinged ${targetUrl} (200 OK) — Render 15-min inactivity sleep timer reset ✅`);
+        }
+      } catch (err: any) {
+        this.logger.warn(`[WhatsApp Keep-Alive] Self-ping to ${targetUrl} failed: ${err?.message}`);
+      }
+    }, 4 * 60 * 1000);
   }
 
   /**
@@ -109,6 +133,38 @@ export class WhatsappService implements OnModuleInit {
     };
   }
 
+  /** Clears the whatsapp_auth_store table in PostgreSQL */
+  private async clearAuthState() {
+    try {
+      await this.prisma.whatsappAuthStore.deleteMany({});
+      this.logger.log('[WhatsApp DB Auth] Auth store purged from PostgreSQL.');
+    } catch (err: any) {
+      this.logger.error(`[WhatsApp DB Auth] Failed to clear auth store: ${err?.message}`);
+    }
+  }
+
+  /** Manual session reset to clear stale auth keys & trigger fresh QR scan */
+  async resetConnection() {
+    this.logger.warn('[WhatsApp Baileys] Manual session reset requested. Purging auth store...');
+    this.isConnected = false;
+    this.qrCodeStr = null;
+
+    if (this.sock) {
+      try {
+        this.sock.end(undefined);
+      } catch {}
+      this.sock = null;
+    }
+
+    await this.clearAuthState();
+    setTimeout(() => this.initBaileys(), 1000);
+
+    return {
+      success: true,
+      message: 'WhatsApp session reset. Please visit /whatsapp/qr-page to scan fresh QR code.',
+    };
+  }
+
   /** Initialises the Baileys WhatsApp Web socket using database-backed auth */
   private async initBaileys() {
     try {
@@ -122,11 +178,16 @@ export class WhatsappService implements OnModuleInit {
         auth: state,
         printQRInTerminal: false,
         syncFullHistory: false,
+        browser: ['Teyro AI Assistant', 'Chrome', '1.0.0'],
+        connectTimeoutMs: 60000,
+        defaultQueryTimeoutMs: 60000,
+        keepAliveIntervalMs: 15000,
+        retryRequestDelayMs: 2500,
       });
 
       this.sock.ev.on('creds.update', saveCreds);
 
-      this.sock.ev.on('connection.update', (update) => {
+      this.sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
@@ -143,16 +204,20 @@ export class WhatsappService implements OnModuleInit {
         if (connection === 'close') {
           this.isConnected = false;
           const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
-          const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+          const isLoggedOut = statusCode === DisconnectReason.loggedOut;
 
           this.logger.warn(
-            `[WhatsApp Baileys] Connection closed (status: ${statusCode}). Reconnecting: ${shouldReconnect}`,
+            `[WhatsApp Baileys] Connection closed (status: ${statusCode}). Logged out: ${isLoggedOut}`,
           );
 
-          if (shouldReconnect) {
-            setTimeout(() => this.initBaileys(), 3000);
+          if (isLoggedOut) {
+            this.logger.error('[WhatsApp Baileys] Device logged out. Clearing auth store for fresh QR scan...');
+            await this.clearAuthState();
+            setTimeout(() => this.initBaileys(), 2000);
           } else {
-            this.logger.error('[WhatsApp Baileys] Device logged out. Please re-scan QR code.');
+            const delay = statusCode === DisconnectReason.restartRequired ? 1000 : 3000;
+            this.logger.log(`[WhatsApp Baileys] Reconnecting in ${delay}ms...`);
+            setTimeout(() => this.initBaileys(), delay);
           }
         } else if (connection === 'open') {
           this.isConnected = true;
@@ -199,6 +264,9 @@ export class WhatsappService implements OnModuleInit {
               <div class="badge">Connected ✅</div>
               <h1>Tey WhatsApp is Ready!</h1>
               <p>Your Teyro WhatsApp client is connected and ready to deliver real-time OTPs, notifications, and reminders.</p>
+              <div style="margin-top: 1.5rem; border-top: 1px solid #334155; pt-4">
+                <a href="/whatsapp/reset" onclick="return confirm('Disconnect and generate fresh QR code?');" style="display: inline-block; background: #EF4444; color: white; padding: 0.6rem 1.2rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.85rem; font-weight: bold;">Disconnect & Re-link Device</a>
+              </div>
             </div>
           </body>
         </html>
