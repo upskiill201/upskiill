@@ -192,12 +192,20 @@ class SoundManager {
     this.lastPlayTimes.set(id, now);
 
     const ctx = this.initContext();
-
-    const buffer = await this.getAudioBuffer(cfg.src);
-    if (!buffer || !ctx) {
-      // HTML5 Audio element fallback (guarantees playback without file downloads)
+    if (ctx && ctx.state === 'suspended') {
       try {
-        const audio = new Audio(cfg.src);
+        await ctx.resume();
+      } catch {}
+    }
+
+    const fileNameKey = cfg.src.split('/').pop()?.replace('.mp3', '') || id;
+    const sourceUrl = EMBEDDED_SOUND_DATA[fileNameKey] || (cfg.src.startsWith('data:') ? cfg.src : null) || cfg.src;
+
+    const buffer = await this.getAudioBuffer(cfg.src, id);
+    if (!buffer || !ctx) {
+      // HTML5 Audio element fallback (guarantees instant playback from Base64 Data URI)
+      try {
+        const audio = new Audio(sourceUrl);
         const catVol = this.volumes[cfg.category as keyof CategoryVolumes] ?? 1.0;
         audio.volume = Math.max(0, Math.min(1, cfg.volume * catVol * (this.isMuted ? 0 : this.volumes.master)));
         audio.playbackRate = cfg.speed || 1.0;
@@ -252,6 +260,11 @@ class SoundManager {
   /** Plays background music with seamless looping & optional fade-in */
   private playMusicBuffer(id: SoundId, buffer: AudioBuffer, cfg: SoundConfig) {
     if (!this.ctx) return;
+
+    // If the exact same music track is ALREADY playing, let it continue seamlessly!
+    if (this.currentMusicId === id && this.musicSource) {
+      return;
+    }
 
     if (this.musicSource) {
       try {
