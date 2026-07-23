@@ -22,17 +22,18 @@ export class GamificationService {
     let updatedFields: any = {};
 
     // 1. Timezone-aware Daily Streak Check and Freeze Consumption
-    if (profile.lastActiveAt) {
-      const lastActiveStr = this.getLocalDayString(profile.lastActiveAt, timezoneOffsetMinutes);
+    const lastStreakCheckDate = profile.lastStreakEarnedAt || profile.lastActiveAt;
+    if (lastStreakCheckDate) {
+      const lastActiveStr = this.getLocalDayString(lastStreakCheckDate, timezoneOffsetMinutes);
       const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
 
       if (diffDays > 1) {
         // Missed a day! Check if they have a streak freeze banked
         if (profile.streakFreezeBank > 0) {
           updatedFields.streakFreezeBank = profile.streakFreezeBank - 1;
-          // Set lastActiveAt to yesterday to preserve streak
+          // Set lastStreakEarnedAt to yesterday to preserve streak
           const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-          updatedFields.lastActiveAt = yesterday;
+          updatedFields.lastStreakEarnedAt = yesterday;
           console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained.`);
         } else {
           updatedFields.streakDays = 0;
