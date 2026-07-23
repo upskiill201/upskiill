@@ -169,6 +169,7 @@ export default function AudioSettingsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
+              onClick={() => play('BUTTON_SECONDARY')}
               className="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5" />
