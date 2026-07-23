@@ -46,7 +46,11 @@ export class WhatsappService implements OnModuleInit {
     if (this.keepAliveInterval) return;
 
     this.keepAliveInterval = setInterval(async () => {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
+      const backendUrl =
+        process.env.RENDER_EXTERNAL_URL ||
+        process.env.BACKEND_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        'https://upskiill-backend.onrender.com';
       const targetUrl = `${backendUrl.replace(/\/$/, '')}/health`;
       try {
         const res = await fetch(targetUrl);
