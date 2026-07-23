@@ -298,9 +298,10 @@ model StudentProfile {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Learning progress data
-  xp           Int       @default(30) // 30 XP starter grant
-  streakDays   Int       @default(0)
-  lastActiveAt DateTime?
+  xp                 Int       @default(30) // 30 XP starter grant
+  streakDays         Int       @default(0)
+  lastActiveAt       DateTime?
+  lastStreakEarnedAt DateTime? // Exact timestamp when daily streak was last incremented
 
   // Lives system — lose a life on wrong Apply answer, refill 1 per 4h
   lives           Int       @default(5)

@@ -194,34 +194,51 @@ export class CourseService {
         },
       });
 
-      // Update StudentProfile for XP and daily activity streaks
+      // Update StudentProfile for XP and timezone-aware daily activity streaks
       const now = new Date();
-      let newStreak = 1;
+      let newStreak = profile.streakDays || 0;
 
-      if (profile.lastActiveAt) {
-        const lastActive = new Date(profile.lastActiveAt);
+      const getLocalDayStr = (d: Date) => {
+        return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      };
 
-        const todayMidnight = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-        ).getTime();
-        const lastActiveMidnight = new Date(
-          lastActive.getFullYear(),
-          lastActive.getMonth(),
-          lastActive.getDate(),
-        ).getTime();
+      const todayStr = getLocalDayStr(now);
+      const lastStreakDate = profile.lastStreakEarnedAt || profile.lastActiveAt;
+      let shouldUpdateStreakEarnedDate = false;
 
-        const diffDays = Math.round(
-          (todayMidnight - lastActiveMidnight) / (1000 * 60 * 60 * 24),
-        );
+      if (!lastStreakDate) {
+        // First time completing a lesson!
+        newStreak = Math.max(1, (profile.streakDays || 0) + 1);
+        shouldUpdateStreakEarnedDate = true;
+      } else {
+        const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
+        const d1 = new Date(todayStr + 'T00:00:00Z');
+        const d2 = new Date(lastStreakStr + 'T00:00:00Z');
+        const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 1) {
+        if (diffDays === 0) {
+          // Already completed a lesson today — maintain current streak
+          newStreak = Math.max(1, profile.streakDays || 1);
+        } else if (diffDays === 1) {
+          // Consecutive day learning! Increment streak (1 -> 2, 2 -> 3, 5 -> 6, etc.)
           newStreak = (profile.streakDays || 0) + 1;
-        } else if (diffDays === 0) {
-          newStreak = profile.streakDays || 1;
+          shouldUpdateStreakEarnedDate = true;
         } else {
-          newStreak = 1;
+          // Missed 1 or more days (diffDays > 1)
+          if (profile.streakFreezeBank > 0) {
+            // Protect streak using 1 banked freeze card
+            newStreak = (profile.streakDays || 0) + 1;
+            shouldUpdateStreakEarnedDate = true;
+            await this.prisma.studentProfile.update({
+              where: { userId },
+              data: { streakFreezeBank: profile.streakFreezeBank - 1 },
+            });
+            console.log(`[Gamification] Streak freeze consumed for user ${userId} on lesson completion.`);
+          } else {
+            // Missed day without freeze — start new 1-day streak for today
+            newStreak = 1;
+            shouldUpdateStreakEarnedDate = true;
+          }
         }
       }
 
@@ -231,6 +248,7 @@ export class CourseService {
           xp: { increment: xpEarned },
           streakDays: newStreak,
           lastActiveAt: now,
+          ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
         },
       });
       newXpTotal = updatedProfile.xp;
