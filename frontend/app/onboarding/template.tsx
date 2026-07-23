@@ -55,7 +55,7 @@ export default function OnboardingTemplate({
           opacity: { duration: 0.18 },
           scale: { type: "spring", stiffness: 380, damping: 30 }
         }}
-        className="w-full min-h-screen"
+        className="w-full h-full"
       >
         {children}
       </motion.div>

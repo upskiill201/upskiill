@@ -21,6 +21,10 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  // WhatsApp verification (set on onboarding Step 6)
+  whatsappPhone    String?  // E.164 format, e.g. +2347012345678
+  whatsappVerified Boolean  @default(false)
+
   // Dual-role access flags — the canonical source of truth for which profiles exist
   hasStudentAccess Boolean @default(false)
   hasCreatorAccess Boolean @default(false)
@@ -294,12 +298,37 @@ model StudentProfile {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Learning progress data
-  xp           Int       @default(0)
-  streakDays   Int       @default(0)
-  lastActiveAt DateTime?
+  xp                 Int       @default(30) // 30 XP starter grant
+  streakDays         Int       @default(0)
+  lastActiveAt       DateTime?
+  lastStreakEarnedAt DateTime? // Exact timestamp when daily streak was last incremented
+
+  // Lives system — lose a life on wrong Apply answer, refill 1 per 4h
+  lives           Int       @default(5)
+  maxLives        Int       @default(5)
+  livesLastLostAt DateTime?  // timestamp of when the last life was lost
+
+  // Streak freezes (banked freezes)
+  streakFreezeBank Int       @default(1)
+
+  // Daily quests log
+  completedQuests  Json      @default("[]")
+  lastQuestResetAt DateTime?
+
+  // Daily Reward (Login Chest)
+  lastRewardClaimedAt      DateTime?
+  dailyRewardCyclePosition Int       @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("student_profiles")
+}
+
+model WhatsappAuthStore {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("whatsapp_auth_store")
 }

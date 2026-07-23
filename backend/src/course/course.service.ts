@@ -84,6 +84,7 @@ export class CourseService {
           include: {
             lessons: {
               orderBy: { orderIndex: 'asc' },
+              include: { resources: true },
             },
           },
         },
@@ -125,6 +126,12 @@ export class CourseService {
       );
     }
 
+    const profile = await this.prisma.studentProfile.upsert({
+      where: { userId },
+      create: { userId }, // Prisma uses schema defaults (e.g. 30 XP, 1 freeze, 5 lives)
+      update: {},
+    });
+
     const currentCompleted = Array.isArray(enrollment.completedLessons)
       ? (enrollment.completedLessons as string[])
       : [];
@@ -132,6 +139,8 @@ export class CourseService {
     let isNewCompletion = false;
     let xpEarned = 0;
     let sectionCompleted = false;
+    let newXpTotal = profile.xp;
+    let newStreakDaysTotal = profile.streakDays;
 
     if (!currentCompleted.includes(lessonId)) {
       isNewCompletion = true;
@@ -143,7 +152,16 @@ export class CourseService {
         include: { section: { include: { lessons: true } } },
       });
 
-      xpEarned = lesson?.xpReward ?? 10;
+      let baseLessonXp = 10; // Flat 10 XP per lesson completion
+
+      // Check if all lessons in this section are completed
+      if (lesson?.section?.lessons) {
+        sectionCompleted = lesson.section.lessons.every((l) =>
+          currentCompleted.includes(l.id),
+        );
+      }
+
+      xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
 
       let totalLessons = 0;
       const courseWithLessons = await this.prisma.course.findUnique({
@@ -157,23 +175,16 @@ export class CourseService {
 
       if (courseWithLessons) {
         totalLessons = courseWithLessons.sections.reduce(
-          (acc, section) => acc + section.lessons.length,
+          (acc, s) => acc + s.lessons.length,
           0,
         );
       }
-      totalLessons = totalLessons || 1; // Fallback to 1
+      totalLessons = totalLessons || 1;
 
       const progress = Math.min(
         100,
         Math.round((currentCompleted.length / totalLessons) * 100),
       );
-
-      // Check if all lessons in this section are completed
-      if (lesson?.section?.lessons) {
-        sectionCompleted = lesson.section.lessons.every((l) =>
-          currentCompleted.includes(l.id),
-        );
-      }
 
       await this.prisma.enrollment.update({
         where: { id: enrollment.id },
@@ -183,57 +194,75 @@ export class CourseService {
         },
       });
 
-      // Update StudentProfile for XP and daily activity streaks
+      // Update StudentProfile for XP and timezone-aware daily activity streaks
       const now = new Date();
-      let newStreak = 1;
+      let newStreak = profile.streakDays || 0;
 
-      const profile = await this.prisma.studentProfile.upsert({
-        where: { userId },
-        create: { userId, xp: 0, streakDays: 0 },
-        update: {},
-      });
+      const getLocalDayStr = (d: Date) => {
+        return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      };
 
-      if (profile.lastActiveAt) {
-        const lastActive = new Date(profile.lastActiveAt);
+      const todayStr = getLocalDayStr(now);
+      const lastStreakDate = profile.lastStreakEarnedAt || profile.lastActiveAt;
+      let shouldUpdateStreakEarnedDate = false;
 
-        const todayMidnight = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-        ).getTime();
-        const lastActiveMidnight = new Date(
-          lastActive.getFullYear(),
-          lastActive.getMonth(),
-          lastActive.getDate(),
-        ).getTime();
+      if (!lastStreakDate) {
+        // First time completing a lesson!
+        newStreak = Math.max(1, (profile.streakDays || 0) + 1);
+        shouldUpdateStreakEarnedDate = true;
+      } else {
+        const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
+        const d1 = new Date(todayStr + 'T00:00:00Z');
+        const d2 = new Date(lastStreakStr + 'T00:00:00Z');
+        const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
 
-        const diffDays = Math.round(
-          (todayMidnight - lastActiveMidnight) / (1000 * 60 * 60 * 24),
-        );
-
-        if (diffDays === 1) {
+        if (diffDays === 0) {
+          // Already completed a lesson today — maintain current streak
+          newStreak = Math.max(1, profile.streakDays || 1);
+        } else if (diffDays === 1) {
+          // Consecutive day learning! Increment streak (1 -> 2, 2 -> 3, 5 -> 6, etc.)
           newStreak = (profile.streakDays || 0) + 1;
-        } else if (diffDays === 0) {
-          newStreak = profile.streakDays || 1;
+          shouldUpdateStreakEarnedDate = true;
         } else {
-          newStreak = 1;
+          // Missed 1 or more days (diffDays > 1)
+          if (profile.streakFreezeBank > 0) {
+            // Protect streak using 1 banked freeze card
+            newStreak = (profile.streakDays || 0) + 1;
+            shouldUpdateStreakEarnedDate = true;
+            await this.prisma.studentProfile.update({
+              where: { userId },
+              data: { streakFreezeBank: profile.streakFreezeBank - 1 },
+            });
+            console.log(`[Gamification] Streak freeze consumed for user ${userId} on lesson completion.`);
+          } else {
+            // Missed day without freeze — start new 1-day streak for today
+            newStreak = 1;
+            shouldUpdateStreakEarnedDate = true;
+          }
         }
       }
 
-      await this.prisma.studentProfile.update({
+      const updatedProfile = await this.prisma.studentProfile.update({
         where: { userId },
         data: {
           xp: { increment: xpEarned },
           streakDays: newStreak,
           lastActiveAt: now,
+          ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
         },
       });
+      newXpTotal = updatedProfile.xp;
+      newStreakDaysTotal = updatedProfile.streakDays;
+
     }
 
     return {
       success: true,
       completedLessons: currentCompleted,
       xpEarned: isNewCompletion ? xpEarned : 0,
+      // Updated totals — use these to refresh frontend state without extra API call
+      newXp: newXpTotal,
+      newStreakDays: newStreakDaysTotal,
       sectionCompleted,
     };
   }

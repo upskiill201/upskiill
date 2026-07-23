@@ -331,10 +331,10 @@ export default function OnboardingStep4() {
         </div>
 
         {/* Desktop Mascot */}
-        <div className="absolute right-0 bottom-[-24vh] lg:bottom-[-26vh] w-[55%] justify-center z-10 pointer-events-none">
-           <div className="relative w-[650px] h-[650px] lg:w-[850px] lg:h-[850px] translate-x-12 lg:translate-x-16">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[55%] justify-center z-10 pointer-events-none">
+           <div className="relative w-[40vw] h-[40vw] translate-x-12 lg:translate-x-16">
               <MascotBackground />
-              <div className="absolute inset-0 z-10 scale-[1.4] lg:scale-[1.6] origin-bottom">
+              <div className="absolute inset-0 z-10 scale-[1.2] origin-bottom">
                 <Image 
                   src="/User onbarding Assets/Tey_step4_desktop.webp" 
                   alt="Tey Looking with Magnifying Glass" 

@@ -40,6 +40,21 @@ export default function OnboardingStep1() {
     return () => clearTimeout(t);
   }, []);
 
+  // iOS Safari viewport height fix: set --vh from the real visualViewport
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    setVH();
+    window.visualViewport?.addEventListener('resize', setVH);
+    window.addEventListener('resize', setVH);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', setVH);
+      window.removeEventListener('resize', setVH);
+    };
+  }, []);
+
   const headlineShadow = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.15), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
@@ -47,10 +62,15 @@ export default function OnboardingStep1() {
   if (isLoading) return <StepSkeleton />;
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden relative">
+    <div className="min-h-[100svh] min-h-[100dvh] min-h-screen md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden md:overflow-visible relative">
       
       {/* Mobile bottom white soft fade */}
       <div className="absolute bottom-0 left-0 right-0 h-[50dvh] bg-gradient-to-b from-transparent via-[#F7F8FC] to-[#F7F8FC] via-[20%] md:hidden z-0" />
+
+      {/* Desktop-only full-page bubble background */}
+      <div className="hidden md:block absolute inset-0 z-0">
+        <MascotBackground />
+      </div>
 
       {/* Decorative background */}
       <div className="absolute top-10 left-10 w-6 h-6 text-white opacity-60 z-0">
@@ -67,12 +87,12 @@ export default function OnboardingStep1() {
       </div>
 
       {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
+      <div className="flex flex-col w-full relative z-10 md:hidden overflow-visible pb-2 pt-2 justify-between" style={{ height: 'var(--vh, 100dvh)' }}>
         
         {/* Top 60% Image Container - 100% of device width */}
-        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible">
+        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-4 overflow-visible">
           {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-3.5 mb-4 shrink-0 relative z-20">
+          <div className="w-full px-6 flex items-center gap-3.5 mb-2 shrink-0 sticky top-0 z-30 bg-gradient-to-b from-[#F5F8FF] to-transparent pt-2 pb-1">
             <button 
               onClick={() => router.push('/onboarding/0')} 
               className="w-10 h-10 bg-white/95 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shrink-0 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
@@ -96,7 +116,7 @@ export default function OnboardingStep1() {
             initial={{ scale: 0.6, y: -20 }}
             animate={{ scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-stretch justify-center relative select-none mt-2 px-0"
+            className="w-full flex-1 flex items-stretch justify-center relative select-none px-0"
           >
             {/* Bubble background spans 100% of container width */}
             <div className="relative w-full h-full flex items-center justify-center">
@@ -112,19 +132,19 @@ export default function OnboardingStep1() {
         </div>
 
         {/* Bottom 40% Text & CTA Container - padded horizontally with white background and soft top fade */}
-        <div className="w-full h-[40dvh] flex flex-col justify-between items-center relative z-20 pb-4 px-6 bg-white">
+        <div className="w-full flex-shrink-0 flex flex-col justify-between items-center relative z-20 pb-2 px-6 bg-white">
           
           {/* Soft white shadow fade overlay at the top boundary */}
           <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
           {/* Centered Typography container */}
-          <div className="w-full flex-1 flex flex-col justify-center items-center text-center mt-1 mb-1 px-1 z-10">
+          <div className="w-full flex-1 flex flex-col justify-center items-center text-center px-1 z-10">
             {/* Relative scaled heading - constrained to 80% width */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[8vw] xs:text-[9vw] sm:text-3xl font-[900] leading-[1.3] mb-1 text-[#071233]"
+              className="text-[8vw] xs:text-[9vw] sm:text-3xl font-[900] leading-[1.25] mb-0 text-[#071233]"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
@@ -156,7 +176,7 @@ export default function OnboardingStep1() {
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.65 }}
-            className="w-full max-w-[340px] px-2 mb-6 z-20"
+            className="w-full max-w-[340px] px-2 mb-2 z-20"
           >
             <motion.button
               animate={idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
@@ -179,19 +199,17 @@ export default function OnboardingStep1() {
         </div>
       </div>
 
-      {/* DESKTOP-ONLY LAYOUT (hidden md:grid) */}
-      <div className="hidden md:grid max-w-[1400px] w-full mx-auto relative z-10 grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-40 items-center px-8 lg:px-12">
+      {/* DESKTOP-ONLY LAYOUT (hidden md:flex) */}
+      <div className="hidden md:flex flex-1 w-full max-w-[1440px] mx-auto flex-row relative min-h-0">
 
         {/* LEFT COLUMN — Mascot drops in and bounces */}
         <motion.div
-          initial={{ scale: 0.6, y: -40 }}
+          initial={{ scale: 0.65, y: -30 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-          className="w-full flex justify-start order-1"
+          className="w-1/2 lg:w-5/12 h-[70vh] lg:h-[80vh] flex items-center justify-center relative"
         >
-          {/* Desktop mascot container size reduced to 90% width of its column container, removing scale overrides */}
-          <div className="relative w-[90%] aspect-square transition-transform z-10">
-            <MascotBackground />
+          <div className="relative w-full h-full transition-transform z-10">
             <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10">
               <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
             </motion.div>
@@ -199,10 +217,10 @@ export default function OnboardingStep1() {
         </motion.div>
 
         {/* RIGHT COLUMN */}
-        <div className="w-full flex flex-col justify-center order-2 relative">
+        <div className="w-full flex flex-col md:justify-center relative px-6 md:px-10 lg:px-12 z-20 flex-1 pb-8 md:pb-10">
 
           {/* DESKTOP PROGRESS BAR */}
-          <div className="flex items-center gap-4 mb-10 relative z-10">
+          <div className="flex items-center gap-5 mb-10 relative z-10 w-full">
             <button 
               onClick={() => router.push('/onboarding/0')} 
               className="w-12 h-12 bg-white border border-slate-200 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm shrink-0 cursor-pointer"
@@ -218,64 +236,68 @@ export default function OnboardingStep1() {
                 style={{ background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)', boxShadow: 'inset 0px -3px 0px rgba(0,0,0,0.1), inset 0px 3px 0px rgba(255,255,255,0.3)' }}
               />
             </div>
-            <span className="text-lg font-bold" style={{ color: '#0172FD' }}>1/15</span>
+            <span className="text-lg font-bold" style={{ color: '#0172FD', textShadow: '0 0 10px rgba(255,255,255,1)' }}>1/15</span>
           </div>
 
-          {/* ── HEADLINE ── */}
-          <motion.h1
-            variants={headlineContainer}
-            initial="hidden"
-            animate="show"
-            className="text-[6rem] md:text-[9rem] lg:text-[10rem] font-[800] mb-6 tracking-tighter text-[#071233] text-left relative z-10"
-            style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
-          >
-            <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
-              Welcome
-            </motion.span>
-            <br />
-            <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.2em' }}>
-              to
-            </motion.span>
-            <motion.span variants={accentVariant} style={{ display: 'inline-block', color: '#0172FD', textShadow: accentShadow }}>
-              Teyro!
-            </motion.span>
-          </motion.h1>
+          {/* Content wrapper */}
+          <div className="relative z-10 w-full max-w-2xl mx-auto md:mx-0 pt-6 md:pt-0">
 
-          {/* ── SUBTITLE ── */}
-          <motion.p
-            initial={{ y: 14, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
-            className="text-[1.25rem] md:text-3xl lg:text-[2.25rem] mb-12 font-medium text-left text-slate-600 leading-snug md:max-w-[95%] relative z-10"
-            style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)' }}
-          >
-            Your journey to mastering<br /> new skills starts here.
-          </motion.p>
-
-          {/* ── CTA ── */}
-          <motion.div
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.65 }}
-          >
-            <motion.button
-              animate={idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-              transition={idle ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] } : { type: 'spring', stiffness: 300, damping: 20 }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
-              onClick={() => {
-                setIdle(false);
-                playHaptic('medium');
-                void advance();
-              }}
-              className="relative z-10 w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] text-white font-bold text-xl md:text-2xl"
-              style={{ backgroundColor: '#0172FD', boxShadow: '0 16px 32px -8px rgba(1,114,253,0.5), inset 0px -6px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+            {/* ── HEADLINE ── */}
+            <motion.h1
+              variants={headlineContainer}
+              initial="hidden"
+              animate="show"
+              className="text-[2.25rem] leading-[1.1] md:text-[4.5rem] lg:text-[6rem] xl:text-[7.5rem] font-[800] mb-4 tracking-tight text-[#071233] text-left"
+              style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
-              <span>Get Started</span>
-              <ArrowRight className="absolute right-8 md:right-10 w-6 h-6 md:w-7 md:h-7 stroke-[3]" />
-            </motion.button>
-          </motion.div>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
+                Welcome
+              </motion.span>
+              <br />
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>
+                to
+              </motion.span>
+              <motion.span variants={accentVariant} style={{ display: 'inline-block', color: '#0172FD', textShadow: accentShadow }}>
+                Teyro!
+              </motion.span>
+            </motion.h1>
 
+            {/* ── SUBTITLE ── */}
+            <motion.p
+              initial={{ y: 14, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
+              className="text-base md:text-xl lg:text-[1.35rem] mb-10 font-medium text-left text-slate-600 leading-snug"
+              style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)' }}
+            >
+              Your journey to mastering<br /> new skills starts here.
+            </motion.p>
+
+            {/* ── CTA ── */}
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.65 }}
+            >
+              <motion.button
+                animate={idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+                transition={idle ? { duration: 0.45, ease: 'easeInOut', times: [0, 0.5, 1] } : { type: 'spring', stiffness: 300, damping: 20 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
+                onClick={() => {
+                  setIdle(false);
+                  playHaptic('medium');
+                  void advance();
+                }}
+                className="relative z-10 w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] text-white font-bold text-xl md:text-2xl"
+                style={{ backgroundColor: '#0172FD', boxShadow: '0 16px 32px -8px rgba(1,114,253,0.5), inset 0px -6px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+              >
+                <span>Get Started</span>
+                <ArrowRight className="absolute right-8 md:right-10 w-6 h-6 md:w-7 md:h-7 stroke-[3]" />
+              </motion.button>
+            </motion.div>
+
+          </div>
         </div>
       </div>
     </div>

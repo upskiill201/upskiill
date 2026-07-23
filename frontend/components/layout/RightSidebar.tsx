@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bot, Lock, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './RightSidebar.module.css';
 
 export interface RightSidebarProps {
@@ -18,15 +19,54 @@ export interface RightSidebarProps {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLessons, section, sectionIndex, userName }) => {
   const { triggerComingSoon } = useComingSoon();
+  const {
+    xp: userXpTotal,
+    completedQuests,
+    claimQuest,
+    lastRewardClaimedAt,
+    dailyRewardCyclePosition,
+    isEligibleForReward,
+    nextRewardClaimInMs,
+    claimDailyReward,
+  } = useGamification();
+
+  const [countdownStr, setCountdownStr] = useState('');
+
+  useEffect(() => {
+    if (isEligibleForReward || !nextRewardClaimInMs) {
+      setCountdownStr('');
+      return;
+    }
+
+    let remainingMs = nextRewardClaimInMs;
+    // Tick immediately
+    const updateTick = () => {
+      if (remainingMs <= 0) {
+        setCountdownStr('00:00:00');
+        return;
+      }
+      const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+      setCountdownStr(
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+      );
+      remainingMs -= 1000;
+    };
+
+    updateTick();
+    const interval = setInterval(updateTick, 1000);
+    return () => clearInterval(interval);
+  }, [isEligibleForReward, nextRewardClaimInMs]);
+
+  const handleClaimReward = async () => {
+    playHaptic('success');
+    await claimDailyReward();
+  };
 
   const handleLetsGo = () => {
     playHaptic('medium');
     triggerComingSoon("Tey's Challenge: Let's Go!");
-  };
-
-  const handleClaimReward = () => {
-    playHaptic('medium');
-    triggerComingSoon('Daily Chest Reward');
   };
 
   // Section-level progress
@@ -56,7 +96,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
   let completedLessonsCount = 0;
   let completedSectionsCount = 0;
   let progressPercent = 0;
-  let totalXp = 0;
+  let totalXp = userXpTotal; // Use unified XP from context instead of local formula
 
   if (hasCourse) {
     const sectionsList = course.sections || [];
@@ -64,7 +104,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     
     totalSections = sectionsList.length || curriculumList.length || 0;
     completedLessonsCount = completedLessons?.length || 0;
-    totalXp = completedLessonsCount * 15; // 15 XP per lesson completed
 
     if (sectionsList.length > 0) {
       totalLessons = sectionsList.reduce((acc: number, s: any) => acc + (s.lessons?.length || 0), 0);
@@ -182,65 +221,220 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
       {/* DAILY QUESTS CARD (section view) */}
       {hasSection && (
-        <div className={styles.questsCard}>
+        <div className={styles.questsCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className={styles.cardHeaderWithLink}>
             <h4 className={styles.cardSectionTitle}>Daily Quests</h4>
-            <button
-              onClick={() => triggerComingSoon('All Quests')}
-              className={styles.cardViewAllBtn}
-            >
-              View All
-            </button>
           </div>
 
-          <div className={styles.questItem}>
-            <div className={styles.questIconWrapper}>
-              <span>💎</span>
-            </div>
-            <div className={styles.questContent}>
-              <div className={styles.questInfoRow}>
-                <span className={styles.questTitle}>Earn 20 XP</span>
-                <span className={styles.questProgressText}>{Math.min(sectionXpEarned, 20)} / 20</span>
+          {/* Quest 1: Complete 1 Lesson */}
+          {(() => {
+            const isFinished = sectionCompletedCount >= 1;
+            const isClaimed = completedQuests.includes('daily-lesson');
+            return (
+              <div className={styles.questItem} style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
+                <div className={styles.questIconWrapper}>
+                  <span>🎯</span>
+                </div>
+                <div className={styles.questContent} style={{ width: '100%' }}>
+                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Complete 1 Lesson</span>
+                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
+                      {Math.min(sectionCompletedCount, 1)} / 1
+                    </span>
+                  </div>
+                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
+                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#58cc02', width: `${isFinished ? 100 : 0}%` }} />
+                  </div>
+                  {isClaimed ? (
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02' }}>Claimed! ✓</span>
+                  ) : isFinished ? (
+                    <button
+                      onClick={() => claimQuest('daily-lesson')}
+                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      CLAIM +20 XP
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
+                  )}
+                </div>
               </div>
-              <div className={styles.questProgressBar}>
-                <div className={styles.questProgressFill} style={{ width: `${Math.min((sectionXpEarned / 20) * 100, 100)}%` }} />
+            );
+          })()}
+
+          {/* Quest 2: Earn 10 XP */}
+          {(() => {
+            const isFinished = sectionXpEarned >= 10;
+            const isClaimed = completedQuests.includes('daily-consistent');
+            return (
+              <div className={styles.questItem}>
+                <div className={styles.questIconWrapper}>
+                  <span>💎</span>
+                </div>
+                <div className={styles.questContent} style={{ width: '100%' }}>
+                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Earn 10 XP Today</span>
+                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
+                      {Math.min(sectionXpEarned, 10)} / 10
+                    </span>
+                  </div>
+                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
+                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#0172FD', width: `${Math.min((sectionXpEarned / 10) * 100, 100)}%` }} />
+                  </div>
+                  {isClaimed ? (
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD' }}>Claimed! ✓</span>
+                  ) : isFinished ? (
+                    <button
+                      onClick={() => claimQuest('daily-consistent')}
+                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      CLAIM +10 XP
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       )}
 
-      {/* UNLOCK BONUS REWARD CARD (section view) */}
-      {hasSection && (
-        <div className={styles.rewardCard}>
-          <span className={styles.rewardHeader}>Unlock Bonus Reward!</span>
-          <p className={styles.rewardSubtext}>
-            Complete all lessons in this section to unlock a mystery chest.
-          </p>
-          <div className={styles.bonusProgressRow}>
-            <div className={styles.questProgressBar}>
-              <div className={styles.questProgressFill} style={{ width: `${sectionProgressPercent}%` }} />
-            </div>
-            <span className={styles.bonusProgressText}>{sectionCompletedCount} / {sectionTotalLessons}</span>
+      {/* DAILY REWARD LOGIN CHEST CARD */}
+      <div className={styles.dailyRewardCard}>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes chestIdle {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-2deg); }
+          }
+          @keyframes pulseGold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 184, 0, 0.6); }
+            50% { transform: scale(1.1); box-shadow: 0 0 16px rgba(255, 184, 0, 0.95); }
+          }
+          .chestAnimate {
+            animation: chestIdle 2.2s infinite ease-in-out;
+          }
+          .day7Glow {
+            animation: pulseGold 1.8s infinite ease-in-out;
+          }
+        `}} />
+
+        {/* Top Side-by-Side row: Text on left, Chest badge on right */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+            <span style={{ fontWeight: 800, fontSize: '18px', color: '#3C3C3C', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+              Daily Reward
+            </span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#777777', fontFamily: 'var(--font-jakarta), sans-serif', lineHeight: '1.4' }}>
+              {(() => {
+                if (isEligibleForReward) {
+                  if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
+                  return "Claim your reward to build a daily habit!";
+                } else {
+                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked! 🎉";
+                  return `Next chest in ${countdownStr}`;
+                }
+              })()}
+            </span>
           </div>
-          <div className={styles.treasureBoxWrapper}>
+          
+          <div style={{ width: '64px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Image
               src="/Tressure box.png"
               alt="Mystery Chest"
-              width={100}
-              height={80}
-              className={styles.treasureBoxImage}
+              width={64}
+              height={52}
+              className={isEligibleForReward ? 'chestAnimate' : ''}
+              style={{ objectFit: 'contain', filter: isEligibleForReward ? 'none' : 'grayscale(30%) opacity(85%)' }}
             />
           </div>
-          <button
-            onClick={handleClaimReward}
-            className={sectionComplete ? styles.button3dBlue : styles.button3dWhiteReward}
-            disabled={!sectionComplete}
-          >
-            {sectionComplete ? 'Claim Reward' : 'Complete Section to Unlock'}
-          </button>
         </div>
-      )}
+
+        {/* 7-pip calendar-style streak tracker */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '8px 0 16px', width: '100%', gap: '6px' }}>
+          {Array.from({ length: 7 }).map((_, i) => {
+            const dayNum = i + 1;
+            const isActive = dayNum === dailyRewardCyclePosition && isEligibleForReward;
+            
+            let isCompleted = false;
+            if (isEligibleForReward) {
+              isCompleted = dayNum < dailyRewardCyclePosition;
+            } else {
+              const dayJustClaimed = dailyRewardCyclePosition === 1 ? 7 : dailyRewardCyclePosition - 1;
+              isCompleted = dayNum <= dayJustClaimed;
+            }
+
+            const isDay7 = dayNum === 7;
+
+            return (
+              <div
+                key={dayNum}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span style={{ fontSize: '10px', fontWeight: 800, color: isDay7 ? '#FF8A00' : '#A0A0A0', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+                  D{dayNum}
+                </span>
+                <div
+                  className={isDay7 && !isCompleted ? 'day7Glow' : ''}
+                  style={{
+                    width: isDay7 ? '32px' : '28px',
+                    height: isDay7 ? '32px' : '28px',
+                    borderRadius: '50%',
+                    background: isCompleted
+                      ? '#58cc02'
+                      : isDay7
+                        ? 'linear-gradient(135deg, #FFC700 0%, #FF8A00 100%)'
+                        : isActive
+                          ? '#FF8A00'
+                          : '#E2E8F0',
+                    border: isActive || (isDay7 && !isCompleted) ? '2px solid white' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: isCompleted || isActive || isDay7 ? 'white' : '#A0A0A0',
+                    fontWeight: 800,
+                    fontSize: '11px',
+                    boxShadow: isActive && !isDay7 ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {isCompleted ? (
+                    '✓'
+                  ) : isDay7 ? (
+                    <div style={{ position: 'relative', width: 20, height: 18 }}>
+                      <Image
+                        src="/Tressure box.png"
+                        alt="Day 7 Chest"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                  ) : (
+                    dayNum
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={handleClaimReward}
+          disabled={!isEligibleForReward}
+          className={isEligibleForReward ? styles.dailyRewardClaimBtn : styles.dailyRewardClaimBtnDisabled}
+        >
+          {isEligibleForReward
+            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
+            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED ✓' : 'CLAIMED ✓')
+          }
+        </button>
+      </div>
 
       {/* ─── COURSE-LEVEL CARDS (shown when no section prop) ─── */}
 

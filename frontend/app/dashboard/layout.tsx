@@ -3,23 +3,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
-import { 
+import {
   ChevronLeft,
   ChevronRight,
   Menu,
   X,
   Sparkles,
   Rocket,
-  Home,
-  Layers,
-  Search,
-  Trophy,
-  Target,
-  User,
-  MoreHorizontal,
   Flame,
   Settings,
-  LogOut
+  Headphones,
+  LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,6 +22,8 @@ import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
+import { useGamification } from '@/context/GamificationContext';
+import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -50,13 +46,16 @@ interface EnhancedDashboardLink extends DashboardLink {
 interface DashboardLayoutProps {
   children: React.ReactNode;
   isWide?: boolean;
+  hideMobileChrome?: boolean;
 }
 
 export default function DashboardLayout({
   children,
   isWide = false,
+  hideMobileChrome = false,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
+  const { streakDays, xp, lives } = useGamification();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -64,8 +63,8 @@ export default function DashboardLayout({
   const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100');
   const [hasStudentAccess, setHasStudentAccess] = useState(false);
   const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
-  const [streakDays, setStreakDays] = useState(0);
-  const [userLevel, setUserLevel] = useState(0);
+
+  const userLevel = Math.floor(xp / 100) + 1;
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -88,14 +87,6 @@ export default function DashboardLayout({
       }
     };
     fetchMe();
-
-    // Read onboarding answers from localStorage to align stats state
-    const state = getOnboardingState();
-    if (state) {
-      // By default new users start with 0 streak and level 0
-      setStreakDays(0);
-      setUserLevel(0);
-    }
   }, []);
 
   const handleLogout = async (e: React.MouseEvent) => {
@@ -114,53 +105,54 @@ export default function DashboardLayout({
       id: 'learn', 
       label: 'Home', 
       href: '/dashboard', 
-      icon: <Home size={20} /> 
+      icon: <Image src="/Icons/home-button.png" alt="Home" width={28} height={28} className={styles.navIcon} />
     },
     { 
       id: 'journeys', 
       label: 'My Learning', 
       href: '/dashboard/my-learning', 
-      icon: <Layers size={20} className={styles.journeysIcon} />, 
+      icon: <Image src="/Icons/my-learning.png" alt="My Learning" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: false 
     },
     { 
       id: 'explore', 
       label: 'Explore', 
       href: '/dashboard', 
-      icon: <Search size={20} className={styles.exploreIcon} />, 
+      icon: <Image src="/Icons/explore.png" alt="Explore" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'leaderboards', 
       label: 'Leaderboards', 
       href: '/dashboard', 
-      icon: <Trophy size={20} className={styles.leaderboardsIcon} />, 
+      icon: <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'quests', 
       label: 'Quests', 
       href: '/dashboard', 
-      icon: <Target size={20} className={styles.questsIcon} />, 
+      icon: <Image src="/Icons/Quests.png" alt="Quests" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'profile', 
       label: 'Profile', 
       href: '/dashboard', 
-      icon: <User size={20} className={styles.profileIcon} />, 
+      icon: <Image src="/Icons/user-profile.png" alt="Profile" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
     { 
       id: 'more', 
       label: 'More', 
       href: '/dashboard', 
-      icon: <MoreHorizontal size={20} className={styles.moreIcon} />, 
+      icon: <Image src="/Icons/more.png" alt="More" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: true 
     },
   ];
 
   const handleLinkClick = (e: React.MouseEvent, link: EnhancedDashboardLink) => {
+    void emitAudioEvent('TAB_SWITCH');
     if (link.isComingSoon) {
       e.preventDefault();
       triggerComingSoon(link.label);
@@ -177,12 +169,13 @@ export default function DashboardLayout({
               <Link href="/dashboard" className={styles.logoLink}>
                 {!isSidebarCollapsed ? (
                   <Image 
-                    src="/Teyro Logo.png" 
+                    src="/teyro-logo-blue.png" 
                     alt="Teyro" 
                     width={105} 
                     height={30} 
                     priority 
                     className={styles.sidebarLogo}
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                 ) : (
                   <div className={styles.compactLogo}>T</div>
@@ -192,7 +185,7 @@ export default function DashboardLayout({
             
             <button 
               className={styles.sidebarToggle} 
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsSidebarCollapsed(!isSidebarCollapsed); }}
               aria-label="Toggle Sidebar"
             >
               {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -200,7 +193,7 @@ export default function DashboardLayout({
 
             <button 
               className={styles.mobileClose} 
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(false); }}
               aria-label="Close Mobile Menu"
             >
               <X size={22} />
@@ -218,7 +211,7 @@ export default function DashboardLayout({
 
               const renderedIcon = link.id === 'learn' ? (
                 <div className={isActive ? styles.activeIconCircle : styles.icon}>
-                  <Home size={isActive ? 14 : 20} className={isActive ? styles.activeHomeIcon : ''} />
+                  <Image src="/Icons/home-button.png" alt="Home" width={isActive ? 14 : 20} height={isActive ? 14 : 20} className={styles.navIcon} />
                 </div>
               ) : (
                 <span className={styles.icon}>{link.icon}</span>
@@ -249,14 +242,38 @@ export default function DashboardLayout({
               <div className={styles.footerCardsWrapper}>
                 {/* Streak Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Streaks')}>
-                  <div className={`${styles.sidebarCardIconBg} ${styles.streakBg}`}>
-                    <Flame size={18} className={styles.streakFlameIcon} />
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/Icons/burn.png" width={20} height={20} alt="Streak Burn Icon" style={{ objectFit: 'contain' }} />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle}>{streakDays} Days Streak</span>
-                    <span className={styles.sidebarCardSubtitle}>Keep it going!</span>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#FF9600', fontWeight: 800 }}>{streakDays} Days Streak</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(255,150,0,0.85)', fontWeight: 600 }}>Keep it going!</span>
                   </div>
-                  <ChevronRight size={14} className={styles.sidebarCardChevron} />
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF9600' }} />
+                </div>
+
+                {/* XP Balance Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('XP Details')}>
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/Icons/gem.png" width={20} height={20} alt="XP Gem" style={{ objectFit: 'contain' }} />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#0172FD', fontWeight: 800 }}>{xp} XP</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(1,114,253,0.85)', fontWeight: 600 }}>Total Balance</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#0172FD' }} />
+                </div>
+
+                {/* Lives Card */}
+                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Lives Details')}>
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image src="/Icons/heart.png" width={20} height={20} alt="Lives" style={{ objectFit: 'contain' }} />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#FF4B4B', fontWeight: 800 }}>{lives} / 5 Lives</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(255,75,75,0.85)', fontWeight: 600 }}>Hearts remaining</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF4B4B' }} />
                 </div>
 
                 {/* Profile Card */}
@@ -283,13 +300,13 @@ export default function DashboardLayout({
 
             <div className={styles.utilityActions}>
               <Link 
-                href="/dashboard" 
-                onClick={(e) => { e.preventDefault(); triggerComingSoon('Settings'); setIsMobileMenuOpen(false); }} 
+                href="/audio-settings" 
+                onClick={() => setIsMobileMenuOpen(false)} 
                 className={styles.navItemCompact}
-                title={isSidebarCollapsed ? 'Settings' : ''}
+                title={isSidebarCollapsed ? 'Audio Settings' : ''}
               >
-                <span className={styles.icon}><Settings size={20} /></span>
-                {!isSidebarCollapsed && <span className={styles.label}>Settings</span>}
+                <span className={styles.icon}><Headphones size={20} className="text-[#0172FD]" /></span>
+                {!isSidebarCollapsed && <span className={styles.label}>Audio Settings</span>}
               </Link>
               <button 
                 onClick={handleLogout} 
@@ -307,13 +324,14 @@ export default function DashboardLayout({
         {isMobileMenuOpen && <div className={styles.overlay} onClick={() => setIsMobileMenuOpen(false)} />}
 
         {/* MOBILE BOTTOM NAVIGATION BAR */}
+        {!hideMobileChrome && (
         <nav className={styles.mobileBottomNav}>
           <Link href="/dashboard" className={`${styles.bottomNavItem} ${pathname === '/dashboard' ? styles.activeBottomItem : ''}`}>
-            <Home size={20} />
+            <Image src="/Icons/home-button.png" alt="Home" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Home</span>
           </Link>
           <Link href="/dashboard/my-learning" className={`${styles.bottomNavItem} ${pathname === '/dashboard/my-learning' ? styles.activeBottomItem : ''}`}>
-            <Layers size={20} />
+            <Image src="/Icons/my-learning.png" alt="My Learning" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>My Learning</span>
           </Link>
           <a 
@@ -321,7 +339,7 @@ export default function DashboardLayout({
             onClick={(e) => { e.preventDefault(); triggerComingSoon('Leaderboards'); }} 
             className={styles.bottomNavItem}
           >
-            <Trophy size={20} />
+            <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Leaderboards</span>
           </a>
           <a 
@@ -329,36 +347,40 @@ export default function DashboardLayout({
             onClick={(e) => { e.preventDefault(); triggerComingSoon('Profile Settings'); }} 
             className={styles.bottomNavItem}
           >
-            <User size={20} />
+            <Image src="/Icons/user-profile.png" alt="Profile" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Profile</span>
           </a>
         </nav>
+        )}
 
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
           {/* MOBILE-ONLY STICKY HEADER */}
+          {!hideMobileChrome && (
           <header className={styles.mobileHeader}>
             <button 
               className={styles.mobileToggle} 
-              onClick={() => setIsMobileMenuOpen(true)}
+              onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(true); }}
               aria-label="Open Menu"
             >
               <Menu size={22} />
             </button>
             <div className={styles.mobileLogoContainer}>
               <Image 
-                src="/Teyro Logo.png" 
+                src="/teyro-logo-blue.png" 
                 alt="Teyro" 
                 width={85} 
                 height={24} 
                 priority 
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
             <Avatar src={userAvatar} name={userName} size="sm" />
           </header>
+          )}
 
           {/* PAGE CONTENT */}
-          <div className={`${styles.content} ${isWide ? styles.wideContent : ''}`}>
+          <div className={`${styles.content} ${isWide ? styles.wideContent : ''} ${hideMobileChrome ? styles.immersiveContent : ''}`}>
             {children}
           </div>
         </main>
