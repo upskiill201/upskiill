@@ -11,6 +11,7 @@ import {
   SoundConfig,
   DEFAULT_SOUND_REGISTRY,
 } from './soundRegistry';
+import { EMBEDDED_SOUND_DATA } from './soundData';
 
 export interface CategoryVolumes {
   master: number;
@@ -141,8 +142,8 @@ class SoundManager {
     await Promise.all(promises);
   }
 
-  /** Fetch or get decoded AudioBuffer for a given URL */
-  private async getAudioBuffer(url: string): Promise<AudioBuffer | null> {
+  /** Fetch or decode AudioBuffer from Base64 Data URI or network URL */
+  private async getAudioBuffer(url: string, id?: SoundId): Promise<AudioBuffer | null> {
     if (this.bufferCache.has(url)) {
       return this.bufferCache.get(url)!;
     }
@@ -150,14 +151,19 @@ class SoundManager {
     const ctx = this.initContext();
     if (!ctx) return null;
 
+    // Resolve Base64 embedded URI to bypass HTTP requests & browser download extensions
+    const fileNameKey = url.split('/').pop()?.replace('.mp3', '') || id || '';
+    const embeddedBase64 = EMBEDDED_SOUND_DATA[fileNameKey] || (url.startsWith('data:') ? url : null);
+    const sourceUrl = embeddedBase64 || url;
+
     try {
-      const response = await fetch(url);
+      const response = await fetch(sourceUrl);
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
       this.bufferCache.set(url, audioBuffer);
       return audioBuffer;
     } catch (err) {
-      console.warn(`[SoundManager] Failed to decode audio buffer from ${url}:`, err);
+      console.warn(`[SoundManager] Failed to decode audio buffer for ${id || url}:`, err);
       return null;
     }
   }

@@ -65,6 +65,18 @@ const nextConfig: NextConfig = {
       ],
     };
   },
+  async headers() {
+    return [
+      {
+        source: '/assets/sounds/:path*',
+        headers: [
+          { key: 'Content-Type', value: 'audio/mpeg' },
+          { key: 'Content-Disposition', value: 'inline' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
