@@ -118,7 +118,7 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
     >
       {/* ── TOP HEADER ROW ────────────────────────────────── */}
       <motion.div className={styles.topHeaderRow} variants={itemVariants}>
-        <Link href="/dashboard/my-learning" className={styles.backLink}>
+        <Link href="/dashboard/my-learning" onClick={() => playHaptic('light')} className={styles.backLink}>
           <ArrowLeft size={16} />
           <span>Back to My Learning</span>
         </Link>
@@ -574,7 +574,7 @@ export default function LearnCoursePage() {
     return (
       <div className={styles.errorShell}>
         <h2>Course Not Found</h2>
-        <button onClick={() => router.push('/dashboard/my-learning')} className={styles.errorBtn}>
+        <button onClick={() => { playHaptic('light'); router.push('/dashboard/my-learning'); }} className={styles.errorBtn}>
           Back to My Learning
         </button>
       </div>

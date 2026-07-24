@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import Button from '../../components/ui/Button';
+import { playHaptic } from '@/lib/haptics';
 import styles from './CheckoutPage.module.css';
 
 // Stripe
@@ -201,7 +202,7 @@ export default function CheckoutPage() {
 
         {/* Left: Order Summary */}
         <div className={styles.summarySide}>
-          <Link href="/cart" className={styles.backLink}>
+          <Link href="/cart" onClick={() => playHaptic('light')} className={styles.backLink}>
             <ArrowLeft size={16} /> Back to Cart
           </Link>
 
