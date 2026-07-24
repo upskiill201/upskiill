@@ -441,9 +441,33 @@ export class WhatsappService implements OnModuleInit {
 
   // ─── Private Helpers ────────────────────────────────────────────────────────
 
+  /**
+   * Smart Phone Normalisation.
+   * Handles local 9-digit numbers (e.g. 671405008 -> +237671405008), zero-prefixed,
+   * 12-digit 237-prefixed, and international numbers starting with '+'.
+   */
   private normalisePhone(raw: string): string {
-    const digits = raw.replace(/[^\d+]/g, '');
-    return digits.startsWith('+') ? digits : `+${digits}`;
+    let clean = raw.replace(/[^\d+]/g, '');
+
+    if (clean.startsWith('+')) {
+      return clean;
+    }
+
+    if (clean.startsWith('0')) {
+      clean = clean.substring(1);
+    }
+
+    // Default to Cameroon (+237) for 9-digit numbers starting with 6 or 2
+    if (clean.length === 9 && (clean.startsWith('6') || clean.startsWith('2'))) {
+      return `+237${clean}`;
+    }
+
+    // Handle 12-digit numbers starting with 237
+    if (clean.length === 12 && clean.startsWith('237')) {
+      return `+${clean}`;
+    }
+
+    return `+${clean}`;
   }
 
   private buildOtpMessage(code: string, expiryMinutes = 10): string {
