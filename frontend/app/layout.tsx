@@ -138,6 +138,7 @@ import { IntercomProvider } from "../components/providers/IntercomProvider";
 import { GamificationProvider } from "../context/GamificationContext";
 import { AudioProvider } from "../context/AudioContext";
 import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
+import { TeyroLoaderProvider } from "../components/providers/TeyroLoaderProvider";
 
 export default function RootLayout({
   children,
@@ -156,11 +157,13 @@ export default function RootLayout({
               <AudioProvider>
                 <BackgroundMusicManager />
                 <GamificationProvider>
-                  <HeaderWrapper />
-                  <main className="flex-1" style={{ overflow: 'visible' }}>
-                    {children}
-                  </main>
-                  <FooterWrapper />
+                  <TeyroLoaderProvider>
+                    <HeaderWrapper />
+                    <main className="flex-1" style={{ overflow: 'visible' }}>
+                      {children}
+                    </main>
+                    <FooterWrapper />
+                  </TeyroLoaderProvider>
                 </GamificationProvider>
               </AudioProvider>
             </CartProvider>

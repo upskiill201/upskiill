@@ -1,0 +1,168 @@
+/* ─── TEYRO BRANDED FULL-SCREEN LOADER (PATTERN A) ────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  padding: 1.5rem;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  text-center: center;
+}
+
+/* Mascot Wrapper & Animation */
+.mascotWrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .mascotWrapper {
+    width: 210px;
+    height: 210px;
+    margin-bottom: 2.5rem;
+  }
+}
+
+.mascotGlow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(1, 114, 253, 0.12) 0%, rgba(1, 114, 253, 0) 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+.mascotImage {
+  object-fit: contain;
+  filter: drop-shadow(0 16px 30px rgba(1, 114, 253, 0.12));
+  animation: floatMascot 3.5s ease-in-out infinite alternate;
+}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  .mascotGlow,
+  .mascotImage {
+    animation: none !important;
+  }
+}
+
+/* Loading Tag Label: LOADING.. */
+.label {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #5C7C99;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .label {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* Micro-copy line */
+.microcopy {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: #1E293B;
+  max-width: 380px;
+  margin: 0 auto;
+  min-height: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .microcopy {
+    font-size: 1.15rem;
+    max-width: 420px;
+  }
+}
+
+/* Timeout / Slow Connection Action */
+.actionWrapper {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reloadBtn {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border: 1.5px solid #0172FD;
+  border-radius: 1rem;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #0050B3, 0 10px 20px -5px rgba(1, 114, 253, 0.3);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.reloadBtn:hover {
+  background-color: #0060D9;
+}
+
+.reloadBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #0050B3;
+}
+
+/* Keyframes */
+@keyframes floatMascot {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
