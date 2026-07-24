@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import TeyroBrandedLoader, { MascotPose } from '../ui/TeyroBrandedLoader';
 
@@ -28,10 +28,21 @@ const TeyroLoaderContext = createContext<TeyroLoaderContextType>({
 
 export const useTeyroLoader = () => useContext(TeyroLoaderContext);
 
-export function TeyroLoaderProvider({ children }: { children: React.ReactNode }) {
+/**
+ * RouteChangeWatcher (Isolated in Suspense to prevent Next.js static export bailout)
+ */
+function RouteChangeWatcher({ onRouteChange }: { onRouteChange: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    onRouteChange();
+  }, [pathname, searchParams, onRouteChange]);
+
+  return null;
+}
+
+export function TeyroLoaderProvider({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
   const [overrideText, setOverrideText] = useState<string | undefined>(undefined);
   const [isFullScreenMode, setIsFullScreenMode] = useState<boolean>(false);
@@ -142,12 +153,7 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
     }
   }, [showLoaderImmediate, hideLoader]);
 
-  // 2. Hide loader on route changes (with configured hold time)
-  useEffect(() => {
-    hideLoader();
-  }, [pathname, searchParams, hideLoader]);
-
-  // 3. Background Session Resume Threshold (> 30 min)
+  // 2. Background Session Resume Threshold (> 30 min)
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -174,6 +180,9 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
 
   return (
     <TeyroLoaderContext.Provider value={{ showLoader, showLoaderImmediate, hideLoader, isLoading: isVisible }}>
+      <Suspense fallback={null}>
+        <RouteChangeWatcher onRouteChange={hideLoader} />
+      </Suspense>
       {children}
       <TeyroBrandedLoader
         isVisible={isVisible}
