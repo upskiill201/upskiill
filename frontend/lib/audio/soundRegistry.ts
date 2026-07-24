@@ -163,7 +163,7 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     name: 'Tab Switch',
     category: 'ui',
     src: '/assets/sounds/ui/UI_TAB_SWITCH.mp3',
-    enabled: true,
+    enabled: false,
     volume: 0.6,
     delayMs: 0,
     speed: 1.0,

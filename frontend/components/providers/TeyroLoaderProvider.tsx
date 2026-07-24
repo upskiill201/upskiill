@@ -2,16 +2,18 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import TeyroBrandedLoader from '../ui/TeyroBrandedLoader';
+import TeyroBrandedLoader, { MascotPose } from '../ui/TeyroBrandedLoader';
 
 const BACKGROUND_RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
-const GUARD_300MS = 300; // Do not show loader if load completes in < 300ms
-const MIN_HOLD_600MS = 600; // Minimum time loader stays visible once shown
+const GUARD_300MS = 300; // Do not show loader if background load completes in < 300ms
+const DEFAULT_MIN_HOLD_MS = 1400; // Default minimum time loader stays visible once shown (1.4s)
 
 interface TeyroLoaderContextType {
-  /** Trigger Pattern A full-screen branded loader manually */
-  showLoader: (overrideText?: string) => void;
-  /** Hide Pattern A loader with 600ms min hold & 300ms guard */
+  /** Trigger Pattern A branded loader with 300ms guard */
+  showLoader: (overrideText?: string, fullScreen?: boolean, holdMs?: number, suppressCheck?: boolean, pose?: MascotPose) => void;
+  /** Trigger Pattern A branded loader IMMEDIATELY (no 300ms guard) on user button clicks */
+  showLoaderImmediate: (overrideText?: string, fullScreen?: boolean, holdMs?: number, suppressCheck?: boolean, pose?: MascotPose) => void;
+  /** Hide Pattern A loader with configured min hold & smooth cross-fade */
   hideLoader: () => void;
   /** Whether loader is active */
   isLoading: boolean;
@@ -19,6 +21,7 @@ interface TeyroLoaderContextType {
 
 const TeyroLoaderContext = createContext<TeyroLoaderContextType>({
   showLoader: () => {},
+  showLoaderImmediate: () => {},
   hideLoader: () => {},
   isLoading: false,
 });
@@ -31,9 +34,13 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
 
   const [isVisible, setIsVisible] = useState(false);
   const [overrideText, setOverrideText] = useState<string | undefined>(undefined);
+  const [isFullScreenMode, setIsFullScreenMode] = useState<boolean>(false);
+  const [suppressCheck, setSuppressCheck] = useState<boolean>(false);
+  const [selectedPose, setSelectedPose] = useState<MascotPose>('random');
 
   const requestStartTimeRef = useRef<number | null>(null);
   const visibleStartTimeRef = useRef<number | null>(null);
+  const customHoldMsRef = useRef<number>(DEFAULT_MIN_HOLD_MS);
   const guardTimerRef = useRef<NodeJS.Timeout | null>(null);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -44,15 +51,45 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
   };
 
   /**
-   * Request showing Pattern A loader.
-   * Enforces 300ms guard before making visible.
+   * Request showing Pattern A loader IMMEDIATELY (e.g. on clicking CONTINUE button).
    */
-  const showLoader = useCallback((customText?: string) => {
+  const showLoaderImmediate = useCallback((
+    customText?: string,
+    fullScreen = false,
+    holdMs = DEFAULT_MIN_HOLD_MS,
+    suppress = false,
+    pose: MascotPose = 'random'
+  ) => {
     clearTimers();
     setOverrideText(customText);
+    setIsFullScreenMode(fullScreen);
+    setSuppressCheck(suppress);
+    setSelectedPose(pose);
+    customHoldMsRef.current = holdMs;
+    requestStartTimeRef.current = Date.now();
+    visibleStartTimeRef.current = Date.now();
+    setIsVisible(true);
+  }, []);
+
+  /**
+   * Request showing Pattern A loader with 300ms guard.
+   */
+  const showLoader = useCallback((
+    customText?: string,
+    fullScreen = false,
+    holdMs = DEFAULT_MIN_HOLD_MS,
+    suppress = false,
+    pose: MascotPose = 'random'
+  ) => {
+    clearTimers();
+    setOverrideText(customText);
+    setIsFullScreenMode(fullScreen);
+    setSuppressCheck(suppress);
+    setSelectedPose(pose);
+    customHoldMsRef.current = holdMs;
     requestStartTimeRef.current = Date.now();
 
-    // 300ms Guard: only show loader if action takes longer than 300ms
+    // 300ms Guard
     guardTimerRef.current = setTimeout(() => {
       visibleStartTimeRef.current = Date.now();
       setIsVisible(true);
@@ -61,46 +98,51 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
 
   /**
    * Hide Pattern A loader.
-   * Enforces 600ms minimum hold time if loader was rendered.
+   * Enforces configured minimum hold time once rendered.
    */
   const hideLoader = useCallback(() => {
     clearTimers();
 
-    // If 300ms guard hasn't fired yet, cancel it so loader never shows
+    // If loader was never made visible (e.g. guard cancelled), hide immediately
     if (!visibleStartTimeRef.current) {
       requestStartTimeRef.current = null;
       setIsVisible(false);
       return;
     }
 
-    // Loader is visible — check if it has been visible for at least 600ms
+    // Loader is visible — hold until at least configured holdMs total visible duration
     const elapsedTimeVisible = Date.now() - visibleStartTimeRef.current;
-    const remainingHold = Math.max(0, MIN_HOLD_600MS - elapsedTimeVisible);
+    const requiredHold = customHoldMsRef.current || DEFAULT_MIN_HOLD_MS;
+    const remainingHold = Math.max(0, requiredHold - elapsedTimeVisible);
 
     holdTimerRef.current = setTimeout(() => {
       setIsVisible(false);
       requestStartTimeRef.current = null;
       visibleStartTimeRef.current = null;
       setOverrideText(undefined);
+      setIsFullScreenMode(false);
+      setSuppressCheck(false);
+      setSelectedPose('random');
+      customHoldMsRef.current = DEFAULT_MIN_HOLD_MS;
     }, remainingHold);
   }, []);
 
-  // 1. Cold Start & Route Change trigger
+  // 1. Cold Start & First Mount
   const isFirstMount = useRef(true);
 
   useEffect(() => {
     if (isFirstMount.current) {
       isFirstMount.current = false;
-      // Show loader on cold start for smooth hydration
-      showLoader();
+      // Show fullScreen loader on cold start
+      showLoaderImmediate("Learning one small skill today is better than planning to learn everything tomorrow.", true);
       const coldStartTimer = setTimeout(() => {
         hideLoader();
-      }, 750);
+      }, 1000);
       return () => clearTimeout(coldStartTimer);
     }
-  }, [showLoader, hideLoader]);
+  }, [showLoaderImmediate, hideLoader]);
 
-  // 2. Hide loader on route changes
+  // 2. Hide loader on route changes (with configured hold time)
   useEffect(() => {
     hideLoader();
   }, [pathname, searchParams, hideLoader]);
@@ -115,11 +157,10 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
         const now = Date.now();
 
         if (lastActive && now - parseInt(lastActive, 10) > BACKGROUND_RESUME_THRESHOLD_MS) {
-          // Session backgrounded > 30 mins — trigger Pattern A cold-start loader
-          showLoader("Welcome back! Tey is restoring your session...");
+          showLoaderImmediate("Welcome back! Tey is restoring your learning session...", true);
           setTimeout(() => {
             hideLoader();
-          }, 1200);
+          }, 1500);
         }
         localStorage.setItem('teyro_last_active_timestamp', now.toString());
       } else {
@@ -129,12 +170,18 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [showLoader, hideLoader]);
+  }, [showLoaderImmediate, hideLoader]);
 
   return (
-    <TeyroLoaderContext.Provider value={{ showLoader, hideLoader, isLoading: isVisible }}>
+    <TeyroLoaderContext.Provider value={{ showLoader, showLoaderImmediate, hideLoader, isLoading: isVisible }}>
       {children}
-      <TeyroBrandedLoader isVisible={isVisible} microcopyOverride={overrideText} />
+      <TeyroBrandedLoader
+        isVisible={isVisible}
+        microcopyOverride={overrideText}
+        fullScreen={isFullScreenMode}
+        suppressConnectionCheck={suppressCheck}
+        mascotPose={selectedPose}
+      />
     </TeyroLoaderContext.Provider>
   );
 }

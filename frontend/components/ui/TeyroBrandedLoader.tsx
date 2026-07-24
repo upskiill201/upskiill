@@ -5,63 +5,129 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './TeyroBrandedLoader.module.css';
 
-/** Curated Tey micro-copy pool adhering to warm, encouraging "small steps" philosophy */
+/** Official Teyro WebM mascot poses */
+export type MascotPose = 'reading' | 'sitting' | 'standing' | 'sleeping' | 'working' | 'random';
+
+export const MASCOT_WEBM_MAP: Record<Exclude<MascotPose, 'random'>, string> = {
+  reading: '/Loading Screens/Tey_Reading.webm',
+  sitting: '/Loading Screens/Tey_Sitting.webm',
+  standing: '/Loading Screens/Tey_Standing.webm',
+  sleeping: '/Loading Screens/Tey_sleeping.webm',
+  working: '/Loading Screens/Tey_working.webm',
+};
+
+const POSES_LIST: Exclude<MascotPose, 'random'>[] = ['reading', 'sitting', 'standing', 'sleeping', 'working'];
+
+/** Curated Tey micro-copy pool (36 lines without em-dashes) */
 export const TEY_MICROCOPY_POOL: string[] = [
+  "Every expert you admire was once a beginner who refused to quit.",
   "Learning one small skill today is better than planning to learn everything tomorrow.",
-  "Small daily steps build giant future leaps.",
-  "Tey is preparing your custom learning path...",
-  "Consistency beats intensity every single time.",
-  "Great things take a moment — Tey is double-checking your progress.",
-  "Fun fact: 10 minutes a day adds up to 60+ hours of learning a year.",
-  "Unlocking your next milestone...",
-  "Making learning dangerously fun and addictive...",
-  "Tey notices when you show up every day. Keep that streak alive!",
-  "Preparing interactive practice cards...",
-  "Building your personalized experience...",
-  "Gathering your daily XP and streak rewards...",
-  "Mastering a skill is just a series of small, daily wins.",
-  "Taking a tiny step forward is still moving forward.",
-  "Tey is polishing your lesson content..."
+  "Skills open doors that certificates alone sometimes can't.",
+  "The best investment you can make is in yourself.",
+  "Progress isn't about speed, it's about showing up consistently.",
+  "The more you practice, the less you'll need luck.",
+  "Knowledge becomes valuable when you apply it.",
+  "Five focused minutes can change what you know forever.",
+  "Every lesson you finish makes the next one a little easier.",
+  "Small daily improvements lead to remarkable results over time.",
+  "Learning never wastes your time, it multiplies your opportunities.",
+  "Don't chase perfection. Chase progress.",
+  "The skills you build today can create opportunities tomorrow.",
+  "Consistency beats motivation every single time.",
+  "Your future self is quietly cheering you on.",
+  "Questions are proof that you're learning, not failing.",
+  "Real growth starts the moment you become comfortable being a beginner.",
+  "The only lesson that never helps is the one you never start.",
+  "Every great career is built one skill at a time.",
+  "Learning is one of the few things nobody can take away from you.",
+  "Every habit starts with a trigger. Today, that trigger is you showing up.",
+  "The smaller the first step, the more likely you are to take it.",
+  "Slightly unpredictable rewards keep your brain curious and engaged.",
+  "The effort you invest today makes tomorrow's lesson easier to start.",
+  "Habits aren't built by willpower, they're built by design.",
+  "Behavior happens when motivation, ability, and a trigger meet at the same moment.",
+  "Reducing friction matters more than increasing motivation.",
+  "The less thinking a habit requires, the more automatic it becomes.",
+  "Curiosity grows when you don't always know what's coming next.",
+  "Variable rewards keep your brain engaged longer than predictable ones.",
+  "The more effort you invest in learning, the more you value it.",
+  "Small investments in learning compound into lifelong skills.",
+  "Every streak you protect is a promise to your future self.",
+  "External reminders start habits. Internal motivation keeps them alive.",
+  "The strongest learning triggers aren't notifications, they're emotions.",
+  "When learning becomes your response to curiosity, it's becoming a habit."
 ];
 
 export interface TeyroBrandedLoaderProps {
   /** Optional microcopy string to override automatic rotation */
   microcopyOverride?: string;
-  /** Phase 1: Static image path. Defaults to Step_7_tey_verified_state.webp */
+  /** Mascot WebM pose selection. Defaults to 'random' */
+  mascotPose?: MascotPose;
+  /** Phase 1: Static image fallback path. Defaults to Step_7_tey_verified_state.webp */
   mascotSrc?: string;
-  /** Optional WebM video loop path for Phase 2 / Phase 3 */
+  /** Optional WebM video loop path for custom overriding */
   webmSrc?: string;
   /** Custom retry handler for >15s timeout */
   onRetry?: () => void;
   /** Whether the loader is visible */
   isVisible?: boolean;
+  /** Whether to force full-screen coverage (e.g. cold start / auth redirect / not logged in). Defaults to false so desktop sidebar stays visible for logged-in users */
+  fullScreen?: boolean;
+  /** Optional manual index for testing specific pool lines */
+  forcePoolIndex?: number;
+  /** If true, suppresses automatic 8s connection check and 15s reload warnings unless an error explicitly occurs */
+  suppressConnectionCheck?: boolean;
 }
 
 /**
- * TeyroBrandedLoader (Pattern A: Full-Screen Branded Loader)
+ * TeyroBrandedLoader (Pattern A: Branded Loader)
  *
- * Primary cold-start, auth-redirect, and session-resume loader for Teyro.
- * Renders Tey mascot, "LOADING..", rotating motivational micro-copy,
- * and 8s/15s connection-aware timeout states.
+ * Primary cold-start, auth-redirect, and in-app navigation loader for Teyro.
+ * Features 5 seamless looping WebM mascot animations, ultra-bold LOADING... tag,
+ * rotating motivational micro-copy, and 8s/15s connection-aware timeout states.
  */
 export default function TeyroBrandedLoader({
   microcopyOverride,
+  mascotPose = 'random',
   mascotSrc = "/User onbarding Assets/Step_7_tey_verified_state.webp",
   webmSrc,
   onRetry,
   isVisible = true,
+  fullScreen = false,
+  forcePoolIndex,
+  suppressConnectionCheck = false,
 }: TeyroBrandedLoaderProps) {
   const [currentCopyIndex, setCurrentCopyIndex] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWebmSupported, setIsWebmSupported] = useState(true);
+  const [activeRandomPose, setActiveRandomPose] = useState<Exclude<MascotPose, 'random'>>('standing');
+  const [dotsCount, setDotsCount] = useState(1);
   const startTimeRef = useRef<number>(Date.now());
 
-  // Randomize initial micro-copy on mount
+  // Pick random pose & micro-copy index when loader becomes visible
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * TEY_MICROCOPY_POOL.length);
-    setCurrentCopyIndex(randomIndex);
+    if (!isVisible) return;
+
+    const randomPoseIdx = Math.floor(Math.random() * POSES_LIST.length);
+    setActiveRandomPose(POSES_LIST[randomPoseIdx]);
+
+    if (typeof forcePoolIndex === 'number' && forcePoolIndex >= 0) {
+      setCurrentCopyIndex(forcePoolIndex % TEY_MICROCOPY_POOL.length);
+    } else {
+      const randomIndex = Math.floor(Math.random() * TEY_MICROCOPY_POOL.length);
+      setCurrentCopyIndex(randomIndex);
+    }
     startTimeRef.current = Date.now();
-  }, []);
+  }, [isVisible, forcePoolIndex]);
+
+  // Animated typing dots effect (LOADING. -> LOADING.. -> LOADING...)
+  useEffect(() => {
+    if (!isVisible) return;
+    const interval = setInterval(() => {
+      setDotsCount((prev) => (prev % 3) + 1);
+    }, 400);
+    return () => clearInterval(interval);
+  }, [isVisible]);
 
   // Timer tick for 8s connection check & 15s hard timeout
   useEffect(() => {
@@ -74,17 +140,6 @@ export default function TeyroBrandedLoader({
     return () => clearInterval(timer);
   }, [isVisible]);
 
-  // Micro-copy auto-rotation every 4.5s (accessible rotation)
-  useEffect(() => {
-    if (!isVisible || microcopyOverride || elapsedTime >= 8000) return;
-
-    const copyInterval = setInterval(() => {
-      setCurrentCopyIndex((prev) => (prev + 1) % TEY_MICROCOPY_POOL.length);
-    }, 4500);
-
-    return () => clearInterval(copyInterval);
-  }, [isVisible, microcopyOverride, elapsedTime]);
-
   const handleReload = () => {
     if (onRetry) {
       onRetry();
@@ -93,19 +148,34 @@ export default function TeyroBrandedLoader({
     }
   };
 
+  // Determine active WebM animation source
+  const getActiveWebmSrc = (): string => {
+    if (webmSrc) return webmSrc;
+    if (!suppressConnectionCheck && elapsedTime >= 8000) return MASCOT_WEBM_MAP.sleeping; // Switches to sleeping on connection check (>8s)
+    if (mascotPose && mascotPose !== 'random') {
+      return MASCOT_WEBM_MAP[mascotPose];
+    }
+    return MASCOT_WEBM_MAP[activeRandomPose] || MASCOT_WEBM_MAP.standing;
+  };
+
   // Determine displayed micro-copy text
   const getDisplayedText = () => {
-    if (elapsedTime >= 15000) {
-      return "This is taking longer than usual. Please check your internet connection.";
-    }
-    if (elapsedTime >= 8000) {
-      return "Still loading — checking your connection...";
+    if (!suppressConnectionCheck) {
+      if (elapsedTime >= 15000) {
+        return "This is taking longer than usual. Please check your internet connection.";
+      }
+      if (elapsedTime >= 8000) {
+        return "Still loading — checking your connection...";
+      }
     }
     if (microcopyOverride) {
       return microcopyOverride;
     }
-    return TEY_MICROCOPY_POOL[currentCopyIndex] || TEY_MICROCOPY_POOL[0];
+    const idx = typeof forcePoolIndex === 'number' ? forcePoolIndex % TEY_MICROCOPY_POOL.length : currentCopyIndex;
+    return TEY_MICROCOPY_POOL[idx] || TEY_MICROCOPY_POOL[0];
   };
+
+  const currentWebmSrc = getActiveWebmSrc();
 
   return (
     <AnimatePresence>
@@ -114,8 +184,8 @@ export default function TeyroBrandedLoader({
           key="teyro-branded-loader"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.25 } }}
-          className={styles.overlay}
+          exit={{ opacity: 0, transition: { duration: 0.35 } }}
+          className={`${styles.overlay} ${fullScreen ? styles.fullScreen : ''}`}
           role="alert"
           aria-live="polite"
           aria-busy="true"
@@ -123,45 +193,46 @@ export default function TeyroBrandedLoader({
           <div className={styles.container}>
             {/* Mascot Center Area */}
             <div className={styles.mascotWrapper}>
-              <div className={styles.mascotGlow} />
-
-              {/* Phase 2/3 WebM Video Loop with Image Fallback */}
-              {webmSrc && isWebmSupported ? (
+              {/* WebM Looping Video Engine with WebP Static Fallback */}
+              {isWebmSupported && currentWebmSrc ? (
                 <video
+                  key={currentWebmSrc}
                   autoPlay
                   loop
                   muted
                   playsInline
+                  preload="auto"
                   onError={() => setIsWebmSupported(false)}
-                  className="w-full h-full object-contain"
+                  className={styles.mascotVideo}
                 >
-                  <source src={webmSrc} type="video/webm" />
-                  {/* Fallback to static webp */}
+                  <source src={currentWebmSrc} type="video/webm" />
+                  {/* Static fallback image */}
                   <Image
                     src={mascotSrc}
-                    alt="Tey Mascot"
+                    alt="Tey Mascot Fallback"
                     fill
-                    sizes="(max-width: 640px) 180px, 210px"
+                    sizes="(max-width: 640px) 180px, (max-width: 1024px) 220px, 270px"
                     className={styles.mascotImage}
                     priority
                   />
                 </video>
               ) : (
-                /* Phase 1: High quality WebP mascot */
+                /* Fallback for legacy browsers */
                 <Image
                   src={mascotSrc}
                   alt="Tey Mascot"
                   fill
-                  sizes="(max-width: 640px) 180px, 210px"
+                  sizes="(max-width: 640px) 180px, (max-width: 1024px) 220px, 270px"
                   className={styles.mascotImage}
                   priority
                 />
               )}
             </div>
 
-            {/* Label: LOADING.. */}
+            {/* Label: LOADING... with animated typing dots */}
             <div className={styles.label}>
-              LOADING..
+              <span>LOADING</span>
+              <span className={styles.dots}>{'.'.repeat(dotsCount)}</span>
             </div>
 
             {/* Rotating Micro-copy Line */}
@@ -178,8 +249,8 @@ export default function TeyroBrandedLoader({
               </motion.p>
             </AnimatePresence>
 
-            {/* 15s Action Button: Reload Page */}
-            {elapsedTime >= 15000 && (
+            {/* 15s Action Button: Reload Page (Only if not suppressed) */}
+            {!suppressConnectionCheck && elapsedTime >= 15000 && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
