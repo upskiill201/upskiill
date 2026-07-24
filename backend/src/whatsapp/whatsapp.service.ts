@@ -14,7 +14,10 @@ import * as QRCode from 'qrcode';
 // ─── OTP Store Entry ─────────────────────────────────────────────────────────
 interface OtpEntry {
   code: string;
-  expiresAt: number; // Unix ms timestamp
+  expiresAt: number; // Unix ms timestamp (10 mins)
+  lastSentAt: number; // Unix ms timestamp (30s cooldown)
+  resendCount: number; // Max 5 resends per session
+  attempts: number; // Max 5 wrong verification tries
 }
 
 @Injectable()
@@ -350,12 +353,30 @@ export class WhatsappService implements OnModuleInit {
     }
 
     const phone = this.normalisePhone(rawPhone);
+    const now = Date.now();
+    const existing = this.otpStore.get(phone);
+
+    // 1. Generation Rate Limiting: 30-second cooldown window
+    if (existing && now - existing.lastSentAt < 30 * 1000) {
+      const secondsLeft = Math.ceil((30 * 1000 - (now - existing.lastSentAt)) / 1000);
+      throw new BadRequestException(`Please wait ${secondsLeft} second(s) before requesting a new code.`);
+    }
+
+    // 2. Cap Total Resends (max 5 per session per phone number)
+    const resendCount = existing ? existing.resendCount + 1 : 0;
+    if (resendCount > 5) {
+      throw new BadRequestException('Maximum resend limit reached for this number. Please try again in 15 minutes.');
+    }
+
+    // 3. Invalidate previous code and issue a FRESH 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store with 10-minute TTL
     this.otpStore.set(phone, {
       code,
-      expiresAt: Date.now() + 10 * 60 * 1000,
+      expiresAt: now + 10 * 60 * 1000, // 10 minutes TTL
+      lastSentAt: now,
+      resendCount,
+      attempts: 0,
     });
 
     const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
@@ -379,6 +400,7 @@ export class WhatsappService implements OnModuleInit {
       message: this.isConnected
         ? 'OTP sent to your WhatsApp number!'
         : 'OTP generated. Please visit the backend QR page to connect WhatsApp.',
+      phone,
     };
   }
 
@@ -393,23 +415,35 @@ export class WhatsappService implements OnModuleInit {
     const entry = this.otpStore.get(phone);
 
     if (!entry) {
-      throw new BadRequestException('No OTP found for this number. Please request a new one.');
+      throw new BadRequestException('No active OTP found for this number. Please request a new code.');
     }
 
     if (Date.now() > entry.expiresAt) {
       this.otpStore.delete(phone);
-      throw new BadRequestException('OTP has expired. Please request a new one.');
+      throw new BadRequestException('OTP has expired. Please request a new code.');
+    }
+
+    // Check if locked due to too many failed attempts
+    if (entry.attempts >= 5) {
+      this.otpStore.delete(phone);
+      throw new BadRequestException('Too many incorrect attempts. Code locked — please request a new code.');
     }
 
     if (entry.code !== code) {
-      throw new BadRequestException('Incorrect OTP code. Please try again.');
+      entry.attempts += 1;
+      const remaining = 5 - entry.attempts;
+      if (remaining <= 0) {
+        this.otpStore.delete(phone);
+        throw new BadRequestException('Too many incorrect attempts. Code locked — please request a new code.');
+      }
+      throw new BadRequestException(`Incorrect OTP code. You have ${remaining} attempt(s) remaining.`);
     }
 
-    // OTP matched
+    // OTP matched successfully
     this.otpStore.delete(phone);
     this.logger.log(`[WhatsApp Baileys] OTP verified for ${phone} ✅`);
 
-    // Persist verified number to User record
+    // Persist verified number to User & OnboardingSession records
     if (userId) {
       await this.prisma.user.update({
         where: { id: userId },
@@ -441,18 +475,45 @@ export class WhatsappService implements OnModuleInit {
 
   // ─── Private Helpers ────────────────────────────────────────────────────────
 
+  /**
+   * Smart Phone Normalisation.
+   * Handles local 9-digit numbers (e.g. 671405008 -> +237671405008), zero-prefixed,
+   * 12-digit 237-prefixed, and international numbers starting with '+'.
+   */
   private normalisePhone(raw: string): string {
-    const digits = raw.replace(/[^\d+]/g, '');
-    return digits.startsWith('+') ? digits : `+${digits}`;
+    let clean = raw.replace(/[^\d+]/g, '');
+
+    if (clean.startsWith('+')) {
+      return clean;
+    }
+
+    if (clean.startsWith('0')) {
+      clean = clean.substring(1);
+    }
+
+    // Default to Cameroon (+237) for 9-digit numbers starting with 6 or 2
+    if (clean.length === 9 && (clean.startsWith('6') || clean.startsWith('2'))) {
+      return `+237${clean}`;
+    }
+
+    // Handle 12-digit numbers starting with 237
+    if (clean.length === 12 && clean.startsWith('237')) {
+      return `+${clean}`;
+    }
+
+    return `+${clean}`;
   }
 
+  /**
+   * Builds WhatsApp OTP message with iOS / Android WebOTP autofill tag (@teyro.app #code).
+   */
   private buildOtpMessage(code: string, expiryMinutes = 10): string {
     return (
       `💙 Hey, I'm Tey!\n\n` +
-      `I brought your login code:\n\n` +
+      `Here is your Teyro verification code:\n\n` +
       `🔐 *${code}*\n\n` +
-      `Use it within ${expiryMinutes} minutes so we can get back to making learning dangerously fun. 😏\n\n` +
-      `Didn't ask for this? You can safely ignore this message.`
+      `Valid for ${expiryMinutes} minutes. Make sure not to share it with anyone! 😏\n\n` +
+      `@teyro.app #${code}`
     );
   }
 }

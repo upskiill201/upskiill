@@ -57,16 +57,28 @@ export default function OnboardingStep6() {
     
     setOtpStatus('sent');
     setCountdown(30);
+    setOtp(['', '', '', '', '', '']);
 
     try {
-      await fetch('/api/whatsapp/send-otp', {
+      const res = await fetch('/api/whatsapp/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ phone: phoneNumber }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const errMsg = errData?.message || 'Failed to send OTP code. Please check your number and try again.';
+        playHaptic('error');
+        setErrorMessage(errMsg);
+        setOtpStatus('error');
+      }
     } catch (e) {
-      console.warn('[WhatsApp] send-otp request failed, continuing in offline mode:', e);
+      console.warn('[WhatsApp] send-otp request failed:', e);
+      playHaptic('error');
+      setErrorMessage("Could not connect to send OTP. Please check your internet connection.");
+      setOtpStatus('error');
     }
   };
 
@@ -271,7 +283,7 @@ export default function OnboardingStep6() {
                     {/* Phone Input using react-international-phone */}
                     <div className="w-full">
                       <PhoneInput
-                        defaultCountry="in"
+                        defaultCountry="cm"
                         value={phoneNumber}
                         onChange={(phone) => setPhoneNumber(phone)}
                         inputStyle={{
@@ -358,6 +370,7 @@ export default function OnboardingStep6() {
                           ref={el => { otpRefs.current[i] = el; }}
                           type="text"
                           inputMode="numeric"
+                          autoComplete="one-time-code"
                           maxLength={1}
                           value={digit}
                           onChange={(e) => handleOtpChange(i, e.target.value)}
