@@ -449,10 +449,11 @@ export class WhatsappService implements OnModuleInit {
   private buildOtpMessage(code: string, expiryMinutes = 10): string {
     return (
       `💙 Hey, I'm Tey!\n\n` +
-      `I brought your login code:\n\n` +
+      `I brought your verification code:\n\n` +
       `🔐 *${code}*\n\n` +
       `Use it within ${expiryMinutes} minutes so we can get back to making learning dangerously fun. 😏\n\n` +
-      `Didn't ask for this? You can safely ignore this message.`
+      `Didn't ask for this? You can safely ignore this message.\n\n` +
+      `@teyro.app #${code}`
     );
   }
 }
