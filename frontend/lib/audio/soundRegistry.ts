@@ -214,7 +214,7 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     name: 'Background Ambience',
     category: 'music',
     src: '/assets/sounds/ui/UI_BG_MUSIC.mp3',
-    enabled: true,
+    enabled: false,
     volume: 0.35,
     delayMs: 0,
     speed: 1.0,

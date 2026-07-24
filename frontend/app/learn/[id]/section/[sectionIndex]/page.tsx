@@ -802,7 +802,7 @@ function SectionViewContent({
        {/* Stats bar — only shown on the milestone map screen */}
       {!activeLesson && (
         <div className={styles.topRow}>
-          <Link href={`/learn/${params.id}`} className={styles.backLink}>
+          <Link href={`/learn/${params.id}`} onClick={() => playHaptic('light')} className={styles.backLink}>
             <ArrowLeft size={16} />
             <span>Back to Course</span>
           </Link>
@@ -835,7 +835,7 @@ function SectionViewContent({
 
               <button
                 className={styles.outOfLivesBtnSecondary}
-                onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+                onClick={() => { playHaptic('light'); setActiveLesson(null); setLessonPhase('start'); }}
                 style={{ width: '100%', backgroundColor: 'transparent', border: '2px solid #CBD5E1', color: '#64748B', borderBottomWidth: '4px' }}
               >
                 Back to Lessons
@@ -856,7 +856,7 @@ function SectionViewContent({
               <div className={styles.duolingoHeader}>
                 <div className={styles.headerLeft}>
                   <button 
-                    onClick={() => { playHaptic('medium'); setActiveLesson(null); }} 
+                    onClick={() => { playHaptic('light'); setActiveLesson(null); }} 
                     className={styles.headerBackBtn}
                     style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
                   >
@@ -2076,7 +2076,7 @@ export default function SectionViewPage() {
       <DashboardLayout>
         <div className={styles.errorShell}>
           <h2>Course Not Found</h2>
-          <button onClick={() => router.push('/dashboard/my-learning')} className={styles.errorBtn}>
+          <button onClick={() => { playHaptic('light'); router.push('/dashboard/my-learning'); }} className={styles.errorBtn}>
             Back to My Learning
           </button>
         </div>
@@ -2093,7 +2093,7 @@ export default function SectionViewPage() {
         <div className={styles.errorShell}>
           <h2>Section Not Found</h2>
           <p>This section doesn&apos;t exist in the course.</p>
-          <button onClick={() => router.push(`/learn/${params.id}`)} className={styles.errorBtn}>
+          <button onClick={() => { playHaptic('light'); router.push(`/learn/${params.id}`); }} className={styles.errorBtn}>
             Back to Course
           </button>
         </div>
