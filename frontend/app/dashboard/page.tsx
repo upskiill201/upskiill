@@ -13,6 +13,7 @@ import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatPill } from '@/components/ui/StatPill';
 import { useGamification } from '@/context/GamificationContext';
+import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
@@ -23,48 +24,51 @@ export default function DashboardPage() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
-  useEffect(() => {
-    // 1. Try to fetch user name from backend auth
-    const fetchMe = async () => {
-      try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.fullName) {
-            setUserName(data.fullName.split(' ')[0]);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load user info', err);
-      }
-    };
-    fetchMe();
+  const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
-    // 2. Read onboarding answers from localStorage to check user setup
+  useEffect(() => {
+    // 1. Trigger loader with 15s hold configuration and suppressed connection check popups
+    showLoader(undefined, false, 15000, true);
+
+    // 2. Read onboarding answers from localStorage for instant name fallback
     const state = getOnboardingState();
-    if (state) {
-      if (state.answers?.['1']?.name) {
-        const localName = state.answers['1'].name as string;
-        setUserName(localName.split(' ')[0]);
-      }
+    if (state?.answers?.['1']?.name) {
+      const localName = state.answers['1'].name as string;
+      setUserName(localName.split(' ')[0]);
     }
 
-    // 3. Fetch user course enrollments
-    const fetchEnrollments = async () => {
+    // 3. Fetch all backend data (me & enrollments) in parallel
+    const loadAllDashboardData = async () => {
       try {
-        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          setEnrollments(data);
-        }
+        await Promise.allSettled([
+          fetch('/api/auth/me', { credentials: 'include' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data?.fullName) {
+                setUserName(data.fullName.split(' ')[0]);
+              }
+            }),
+          fetch('/api/auth/me/enrollments', { credentials: 'include' })
+            .then((res) => (res.ok ? res.json() : []))
+            .then((data) => {
+              if (Array.isArray(data)) {
+                setEnrollments(data);
+              }
+            }),
+        ]);
       } catch (err) {
-        console.error('Failed to load enrollments', err);
+        console.error('Failed loading dashboard data', err);
       } finally {
         setLoadingEnrollments(false);
+        // Hold loading screen for 15 seconds after all elements are loaded
+        setTimeout(() => {
+          hideLoader();
+        }, 15000);
       }
     };
-    fetchEnrollments();
-  }, []);
+
+    loadAllDashboardData();
+  }, [showLoader, hideLoader]);
 
   const getJourneyIcon = (category: string) => {
     const cat = (category || '').toLowerCase();
@@ -86,6 +90,13 @@ export default function DashboardPage() {
 
   const handleContinueLearning = () => {
     playHaptic('medium');
+    showLoaderImmediate(
+      "Tey is preparing your custom learning path...",
+      false, // Preserves desktop sidebar (replaces middle column + right sidebar)!
+      15000, // 15 seconds display duration so user can comfortably read message
+      true,  // Suppress connection check unless actual error occurs
+      'working'
+    );
     if (enrollments.length > 0) {
       router.push(`/learn/${enrollments[0].course.id}`);
     } else {
@@ -95,6 +106,13 @@ export default function DashboardPage() {
 
   const handleJumpToUnit = (courseIdOrName: string) => {
     playHaptic('medium');
+    showLoaderImmediate(
+      "Tey is building your interactive practice cards...",
+      false, // Preserves desktop sidebar
+      15000, // 15 seconds display duration
+      true,  // Suppress connection check unless actual error occurs
+      'working'
+    );
     if (courseIdOrName && (courseIdOrName.includes('-') || courseIdOrName.startsWith('sec-') || courseIdOrName.length > 15)) {
       router.push(`/learn/${courseIdOrName}`);
     } else {

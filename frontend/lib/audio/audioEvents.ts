@@ -26,7 +26,7 @@ export const AUDIO_EVENT_MAP: Record<AppAudioEvent, SoundId | null> = {
   BUTTON_PRIMARY_CLICK: 'BUTTON_PRIMARY',
   BUTTON_SECONDARY_CLICK: 'BUTTON_SECONDARY',
   SELECTION_CHANGE: 'SELECTION',
-  TAB_SWITCH: 'TAB_SWITCH',
+  TAB_SWITCH: null, // Disabled transition sound for page loads per user directive
   TOGGLE_CHANGE: 'TOGGLE',
   DRAWER_TOGGLE: 'MENU_OPEN_CLOSE',
   ACTION_SUCCESS: 'SUCCESS_CONFIRM',

@@ -6,14 +6,20 @@ import Image from 'next/image';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { RightSidebar } from '@/components/layout/RightSidebar';
+import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
+import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import styles from './MyLearning.module.css';
 
 export default function MyLearningPage() {
   const router = useRouter();
+  const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Trigger loader without overrideText so it polls the 36 motivational text pool!
+    showLoader(undefined, false, 800, true);
+
     const fetchEnrollments = async () => {
       try {
         const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
@@ -25,13 +31,21 @@ export default function MyLearningPage() {
         console.error('Failed to load enrolled courses', err);
       } finally {
         setLoading(false);
+        hideLoader(); // Only hide when backend data is loaded!
       }
     };
     fetchEnrollments();
-  }, []);
+  }, [showLoader, hideLoader]);
 
   const handleContinueLearning = (courseId: string) => {
     playHaptic('medium');
+    showLoaderImmediate(
+      "Tey is preparing your course roadmap...",
+      false, // Preserves desktop sidebar (replaces middle column + right sidebar)!
+      15000, // 15 seconds display duration so user can comfortably read message
+      true,  // Suppress connection check warning unless error
+      'reading'
+    );
     router.push(`/learn/${courseId}`);
   };
 
@@ -56,24 +70,7 @@ export default function MyLearningPage() {
   };
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.pageHeader}>
-          <h2 className={styles.pageTitle}>My Learning</h2>
-          <p className={styles.pageSubtitle}>Loading active learning paths…</p>
-        </div>
-        <div className={styles.dashboardGrid}>
-          <div className={styles.middleColumn}>
-            <div className={styles.journeysList}>
-              <div className={styles.skeletonCard} />
-              <div className={styles.skeletonCard} />
-              <div className={styles.skeletonCard} />
-            </div>
-          </div>
-          <RightSidebar />
-        </div>
-      </div>
-    );
+    return <TeyroBrandedLoader isVisible={true} microcopyOverride="Tey is gathering your enrolled learning paths..." />;
   }
 
   return (

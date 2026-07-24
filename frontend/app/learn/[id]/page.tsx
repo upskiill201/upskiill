@@ -10,6 +10,7 @@ import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import Skeleton from '@/components/ui/Skeleton';
+import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import { StatPill } from '@/components/ui/StatPill';
 import { useGamification } from '@/context/GamificationContext';
 import styles from './LearnCourse.module.css';
@@ -552,22 +553,9 @@ export default function LearnCoursePage() {
     run();
   }, [params.id]);
 
-  /* ── Loading skeleton ─────────────────────────────── */
+  /* ── Loading state ─────────────────────────────── */
   if (loading) {
-    return (
-      <div className={styles.skeletonShell}>
-        <div className={styles.skeletonMain}>
-          <Skeleton height={48} style={{ background: '#E2E8F0', borderRadius: 12 }} />
-          <Skeleton height={180} style={{ background: '#E2E8F0', borderRadius: 20 }} />
-          <Skeleton height={120} style={{ background: '#E2E8F0', borderRadius: 20 }} />
-          <Skeleton height={120} style={{ background: '#E2E8F0', borderRadius: 20 }} />
-        </div>
-        <div className={styles.skeletonSide}>
-          <Skeleton height={260} style={{ background: '#E2E8F0', borderRadius: 20 }} />
-          <Skeleton height={160} style={{ background: '#E2E8F0', borderRadius: 20 }} />
-        </div>
-      </div>
-    );
+    return <TeyroBrandedLoader isVisible={true} microcopyOverride="Tey is building your course syllabus..." />;
   }
 
   if (!course) {

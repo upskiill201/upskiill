@@ -9,6 +9,7 @@ import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, Pane
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
+import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import { StatPill } from '@/components/ui/StatPill';
 import { useGamification } from '@/context/GamificationContext';
 import styles from './SectionView.module.css';
@@ -2054,21 +2055,7 @@ export default function SectionViewPage() {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <DashboardLayout>
-        <div className={styles.skeletonShell}>
-          <div className={styles.skeletonMain}>
-            <Skeleton height={140} style={{ background: '#E2E8F0', borderRadius: 16 }} />
-            <Skeleton height={300} style={{ background: '#E2E8F0', borderRadius: 16 }} />
-            <Skeleton height={300} style={{ background: '#E2E8F0', borderRadius: 16 }} />
-          </div>
-          <div className={styles.skeletonSide}>
-            <Skeleton height={260} style={{ background: '#E2E8F0', borderRadius: 16 }} />
-            <Skeleton height={160} style={{ background: '#E2E8F0', borderRadius: 16 }} />
-          </div>
-        </div>
-      </DashboardLayout>
-    );
+    return <TeyroBrandedLoader isVisible={true} microcopyOverride="Tey is setting up your section milestones..." />;
   }
 
   if (!course) {
