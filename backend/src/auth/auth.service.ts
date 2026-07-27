@@ -278,21 +278,47 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     let user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: dto.email.toLowerCase().trim() },
     });
 
     if (!user) {
       throw new ForbiddenException('Incorrect credentials');
     }
 
+    // Account status & soft-delete check
+    if (user.deletedAt || user.accountStatus === 'SUSPENDED' || user.accountStatus === 'DELETED') {
+      throw new ForbiddenException('Account is suspended or disabled');
+    }
+
+    // Account lock check
+    const now = new Date();
+    if (user.accountLockedUntil && now < user.accountLockedUntil) {
+      throw new ForbiddenException(
+        'Account is temporarily locked due to failed attempts. Try again later.',
+      );
+    }
+
     const pwMatches = await bcrypt.compare(dto.password, user.password);
 
     if (!pwMatches) {
+      const newFailedAttempts = (user.failedLoginAttempts || 0) + 1;
+      const shouldLock = newFailedAttempts >= 5;
+      const lockTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: newFailedAttempts,
+          ...(shouldLock
+            ? { accountLockedUntil: lockTime, accountStatus: 'LOCKED' }
+            : {}),
+        },
+      });
+
       throw new ForbiddenException('Incorrect credentials');
     }
 
-    // Upgrade account to INSTRUCTOR if they logged in via the instructor portal
-    // and aren't an instructor yet
+    // Upgrade account to INSTRUCTOR if logged in via instructor portal
     if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
       user = await this.prisma.user.update({
         where: { id: user.id },
@@ -307,6 +333,18 @@ export class AuthService {
         email: user.email,
       });
     }
+
+    // Successful login tracking
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lastLoginAt: now,
+        loginCount: { increment: 1 },
+        failedLoginAttempts: 0,
+        accountLockedUntil: null,
+        ...(user.accountStatus === 'LOCKED' ? { accountStatus: 'ACTIVE' } : {}),
+      },
+    });
 
     const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
     return {

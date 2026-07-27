@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-export type StatType = 'streak' | 'gem' | 'lives';
+export type StatType = 'streak' | 'gem' | 'lives' | 'coin';
 
 interface StatPillProps {
   type: StatType;
@@ -36,6 +36,12 @@ const STAT_CONFIG: Record<StatType, { icon: string; defaultLabel: string; color:
     color: '#FF4B4B',
     glow: 'rgba(255,75,75,0.22)',
   },
+  coin: {
+    icon: '/Icons/Coin.png',
+    defaultLabel: 'Coins',
+    color: '#EAB308',
+    glow: 'rgba(234,179,8,0.30)',
+  },
 };
 
 /**
@@ -52,6 +58,14 @@ export const StatPill: React.FC<StatPillProps> = ({
 }) => {
   const cfg = STAT_CONFIG[type];
   const displayLabel = label ?? cfg.defaultLabel;
+
+  // Dynamic icon for Coins (Coin.png when > 0, Coin_empty.png when 0)
+  const iconSrc =
+    type === 'coin'
+      ? Number(value) > 0
+        ? '/Icons/Coin.png'
+        : '/Icons/Coin_empty.png'
+      : cfg.icon;
 
   return (
     <motion.button
@@ -104,7 +118,7 @@ export const StatPill: React.FC<StatPillProps> = ({
           }}
         />
         <Image
-          src={cfg.icon}
+          src={iconSrc}
           alt={displayLabel}
           fill
           sizes="36px"

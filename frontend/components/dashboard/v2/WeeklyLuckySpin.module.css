@@ -1,0 +1,178 @@
+.card {
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  border: 2.5px solid #E9D5FF;
+  border-radius: 1.5rem;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  box-shadow: 0 4px 0 0 #D8B4FE;
+  margin-bottom: 1.5rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #7E22CE;
+}
+
+.timer {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #A855F7;
+}
+
+.wheelPreview {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 5px solid #FDE047;
+  background: conic-gradient(
+    #3B82F6 0deg 60deg,
+    #EC4899 60deg 120deg,
+    #EAB308 120deg 180deg,
+    #22C55E 180deg 240deg,
+    #A855F7 240deg 300deg,
+    #EF4444 300deg 360deg
+  );
+  box-shadow: 0 6px 16px rgba(126, 34, 206, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerPin {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 3px solid #EAB308;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.spinBtn {
+  width: 100%;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: #0172FD;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #0050B3;
+  transition: transform 0.1s ease;
+}
+
+.spinBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #0050B3;
+}
+
+/* Modal Overlay */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 420px;
+  background: #FFFFFF;
+  border-radius: 1.75rem;
+  padding: 2.25rem 1.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-bottom: 0.5rem;
+}
+
+.modalDesc {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.bigWheelContainer {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin-bottom: 1.75rem;
+}
+
+.bigWheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #FDE047;
+  background: conic-gradient(
+    #3B82F6 0deg 60deg,
+    #EC4899 60deg 120deg,
+    #EAB308 120deg 180deg,
+    #22C55E 180deg 240deg,
+    #A855F7 240deg 300deg,
+    #EF4444 300deg 360deg
+  );
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.wheelPointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 22px solid #EF4444;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.spinActionBtn {
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: #0172FD;
+  border: none;
+  border-radius: 1.15rem;
+  padding: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 5px 0 0 #0050B3;
+}

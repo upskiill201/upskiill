@@ -7,6 +7,9 @@ import { Bot, Lock, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
 import { useGamification } from '@/context/GamificationContext';
+import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
+import FriendsActivityCard from '@/components/dashboard/v2/FriendsActivityCard';
+import WeeklyLuckySpinCard from '@/components/dashboard/v2/WeeklyLuckySpinCard';
 import styles from './RightSidebar.module.css';
 
 export interface RightSidebarProps {
@@ -623,6 +626,11 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </button>
       </div>
       )}
+
+      {/* NEW V2 RIGHT SIDEBAR CARDS */}
+      <LearningStatsCard />
+      <FriendsActivityCard />
+      <WeeklyLuckySpinCard />
     </div>
   );
 };

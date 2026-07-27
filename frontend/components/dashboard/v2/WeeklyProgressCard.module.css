@@ -1,0 +1,116 @@
+.card {
+  background: #FFFFFF;
+  border: 2.5px solid #E2E8F0;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 0 0 #CBD5E1;
+  height: 100%;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.header {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0F172A;
+}
+
+.subHeader {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.dayLabels {
+  display: flex;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #94A3B8;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.statText {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.pctBadge {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #0172FD;
+}
+
+/* 12-Week GitHub Style Skill Heatmap Grid */
+.heatmapContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.heatmapGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.45rem;
+}
+
+.dotCell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 0.4rem;
+  transition: transform 0.15s ease;
+}
+
+.dotActive {
+  background: #0172FD;
+  box-shadow: 0 2px 0 0 #0050B3;
+}
+
+.dotEmpty {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1.5px solid #F1F5F9;
+}
+
+.viewMoreBtn {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0172FD;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}

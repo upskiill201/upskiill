@@ -1,0 +1,1355 @@
+/* ─── TEYRO STUDENT PROFILE SYSTEM (EXACT HI-FI DESIGN MATCH) ────────────────────────── */
+
+.pageContainer {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 4rem 1rem;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', -apple-system, sans-serif;
+  color: #1E293B;
+}
+
+@media (min-width: 768px) {
+  .pageContainer {
+    padding: 0.75rem 1.5rem 4rem 1.5rem;
+  }
+}
+
+/* ── Persistent Top Header Stat Bar ── */
+.topHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.headerStatItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerStatTextGroup {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.headerStatValue {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: inherit;
+}
+
+.headerStatLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: inherit;
+  opacity: 0.85;
+}
+
+/* Icon-matched Stat Colors */
+.statOrangeText { color: #FF5722; }
+.statBlueText { color: #0172FD; }
+.statRedText { color: #FF4B4B; }
+.statYellowText { color: #EAB308; }
+
+.userAvatarBadge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #0172FD;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.userDropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+/* ── Main Layout: Middle Column + Right Sidebar ── */
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+@media (min-width: 1024px) {
+  .profileGrid {
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+.middleColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.rightSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Base Card Style (Clean, flat 1.5px border matching UI design) ── */
+.card {
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: none;
+}
+
+/* ── 1. WELCOME BACK BANNER (60% Image / 40% Text Split with Top-Popping Mascot) ── */
+.welcomeBanner {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #BAE6FD;
+  border-radius: 1.25rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: visible; /* Allows mascot head & arms to pop out OVER top of card! */
+  height: 155px;
+  margin-top: 1.5rem; /* Reduced clearance */
+}
+
+@media (min-width: 1024px) {
+  .welcomeBanner {
+    height: 165px;
+    margin-top: 1.8rem; /* Reduced top margin on desktop */
+    padding: 1.25rem 2rem;
+  }
+}
+
+/* Image Container (60% width on left) */
+.welcomeImageContainer {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.welcomeMascot {
+  width: 290px;
+  height: 225px;
+  position: absolute;
+  bottom: 0px; /* Anchored to bottom of card so bottom is 100% hidden inside card */
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .welcomeMascot {
+    width: 340px;
+    height: 265px;
+    bottom: 0px; /* Anchored to bottom of card on desktop */
+  }
+}
+
+/* Text Container (40% width on right) */
+.welcomeTextContainer {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.welcomeTitle {
+  font-size: 1.15rem; /* Reduced heading font size */
+  font-weight: 900;
+  color: #0172FD;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.welcomeSubtitle {
+  font-size: 0.82rem; /* Reduced subtext font size */
+  font-weight: 500;
+  color: #475569;
+  margin: 0.35rem 0 0 0;
+  line-height: 1.35;
+}
+
+/* ── 2. IDENTITY BLOCK (No container border or background, matches UI design) ── */
+.identityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.identityMainRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.avatarWrapper {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.avatarCircle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #0172FD;
+  color: #FFFFFF;
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarStarBadge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #0172FD;
+  border: 2px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFD700;
+}
+
+.identityDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.identityName {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0;
+}
+
+.handleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.pencilIcon {
+  color: #94A3B8;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.pencilIcon:hover {
+  color: #0172FD;
+}
+
+.joinedRow {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.identityRightMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.socialCountRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0172FD;
+  margin-top: 0.25rem;
+}
+
+.socialCountLink {
+  cursor: pointer;
+}
+
+.socialCountLink:hover {
+  text-decoration: underline;
+}
+
+/* ── 3. LINKEDIN SHOWCASE CARD ── */
+.linkedinCard {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #BAE6FD;
+  border-radius: 1.25rem;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.linkedinContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 320px;
+}
+
+.linkedinTitle {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0;
+}
+
+.linkedinSubtitle {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #475569;
+  margin: 0 0 0.5rem 0;
+}
+
+/* 3D Button: GET STARTED */
+.btn3dBlue {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border: none;
+  border-radius: 0.85rem;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #0050B3; /* 3D Shadow Press Effect */
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  width: fit-content;
+}
+
+.btn3dBlue:hover {
+  background-color: #0060D9;
+}
+
+.btn3dBlue:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #0050B3;
+}
+
+.linkedinGraphic {
+  width: 140px;
+  height: 110px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── 4. STATISTICS SECTION (5 BOX GRID) ── */
+.sectionHeader {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .statsRow {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+.statCard {
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 0.85rem;
+  padding: 0.75rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 105px;
+  position: relative;
+}
+
+.statCardTop {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.statIconWrapper {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.statValueGroup {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.statNum {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.statLbl {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.statFooterPill {
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  margin-top: 0.35rem;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.statPillOrange { background-color: #FFF7ED; color: #D97706; }
+.statPillGreen { background-color: #F0FDF4; color: #16A34A; }
+.statPillPurple { background-color: #F3E8FF; color: #8B5CF6; }
+
+.levelShieldIcon {
+  width: 22px;
+  height: 22px;
+  background-color: #9333EA;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  border-radius: 0.35rem;
+}
+
+.levelProgressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.35rem;
+}
+
+.levelProgressText {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.statProgressBarTrack {
+  width: 100%;
+  height: 4px;
+  background-color: #E2E8F0;
+  border-radius: 9999px;
+  margin-top: 0.15rem;
+  overflow: hidden;
+}
+
+.statProgressBarFill {
+  height: 100%;
+  background-color: #0172FD;
+  border-radius: 9999px;
+}
+
+.viewDetailsLink {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #0172FD;
+  cursor: pointer;
+  margin-top: 0.35rem;
+  display: block;
+}
+
+.viewDetailsLink:hover {
+  text-decoration: underline;
+}
+
+/* ── 5. ACHIEVEMENTS SECTION ── */
+.achievementsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.achievementItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 1rem;
+}
+
+.badgeLevelBox {
+  width: 54px;
+  height: 54px;
+  border-radius: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  color: #FFFFFF;
+}
+
+.badgeLevelTag {
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  position: absolute;
+  bottom: 3px;
+}
+
+.badgeDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.badgeHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badgeTitle {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.badgeProgressNum {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.barTrack {
+  width: 100%;
+  height: 14px;
+  background-color: #E2E8F0;
+  border-radius: 9999px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #CBD5E1;
+  margin: 0.25rem 0;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
+  border-radius: 9999px;
+  box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 2px 0 0 #D99B00;
+  position: relative;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.badgeSub {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748B;
+  margin: 0;
+}
+
+/* ── Claim Achievement Button (3D Gold Pill) ── */
+.claimBtn {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #7C3A00;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
+  border: none;
+  border-radius: 9999px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 2px 0 0 #D99B00;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.claimBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 3px 0 0 #D99B00;
+}
+
+.claimBtn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.4), 0 1px 0 0 #D99B00;
+}
+
+.claimBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── XP Claim Toast ── */
+.claimToast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFFFF;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 9999px;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0F172A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  animation: toastSlideUp 0.3s ease;
+}
+
+@keyframes toastSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.viewAllLink {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0172FD;
+  cursor: pointer;
+}
+
+.viewAllLink:hover {
+  text-decoration: underline;
+}
+
+/* ── RIGHT SIDEBAR ── */
+
+/* 1. FOLLOWING / FOLLOWERS CARD */
+.socialTabsCard {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabHeader {
+  display: flex;
+  border-bottom: 1.5px solid #E2E8F0;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 0.85rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #64748B;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tabBtnActive {
+  color: #0172FD;
+  border-bottom-color: #0172FD;
+}
+
+.socialTabBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.classmatesClusterGraphic {
+  width: 100%;
+  height: 110px;
+  position: relative;
+}
+
+.socialTabCaption {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #64748B;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* 2. ADD FRIENDS CARD */
+.addFriendsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cardHeading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.friendOptionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: background-color 0.15s ease;
+}
+
+.friendOptionRow:hover {
+  background-color: #F8FAFC;
+}
+
+.friendOptionLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.friendIconBox {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.75rem;
+  background-color: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0172FD;
+  flex-shrink: 0;
+}
+
+.friendTextGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.friendTitle {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #0F172A;
+}
+
+.friendSub {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #64748B;
+}
+
+/* 3. INVITE FRIENDS & EARN REWARDS BLUE CARD */
+.inviteBlueCard {
+  background: linear-gradient(135deg, #0172FD 0%, #0050B3 100%);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.inviteBlueTitle {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.inviteBlueSub {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  margin: 0;
+  max-width: 210px;
+}
+
+/* 3D Button: INVITE NOW (Pure White with Blue 3D shadow) */
+.btn3dWhite {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  color: #0172FD;
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 0.85rem;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #003A82; /* 3D Shadow Press Effect */
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+
+.btn3dWhite:hover {
+  background-color: #F8FAFC;
+}
+
+.btn3dWhite:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #003A82;
+}
+
+.inviteBlueGraphic {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 120px;
+  height: 120px;
+}
+
+/* 4. FOOTER & COPYRIGHT */
+.footerLinksRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.85rem;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.footerLink {
+  cursor: pointer;
+}
+
+.footerLink:hover {
+  color: #0172FD;
+}
+
+.copyrightBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.teyroLogoFooter {
+  width: 75px;
+  height: auto;
+  object-fit: contain;
+}
+
+.copyrightText {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94A3B8;
+}
+
+/* ── AVATAR PHOTO UPLOADER ── */
+.avatarUploadWrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 0 auto 1.25rem auto;
+  cursor: pointer;
+  overflow: hidden;
+  border: 3px solid #0172FD;
+  box-shadow: 0 4px 12px rgba(1, 114, 253, 0.2);
+}
+
+.avatarUploadImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatarUploadOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 50%;
+}
+
+.avatarUploadWrapper:hover .avatarUploadOverlay {
+  opacity: 1;
+}
+
+.avatarUploadSpinner {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+/* ── FOLLOW & FOLLOWING BUTTONS ── */
+.followBtn {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.35rem 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 2.5px 0 0 #0050B3;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.followBtn:hover {
+  background-color: #0062E0;
+}
+
+.followBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 0.5px 0 0 #0050B3;
+}
+
+.followingBtn {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #475569;
+  background-color: #F1F5F9;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 9999px;
+  padding: 0.35rem 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.followingBtn:hover {
+  background-color: #FEE2E2;
+  color: #EF4444;
+  border-color: #FCA5A5;
+}
+
+/* ─── COMPREHENSIVE RESPONSIVE DESIGN (TABLET, MOBILE & ULTRA-TINY BREAKPOINTS) ─── */
+
+/* ── 1. Medium & Small Mobile (<= 640px) ── */
+@media (max-width: 640px) {
+  .pageContainer {
+    padding: 0.4rem 0.5rem 3rem 0.5rem;
+  }
+
+  .topHeaderBar {
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 0.2rem 0.25rem;
+  }
+
+  .headerStatItem {
+    gap: 0.35rem;
+  }
+
+  .headerStatValue {
+    font-size: clamp(0.75rem, 3.5vw, 0.9rem);
+  }
+
+  .headerStatLabel {
+    font-size: clamp(0.6rem, 2.5vw, 0.7rem);
+  }
+
+  .welcomeBanner {
+    height: 140px;
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .welcomeMascot {
+    width: clamp(200px, 55vw, 290px);
+    height: clamp(155px, 45vw, 225px);
+  }
+
+  .welcomeTitle {
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+  }
+
+  .welcomeSubtitle {
+    font-size: clamp(0.72rem, 3vw, 0.82rem);
+  }
+
+  .identityCard {
+    padding: 0.25rem;
+  }
+
+  .avatarWrapper, .avatarCircle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.6rem;
+  }
+
+  .identityName {
+    font-size: clamp(1.15rem, 5vw, 1.4rem);
+  }
+
+  .linkedinCard {
+    padding: 1rem 1.25rem;
+  }
+
+  .linkedinTitle {
+    font-size: clamp(0.95rem, 4vw, 1.2rem);
+  }
+
+  .linkedinSubtitle {
+    font-size: clamp(0.75rem, 3vw, 0.88rem);
+  }
+
+  .linkedinGraphic {
+    width: 100px;
+    height: 85px;
+  }
+
+  .btn3dBlue {
+    padding: 0.55rem 1.25rem;
+    font-size: 0.8rem;
+  }
+
+  .achievementItem {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .badgeLevelBox {
+    width: 46px;
+    height: 46px;
+  }
+
+  .badgeTitle {
+    font-size: 0.9rem;
+  }
+
+  .badgeSub {
+    font-size: 0.76rem;
+  }
+}
+
+/* ── 2. Compact Mobile (<= 480px) ── */
+@media (max-width: 480px) {
+  .topHeaderBar {
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .welcomeBanner {
+    height: 125px;
+    margin-top: 1rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .welcomeImageContainer {
+    width: 50%;
+  }
+
+  .welcomeTextContainer {
+    width: 50%;
+  }
+
+  .welcomeMascot {
+    width: clamp(150px, 50vw, 220px);
+    height: clamp(120px, 40vw, 175px);
+  }
+
+  .welcomeTitle {
+    font-size: clamp(0.82rem, 3.8vw, 1rem);
+  }
+
+  .welcomeSubtitle {
+    font-size: clamp(0.65rem, 2.8vw, 0.75rem);
+  }
+
+  .identityMainRow {
+    gap: 0.75rem;
+  }
+
+  .avatarWrapper, .avatarCircle {
+    width: 52px;
+    height: 52px;
+    font-size: 1.35rem;
+  }
+
+  .avatarStarBadge {
+    width: 20px;
+    height: 20px;
+  }
+
+  .identityName {
+    font-size: clamp(1.05rem, 4.5vw, 1.25rem);
+  }
+
+  .handleRow, .joinedRow {
+    font-size: clamp(0.72rem, 3.2vw, 0.85rem);
+  }
+
+  .socialCountRow {
+    gap: 0.75rem;
+    font-size: clamp(0.78rem, 3.5vw, 0.9rem);
+  }
+
+  .linkedinCard {
+    padding: 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .linkedinGraphic {
+    width: 75px;
+    height: 65px;
+  }
+
+  .achievementItem {
+    padding: 0.65rem;
+    gap: 0.6rem;
+    border-radius: 0.85rem;
+  }
+
+  .badgeLevelBox {
+    width: 40px;
+    height: 40px;
+  }
+
+  .badgeLevelTag {
+    font-size: 0.45rem;
+    padding: 0.08rem 0.25rem;
+  }
+
+  .badgeTitle {
+    font-size: 0.85rem;
+  }
+
+  .badgeProgressNum {
+    font-size: 0.75rem;
+  }
+
+  .badgeSub {
+    font-size: 0.72rem;
+  }
+
+  .barTrack {
+    height: 11px;
+  }
+}
+
+/* ── 3. Ultra-Tiny Mobile & Watch Screens (<= 320px down to 240px width & short heights) ── */
+@media (max-width: 320px) {
+  .pageContainer {
+    padding: 0.25rem 0.35rem 2rem 0.35rem;
+  }
+
+  .topHeaderBar {
+    gap: 0.25rem;
+    padding: 0.15rem;
+  }
+
+  .headerStatValue {
+    font-size: 0.7rem;
+  }
+
+  .headerStatLabel {
+    display: none; /* Hide labels on ultra-narrow <320px to save space */
+  }
+
+  .welcomeBanner {
+    height: 110px;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 0.85rem;
+  }
+
+  .welcomeTitle {
+    font-size: 0.75rem;
+    line-height: 1.15;
+  }
+
+  .welcomeSubtitle {
+    font-size: 0.6rem;
+    line-height: 1.2;
+    margin-top: 0.15rem;
+  }
+
+  .welcomeMascot {
+    width: 130px;
+    height: 105px;
+  }
+
+  .avatarWrapper, .avatarCircle {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .identityName {
+    font-size: 0.95rem;
+  }
+
+  .handleRow, .joinedRow {
+    font-size: 0.68rem;
+  }
+
+  .socialCountRow {
+    font-size: 0.72rem;
+    gap: 0.4rem;
+  }
+
+  .linkedinCard {
+    padding: 0.65rem;
+    border-radius: 0.85rem;
+  }
+
+  .linkedinTitle {
+    font-size: 0.82rem;
+  }
+
+  .linkedinSubtitle {
+    font-size: 0.68rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .btn3dBlue, .btn3dWhite {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.7rem;
+    border-radius: 0.6rem;
+  }
+
+  .linkedinGraphic {
+    width: 60px;
+    height: 50px;
+  }
+
+  .achievementItem {
+    padding: 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .badgeLevelBox {
+    width: 36px;
+    height: 36px;
+  }
+
+  .badgeTitle {
+    font-size: 0.78rem;
+  }
+
+  .badgeProgressNum {
+    font-size: 0.68rem;
+  }
+
+  .badgeSub {
+    font-size: 0.65rem;
+  }
+
+  .barTrack {
+    height: 9px;
+  }
+
+  .claimBtn {
+    font-size: 0.58rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .friendIconBox {
+    width: 32px;
+    height: 32px;
+  }
+
+  .friendTitle {
+    font-size: 0.8rem;
+  }
+
+  .friendSub {
+    font-size: 0.68rem;
+  }
+}
+
+/* ── 4. Short Viewports (max-height: 520px) ── */
+@media (max-height: 520px) {
+  .welcomeBanner {
+    height: 110px;
+    margin-top: 0.5rem;
+  }
+  .welcomeMascot {
+    height: 105px;
+    width: 140px;
+  }
+  .pageContainer {
+    padding-bottom: 1.5rem;
+  }
+}
+
+

@@ -14,12 +14,19 @@ import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatPill } from '@/components/ui/StatPill';
 import { useGamification } from '@/context/GamificationContext';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
+import MomentumCard from '@/components/dashboard/v2/MomentumCard';
+import TodaysMissionsCard from '@/components/dashboard/v2/TodaysMissionsCard';
+import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
+import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
+import NextAchievementCard from '@/components/dashboard/v2/NextAchievementCard';
+import AlmostThereCard from '@/components/dashboard/v2/AlmostThereCard';
+import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
-  const { streakDays, xp: xpPoints, lives: livesCount } = useGamification();
+  const { streakDays, xp: xpPoints, lives: livesCount, gems } = useGamification();
   const [userName, setUserName] = useState('Joel');
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
@@ -141,6 +148,7 @@ export default function DashboardPage() {
         {/* BORDERLESS TOP-RIGHT STATS ROW */}
         <div className={styles.statsRow}>
           <StatPill type="streak" value={streakDays} onClick={() => triggerComingSoon('Streak History')} />
+          <StatPill type="coin" value={gems} onClick={() => router.push('/dashboard/shop')} />
           <StatPill type="gem" value={xpPoints} onClick={() => triggerComingSoon('XP Analytics')} />
           <StatPill type="lives" value={livesCount} onClick={() => triggerComingSoon('Lives Refill')} />
         </div>
@@ -187,7 +195,7 @@ export default function DashboardPage() {
               {/* Focus Mascot Section */}
               <div className={styles.focusCardRight}>
                 <div className={styles.mascotBubble}>
-                  <span>Let&apos;s master {currentEnrollment.course.title.split(':')[0]} step-by-step!</span>
+                  <span>Let&apos;s master {currentEnrollment ? currentEnrollment.course.title.split(':')[0] : 'UI/UX'} step-by-step!</span>
                   <div className={styles.mascotBubbleTail} />
                 </div>
                 <div className={styles.focusMascotImageWrapper}>
@@ -251,6 +259,27 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
+          {/* 1. MOMENTUM CARD */}
+          <MomentumCard onAction={handleContinueLearning} />
+
+          {/* 2. TODAY'S MISSIONS */}
+          <TodaysMissionsCard />
+
+          {/* 3. MYSTERY CHEST + WEEKLY PROGRESS (2-Column Grid Row) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <MysteryChestCard />
+            <WeeklyProgressCard />
+          </div>
+
+          {/* 4. NEXT ACHIEVEMENT + ALMOST THERE (2-Column Grid Row) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <NextAchievementCard />
+            <AlmostThereCard onAction={handleContinueLearning} />
+          </div>
+
+          {/* 5. CONTINUE LEARNING CAROUSEL */}
+          <ContinueLearningCarousel enrollments={enrollments} />
 
           {/* MY JOURNEYS SECTION */}
           <div className={styles.journeysSection}>

@@ -1,0 +1,97 @@
+.card {
+  background: #FFFFFF;
+  border: 2.5px solid #E2E8F0;
+  border-radius: 1.5rem;
+  padding: 1.35rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 0 0 #CBD5E1;
+  height: 100%;
+}
+
+.header {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0F172A;
+  margin-bottom: 0.85rem;
+}
+
+.body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.badgeWrap {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+  border: 2.5px solid #86EFAC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 0 #4ADE80;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.levelPill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #64748B;
+  background: #F1F5F9;
+  border-radius: 9999px;
+  padding: 0.15rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.desc {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 7px;
+  background-color: #F1F5F9;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: #22C55E;
+  border-radius: 9999px;
+}
+
+.progressText {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748B;
+  text-align: right;
+  margin-top: 0.2rem;
+}

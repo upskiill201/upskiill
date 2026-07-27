@@ -22,9 +22,9 @@ export class GamificationService {
     let updatedFields: any = {};
 
     // 1. Timezone-aware Daily Streak Check and Freeze Consumption
-    const lastStreakCheckDate = profile.lastStreakEarnedAt || profile.lastActiveAt;
-    if (lastStreakCheckDate) {
-      const lastActiveStr = this.getLocalDayString(lastStreakCheckDate, timezoneOffsetMinutes);
+    let streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL';
+    if (profile.lastStreakEarnedAt) {
+      const lastActiveStr = this.getLocalDayString(profile.lastStreakEarnedAt, timezoneOffsetMinutes);
       const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
 
       if (diffDays > 1) {
@@ -34,11 +34,23 @@ export class GamificationService {
           // Set lastStreakEarnedAt to yesterday to preserve streak
           const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           updatedFields.lastStreakEarnedAt = yesterday;
+          streakStatus = 'SAVED';
           console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained.`);
         } else {
           updatedFields.streakDays = 0;
+          streakStatus = 'RESET';
         }
       }
+    } else {
+      // If profile has no lastStreakEarnedAt timestamp yet, initialize starter streak
+      if (profile.streakDays <= 0) {
+        updatedFields.streakDays = 3;
+      }
+    }
+
+    // Recovery check: if profile streak was wiped to 0 by legacy lastActiveAt fallback bug, restore starter streak
+    if (profile.streakDays === 0 && !updatedFields.streakDays && streakStatus !== 'RESET') {
+      updatedFields.streakDays = 3;
     }
 
     // 2. Timezone-aware Daily Quests reset
@@ -389,12 +401,35 @@ export class GamificationService {
   }
 
   /**
+   * Helper method to award Gems to a user and log transaction.
+   */
+  async awardGems(userId: string, amount: number, source: string) {
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: { gems: { increment: amount } },
+    });
+
+    await this.prisma.gemTransaction.create({
+      data: {
+        userId,
+        type: 'EARN',
+        amount,
+        source,
+      },
+    });
+
+    return updated.gems;
+  }
+
+  /**
    * Builds the formatted API payload.
    */
   private async buildResponse(
     profile: {
       xp: number;
       streakDays: number;
+      longestStreak?: number;
+      gems?: number;
       lives: number;
       maxLives: number;
       livesLastLostAt: Date | null;
@@ -402,8 +437,10 @@ export class GamificationService {
       completedQuests: any;
       lastRewardClaimedAt: Date | null;
       dailyRewardCyclePosition: number;
+      lastLessonCompletedAt?: Date | null;
     },
     timezoneOffsetMinutes = 0,
+    streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL',
   ) {
     let livesRefillAt: string | null = null;
 
@@ -427,17 +464,37 @@ export class GamificationService {
 
     const nextRewardClaimInMs = this.getNextMidnightMs(now, timezoneOffsetMinutes);
 
+    // Level calculation (exponential curve)
+    let userLevel = 1;
+    const totalXp = profile.xp || 0;
+    while (true) {
+      const nextReq = 50 * userLevel * (userLevel + 1);
+      if (totalXp >= nextReq) {
+        userLevel++;
+      } else {
+        break;
+      }
+    }
+    const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
+    const xpInCurrentLevel = Math.max(0, totalXp - currentLevelBaseXp);
+
     return {
       xp: profile.xp,
+      userLevel,
+      xpInCurrentLevel,
       streakDays: profile.streakDays,
+      longestStreak: profile.longestStreak ?? Math.max(3, profile.streakDays),
+      gems: profile.gems ?? 100,
       lives: profile.lives,
       maxLives: profile.maxLives,
       streakFreezeBank: profile.streakFreezeBank,
+      streakStatus,
       completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       livesRefillAt,
+      lastLessonCompletedAt: profile.lastLessonCompletedAt ? profile.lastLessonCompletedAt.toISOString() : null,
       // Daily reward fields
       lastRewardClaimedAt: profile.lastRewardClaimedAt ? profile.lastRewardClaimedAt.toISOString() : null,
-      dailyRewardCyclePosition: profile.dailyRewardCyclePosition,
+      dailyRewardCyclePosition: profile.dailyRewardCyclePosition || 1,
       isEligibleForReward,
       nextRewardClaimInMs,
     };

@@ -1,0 +1,366 @@
+.pageWrapper {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem 1.25rem;
+}
+
+.shopHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2.5px solid #F1F5F9;
+}
+
+.shopTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.shopTitle {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.gemBalanceCard {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #F0F9FF;
+  border: 2px solid #BAE6FD;
+  border-radius: 9999px;
+  padding: 0.5rem 1.15rem;
+  box-shadow: 0 2.5px 0 0 #7DD3FC;
+}
+
+.gemValue {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0284C7;
+}
+
+/* Category Sections */
+.categorySection {
+  margin-bottom: 2.5rem;
+}
+
+.categoryHeading {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #1E293B;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.01em;
+}
+
+.divider {
+  height: 2px;
+  background-color: #E2E8F0;
+  border: none;
+  margin-bottom: 1.5rem;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.itemCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1rem 0.5rem;
+  border-bottom: 1.5px solid #F1F5F9;
+}
+
+.itemCard:last-child {
+  border-bottom: none;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+/* Duolingo Large Left Icon Containers */
+.iconBox {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  min-width: 76px;
+  border-radius: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBoxHeart {
+  background: #FFF1F2;
+  border: 2px solid #FFE4E6;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.12);
+}
+
+.iconBoxUnlimited {
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDFA 100%);
+  border: 2px solid #A7F3D0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+.iconBoxFreeze {
+  background: #F0F9FF;
+  border: 2px solid #E0F2FE;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.itemTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.itemTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.equippedBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748B;
+  background-color: #E2E8F0;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.itemDescription {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748B;
+  line-height: 1.45;
+  max-width: 440px;
+}
+
+/* Action Buttons */
+.buyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0172FD;
+  background-color: #FFFFFF;
+  border: 2.5px solid #E2E8F0;
+  border-radius: 9999px;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 0 #CBD5E1;
+  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.buyBtn:hover {
+  background-color: #F8FAFC;
+  border-color: #0172FD;
+}
+
+.buyBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #CBD5E1;
+}
+
+.fullBtn {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  background-color: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 9999px;
+  padding: 0.55rem 1.5rem;
+  cursor: not-allowed;
+}
+
+.trialBtn {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #C084FC;
+  background-color: #FFFFFF;
+  border: 2px solid #F0ABFC;
+  border-radius: 9999px;
+  padding: 0.55rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 0 #F5D0FE;
+  transition: all 0.15s ease;
+}
+
+.trialBtn:hover {
+  background-color: #FDF4FF;
+}
+
+/* Modals */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 400px;
+  background: #FFFFFF;
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 4px 0 #E2E8F0;
+  text-align: center;
+}
+
+.modalTitle {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-bottom: 0.75rem;
+}
+
+.modalText {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.modalCostBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.costItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.costLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.costValue {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #0F172A;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.cancelBtn {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #64748B;
+  background: #F1F5F9;
+  border: none;
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+  cursor: pointer;
+}
+
+.confirmBtn {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: #0172FD;
+  border: none;
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #0050B3;
+}
+
+.confirmBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #0050B3;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 800;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .itemCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .itemLeft {
+    width: 100%;
+  }
+
+  .buyBtn, .fullBtn, .trialBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

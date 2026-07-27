@@ -13,9 +13,15 @@ import { ProfileModule } from './profile/profile.module';
 import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { GamificationModule } from './gamification/gamification.module';
+import { SocialModule } from './social/social.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ShopModule } from './shop/shop.module';
+import { AchievementsModule } from './achievements/achievements.module';
+import { HomeModule } from './home/home.module';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 100, // global fallback
@@ -31,6 +37,10 @@ import { GamificationModule } from './gamification/gamification.module';
     UserOnboardingModule,
     WhatsappModule,
     GamificationModule,
+    SocialModule,
+    ShopModule,
+    AchievementsModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

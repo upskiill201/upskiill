@@ -32,30 +32,45 @@ export class ProfileService {
     });
 
     if (!user) throw new NotFoundException('User not found');
-    return user;
+
+    const [followersCount, followingCount] = await Promise.all([
+      this.prisma.userFollow.count({ where: { followingId: userId } }),
+      this.prisma.userFollow.count({ where: { followerId: userId } }),
+    ]);
+
+    return {
+      ...user,
+      followersCount,
+      followingCount,
+    };
   }
 
   /**
    * Updates profile and/or user fields in a single transaction.
-   * Handles both profile table fields and User.fullName updates.
+   * Handles User.fullName and User.avatarUrl updates.
    */
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
-    const { fullName, ...profileFields } = dto;
+    const { fullName, avatarUrl, ...profileFields } = dto;
 
     await this.prisma.$transaction(async (tx) => {
-      // Update User.fullName if provided
-      if (fullName) {
+      // Update User fields if provided
+      const userUpdates: any = {};
+      if (fullName !== undefined) userUpdates.fullName = fullName;
+      if (avatarUrl !== undefined) userUpdates.avatarUrl = avatarUrl;
+
+      if (Object.keys(userUpdates).length > 0) {
         await tx.user.update({
           where: { id: userId },
-          data: { fullName },
+          data: userUpdates,
         });
       }
 
       // Upsert Profile row
+      const cleanProfileData = avatarUrl !== undefined ? { avatarUrl, ...profileFields } : profileFields;
       await tx.profile.upsert({
         where: { userId },
-        create: { userId, ...profileFields },
-        update: profileFields,
+        create: { userId, ...cleanProfileData },
+        update: cleanProfileData,
       });
     });
 

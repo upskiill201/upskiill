@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
@@ -53,6 +54,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // ─── GLOBAL EXCEPTION FILTER ───────────────────────────────────────────────
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // ─── HEALTH ENDPOINT ───────────────────────────────────────────────────────
   // Used by GitHub Actions to verify the backend came up cleanly after deploy.

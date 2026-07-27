@@ -24,6 +24,7 @@ import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
+import StreakStatusModal from '@/components/gamification/StreakStatusModal';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -55,7 +56,7 @@ export default function DashboardLayout({
   hideMobileChrome = false,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { streakDays, xp, lives } = useGamification();
+  const { streakDays, xp, lives, gems } = useGamification();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -138,9 +139,16 @@ export default function DashboardLayout({
     { 
       id: 'profile', 
       label: 'Profile', 
-      href: '/dashboard', 
+      href: '/dashboard/profile', 
       icon: <Image src="/Icons/user-profile.png" alt="Profile" width={28} height={28} className={styles.navIcon} />, 
-      isComingSoon: true 
+      isComingSoon: false 
+    },
+    { 
+      id: 'shop', 
+      label: 'Shop', 
+      href: '/dashboard/shop', 
+      icon: <Image src="/Icons/store.png" alt="Shop" width={28} height={28} className={styles.navIcon} />, 
+      isComingSoon: false 
     },
     { 
       id: 'more', 
@@ -252,6 +260,24 @@ export default function DashboardLayout({
                   <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF9600' }} />
                 </div>
 
+                {/* Coins Balance Card */}
+                <Link href="/dashboard/shop" className={styles.sidebarCard} style={{ textDecoration: 'none' }}>
+                  <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FEF9C3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Image
+                      src={gems > 0 ? '/Icons/Coin.png' : '/Icons/Coin_empty.png'}
+                      width={20}
+                      height={20}
+                      alt="Coins"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                  <div className={styles.sidebarCardContent}>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#EAB308', fontWeight: 800 }}>{gems} Coins</span>
+                    <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(234,179,8,0.85)', fontWeight: 600 }}>Shop Currency</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#EAB308' }} />
+                </Link>
+
                 {/* XP Balance Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('XP Details')}>
                   <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -342,14 +368,13 @@ export default function DashboardLayout({
             <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Leaderboards</span>
           </a>
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); triggerComingSoon('Profile Settings'); }} 
-            className={styles.bottomNavItem}
+          <Link 
+            href="/dashboard/profile" 
+            className={`${styles.bottomNavItem} ${pathname === '/dashboard/profile' ? styles.activeBottomItem : ''}`}
           >
             <Image src="/Icons/user-profile.png" alt="Profile" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Profile</span>
-          </a>
+          </Link>
         </nav>
         )}
 
@@ -407,6 +432,9 @@ export default function DashboardLayout({
             </div>
           </div>
         </Modal>
+
+        {/* GAMIFIED STREAK SAVED / RESET MODAL */}
+        <StreakStatusModal />
       </div>
     </ComingSoonContext.Provider>
   );
