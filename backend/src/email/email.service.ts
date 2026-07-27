@@ -11,10 +11,21 @@ export class EmailService {
     this.resend = new Resend(apiKey);
   }
 
-  async sendVerificationEmail(email: string, code: string, fullName?: string) {
+  async sendVerificationEmail(email: string, code: string, fullName?: string, role?: string, verifyToken?: string) {
     const appUrl = process.env.APP_URL || 'https://teyro.app';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
     const name = fullName ? fullName.split(' ')[0] : 'there';
     const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
+    const isCreator = role === 'INSTRUCTOR';
+    const magicLink = verifyToken ? `${backendUrl}/auth/verify-email?token=${verifyToken}` : null;
+
+    const subject = isCreator 
+      ? `Hey ${name}! Confirm your Teyro Creator Account 👀` 
+      : `Hey ${name}! Is this really your email? 👀`;
+
+    const headline = isCreator
+      ? `Before we unlock your <strong>Creator Studio</strong>, I just need to make sure this email belongs to you.`
+      : `Before we unlock your <strong>learning adventure</strong>, I just need to make sure this email belongs to you.`;
 
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1e293b; background-color: #f8fafc;">
@@ -23,24 +34,37 @@ export class EmailService {
         </div>
         <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
           <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-top: 0; margin-bottom: 16px;">
-            Hey there! 👋
+            Hey ${name}! 👋
           </p>
           <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 16px;">
             It’s Tey here.
           </p>
           <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
-            Before we unlock your learning adventure, I just need to make sure this email belongs to you.
+            ${headline}
           </p>
+
+          ${magicLink ? `
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${magicLink}" style="display: inline-block; background-color: #0172FD; color: #ffffff; font-weight: 800; font-size: 16px; text-decoration: none; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(1, 114, 253, 0.25);">
+              ${isCreator ? 'Verify Creator Account →' : 'Verify Account & Start Learning →'}
+            </a>
+          </div>
+          <p style="font-size: 14px; color: #64748b; text-align: center; margin-bottom: 12px;">
+            Or enter this 6-digit verification code on the verification screen:
+          </p>
+          ` : `
           <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
-            Enter this 6-digit code on the verification screen to unlock your journey:
+            Enter this 6-digit code on the verification screen:
           </p>
-          <div style="text-align: center; margin: 32px 0;">
+          `}
+
+          <div style="text-align: center; margin: 20px 0;">
             <span style="display: inline-block; background-color: #f1f5f9; border: 2px dashed #0172FD; color: #0172FD; font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 6px; padding: 12px 28px; border-radius: 12px;">
               ${code}
             </span>
           </div>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 32px;">
-            This code expires in 10 minutes.
+          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 32px; text-align: center;">
+            This link & code expire in 10 minutes.
           </p>
           <p style="font-size: 16px; line-height: 1.6; color: #0f172a; font-weight: 700; margin-bottom: 0;">
             — Tey 💙
@@ -58,7 +82,7 @@ export class EmailService {
       await this.resend.emails.send({
         from: 'Tey from Teyro <noreply@teyro.app>',
         to: email,
-        subject: `Hey ${name}! Is this really your email? 👀`,
+        subject,
         html,
       });
       this.logger.log(`Verification email sent to ${email}`);

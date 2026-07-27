@@ -299,6 +299,40 @@ export default function StepFifteenPage() {
     }
   };
 
+  const [code, setCode] = useState('');
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [codeError, setCodeError] = useState('');
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code.trim().length !== 6) {
+      setCodeError('Please enter a 6-digit code');
+      return;
+    }
+    setCodeError('');
+    setVerifyingCode(true);
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, code: code.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Verification failed');
+      }
+
+      window.location.href = '/creator/onboarding/16';
+    } catch (err: any) {
+      setCodeError(err.message || 'Invalid or expired verification code');
+    } finally {
+      setVerifyingCode(false);
+    }
+  };
+
   if (isVerificationPending) {
     return (
       <div className="min-h-[calc(100vh-88px)] flex items-center justify-center bg-[#F1EDFC] px-4">
@@ -313,14 +347,37 @@ export default function StepFifteenPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Check your inbox</h1>
           
           <p className="text-gray-600 mb-6 leading-relaxed">
-            We've sent a verification link to <br/>
+            We&apos;ve sent a 1-click verification link and 6-digit code to <br/>
             <strong className="text-gray-900 font-semibold">{maskEmail(email)}</strong>
           </p>
+
+          {/* 6-Digit Code Entry Form */}
+          <form onSubmit={handleVerifyCode} className="mb-6 space-y-3">
+            <div className="text-sm font-semibold text-gray-700 text-left">Enter 6-digit code from your email:</div>
+            <input
+              type="text"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 729759"
+              className="w-full text-center text-2xl font-mono tracking-widest py-3 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            {codeError && (
+              <p className="text-xs text-red-600 text-left font-medium">{codeError}</p>
+            )}
+            <Button
+              type="submit"
+              disabled={verifyingCode || code.length !== 6}
+              className="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl"
+            >
+              {verifyingCode ? 'Verifying...' : 'Verify Code & Launch Studio →'}
+            </Button>
+          </form>
           
-          <div className="bg-gray-50 rounded-xl p-4 mb-8 text-sm text-gray-600 text-left flex gap-3">
+          <div className="bg-gray-50 rounded-xl p-4 mb-6 text-sm text-gray-600 text-left flex gap-3">
             <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
             <div>
-              The link will expire in 24 hours. If you don't see it, be sure to check your spam folder.
+              You can click the button in your email or enter the 6-digit code above. Code expires in 10 minutes.
             </div>
           </div>
 
