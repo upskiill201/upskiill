@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from '../../course/events/lesson-completed.event';
 import { GamificationService } from '../gamification.service';
-import { AchievementsService } from '../../achievements/achievements.service';
+import { AchievementsService } from '../achievements.service';
 
 @Injectable()
 export class GamificationListener {

@@ -86,6 +86,28 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
     trackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
+  const handleCourseClick = async (courseId: string) => {
+    if (!courseId || courseId.startsWith('c')) {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const res = await fetch(`${apiBase}/courses`);
+        if (res.ok) {
+          const courses = await res.json();
+          const list = Array.isArray(courses) ? courses : courses?.courses || [];
+          if (list.length > 0) {
+            router.push(`/learn/${list[0].id}`);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Failed fetching fallback courses', err);
+      }
+      router.push('/dashboard');
+      return;
+    }
+    router.push(`/learn/${courseId}`);
+  };
+
   return (
     <div className={styles.sectionWrapper}>
       <div className={styles.headerRow}>
@@ -105,7 +127,7 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
           <div
             key={c.id}
             className={styles.courseCard}
-            onClick={() => router.push(`/learn/${c.id}`)}
+            onClick={() => handleCourseClick(c.id)}
           >
             <div className={styles.iconBox} style={{ backgroundColor: c.bg }}>
               <span>{c.icon}</span>

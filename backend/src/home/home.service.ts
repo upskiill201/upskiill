@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementsService } from '../gamification/achievements.service';
 import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()

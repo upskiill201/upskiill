@@ -16,7 +16,6 @@ import { GamificationModule } from './gamification/gamification.module';
 import { SocialModule } from './social/social.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShopModule } from './shop/shop.module';
-import { AchievementsModule } from './achievements/achievements.module';
 import { HomeModule } from './home/home.module';
 
 @Module({
@@ -39,7 +38,6 @@ import { HomeModule } from './home/home.module';
     GamificationModule,
     SocialModule,
     ShopModule,
-    AchievementsModule,
     HomeModule,
   ],
   controllers: [AppController],
