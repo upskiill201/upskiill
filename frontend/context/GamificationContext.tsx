@@ -12,11 +12,15 @@ import React, {
 
 export interface GamificationState {
   xp: number;
+  gems: number;
   streakDays: number;
+  longestStreak: number;
   lives: number;
   maxLives: number;
   livesRefillAt: string | null;
   streakFreezeBank: number;
+  streakStatus: 'NORMAL' | 'SAVED' | 'RESET';
+  lastLessonCompletedAt: string | null;
   completedQuests: string[];
   // Daily Reward (Login Chest)
   lastRewardClaimedAt: string | null;
@@ -32,8 +36,10 @@ interface GamificationContextValue extends GamificationState {
   applyLessonReward: (newXp: number, newStreakDays: number) => void;
   claimQuest: (questId: string) => Promise<void>;
   buyStreakFreeze: () => Promise<void>;
+  buyShopItem: (itemKey: 'REFILL_HEARTS' | 'STREAK_FREEZE') => Promise<{ success: boolean; message: string }>;
   refillLivesWithXp: () => Promise<void>;
   claimDailyReward: () => Promise<void>;
+  dismissStreakModal: () => void;
   userLevel: number;
   xpInCurrentLevel: number;
 }
@@ -44,11 +50,15 @@ const GamificationContext = createContext<GamificationContextValue | null>(null)
 
 const DEFAULT_STATE: GamificationState = {
   xp: 30, // Seeded default matching onboarding/psychological grant
-  streakDays: 0,
+  gems: 100, // 100 Gems starter grant
+  streakDays: 3, // Starter 3-day streak matching onboarding grant
+  longestStreak: 3,
   lives: 5,
   maxLives: 5,
   livesRefillAt: null,
   streakFreezeBank: 1, // Start with 1 starter freeze banked
+  streakStatus: 'NORMAL',
+  lastLessonCompletedAt: null,
   completedQuests: [],
   // Daily Reward
   lastRewardClaimedAt: null,
@@ -88,11 +98,15 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       const data = await res.json();
       setState({
         xp: data.xp ?? 30,
-        streakDays: data.streakDays ?? 0,
+        gems: data.gems ?? 100,
+        streakDays: data.streakDays ?? 3,
+        longestStreak: data.longestStreak ?? Math.max(3, data.streakDays ?? 3),
         lives: data.lives ?? 5,
         maxLives: data.maxLives ?? 5,
         livesRefillAt: data.livesRefillAt ?? null,
         streakFreezeBank: data.streakFreezeBank ?? 1,
+        streakStatus: data.streakStatus ?? 'NORMAL',
+        lastLessonCompletedAt: data.lastLessonCompletedAt ?? null,
         completedQuests: Array.isArray(data.completedQuests) ? data.completedQuests : [],
         // Daily Reward
         lastRewardClaimedAt: data.lastRewardClaimedAt ?? null,
@@ -238,6 +252,38 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  const dismissStreakModal = useCallback(() => {
+    setState((prev) => ({ ...prev, streakStatus: 'NORMAL' }));
+  }, []);
+
+  const buyShopItem = useCallback(async (itemKey: 'REFILL_HEARTS' | 'STREAK_FREEZE') => {
+    try {
+      const res = await fetch('/api/shop/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ item: itemKey }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Purchase failed.');
+      }
+
+      setState((prev) => ({
+        ...prev,
+        gems: data.gems ?? prev.gems,
+        lives: data.lives ?? prev.lives,
+        maxLives: data.maxLives ?? prev.maxLives,
+        streakFreezeBank: data.streakFreezeBank ?? prev.streakFreezeBank,
+      }));
+
+      return { success: true, message: data.message || 'Item purchased successfully!' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Purchase failed.' };
+    }
+  }, []);
+
   // level logic: 1 level per 100 XP
   const userLevel = Math.floor(state.xp / 100) + 1;
   const xpInCurrentLevel = state.xp % 100;
@@ -251,8 +297,10 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         applyLessonReward,
         claimQuest,
         buyStreakFreeze,
+        buyShopItem,
         refillLivesWithXp,
         claimDailyReward,
+        dismissStreakModal,
         userLevel,
         xpInCurrentLevel,
       }}

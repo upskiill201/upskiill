@@ -1,0 +1,95 @@
+.card {
+  background: #FFFFFF;
+  border: 2.5px solid #E2E8F0;
+  border-radius: 1.5rem;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 0 0 #CBD5E1;
+  margin-bottom: 1.5rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0F172A;
+}
+
+.selectDropdown {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0172FD;
+  background: #F0F9FF;
+  border: 1.5px solid #BAE6FD;
+  border-radius: 0.6rem;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.statTile {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 1rem;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tileIcon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tileContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.tileLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.tileValue {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.viewMoreBtn {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0172FD;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding-top: 0.25rem;
+  border-top: 1.5px solid #F1F5F9;
+}

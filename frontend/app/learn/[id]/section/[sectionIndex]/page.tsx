@@ -1613,14 +1613,14 @@ function SectionViewContent({
                     </div>
                   </div>
 
-                  {/* Card 2: Streak */}
-                  <div className={styles.celebrateStatCard} style={{ borderColor: '#FFC800' }}>
+                  {/* Card 2: Coins Earned */}
+                  <div className={styles.celebrateStatCard} style={{ borderColor: '#FEF9C3' }}>
                     <div className={styles.celebrateStatIconWrap}>
-                      <Image src="/Icons/burn.png" width={42} height={42} alt="Flame Streak Icon" className={styles.statIconImg} />
+                      <Image src="/Icons/Coin.png" width={42} height={42} alt="Coins Icon" className={styles.statIconImg} />
                     </div>
                     <div className={styles.celebrateStatTextGroup}>
-                      <span className={styles.celebrateStatValue} style={{ color: '#FF9600' }}>{streakDays || 1}-Day</span>
-                      <span className={styles.celebrateStatLabel}>Streak Active</span>
+                      <span className={styles.celebrateStatValue} style={{ color: '#EAB308' }}>+5 Coins</span>
+                      <span className={styles.celebrateStatLabel}>Coins Earned</span>
                     </div>
                   </div>
                 </div>
@@ -1825,7 +1825,7 @@ function SectionViewContent({
                               {`${item.lessonIndex + 1}. ${item.title}`}
                             </h4>
                             <span className={styles.bubbleXp} style={{ color: theme.main }}>
-                              XP +{item.xpReward}
+                              XP +{item.xpReward} • 🪙 +5 Coins
                             </span>
                           </div>
                         )}
@@ -1879,7 +1879,7 @@ function SectionViewContent({
                                         borderBottom: `4px solid ${theme.shadow}`,
                                       }}
                                     >
-                                      START +{item.xpReward || 10} XP
+                                      START +{item.xpReward || 10} XP • 🪙 +5 COINS
                                     </button>
                                   </>
                                 )

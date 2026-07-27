@@ -149,6 +149,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href={fontAwesomeLink} />
+        <link rel="preload" href="/Loading Screens/Teyro_loading.webm" as="video" type="video/webm" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <PostHogProvider>

@@ -5,15 +5,17 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './TeyroBrandedLoader.module.css';
 
-/** Official Teyro WebM mascot poses */
+/** Unified Teyro WebM mascot pose map (points to official Teyro_loading.webm) */
 export type MascotPose = 'reading' | 'sitting' | 'standing' | 'sleeping' | 'working' | 'random';
 
+export const UNIFIED_MASCOT_WEBM = '/Loading Screens/Teyro_loading.webm';
+
 export const MASCOT_WEBM_MAP: Record<Exclude<MascotPose, 'random'>, string> = {
-  reading: '/Loading Screens/Tey_Reading.webm',
-  sitting: '/Loading Screens/Tey_Sitting.webm',
-  standing: '/Loading Screens/Tey_Standing.webm',
-  sleeping: '/Loading Screens/Tey_sleeping.webm',
-  working: '/Loading Screens/Tey_working.webm',
+  reading: UNIFIED_MASCOT_WEBM,
+  sitting: UNIFIED_MASCOT_WEBM,
+  standing: UNIFIED_MASCOT_WEBM,
+  sleeping: UNIFIED_MASCOT_WEBM,
+  working: UNIFIED_MASCOT_WEBM,
 };
 
 const POSES_LIST: Exclude<MascotPose, 'random'>[] = ['reading', 'sitting', 'standing', 'sleeping', 'working'];
@@ -83,8 +85,8 @@ export interface TeyroBrandedLoaderProps {
  * TeyroBrandedLoader (Pattern A: Branded Loader)
  *
  * Primary cold-start, auth-redirect, and in-app navigation loader for Teyro.
- * Features 5 seamless looping WebM mascot animations, ultra-bold LOADING... tag,
- * rotating motivational micro-copy, and 8s/15s connection-aware timeout states.
+ * Features official Teyro_loading.webm mascot animation, ultra-bold LOADING... tag,
+ * rotating motivational micro-copy pool, and 8s/15s connection-aware timeout states.
  */
 export default function TeyroBrandedLoader({
   microcopyOverride,
@@ -100,16 +102,12 @@ export default function TeyroBrandedLoader({
   const [currentCopyIndex, setCurrentCopyIndex] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWebmSupported, setIsWebmSupported] = useState(true);
-  const [activeRandomPose, setActiveRandomPose] = useState<Exclude<MascotPose, 'random'>>('standing');
   const [dotsCount, setDotsCount] = useState(1);
   const startTimeRef = useRef<number>(Date.now());
 
-  // Pick random pose & micro-copy index when loader becomes visible
+  // Pick random micro-copy index when a new loading state begins (remains static during this loading session)
   useEffect(() => {
     if (!isVisible) return;
-
-    const randomPoseIdx = Math.floor(Math.random() * POSES_LIST.length);
-    setActiveRandomPose(POSES_LIST[randomPoseIdx]);
 
     if (typeof forcePoolIndex === 'number' && forcePoolIndex >= 0) {
       setCurrentCopyIndex(forcePoolIndex % TEY_MICROCOPY_POOL.length);
@@ -148,14 +146,10 @@ export default function TeyroBrandedLoader({
     }
   };
 
-  // Determine active WebM animation source
+  // Determine active WebM animation source — unified Teyro_loading.webm
   const getActiveWebmSrc = (): string => {
     if (webmSrc) return webmSrc;
-    if (!suppressConnectionCheck && elapsedTime >= 8000) return MASCOT_WEBM_MAP.sleeping; // Switches to sleeping on connection check (>8s)
-    if (mascotPose && mascotPose !== 'random') {
-      return MASCOT_WEBM_MAP[mascotPose];
-    }
-    return MASCOT_WEBM_MAP[activeRandomPose] || MASCOT_WEBM_MAP.standing;
+    return UNIFIED_MASCOT_WEBM;
   };
 
   // Determine displayed micro-copy text
@@ -196,7 +190,7 @@ export default function TeyroBrandedLoader({
               {/* WebM Looping Video Engine with WebP Static Fallback */}
               {isWebmSupported && currentWebmSrc ? (
                 <video
-                  key={currentWebmSrc}
+                  key="teyro-unified-loading-video"
                   autoPlay
                   loop
                   muted

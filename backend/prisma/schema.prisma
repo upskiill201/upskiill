@@ -31,6 +31,7 @@ model User {
 
   profile             Profile?
   studentProfile      StudentProfile?
+  instructorProfile   InstructorProfile?
   enrollments         Enrollment[]
   courses             Course[]                @relation("InstructorCourses")
   orders              Order[]
@@ -38,6 +39,64 @@ model User {
   onboardingDraft     CreatorOnboardingDraft?
   PasswordResetToken  PasswordResetToken[]
   onboardingSession   OnboardingSession?
+
+  // Social Connections — Followers & Following
+  following UserFollow[] @relation("UserFollower")
+  followers UserFollow[] @relation("UserFollowing")
+
+  // Account Security, Status & Lifecycle fields (Part 3A.2.1.2.1)
+  accountStatus        AccountStatus @default(ACTIVE)
+  emailVerifiedAt      DateTime?
+  lastLoginAt          DateTime?
+  lastActiveAt         DateTime?
+  loginCount           Int           @default(0)
+  failedLoginAttempts  Int           @default(0)
+  accountLockedUntil   DateTime?
+  deletedAt            DateTime?
+
+  gemTransactions    GemTransaction[]
+  shopTransactions   ShopTransaction[]
+  userAchievements   UserAchievement[]
+  userMissions       UserMission[]
+  spinClaims         SpinClaim[]
+  courseProgresses   UserCourseProgress[]
+  lessonProgresses   UserLessonProgress[]
+  stepProgresses     UserStepProgress[]
+  stepAttempts       UserStepAttempt[]
+  learningSessions   LearningSession[]
+  userLearningStreak UserLearningStreak?
+  userStats          UserStats?
+  weeklyProgresses   UserWeeklyProgress[]
+  learningEvents     LearningEvent[]
+  userInventories    UserInventory[]
+  userChests         UserChest[]
+  dailyActivities    UserDailyActivity[]
+  userMomentum       UserMomentum?
+  rewardLogs             RewardLog[]
+  xpEvents               XpEvent[]
+  communityMemberships   CommunityMembership[]
+  posts                  Post[]
+  comments               Comment[]
+  likes                  Like[]
+  activityFeed           ActivityFeed[]
+  viewerFriendActivities FriendActivity[]       @relation("ViewerFriendActivities")
+  actorFriendActivities  FriendActivity[]       @relation("ActorFriendActivities")
+  notifications          Notification[]
+
+  @@index([accountStatus, role])
+  @@index([createdAt, role])
+  @@index([lastLoginAt])
+  @@index([role])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+enum AccountStatus {
+  ACTIVE
+  PENDING_VERIFICATION
+  SUSPENDED
+  LOCKED
+  DELETED
 }
 
 model Profile {
@@ -115,26 +174,35 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enrollments Enrollment[]
-  orderItems  OrderItem[]
+  enrollments          Enrollment[]
+  orderItems           OrderItem[]
+  userCourseProgresses UserCourseProgress[]
+  community            Community?
+  posts                Post[]
 }
 
 model Section {
-  id         String   @id @default(uuid())
-  title      String
-  goal       String?  @db.Text
-  orderIndex Int      @default(0)
-  courseId   String
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons    Lesson[]
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  goal        String?  @db.Text
+  orderIndex  Int      @default(0)
+  isLocked    Boolean  @default(false)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@map("course_sections")
 }
 
 model Lesson {
   id               String  @id @default(uuid())
   title            String  @db.VarChar(100)
+  description      String? @db.Text
   shortDescription String? @db.VarChar(300)
   lessonType       String  @default("video")
   orderIndex       Int     @default(0)
@@ -148,7 +216,6 @@ model Lesson {
   estimatedDurationSeconds Int       @default(0)
 
   // Block-based content architecture
-  // Stores arrays of content blocks for learn, apply, reflect, deepen phases
   contentBlocks Json? @default("{}")
 
   // Phase completion state tracking
@@ -159,11 +226,54 @@ model Lesson {
 
   // Relations
   sectionId String
-  section   Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section   Section              @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   resources LessonResource[]
+  steps     LessonStep[]
+  userLessonProgresses UserLessonProgress[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([sectionId])
+  @@map("course_lessons")
+}
+
+model LessonStep {
+  id              String   @id @default(uuid())
+  lessonId        String
+  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  stepType        String   // 'learn' | 'apply' | 'reflect' | 'resources'
+  title           String?
+  orderIndex      Int      @default(0)
+  isRequired      Boolean  @default(true)
+  unlockCondition Json?
+
+  contents         LessonStepContent[]
+  userStepProgresses UserStepProgress[]
+  userStepAttempts   UserStepAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lessonId])
+  @@index([stepType])
+  @@map("lesson_steps")
+}
+
+model LessonStepContent {
+  id            String     @id @default(uuid())
+  stepId        String
+  step          LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  contentType   String     // 'video' | 'text' | 'quiz' | 'task' | 'ai_prompt' | 'file'
+  content       Json
+  orderIndex    Int        @default(0)
+  isInteractive Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stepId])
+  @@map("lesson_step_content")
 }
 
 model LessonResource {
@@ -315,14 +425,50 @@ model StudentProfile {
   completedQuests  Json      @default("[]")
   lastQuestResetAt DateTime?
 
+  // Achievements log — tracks which badge levels have been unlocked and claimed
+  // Format: [{ badgeId, level, claimed, unlockedAt }]
+  achievements Json @default("[]")
+
   // Daily Reward (Login Chest)
   lastRewardClaimedAt      DateTime?
   dailyRewardCyclePosition Int       @default(1)
 
+  // Gems currency & longest streak tracking
+  gems                  Int       @default(100) // 100 Gems starter grant
+  longestStreak         Int       @default(3)
+  lastLessonCompletedAt DateTime? // Exact timestamp when a lesson was finished
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
   @@map("student_profiles")
+}
+
+model GemTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // 'EARN' | 'SPEND'
+  amount    Int
+  source    String   // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ADMIN'
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("gem_transactions")
+}
+
+model ShopTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      String   // 'REFILL_HEARTS' | 'STREAK_FREEZE'
+  quantity  Int      @default(1)
+  cost      Int
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("shop_transactions")
 }
 
 model WhatsappAuthStore {
@@ -332,3 +478,471 @@ model WhatsappAuthStore {
 
   @@map("whatsapp_auth_store")
 }
+
+model UserFollow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("user_follows")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String   // 'wildfire' | 'sage' | 'champion' | 'explorer' | 'marathon'
+  tier          Int      @default(1)
+  unlockedAt    DateTime @default(now())
+
+  @@unique([userId, achievementId, tier])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+model UserMission {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionKey String    // 'COMPLETE_LESSON' | 'MAINTAIN_STREAK' | 'LEARN_MINUTES'
+  progress   Int       @default(0)
+  target     Int       @default(1)
+  completed  Boolean   @default(false)
+  claimedAt  DateTime?
+  dateStr    String    // YYYY-MM-DD local date string
+
+  @@unique([userId, missionKey, dateStr])
+  @@index([userId, dateStr])
+  @@map("user_missions")
+}
+
+model SpinClaim {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardType String   // 'COINS' | 'XP' | 'FREEZE' | 'HEARTS'
+  rewardVal  Int
+  claimedAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("spin_claims")
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+model InstructorProfile {
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName          String
+  professionalHeadline String?
+  bio                  String?            @db.Text
+  avatarUrl            String?
+  coverImageUrl        String?
+  websiteUrl           String?
+  linkedinUrl          String?
+  youtubeUrl           String?
+  verificationStatus   VerificationStatus @default(PENDING)
+  profileVisibility    ProfileVisibility  @default(PUBLIC)
+  yearsOfExperience    Int?
+  expertise            Json?              @default("[]")
+  onboardingCompleted  Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([verificationStatus, profileVisibility])
+  @@index([displayName, verificationStatus])
+  @@map("instructor_profiles")
+}
+
+model UserCourseProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId           String
+  course             Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status             String    @default("not_started") // not_started, in_progress, completed, paused
+  progressPercentage Float     @default(0)
+  currentLessonId    String?
+  lastStepId         String?
+  startedAt          DateTime?
+  completedAt        DateTime?
+  lastActiveAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@map("user_course_progress")
+}
+
+model UserLessonProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId           String
+  lesson             Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status             String    @default("locked") // locked, unlocked, in_progress, completed
+  progressPercentage Float     @default(0)
+  startedAt          DateTime?
+  completedAt        DateTime?
+  timeSpentSeconds   Int       @default(0)
+  attemptsCount      Int       @default(0)
+  lastStepId         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@map("user_lesson_progress")
+}
+
+model UserStepProgress {
+  id                   String     @id @default(uuid())
+  userId               String
+  user                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepId               String
+  step                 LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  status               String     @default("not_started") // not_started, in_progress, completed, failed
+  completionPercentage Float      @default(0)
+  score                Float?
+  attemptsCount        Int        @default(0)
+  timeSpentSeconds     Int        @default(0)
+  startedAt            DateTime?
+  completedAt          DateTime?
+  lastAttemptAt        DateTime?
+  isMastered           Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, stepId])
+  @@index([userId])
+  @@map("user_step_progress")
+}
+
+model UserStepAttempt {
+  id               String     @id @default(uuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepId           String
+  step             LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  attemptNumber    Int        @default(1)
+  inputData        Json?
+  resultScore      Float?
+  aiFeedback       String?    @db.Text
+  isCorrect        Boolean?
+  timeSpentSeconds Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([stepId])
+  @@index([userId])
+  @@map("user_step_attempts")
+}
+
+model LearningSession {
+  id               String    @id @default(uuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt        DateTime  @default(now())
+  endedAt          DateTime?
+  durationSeconds  Int?
+  lessonsCompleted Int       @default(0)
+  stepsCompleted   Int       @default(0)
+  deviceType       String?   // 'mobile' | 'desktop'
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("learning_sessions")
+}
+
+model UserLearningStreak {
+  userId            String   @id
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak     Int      @default(0)
+  longestStreak     Int      @default(0)
+  lastActivityDate  String?  // YYYY-MM-DD
+  streakFreezeCount Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lastActivityDate])
+  @@map("user_learning_streaks")
+}
+
+model UserStats {
+  userId           String    @id
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalXp          Int       @default(0)
+  totalCoins       Int       @default(0)
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lessonsCompleted Int       @default(0)
+  lastActivityAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_stats")
+}
+
+model UserWeeklyProgress {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStartDate    String   // YYYY-MM-DD (Monday)
+  lessonsCompleted Int      @default(0)
+  xpEarned         Int      @default(0)
+  daysActive       Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStartDate])
+  @@index([userId, weekStartDate])
+  @@map("user_weekly_progress")
+}
+
+model LearningEvent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventType  String   // 'LESSON_COMPLETED' | 'STREAK_INCREMENTED' | 'ACHIEVEMENT_UNLOCKED'
+  entityType String   // 'lesson' | 'course' | 'achievement'
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([eventType])
+  @@map("learning_events")
+}
+
+model UserInventory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemType  String   // 'FREEZE' | 'BOOST' | 'CHEST'
+  quantity  Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, itemType])
+  @@index([userId])
+  @@map("user_inventory")
+}
+
+model UserChest {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chestType     String    // 'DAILY' | 'REWARD' | 'STREAK'
+  status        String    @default("LOCKED") // 'LOCKED' | 'UNLOCKED' | 'OPENED'
+  rewardPayload Json?
+  createdAt     DateTime  @default(now())
+  openedAt      DateTime?
+
+  @@index([userId])
+  @@map("user_chests")
+}
+
+model UserDailyActivity {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             String   // YYYY-MM-DD
+  lessonsCompleted Int      @default(0)
+  xpEarned         Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("user_daily_activity")
+}
+
+model UserMomentum {
+  userId           String   @id
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  momentumScore    Int      @default(0)
+  lastCalculatedAt DateTime @default(now())
+
+  @@map("user_momentum")
+}
+
+model RewardLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardType  String   // 'XP' | 'COINS' | 'FREEZE' | 'HEARTS' | 'SPIN'
+  rewardValue Int
+  sourceType  String   // 'MISSION' | 'CHEST' | 'SPIN' | 'STREAK' | 'LESSON'
+  sourceId    String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("reward_logs")
+}
+
+model XpEvent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceType String   // 'LESSON' | 'MISSION' | 'REWARD' | 'CHALLENGE'
+  sourceId   String?
+  xpAmount   Int
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("xp_events")
+}
+
+model Community {
+  id          String   @id @default(uuid())
+  name        String
+  courseId    String?  @unique
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  description String?  @db.Text
+  visibility  String   @default("PUBLIC") // 'PUBLIC' | 'PRIVATE'
+  memberCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  memberships CommunityMembership[]
+  posts       Post[]
+
+  @@map("communities")
+}
+
+model CommunityMembership {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  role        String    @default("MEMBER") // 'MEMBER' | 'ADMIN'
+  joinedAt    DateTime  @default(now())
+
+  @@unique([userId, communityId])
+  @@index([userId])
+  @@index([communityId])
+  @@map("community_memberships")
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId  String?
+  community    Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  courseId     String?
+  course       Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  postType     String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT'
+  contentText  String     @db.Text
+  mediaUrl     String?
+  likeCount    Int        @default(0)
+  commentCount Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  comments Comment[]
+
+  @@index([userId])
+  @@index([communityId])
+  @@index([courseId])
+  @@index([createdAt(sort: Desc)])
+  @@map("posts")
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentText String   @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([postId])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Like {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String   // 'POST' | 'COMMENT'
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([userId])
+  @@map("likes")
+}
+
+model ActivityFeed {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityType String   // 'LESSON_COMPLETED' | 'STREAK' | 'LEVEL_UP'
+  entityType   String   // 'lesson' | 'streak' | 'level'
+  entityId     String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  friendActivities FriendActivity[]
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("activity_feed")
+}
+
+model FriendActivity {
+  id           String       @id @default(uuid())
+  userId       String       // Viewer
+  user         User         @relation("ViewerFriendActivities", fields: [userId], references: [id], onDelete: Cascade)
+  friendUserId String       // Actor
+  friendUser   User         @relation("ActorFriendActivities", fields: [friendUserId], references: [id], onDelete: Cascade)
+  activityId   String
+  activity     ActivityFeed @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+
+  @@index([userId])
+  @@index([friendUserId])
+  @@map("friend_activity")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String   // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM'
+  entityType String?
+  entityId   String?
+  title      String?
+  body       String?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+

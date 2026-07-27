@@ -4,11 +4,16 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { LessonCompletedEvent } from './events/lesson-completed.event';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class CourseService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async findAll(query: {
     search?: string;
@@ -203,12 +208,12 @@ export class CourseService {
       };
 
       const todayStr = getLocalDayStr(now);
-      const lastStreakDate = profile.lastStreakEarnedAt || profile.lastActiveAt;
+      const lastStreakDate = profile.lastStreakEarnedAt;
       let shouldUpdateStreakEarnedDate = false;
 
       if (!lastStreakDate) {
-        // First time completing a lesson!
-        newStreak = Math.max(1, (profile.streakDays || 0) + 1);
+        // First lesson ever completed! Earn 1 day of streak for today.
+        newStreak = Math.max(1, profile.streakDays || 1);
         shouldUpdateStreakEarnedDate = true;
       } else {
         const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
@@ -217,10 +222,11 @@ export class CourseService {
         const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
 
         if (diffDays === 0) {
-          // Already completed a lesson today — maintain current streak
-          newStreak = Math.max(1, profile.streakDays || 1);
+          // Already completed a lesson today — maintain current streak, DO NOT increment further!
+          newStreak = profile.streakDays || 1;
+          shouldUpdateStreakEarnedDate = false;
         } else if (diffDays === 1) {
-          // Consecutive day learning! Increment streak (1 -> 2, 2 -> 3, 5 -> 6, etc.)
+          // First lesson completed on a new consecutive calendar day! Increment streak (+1 day)
           newStreak = (profile.streakDays || 0) + 1;
           shouldUpdateStreakEarnedDate = true;
         } else {
@@ -242,24 +248,105 @@ export class CourseService {
         }
       }
 
+      const gemReward = 5;
+      const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
+      const updatedLongest = Math.max(currentLongest, newStreak);
+
       const updatedProfile = await this.prisma.studentProfile.update({
         where: { userId },
         data: {
           xp: { increment: xpEarned },
+          gems: { increment: gemReward },
           streakDays: newStreak,
+          longestStreak: updatedLongest,
           lastActiveAt: now,
+          lastLessonCompletedAt: now,
           ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
         },
       });
+
+      await this.prisma.gemTransaction.create({
+        data: {
+          userId,
+          type: 'EARN',
+          amount: gemReward,
+          source: 'LESSON',
+        },
+      });
+
       newXpTotal = updatedProfile.xp;
       newStreakDaysTotal = updatedProfile.streakDays;
 
+      // 1. Update Daily Activity Heatmap
+      await this.prisma.userDailyActivity.upsert({
+        where: { userId_date: { userId, date: todayStr } },
+        create: { userId, date: todayStr, lessonsCompleted: 1, xpEarned },
+        update: { lessonsCompleted: { increment: 1 }, xpEarned: { increment: xpEarned } },
+      });
+
+      // 2. Denormalize UserStats for instant Home Dashboard rendering (<200ms)
+      await this.prisma.userStats.upsert({
+        where: { userId },
+        create: {
+          userId,
+          totalXp: newXpTotal,
+          totalCoins: gemReward,
+          currentStreak: newStreakDaysTotal,
+          longestStreak: updatedLongest,
+          lessonsCompleted: 1,
+          lastActivityAt: now,
+        },
+        update: {
+          totalXp: newXpTotal,
+          totalCoins: { increment: gemReward },
+          currentStreak: newStreakDaysTotal,
+          longestStreak: updatedLongest,
+          lessonsCompleted: { increment: 1 },
+          lastActivityAt: now,
+        },
+      });
+
+      // 3. Log Learning Event
+      await this.prisma.learningEvent.create({
+        data: {
+          userId,
+          eventType: 'LESSON_COMPLETED',
+          entityType: 'lesson',
+          entityId: lessonId,
+          metadata: { xp: xpEarned, coins: gemReward, streak: newStreakDaysTotal },
+        },
+      });
+
+      // 4. 3-Day Streak Lucky Wheel Unlock Rule: Every 3-day streak milestone grants a Lucky Wheel Spin
+      if (shouldUpdateStreakEarnedDate && newStreakDaysTotal > 0 && newStreakDaysTotal % 3 === 0) {
+        await this.prisma.spinClaim.create({
+          data: {
+            userId,
+            rewardType: 'SPIN_EARNED',
+            rewardVal: 1,
+          },
+        });
+        console.log(`[Gamification] Awarded Lucky Wheel Spin to user ${userId} for reaching ${newStreakDaysTotal}-day streak milestone!`);
+      }
     }
+
+    // Publish LessonCompletedEvent to decouple Learning Domain from downstream modules
+    this.eventEmitter.emit(
+      'lesson.completed',
+      new LessonCompletedEvent(
+        userId,
+        lessonId,
+        course.id,
+        isNewCompletion,
+        new Date(),
+      ),
+    );
 
     return {
       success: true,
       completedLessons: currentCompleted,
       xpEarned: isNewCompletion ? xpEarned : 0,
+      gemsEarned: isNewCompletion ? 5 : 0,
       // Updated totals — use these to refresh frontend state without extra API call
       newXp: newXpTotal,
       newStreakDays: newStreakDaysTotal,
