@@ -413,7 +413,7 @@ export default function StepFifteenPage() {
 
             <div>
     <FloatingInput id="password" type={showPassword ? "text" : "password"} label="Password" placeholder="Create a secure password (min. 6 chars)" value={password} onChange={(e: any) => setPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete="new-password">
-      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowPassword(!showPassword)}>
+      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
       </button>
     </FloatingInput>
@@ -464,7 +464,7 @@ export default function StepFifteenPage() {
 
             <div className="mt-2">
     <FloatingInput id="confirmPassword" type={showConfirmPassword ? "text" : "password"} label="Confirm Password" placeholder="Confirm your secure password" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete="new-password">
-      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}>
         {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
       </button>
     </FloatingInput>
