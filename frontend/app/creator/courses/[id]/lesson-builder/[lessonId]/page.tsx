@@ -609,11 +609,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <button className={styles.btnOutline}><Eye size={15} /> Preview as Student</button>
             <div className={styles.btnSplitGroup}>
               <button className={styles.btnPrimaryCaret} onClick={() => handleSave()}>Save &amp; Continue</button>
-              <button className={styles.btnPrimaryCaretSplit}><ChevronDown size={14} /></button>
+              <button className={styles.btnPrimaryCaretSplit} aria-label="More save options"><ChevronDown size={14} /></button>
             </div>
             <div className={styles.paginationGroup}>
-              <button className={styles.btnOutlineSquare}><ChevronLeft size={16} /></button>
-              <button className={styles.btnOutlineSquare}><ChevronRight size={16} /></button>
+              <button className={styles.btnOutlineSquare} aria-label="Previous lesson"><ChevronLeft size={16} /></button>
+              <button className={styles.btnOutlineSquare} aria-label="Next lesson"><ChevronRight size={16} /></button>
             </div>
           </div>
         </div>
@@ -720,7 +720,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                                 Replace Video
                                 <input type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoFileChange} />
                               </label>
-                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                              <button className={styles.richVideoBtnDanger} aria-label="Remove video" onClick={async () => {
                                 setLesson((l: any) => ({ ...l, learnVideoUrl: null }));
                                 await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnVideoUrl: null }) });
                               }}>
@@ -791,7 +791,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                                 Replace Audio
                                 <input type="file" accept="audio/*" style={{ display: 'none' }} onChange={handleAudioFileChange} />
                               </label>
-                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                              <button className={styles.richVideoBtnDanger} aria-label="Remove audio" onClick={async () => {
                                 setLesson((l: any) => ({ ...l, learnAudioUrl: null }));
                                 await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnAudioUrl: null }) });
                               }}>
