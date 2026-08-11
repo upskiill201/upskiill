@@ -30,18 +30,64 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.resetTimerWarning {
+  background: #FEF2F2;
+  border-color: #FECACA;
+  color: #EF4444;
+  animation: pulseTimer 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseTimer {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.allClaimedBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.allClaimedText {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #EA580C;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fireGlow 1.8s ease-in-out infinite;
+}
+
+@keyframes fireGlow {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(234, 88, 12, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(234, 88, 12, 0.6), 0 0 24px rgba(234, 88, 12, 0.3);
+    transform: scale(1.03);
+  }
 }
 
 .missionsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .missionCard {
   background: #FFFFFF;
   border: 2.5px solid #E2E8F0;
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
@@ -50,20 +96,58 @@
   gap: 0.75rem;
   box-shadow: 0 4px 0 0 #CBD5E1;
   position: relative;
-  transition: transform 0.15s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease, opacity 0.3s ease;
 }
 
 .missionCard:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 0 #CBD5E1;
+  border-color: #CBD5E1;
+}
+
+.missionCardClaimed {
+  opacity: 0.78;
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 0 0 #E2E8F0;
+}
+
+.missionCardClaimed:hover {
+  transform: none;
+  box-shadow: 0 2px 0 0 #E2E8F0;
+}
+
+/* Ready to Claim State Glow */
+.missionCardReady {
+  border-color: #22C55E;
+  background: #F0FDF4;
+  box-shadow: 0 4px 0 0 #16A34A;
+  animation: cardPulse 2s infinite ease-in-out;
+}
+
+.missionCardReady:hover {
+  box-shadow: 0 8px 0 0 #16A34A;
+  transform: translateY(-4px);
+}
+
+@keyframes cardPulse {
+  0% { box-shadow: 0 4px 0 0 #16A34A, 0 0 0 0 rgba(34, 197, 94, 0.3); }
+  50% { box-shadow: 0 4px 0 0 #16A34A, 0 0 12px 2px rgba(34, 197, 94, 0.4); }
+  100% { box-shadow: 0 4px 0 0 #16A34A, 0 0 0 0 rgba(34, 197, 94, 0.3); }
 }
 
 .iconWrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 1rem;
+  width: 54px;
+  height: 54px;
+  border-radius: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.missionCard:hover .iconWrap {
+  transform: scale(1.12) rotate(-3deg);
 }
 
 .iconBlue {
@@ -89,27 +173,49 @@
   line-height: 1.3;
 }
 
+/* Tactile 3D Progress Bar Style */
 .progressContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
-.progressTrack {
+.progressTrack3D {
   width: 100%;
-  height: 8px;
-  background-color: #F1F5F9;
+  height: 14px;
+  background-color: #E2E8F0;
   border-radius: 9999px;
   overflow: hidden;
   position: relative;
+  border: 1.5px solid #CBD5E1;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-.progressFill {
+.progressFill3D {
   height: 100%;
-  background: linear-gradient(90deg, #0172FD 0%, #3B82F6 100%);
+  background: linear-gradient(180deg, #3B82F6 0%, #0172FD 100%);
   border-radius: 9999px;
-  transition: width 0.4s ease;
+  box-shadow: 0 2px 0 0 #0050B3;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.progressFillCompleted {
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
+  box-shadow: 0 2px 0 0 #15803D;
+}
+
+/* Shimmer Highlight Line inside 3D progress */
+.progressFill3D::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  right: 2px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 9999px;
 }
 
 .progressText {
@@ -122,44 +228,124 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-  margin-top: 0.25rem;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+  width: 100%;
 }
 
 .rewardBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   font-size: 0.78rem;
   font-weight: 800;
   color: #0F172A;
   background: #F8FAFC;
   border: 1.5px solid #E2E8F0;
   border-radius: 9999px;
-  padding: 0.2rem 0.55rem;
+  padding: 0.2rem 0.65rem;
+  white-space: nowrap;
+  transition: transform 0.2s ease;
 }
 
-.claimBtn {
+.missionCard:hover .rewardBadge {
+  transform: scale(1.05);
+}
+
+/* Playful 3D Tactile Claim Button */
+.claimBtn3D {
   width: 100%;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #FFFFFF;
-  background: #0172FD;
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
   border: none;
   border-radius: 0.85rem;
-  padding: 0.55rem;
+  padding: 0.65rem;
   cursor: pointer;
-  box-shadow: 0 3px 0 0 #0050B3;
+  box-shadow: 0 4px 0 0 #15803D;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, filter 0.15s ease;
   margin-top: 0.25rem;
+}
+
+.claimBtn3D:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 #15803D;
+  filter: brightness(1.05);
+}
+
+.claimBtn3D:active {
+  transform: translateY(2px) scale(0.95);
+  box-shadow: 0 1px 0 0 #15803D;
+}
+
+.claimBtnShake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
 .claimedTag {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: #22C55E;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #15803D;
   margin-top: 0.25rem;
+}
+
+/* Floating Reward Particle Overlay */
+.particlePopup {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background: #FEF08A;
+  border: 2px solid #EAB308;
+  color: #713F12;
+  font-size: 0.95rem;
+  font-weight: 900;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4);
+  pointer-events: none;
+  z-index: 100;
+  animation: floatUpAndFade 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -15px) scale(1.15);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -35px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50px) scale(0.9);
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  display: block;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 @media (max-width: 768px) {

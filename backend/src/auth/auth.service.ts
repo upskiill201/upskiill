@@ -34,10 +34,17 @@ export class AuthService {
     const requestedRole = dto.role || 'STUDENT';
 
     if (existing) {
-      if (requestedRole === 'INSTRUCTOR' && existing.role !== 'INSTRUCTOR') {
-        const pwMatches = await bcrypt.compare(dto.password, existing.password);
+      const pwMatches = await bcrypt.compare(dto.password, existing.password);
+
+      if (requestedRole === 'INSTRUCTOR' && (!existing.hasCreatorAccess || existing.role !== 'INSTRUCTOR')) {
         if (!pwMatches) {
-          throw new ForbiddenException('Incorrect credentials');
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'EMAIL_ALREADY_EXISTS',
+            message: 'An account with this email already exists. Enter your password to activate your Creator profile.',
+            canLink: true,
+            isVerified: existing.isVerified,
+          });
         }
 
         // Upgrade account to INSTRUCTOR, set creator access flag
@@ -65,17 +72,44 @@ export class AuthService {
           }
         }
 
+        if (dto.onboarding) {
+          try {
+            await this.profileService.hydrateFromOnboarding(existing.id, dto.onboarding as any);
+          } catch (err) {
+            console.warn(`Profile hydration failed for linked user ${existing.id}:`, err);
+          }
+        }
+
         const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
-        return {
-          ...await this.signToken(existing.id, existing.email, existing.fullName, existing.role),
-          hasBothRoles,
-        };
+
+        if (existing.isVerified) {
+          const tokens = await this.signToken(existing.id, existing.email, existing.fullName, existing.role);
+          return {
+            ...tokens,
+            hasBothRoles,
+            linked: true,
+            verified: true,
+            message: 'Creator profile activated successfully',
+          };
+        } else {
+          await this.resendVerification(existing.email);
+          return {
+            message: 'Account linked, but is not verified. Check your email.',
+            userId: existing.id,
+            requiresVerification: true,
+          };
+        }
       }
 
       if (requestedRole === 'STUDENT' && !existing.hasStudentAccess) {
-        const pwMatches = await bcrypt.compare(dto.password, existing.password);
         if (!pwMatches) {
-          throw new ForbiddenException('Incorrect credentials');
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'EMAIL_ALREADY_EXISTS',
+            message: 'An account with this email already exists. Enter your password to activate your Student profile.',
+            canLink: true,
+            isVerified: existing.isVerified,
+          });
         }
 
         // Enable student access on existing user
@@ -93,14 +127,34 @@ export class AuthService {
         });
 
         const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
-        return {
-          ...await this.signToken(existing.id, existing.email, existing.fullName, existing.role),
-          hasBothRoles,
-        };
+
+        if (existing.isVerified) {
+          const tokens = await this.signToken(existing.id, existing.email, existing.fullName, existing.role);
+          return {
+            ...tokens,
+            hasBothRoles,
+            linked: true,
+            verified: true,
+            message: 'Student profile activated successfully',
+          };
+        } else {
+          await this.resendVerification(existing.email);
+          return {
+            message: 'Account linked, but is not verified. Check your email.',
+            userId: existing.id,
+            requiresVerification: true,
+          };
+        }
       }
 
       if (existing.isVerified) {
-        throw new ConflictException('Email already in use');
+        throw new ConflictException({
+          statusCode: 409,
+          code: 'EMAIL_ALREADY_EXISTS',
+          message: 'An account with this email already exists.',
+          canLink: false,
+          isVerified: true,
+        });
       } else {
         // Idempotent: User exists but not verified, resend email
         await this.resendVerification(existing.email);
@@ -347,9 +401,22 @@ export class AuthService {
     });
 
     const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
+
+    // Canonical post-login destination determined server-side from real DB profile flags.
+    // This prevents the client from blindly redirecting to /dashboard regardless of role.
+    let redirectTo = '/onboarding/0';
+    if (hasBothRoles) {
+      redirectTo = '/role-select';
+    } else if (user.hasCreatorAccess) {
+      redirectTo = '/creator';
+    } else if (user.hasStudentAccess) {
+      redirectTo = '/dashboard';
+    }
+
     return {
       ...await this.signToken(user.id, user.email, user.fullName, user.role),
       hasBothRoles,
+      redirectTo,
     };
   }
 
@@ -551,7 +618,18 @@ export class AuthService {
     fullName: string,
     role: string,
   ) {
-    const payload = { sub: userId, email, role };
+    const userRow = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { hasCreatorAccess: true, hasStudentAccess: true },
+    });
+
+    const payload = {
+      sub: userId,
+      email,
+      role,
+      hasCreatorAccess: userRow?.hasCreatorAccess ?? false,
+      hasStudentAccess: userRow?.hasStudentAccess ?? false,
+    };
     const secret = process.env.JWT_SECRET || 'super-secret-upskiill-key-2024';
 
     const token = await this.jwt.signAsync(payload, {

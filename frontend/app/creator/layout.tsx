@@ -27,6 +27,7 @@ import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import styles from './Creator.module.css';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 
@@ -73,14 +74,34 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   
-  const [creatorName, setCreatorName] = useState('Creator');
-  const [creatorAvatar, setCreatorAvatar] = useState('https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80');
-  const [hasStudentAccess, setHasStudentAccess] = useState(false);
-  const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
+  const [creatorName, setCreatorName] = useState<string | null>(null);
+  const [creatorAvatar, setCreatorAvatar] = useState<string | null>(null);
+  const [hasStudentAccess, setHasStudentAccess] = useState<boolean>(false);
+  const [hasCreatorAccess, setHasCreatorAccess] = useState<boolean>(false);
 
   useEffect(() => {
     setIsMounted(true);
-    
+
+    // Creator auth pages (/creator/login, /creator/signup, etc.) are inside the /creator/* route
+    // tree so this layout wraps them. We MUST NOT run auth checks on those pages — doing so
+    // causes a redirect loop: layout fires /api/auth/me → 401 → redirect to /creator/login
+    // → layout fires again → infinite refresh.
+    const CREATOR_AUTH_PATHS = [
+      '/creator/login', '/creator/signup', '/creator/onboarding',
+      '/creator/forgot-password', '/creator/reset-password',
+      '/creator/verify-pending', '/creator/verify-failed',
+    ];
+    if (CREATOR_AUTH_PATHS.some((p) => pathname?.startsWith(p))) {
+      return; // Auth pages manage their own session state
+    }
+
+    // Safely hydrate cached user on client mount to prevent SSR hydration mismatch
+    const cached = getCachedUser();
+    if (cached?.fullName) setCreatorName(cached.fullName);
+    if (cached?.avatarUrl) setCreatorAvatar(cached.avatarUrl);
+    if (cached?.hasStudentAccess !== undefined) setHasStudentAccess(cached.hasStudentAccess);
+    if (cached?.hasCreatorAccess !== undefined) setHasCreatorAccess(cached.hasCreatorAccess);
+
     // Fetch live user data for sidebar
     const fetchUser = async () => {
       try {
@@ -88,9 +109,22 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
         if (res.ok) {
           const data = await res.json();
           if (data.fullName) setCreatorName(data.fullName);
-          if (data.profile?.avatarUrl) setCreatorAvatar(data.profile.avatarUrl);
-          if (data.hasStudentAccess) setHasStudentAccess(data.hasStudentAccess);
-          if (data.hasCreatorAccess) setHasCreatorAccess(data.hasCreatorAccess);
+          if (data.profile?.avatarUrl || data.avatarUrl) setCreatorAvatar(data.profile?.avatarUrl || data.avatarUrl);
+          if (data.hasStudentAccess !== undefined) setHasStudentAccess(data.hasStudentAccess);
+          if (data.hasCreatorAccess !== undefined) setHasCreatorAccess(data.hasCreatorAccess);
+          setCachedUser(data);
+
+          // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-03)
+          // Pure students with no creator access should not be in the Creator Studio.
+          // Use window.location.href (hard navigation) to prevent any router-level loop.
+          if (!data.hasCreatorAccess) {
+            window.location.href = '/dashboard';
+            return;
+          }
+        } else if (res.status === 401) {
+          // No valid session — send to creator login
+          window.location.href = '/creator/login';
+          return;
         }
       } catch (err) {
         console.warn('Failed to fetch user data for sidebar', err);
@@ -105,7 +139,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [pathname]);
 
   const triggerComingSoon = (feature: string) => setComingSoonFeature(feature);
 
@@ -218,10 +252,10 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                       className={styles.userProfile}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                      <Avatar src={creatorAvatar} name={creatorName} size="sm" />
+                      <Avatar src={creatorAvatar || undefined} name={creatorName || 'Creator'} size="sm" />
                       <div className={styles.userInfo}>
                         <div className={styles.userNameRow}>
-                          <span className={styles.userName}>{creatorName}</span>
+                          <span className={styles.userName}>{creatorName || 'Creator'}</span>
                           <ChevronDown size={14} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
                         </div>
                         <span className={styles.userRole}>Instructor</span>

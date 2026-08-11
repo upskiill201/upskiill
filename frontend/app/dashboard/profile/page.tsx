@@ -29,8 +29,10 @@ import {
 import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
+import { StatsBar } from '@/components/ui/StatsBar';
 import { useGamification } from '@/context/GamificationContext';
 import { playHaptic } from '@/lib/haptics';
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import styles from './Profile.module.css';
 
 interface Classmate {
@@ -68,13 +70,13 @@ const MOCK_CLASSMATES: Classmate[] = [
 ];
 
 export default function StudentProfilePage() {
-  const { streakDays, xp, lives, maxLives, userLevel, refresh } = useGamification();
+  const { streakDays, xp, refresh } = useGamification();
 
-  const [displayName, setDisplayName] = useState('Up Skill');
-  const [username, setUsername] = useState('upskill');
+  const [displayName, setDisplayName] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [bio, setBio] = useState('');
   const [joinedDate, setJoinedDate] = useState('Joined July 2026');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [followingCount, setFollowingCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
   const [activeSocialTab, setActiveSocialTab] = useState<'following' | 'followers'>('following');
@@ -85,8 +87,8 @@ export default function StudentProfilePage() {
   const [copiedToast, setCopiedToast] = useState(false);
 
   // Editable form inputs
-  const [editNameInput, setEditNameInput] = useState(displayName);
-  const [editUsernameInput, setEditUsernameInput] = useState(username);
+  const [editNameInput, setEditNameInput] = useState('');
+  const [editUsernameInput, setEditUsernameInput] = useState('');
   const [editBioInput, setEditBioInput] = useState('');
   const [editAvatarInput, setEditAvatarInput] = useState('');
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -97,6 +99,24 @@ export default function StudentProfilePage() {
   const [followingList, setFollowingList] = useState<Classmate[]>([]);
   const [followersList, setFollowersList] = useState<Classmate[]>([]);
 
+  useEffect(() => {
+    // Hydrate cached profile on client mount safely to prevent SSR hydration mismatch
+    const cached = getCachedUser();
+    if (cached?.fullName) {
+      setDisplayName(cached.fullName);
+      setEditNameInput(cached.fullName);
+    }
+    if (cached?.email) {
+      const u = cached.email.split('@')[0];
+      setUsername(u);
+      setEditUsernameInput(u);
+    }
+    if (cached?.avatarUrl) {
+      setAvatarUrl(cached.avatarUrl);
+      setEditAvatarInput(cached.avatarUrl);
+    }
+  }, []);
+
   // Fetch user profile info from backend
   const fetchProfile = useCallback(async () => {
     try {
@@ -106,6 +126,7 @@ export default function StudentProfilePage() {
         if (data.fullName) {
           setDisplayName(data.fullName);
           setEditNameInput(data.fullName);
+          setCachedUser(data);
         }
         if (data.username) {
           setUsername(data.username);
@@ -399,40 +420,10 @@ export default function StudentProfilePage() {
         </div>
       )}
 
-      {/* ── TOP HEADER GAMIFICATION STATS BAR (ICON-MATCHED COLORS) ── */}
+      {/* ── TOP HEADER GAMIFICATION STATS BAR (ALL FIVE LIVE STATS) ── */}
       <div className={styles.topHeaderBar}>
-        {/* Streak Item (Orange) */}
-        <div className={`${styles.headerStatItem} ${styles.statOrangeText}`}>
-          <Image src="/Icons/burn.png" width={22} height={22} alt="Streak" />
-          <div className={styles.headerStatTextGroup}>
-            <span className={styles.headerStatValue}>{streakDays || 12}</span>
-            <span className={styles.headerStatLabel}>Streak</span>
-          </div>
-        </div>
-
-        {/* XP Item (Blue) */}
-        <div className={`${styles.headerStatItem} ${styles.statBlueText}`}>
-          <Image src="/Icons/gem.png" width={22} height={22} alt="XP" />
-          <div className={styles.headerStatTextGroup}>
-            <span className={styles.headerStatValue}>{xp || 505}</span>
-            <span className={styles.headerStatLabel}>XP</span>
-          </div>
-        </div>
-
-        {/* Hearts Item (Red) */}
-        <div className={`${styles.headerStatItem} ${styles.statRedText}`}>
-          <Image src="/Icons/heart.png" width={22} height={22} alt="Hearts" />
-          <div className={styles.headerStatTextGroup}>
-            <span className={styles.headerStatValue}>{lives}/{maxLives}</span>
-            <span className={styles.headerStatLabel}>Hearts</span>
-          </div>
-        </div>
-
-        {/* Level Item (Yellow/Gold) */}
-        <div className={`${styles.headerStatItem} ${styles.statYellowText}`}>
-          <Star size={20} className="fill-[#EAB308] text-[#EAB308]" />
-          <span className={styles.headerStatValue} style={{ fontSize: '0.9rem' }}>Level {userLevel || 7}</span>
-        </div>
+        {/* All stats: streak, coins, XP, hearts & level — live from gamification context */}
+        <StatsBar />
 
         {/* User Profile Avatar Circle */}
         <div className={styles.userDropdownTrigger} onClick={() => setIsEditModalOpen(true)}>
@@ -467,7 +458,7 @@ export default function StudentProfilePage() {
             <div className={styles.welcomeTextContainer}>
               <h2 className={styles.welcomeTitle}>
                 Welcome back,<br />
-                {displayName}! 👋
+                {displayName ? `${displayName}! 👋` : <span className="inline-block w-28 h-6 bg-slate-200 animate-pulse rounded-md align-middle my-1" />}
               </h2>
               <p className={styles.welcomeSubtitle}>
                 Consistency today,<br />
@@ -483,10 +474,10 @@ export default function StudentProfilePage() {
                 {/* Avatar with star badge */}
                 <div className={styles.avatarWrapper}>
                   {avatarUrl ? (
-                    <Avatar src={avatarUrl} name={displayName} size="lg" />
+                    <Avatar src={avatarUrl || undefined} name={displayName || 'User'} size="lg" />
                   ) : (
                     <div className={styles.avatarCircle}>
-                      {displayName ? displayName.charAt(0).toUpperCase() : 'U'}
+                      {displayName ? displayName.charAt(0).toUpperCase() : <span className="inline-block w-6 h-6 bg-slate-200 animate-pulse rounded-full" />}
                     </div>
                   )}
                   <div className={styles.avatarStarBadge}>
@@ -495,9 +486,11 @@ export default function StudentProfilePage() {
                 </div>
 
                 <div className={styles.identityDetails}>
-                  <h1 className={styles.identityName}>{displayName}</h1>
+                  <h1 className={styles.identityName}>
+                    {displayName || <span className="inline-block w-36 h-6 bg-slate-200 animate-pulse rounded-md" />}
+                  </h1>
                   <div className={styles.handleRow}>
-                    <span>@{username}</span>
+                    <span>{username ? `@${username}` : <span className="inline-block w-20 h-4 bg-slate-200 animate-pulse rounded" />}</span>
                     <Edit3 
                       size={15} 
                       className={styles.pencilIcon} 
@@ -552,7 +545,7 @@ export default function StudentProfilePage() {
                 src="/User onbarding Assets/Step_14_image_desktop.webp" 
                 alt="Teyro LinkedIn Mascot"
                 fill
-                sizes="140px"
+                sizes="260px"
                 style={{ objectFit: 'contain' }}
               />
             </div>

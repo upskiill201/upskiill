@@ -312,7 +312,7 @@
   background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
   border: 1.5px solid #BAE6FD;
   border-radius: 1.25rem;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0 1.5rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -368,8 +368,10 @@
 }
 
 .linkedinGraphic {
-  width: 140px;
-  height: 110px;
+  width: clamp(200px, 30%, 260px);
+  height: 100%;
+  min-height: 170px;
+  align-self: stretch;
   position: relative;
   flex-shrink: 0;
 }
@@ -1170,7 +1172,8 @@
 
   .linkedinGraphic {
     width: 75px;
-    height: 65px;
+    height: auto;
+    align-self: stretch;
   }
 
   .achievementItem {

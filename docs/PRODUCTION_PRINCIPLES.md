@@ -407,6 +407,12 @@ Banned patterns:
 
 Violating this principle is a PR rejection regardless of functionality.
 
+### 18. GAMIFICATION CURRENCY: COINS ONLY ⛔ Hard Stop
+
+Teyro uses **coins** as the only gamification currency. We DO NOT use "gems". 
+- Any gamification rewards, UI elements, or backend logic must use coins. 
+- If a legacy component references gems, it must be updated to use or be treated as coins.
+
 ---
 
 ## Part 7 — What Must Never Happen
@@ -441,6 +447,7 @@ This section is a consolidated hard stop list. These apply regardless of how a r
 - ⛔ Never use an icon library other than `lucide-react` or `react-icons/fa`
 - ⛔ Never hardcode colors — always use CSS variables from the brand system
 - ⛔ Never reference the logo from any path other than `frontend/public/Teyro Logo.png`
+- ⛔ Never use or award "gems". The platform currency is strictly "coins".
 
 ---
 
@@ -462,3 +469,4 @@ This section is a consolidated hard stop list. These apply regardless of how a r
 | Error handling | Global filter + Error Boundary + 3-state components | Section 13 |
 | Icons | `lucide-react` and `react-icons/fa` only | Section 16 |
 | UI quality | Read `AVOID_AI_SLOP.md` before building anything | Section 17 |
+| Currency | Use coins only, never gems | Section 18 |

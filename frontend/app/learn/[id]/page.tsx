@@ -11,8 +11,8 @@ import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
-import { StatPill } from '@/components/ui/StatPill';
-import { useGamification } from '@/context/GamificationContext';
+import { StatsBar } from '@/components/ui/StatsBar';
+import LearnCourseSkeleton from './LearnCourseSkeleton';
 import styles from './LearnCourse.module.css';
 
 /* ─── Spring constants ───────────────────────────────────────────── */
@@ -69,8 +69,7 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
   
-  // Use global gamification context for synchronized stats
-  const { xp: xpPoints, streakDays, lives: livesCount } = useGamification();
+  // Live stats are rendered by <StatsBar /> from the global gamification context
 
   const sections = course.sections || course.curriculum || [];
   const totalLessons = sections.reduce((acc: number, s: any) => acc + (s.lessons?.length || 0), 0);
@@ -123,6 +122,9 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
           <ArrowLeft size={16} />
           <span>Back to My Learning</span>
         </Link>
+
+        {/* Live stats bar — always visible on desktop, mirrors the dashboard homescreen */}
+        <StatsBar />
       </motion.div>
       
       {/* Rest of JSX... */}
@@ -531,15 +533,21 @@ export default function LearnCoursePage() {
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await fetch(`/api/courses/${params.id}`, { headers: { 'Cache-Control': 'no-cache' } });
-        if (!res.ok) throw new Error('Course not found');
-        const data = await res.json();
-        setCourse(data);
+        const [courseRes, progRes] = await Promise.all([
+          fetch(`/api/courses/${params.id}`, { headers: { 'Cache-Control': 'no-cache' } }),
+          fetch(`/api/courses/${params.id}/progress`, {
+            credentials: 'include',
+            headers: { 'Cache-Control': 'no-cache' },
+          }),
+        ]);
 
-        const progRes = await fetch(`/api/courses/${params.id}/progress`, {
-          credentials: 'include',
-          headers: { 'Cache-Control': 'no-cache' },
-        });
+        if (courseRes.ok) {
+          const data = await courseRes.json();
+          setCourse(data);
+        } else {
+          setCourse(null);
+        }
+
         if (progRes.ok) {
           const pd = await progRes.json();
           setCompletedLessons(pd.completedLessons || []);
@@ -555,7 +563,11 @@ export default function LearnCoursePage() {
 
   /* ── Loading state ─────────────────────────────── */
   if (loading) {
-    return <TeyroBrandedLoader isVisible={true} microcopyOverride="Tey is building your course syllabus..." />;
+    return (
+      <DashboardLayout>
+        <LearnCourseSkeleton />
+      </DashboardLayout>
+    );
   }
 
   if (!course) {

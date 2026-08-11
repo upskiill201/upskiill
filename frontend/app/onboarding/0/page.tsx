@@ -35,8 +35,8 @@ export default function OnboardingStep0() {
     // Basic initialization check
     const state = getOnboardingState();
     if (state.onboardingComplete) {
-      router.replace('/dashboard');
-      return;
+      // router.replace('/dashboard');
+      // return;
     }
     setIsLoading(false);
     const t = setTimeout(() => setIdle(true), 1500);
@@ -87,9 +87,10 @@ export default function OnboardingStep0() {
       }
 
       playHaptic('medium');
-      
-      // If user has both profiles, let them pick their mode first
-      window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
+
+      // Use server-provided redirectTo — determined from real DB profile flags.
+      // This prevents creators from being blindly sent to /dashboard.
+      window.location.href = data.redirectTo || '/dashboard';
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -153,7 +154,8 @@ export default function OnboardingStep0() {
       }
 
       playHaptic('medium');
-      window.location.href = data.hasBothRoles ? '/role-select' : '/dashboard';
+      // Use server-provided redirectTo — determined from real DB profile flags.
+      window.location.href = data.redirectTo || '/dashboard';
     } catch (err: unknown) {
       console.error(err);
       const message = err instanceof Error ? err.message : 'Google authentication failed';

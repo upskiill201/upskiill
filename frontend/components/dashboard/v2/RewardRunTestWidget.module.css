@@ -1,0 +1,149 @@
+.card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px dashed #0172fd;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 25px -5px rgba(1, 114, 253, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badgeIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0172fd;
+  letter-spacing: 0.03em;
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.testBadge {
+  background-color: #e0f2fe;
+  color: #0172fd;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.testBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-jakarta), sans-serif;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  position: relative;
+  user-select: none;
+}
+
+.testBtn:active {
+  transform: translateY(2px);
+  box-shadow: none !important;
+}
+
+.btnCoin {
+  background-color: #fef9c3;
+  color: #ca8a04;
+  border: 2px solid #facc15;
+  box-shadow: 0 4px 0 #eab308;
+}
+
+.btnXp {
+  background-color: #eff6ff;
+  color: #0172fd;
+  border: 2px solid #93c5fd;
+  box-shadow: 0 4px 0 #3b82f6;
+}
+
+.btnHeart {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #fca5a5;
+  box-shadow: 0 4px 0 #ef4444;
+}
+
+.btnStreak {
+  background-color: #ffedd5;
+  color: #ea580c;
+  border: 2px solid #fdba74;
+  box-shadow: 0 4px 0 #f97316;
+}
+
+.comboRow {
+  margin-top: 8px;
+}
+
+.comboBtn {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #0172fd 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #1d4ed8, 0 10px 20px -5px rgba(1, 114, 253, 0.4);
+  font-family: var(--font-jakarta), sans-serif;
+  transition: transform 0.1s ease;
+}
+
+.comboBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #1d4ed8;
+}

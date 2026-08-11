@@ -5,7 +5,7 @@ import { BadRequestException } from '@nestjs/common';
 
 describe('PaymentService', () => {
   let service: PaymentService;
-  let prismaServiceMock: Record<string, jest.Mock>;
+  let prismaServiceMock: any;
 
   beforeEach(async () => {
     // Set environment variable required for MeSomb initialization

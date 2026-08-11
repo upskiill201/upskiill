@@ -4,6 +4,19 @@
   padding: 1.5rem 1.25rem 4rem 1.25rem;
 }
 
+.topStats {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .topStats {
+    justify-content: flex-start;
+  }
+}
+
 .shopHeader {
   display: flex;
   align-items: center;

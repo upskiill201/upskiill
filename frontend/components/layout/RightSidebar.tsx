@@ -7,6 +7,7 @@ import { Bot, Lock, BookOpen } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
 import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
 import FriendsActivityCard from '@/components/dashboard/v2/FriendsActivityCard';
 import WeeklyLuckySpinCard from '@/components/dashboard/v2/WeeklyLuckySpinCard';
@@ -32,6 +33,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     nextRewardClaimInMs,
     claimDailyReward,
   } = useGamification();
+  const { triggerRewardAnimation } = useRewardAnimation();
 
   const [countdownStr, setCountdownStr] = useState('');
 
@@ -62,8 +64,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     return () => clearInterval(interval);
   }, [isEligibleForReward, nextRewardClaimInMs]);
 
-  const handleClaimReward = async () => {
+  const handleClaimReward = async (e: React.MouseEvent<HTMLButtonElement>) => {
     playHaptic('success');
+    triggerRewardAnimation({
+      originElement: e.currentTarget,
+      rewards: [{ currency: 'COINS', amount: 20 }]
+    });
     await claimDailyReward();
   };
 

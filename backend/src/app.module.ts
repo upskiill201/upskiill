@@ -17,14 +17,21 @@ import { SocialModule } from './social/social.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShopModule } from './shop/shop.module';
 import { HomeModule } from './home/home.module';
+import { MissionsModule } from './missions/missions.module';
+import { ProgressModule } from './progress/progress.module';
+import { ChestModule } from './chest/chest.module';
+import { SpinModule } from './spin/spin.module';
+import { StreakModule } from './streak/streak.module';
 
 @Module({
   imports: [
     EventEmitterModule.forRoot(),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100, // global fallback
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100, // global fallback
+      },
+    ]),
     PrismaModule,
     AuthModule,
     CourseModule,
@@ -39,6 +46,11 @@ import { HomeModule } from './home/home.module';
     SocialModule,
     ShopModule,
     HomeModule,
+    MissionsModule,
+    ProgressModule,
+    ChestModule,
+    SpinModule,
+    StreakModule,
   ],
   controllers: [AppController],
   providers: [AppService],

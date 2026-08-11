@@ -33,6 +33,11 @@ export class WhatsappService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
+    const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
+    if (!isEnabled) {
+      this.logger.warn('[WhatsApp] Baileys service is DISABLED (set ENABLE_WHATSAPP=true in env to activate). Dev Mode active.');
+      return;
+    }
     await this.initBaileys();
     this.startKeepAlivePinger();
   }
@@ -171,6 +176,7 @@ export class WhatsappService implements OnModuleInit {
 
   /** Initialises the Baileys WhatsApp Web socket using database-backed auth */
   private async initBaileys() {
+    if (process.env.ENABLE_WHATSAPP !== 'true') return;
     try {
       const { state, saveCreds } = await this.usePrismaAuthState();
       const { version } = await fetchLatestBaileysVersion();
@@ -358,10 +364,11 @@ export class WhatsappService implements OnModuleInit {
       expiresAt: Date.now() + 10 * 60 * 1000,
     });
 
-    const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
-    const message = this.buildOtpMessage(code);
+    const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
 
-    if (this.sock && this.isConnected) {
+    if (isEnabled && this.sock && this.isConnected) {
+      const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
+      const message = this.buildOtpMessage(code);
       try {
         await this.sock.sendMessage(jid, { text: message });
         this.logger.log(`[WhatsApp Baileys] OTP sent to ${phone} (${jid}) ✅`);
@@ -370,15 +377,16 @@ export class WhatsappService implements OnModuleInit {
       }
     } else {
       this.logger.warn(
-        `[WhatsApp Baileys] Client not connected yet. OTP for ${phone} is: ${code} (Visit https://upskiill-backend.onrender.com/whatsapp/qr-page to scan QR)`,
+        `[WhatsApp Dev Mode] Service disabled or disconnected. OTP for ${phone} is: 🔑 ${code} 🔑`,
       );
     }
 
     return {
       success: true,
-      message: this.isConnected
+      message: isEnabled && this.isConnected
         ? 'OTP sent to your WhatsApp number!'
-        : 'OTP generated. Please visit the backend QR page to connect WhatsApp.',
+        : `OTP generated (Dev Mode). Use code ${code} to verify.`,
+      code: process.env.NODE_ENV !== 'production' ? code : undefined,
     };
   }
 

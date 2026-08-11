@@ -10,6 +10,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './Creator.module.css';
 
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
+
 // Mock Data
 const STATS = [
   { id: 1, title: 'Total Students', value: '2,487', trend: '+ 18.6%', trendText: 'vs Apr 18 - May 17', icon: <Users size={20} className={styles.iconBlue} />, bg: styles.bgBlue },
@@ -40,14 +42,21 @@ const ACTIVITY = [
 export default function CreatorDashboard() {
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [cachedFirstName, setCachedFirstName] = useState<string | null>(null);
 
   useEffect(() => {
+    const cached = getCachedUser();
+    if (cached?.fullName) {
+      setCachedFirstName(cached.fullName.split(' ')[0]);
+    }
+
     const fetchProfile = async () => {
       try {
         const res = await fetch('/api/profile');
         if (res.ok) {
           const data = await res.json();
           setProfileData(data);
+          if (data?.fullName) setCachedUser(data);
         }
       } catch (err) {
         console.error('Failed to load profile for dashboard banner', err);
@@ -59,7 +68,7 @@ export default function CreatorDashboard() {
   }, []);
 
   const needsSetup = !loading && profileData && !profileData.profile?.bio;
-  const firstName = profileData?.fullName?.split(' ')[0] || 'Alex';
+  const firstName = profileData?.fullName?.split(' ')[0] || cachedFirstName;
 
   return (
     <div className={styles.dashboardLayout}>
@@ -80,7 +89,9 @@ export default function CreatorDashboard() {
       {/* ─── HEADER AREA ─── */}
       <div className={styles.welcomeSection}>
         <div>
-          <h2 className={styles.welcomeTitle}>Welcome back, {firstName}! 👋</h2>
+          <h2 className={styles.welcomeTitle}>
+            Welcome back, {firstName ? `${firstName}! 👋` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
+          </h2>
           <p className={styles.welcomeSub}>Here&apos;s what&apos;s happening with your courses today.</p>
         </div>
         

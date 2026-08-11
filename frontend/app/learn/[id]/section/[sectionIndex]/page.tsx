@@ -10,8 +10,13 @@ import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
-import { StatPill } from '@/components/ui/StatPill';
+import LearnSectionSkeleton from './LearnSectionSkeleton';
+import { StatsBar } from '@/components/ui/StatsBar';
+import confetti from 'canvas-confetti';
+import { playWinSound } from '@/utils/audio';
+import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
@@ -297,11 +302,29 @@ function SectionViewContent({
   setCompletedLessons,
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
-  const { xp: xpPoints, streakDays, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp } = useGamification();
+  const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays } = useGamification();
+  const { triggerRewardAnimation } = useRewardAnimation();
   const params = useParams();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
   const mapRef = useRef<HTMLDivElement>(null);
+  const xpCardRef = useRef<HTMLDivElement>(null);
+  const coinCardRef = useRef<HTMLDivElement>(null);
+  const lessonStartTimeRef = useRef<number>(Date.now());
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [celebrateStep, setCelebrateStep] = useState<1 | 2 | 3 | 4>(1);
+  const [isRewardsCollected, setIsRewardsCollected] = useState<boolean>(false);
+  const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(120);
+  const [earnedRewards, setEarnedRewards] = useState<{ xp: number; coins: number; isNewCompletion: boolean }>({ xp: 20, coins: 5, isNewCompletion: true });
+  const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
+  const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
+
+  // Animated counters & progress bar fill states for Duolingo victory stepper
+  const [displayXp, setDisplayXp] = useState<number>(0);
+  const [displayCoins, setDisplayCoins] = useState<number>(0);
+  const [animatedAccuracy, setAnimatedAccuracy] = useState<number>(0);
+  const [animatedLevelPct, setAnimatedLevelPct] = useState<number>(0);
 
   const completedInSection = lessons.filter((l: any) =>
     completedLessons.includes(l.id)
@@ -323,6 +346,137 @@ function SectionViewContent({
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+
+  const isReviewMode = activeLesson ? completedLessons.includes(activeLesson.id) : false;
+
+  const currentLessonIndex = activeLesson ? lessons.findIndex((l: any) => l.id === activeLesson.id) : -1;
+  const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < lessons.length - 1 ? lessons[currentLessonIndex + 1] : null;
+
+  useEffect(() => {
+    if (activeLesson) {
+      lessonStartTimeRef.current = Date.now();
+    }
+  }, [activeLesson]);
+
+  // PHASE 1 & 3: Camera Auto-Scroll & Lock Shatter Audio Choreography
+  useEffect(() => {
+    if (lessonPhase === 'start' && mapRef.current) {
+      const targetNodeIdx = justUnlockedIndex !== null ? justUnlockedIndex : currentActiveLessonIndex;
+      if (targetNodeIdx !== -1) {
+        const nodeElem = nodeRefs.current[targetNodeIdx];
+        if (nodeElem && mapRef.current) {
+          const containerHeight = mapRef.current.clientHeight;
+          const nodeTop = nodeElem.offsetTop;
+          const targetScrollTop = Math.max(0, nodeTop - containerHeight / 2 + 75);
+
+          // Phase 1: Smooth camera auto-scroll to center unlocked node dead-center
+          mapRef.current.scrollTo({
+            top: targetScrollTop,
+            behavior: 'smooth',
+          });
+        }
+      }
+
+      // Phase 3: Lock Shatter & Sound Timing (plays at exact peak moment: t = 1.4s)
+      if (justUnlockedIndex !== null) {
+        const unlockAudioTimer = setTimeout(() => {
+          try {
+            playWinSound();
+            confetti({
+              particleCount: 40,
+              spread: 60,
+              origin: { y: 0.5 },
+              colors: ['#58CC02', '#0172FD', '#EAB308'],
+            });
+          } catch {}
+        }, 1400);
+
+        const resetTimer = setTimeout(() => {
+          setJustUnlockedIndex(null);
+        }, 3200);
+
+        return () => {
+          clearTimeout(unlockAudioTimer);
+          clearTimeout(resetTimer);
+        };
+      }
+    }
+  }, [lessonPhase, currentActiveLessonIndex, justUnlockedIndex]);
+
+  const targetAccuracy = Math.max(60, Math.min(100, Math.round((livesCount / 5) * 100)));
+  const targetLevelXpNeeded = 100 * (userLevel || 1);
+  const targetLevelPct = Math.min(100, Math.max(0, Math.round((xpInCurrentLevel / targetLevelXpNeeded) * 100)));
+
+  useEffect(() => {
+    if (lessonPhase === 'celebrate') {
+      const elapsed = Math.max(30, Math.round((Date.now() - lessonStartTimeRef.current) / 1000));
+      setTimeSpentSeconds(elapsed);
+
+      try {
+        playWinSound();
+        confetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.6 },
+          colors: ['#0172FD', '#58CC02', '#EAB308', '#FF8A00'],
+        });
+      } catch {}
+    } else {
+      setIsRewardsCollected(false);
+      setCelebrateStep(1);
+    }
+  }, [lessonPhase]);
+
+  // Stepper animations per step
+  useEffect(() => {
+    if (lessonPhase !== 'celebrate') return;
+
+    if (celebrateStep === 1) {
+      setDisplayXp(0);
+      setAnimatedAccuracy(0);
+
+      let startXp = 0;
+      const targetXp = earnedRewards.xp || 20;
+      const xpStepTime = Math.max(20, Math.floor(800 / Math.max(1, targetXp)));
+
+      const xpTimer = setInterval(() => {
+        startXp += 1;
+        setDisplayXp(startXp);
+        playAscendingPopSound(startXp);
+        if (startXp >= targetXp) clearInterval(xpTimer);
+      }, xpStepTime);
+
+      const accTimer = setTimeout(() => {
+        setAnimatedAccuracy(targetAccuracy);
+      }, 150);
+
+      return () => {
+        clearInterval(xpTimer);
+        clearTimeout(accTimer);
+      };
+    } else if (celebrateStep === 3) {
+      setDisplayCoins(0);
+      let startCoins = 0;
+      const targetCoins = earnedRewards.coins || 5;
+      const coinStepTime = Math.max(40, Math.floor(800 / Math.max(1, targetCoins)));
+
+      const coinTimer = setInterval(() => {
+        startCoins += 1;
+        setDisplayCoins(startCoins);
+        playAscendingPopSound(startCoins);
+        if (startCoins >= targetCoins) clearInterval(coinTimer);
+      }, coinStepTime);
+
+      return () => clearInterval(coinTimer);
+    } else if (celebrateStep === 4) {
+      setAnimatedLevelPct(0);
+      const lvlTimer = setTimeout(() => {
+        setAnimatedLevelPct(targetLevelPct);
+      }, 150);
+
+      return () => clearTimeout(lvlTimer);
+    }
+  }, [lessonPhase, celebrateStep, earnedRewards.xp, earnedRewards.coins, targetAccuracy, targetLevelPct]);
 
   let applyData = null;
   if (activeLesson?.contentBlocks?.apply && Array.isArray(activeLesson.contentBlocks.apply)) {
@@ -348,6 +502,18 @@ function SectionViewContent({
   const applyScenario = applyData?.scenario || '';
   const currentQuestion = applyQuestions[currentQuestionIndex] || applyQuestions[0];
 
+  // Auto-preselect saved correct answer when in Review Mode
+  useEffect(() => {
+    if (isReviewMode && lessonPhase === 'apply' && currentQuestion?.options) {
+      const correctIdx = currentQuestion.options.findIndex((opt: any) => opt.id === currentQuestion.correctOptionId);
+      if (correctIdx !== -1) {
+        setSelectedOptionIndex(correctIdx);
+        setIsAnswerChecked(true);
+        setIsAnswerCorrect(true);
+      }
+    }
+  }, [isReviewMode, lessonPhase, currentQuestionIndex, currentQuestion]);
+
   const handleCheckAnswer = () => {
     if (selectedOptionIndex === null) return;
     playHaptic('medium');
@@ -355,14 +521,17 @@ function SectionViewContent({
     const selectedOption = currentQuestion.options[selectedOptionIndex];
     const correct = selectedOption.id === currentQuestion.correctOptionId;
     setIsAnswerCorrect(correct);
-    // Deduct a life on wrong answer (global context + backend)
-    if (!correct) {
+    if (correct) {
+      playWinSound();
+    }
+    // Deduct a life on wrong answer (global context + backend) — ONLY if NOT in Review Mode
+    if (!correct && !isReviewMode) {
       loseLife();
     }
   };
 
   const handleApplyContinue = () => {
-    playHaptic('medium');
+    playHaptic('medium', false);
     if (currentQuestionIndex < applyQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setSelectedOptionIndex(null);
@@ -430,7 +599,7 @@ function SectionViewContent({
 
   const handleReflectSubmit = () => {
     if (canSubmitReflect) {
-      playHaptic('success');
+      playHaptic('success', false);
       setLessonPhase('deepen');
     }
   };
@@ -479,34 +648,61 @@ function SectionViewContent({
   const deepenDesc = deepenData?.collectionDescription || 'Explore these helpful resources to master the topic.';
   const nextStepConfig = deepenData?.recommendedNextStep || { type: 'practice' };
 
+  const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+
   const handleDeepenFinish = async () => {
+    if (isCompletingLesson) return;
+    setIsCompletingLesson(true);
     playHaptic('success');
     try {
       const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonId: activeLesson.id })
+        body: JSON.stringify({
+          lessonId: activeLesson.id,
+          timezoneOffset: new Date().getTimezoneOffset(),
+        })
       });
       if (res.ok) {
         const data = await res.json();
         if (!completedLessons.includes(activeLesson.id)) {
           setCompletedLessons(prev => [...prev, activeLesson.id]);
         }
+        setEarnedRewards({
+          xp: data.xpEarned ?? (activeLesson?.xpReward || 20),
+          coins: data.coinsEarned ?? 5,
+          isNewCompletion: data.isNewCompletion !== false,
+        });
         // Instantly update global context with server-confirmed new totals
         if (data.newXp !== undefined && data.newStreakDays !== undefined) {
-          applyLessonReward(data.newXp, data.newStreakDays);
+          applyLessonReward(data.newXp, data.newStreakDays, data.newCoins);
         }
+        // Signal Today's Missions card to re-fetch or merge instantly
+        if (data.missionsUpdated) {
+          window.dispatchEvent(new CustomEvent('missions:updated', { detail: data.missionsUpdated }));
+        }
+        window.dispatchEvent(new Event('mission:refresh'));
       }
     } catch (e) {
       console.error('Error completing lesson:', e);
+    } finally {
+      setIsCompletingLesson(false);
     }
     setLessonPhase('celebrate');
   };
 
+
   const handleCelebrateFinish = () => {
     playHaptic('medium');
+    const newlyUnlockedIdx = currentActiveLessonIndex + 1;
+    setJustUnlockedIndex(newlyUnlockedIdx);
     setActiveLesson(null);
     setLessonPhase('start');
+
+    try {
+      playAscendingPopSound(4);
+    } catch {}
   };
 
   const getSerpentineRows = (items: any[]) => {
@@ -768,6 +964,18 @@ function SectionViewContent({
   }, [activeLesson]);
 
   const handleNodeClick = (idx: number, isLocked: boolean) => {
+    if (isLocked) {
+      playHaptic('warning');
+      setLockedToast({
+        message: 'Complete preceding lessons to unlock this step! 🔒',
+        key: Date.now(),
+      });
+      setTimeout(() => {
+        setLockedToast((prev) => (prev?.key ? null : prev));
+      }, 2500);
+      return;
+    }
+
     playHaptic('medium');
     setActivePopoverIndex(activePopoverIndex === idx ? null : idx);
   };
@@ -807,6 +1015,9 @@ function SectionViewContent({
             <ArrowLeft size={16} />
             <span>Back to Course</span>
           </Link>
+
+          {/* Live stats bar — all five user stats, mirrors the dashboard homescreen */}
+          <StatsBar className={styles.topRowStats} />
         </div>
       )}
 
@@ -863,8 +1074,13 @@ function SectionViewContent({
                   >
                     <ArrowLeft size={18} strokeWidth={3} color="white" />
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em' }}>
-                        SECTION {sectionIndex + 1}, UNIT 1
+                      <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>SECTION {sectionIndex + 1}, UNIT 1</span>
+                        {isReviewMode && (
+                          <span style={{ backgroundColor: '#22C55E', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 900 }}>
+                            REVIEW MODE 🟢
+                          </span>
+                        )}
                       </span>
                       <h1 className={styles.headerTitleText} style={{ color: 'white', margin: 0, padding: 0, fontSize: '20px', fontWeight: 800, lineHeight: 1.2 }}>
                         {section.title}
@@ -884,6 +1100,37 @@ function SectionViewContent({
                   </button>
                 </div>
               </div>
+
+              {/* Bold 3D Gamified Review Mode Banner */}
+              {isReviewMode && (
+                <div style={{
+                  backgroundColor: '#58CC02',
+                  color: 'white',
+                  padding: '14px 20px',
+                  margin: '16px 24px 0 24px',
+                  borderRadius: '16px',
+                  boxShadow: '0 5px 0 #46A302',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  border: '2px solid #46A302',
+                }}>
+                  <div style={{ backgroundColor: 'rgba(255,255,255,0.22)', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                    🧪
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ textTransform: 'uppercase', fontSize: '13px', fontWeight: 900, letterSpacing: '0.06em', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span>REPLAY & PRACTICE MODE</span>
+                      <span style={{ backgroundColor: '#10B981', color: 'white', padding: '3px 9px', borderRadius: '8px', fontSize: '10px', fontWeight: 900, boxShadow: '0 2px 0 #059669' }}>
+                        ZERO HEARTS AT RISK 🛡️
+                      </span>
+                    </div>
+                    <p style={{ margin: '3px 0 0 0', fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.96)', lineHeight: 1.3 }}>
+                      You already mastered this lesson! Practice freely without losing any hearts! 🦖✨
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Stepper Progress Indicator */}
               <div className={styles.stepperContainer}>
@@ -1199,6 +1446,11 @@ function SectionViewContent({
                           {String.fromCharCode(65 + idx)}
                         </div>
                         <span className={styles.optionText}>{option.text}</span>
+                        {isReviewMode && isSelected && (
+                          <span style={{ backgroundColor: '#DCFCE7', color: '#15803D', border: '1px solid #86EFAC', padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                            Tey&apos;s Saved Choice 🎯
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -1224,7 +1476,7 @@ function SectionViewContent({
                           </div>
                           <div>
                             <h4 className={isAnswerCorrect ? styles.celebrationTitleCorrect : styles.celebrationTitleWrong}>
-                              {isAnswerCorrect ? 'Awesome!' : 'Incorrect'}
+                              {isAnswerCorrect ? (isReviewMode ? 'Bullseye! You still got it! 🎯' : 'Awesome!') : 'Incorrect'}
                             </h4>
                             <p className={isAnswerCorrect ? styles.celebrationExplanation : styles.celebrationExplanationWrong}>
                               {isAnswerCorrect 
@@ -1249,12 +1501,39 @@ function SectionViewContent({
                       CHECK ANSWER
                     </button>
                   ) : (
-                    <button 
-                      className={isAnswerCorrect ? styles.continueBtnCorrect : styles.continueBtnWrong}
-                      onClick={isAnswerCorrect ? handleApplyContinue : () => { setIsAnswerChecked(false); setSelectedOptionIndex(null); }}
-                    >
-                      {isAnswerCorrect ? 'CONTINUE' : 'GOT IT'}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
+                      <button 
+                        className={isAnswerCorrect ? styles.continueBtnCorrect : styles.continueBtnWrong}
+                        onClick={isAnswerCorrect ? handleApplyContinue : () => { setIsAnswerChecked(false); setSelectedOptionIndex(null); }}
+                        style={{ flex: 1 }}
+                      >
+                        {isAnswerCorrect ? 'CONTINUE' : 'GOT IT'}
+                      </button>
+                      {isReviewMode && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOptionIndex(null);
+                            setIsAnswerChecked(false);
+                            setIsAnswerCorrect(false);
+                          }}
+                          style={{
+                            padding: '12px 18px',
+                            borderRadius: '12px',
+                            backgroundColor: '#FEF08A',
+                            color: '#854D0E',
+                            fontWeight: 900,
+                            fontSize: '13px',
+                            border: '2px solid #EAB308',
+                            boxShadow: '0 3px 0 #CA8A04',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          ⚡ TRY AGAIN FOR FUN!
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -1267,8 +1546,18 @@ function SectionViewContent({
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
                 <div className={styles.reflectTitleRow}>
                   <div>
-                    <span className={styles.applyBadge}>REFLECTION</span>
-                    <h2 className={styles.reflectTitle}>Take a moment to reflect ✨</h2>
+                    <span className={styles.applyBadge}>
+                      {isReviewMode ? 'TEY\'S MEMORY VAULT 📦' : 'REFLECTION'}
+                    </span>
+                    <h2 className={styles.reflectTitle}>
+                      {isReviewMode ? 'Your Saved Reflections ✨' : 'Take a moment to reflect ✨'}
+                    </h2>
+                    {isReviewMode && (
+                      <div style={{ backgroundColor: '#EFF6FF', border: '2px solid #BFDBFE', padding: '12px 16px', borderRadius: '14px', margin: '14px 0', color: '#1E40AF', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '20px' }}>💡</span>
+                        <span>Tey stored your notes from your first completion! Feel free to polish or update your thoughts below.</span>
+                      </div>
+                    )}
                     <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: cleanHtml(reflectPrompt) }} />
                   </div>
                   <Image src="/lesson Player/Hi there tey.png" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
@@ -1447,8 +1736,10 @@ function SectionViewContent({
                   <button 
                     className={styles.finishLessonBtn3D}
                     onClick={handleDeepenFinish}
+                    disabled={isCompletingLesson}
+                    style={isCompletingLesson ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
                   >
-                    FINISH LESSON
+                    {isCompletingLesson ? 'SAVING PROGRESS...' : 'FINISH LESSON'}
                   </button>
                 </div>
               </div>
@@ -1598,52 +1889,242 @@ function SectionViewContent({
                 </div>
               </div>
 
-              {/* BOTTOM CONTAINER - Stats, Progress & Let's Go Button */}
+              {/* BOTTOM CONTAINER - Duolingo 4-Screen Victory Stepper */}
               <div className={styles.celebrateBottom}>
-                {/* Stats row */}
-                <div className={styles.celebrateStatsRow}>
-                  {/* Card 1: XP */}
-                  <div className={styles.celebrateStatCard} style={{ borderColor: '#84D8FF' }}>
-                    <div className={styles.celebrateStatIconWrap}>
-                      <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
-                    </div>
-                    <div className={styles.celebrateStatTextGroup}>
-                      <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{activeLesson?.xpReward || 20} XP</span>
-                      <span className={styles.celebrateStatLabel}>Earned</span>
-                    </div>
-                  </div>
-
-                  {/* Card 2: Coins Earned */}
-                  <div className={styles.celebrateStatCard} style={{ borderColor: '#FEF9C3' }}>
-                    <div className={styles.celebrateStatIconWrap}>
-                      <Image src="/Icons/Coin.png" width={42} height={42} alt="Coins Icon" className={styles.statIconImg} />
-                    </div>
-                    <div className={styles.celebrateStatTextGroup}>
-                      <span className={styles.celebrateStatValue} style={{ color: '#EAB308' }}>+5 Coins</span>
-                      <span className={styles.celebrateStatLabel}>Coins Earned</span>
-                    </div>
-                  </div>
+                {/* Top 4-Dot Progress Indicator */}
+                <div className={styles.stepperProgressDots}>
+                  {[1, 2, 3, 4].map((step) => (
+                    <div
+                      key={step}
+                      className={`${styles.stepperDot} ${celebrateStep === step ? styles.stepperDotActive : ''}`}
+                    />
+                  ))}
                 </div>
 
-                {/* Progress bar card */}
-                <div className={styles.celebrateProgressCard}>
-                  <div className={styles.celebrateProgressBarContainer}>
-                    <div className={styles.celebrateProgressBarFill} style={{ width: '100%' }}>
-                      <span className={styles.celebrateProgressPercentText}>100%</span>
+                {/* SCREEN 1: LESSON VICTORY & PERFORMANCE SUMMARY */}
+                {celebrateStep === 1 && (
+                  <>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, backgroundColor: '#FEF9C3', color: '#CA8A04', border: '2px solid #FACC15', borderRadius: 9999, padding: '4px 14px', fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>
+                      <span>⭐ PERFECT RUN!</span>
                     </div>
-                  </div>
-                  <p className={styles.celebrateProgressSub}>
-                    All <strong style={{ color: '#58CC02' }}>4 lesson phases</strong> completed!
-                  </p>
-                </div>
 
-                {/* LET'S GO! 3D Button */}
-                <button 
-                  className={styles.letsGoBtn3D}
-                  onClick={handleCelebrateFinish}
-                >
-                  LET&apos;S GO!
-                </button>
+                    <div className={styles.celebrateStatsRow}>
+                      {/* Card 1: XP */}
+                      <div className={styles.celebrateStatCard} style={{ borderColor: '#84D8FF' }}>
+                        <div className={styles.celebrateStatIconWrap}>
+                          <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
+                        </div>
+                        <div className={styles.celebrateStatTextGroup}>
+                          <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{displayXp} XP</span>
+                          <span className={styles.celebrateStatLabel}>XP EARNED</span>
+                        </div>
+                      </div>
+
+                      {/* Card 2: Time Spent */}
+                      <div className={styles.celebrateStatCard} style={{ borderColor: '#BBF7D0' }}>
+                        <div className={styles.celebrateStatIconWrap}>
+                          <span style={{ fontSize: 26 }}>⏱️</span>
+                        </div>
+                        <div className={styles.celebrateStatTextGroup}>
+                          <span className={styles.celebrateStatValue} style={{ color: '#16A34A' }}>
+                            {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s
+                          </span>
+                          <span className={styles.celebrateStatLabel}>Time Spent</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Accuracy Card */}
+                    <div className={styles.celebrateProgressCard}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: 13, fontWeight: 900, color: '#58CC02' }}>
+                        <span>ACCURACY RATING</span>
+                        <span>{animatedAccuracy}%</span>
+                      </div>
+                      <div className={styles.celebrateProgressBarContainer}>
+                        <div className={styles.celebrateProgressBarFill} style={{ width: `${animatedAccuracy}%`, transition: 'width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+                          <span className={styles.celebrateProgressPercentText}>
+                            {animatedAccuracy}%
+                          </span>
+                        </div>
+                      </div>
+                      <p className={styles.celebrateProgressSub}>
+                        🎯 <strong style={{ color: '#58CC02' }}>Great Accuracy!</strong> Practice makes perfect!
+                      </p>
+                    </div>
+
+                    <button
+                      className={styles.letsGoBtn3D}
+                      onClick={() => {
+                        playHaptic('medium', false);
+                        setCelebrateStep(2);
+                      }}
+                    >
+                      CONTINUE ➔
+                    </button>
+                  </>
+                )}
+
+                {/* SCREEN 2: STREAK FLAME IGNITION CALENDAR */}
+                {celebrateStep === 2 && (
+                  <>
+                    <div style={{ textAlign: 'center', marginBottom: 4 }}>
+                      <h3 style={{ fontSize: 19, fontWeight: 900, color: '#FF8A00', margin: '0 0 4px 0', fontFamily: 'var(--font-jakarta)' }}>
+                        🔥 {streakDays > 0 ? streakDays : 1}-DAY STREAK EXTENDED!
+                      </h3>
+                      <p style={{ fontSize: 12.5, fontWeight: 700, color: '#64748B', margin: 0 }}>
+                        {streakDays > 1 
+                          ? `${streakDays}-Day Streak Extended! You completed a lesson today to keep your flame burning bright!`
+                          : `1-Day Streak Started! Keep building your daily habit!`
+                        }
+                      </p>
+                    </div>
+
+                    {/* 7-Day Flame Calendar */}
+                    <div className={styles.streakCalendarRow}>
+                      {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((dayLabel, idx) => {
+                        const todayIdx = (new Date().getDay() + 6) % 7;
+                        const isToday = idx === todayIdx;
+                        const isPast = idx <= todayIdx;
+
+                        return (
+                          <div key={idx} className={styles.dayPill}>
+                            <span className={styles.dayPillLabel}>{dayLabel}</span>
+                            <div className={`${styles.dayPillCircle} ${isToday ? styles.dayPillIgnited : ''}`}>
+                              {isPast ? (
+                                <Image src="/Icons/burn.png" width={22} height={22} alt="Streak Flame" />
+                              ) : (
+                                <span>·</span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className={styles.celebrateProgressCard} style={{ backgroundColor: '#FFF7ED', borderColor: '#FFEDD5' }}>
+                      <p style={{ fontSize: 12.5, fontWeight: 800, color: '#C2410C', margin: 0 }}>
+                        ⚡ Consistent daily practice accelerates brain retention by 3x!
+                      </p>
+                    </div>
+
+                    <button
+                      className={styles.letsGoBtn3D}
+                      style={{ backgroundColor: '#FF8A00', borderColor: '#EA580C' }}
+                      onClick={() => {
+                        playHaptic('medium', false);
+                        setCelebrateStep(3);
+                      }}
+                    >
+                      CONTINUE ➔
+                    </button>
+                  </>
+                )}
+
+                {/* SCREEN 3: TODAY'S MISSIONS & REWARDRUN FLIGHT */}
+                {celebrateStep === 3 && (
+                  <>
+                    <div style={{ textAlign: 'center', marginBottom: 4 }}>
+                      <h3 style={{ fontSize: 19, fontWeight: 900, color: '#0172FD', margin: '0 0 4px 0', fontFamily: 'var(--font-jakarta)' }}>
+                        🎯 DAILY MISSIONS & REWARDS
+                      </h3>
+                      <p style={{ fontSize: 12.5, fontWeight: 700, color: '#64748B', margin: 0 }}>
+                        Claim your rewards to launch them into your stats!
+                      </p>
+                    </div>
+
+                    <div className={styles.celebrateStatsRow}>
+                      {/* Card 1: XP */}
+                      <div ref={xpCardRef} className={styles.celebrateStatCard} style={{ borderColor: isRewardsCollected ? '#22C55E' : '#84D8FF', transition: 'border-color 0.3s ease' }}>
+                        <div className={styles.celebrateStatIconWrap}>
+                          <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
+                        </div>
+                        <div className={styles.celebrateStatTextGroup}>
+                          <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{displayXp} XP</span>
+                          <span className={styles.celebrateStatLabel} style={{ color: isRewardsCollected ? '#22C55E' : '#94A3B8' }}>
+                            {isRewardsCollected ? 'COLLECTED! ✓' : 'XP EARNED'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card 2: Coins Earned */}
+                      <div ref={coinCardRef} className={styles.celebrateStatCard} style={{ borderColor: isRewardsCollected ? '#22C55E' : '#FEF9C3', transition: 'border-color 0.3s ease' }}>
+                        <div className={styles.celebrateStatIconWrap}>
+                          <Image src="/Icons/Coin.png" width={42} height={42} alt="Coins Icon" className={styles.statIconImg} />
+                        </div>
+                        <div className={styles.celebrateStatTextGroup}>
+                          <span className={styles.celebrateStatValue} style={{ color: '#EAB308' }}>+{displayCoins} Coins</span>
+                          <span className={styles.celebrateStatLabel} style={{ color: isRewardsCollected ? '#22C55E' : '#94A3B8' }}>
+                            {isRewardsCollected ? 'COLLECTED! ✓' : 'COINS EARNED'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {!isRewardsCollected ? (
+                      <button
+                        className={styles.letsGoBtn3D}
+                        style={{ backgroundColor: '#EAB308', borderColor: '#CA8A04' }}
+                        onClick={() => {
+                          triggerRewardAnimation({
+                            originElement: xpCardRef.current || coinCardRef.current,
+                            rewards: [
+                              { currency: 'XP', amount: earnedRewards.xp },
+                              { currency: 'COINS', amount: earnedRewards.coins },
+                            ],
+                          });
+                          setIsRewardsCollected(true);
+                        }}
+                      >
+                        CLAIM ALL REWARDS 🪙
+                      </button>
+                    ) : (
+                      <button
+                        className={styles.letsGoBtn3D}
+                        onClick={() => {
+                          playHaptic('medium', false);
+                          setCelebrateStep(4);
+                        }}
+                      >
+                        CONTINUE ➔
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {/* SCREEN 4: LEVEL PROGRESS & UP NEXT TEASER */}
+                {celebrateStep === 4 && (
+                  <>
+                    <div className={styles.celebrateProgressCard}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: 12, fontWeight: 900, color: '#0172FD' }}>
+                        <span>LEVEL {userLevel} PROGRESS</span>
+                        <span>{xpInCurrentLevel} / {targetLevelXpNeeded} XP</span>
+                      </div>
+                      <div className={styles.celebrateProgressBarContainer}>
+                        <div className={styles.celebrateProgressBarFill} style={{ width: `${animatedLevelPct}%`, transition: 'width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+                          <span className={styles.celebrateProgressPercentText}>
+                            {animatedLevelPct}%
+                          </span>
+                        </div>
+                      </div>
+                      <p className={styles.celebrateProgressSub}>
+                        👑 <strong style={{ color: '#0172FD' }}>Level {userLevel} Master!</strong> Keep ascending!
+                      </p>
+                    </div>
+
+                    {nextLesson && (
+                      <div style={{ width: '100%', backgroundColor: '#EFF6FF', color: '#0172FD', borderRadius: 14, padding: '12px 16px', fontSize: 12.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, border: '1.5px solid #BFDBFE', textAlign: 'center' }}>
+                        UP NEXT ➔ {nextLesson.title}
+                      </div>
+                    )}
+
+                    <button 
+                      className={styles.letsGoBtn3D}
+                      onClick={() => handleCelebrateFinish()}
+                    >
+                      FINISH & RETURN TO MAP ➔
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -1673,6 +2154,22 @@ function SectionViewContent({
                 </button>
               </motion.div>
 
+              {/* Locked Node Toast Feedback */}
+              <AnimatePresence>
+                {lockedToast && (
+                  <motion.div
+                    key={lockedToast.key}
+                    className={styles.lockedToastBanner}
+                    initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  >
+                    <span>{lockedToast.message}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Serpentine Map Container — scrolls independently */}
               <div className={styles.journeyPathContainer} ref={mapRef}>
                 
@@ -1689,13 +2186,13 @@ function SectionViewContent({
                 </div>
 
                 <div className={styles.pathMascotRight}>
-                  <Image
-                    src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
-                    alt="Tey Mascot Right"
-                    width={130}
-                    height={130}
-                    className={styles.sideMascotImg}
-                    priority
+                  <video
+                    src="/Tey Expressions/lesson_map_animation_2.webm"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={styles.sideMascotVideo}
                   />
                 </div>
 
@@ -1732,6 +2229,7 @@ function SectionViewContent({
                   return (
                     <div 
                       key={item.id} 
+                      ref={(el) => { nodeRefs.current[idx] = el; }}
                       className={styles.journeyNodeRow}
                       style={{ height: '150px' }}
                     >
@@ -1742,12 +2240,31 @@ function SectionViewContent({
                         style={{ '--offset-multiplier': multiplier } as React.CSSProperties}
                       >
                         
-                        {/* Floating Active "START" Indicator */}
+                        {/* Floating Active Indicator */}
                         {isActive && !isPopoverOpen && (
-                          <div className={styles.startBadgeBubble} style={{ color: theme.main }}>
-                            <span>START</span>
+                          <motion.div 
+                            className={styles.startBadgeBubble} 
+                            style={{ color: theme.main }}
+                            initial={{ scale: 0.8, y: 5 }}
+                            animate={{ scale: [0.9, 1.1, 1], y: [0, -6, 0] }}
+                            transition={{
+                              scale: { duration: 0.4, ease: 'easeOut' },
+                              y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+                            }}
+                          >
+                            <span>
+                              {item.type === 'trophy'
+                                ? 'UNIT MASTERED! 👑'
+                                : item.type === 'challenge'
+                                ? 'BONUS CHEST 🎁'
+                                : item.lessonIndex === 0 && completedInSection === 0
+                                ? 'START 🚀'
+                                : item.lessonIndex === totalLessons - 1
+                                ? 'FINAL LESSON! 🏆'
+                                : 'LESSON UNLOCKED! 🔓'}
+                            </span>
                             <div className={styles.badgeArrow} />
-                          </div>
+                          </motion.div>
                         )}
 
                         {/* Outer backing target dish ring (Active nodes only) */}
@@ -1764,6 +2281,11 @@ function SectionViewContent({
                               ${styles.duoPedestal} 
                               ${isCompleted ? styles.duoPedestalCompleted : isActive ? styles.duoPedestalActive : styles.duoPedestalLocked}
                             `}
+                            animate={justUnlockedIndex === idx ? {
+                              scale: [1, 1.3, 0.9, 1.15, 1],
+                              rotate: [0, -10, 10, -5, 5, 0],
+                            } : undefined}
+                            transition={{ duration: 0.8, ease: 'easeInOut' }}
                             style={(!isLocked) ? {
                               backgroundColor: theme.main,
                               boxShadow: `0 8px 0 ${theme.shadow}`,
@@ -1772,7 +2294,6 @@ function SectionViewContent({
                               y: 8,
                               boxShadow: '0 0px 0 transparent',
                             }}
-                            transition={{ type: 'spring', stiffness: 600, damping: 25 }}
                           >
                               {isCompleted ? (
                                 <Check size={32} strokeWidth={4} color="white" />
@@ -1930,11 +2451,12 @@ function SectionViewContent({
             <X size={20} />
           </button>
 
-          <div className={styles.drawerStatsRow}>
-            <StatPill type="streak" value={streakDays} />
-            <StatPill type="gem" value={xpPoints} />
-            <StatPill type="lives" value={livesCount} />
-          </div>
+          {/* Live stats bar inside the lesson-player drawer — all five stats visible during lessons */}
+          {activeLesson && (
+            <div className={styles.drawerStatsRow}>
+              <StatsBar compact />
+            </div>
+          )}
 
           <SectionSidebar
             completedCount={completedInSection}
@@ -2033,7 +2555,10 @@ export default function SectionViewPage() {
     const run = async () => {
       try {
         const res = await fetch(`/api/courses/${params.id}`, { headers: { 'Cache-Control': 'no-cache' } });
-        if (!res.ok) throw new Error('Course not found');
+        if (!res.ok) {
+          setCourse(null);
+          return;
+        }
         const data = await res.json();
         setCourse(data);
 
@@ -2055,7 +2580,11 @@ export default function SectionViewPage() {
   }, [params.id]);
 
   if (loading) {
-    return <TeyroBrandedLoader isVisible={true} microcopyOverride="Tey is setting up your section milestones..." />;
+    return (
+      <DashboardLayout isWide hideMobileChrome>
+        <LearnSectionSkeleton />
+      </DashboardLayout>
+    );
   }
 
   if (!course) {

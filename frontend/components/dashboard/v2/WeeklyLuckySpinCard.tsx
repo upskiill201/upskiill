@@ -1,95 +1,306 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGamification } from '@/context/GamificationContext';
+import gsap from 'gsap';
+import { CustomEase } from 'gsap/dist/CustomEase';
 import styles from './WeeklyLuckySpin.module.css';
+import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
+import { useHerald } from '@/context/HeraldContext';
+import { playTickSound, playWinSound } from '@/utils/audio';
+
+// Register CustomEase
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(CustomEase);
+}
 
 export default function WeeklyLuckySpinCard() {
-  const { streakDays } = useGamification();
+  const { refresh } = useGamification();
+  const { triggerRewardAnimation } = useRewardAnimation();
+  const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [showModal, setShowModal] = useState(false);
+  const [spinState, setSpinState] = useState<'LOADING' | 'AVAILABLE' | 'SPUN'>('LOADING');
+  const [wheelConfig, setWheelConfig] = useState<any[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [spinRotation, setSpinRotation] = useState(0);
   const [prizeMessage, setPrizeMessage] = useState<string | null>(null);
 
-  const canSpin = streakDays >= 3;
+  const wheelRef = useRef<HTMLDivElement>(null);
+  const pointerRef = useRef<HTMLDivElement>(null);
+  const currentRotationRef = useRef(0);
+  const lastTickAngleRef = useRef(0);
 
-  const handleStartSpin = () => {
-    if (isSpinning || prizeMessage) return;
+  // Register this widget as visible — Herald suppresses its spin banner when this card is on screen
+  useEffect(() => {
+    registerNativeWidget('weekly-spin');
+    return () => unregisterNativeWidget('weekly-spin');
+  }, [registerNativeWidget, unregisterNativeWidget]);
+
+  // Fetch initial state + emit Herald signal if spin is available
+  useEffect(() => {
+       fetch('/api/v2/spin/current-week', {
+         credentials: 'include',
+       })
+         .then(res => {
+           if (!res.ok) throw new Error('Failed to fetch spin state');
+           return res.json();
+         })
+      .then(data => {
+        if (data.status) {
+          setSpinState(data.status);
+          if (data.status === 'SPUN') {
+            setPrizeMessage(`🎉 YOU WON ${data.rewardSnapshotAmount} ${data.rewardSnapshotType}!`);
+          }
+          // Herald signal: weekly spin is available
+          if (data.status === 'AVAILABLE') {
+            // Dedup key: week number so it only fires once per week boundary per session
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            const transitionKey = `spin-available-${weekStart.getTime()}`;
+            enqueueHeraldNotification({
+              id: `herald-spin-${Date.now()}`,
+              type: 'SPIN',
+              entityId: 'weekly-spin',
+              transitionKey,
+              title: 'Weekly Lucky Spin',
+              subtitle: "Your weekly spin is ready — don't miss it!",
+            });
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load current week spin:', err);
+        setSpinState('AVAILABLE'); // Fallback to let them click and see any error if backend is down
+      });
+
+      fetch('/api/v2/spin/wheel-config', {
+        credentials: 'include',
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch wheel config');
+          return res.json();
+        })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setWheelConfig(data);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load wheel config:', err);
+      });
+  }, []);
+
+  const totalSegments = wheelConfig.length || 8;
+  const degreesPerSegment = 360 / totalSegments;
+
+  // Build the conic gradient for the wheel
+  const wheelGradient = useMemo(() => {
+    if (wheelConfig.length === 0) return 'conic-gradient(#3B82F6 0deg 360deg)';
+    let gradientStops = '';
+    let currentAngle = 0;
+    
+    wheelConfig.forEach((seg, i) => {
+      const nextAngle = currentAngle + degreesPerSegment;
+      gradientStops += `${seg.colorKey} ${currentAngle}deg ${nextAngle}deg${i < wheelConfig.length - 1 ? ',' : ''}`;
+      currentAngle = nextAngle;
+    });
+
+    return `conic-gradient(${gradientStops})`;
+  }, [wheelConfig, degreesPerSegment]);
+
+  const handleStartSpin = async () => {
+    if (isSpinning || spinState === 'SPUN' || wheelConfig.length === 0) return;
     setIsSpinning(true);
-    const newRotation = spinRotation + 1800 + Math.floor(Math.random() * 360);
-    setSpinRotation(newRotation);
 
-    setTimeout(() => {
+    try {
+      // 1. Fetch outcome
+       const response = await fetch('/api/v2/spin/spin', {
+         method: 'POST',
+         credentials: 'include',
+       });
+       const data = await response.json();
+       
+       if (!response.ok) {
+         throw new Error(data.message || 'Spin failed');
+       }
+
+      const { landedSegmentIndex, rewardSnapshotType, rewardSnapshotAmount } = data;
+
+      // 2. Compute Target Angle
+      // The segment index starts from 0 at the 12 o'clock position (0 deg) and goes clockwise.
+      // We want the wheel to land so that the winning segment is under the pointer (at 0 deg).
+      // Since the wheel rotates, if we want segment N to be at top, we rotate by (360 - N*degreesPerSegment).
+      
+      const segmentCenter = (landedSegmentIndex * degreesPerSegment) + (degreesPerSegment / 2);
+      // Random jitter within the segment (avoid exact center)
+      const jitter = (Math.random() - 0.5) * (degreesPerSegment * 0.6);
+      const targetAngle = 360 - (segmentCenter + jitter);
+      
+      // Add multiple full rotations
+      const fullRotations = 5 * 360; 
+      const finalRotation = currentRotationRef.current + fullRotations + targetAngle - (currentRotationRef.current % 360);
+      
+      // 3. Animate using GSAP
+      lastTickAngleRef.current = currentRotationRef.current;
+      
+      gsap.to(wheelRef.current, {
+        rotation: finalRotation,
+        duration: 5,
+        ease: CustomEase.create("spinEase", "M0,0 C0.15,0 0.2,0.85 1,1"),
+        onUpdate: function() {
+          if (!wheelRef.current) return;
+          const currentAngle = gsap.getProperty(wheelRef.current, "rotation") as number;
+          currentRotationRef.current = currentAngle;
+          
+          // Check for ticks
+          const segmentsPassed = Math.floor(currentAngle / degreesPerSegment);
+          const lastSegmentsPassed = Math.floor(lastTickAngleRef.current / degreesPerSegment);
+          
+          if (segmentsPassed > lastSegmentsPassed) {
+            playTickSound();
+            // Flap animation
+            if (pointerRef.current) {
+               gsap.fromTo(pointerRef.current, 
+                 { rotation: -15 }, 
+                 { rotation: 0, duration: 0.1, ease: "back.out(2)" }
+               );
+            }
+          }
+          lastTickAngleRef.current = currentAngle;
+        },
+        onComplete: () => {
+          // Overshoot and settle bounce
+          gsap.to(wheelRef.current, {
+             rotation: finalRotation - 2,
+             duration: 0.2,
+             yoyo: true,
+             repeat: 1,
+               onComplete: async () => {
+                 setIsSpinning(false);
+                 setSpinState('SPUN');
+                 setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${rewardSnapshotType}!`);
+                 const mappedCurrency = rewardSnapshotType === 'GEMS' ? 'COINS' : (rewardSnapshotType as RewardCurrency);
+                 triggerRewardAnimation({
+                   originElement: wheelRef.current,
+                   rewards: [{ currency: mappedCurrency, amount: rewardSnapshotAmount }],
+                 });
+                 if (refresh) await refresh();
+               }
+          });
+        }
+      });
+
+    } catch (err) {
+      console.error(err);
       setIsSpinning(false);
-      setPrizeMessage('🎉 YOU WON +50 COINS & +1 STREAK FREEZE!');
-    }, 5000);
+      // Reset if network failed
+    }
   };
+
+  const isAvailable = spinState === 'AVAILABLE';
 
   return (
     <>
-      <div className={styles.card}>
+      <div className={styles.card} onClick={() => {
+        if (spinState !== 'LOADING') setShowModal(true);
+      }}>
         <div className={styles.headerRow}>
           <h3 className={styles.title}>WEEKLY LUCKY SPIN</h3>
-          <span className={styles.timer}>Spins reset in 2d 12h</span>
+          <span className={styles.timer}>Available this week!</span>
         </div>
 
-        <div className={styles.wheelPreview}>
-          <div className={styles.centerPin} />
+        <div className={styles.wheelPreviewStage}>
+          <div className={styles.wheelPreview} style={{ background: wheelGradient }}>
+            <div className={styles.centerPin} />
+          </div>
         </div>
 
         <button
           type="button"
-          onClick={() => setShowModal(true)}
           className={styles.spinBtn}
+          disabled={spinState === 'LOADING'}
         >
-          {canSpin ? 'SPIN NOW 🎉' : 'REACH 3-DAY STREAK TO SPIN'}
+          {spinState === 'LOADING' ? 'LOADING...' : (isAvailable ? 'SPIN NOW 🎉' : 'ALREADY SPUN')}
         </button>
       </div>
 
-      {/* LUCKY SPIN MODAL */}
+      {/* FULL-SCREEN LUCKY SPIN ROUTE/MODAL */}
       <AnimatePresence>
         {showModal && (
-          <div className={styles.modalBackdrop} onClick={() => !isSpinning && setShowModal(false)}>
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.85, opacity: 0 }}
-              className={styles.modalCard}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className={styles.modalTitle}>Weekly Lucky Spin 🎉</h2>
-              <p className={styles.modalDesc}>
-                Maintain your 3-day streak to claim your weekly mystery prize!
-              </p>
-
-              <div className={styles.bigWheelContainer}>
-                <div className={styles.wheelPointer} />
-                <motion.div
-                  className={styles.bigWheel}
-                  animate={{ rotate: spinRotation }}
-                  transition={{ duration: 5, ease: [0.15, 0.85, 0.35, 1] }}
-                />
-              </div>
-
-              {prizeMessage ? (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#22C55E' }}>
-                    {prizeMessage}
-                  </span>
-                </div>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={prizeMessage ? () => setShowModal(false) : handleStartSpin}
-                disabled={isSpinning}
-                className={styles.spinActionBtn}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.modalBackdrop}
+          >
+            {/* Close Button (Hidden/Disabled while spinning) */}
+            {!isSpinning && (
+              <button 
+                className={styles.closeBtn} 
+                onClick={() => setShowModal(false)}
+                aria-label="Close"
               >
-                {isSpinning ? 'SPINNING...' : prizeMessage ? 'CLAIM PRIZE' : 'SPIN NOW'}
+                ✕
               </button>
-            </motion.div>
-          </div>
+            )}
+
+            <h2 className={styles.modalTitle}>Weekly Lucky Spin</h2>
+            <p className={styles.modalDesc}>
+              {spinState === 'SPUN' ? 'Come back next week for another spin!' : 'Tap the button to reveal your mystery prize.'}
+            </p>
+
+            <div className={styles.bigWheelContainer}>
+              <div className={styles.wheelStage}>
+                <div className={isSpinning ? styles.chaseLightsActive : styles.chaseLights} />
+                <div ref={pointerRef} className={styles.wheelPointer} />
+                <div
+                  ref={wheelRef}
+                  className={styles.bigWheel}
+                  style={{ background: wheelGradient }}
+                >
+                  {/* Render segments text inside wheel */}
+                  {wheelConfig.map((seg, i) => {
+                     const angle = (i * degreesPerSegment) + (degreesPerSegment / 2);
+                     return (
+                       <div 
+                         key={seg.id} 
+                         className={styles.segmentLabel}
+                         style={{ transform: `rotate(${angle}deg)` }}
+                       >
+                         <span className={styles.segmentText}>{seg.rewardType === 'STREAK_FREEZE' ? '❄️' : seg.amountMax}</span>
+                       </div>
+                     )
+                  })}
+                </div>
+                <div className={styles.centerHub} />
+              </div>
+            </div>
+
+            <div className={styles.prizeContainer}>
+              <AnimatePresence>
+                {prizeMessage && (
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className={styles.prizeMessage}
+                  >
+                    {prizeMessage}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <button
+              type="button"
+              onClick={spinState === 'SPUN' ? () => setShowModal(false) : handleStartSpin}
+              disabled={isSpinning}
+              className={isSpinning ? styles.spinActionBtnDisabled : styles.spinActionBtn}
+            >
+              {isSpinning ? 'SPINNING...' : (spinState === 'SPUN' ? 'DONE' : 'SPIN')}
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

@@ -39,6 +39,8 @@ export default function OnboardingStep12() {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [isLinkAccountMode, setIsLinkAccountMode] = useState(false);
+  const [linkPromptMessage, setLinkPromptMessage] = useState('');
 
   // Verification state
   const [resending, setResending] = useState(false);
@@ -113,7 +115,7 @@ export default function OnboardingStep12() {
         credentials: 'include',
         body: JSON.stringify({
           email: email.toLowerCase().trim(),
-          fullName,
+          fullName: fullName || email.split('@')[0],
           password,
           role: 'STUDENT',
           onboarding: localState.answers
@@ -122,8 +124,21 @@ export default function OnboardingStep12() {
 
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 409 || data.code === 'EMAIL_ALREADY_EXISTS') {
+          if (data.canLink !== false) {
+            setIsLinkAccountMode(true);
+            setLinkPromptMessage('It looks like you already have a Teyro account! Please enter your password to activate your Student profile.');
+            throw new Error(data.message || 'Please enter your existing account password to activate your Student profile.');
+          }
+        }
         const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
         throw new Error(errMsg || 'Signup failed');
+      }
+
+      if (data.linked && data.verified) {
+        playHaptic('medium');
+        void advance();
+        return;
       }
 
       // Transition to verification screen
@@ -387,8 +402,14 @@ export default function OnboardingStep12() {
               >
                 <div className="w-full flex flex-col gap-3 pt-2 shrink-0">
                   <h2 className="text-xl font-[900] text-slate-800 text-center" style={{ fontFamily: 'var(--font-jakarta)' }}>
-                    Create Account
+                    {isLinkAccountMode ? 'Activate Student Profile' : 'Create Account'}
                   </h2>
+
+                  {isLinkAccountMode && (
+                    <div className="text-xs text-blue-900 font-medium px-4 text-center bg-blue-50 py-2.5 rounded-xl border border-blue-200">
+                      {linkPromptMessage || 'It looks like you already have a Teyro account! Please enter your password to activate your Student profile.'}
+                    </div>
+                  )}
 
                   {authError && (
                     <div className="text-xs text-red-500 font-semibold px-4 text-center bg-red-50 py-2 rounded-xl">
@@ -397,17 +418,19 @@ export default function OnboardingStep12() {
                   )}
 
                   {/* Name field */}
-                  <div className="w-full relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input 
-                      type="text"
-                      placeholder="Full Name"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full h-12 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 text-sm font-semibold transition-all"
-                    />
-                  </div>
+                  {!isLinkAccountMode && (
+                    <div className="w-full relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <input 
+                        type="text"
+                        placeholder="Full Name"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="w-full h-12 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 text-sm font-semibold transition-all"
+                      />
+                    </div>
+                  )}
 
                   {/* Email field */}
                   <div className="w-full relative">
@@ -427,7 +450,7 @@ export default function OnboardingStep12() {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input 
                       type={showPassword ? "text" : "password"}
-                      placeholder="Password"
+                      placeholder={isLinkAccountMode ? "Account Password" : "Password"}
                       required
                       minLength={6}
                       value={password}
@@ -448,11 +471,11 @@ export default function OnboardingStep12() {
                   <motion.button
                     type="submit"
                     whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.98 }}
                     disabled={authLoading}
-                    className="w-full h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)]"
+                    className="w-full h-12 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-sm tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
                   >
-                    <span>{authLoading ? 'Signing up...' : 'Sign up with email'}</span>
+                    <span>{authLoading ? (isLinkAccountMode ? 'Activating Profile...' : 'Signing up...') : (isLinkAccountMode ? 'Activate Student Profile →' : 'Sign up with email')}</span>
                   </motion.button>
 
                   <motion.button
@@ -734,8 +757,14 @@ export default function OnboardingStep12() {
                   className="w-full flex flex-col items-start"
                 >
                   <h2 className="text-3xl font-[900] text-slate-800 mb-6" style={{ fontFamily: 'var(--font-jakarta)' }}>
-                    Create Account
+                    {isLinkAccountMode ? 'Activate Student Profile' : 'Create Account'}
                   </h2>
+
+                  {isLinkAccountMode && (
+                    <div className="text-sm text-blue-900 font-medium px-4 py-3 bg-blue-50 rounded-xl mb-4 border border-blue-200 w-full md:w-[70%]">
+                      {linkPromptMessage || 'It looks like you already have a Teyro account! Please enter your password to activate your Student profile.'}
+                    </div>
+                  )}
 
                   {authError && (
                     <div className="text-sm text-red-500 font-semibold px-4 py-2 bg-red-50 rounded-xl mb-4 w-full md:w-[70%]">
@@ -745,17 +774,19 @@ export default function OnboardingStep12() {
 
                   <div className="w-full flex flex-col gap-4 w-full md:w-[70%] mb-8">
                     {/* Name */}
-                    <div className="w-full relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5.5 h-5.5 text-slate-400" />
-                      <input 
-                        type="text"
-                        placeholder="Full Name"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 text-base font-semibold transition-all"
-                      />
-                    </div>
+                    {!isLinkAccountMode && (
+                      <div className="w-full relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5.5 h-5.5 text-slate-400" />
+                        <input 
+                          type="text"
+                          placeholder="Full Name"
+                          required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-[1rem] focus:outline-none focus:border-[#0172FD] text-slate-800 text-base font-semibold transition-all"
+                        />
+                      </div>
+                    )}
 
                     {/* Email */}
                     <div className="w-full relative">
@@ -775,7 +806,7 @@ export default function OnboardingStep12() {
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5.5 h-5.5 text-slate-400" />
                       <input 
                         type={showPassword ? "text" : "password"}
-                        placeholder="Password"
+                        placeholder={isLinkAccountMode ? "Account Password" : "Password"}
                         required
                         minLength={6}
                         value={password}
@@ -800,7 +831,7 @@ export default function OnboardingStep12() {
                       disabled={authLoading}
                       className="w-full h-14 bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-lg tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-[2px] transition-all flex items-center justify-center shadow-[0_4px_15px_rgba(1,114,253,0.25)] cursor-pointer"
                     >
-                      <span>{authLoading ? 'Signing up...' : 'Sign up with email'}</span>
+                      <span>{authLoading ? (isLinkAccountMode ? 'Activating Profile...' : 'Signing up...') : (isLinkAccountMode ? 'Activate Student Profile →' : 'Sign up with email')}</span>
                     </motion.button>
 
                     <motion.button

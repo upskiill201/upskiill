@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
+  width: 100%;
+  position: sticky;
+  top: 32px;
+  min-width: 0;
 }
 
 /* COURSE PROGRESS CARD */

@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import { useComingSoon } from '@/app/dashboard/layout';
 import { RightSidebar } from '@/components/layout/RightSidebar';
+import { StatsBar } from '@/components/ui/StatsBar';
 import dashStyles from '../Page.module.css';
 import styles from './Shop.module.css';
 
 export default function ShopPage() {
-  const { gems, lives, maxLives, streakFreezeBank, buyShopItem } = useGamification();
+  const { coins, lives, maxLives, streakFreezeBank, buyShopItem } = useGamification();
+  const { triggerRewardAnimation } = useRewardAnimation();
   const { triggerComingSoon } = useComingSoon();
 
   const [pendingItem, setPendingItem] = useState<'REFILL_HEARTS' | 'STREAK_FREEZE' | null>(null);
@@ -20,26 +23,38 @@ export default function ShopPage() {
 
   const isHeartsFull = lives >= maxLives;
   const isFreezeMaxed = streakFreezeBank >= 2;
-  const coinIcon = gems > 0 ? '/Icons/Coin.png' : '/Icons/Coin_empty.png';
+  const coinIcon = coins > 0 ? '/Icons/Coin.png' : '/Icons/Coin_empty.png';
 
   const handleInitiateBuy = (itemKey: 'REFILL_HEARTS' | 'STREAK_FREEZE') => {
     const cost = itemKey === 'REFILL_HEARTS' ? 120 : 200;
-    if (gems < cost) {
+    if (coins < cost) {
       setShowInsufficientModal(true);
     } else {
       setPendingItem(itemKey);
     }
   };
 
-  const handleConfirmPurchase = async () => {
+  const handleConfirmPurchase = async (e?: React.MouseEvent) => {
     if (!pendingItem || isSubmitting) return;
     setIsSubmitting(true);
+    const itemPurchased = pendingItem;
     const result = await buyShopItem(pendingItem);
     setIsSubmitting(false);
     setPendingItem(null);
 
     if (result.success) {
       setToastMessage(result.message);
+      if (itemPurchased === 'REFILL_HEARTS') {
+        triggerRewardAnimation({
+          originElement: e?.currentTarget as HTMLElement,
+          rewards: [{ currency: 'HEARTS', amount: maxLives - lives }],
+        });
+      } else if (itemPurchased === 'STREAK_FREEZE') {
+        triggerRewardAnimation({
+          originElement: e?.currentTarget as HTMLElement,
+          rewards: [{ currency: 'STREAK', amount: 1 }],
+        });
+      }
       setTimeout(() => setToastMessage(null), 3500);
     } else {
       setToastMessage(result.message);
@@ -53,16 +68,15 @@ export default function ShopPage() {
         {/* MIDDLE COLUMN: SHOP CONTENT */}
         <div className={dashStyles.middleColumn}>
           <div className={styles.pageWrapper}>
+            {/* LIVE STATS BAR — candy-3D pills in per-stat colors, matching the shop coin card style */}
+            <div className={styles.topStats}>
+              <StatsBar variant="pill" />
+            </div>
+
             {/* SHOP HEADER */}
             <div className={styles.shopHeader}>
               <div className={styles.shopTitleRow}>
                 <h1 className={styles.shopTitle}>Shop</h1>
-              </div>
-
-              {/* COINS BALANCE DISPLAY */}
-              <div className={styles.gemBalanceCard}>
-                <Image src={coinIcon} alt="Coins" width={26} height={26} />
-                <span className={styles.gemValue}>{gems} Coins</span>
               </div>
             </div>
 
@@ -213,7 +227,7 @@ export default function ShopPage() {
                   <span className={styles.costLabel}>Your Balance</span>
                   <span className={styles.costValue}>
                     <Image src={coinIcon} alt="Coins" width={20} height={20} />
-                    {gems} Coins
+                    {coins} Coins
                   </span>
                 </div>
               </div>

@@ -81,4 +81,17 @@ export class GamificationController {
     const offset = body.timezoneOffset ?? 0;
     return this.gamificationService.claimDailyReward(req.user.id as string, offset);
   }
+
+  /**
+   * POST /api/gamification/test-reward
+   * Development & QA endpoint for testing RewardRun flight engine.
+   * Body: { coins?, xp?, hearts?, streak? }
+   */
+  @Post('test-reward')
+  async testReward(
+    @Req() req: any,
+    @Body() body: { coins?: number; xp?: number; hearts?: number; streak?: number },
+  ) {
+    return this.gamificationService.grantTestReward(req.user.id as string, body);
+  }
 }

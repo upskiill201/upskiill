@@ -1,0 +1,253 @@
+﻿.container {
+  max-width: 1056px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #0172FD;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 0.75rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 0 #CBD5E1;
+  transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 0 #CBD5E1;
+  background: #F8FAFC;
+}
+
+.backBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 0 #CBD5E1;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.gridTwoCol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .gridTwoCol {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.card {
+  background: #FFFFFF;
+  border: 2.5px solid #E2E8F0;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 4px 0 0 #CBD5E1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 #CBD5E1;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0F172A;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #EFF6FF;
+  color: #0172FD;
+  border: 1px solid #BFDBFE;
+}
+
+.weekDaysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.dayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.85rem 0.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid #E2E8F0;
+  background: #F8FAFC;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.dayCard:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(1, 114, 253, 0.15);
+}
+
+.dayCardActive {
+  background: #0172FD;
+  border-color: #0050B3;
+  color: #FFFFFF;
+  box-shadow: 0 3px 0 0 #0050B3;
+}
+
+.dayCardToday {
+  border: 2px dashed #0172FD;
+  background: #EFF6FF;
+}
+
+.dayName {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.dayDate {
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+.dayStatusIcon {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.statBox {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0F172A;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.heatmapContainer {
+  margin-top: 1.5rem;
+}
+
+.heatmapHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.heatmapLabel {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.matrixGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.4rem;
+}
+
+.matrixCol {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 0.4rem;
+}
+
+.matrixCell {
+  aspect-ratio: 1;
+  border-radius: 0.25rem;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  transition: transform 0.15s ease;
+}
+
+.matrixCell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+}
+
+.cellLevel1 { background: #93C5FD; border-color: #60A5FA; }
+.cellLevel2 { background: #3B82F6; border-color: #2563EB; }
+.cellLevel3 { background: #1D4ED8; border-color: #1E40AF; }
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748B;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.legendBox {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}

@@ -16,7 +16,7 @@ export class EmailService {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
     const name = fullName ? fullName.split(' ')[0] : 'there';
     const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
-    const isCreator = role === 'INSTRUCTOR';
+    const isCreator = role === 'INSTRUCTOR' || role?.toLowerCase() === 'creator';
     const magicLink = verifyToken ? `${backendUrl}/auth/verify-email?token=${verifyToken}` : null;
 
     const subject = isCreator 

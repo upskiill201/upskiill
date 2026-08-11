@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { BookOpen, Clock, Trophy, ChevronRight } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
@@ -8,6 +8,23 @@ import styles from './LearningStatsCard.module.css';
 
 export default function LearningStatsCard() {
   const { xp } = useGamification();
+  const [stats, setStats] = useState({
+    lessonsCompleted: 0,
+    hoursLearned: 0,
+    xpEarned: xp,
+    rankPercentile: 'Top 10%',
+  });
+
+  useEffect(() => {
+    fetch('/api/v2/progress/stats-summary', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setStats(data);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch learning stats:', err));
+  }, []);
 
   return (
     <div className={styles.card}>
@@ -28,7 +45,7 @@ export default function LearningStatsCard() {
           </div>
           <div className={styles.tileContent}>
             <span className={styles.tileLabel}>Lessons</span>
-            <span className={styles.tileValue}>12</span>
+            <span className={styles.tileValue}>{stats.lessonsCompleted}</span>
           </div>
         </div>
 
@@ -39,7 +56,7 @@ export default function LearningStatsCard() {
           </div>
           <div className={styles.tileContent}>
             <span className={styles.tileLabel}>Hours</span>
-            <span className={styles.tileValue}>5.8</span>
+            <span className={styles.tileValue}>{stats.hoursLearned}</span>
           </div>
         </div>
 
@@ -50,7 +67,7 @@ export default function LearningStatsCard() {
           </div>
           <div className={styles.tileContent}>
             <span className={styles.tileLabel}>XP Earned</span>
-            <span className={styles.tileValue}>{xp}</span>
+            <span className={styles.tileValue}>{stats.xpEarned || xp}</span>
           </div>
         </div>
 
@@ -61,7 +78,7 @@ export default function LearningStatsCard() {
           </div>
           <div className={styles.tileContent}>
             <span className={styles.tileLabel}>Rank</span>
-            <span className={styles.tileValue}>Top 14%</span>
+            <span className={styles.tileValue}>{stats.rankPercentile}</span>
           </div>
         </div>
       </div>
