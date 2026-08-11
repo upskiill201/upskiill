@@ -1,5 +1,6 @@
 'use client';
 import { playHaptic } from '@/lib/haptics';
+import { playWinSound } from '@/utils/audio';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
@@ -121,6 +122,7 @@ export default function OnboardingStep6() {
     // Explicit bypass for local staging testing
     if (fullOtp === '123456') {
       setOtpStatus('verified');
+      playWinSound();
       saveAnswer({ whatsappNumber: phoneNumber.replace(/\D/g, '') });
       return;
     }
@@ -140,6 +142,7 @@ export default function OnboardingStep6() {
         const data = await res.json();
         if (data.success) {
           setOtpStatus('verified');
+          playWinSound();
           saveAnswer({ whatsappNumber: data.phone ?? phoneNumber });
           return;
         }

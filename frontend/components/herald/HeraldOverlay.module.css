@@ -1,0 +1,268 @@
+/* ─── Herald Overlay (Duolingo Gamified Aesthetic - Large Desktop Focus) ──── */
+
+.heraldRoot {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99800;
+  width: min(640px, calc(100vw - 32px));
+  pointer-events: auto;
+  perspective: 1000px;
+}
+
+/* ─── Banner Card ───────────────────────────────────────────────────────── */
+
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #0F172A;
+  border: 3px solid #1E293B;
+  border-bottom: 6px solid #020617;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 0 30px rgba(1, 114, 253, 0.15);
+
+  /* Top accent line */
+  border-top-color: #0172FD;
+}
+
+/* ─── Mascot Avatar ─────────────────────────────────────────────────────── */
+
+.mascotContainer {
+  position: relative;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: radial-gradient(circle at center, #0172FD 0%, #0056C6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(1, 114, 253, 0.45);
+}
+
+.mascotAvatar {
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+}
+
+.mascotBadge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 15px;
+  background: #1E293B;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Copy ─────────────────────────────────────────────────────────────── */
+
+.bannerCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bannerHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bannerTitle {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.rewardTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #FCD34D;
+}
+
+.bannerSubtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Actions ──────────────────────────────────────────────────────────── */
+
+.bannerActions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Duolingo 3D Tactile Claim Button */
+.claimBtn3D {
+  height: 44px;
+  padding: 0 20px;
+  background: #22C55E;
+  border: none;
+  border-bottom: 5px solid #15803D;
+  border-radius: 14px;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.claimBtn3D:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.claimBtn3D:active:not(:disabled) {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.claimBtn3D:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
+
+.claimBtnClaimed {
+  background: #16A34A;
+  border-bottom-color: #166534;
+}
+
+/* Duolingo 3D Open Button */
+.openBtn3D {
+  height: 44px;
+  padding: 0 20px;
+  background: #FF8A00;
+  border: none;
+  border-bottom: 5px solid #C2410C;
+  border-radius: 14px;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 138, 0, 0.3);
+}
+
+.openBtn3D:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.openBtn3D:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+/* Dismiss X */
+.dismissBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 10px;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.dismissBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+
+/* ─── Auto-dismiss Progress Bar ────────────────────────────────────────── */
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #0172FD 0%, #22C55E 100%);
+  transform-origin: left;
+  animation: drainProgress linear forwards;
+}
+
+@keyframes drainProgress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .heraldRoot {
+    top: 68px;
+    width: min(520px, calc(100vw - 24px));
+  }
+
+  .banner {
+    padding: 13px 15px;
+    gap: 12px;
+  }
+
+  .bannerTitle {
+    font-size: 0.95rem;
+  }
+
+  .bannerSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .claimBtn3D,
+  .openBtn3D {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 0.82rem;
+  }
+}

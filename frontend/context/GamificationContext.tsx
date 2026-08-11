@@ -13,6 +13,7 @@ import React, {
 export interface GamificationState {
   xp: number;
   gems: number;
+  coins: number;
   streakDays: number;
   longestStreak: number;
   lives: number;
@@ -20,6 +21,7 @@ export interface GamificationState {
   livesRefillAt: string | null;
   streakFreezeBank: number;
   streakStatus: 'NORMAL' | 'SAVED' | 'RESET';
+  lostStreakCount: number;
   lastLessonCompletedAt: string | null;
   completedQuests: string[];
   // Daily Reward (Login Chest)
@@ -27,13 +29,16 @@ export interface GamificationState {
   dailyRewardCyclePosition: number;
   isEligibleForReward: boolean;
   nextRewardClaimInMs: number;
+  userLevel?: number;
+  xpInCurrentLevel?: number;
   isLoading: boolean;
 }
 
 interface GamificationContextValue extends GamificationState {
   refresh: () => Promise<void>;
   loseLife: () => Promise<void>;
-  applyLessonReward: (newXp: number, newStreakDays: number) => void;
+  applyLessonReward: (newXp: number, newStreakDays: number, newCoins?: number) => void;
+  awardTestReward: (delta: { coins?: number; xp?: number; lives?: number; streakDays?: number }) => void;
   claimQuest: (questId: string) => Promise<void>;
   buyStreakFreeze: () => Promise<void>;
   buyShopItem: (itemKey: 'REFILL_HEARTS' | 'STREAK_FREEZE') => Promise<{ success: boolean; message: string }>;
@@ -50,7 +55,8 @@ const GamificationContext = createContext<GamificationContextValue | null>(null)
 
 const DEFAULT_STATE: GamificationState = {
   xp: 30, // Seeded default matching onboarding/psychological grant
-  gems: 100, // 100 Gems starter grant
+  gems: 50, // Starter grant aligned to coins
+  coins: 50, // 50 Coins starter grant
   streakDays: 3, // Starter 3-day streak matching onboarding grant
   longestStreak: 3,
   lives: 5,
@@ -58,6 +64,7 @@ const DEFAULT_STATE: GamificationState = {
   livesRefillAt: null,
   streakFreezeBank: 1, // Start with 1 starter freeze banked
   streakStatus: 'NORMAL',
+  lostStreakCount: 0,
   lastLessonCompletedAt: null,
   completedQuests: [],
   // Daily Reward
@@ -96,9 +103,11 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       }
 
       const data = await res.json();
+      const currentCoins = data.coins ?? data.gems ?? 50;
       setState({
         xp: data.xp ?? 30,
-        gems: data.gems ?? 100,
+        gems: currentCoins,
+        coins: currentCoins,
         streakDays: data.streakDays ?? 3,
         longestStreak: data.longestStreak ?? Math.max(3, data.streakDays ?? 3),
         lives: data.lives ?? 5,
@@ -106,6 +115,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         livesRefillAt: data.livesRefillAt ?? null,
         streakFreezeBank: data.streakFreezeBank ?? 1,
         streakStatus: data.streakStatus ?? 'NORMAL',
+        lostStreakCount: data.lostStreakCount ?? 0,
         lastLessonCompletedAt: data.lastLessonCompletedAt ?? null,
         completedQuests: Array.isArray(data.completedQuests) ? data.completedQuests : [],
         // Daily Reward
@@ -113,6 +123,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
         isEligibleForReward: data.isEligibleForReward ?? true,
         nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
+        userLevel: data.userLevel,
+        xpInCurrentLevel: data.xpInCurrentLevel,
         isLoading: false,
       });
     } catch {
@@ -156,11 +168,13 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  const applyLessonReward = useCallback((newXp: number, newStreakDays: number) => {
+  const applyLessonReward = useCallback((newXp: number, newStreakDays: number, newCoins?: number) => {
     setState((prev) => ({
       ...prev,
       xp: newXp,
       streakDays: newStreakDays,
+      coins: newCoins !== undefined ? newCoins : (prev.coins + 5),
+      gems: newCoins !== undefined ? newCoins : (prev.gems + 5),
     }));
   }, []);
 
@@ -252,6 +266,20 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  const awardTestReward = useCallback((delta: { coins?: number; xp?: number; lives?: number; streakDays?: number }) => {
+    setState((prev) => {
+      const newCoins = prev.coins + (delta.coins || 0);
+      return {
+        ...prev,
+        coins: newCoins,
+        gems: newCoins,
+        xp: prev.xp + (delta.xp || 0),
+        lives: delta.lives ? Math.min(prev.maxLives, prev.lives + delta.lives) : prev.lives,
+        streakDays: prev.streakDays + (delta.streakDays || 0),
+      };
+    });
+  }, []);
+
   const dismissStreakModal = useCallback(() => {
     setState((prev) => ({ ...prev, streakStatus: 'NORMAL' }));
   }, []);
@@ -284,9 +312,21 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // level logic: 1 level per 100 XP
-  const userLevel = Math.floor(state.xp / 100) + 1;
-  const xpInCurrentLevel = state.xp % 100;
+  // level logic: exponential curve matching backend
+  let userLevel = state.userLevel || 1;
+  if (!state.userLevel) {
+    const totalXp = state.xp || 0;
+    while (true) {
+      const nextReq = 50 * userLevel * (userLevel + 1);
+      if (totalXp >= nextReq) {
+        userLevel++;
+      } else {
+        break;
+      }
+    }
+  }
+  const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
+  const xpInCurrentLevel = state.xpInCurrentLevel ?? Math.max(0, (state.xp || 0) - currentLevelBaseXp);
 
   return (
     <GamificationContext.Provider
@@ -295,6 +335,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         refresh,
         loseLife,
         applyLessonReward,
+        awardTestReward,
         claimQuest,
         buyStreakFreeze,
         buyShopItem,

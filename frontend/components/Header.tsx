@@ -159,7 +159,7 @@ export default function Header() {
                      <Link href="/dashboard" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <LayoutGrid size={16} /> Dashboard
                      </Link>
-                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
+                     <Link href="/dashboard/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <User size={16} /> Edit Profile
                      </Link>
                      <button onClick={handleLogout} className={`${styles.dropdownItem} ${styles.logout}`} role="menuitem">
@@ -234,7 +234,7 @@ export default function Header() {
                     <Link href="/dashboard" className={styles.mobileNavLink}>
                       <LayoutGrid size={18} /> Dashboard
                     </Link>
-                    <Link href="/profile" className={styles.mobileNavLink}>
+                    <Link href="/dashboard/profile" className={styles.mobileNavLink}>
                       <User size={18} /> Edit Profile
                     </Link>
                     <button onClick={handleLogout} className={`${styles.mobileNavLink} ${styles.logoutText}`}>

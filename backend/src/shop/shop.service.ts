@@ -36,14 +36,14 @@ export class ShopService {
         throw new BadRequestException('Your hearts are already full!');
       }
 
-      if (profile.gems < item.cost) {
-        throw new BadRequestException(`Not enough Gems. You need 💎 ${item.cost} Gems, but you currently have 💎 ${profile.gems}.`);
+      if (profile.coins < item.cost) {
+        throw new BadRequestException(`Not enough Coins. You need 🪙 ${item.cost} Coins, but you currently have 🪙 ${profile.coins}.`);
       }
 
       const updated = await this.prisma.studentProfile.update({
         where: { userId },
         data: {
-          gems: { decrement: item.cost },
+          coins: { decrement: item.cost },
           lives: profile.maxLives,
           livesLastLostAt: null,
         },
@@ -71,7 +71,8 @@ export class ShopService {
       return {
         success: true,
         message: 'Hearts refilled successfully! ❤️❤️❤️❤️❤️',
-        gems: updated.gems,
+        coins: updated.coins,
+        gems: updated.coins,
         lives: updated.lives,
         maxLives: updated.maxLives,
         streakFreezeBank: updated.streakFreezeBank,
@@ -82,14 +83,14 @@ export class ShopService {
         throw new BadRequestException(`Maximum capacity reached! Free tier accounts can equip up to ${item.maxStorage} Streak Freezes.`);
       }
 
-      if (profile.gems < item.cost) {
-        throw new BadRequestException(`Not enough Gems. You need 💎 ${item.cost} Gems, but you currently have 💎 ${profile.gems}.`);
+      if (profile.coins < item.cost) {
+        throw new BadRequestException(`Not enough Coins. You need 🪙 ${item.cost} Coins, but you currently have 🪙 ${profile.coins}.`);
       }
 
       const updated = await this.prisma.studentProfile.update({
         where: { userId },
         data: {
-          gems: { decrement: item.cost },
+          coins: { decrement: item.cost },
           streakFreezeBank: { increment: 1 },
         },
       });
@@ -116,7 +117,8 @@ export class ShopService {
       return {
         success: true,
         message: 'Purchased Successfully! 🧊 +1 Streak Freeze',
-        gems: updated.gems,
+        coins: updated.coins,
+        gems: updated.coins,
         lives: updated.lives,
         maxLives: updated.maxLives,
         streakFreezeBank: updated.streakFreezeBank,

@@ -216,8 +216,13 @@ export class AuthController {
     if (!email) return { exists: false };
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
-      select: { id: true },
+      select: { id: true, hasCreatorAccess: true, hasStudentAccess: true, isVerified: true },
     });
-    return { exists: !!user };
+    return { 
+      exists: !!user,
+      hasCreatorAccess: user?.hasCreatorAccess ?? false,
+      hasStudentAccess: user?.hasStudentAccess ?? false,
+      isVerified: user?.isVerified ?? false,
+    };
   }
 }

@@ -4,7 +4,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { firebaseAdmin } from './firebase-admin';
+import { ProfileService } from '../profile/profile.service';
+import { EmailService } from '../email/email.service';
 
 jest.mock('bcrypt');
 jest.mock('./firebase-admin', () => ({
@@ -43,7 +44,20 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: {
-            signAsync: jest.fn(),
+            signAsync: jest.fn().mockResolvedValue('mocked-jwt-token'),
+          },
+        },
+        {
+          provide: ProfileService,
+          useValue: {
+            getProfile: jest.fn(),
+            updateProfile: jest.fn(),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendVerificationEmail: jest.fn(),
           },
         },
       ],
@@ -123,7 +137,7 @@ describe('AuthService', () => {
     });
 
     it('should successfully sign up a new INSTRUCTOR user', async () => {
-      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
+      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' as any };
       const mockUser = { id: '1', ...dtoWithRole };
       const mockToken = 'mocked_jwt_token';
 
@@ -144,7 +158,7 @@ describe('AuthService', () => {
           profile: { create: {} },
         },
       });
-      expect(result.user.role).toBe('INSTRUCTOR');
+      expect((result as any).user.role).toBe('INSTRUCTOR');
     });
 
     it('should throw ForbiddenException if email already in use (no instructor upgrade)', async () => {
@@ -155,7 +169,7 @@ describe('AuthService', () => {
     });
 
     it('should throw ForbiddenException if upgrading to INSTRUCTOR with incorrect credentials', async () => {
-      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
+      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' as any };
       const existingUser = { id: '1', email: dto.email, password: 'oldHashedPassword', role: 'STUDENT' };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
@@ -167,7 +181,7 @@ describe('AuthService', () => {
     });
 
     it('should successfully upgrade existing STUDENT to INSTRUCTOR', async () => {
-      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
+      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' as any };
       const existingUser = { id: '1', email: dto.email, password: 'oldHashedPassword', fullName: dto.fullName, role: 'STUDENT' };
       const updatedUser = { ...existingUser, role: 'INSTRUCTOR' };
       const mockToken = 'mocked_jwt_token';

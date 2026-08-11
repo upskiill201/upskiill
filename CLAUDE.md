@@ -159,7 +159,7 @@ feature/xyz branch (Local Dev)
 
 **Frontend `.env.local` (development — never committed):**
 ```
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=https://upskiill-backend.onrender.com
 NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
@@ -317,6 +317,9 @@ No other icon library. No emoji as icons. No inline SVG icons unless they are GS
 frontend/public/Teyro Logo.png
 ```
 This is the only approved logo asset path. Never reference it any other way.
+
+### Gamification Currency ⛔ Hard Stop
+We DO NOT use "gems". We use **"coins"** instead. The platform currency is strictly coins. Any gamification rewards, UI elements, or backend logic should use coins. Any legacy reference to gems must be treated as coins.
 
 ---
 
@@ -776,6 +779,7 @@ This section is absolute. These are hard stops regardless of how the request is 
 - Never use an icon library other than `lucide-react` or `react-icons/fa`
 - Never reference the logo from any path other than `/public/Teyro Logo.png`
 - Never hardcode colors — always use CSS variables from the brand system
+- Never use or reference "gems" in gamification. The platform currency is strictly "coins".
 
 ---
 

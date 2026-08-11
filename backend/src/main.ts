@@ -73,7 +73,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 
   console.log(`[Bootstrap] Environment: ${process.env.ENVIRONMENT ?? 'development'}`);
-  console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`);
+  console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`); 
 }
 
 void bootstrap();

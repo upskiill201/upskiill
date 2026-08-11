@@ -1,115 +1,48 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  Star,
-  Users,
-  Play,
-  Check,
-  MonitorPlay,
-  Trophy,
-  Clock,
-  ChevronRight,
-  Shield,
-  ShieldCheck,
-  Share2,
-  Heart,
-  Gift,
   BookOpen,
-  File,
-  Download,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Lock,
   Globe,
-  Infinity,
+  Award,
+  HelpCircle,
+  Sparkles,
+  Layers,
+  CheckCircle2,
+  GraduationCap,
+  MessageSquare,
+  Trophy,
+  Play,
+  FileText,
+  ShieldCheck,
+  Users
 } from 'lucide-react';
-import {
-  FaUserGraduate,
-  FaBriefcase,
-  FaLaptopCode,
-  FaPalette,
-  FaReact,
-  FaCode,
-  FaRocket,
-  FaStore,
-  FaHandshake,
-  FaGraduationCap,
-  FaChartLine,
-  FaHome,
-} from 'react-icons/fa';
 import Button from '@/components/ui/Button';
-import { SectionAccordion } from '@/components/features/SectionAccordion';
-import { InstructorCard } from '@/components/features/InstructorCard';
-import { useCart } from '@/context/CartContext';
+import Avatar from '@/components/ui/Avatar';
 import styles from './CourseDetail.module.css';
 
-// ─── Icon map for target audience ────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AUDIENCE_ICONS: Record<string, React.ComponentType<any>> = {
-  FaUserGraduate,
-  FaBriefcase,
-  FaLaptopCode,
-  FaPalette,
-  FaReact,
-  FaCode,
-  FaRocket,
-  FaStore,
-  FaHandshake,
-  FaGraduationCap,
-  FaChartLine,
-  FaHome,
-};
-
 interface Lesson {
-  index: number;
+  id?: string;
   title: string;
-  duration: string;
+  durationMinutes?: number;
+  duration?: string;
+  lessonType?: 'video' | 'text' | 'quiz' | string;
+  type?: string;
   isFreePreview?: boolean;
 }
 
 interface CurriculumSection {
+  id?: string;
   title: string;
-  lessonCount: number;
-  totalDuration: string;
+  orderIndex?: number;
   lessons: Lesson[];
-}
-
-interface AudienceItem {
-  icon: string;
-  title: string;
-  description: string;
-}
-
-// ─── Simple Markdown-lite Parser ──────────────────────────────────────────────
-function renderDescription(text: string) {
-  if (!text) return null;
-  const blocks = text.split('\n\n');
-  return blocks.map((block, i) => {
-    if (block.startsWith('> ')) {
-      return (
-        <blockquote key={i} className={styles.blockquote}>
-          &ldquo;{block.replace(/^> /, '')}&rdquo;
-        </blockquote>
-      );
-    }
-    if (block.startsWith('### ')) {
-      return <h3 key={i} className={styles.subHeading}>{block.replace(/^### /, '')}</h3>;
-    }
-    if (block.startsWith('- ')) {
-      const items = block.split('\n').filter(line => line.startsWith('- '));
-      return (
-        <ul key={i} className={styles.bulletList}>
-          {items.map((item, j) => (
-            <li key={j} className={styles.bulletItem}>
-              <div className={styles.bulletDot} />
-              <span>{item.replace(/^- /, '')}</span>
-            </li>
-          ))}
-        </ul>
-      );
-    }
-    return <p key={i} className={styles.paragraph}>{block}</p>;
-  });
 }
 
 export default function CourseDetailPage({
@@ -117,471 +50,680 @@ export default function CourseDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: idOrSlug } = React.use(params);
-  const { addItem, isInCart } = useCart();
+  const resolvedParams = React.use(params);
+  const idOrSlug = resolvedParams.id;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isPreviewMode = searchParams?.get('preview') === 'true';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [course, setCourse] = React.useState<any>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isEnrolled, setIsEnrolled] = React.useState(false);
-  const [isWishlisted, setIsWishlisted] = React.useState(false);
+  const [course, setCourse] = useState<any>(null);
+  const [sections, setSections] = useState<CurriculumSection[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [openSectionIds, setOpenSectionIds] = useState<string[]>([]);
 
-  React.useEffect(() => {
+  // Preview Video Modal State
+  const [activePreviewLesson, setActivePreviewLesson] = useState<Lesson | null>(null);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiUrl = '/api';
-
-        const courseRes = await fetch(`${apiUrl}/courses/${idOrSlug}`);
-        if (courseRes.ok) {
-          const data = await courseRes.json();
-          setCourse(data);
-
-          const meRes = await fetch(`${apiUrl}/auth/me`, {
+        setIsLoading(true);
+        if (isPreviewMode) {
+          // ─── CREATOR PREVIEW MODE: Load Draft Course & Curriculum ───
+          const draftRes = await fetch(`/api/courses/${idOrSlug}/draft`, {
             credentials: 'include',
           });
-          if (meRes.ok) {
-            const enrollmentsRes = await fetch(`${apiUrl}/auth/me/enrollments`, {
-              credentials: 'include',
-            });
-            if (enrollmentsRes.ok) {
-              const enrollments = await enrollmentsRes.json();
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const enrolled = enrollments.some((e: any) => e.courseId === data.id);
-              setIsEnrolled(enrolled);
+          if (draftRes.ok) {
+            const draftData = await draftRes.json();
+            setCourse(draftData);
+          }
+
+          const curRes = await fetch(`/api/courses/${idOrSlug}/curriculum`, {
+            credentials: 'include',
+          });
+          if (curRes.ok) {
+            const curData = await curRes.json();
+            if (Array.isArray(curData)) {
+              setSections(curData);
+              if (curData.length > 0) {
+                setOpenSectionIds([curData[0].id || '0']);
+              }
+            }
+          }
+        } else {
+          // ─── PUBLIC STUDENT MODE: Load Published Course Data ───
+          const courseRes = await fetch(`/api/courses/${idOrSlug}`);
+          if (courseRes.ok) {
+            const data = await courseRes.json();
+            setCourse(data);
+
+            if (Array.isArray(data.sections)) {
+              setSections(data.sections);
+              if (data.sections.length > 0) {
+                setOpenSectionIds([data.sections[0].id || '0']);
+              }
+            }
+
+            // Check student authentication & enrollment status
+            const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+            if (meRes.ok) {
+              const enrollmentsRes = await fetch('/api/auth/me/enrollments', {
+                credentials: 'include',
+              });
+              if (enrollmentsRes.ok) {
+                const enrollments = await enrollmentsRes.json();
+                const enrolled = enrollments.some(
+                  (e: any) => e.courseId === data.id || e.courseId === idOrSlug
+                );
+                setIsEnrolled(enrolled);
+              }
             }
           }
         }
       } catch (err) {
-        console.error('Failed to fetch course details', err);
+        console.error('Failed to fetch course detail:', err);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchData();
-  }, [idOrSlug]);
 
-  const handleAddToCart = () => {
-    if (course) {
-      addItem({
-        id: course.id,
-        title: course.title,
-        thumbnail: course.thumbnailUrl || '',
-        instructorName: course.instructor?.fullName || 'Instructor',
-        price: course.price,
-      });
-    }
+    fetchData();
+  }, [idOrSlug, isPreviewMode]);
+
+  const toggleSection = (sectionId: string) => {
+    setOpenSectionIds((prev) =>
+      prev.includes(sectionId)
+        ? prev.filter((id) => id !== sectionId)
+        : [...prev, sectionId]
+    );
   };
 
-  const discountPct = course?.originalPrice
-    ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)
-    : 0;
-
-  const mockCurriculum = [
-    {
-      title: 'Section 1: Setup and Fundamentals',
-      lessonCount: 5,
-      totalDuration: '58m',
-      lessons: [
-        { index: 1, title: 'Welcome & Course Overview', duration: '4:15', isFreePreview: true },
-        { index: 2, title: 'Setting Up Your Environment', duration: '12:30', isFreePreview: true },
-        { index: 3, title: 'Core Concepts & Terminology', duration: '18:45' },
-        { index: 4, title: 'Understanding the Architecture', duration: '13:20' },
-        { index: 5, title: 'First Mini-Project', duration: '9:10' },
-      ],
-    },
-    {
-      title: 'Section 2: Deep Dive into Practice',
-      lessonCount: 6,
-      totalDuration: '1h 18m',
-      lessons: [
-        { index: 1, title: 'Introduction to Advanced Tools', duration: '8:00', isFreePreview: true },
-        { index: 2, title: 'Structuring Your Workflow', duration: '14:30' },
-        { index: 3, title: 'Live Coding / Real-World Example', duration: '22:15' },
-        { index: 4, title: 'Best Practices & Optimization', duration: '16:40' },
-        { index: 5, title: 'Debugging Common Issues', duration: '11:25' },
-        { index: 6, title: 'Chapter Summary & Quiz', duration: '5:10' },
-      ],
-    },
-    {
-      title: 'Section 3: Mastering the Craft',
-      lessonCount: 5,
-      totalDuration: '1h 5m',
-      lessons: [
-        { index: 1, title: 'Deploying Your Work', duration: '10:00' },
-        { index: 2, title: 'Handling Edge Cases', duration: '15:30' },
-        { index: 3, title: 'Scaling and Performance', duration: '24:00' },
-        { index: 4, title: 'Reviewing with Peers', duration: '9:45' },
-        { index: 5, title: 'Next Steps & Certification', duration: '5:45' },
-      ],
-    }
-  ];
-
-  const actualCurriculum = course?.curriculum && course.curriculum.length > 0 ? course.curriculum : mockCurriculum;
-
-  const totalLessons = actualCurriculum.reduce(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (acc: number, s: any) => acc + (s.lessonCount || 0),
+  // ─── DYNAMIC GAMIFICATION & METADATA CALCULATIONS ───
+  const allLessons = sections.flatMap((s) => s.lessons || []);
+  const totalLessonsCount = allLessons.length;
+  
+  const totalMinutes = allLessons.reduce(
+    (acc, l) => acc + (l.durationMinutes || 0),
     0
   );
+  
+  const formattedDuration =
+    totalMinutes > 0
+      ? `${Math.floor(totalMinutes / 60) > 0 ? `${Math.floor(totalMinutes / 60)}h ` : ''}${totalMinutes % 60}m`
+      : course?.duration || 'Flexible Pacing';
+
+  const totalXp = totalLessonsCount * 50;
+
+  const learnersCount =
+    course?._count?.enrollments ?? course?.studentsCount ?? 0;
+
+  // Dynamic Course Badges generated from curriculum sections
+  const dynamicBadges = [
+    ...sections.map((sec, i) => ({
+      id: sec.id || `mod-${i}`,
+      label: `Ch. ${i + 1}`,
+      title: sec.title,
+      icon: i % 2 === 0 ? <Trophy size={18} /> : <Award size={18} />,
+    })),
+    {
+      id: 'cert',
+      label: 'Cert',
+      title: 'Course Completion Certificate',
+      icon: <GraduationCap size={18} />,
+    },
+  ];
+
+  // ─── ENROLLMENT HANDLER ───
+  const handleEnrollment = async () => {
+    if (isPreviewMode) return;
+    if (isEnrolled) {
+      router.push('/dashboard/my-learning');
+      return;
+    }
+
+    setIsEnrolling(true);
+    try {
+      const res = await fetch(`/api/courses/${course?.id || idOrSlug}/enroll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      if (res.status === 401) {
+        router.push(`/login?redirect=/courses/${idOrSlug}`);
+        return;
+      }
+
+      if (res.ok) {
+        setIsEnrolled(true);
+        router.push('/dashboard/my-learning');
+      } else {
+        alert('Could not complete enrollment. Please try again.');
+      }
+    } catch (err) {
+      console.error('Enrollment error:', err);
+      alert('Failed to enroll in course.');
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
 
   if (isLoading) {
     return (
       <div className={styles.loadingWrap}>
         <div className={styles.spinner} />
-        <p>Loading course details…</p>
+        <p style={{ fontWeight: 600 }}>Loading course details...</p>
       </div>
     );
   }
 
-  if (!course) {
+  if (!course && !isPreviewMode) {
     return (
       <div className={styles.loadingWrap}>
-        <p>Course not found.</p>
+        <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A' }}>
+          Course Not Found
+        </h2>
+        <p style={{ color: '#64748B' }}>
+          The requested course could not be located or has been archived.
+        </p>
         <Link href="/courses">
-          <Button variant="primary">Browse Courses</Button>
+          <Button variant="primary">Browse All Courses</Button>
         </Link>
       </div>
     );
   }
 
+  const courseTitle = course?.title || 'Untitled Course';
+  const courseDescription =
+    course?.description ||
+    course?.shortDescription ||
+    'Learn step-by-step with interactive lessons, practical projects, and instant feedback.';
+  
+  // Safe brand gradient fallback if no thumbnail URL
+  const coverImage = course?.thumbnailUrl;
+  const priceDisplay =
+    course?.price === 0 || !course?.price ? 'FREE' : `$${course.price}`;
+  
+  const instructorName = course?.instructor?.fullName || 'Teyro Creator';
+  const instructorAvatar = course?.instructor?.avatarUrl || undefined;
+  const instructorBio =
+    course?.instructor?.profile?.bio || 'Teyro Certified Instructor';
+
+  const requirementsList = Array.isArray(course?.requirements)
+    ? course.requirements.filter(Boolean)
+    : course?.startingPoint
+    ? [course.startingPoint]
+    : [];
+
   return (
     <div className={styles.pageWrapper}>
-      {/* ─── HERO BANNER ─────────────────────────────────────────────────── */}
+      
+      {/* ─── CREATOR PREVIEW NOTICE BANNER ─── */}
+      {isPreviewMode && (
+        <div className={styles.previewNoticeBanner}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className={styles.previewBadge}>CREATOR PREVIEW</span>
+            <span>
+              Live student perspective preview. Enrollment and checkout are disabled.
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.close()}
+            style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.3)' }}
+          >
+            Close Preview
+          </Button>
+        </div>
+      )}
+
+      {/* ─── ZONE A: HERO HEADER ─── */}
       <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroContent}>
-            {/* Breadcrumbs */}
-            <div className={styles.breadcrumbs}>
-              <Link href="/courses" className={styles.breadcrumbLink}>Courses</Link>
-              <ChevronRight size={14} style={{ opacity: 0.5 }} />
-              <Link href={`/courses?category=${course.category}`} className={styles.breadcrumbLink}>
-                {course.category}
-              </Link>
-              <ChevronRight size={14} style={{ opacity: 0.5 }} />
-              <span className={styles.breadcrumbCurrent}>{course.title}</span>
+        {coverImage && (
+          <img
+            src={coverImage}
+            alt={courseTitle}
+            className={styles.heroBgImage}
+          />
+        )}
+        <div className={styles.heroOverlay} />
+
+        <div className={styles.heroContainer}>
+          <div className={styles.badgeRow}>
+            <span className={styles.levelBadge}>
+              {course?.level || 'BEGINNER'}
+            </span>
+            <span className={styles.categoryBadge}>
+              {course?.category || 'COURSE'}
+            </span>
+            {course?.language && (
+              <span className={styles.categoryBadge}>{course.language}</span>
+            )}
+          </div>
+
+          <h1 className={styles.heroTitle}>{courseTitle}</h1>
+
+          <p className={styles.heroSub}>{courseDescription}</p>
+
+          <div className={styles.heroCtaRow}>
+            <button
+              className={styles.primaryCtaBtn}
+              onClick={handleEnrollment}
+              disabled={isPreviewMode || isEnrolling}
+            >
+              {isPreviewMode
+                ? 'Preview Mode (Enrollment Disabled)'
+                : isEnrolled
+                ? 'Continue Learning →'
+                : course?.price === 0 || !course?.price
+                ? 'Start Learning for Free →'
+                : `Enroll for ${priceDisplay} →`}
+            </button>
+          </div>
+
+          <div className={styles.metaRow}>
+            <div className={styles.metaItem}>
+              <CheckCircle2 size={16} style={{ color: '#60A5FA' }} />
+              <span>
+                Prerequisites:{' '}
+                <strong>
+                  {requirementsList.length > 0 ? requirementsList[0] : 'None required'}
+                </strong>
+              </span>
             </div>
 
-            {/* Badge row */}
-            <div className={styles.heroBadgeRow}>
-              <span className={styles.badgeBestseller}>BESTSELLER</span>
-              <span className={styles.badgeLevel}>{course.level}</span>
-              <span className={styles.badgeCategory}>{course.category}</span>
+            <div className={styles.metaItem}>
+              <Clock size={16} style={{ color: '#60A5FA' }} />
+              <span>
+                Time to complete: <strong>{formattedDuration}</strong>
+              </span>
             </div>
 
-            <h1 className={styles.title}>{course.title}</h1>
-            <p className={styles.subtitle}>
-              {course.shortDescription || course.description?.substring(0, 160)}
-            </p>
-
-            {/* Meta row */}
-            <div className={styles.metaRow}>
-              <div className={styles.metaItem}>
-                <Star size={16} fill="#F59E0B" color="#F59E0B" />
-                <span className={styles.ratingHighlight}>{course.rating || 4.9}</span>
-                <span className={styles.metaSmall}>({(course.reviewsCount || 0).toLocaleString()} ratings)</span>
-              </div>
-              <span className={styles.metaDivider}>·</span>
-              <div className={styles.metaItem}>
-                <Users size={15} />
-                <span>{(course.studentsCount || 0).toLocaleString()} students</span>
-              </div>
-              <span className={styles.metaDivider}>·</span>
-              <div className={styles.metaItem}>
-                <Clock size={15} />
-                <span>{course.duration || '0h'} total</span>
-              </div>
-            </div>
-
-            {/* Instructor */}
-            <div className={styles.instructorRow}>
-              {course.instructor?.avatarUrl && (
-                <div className={styles.instructorAvatar}>
-                  <Image
-                    src={course.instructor.avatarUrl}
-                    alt={course.instructor.fullName}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>
-              )}
-              <span className={styles.instructorText}>Created by</span>
-              <Link href="#instructor" className={styles.instructorName}>
-                {course.instructor?.fullName}
-              </Link>
+            <div className={styles.metaItem}>
+              <Users size={16} style={{ color: '#60A5FA' }} />
+              <span>
+                Enrolled:{' '}
+                <strong>
+                  {learnersCount > 0
+                    ? `+${learnersCount.toLocaleString()} learners`
+                    : 'Be the first to enroll'}
+                </strong>
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── MAIN LAYOUT ─────────────────────────────────────────────────── */}
-      <div className={styles.mainContainer}>
+      {/* ─── PAGE BODY GRID (ZONES B & C) ─── */}
+      <div className={styles.salesBody}>
+        
+        {/* ─── ZONE B: MAIN CONTENT COLUMN (LEFT ~65%) ─── */}
+        <div className={styles.mainCol}>
+          <h2 className={styles.sectionHeaderTitle}>
+            <BookOpen size={22} style={{ color: '#0172FD' }} /> Course Syllabus &amp; Curriculum
+          </h2>
 
-        {/* ─── LEFT COLUMN ─────────────────────────────────────────────── */}
-        <div className={styles.leftColumn}>
-
-          {/* What you'll learn */}
-          <div className={styles.contentBox}>
-            <h2 className={styles.sectionTitle}>What you&apos;ll learn</h2>
-            <div className={styles.learnGrid}>
-              {(course.whatYouWillLearn || []).map((item: string, i: number) => (
-                <div key={i} className={styles.checkItem}>
-                  <div className={styles.checkIconWrap}>
-                    <Check size={13} strokeWidth={3} />
-                  </div>
-                  <span>{item}</span>
-                </div>
-              ))}
+          {/* Numbered Modules Accordion List */}
+          {sections.length === 0 ? (
+            <div
+              style={{
+                padding: '36px',
+                textAlign: 'center',
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1px dashed #CBD5E1',
+              }}
+            >
+              <Layers size={36} style={{ color: '#94A3B8', margin: '0 auto 12px' }} />
+              <h4 style={{ margin: 0, fontWeight: 700, color: '#334155', fontSize: '15px' }}>
+                Course Curriculum in Progress
+              </h4>
+              <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '13px' }}>
+                This course curriculum is currently being built by the instructor.
+              </p>
             </div>
-          </div>
+          ) : (
+            <div className={styles.modulesContainer}>
+              {sections.map((section, idx) => {
+                const secId = section.id || String(idx);
+                const isOpen = openSectionIds.includes(secId);
+                const moduleNum = idx + 1;
 
-          {/* Who is this course for */}
-          {(course.targetAudience || []).length > 0 && (
-            <div className={styles.contentBox}>
-              <h2 className={styles.sectionTitle}>Who is this course for?</h2>
-              <div className={styles.audienceGrid}>
-                {(course.targetAudience as AudienceItem[]).map((item, i) => {
-                  const IconComp = AUDIENCE_ICONS[item.icon] || FaUserGraduate;
-                  return (
-                    <div key={i} className={styles.audienceItem}>
-                      <div className={styles.audienceIconBox}>
-                        <IconComp size={20} />
+                return (
+                  <div key={secId} className={styles.moduleCard}>
+                    <div
+                      className={styles.moduleHeader}
+                      onClick={() => toggleSection(secId)}
+                    >
+                      <div className={styles.moduleHeaderLeft}>
+                        <div className={styles.moduleNumCircle}>{moduleNum}</div>
+                        <span className={styles.moduleTitleText}>
+                          {section.title}
+                        </span>
                       </div>
-                      <div>
-                        <p className={styles.audienceTitle}>{item.title}</p>
-                        <p className={styles.audienceDesc}>{item.description}</p>
+
+                      <div className={styles.moduleHeaderRight}>
+                        <span className={styles.moduleMetaText}>
+                          {section.lessons?.length || 0} lessons
+                        </span>
+                        {isOpen ? (
+                          <ChevronUp size={18} color="#64748B" />
+                        ) : (
+                          <ChevronDown size={18} color="#64748B" />
+                        )}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {isOpen && (
+                      <div className={styles.lessonsList}>
+                        {section.lessons && section.lessons.length > 0 ? (
+                          section.lessons.map((lesson, lIdx) => {
+                            const isUnlocked =
+                              isEnrolled || (moduleNum === 1 && lIdx === 0) || lesson.isFreePreview;
+
+                            const typeName = lesson.lessonType || lesson.type || 'video';
+
+                            return (
+                              <div
+                                key={lesson.id || lIdx}
+                                className={styles.lessonRow}
+                              >
+                                <div className={styles.lessonRowLeft}>
+                                  {typeName === 'quiz' ? (
+                                    <HelpCircle size={16} className={styles.lessonIcon} />
+                                  ) : (
+                                    <FileText size={16} className={styles.lessonIcon} />
+                                  )}
+                                  <span className={styles.lessonTitle}>
+                                    {lesson.title}
+                                  </span>
+                                </div>
+
+                                <div className={styles.lessonRowRight}>
+                                  {lesson.durationMinutes ? (
+                                    <span className={styles.lessonDuration}>
+                                      {lesson.durationMinutes}m
+                                    </span>
+                                  ) : lesson.duration ? (
+                                    <span className={styles.lessonDuration}>
+                                      {lesson.duration}
+                                    </span>
+                                  ) : null}
+
+                                  {isUnlocked ? (
+                                    lesson.isFreePreview && !isEnrolled ? (
+                                      <button
+                                        type="button"
+                                        className={styles.previewBtn}
+                                        onClick={() => setActivePreviewLesson(lesson)}
+                                      >
+                                        Preview
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className={styles.startBtn}
+                                        onClick={handleEnrollment}
+                                      >
+                                        Start
+                                      </button>
+                                    )
+                                  ) : (
+                                    <span className={styles.lockedBadge}>
+                                      <Lock size={12} /> Locked
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div
+                            style={{
+                              padding: '16px',
+                              fontSize: '13px',
+                              color: '#94A3B8',
+                              fontStyle: 'italic',
+                            }}
+                          >
+                            No lessons in this module.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          {/* Requirements */}
-          {(course.requirements || []).length > 0 && (
-            <div className={styles.contentBox}>
-              <h2 className={styles.sectionTitle}>Requirements &amp; Prerequisites</h2>
-              <ul className={styles.requirementsList}>
-                {(course.requirements as string[]).map((req, i) => (
-                  <li key={i} className={styles.requirementItem}>
-                    <div className={styles.reqDot} />
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
+          {/* Community Prompt Card */}
+          <div className={styles.communityPromptCard}>
+            <div className={styles.promptLeft}>
+              <div className={styles.promptMascotCircle}>
+                <MessageSquare size={24} />
+              </div>
+              <div>
+                <h4 className={styles.promptTextTitle}>
+                  Want to learn more about {courseTitle}?
+                </h4>
+                <p className={styles.promptTextSub}>
+                  Ask questions, connect with classmates, and get help in our community.
+                </p>
+              </div>
             </div>
-          )}
-
-          {/* About this course */}
-          <div className={styles.contentBox}>
-            <h2 className={styles.sectionTitle}>About this Course</h2>
-            <div className={styles.aboutText}>
-              {renderDescription(course.description)}
-            </div>
+            <Link href="/community" className={styles.askCommunityBtn}>
+              Go to Community →
+            </Link>
           </div>
 
-          {/* Certificate Banner */}
-          <div className={styles.certBanner}>
-            <div className={styles.certInfo}>
-              <div className={styles.certBadge}>
-                <Trophy size={14} />
-                UPSKIILL CERTIFIED
-              </div>
-              <h3 className={styles.certTitle}>Earn Your Certificate</h3>
-              <p className={styles.certDesc}>
-                Complete this course and receive a verified digital certificate you can showcase
-                on LinkedIn, add to your resume, or share with employers. Our certificates are
-                recognised by leading companies across Africa and globally.
-              </p>
-              <div className={styles.certActions}>
-                <Button variant="primary" size="sm" leftIcon={<Download size={14} />}>
-                  Preview Certificate
-                </Button>
-              </div>
+          {/* Teyro Course Guarantee Card */}
+          <div className={styles.logoCloudCard}>
+            <p className={styles.logoCloudTitle}>
+              Included with your Teyro enrollment
+            </p>
+            <div className={styles.logoGrid}>
+              <span className={styles.logoItem}>Full Lifetime Access</span>
+              <span className={styles.logoItem}>Mobile &amp; Desktop</span>
+              <span className={styles.logoItem}>Certificate of Completion</span>
+              <span className={styles.logoItem}>Gamified XP &amp; Badges</span>
             </div>
-            <div className={styles.certVisual}>
-              <div className={styles.certCard}>
-                <div className={styles.certCardLogo}>
-                  <span className={styles.certCardLogoText}>Upskiill</span>
-                </div>
-                <div className={styles.certCardLine} />
-                <p className={styles.certCardLabel}>Certificate of Completion</p>
-                <p className={styles.certCardName}>This is to certify that</p>
-                <p className={styles.certCardTitle}>{course.title}</p>
-                <div className={styles.certCardSeal}>✦</div>
+          </div>
+        </div>
+
+        {/* ─── ZONE C: RIGHT SIDEBAR (RIGHT ~35%) ─── */}
+        <div className={styles.sideCol}>
+          
+          {/* Creator Profile Card */}
+          <div className={styles.creatorCard}>
+            <div className={styles.creatorHeader}>
+              <Avatar
+                src={instructorAvatar}
+                name={instructorName}
+                size="md"
+              />
+              <div>
+                <h3 className={styles.creatorName}>{instructorName}</h3>
+                <span className={styles.creatorRole}>{instructorBio}</span>
               </div>
             </div>
           </div>
 
-          {/* Course Curriculum */}
-          <div className={styles.contentBox}>
-            <div className={styles.curriculumHeader}>
-              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>Course Curriculum</h2>
-              <div className={styles.curriculumStats}>
-                <BookOpen size={14} />
-                <span>{actualCurriculum.length} sections · {totalLessons} lessons · {course.duration}</span>
+          {/* Course Progress & XP Stats Preview Card */}
+          <div className={styles.statsCard}>
+            <h3 className={styles.cardTitle}>Course Stats &amp; Rewards</h3>
+
+            <div className={styles.statRow}>
+              <div className={styles.statLabelGroup}>
+                <BookOpen size={16} style={{ color: '#0172FD' }} />
+                <span>Exercises</span>
               </div>
+              <span className={styles.statVal}>0 / {totalLessonsCount}</span>
             </div>
-            <div className={styles.curriculumList}>
-              {actualCurriculum.map((section: CurriculumSection, i: number) => (
-                <SectionAccordion
-                  key={i}
-                  title={section.title}
-                  lessonCount={section.lessonCount}
-                  totalDuration={section.totalDuration}
-                  defaultOpen={i === 0}
-                  lessons={section.lessons}
+
+            <div className={styles.statRow}>
+              <div className={styles.statLabelGroup}>
+                <Layers size={16} style={{ color: '#10B981' }} />
+                <span>Modules</span>
+              </div>
+              <span className={styles.statVal}>0 / {sections.length}</span>
+            </div>
+
+            <div className={styles.statRow}>
+              <div className={styles.statLabelGroup}>
+                <Image
+                  src="/Icons/gem.png"
+                  alt="XP Gem"
+                  width={18}
+                  height={18}
+                  style={{ objectFit: 'contain' }}
                 />
+                <span>XP Earned</span>
+              </div>
+              <span className={styles.statVal}>0 / {totalXp} XP</span>
+            </div>
+          </div>
+
+          {/* Badges & Achievements Card */}
+          <div className={styles.badgesCard}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 className={styles.cardTitle} style={{ margin: 0 }}>
+                Course Badges
+              </h3>
+              <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>
+                0 / {dynamicBadges.length}
+              </span>
+            </div>
+
+            <p style={{ fontSize: '12px', color: '#64748B', margin: '4px 0 12px 0' }}>
+              Complete modules to earn badges — collect &apos;em all!
+            </p>
+
+            <div className={styles.badgesGrid}>
+              {dynamicBadges.slice(0, 4).map((badge) => (
+                <div key={badge.id} className={styles.badgeItem} title={badge.title}>
+                  {badge.icon}
+                  <span className={styles.badgeLabelText}>{badge.label}</span>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Your Instructor */}
-          <div id="instructor" className={styles.contentBox}>
-            <h2 className={styles.sectionTitle}>Your Instructor</h2>
-            <InstructorCard
-              id={course.instructorId}
-              name={course.instructor?.fullName}
-              avatar={
-                course.instructor?.avatarUrl ||
-                'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop'
-              }
-              professionalTitle={`Expert Instructor at Upskiill · ${course.category} Specialist`}
-              rating={4.9}
-              studentsCount={course.studentsCount}
-              coursesCount={3}
-              bioSnippet={`Hi, I'm ${course.instructor?.fullName}. I've spent years mastering ${course.category} and now I'm passionate about making that knowledge accessible to everyone. In this course, I'll guide you step-by-step through real-world projects and industry-proven techniques. My teaching style is practical, direct, and built around getting you results as fast as possible.`}
-            />
+          {/* Cheat Sheets Card */}
+          <div className={styles.resourceCard}>
+            <h4 className={styles.resourceTitle}>Cheat Sheets &amp; Guides</h4>
+            <p className={styles.resourceSub}>
+              Unlock printable cheat sheets and reference guides as you complete chapters.
+            </p>
           </div>
 
-        </div>
-
-        {/* ─── RIGHT COLUMN (Sticky Card) ──────────────────────────────── */}
-        <div className={styles.rightColumn}>
-          <div className={styles.stickyCard}>
-
-            {/* Video Preview */}
-            <div className={styles.cardVideo}>
-              <div className={styles.playBtnWrapper}>
-                <Play size={22} fill="currentColor" strokeWidth={0} style={{ marginLeft: '3px' }} />
-              </div>
-              <span className={styles.cardVideoLabel}>Preview this course</span>
-              <Image
-                src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=400&auto=format&fit=crop'}
-                alt="Course Preview"
-                fill
-                style={{ objectFit: 'cover', opacity: 0.75 }}
-              />
-            </div>
-
-            <div className={styles.cardBody}>
-
-              {/* Price */}
-              <div className={styles.priceRow}>
-                <span className={styles.price}>${course.price}</span>
-                {course.originalPrice && (
-                  <span className={styles.originalPrice}>${course.originalPrice}</span>
-                )}
-                {discountPct > 0 && (
-                  <span className={styles.discountBadge}>{discountPct}% OFF</span>
-                )}
-              </div>
-
-              {/* Timer nudge */}
-              <p className={styles.timerNudge}>
-                <Shield size={13} style={{ color: '#EF4444' }} />
-                <strong>2 days</strong> left at this price!
-              </p>
-
-              {/* CTA Buttons */}
-              <div className={styles.actionWrapper}>
-                {isEnrolled ? (
-                  <Link href={`/learn/${course.id}`} style={{ width: '100%', display: 'block' }}>
-                    <Button variant="primary" size="lg" fullWidth>Go to Course</Button>
-                  </Link>
-                ) : isInCart(course.id) ? (
-                  <Link href="/cart" style={{ width: '100%', display: 'block' }}>
-                    <Button variant="outline" size="lg" fullWidth>Go to Cart</Button>
-                  </Link>
-                ) : (
-                  <>
-                    <Button variant="primary" size="lg" fullWidth onClick={handleAddToCart}>
-                      Add to Cart
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      fullWidth
-                      onClick={handleAddToCart}
-                    >
-                      Buy Now
-                    </Button>
-                  </>
-                )}
-              </div>
-
-              <div className={styles.guaranteeBox}>
-                <div className={styles.guaranteeIcon}>
-                  <ShieldCheck size={20} />
-                </div>
-                <div className={styles.guaranteeText}>
-                  <strong>100% satisfaction guarantee</strong>
-                  <span>30-day money back guarantee by the Upskiill team.</span>
-                </div>
-              </div>
-
-              {/* Share row */}
-              <div className={styles.shareRow}>
-                <button className={styles.shareBtn}>
-                  <Share2 size={15} /> Share
-                </button>
-                <button
-                  className={styles.shareBtn}
-                  onClick={() => setIsWishlisted((w) => !w)}
-                  style={{ color: isWishlisted ? '#EF4444' : undefined }}
-                >
-                  <Heart size={15} fill={isWishlisted ? '#EF4444' : 'none'} /> Wishlist
-                </button>
-                <button className={styles.shareBtn}>
-                  <Gift size={15} /> Gift
-                </button>
-              </div>
-
-              <div className={styles.divider} />
-
-              {/* This course includes */}
-              <h4 className={styles.includesTitle}>This course includes:</h4>
-              <div className={styles.includesList}>
-                <div className={styles.includeItem}>
-                  <MonitorPlay size={16} className={styles.includeIcon} />
-                  <span>{course.duration} on-demand video</span>
-                </div>
-                <div className={styles.includeItem}>
-                  <File size={16} className={styles.includeIcon} />
-                  <span>{totalLessons} lessons &amp; resources</span>
-                </div>
-                <div className={styles.includeItem}>
-                  <Globe size={16} className={styles.includeIcon} />
-                  <span>Full lifetime access</span>
-                </div>
-                <div className={styles.includeItem}>
-                  <Infinity size={16} className={styles.includeIcon} />
-                  <span>Access on mobile &amp; desktop</span>
-                </div>
-                <div className={styles.includeItem}>
-                  <Trophy size={16} className={styles.includeIcon} />
-                  <span>Certificate of completion</span>
-                </div>
-                <div className={styles.includeItem}>
-                  <Download size={16} className={styles.includeIcon} />
-                  <span>Downloadable resources</span>
-                </div>
-              </div>
-
-            </div>
+          {/* Need Help Card */}
+          <div className={styles.resourceCard} style={{ background: '#F8FAFC' }}>
+            <h4 className={styles.resourceTitle}>Need Help?</h4>
+            <p className={styles.resourceSub} style={{ marginBottom: '12px' }}>
+              Ask questions in our community or reach out to tutors.
+            </p>
+            <Link
+              href="/community"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13px',
+                fontWeight: 700,
+                color: '#0172FD',
+                textDecoration: 'none',
+              }}
+            >
+              Go to Community →
+            </Link>
           </div>
         </div>
       </div>
+
+      {/* FREE PREVIEW LESSON MODAL */}
+      {activePreviewLesson && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999,
+            padding: '24px',
+          }}
+        >
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              maxWidth: '640px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #E2E8F0',
+            }}
+          >
+            <div
+              style={{
+                padding: '16px 24px',
+                background: '#0F172A',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <span style={{ fontSize: '14px', fontWeight: 700 }}>
+                Free Preview: {activePreviewLesson.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setActivePreviewLesson(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: '32px 24px', textAlign: 'center' }}>
+              <div
+                style={{
+                  aspectRatio: '16 / 9',
+                  background: '#F1F5F9',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '20px',
+                  border: '1px solid #E2E8F0',
+                }}
+              >
+                <Play size={48} style={{ color: '#0172FD' }} />
+              </div>
+              <p style={{ fontSize: '14px', color: '#475569', marginBottom: '20px' }}>
+                You are viewing a free preview of <strong>&ldquo;{activePreviewLesson.title}&rdquo;</strong>.
+                Enroll to access all interactive lessons, quizzes, and earn your certificate!
+              </p>
+              <Button variant="primary" fullWidth onClick={handleEnrollment}>
+                Enroll Now to Unlock All Lessons →
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

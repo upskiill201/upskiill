@@ -57,11 +57,13 @@ export class CourseController {
     @Req() req: any,
     @Param('id') id: string,
     @Body('lessonId') lessonId: string,
+    @Body('timezoneOffset') timezoneOffset?: number,
   ) {
     return await this.courseService.markLessonComplete(
       req.user.id as string,
       id,
       lessonId,
+      timezoneOffset ?? 0,
     );
   }
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
@@ -129,6 +131,19 @@ export class CourseController {
       id,
       body,
     );
+  }
+
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post(':id/publish')
+  async publishCourse(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.publishCourse(req.user.id as string, id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/enroll')
+  async enrollInCourse(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.enrollInCourse(req.user.id as string, id);
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)

@@ -11,7 +11,7 @@ import styles from './StreakStatusModal.module.css';
  * Triggers when a user's streak was protected by a freeze or reset after missing days.
  */
 export default function StreakStatusModal() {
-  const { streakStatus, streakDays, streakFreezeBank, dismissStreakModal } = useGamification();
+  const { streakStatus, streakDays, lostStreakCount, streakFreezeBank, dismissStreakModal } = useGamification();
 
   if (streakStatus === 'NORMAL') return null;
 
@@ -75,27 +75,31 @@ export default function StreakStatusModal() {
             </>
           ) : (
             <>
-              {/* Reset Broken Heart Illustration */}
+              {/* Reset Broken Flame Illustration */}
               <div className={styles.mascotRingReset}>
                 <Image
-                  src="/Icons/heart.png"
-                  alt="Streak Ended"
+                  src="/Icons/burn.png"
+                  alt="Streak Extinguished"
                   width={60}
                   height={60}
-                  style={{ objectFit: 'contain', filter: 'grayscale(0.5) opacity(0.85)' }}
+                  style={{ objectFit: 'contain', filter: 'grayscale(1) opacity(0.5)' }}
                 />
               </div>
 
-              <h2 className={styles.title}>💔 Your streak ended</h2>
+              <h2 className={styles.title}>💔 Flame Extinguished</h2>
 
               <p className={styles.description}>
-                You missed 2 days without finishing a lesson. Your streak has restarted, but today is a fresh start!
+                {lostStreakCount > 0 ? (
+                  <>Oh no! Your <strong>{lostStreakCount}-day streak</strong> slipped away because you missed consecutive learning days.</>
+                ) : (
+                  <>You missed consecutive days without completing a lesson. Your streak restarted!</>
+                )}
               </p>
 
               <div className={styles.statRow}>
                 <div className={styles.statPill}>
-                  <Image src="/Icons/burn.png" alt="Streak" width={24} height={24} />
-                  <span>{streakDays} Day Streak</span>
+                  <Image src="/Icons/burn.png" alt="Streak" width={24} height={24} style={{ filter: 'grayscale(1)' }} />
+                  <span>0 Days Streak</span>
                 </div>
               </div>
 
@@ -104,7 +108,7 @@ export default function StreakStatusModal() {
                 onClick={dismissStreakModal}
                 className={styles.ctaBtn}
               >
-                START LEARNING TODAY
+                START A NEW FLAME TODAY
               </button>
             </>
           )}
@@ -113,3 +117,4 @@ export default function StreakStatusModal() {
     </AnimatePresence>
   );
 }
+

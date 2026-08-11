@@ -23,6 +23,8 @@ export class GamificationService {
 
     // 1. Timezone-aware Daily Streak Check and Freeze Consumption
     let streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL';
+    // Capture streak count BEFORE any reset — used by the RESET modal to show "Your X-day streak slipped away"
+    let lostStreakCount = 0;
     if (profile.lastStreakEarnedAt) {
       const lastActiveStr = this.getLocalDayString(profile.lastStreakEarnedAt, timezoneOffsetMinutes);
       const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
@@ -37,20 +39,11 @@ export class GamificationService {
           streakStatus = 'SAVED';
           console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained.`);
         } else {
+          lostStreakCount = profile.streakDays; // Remember what was lost before wiping
           updatedFields.streakDays = 0;
           streakStatus = 'RESET';
         }
       }
-    } else {
-      // If profile has no lastStreakEarnedAt timestamp yet, initialize starter streak
-      if (profile.streakDays <= 0) {
-        updatedFields.streakDays = 3;
-      }
-    }
-
-    // Recovery check: if profile streak was wiped to 0 by legacy lastActiveAt fallback bug, restore starter streak
-    if (profile.streakDays === 0 && !updatedFields.streakDays && streakStatus !== 'RESET') {
-      updatedFields.streakDays = 3;
     }
 
     // 2. Timezone-aware Daily Quests reset
@@ -103,7 +96,7 @@ export class GamificationService {
       });
     }
 
-    return this.buildResponse(profile, timezoneOffsetMinutes);
+    return this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount);
   }
 
   /**
@@ -401,8 +394,31 @@ export class GamificationService {
   }
 
   /**
-   * Helper method to award Gems to a user and log transaction.
+   * Helper method to award Gems/Coins to a user and log transaction.
    */
+  async grantTestReward(
+    userId: string,
+    dto: { coins?: number; xp?: number; hearts?: number; streak?: number },
+  ) {
+    const profile = await this.prisma.studentProfile.findUnique({ where: { userId } });
+    if (!profile) return null;
+
+    const updateData: any = {};
+    if (dto.coins) updateData.coins = { increment: dto.coins };
+    if (dto.xp) updateData.xp = { increment: dto.xp };
+    if (dto.hearts) {
+      updateData.lives = Math.min(profile.maxLives, profile.lives + dto.hearts);
+    }
+    if (dto.streak) updateData.streakDays = { increment: dto.streak };
+
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: updateData,
+    });
+
+    return this.buildResponse(updated);
+  }
+
   async awardGems(userId: string, amount: number, source: string) {
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
@@ -430,6 +446,7 @@ export class GamificationService {
       streakDays: number;
       longestStreak?: number;
       gems?: number;
+      coins?: number;
       lives: number;
       maxLives: number;
       livesLastLostAt: Date | null;
@@ -441,6 +458,7 @@ export class GamificationService {
     },
     timezoneOffsetMinutes = 0,
     streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL',
+    lostStreakCount = 0,
   ) {
     let livesRefillAt: string | null = null;
 
@@ -484,11 +502,13 @@ export class GamificationService {
       xpInCurrentLevel,
       streakDays: profile.streakDays,
       longestStreak: profile.longestStreak ?? Math.max(3, profile.streakDays),
-      gems: profile.gems ?? 100,
+      gems: profile.coins ?? 50,
+      coins: profile.coins ?? 50,
       lives: profile.lives,
       maxLives: profile.maxLives,
       streakFreezeBank: profile.streakFreezeBank,
       streakStatus,
+      lostStreakCount,
       completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       livesRefillAt,
       lastLessonCompletedAt: profile.lastLessonCompletedAt ? profile.lastLessonCompletedAt.toISOString() : null,

@@ -98,8 +98,10 @@ export default function StepFifteenPage() {
     return { score, ...levels[score] };
   };
 
-  // Email duplicate check state
+  // Email duplicate & Account linking state
   const [emailCheckState, setEmailCheckState] = useState<'idle' | 'checking' | 'exists' | 'ok'>('idle');
+  const [isLinkAccountMode, setIsLinkAccountMode] = useState(false);
+  const [linkPromptMessage, setLinkPromptMessage] = useState('');
 
   // Form Fields
   const [fullName, setFullName] = useState('');
@@ -151,7 +153,19 @@ export default function StepFifteenPage() {
     try {
       const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
       const data = await res.json();
-      setEmailCheckState(data.exists ? 'exists' : 'ok');
+      if (data.exists) {
+        if (!data.hasCreatorAccess) {
+          setIsLinkAccountMode(true);
+          setLinkPromptMessage('It looks like you already have a Teyro account! Please enter your password to activate your Creator profile.');
+          setEmailCheckState('exists');
+        } else {
+          setIsLinkAccountMode(false);
+          setEmailCheckState('exists');
+        }
+      } else {
+        setIsLinkAccountMode(false);
+        setEmailCheckState('ok');
+      }
     } catch {
       setEmailCheckState('idle');
     }
@@ -160,19 +174,21 @@ export default function StepFifteenPage() {
   // ─── Email/Password Signup ──────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailCheckState === 'exists') return;
-    const strength = getPasswordStrength(password);
-    if (strength.score < 3) {
-      setError('Please choose a stronger password (Good or Strong).');
-      return;
-    }
-    if (COMMON_PASSWORDS.includes(password.toLowerCase())) {
-      setError('Password is too common. Please choose a different one.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
+
+    if (!isLinkAccountMode) {
+      const strength = getPasswordStrength(password);
+      if (strength.score < 3) {
+        setError('Please choose a stronger password (Good or Strong).');
+        return;
+      }
+      if (COMMON_PASSWORDS.includes(password.toLowerCase())) {
+        setError('Password is too common. Please choose a different one.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        return;
+      }
     }
 
     setError('');
@@ -187,9 +203,9 @@ export default function StepFifteenPage() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          email,
+          email: email.toLowerCase().trim(),
           password,
-          fullName,
+          fullName: fullName || email.split('@')[0],
           role: 'INSTRUCTOR',
           draftId: onboardingData.draftId,
           onboarding: onboardingData, // 💾 All 14 steps sent to backend for profile hydration
@@ -199,21 +215,33 @@ export default function StepFifteenPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // If 409 Conflict, it means the user already exists and is verified.
+        if (res.status === 409 || data.code === 'EMAIL_ALREADY_EXISTS') {
+          if (data.canLink !== false) {
+            setIsLinkAccountMode(true);
+            setLinkPromptMessage('It looks like you already have a Teyro account! Please enter your password to activate your Creator profile.');
+            throw new Error(data.message || 'Please enter your existing password to activate your Creator profile.');
+          } else {
+            throw new Error(data.message || 'An account with this email already exists.');
+          }
+        }
         const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
         throw new Error(errMsg || 'Signup failed');
       }
 
-      // Success or Idempotent Success (existing unverified user)
+      // Success or Idempotent Success
       posthog.capture('onboarding_completed', { method: 'email' });
       posthog.capture('creator_registered');
 
-      // DO NOT clear localStorage here
+      if (data.linked && data.verified) {
+        // Verification skipped — navigate directly to Step 16
+        window.location.href = '/creator/onboarding/16';
+        return;
+      }
+
       setIsVerificationPending(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
       setError(message);
-      // ❌ Do NOT clear localStorage on failure — creator can retry with all data preserved
     } finally {
       setLoading(false);
     }
@@ -299,6 +327,40 @@ export default function StepFifteenPage() {
     }
   };
 
+  const [code, setCode] = useState('');
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [codeError, setCodeError] = useState('');
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code.trim().length !== 6) {
+      setCodeError('Please enter a 6-digit code');
+      return;
+    }
+    setCodeError('');
+    setVerifyingCode(true);
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, code: code.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Verification failed');
+      }
+
+      window.location.href = '/creator/onboarding/16';
+    } catch (err: any) {
+      setCodeError(err.message || 'Invalid or expired verification code');
+    } finally {
+      setVerifyingCode(false);
+    }
+  };
+
   if (isVerificationPending) {
     return (
       <div className="min-h-[calc(100vh-88px)] flex items-center justify-center bg-[#F1EDFC] px-4">
@@ -313,14 +375,37 @@ export default function StepFifteenPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Check your inbox</h1>
           
           <p className="text-gray-600 mb-6 leading-relaxed">
-            We've sent a verification link to <br/>
+            We&apos;ve sent a 1-click verification link and 6-digit code to <br/>
             <strong className="text-gray-900 font-semibold">{maskEmail(email)}</strong>
           </p>
+
+          {/* 6-Digit Code Entry Form */}
+          <form onSubmit={handleVerifyCode} className="mb-6 space-y-3">
+            <div className="text-sm font-semibold text-gray-700 text-left">Enter 6-digit code from your email:</div>
+            <input
+              type="text"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 729759"
+              className="w-full text-center text-2xl font-mono tracking-widest py-3 px-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            {codeError && (
+              <p className="text-xs text-red-600 text-left font-medium">{codeError}</p>
+            )}
+            <Button
+              type="submit"
+              disabled={verifyingCode || code.length !== 6}
+              className="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl"
+            >
+              {verifyingCode ? 'Verifying...' : 'Verify Code & Launch Studio →'}
+            </Button>
+          </form>
           
-          <div className="bg-gray-50 rounded-xl p-4 mb-8 text-sm text-gray-600 text-left flex gap-3">
+          <div className="bg-gray-50 rounded-xl p-4 mb-6 text-sm text-gray-600 text-left flex gap-3">
             <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
             <div>
-              The link will expire in 24 hours. If you don't see it, be sure to check your spam folder.
+              You can click the button in your email or enter the 6-digit code above. Code expires in 10 minutes.
             </div>
           </div>
 
@@ -380,6 +465,19 @@ export default function StepFifteenPage() {
             <p>You&apos;ve built the perfect foundation. Create your Teyro account to lock in your progress, claim your studio, and launch your creator journey.</p>
           </div>
 
+          {/* Account linking notice */}
+          {isLinkAccountMode && (
+            <div className="mb-5 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-sm font-medium flex items-start gap-3">
+              <AlertCircle size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-blue-950 text-[14px]">Existing Teyro Account Found!</p>
+                <p className="mt-1 text-[13px] text-blue-800 leading-relaxed">
+                  {linkPromptMessage || 'It looks like you already have a Teyro account! Please enter your password to activate your Creator profile.'}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* General error display */}
           {error && (
             <div className={styles.errorBox} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
@@ -394,81 +492,87 @@ export default function StepFifteenPage() {
           )}
 
           <form className={styles.form} onSubmit={handleSubmit}>
-            <FloatingInput id="fullName" type="text" label="Full Name" placeholder="e.g. Alex Rivera" value={fullName} onChange={(e: any) => setFullName(e.target.value)} icon={User} required />
+            {!isLinkAccountMode && (
+              <FloatingInput id="fullName" type="text" label="Full Name" placeholder="e.g. Alex Rivera" value={fullName} onChange={(e: any) => setFullName(e.target.value)} icon={User} required />
+            )}
 
             <div className="mb-4">
-    <FloatingInput id="email" type="email" label="Email address" placeholder="name@example.com" value={email} onChange={(e: any) => { setEmail(e.target.value); setEmailCheckState('idle'); }} onBlur={handleEmailBlur} icon={Mail} required autoComplete="email">
-      {emailCheckState === 'checking' && <span className="absolute right-4 text-xs text-slate-500 font-medium">Checking...</span>}
-      {emailCheckState === 'ok' && <CheckCircle2 size={16} className="absolute right-4 text-emerald-500" />}
-    </FloatingInput>
-    <AnimatePresence>
-      {emailCheckState === 'exists' && (
-        <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="text-[13px] text-red-500 flex items-center gap-1 mt-1 ml-1">
-          <AlertCircle size={13} />
-          An account with this email already exists. <Link href="/creator/login" className="text-indigo-600 font-semibold underline ml-1">Sign in instead?</Link>
-        </motion.p>
-      )}
-    </AnimatePresence>
-  </div>
-
-            <div>
-    <FloatingInput id="password" type={showPassword ? "text" : "password"} label="Password" placeholder="Create a secure password (min. 6 chars)" value={password} onChange={(e: any) => setPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete="new-password">
-      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowPassword(!showPassword)}>
-        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-      </button>
-    </FloatingInput>
-    <AnimatePresence>
-      {password.length > 0 && (() => {
-        const strength = getPasswordStrength(password);
-        return (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-1 mb-4 overflow-hidden">
-            <div className="flex gap-1 h-1.5 w-full">
-              {[1, 2, 3, 4].map((level) => (
-                <motion.div 
-                  key={level} 
-                  className="flex-1 rounded-full"
-                  animate={{ backgroundColor: level <= strength.score ? strength.color : '#e2e8f0' }}
-                  transition={{ duration: 0.3 }}
-                />
-              ))}
-            </div>
-            <div className="flex justify-end mt-1 relative">
-              <AnimatePresence mode="popLayout">
-                <motion.span 
-                  key={strength.label}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="text-xs font-semibold"
-                  style={{ color: strength.color }}
-                >
-                  {strength.label}
-                  {strength.score === 4 && (
-                    <motion.span 
-                      initial={{ scale: 0 }} 
-                      animate={{ scale: 1 }} 
-                      transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 0.1 }}
-                      className="ml-1 inline-block"
-                    >
-                      🎉
-                    </motion.span>
-                  )}
-                </motion.span>
+              <FloatingInput id="email" type="email" label="Email address" placeholder="name@example.com" value={email} onChange={(e: any) => { setEmail(e.target.value); setEmailCheckState('idle'); }} onBlur={handleEmailBlur} icon={Mail} required autoComplete="email">
+                {emailCheckState === 'checking' && <span className="absolute right-4 text-xs text-slate-500 font-medium">Checking...</span>}
+                {emailCheckState === 'ok' && <CheckCircle2 size={16} className="absolute right-4 text-emerald-500" />}
+              </FloatingInput>
+              <AnimatePresence>
+                {emailCheckState === 'exists' && !isLinkAccountMode && (
+                  <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="text-[13px] text-red-500 flex items-center gap-1 mt-1 ml-1">
+                    <AlertCircle size={13} />
+                    An account with this email already exists. <Link href="/creator/login" className="text-indigo-600 font-semibold underline ml-1">Sign in instead?</Link>
+                  </motion.p>
+                )}
               </AnimatePresence>
             </div>
-          </motion.div>
-        );
-      })()}
-    </AnimatePresence>
-  </div>
 
-            <div className="mt-2">
-    <FloatingInput id="confirmPassword" type={showConfirmPassword ? "text" : "password"} label="Confirm Password" placeholder="Confirm your secure password" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete="new-password">
-      <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-      </button>
-    </FloatingInput>
-  </div>
+            <div>
+              <FloatingInput id="password" type={showPassword ? "text" : "password"} label={isLinkAccountMode ? "Account Password" : "Password"} placeholder={isLinkAccountMode ? "Enter your existing account password" : "Create a secure password (min. 6 chars)"} value={password} onChange={(e: any) => setPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete={isLinkAccountMode ? "current-password" : "new-password"}>
+                <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </FloatingInput>
+              {!isLinkAccountMode && (
+                <AnimatePresence>
+                  {password.length > 0 && (() => {
+                    const strength = getPasswordStrength(password);
+                    return (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-1 mb-4 overflow-hidden">
+                        <div className="flex gap-1 h-1.5 w-full">
+                          {[1, 2, 3, 4].map((level) => (
+                            <motion.div 
+                              key={level} 
+                              className="flex-1 rounded-full"
+                              animate={{ backgroundColor: level <= strength.score ? strength.color : '#e2e8f0' }}
+                              transition={{ duration: 0.3 }}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex justify-end mt-1 relative">
+                          <AnimatePresence mode="popLayout">
+                            <motion.span 
+                              key={strength.label}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -5 }}
+                              className="text-xs font-semibold"
+                              style={{ color: strength.color }}
+                            >
+                              {strength.label}
+                              {strength.score === 4 && (
+                                <motion.span 
+                                  initial={{ scale: 0 }} 
+                                  animate={{ scale: 1 }} 
+                                  transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 0.1 }}
+                                  className="ml-1 inline-block"
+                                >
+                                  🎉
+                                </motion.span>
+                              )}
+                            </motion.span>
+                          </AnimatePresence>
+                        </div>
+                      </motion.div>
+                    );
+                  })()}
+                </AnimatePresence>
+              )}
+            </div>
+
+            {!isLinkAccountMode && (
+              <div className="mt-2">
+                <FloatingInput id="confirmPassword" type={showConfirmPassword ? "text" : "password"} label="Confirm Password" placeholder="Confirm your secure password" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} icon={Lock} required minLength={6} autoComplete="new-password">
+                  <button type="button" className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors z-10" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </FloatingInput>
+              </div>
+            )}
 
             <div className={styles.termsBox}>
               By signing up, you agree to Teyro&apos;s <Link href="/terms/creator">Creator Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
@@ -479,9 +583,9 @@ export default function StepFifteenPage() {
               variant="primary"
               size="lg"
               className={styles.submitBtn}
-              disabled={loading || emailCheckState === 'exists'}
+              disabled={loading || (emailCheckState === 'exists' && !isLinkAccountMode)}
             >
-              {loading ? 'Claiming Studio...' : 'Create My Account & Claim Studio'}
+              {loading ? (isLinkAccountMode ? 'Activating Profile...' : 'Claiming Studio...') : (isLinkAccountMode ? 'Activate Creator Profile & Claim Studio →' : 'Create My Account & Claim Studio')}
             </Button>
           </form>
 

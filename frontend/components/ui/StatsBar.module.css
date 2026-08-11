@@ -1,0 +1,36 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.label {
+  display: block;
+}
+
+/* Compact mode (narrow drawer / mobile): tighter gutters */
+.compact {
+  gap: 4px;
+}
+
+/* ─── Pill variant (candy-3D, like the shop coin balance card) ─── */
+.pillBar {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+/* Auto-hide labels on smaller screens so all five stats stay in one row */
+@media (max-width: 900px) {
+  .label {
+    display: none;
+  }
+}

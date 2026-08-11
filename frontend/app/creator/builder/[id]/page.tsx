@@ -16,6 +16,7 @@ import { Tooltip } from '@/components/ui/Tooltip';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
 import { VideoPoolModal, VideoPreviewCard, PoolLesson } from '@/components/features/VideoPoolModal';
+import Step4PreviewPublish, { CurriculumSection } from './Step4PreviewPublish';
 import styles from './Builder.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -243,10 +244,64 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // For Preview Video selector
+  // For Preview Video selector & Step 4 validation
   const [courseLessons, setCourseLessons] = useState<PoolLesson[]>([]);
+  const [rawSections, setRawSections] = useState<CurriculumSection[]>([]);
   const [previewLessonId, setPreviewLessonId] = useState<string>('');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // Function to refresh curriculum sections for validation & preview
+  const refreshCurriculum = useCallback(async () => {
+    if (isNew || !courseId) return;
+    try {
+      const curRes = await fetch(`/api/courses/${courseId}/curriculum`, { credentials: 'include' });
+      if (curRes.ok) {
+        const sections = await curRes.json();
+        setRawSections(sections);
+        const lessons: PoolLesson[] = [];
+        sections.forEach((s: any) => {
+          if (Array.isArray(s.lessons)) {
+            s.lessons.forEach((l: any) => {
+              let parsedBlocks = l.contentBlocks;
+              if (typeof parsedBlocks === 'string') {
+                try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+              }
+              
+              let learnVideoUrl = null;
+              if (parsedBlocks && Array.isArray(parsedBlocks.learn)) {
+                learnVideoUrl = parsedBlocks.learn.find((b: any) => b.type === 'videoUrl')?.value;
+              }
+              
+              if (learnVideoUrl) {
+                lessons.push({
+                  id: l.id,
+                  title: l.title,
+                  learnVideoUrl,
+                  sectionTitle: s.title,
+                  durationMinutes: l.durationMinutes || 0,
+                  isFreePreview: !!l.isFreePreview
+                });
+              }
+            });
+          }
+        });
+        setCourseLessons(lessons);
+        const previewLesson = lessons.find(l => l.isFreePreview);
+        if (previewLesson) {
+          setPreviewLessonId(previewLesson.id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load curriculum', err);
+    }
+  }, [courseId, isNew]);
+
+  // Refresh curriculum when entering Step 4
+  useEffect(() => {
+    if (activeStep === 4) {
+      refreshCurriculum();
+    }
+  }, [activeStep, refreshCurriculum]);
 
   // ─── LOAD EXISTING DRAFT ───
   useEffect(() => {
@@ -273,44 +328,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             price: typeof fetched.price === 'number' ? fetched.price : 0,
           });
         }
-        
-        // Fetch curriculum for Preview Video selector
-        const curRes = await fetch(`/api/courses/${courseId}/curriculum`, { credentials: 'include' });
-        if (curRes.ok) {
-          const sections = await curRes.json();
-          const lessons: PoolLesson[] = [];
-          sections.forEach((s: any) => {
-            if (Array.isArray(s.lessons)) {
-              s.lessons.forEach((l: any) => {
-                let parsedBlocks = l.contentBlocks;
-                if (typeof parsedBlocks === 'string') {
-                  try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
-                }
-                
-                let learnVideoUrl = null;
-                if (parsedBlocks && Array.isArray(parsedBlocks.learn)) {
-                  learnVideoUrl = parsedBlocks.learn.find((b: any) => b.type === 'videoUrl')?.value;
-                }
-                
-                if (learnVideoUrl) {
-                  lessons.push({
-                    id: l.id,
-                    title: l.title,
-                    learnVideoUrl,
-                    sectionTitle: s.title,
-                    durationMinutes: l.durationMinutes || 0,
-                    isFreePreview: !!l.isFreePreview
-                  });
-                }
-              });
-            }
-          });
-          setCourseLessons(lessons);
-          const previewLesson = lessons.find(l => l.isFreePreview);
-          if (previewLesson) {
-            setPreviewLessonId(previewLesson.id);
-          }
-        }
+        await refreshCurriculum();
       } catch (err) {
         console.error('Failed to load course data', err);
       } finally {
@@ -585,13 +603,25 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
               <button className={styles.drawerClose} onClick={() => setStepsOpen(false)}><X size={18} /></button>
             </div>
             {STEPS.map(step => (
-              <div key={step.num} className={`${styles.drawerStep} ${step.num === activeStep ? styles.drawerStepActive : ''}`}>
+              <div
+                key={step.num}
+                className={`${styles.drawerStep} ${step.num === activeStep ? styles.drawerStepActive : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  setStepsOpen(false);
+                  if (step.num === 4 || step.num <= activeStep) {
+                    setActiveStep(step.num);
+                  } else {
+                    setInactiveStepModal({ label: step.label });
+                  }
+                }}
+              >
                 <span className={`${styles.crumbNum} ${step.num === activeStep ? styles.crumbNumActive : ''}`}>{step.num}</span>
                 <div>
                   <div className={styles.drawerStepLabel}>{step.label}</div>
                   <div className={styles.drawerStepDesc}>{step.desc}</div>
                 </div>
-              {step.num === activeStep && <Check size={14} className={styles.drawerStepCheck} />}
+                {step.num === activeStep && <Check size={14} className={styles.drawerStepCheck} />}
               </div>
             ))}
           </div>
@@ -623,10 +653,13 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                 {i > 0 && <ChevronRight size={14} className={styles.crumbArrow} />}
                 <div
                   className={`${styles.crumb} ${step.num === activeStep ? styles.crumbActive : ''} ${step.num < activeStep ? styles.crumbDone : ''}`}
-                  style={{ cursor: step.num <= activeStep ? 'pointer' : 'default' }}
+                  style={{ cursor: step.num === 4 || step.num <= activeStep ? 'pointer' : 'default' }}
                   onClick={() => {
-                    if (step.num < activeStep) { setActiveStep(step.num); }
-                    else if (step.num > activeStep) { setInactiveStepModal({ label: step.label }); }
+                    if (step.num === 4 || step.num <= activeStep) {
+                      setActiveStep(step.num);
+                    } else {
+                      setInactiveStepModal({ label: step.label });
+                    }
                   }}
                 >
                   <span className={`${styles.crumbNum} ${step.num === activeStep ? styles.crumbNumActive : ''} ${step.num < activeStep ? styles.crumbNumDone : ''}`}>
@@ -654,6 +687,16 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
       {/* ─── MAIN CONTENT ─── */}
       <main className={styles.mainContent}>
+
+        {/* ═══ STEP 4: PREVIEW & PUBLISH ═══ */}
+        {activeStep === 4 && (
+          <Step4PreviewPublish
+            courseId={courseId}
+            data={data}
+            sections={rawSections}
+            onNavigateStep={(stepNum) => setActiveStep(stepNum)}
+          />
+        )}
 
         {/* ═══ STEP 2: CURRICULUM ═══ */}
         {activeStep === 2 && !isNew && (
@@ -1251,37 +1294,39 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
       </main>
 
       {/* ─── STICKY FOOTER ─── */}
-      <footer className={styles.stickyFooter}>
-        <div className={styles.footerLeft}>
-          {saveStatus === 'saved' && (
-            <><Check size={15} className={styles.savedIcon} /> Draft saved just now</>
-          )}
-          {saveStatus === 'error' && (
-            <span style={{ color: '#EF4444' }}>Save failed. Please try again.</span>
-          )}
-          {saveStatus === 'saving' && (
-            <span style={{ color: '#64748B' }}>Saving...</span>
-          )}
-        </div>
-        <div className={styles.footerRight}>
-          {activeStep === 1 ? (
-            <>
-              <Button variant="outline" onClick={() => router.push('/creator/courses')}>Cancel</Button>
-              <Button variant="primary" onClick={async () => { await saveDraft(); if (!isNew) setActiveStep(2); }} loading={saving}>
-                Save &amp; Continue →
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="outline" onClick={() => setActiveStep(1)}>Back</Button>
-              <Button variant="outline" onClick={saveDraft} loading={saving}>Save draft</Button>
-              <Button variant="primary" onClick={saveDraft} loading={saving}>
-                Save &amp; Continue →
-              </Button>
-            </>
-          )}
-        </div>
-      </footer>
+      {activeStep !== 4 && (
+        <footer className={styles.stickyFooter}>
+          <div className={styles.footerLeft}>
+            {saveStatus === 'saved' && (
+              <><Check size={15} className={styles.savedIcon} /> Draft saved just now</>
+            )}
+            {saveStatus === 'error' && (
+              <span style={{ color: '#EF4444' }}>Save failed. Please try again.</span>
+            )}
+            {saveStatus === 'saving' && (
+              <span style={{ color: '#64748B' }}>Saving...</span>
+            )}
+          </div>
+          <div className={styles.footerRight}>
+            {activeStep === 1 ? (
+              <>
+                <Button variant="outline" onClick={() => router.push('/creator/courses')}>Cancel</Button>
+                <Button variant="primary" onClick={async () => { await saveDraft(); if (!isNew) setActiveStep(2); }} loading={saving}>
+                  Save &amp; Continue →
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
+                <Button variant="outline" onClick={saveDraft} loading={saving}>Save draft</Button>
+                <Button variant="primary" onClick={async () => { await saveDraft(); if (activeStep < 4) setActiveStep(activeStep + 1); }} loading={saving}>
+                  Save &amp; Continue →
+                </Button>
+              </>
+            )}
+          </div>
+        </footer>
+      )}
 
       {/* Inactive Step Modal */}
       {inactiveStepModal && (

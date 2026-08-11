@@ -6,6 +6,8 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
+import { MissionsService } from '../missions/missions.service';
+import { ChestService } from '../chest/chest.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -13,6 +15,8 @@ export class CourseService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    private missionsService: MissionsService,
+    private chestService: ChestService,
   ) {}
 
   async findAll(query: {
@@ -68,12 +72,11 @@ export class CourseService {
   }
 
   async findOne(idOrSlug: string) {
-    console.log('Searching for course with ID or Slug:', idOrSlug);
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [
-          { id: idOrSlug, published: true },
-          { slug: idOrSlug, published: true },
+          { id: idOrSlug },
+          { slug: idOrSlug },
         ],
       },
       include: {
@@ -82,6 +85,11 @@ export class CourseService {
             id: true,
             fullName: true,
             avatarUrl: true,
+            profile: {
+              select: {
+                bio: true,
+              },
+            },
           },
         },
         sections: {
@@ -93,6 +101,9 @@ export class CourseService {
             },
           },
         },
+        _count: {
+          select: { enrollments: true },
+        },
       },
     });
 
@@ -101,7 +112,14 @@ export class CourseService {
   }
 
   async getProgress(userId: string, idOrSlug: string) {
-    const course = await this.findOne(idOrSlug);
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+      },
+      select: { id: true },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+
     const enrollment = await this.prisma.enrollment.findUnique({
       where: {
         userId_courseId: { userId, courseId: course.id },
@@ -109,9 +127,10 @@ export class CourseService {
     });
 
     if (!enrollment) {
-      throw new ForbiddenException(
-        'You must purchase this course before you can access the learning materials.',
-      );
+      return {
+        progress: 0,
+        completedLessons: [],
+      };
     }
     return {
       progress: enrollment.progress,
@@ -119,16 +138,22 @@ export class CourseService {
     };
   }
 
-  async markLessonComplete(userId: string, idOrSlug: string, lessonId: string) {
+  async markLessonComplete(userId: string, idOrSlug: string, lessonId: string, timezoneOffsetMinutes = 0) {
     const course = await this.findOne(idOrSlug);
-    const enrollment = await this.prisma.enrollment.findUnique({
+    let enrollment = await this.prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },
     });
 
     if (!enrollment) {
-      throw new ForbiddenException(
-        'You must be enrolled to mark lessons complete.',
-      );
+      // Auto-enroll user when completing their first lesson in a course
+      enrollment = await this.prisma.enrollment.create({
+        data: {
+          userId,
+          courseId: course.id,
+          completedLessons: [],
+          progress: 0,
+        },
+      });
     }
 
     const profile = await this.prisma.studentProfile.upsert({
@@ -146,20 +171,19 @@ export class CourseService {
     let sectionCompleted = false;
     let newXpTotal = profile.xp;
     let newStreakDaysTotal = profile.streakDays;
+    let isFirstStreakOfDay = false;
 
     if (!currentCompleted.includes(lessonId)) {
       isNewCompletion = true;
       currentCompleted.push(lessonId);
 
-      // Fetch the lesson to retrieve its xpReward value
+      // Fetch lesson to calculate XP & section completion bonus
       const lesson = await this.prisma.lesson.findUnique({
         where: { id: lessonId },
         include: { section: { include: { lessons: true } } },
       });
 
-      let baseLessonXp = 10; // Flat 10 XP per lesson completion
-
-      // Check if all lessons in this section are completed
+      let baseLessonXp = 10;
       if (lesson?.section?.lessons) {
         sectionCompleted = lesson.section.lessons.every((l) =>
           currentCompleted.includes(l.id),
@@ -168,51 +192,36 @@ export class CourseService {
 
       xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
 
+      // Compute course progress percentage
       let totalLessons = 0;
-      const courseWithLessons = await this.prisma.course.findUnique({
-        where: { id: course.id },
-        include: {
-          sections: {
-            include: { lessons: true },
-          },
-        },
-      });
-
-      if (courseWithLessons) {
-        totalLessons = courseWithLessons.sections.reduce(
-          (acc, s) => acc + s.lessons.length,
+      if (course.sections) {
+        totalLessons = course.sections.reduce(
+          (acc, s) => acc + (s.lessons?.length || 0),
           0,
         );
       }
       totalLessons = totalLessons || 1;
-
       const progress = Math.min(
         100,
         Math.round((currentCompleted.length / totalLessons) * 100),
       );
 
-      await this.prisma.enrollment.update({
-        where: { id: enrollment.id },
-        data: {
-          completedLessons: currentCompleted,
-          progress,
-        },
-      });
-
-      // Update StudentProfile for XP and timezone-aware daily activity streaks
+      // Calculate streak & timezone-aware daily activity
       const now = new Date();
       let newStreak = profile.streakDays || 0;
 
       const getLocalDayStr = (d: Date) => {
-        return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+        const localMs = d.getTime() - timezoneOffsetMinutes * 60 * 1000;
+        const localDate = new Date(localMs);
+        return `${localDate.getUTCFullYear()}-${String(localDate.getUTCMonth() + 1).padStart(2, '0')}-${String(localDate.getUTCDate()).padStart(2, '0')}`;
       };
 
       const todayStr = getLocalDayStr(now);
       const lastStreakDate = profile.lastStreakEarnedAt;
       let shouldUpdateStreakEarnedDate = false;
+      let consumeStreakFreeze = false;
 
       if (!lastStreakDate) {
-        // First lesson ever completed! Earn 1 day of streak for today.
         newStreak = Math.max(1, profile.streakDays || 1);
         shouldUpdateStreakEarnedDate = true;
       } else {
@@ -222,115 +231,62 @@ export class CourseService {
         const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
 
         if (diffDays === 0) {
-          // Already completed a lesson today — maintain current streak, DO NOT increment further!
           newStreak = profile.streakDays || 1;
           shouldUpdateStreakEarnedDate = false;
         } else if (diffDays === 1) {
-          // First lesson completed on a new consecutive calendar day! Increment streak (+1 day)
           newStreak = (profile.streakDays || 0) + 1;
           shouldUpdateStreakEarnedDate = true;
         } else {
-          // Missed 1 or more days (diffDays > 1)
           if (profile.streakFreezeBank > 0) {
-            // Protect streak using 1 banked freeze card
             newStreak = (profile.streakDays || 0) + 1;
             shouldUpdateStreakEarnedDate = true;
-            await this.prisma.studentProfile.update({
-              where: { userId },
-              data: { streakFreezeBank: profile.streakFreezeBank - 1 },
-            });
-            console.log(`[Gamification] Streak freeze consumed for user ${userId} on lesson completion.`);
+            consumeStreakFreeze = true;
           } else {
-            // Missed day without freeze — start new 1-day streak for today
             newStreak = 1;
             shouldUpdateStreakEarnedDate = true;
           }
         }
       }
 
-      const gemReward = 5;
+      isFirstStreakOfDay = shouldUpdateStreakEarnedDate;
+      const coinReward = 5;
       const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
       const updatedLongest = Math.max(currentLongest, newStreak);
 
-      const updatedProfile = await this.prisma.studentProfile.update({
-        where: { userId },
-        data: {
-          xp: { increment: xpEarned },
-          gems: { increment: gemReward },
-          streakDays: newStreak,
-          longestStreak: updatedLongest,
-          lastActiveAt: now,
-          lastLessonCompletedAt: now,
-          ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
-        },
-      });
-
-      await this.prisma.gemTransaction.create({
-        data: {
-          userId,
-          type: 'EARN',
-          amount: gemReward,
-          source: 'LESSON',
-        },
-      });
+      // Fast Critical Path: Atomic transaction for enrollment & student profile (<50ms)
+      const [updatedEnrollment, updatedProfile] = await this.prisma.$transaction([
+        this.prisma.enrollment.update({
+          where: { id: enrollment.id },
+          data: { completedLessons: currentCompleted, progress },
+        }),
+        this.prisma.studentProfile.update({
+          where: { userId },
+          data: {
+            xp: { increment: xpEarned },
+            coins: { increment: coinReward },
+            streakDays: newStreak,
+            longestStreak: updatedLongest,
+            lastActiveAt: now,
+            lastLessonCompletedAt: now,
+            ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
+            ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
+          },
+        }),
+        this.prisma.gemTransaction.create({
+          data: {
+            userId,
+            type: 'EARN',
+            amount: coinReward,
+            source: 'LESSON',
+          },
+        }),
+      ]);
 
       newXpTotal = updatedProfile.xp;
       newStreakDaysTotal = updatedProfile.streakDays;
-
-      // 1. Update Daily Activity Heatmap
-      await this.prisma.userDailyActivity.upsert({
-        where: { userId_date: { userId, date: todayStr } },
-        create: { userId, date: todayStr, lessonsCompleted: 1, xpEarned },
-        update: { lessonsCompleted: { increment: 1 }, xpEarned: { increment: xpEarned } },
-      });
-
-      // 2. Denormalize UserStats for instant Home Dashboard rendering (<200ms)
-      await this.prisma.userStats.upsert({
-        where: { userId },
-        create: {
-          userId,
-          totalXp: newXpTotal,
-          totalCoins: gemReward,
-          currentStreak: newStreakDaysTotal,
-          longestStreak: updatedLongest,
-          lessonsCompleted: 1,
-          lastActivityAt: now,
-        },
-        update: {
-          totalXp: newXpTotal,
-          totalCoins: { increment: gemReward },
-          currentStreak: newStreakDaysTotal,
-          longestStreak: updatedLongest,
-          lessonsCompleted: { increment: 1 },
-          lastActivityAt: now,
-        },
-      });
-
-      // 3. Log Learning Event
-      await this.prisma.learningEvent.create({
-        data: {
-          userId,
-          eventType: 'LESSON_COMPLETED',
-          entityType: 'lesson',
-          entityId: lessonId,
-          metadata: { xp: xpEarned, coins: gemReward, streak: newStreakDaysTotal },
-        },
-      });
-
-      // 4. 3-Day Streak Lucky Wheel Unlock Rule: Every 3-day streak milestone grants a Lucky Wheel Spin
-      if (shouldUpdateStreakEarnedDate && newStreakDaysTotal > 0 && newStreakDaysTotal % 3 === 0) {
-        await this.prisma.spinClaim.create({
-          data: {
-            userId,
-            rewardType: 'SPIN_EARNED',
-            rewardVal: 1,
-          },
-        });
-        console.log(`[Gamification] Awarded Lucky Wheel Spin to user ${userId} for reaching ${newStreakDaysTotal}-day streak milestone!`);
-      }
     }
 
-    // Publish LessonCompletedEvent to decouple Learning Domain from downstream modules
+    // Publish LessonCompletedEvent — all secondary writes (missions, chests, heatmaps, achievements, audit logs) run asynchronously in GamificationListener
     this.eventEmitter.emit(
       'lesson.completed',
       new LessonCompletedEvent(
@@ -339,20 +295,27 @@ export class CourseService {
         course.id,
         isNewCompletion,
         new Date(),
+        timezoneOffsetMinutes,
+        xpEarned,
+        newStreakDaysTotal,
+        isFirstStreakOfDay,
       ),
     );
 
     return {
       success: true,
+      isNewCompletion,
       completedLessons: currentCompleted,
       xpEarned: isNewCompletion ? xpEarned : 0,
-      gemsEarned: isNewCompletion ? 5 : 0,
-      // Updated totals — use these to refresh frontend state without extra API call
+      coinsEarned: isNewCompletion ? 5 : 0,
       newXp: newXpTotal,
       newStreakDays: newStreakDaysTotal,
+      newCoins: isNewCompletion ? (profile.coins + 5) : profile.coins,
       sectionCompleted,
+      isFirstStreakOfDay,
     };
   }
+
   async createCourse(
     userId: string,
     data: { title: string; category: string; creatorTimeWeekly?: string },
@@ -408,7 +371,30 @@ export class CourseService {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
       include: {
-        instructor: { select: { id: true, fullName: true, avatarUrl: true } },
+        instructor: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+            profile: {
+              select: {
+                bio: true,
+              },
+            },
+          },
+        },
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+              include: { resources: true },
+            },
+          },
+        },
+        _count: {
+          select: { enrollments: true },
+        },
       },
     });
     if (!course) throw new NotFoundException('Course not found');
@@ -491,6 +477,50 @@ export class CourseService {
         }),
       },
     });
+  }
+
+  async publishCourse(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.course.update({
+      where: { id: course.id },
+      data: { published: true },
+    });
+  }
+
+  async enrollInCourse(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const enrollment = await this.prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId: course.id,
+        },
+      },
+      create: {
+        userId,
+        courseId: course.id,
+        progress: 0,
+        completedLessons: [],
+      },
+      update: {},
+    });
+
+    return { enrolled: true, courseId: course.id, enrollmentId: enrollment.id };
   }
 
   async deleteCourse(userId: string, courseIdOrSlug: string) {

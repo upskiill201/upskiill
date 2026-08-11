@@ -136,6 +136,14 @@ import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { IntercomProvider } from "../components/providers/IntercomProvider";
 import { GamificationProvider } from "../context/GamificationContext";
+import { RewardAnimationProvider } from "../context/RewardAnimationContext";
+import RewardAnimationOverlay from "../components/ui/RewardAnimationOverlay";
+import { HeraldProvider } from "../context/HeraldContext";
+import HeraldOverlay from "../components/herald/HeraldOverlay";
+import HeraldChestReveal from "../components/herald/HeraldChestReveal";
+import HeraldSpinReveal from "../components/herald/HeraldSpinReveal";
+import { StreakProvider } from "../context/StreakContext";
+import StreakModal from "../components/streak/StreakModal";
 import { AudioProvider } from "../context/AudioContext";
 import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
 import { TeyroLoaderProvider } from "../components/providers/TeyroLoaderProvider";
@@ -158,13 +166,25 @@ export default function RootLayout({
               <AudioProvider>
                 <BackgroundMusicManager />
                 <GamificationProvider>
-                  <TeyroLoaderProvider>
-                    <HeaderWrapper />
-                    <main className="flex-1" style={{ overflow: 'visible' }}>
-                      {children}
-                    </main>
-                    <FooterWrapper />
-                  </TeyroLoaderProvider>
+                  <RewardAnimationProvider>
+                    <RewardAnimationOverlay />
+                    <HeraldProvider>
+                      <StreakProvider>
+                        {/* Herald & Streak portals — router-independent, render into document.body */}
+                        <HeraldOverlay />
+                        <HeraldChestReveal />
+                        <HeraldSpinReveal />
+                        <StreakModal />
+                        <TeyroLoaderProvider>
+                          <HeaderWrapper />
+                          <main className="flex-1" style={{ overflow: 'visible' }}>
+                            {children}
+                          </main>
+                          <FooterWrapper />
+                        </TeyroLoaderProvider>
+                      </StreakProvider>
+                    </HeraldProvider>
+                  </RewardAnimationProvider>
                 </GamificationProvider>
               </AudioProvider>
             </CartProvider>

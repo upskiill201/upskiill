@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementsService } from '../gamification/achievements.service';
 import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
@@ -179,7 +179,8 @@ export class HomeService {
           fullName: user?.fullName,
           streakDays: statsResult.streakDays,
           xp: statsResult.xp,
-          gems: statsResult.gems,
+          coins: statsResult.coins,
+          gems: statsResult.coins,
           lives: statsResult.lives,
           userLevel: statsResult.userLevel,
         },

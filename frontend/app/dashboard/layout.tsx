@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { DashboardLink } from '@/components/layout/Sidebar';
 import {
   ChevronLeft,
@@ -23,8 +23,10 @@ import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
+import { useStreakModal } from '@/context/StreakContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import StreakStatusModal from '@/components/gamification/StreakStatusModal';
+import { getCachedUser, setCachedUser, clearCachedUser } from '@/lib/user-cache';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -56,16 +58,16 @@ export default function DashboardLayout({
   hideMobileChrome = false,
 }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { streakDays, xp, lives, gems } = useGamification();
+  const router = useRouter();
+  const { streakDays, xp, lives, coins, userLevel } = useGamification();
+  const { openStreakModal } = useStreakModal();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userName, setUserName] = useState('Joel Ndakwe');
-  const [userAvatar, setUserAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100');
-  const [hasStudentAccess, setHasStudentAccess] = useState(false);
-  const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
-
-  const userLevel = Math.floor(xp / 100) + 1;
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [hasStudentAccess, setHasStudentAccess] = useState<boolean>(false);
+  const [hasCreatorAccess, setHasCreatorAccess] = useState<boolean>(false);
 
   const triggerComingSoon = (feature: string) => {
     setComingSoonFeature(feature);
@@ -73,15 +75,35 @@ export default function DashboardLayout({
 
   // Fetch user data on mount (middleware handles route protection)
   useEffect(() => {
+    // Safely hydrate cached user on client mount to prevent SSR hydration mismatch
+    const cached = getCachedUser();
+    if (cached?.fullName) setUserName(cached.fullName);
+    if (cached?.avatarUrl) setUserAvatar(cached.avatarUrl);
+    if (cached?.hasStudentAccess !== undefined) setHasStudentAccess(cached.hasStudentAccess);
+    if (cached?.hasCreatorAccess !== undefined) setHasCreatorAccess(cached.hasCreatorAccess);
+
     const fetchMe = async () => {
       try {
         const res = await fetch('/api/auth/me', { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           if (data?.fullName) setUserName(data.fullName);
-          if (data?.avatarUrl) setUserAvatar(data.avatarUrl);
-          if (data?.hasStudentAccess) setHasStudentAccess(data.hasStudentAccess);
-          if (data?.hasCreatorAccess) setHasCreatorAccess(data.hasCreatorAccess);
+          if (data?.avatarUrl !== undefined) setUserAvatar(data.avatarUrl);
+          if (data?.hasStudentAccess !== undefined) setHasStudentAccess(data.hasStudentAccess);
+          if (data?.hasCreatorAccess !== undefined) setHasCreatorAccess(data.hasCreatorAccess);
+          setCachedUser(data);
+
+          // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-01 & AUTH-02)
+          // Pure creators without a verified student account should be in /creator, not /dashboard.
+          // Use window.location.href (hard navigation) to break any localStorage-based infinite redirect
+          // loops that router.push() cannot escape.
+          if (!data.hasStudentAccess && !data.studentProfile) {
+            window.location.href = '/creator';
+            return;
+          }
+        } else if (res.status === 401) {
+          router.push('/login');
+          return;
         }
       } catch (err) {
         console.error('Failed to load user data', err);
@@ -92,6 +114,7 @@ export default function DashboardLayout({
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
+    clearCachedUser();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {
@@ -118,9 +141,9 @@ export default function DashboardLayout({
     { 
       id: 'explore', 
       label: 'Explore', 
-      href: '/dashboard', 
+      href: '/dashboard/explore', 
       icon: <Image src="/Icons/explore.png" alt="Explore" width={28} height={28} className={styles.navIcon} />, 
-      isComingSoon: true 
+      isComingSoon: false 
     },
     { 
       id: 'leaderboards', 
@@ -249,7 +272,7 @@ export default function DashboardLayout({
             {!isSidebarCollapsed && (
               <div className={styles.footerCardsWrapper}>
                 {/* Streak Card */}
-                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Streaks')}>
+                <div className={styles.sidebarCard} onClick={() => openStreakModal('PERSONAL')}>
                   <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FFEDD5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Image src="/Icons/burn.png" width={20} height={20} alt="Streak Burn Icon" style={{ objectFit: 'contain' }} />
                   </div>
@@ -264,7 +287,7 @@ export default function DashboardLayout({
                 <Link href="/dashboard/shop" className={styles.sidebarCard} style={{ textDecoration: 'none' }}>
                   <div className={styles.sidebarCardIconBg} style={{ backgroundColor: '#FEF9C3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Image
-                      src={gems > 0 ? '/Icons/Coin.png' : '/Icons/Coin_empty.png'}
+                      src={coins > 0 ? '/Icons/Coin.png' : '/Icons/Coin_empty.png'}
                       width={20}
                       height={20}
                       alt="Coins"
@@ -272,7 +295,7 @@ export default function DashboardLayout({
                     />
                   </div>
                   <div className={styles.sidebarCardContent}>
-                    <span className={styles.sidebarCardTitle} style={{ color: '#EAB308', fontWeight: 800 }}>{gems} Coins</span>
+                    <span className={styles.sidebarCardTitle} style={{ color: '#EAB308', fontWeight: 800 }}>{coins} Coins</span>
                     <span className={styles.sidebarCardSubtitle} style={{ color: 'rgba(234,179,8,0.85)', fontWeight: 600 }}>Shop Currency</span>
                   </div>
                   <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#EAB308' }} />
@@ -304,7 +327,7 @@ export default function DashboardLayout({
 
                 {/* Profile Card */}
                 <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Profile Settings')}>
-                  <Avatar src={userAvatar} name={userName} size="sm" className={styles.profileAvatar} />
+                  <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" className={styles.profileAvatar} />
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{userName}</span>
                     <span className={styles.sidebarCardSubtitle}>Level {userLevel} 👑</span>
@@ -400,7 +423,7 @@ export default function DashboardLayout({
                 style={{ width: 'auto', height: 'auto' }}
               />
             </div>
-            <Avatar src={userAvatar} name={userName} size="sm" />
+            <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" />
           </header>
           )}
 

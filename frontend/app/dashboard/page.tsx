@@ -12,39 +12,46 @@ import { useComingSoon } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatPill } from '@/components/ui/StatPill';
+import { StatsBar } from '@/components/ui/StatsBar';
 import { useGamification } from '@/context/GamificationContext';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
 import MomentumCard from '@/components/dashboard/v2/MomentumCard';
+import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
 import TodaysMissionsCard from '@/components/dashboard/v2/TodaysMissionsCard';
 import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
 import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
 import NextAchievementCard from '@/components/dashboard/v2/NextAchievementCard';
 import AlmostThereCard from '@/components/dashboard/v2/AlmostThereCard';
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
-  const { streakDays, xp: xpPoints, lives: livesCount, gems } = useGamification();
-  const [userName, setUserName] = useState('Joel');
+  const { streakDays, xp: xpPoints, lives: livesCount, coins, userLevel } = useGamification();
+  const [userName, setUserName] = useState<string | null>(null);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
   useEffect(() => {
-    // 1. Trigger loader with 15s hold configuration and suppressed connection check popups
-    showLoader(undefined, false, 15000, true);
-
-    // 2. Read onboarding answers from localStorage for instant name fallback
-    const state = getOnboardingState();
-    if (state?.answers?.['1']?.name) {
-      const localName = state.answers['1'].name as string;
-      setUserName(localName.split(' ')[0]);
+    // 1. Hydrate cached user on client mount safely to prevent SSR hydration mismatch
+    const cached = getCachedUser();
+    if (cached?.fullName) {
+      setUserName(cached.fullName.split(' ')[0]);
+    } else {
+      const state = getOnboardingState();
+      if (state?.answers?.['1']?.name) {
+        setUserName((state.answers['1'].name as string).split(' ')[0]);
+      }
     }
 
-    // 3. Fetch all backend data (me & enrollments) in parallel
+    // 2. Trigger loader with 15s hold configuration and suppressed connection check popups
+    showLoader(undefined, false, 15000, true);
+
+    // 2. Fetch all backend data (me & enrollments) in parallel
     const loadAllDashboardData = async () => {
       try {
         await Promise.allSettled([
@@ -53,6 +60,7 @@ export default function DashboardPage() {
             .then((data) => {
               if (data?.fullName) {
                 setUserName(data.fullName.split(' ')[0]);
+                setCachedUser(data);
               }
             }),
           fetch('/api/auth/me/enrollments', { credentials: 'include' })
@@ -141,17 +149,14 @@ export default function DashboardPage() {
       {/* TOP HEADER ROW: Welcome greeting on left, Borderless Stats on right */}
       <div className={styles.topHeaderRow}>
         <div className={styles.welcomeBanner}>
-          <h2 className={styles.welcomeTitle}>Welcome back, {userName}! 👋</h2>
+          <h2 className={styles.welcomeTitle}>
+            Welcome back, {userName ? `${userName}! 👋` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
+          </h2>
           <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
         </div>
 
         {/* BORDERLESS TOP-RIGHT STATS ROW */}
-        <div className={styles.statsRow}>
-          <StatPill type="streak" value={streakDays} onClick={() => triggerComingSoon('Streak History')} />
-          <StatPill type="coin" value={gems} onClick={() => router.push('/dashboard/shop')} />
-          <StatPill type="gem" value={xpPoints} onClick={() => triggerComingSoon('XP Analytics')} />
-          <StatPill type="lives" value={livesCount} onClick={() => triggerComingSoon('Lives Refill')} />
-        </div>
+        <StatsBar />
       </div>
 
       {/* TWO-COLUMN GRID CONTAINER (Desktop/Tablet) */}
@@ -213,27 +218,17 @@ export default function DashboardPage() {
           ) : (
             <div className={styles.focusCard}>
               <div className={styles.focusCardLeft}>
-                <span className={styles.focusHeader}>CURRENT FOCUS</span>
-                <h3 className={styles.focusCourseTitle}>UI/UX Design</h3>
-                <p className={styles.focusCourseDesc}>Mastering the fundamentals of digital interfaces.</p>
+                <span className={styles.focusHeader}>GET STARTED</span>
+                <h3 className={styles.focusCourseTitle}>Welcome to Teyro!</h3>
+                <p className={styles.focusCourseDesc}>You haven&apos;t enrolled in any courses yet. Explore our interactive catalog to start learning!</p>
                 
-                {/* Focus Progress Bar */}
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressBarWrapper}>
-                    <div className={styles.progressBarFill} style={{ width: '65%' }} />
-                  </div>
-                  <div className={styles.progressLabels}>
-                    <span className={styles.progressPct}>65% COMPLETE</span>
-                    <span className={styles.progressUnit}>UNIT 4 / 12</span>
-                  </div>
-                </div>
-
                 {/* 3D Action Button */}
                 <button 
-                  onClick={handleContinueLearning}
+                  onClick={() => router.push('/courses')}
                   className={styles.button3dPrimary}
+                  style={{ marginTop: '16px' }}
                 >
-                  <span>Continue Learning</span>
+                  <span>Explore Courses</span>
                   <span className={styles.buttonIconCircle}>
                     <ArrowRight size={16} />
                   </span>
@@ -243,7 +238,7 @@ export default function DashboardPage() {
               {/* Focus Mascot Section */}
               <div className={styles.focusCardRight}>
                 <div className={styles.mascotBubble}>
-                  <span>I can create intuitive user experiences with Figma.</span>
+                  <span>Pick a course from our catalog to start building skills!</span>
                   <div className={styles.mascotBubbleTail} />
                 </div>
                 <div className={styles.focusMascotImageWrapper}>
@@ -259,6 +254,9 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
+          {/* REWARDRUN LAB & TEST BENCH WIDGET */}
+          <RewardRunTestWidget />
 
           {/* 1. MOMENTUM CARD */}
           <MomentumCard onAction={handleContinueLearning} />
@@ -332,59 +330,17 @@ export default function DashboardPage() {
                   </div>
                 ))
               ) : (
-                <>
-                  {/* Journey 1 */}
-                  <div className={styles.journeyCard}>
-                    <div className={styles.journeyCardLeft}>
-                      <div className={styles.journeyIconWrapper}>
-                        <span className={styles.journeyIcon}>🚀</span>
-                      </div>
-                      <div className={styles.journeyInfo}>
-                        <h5 className={styles.journeyTitle}>Startup Fundamentals</h5>
-                        <span className={styles.journeySubtitle}>280 UNITS</span>
-                      </div>
-                    </div>
-                    <div className={styles.journeyCardRight}>
-                      <div className={styles.journeyProgressWrapper}>
-                        <div className={styles.journeyProgressBar}>
-                          <div className={styles.journeyProgressFill} style={{ width: '30%', backgroundColor: '#FF8A00' }} />
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => handleJumpToUnit('Startup Fundamentals')}
-                        className={styles.button3dOutline}
-                      >
-                        Jump to Unit
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Journey 2 */}
-                  <div className={styles.journeyCard}>
-                    <div className={styles.journeyCardLeft}>
-                      <div className={styles.journeyIconWrapper}>
-                        <span className={styles.journeyIcon}>🧠</span>
-                      </div>
-                      <div className={styles.journeyInfo}>
-                        <h5 className={styles.journeyTitle}>AI for Beginners</h5>
-                        <span className={styles.journeySubtitle}>150 UNITS</span>
-                      </div>
-                    </div>
-                    <div className={styles.journeyCardRight}>
-                      <div className={styles.journeyProgressWrapper}>
-                        <div className={styles.journeyProgressBar}>
-                          <div className={styles.journeyProgressFill} style={{ width: '15%', backgroundColor: '#8B5CF6' }} />
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => handleJumpToUnit('AI for Beginners')}
-                        className={styles.button3dOutline}
-                      >
-                        Jump to Unit
-                      </button>
-                    </div>
-                  </div>
-                </>
+                <div style={{ padding: '24px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1px dashed #CBD5E1', width: '100%' }}>
+                  <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#475569' }}>
+                    You haven&apos;t enrolled in any courses yet.
+                  </p>
+                  <button
+                    onClick={() => router.push('/courses')}
+                    style={{ marginTop: '12px', background: '#0172FD', color: '#FFFFFF', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    Browse Catalog →
+                  </button>
+                </div>
               )}
             </div>
           </div>
