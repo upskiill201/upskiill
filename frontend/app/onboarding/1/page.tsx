@@ -33,26 +33,9 @@ export default function OnboardingStep1() {
   const { isLoading, advance } = useOnboardingSession(1);
   const [idle, setIdle] = useState(false);
 
-  // Idle whisper nudge: pulse CTA once after 1.5 s if user hasn't tapped
-  // Must be declared BEFORE the early return to satisfy Rules of Hooks
   useEffect(() => {
     const t = setTimeout(() => setIdle(true), 1500);
     return () => clearTimeout(t);
-  }, []);
-
-  // iOS Safari viewport height fix: set --vh from the real visualViewport
-  useEffect(() => {
-    const setVH = () => {
-      const vh = window.visualViewport?.height || window.innerHeight;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-    setVH();
-    window.visualViewport?.addEventListener('resize', setVH);
-    window.addEventListener('resize', setVH);
-    return () => {
-      window.visualViewport?.removeEventListener('resize', setVH);
-      window.removeEventListener('resize', setVH);
-    };
   }, []);
 
   const headlineShadow = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.15), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
@@ -87,7 +70,7 @@ export default function OnboardingStep1() {
       </div>
 
       {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-1 pt-2 justify-between" style={{ height: 'var(--vh, 100dvh)' }}>
+      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-1 pt-2 justify-between h-[100dvh]">
         
         {/* Top Image Container - stretches dynamically */}
         <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-2 overflow-visible">
@@ -116,7 +99,7 @@ export default function OnboardingStep1() {
             initial={{ scale: 0.6, y: -20 }}
             animate={{ scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 relative select-none min-h-0 mt-2"
+            className="w-full flex-1 relative select-none min-h-[25vh] mt-2"
           >
             {/* Bubble background spans 100% of container */}
             <div className="absolute inset-0 w-full h-full">
@@ -127,7 +110,7 @@ export default function OnboardingStep1() {
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div layoutId="tey-mascot" className="relative w-[90%] h-[90%] z-10 flex items-center justify-center">
                 <Image 
-                  src="/User%20onbarding%20Assets/Tey_welcome.PNG" 
+                  src="/User onbarding Assets/Tey_welcome.PNG" 
                   alt="Tey Welcome Mascot" 
                   fill 
                   className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" 
@@ -218,7 +201,7 @@ export default function OnboardingStep1() {
         >
           <div className="relative w-full h-full transition-transform z-10">
             <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10">
-              <Image src="/User%20onbarding%20Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
+              <Image src="/User onbarding Assets/Tey_welcome.PNG" alt="Tey Welcome Mascot" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
             </motion.div>
           </div>
         </motion.div>
