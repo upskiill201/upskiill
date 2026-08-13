@@ -173,6 +173,9 @@ export default function OnboardingStep6() {
   return (
     <div className="h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
       
+      {/* Mobile bottom soft fade hugging the character */}
+      <div className="absolute bottom-0 left-0 right-0 h-[60dvh] bg-gradient-to-b from-transparent via-[#F4F8FF] to-[#FFFFFF] via-[25%] md:hidden z-0 pointer-events-none" />
+
       <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pb-0 md:pb-[2vh] pt-4 md:pt-24">
         
         {/* Mobile Progress Bar */}
@@ -240,8 +243,6 @@ export default function OnboardingStep6() {
 
           {/* Text & Form Content (Right) */}
           <div className="w-full flex-1 md:w-[50%] min-h-0 flex flex-col justify-start md:justify-center gap-2 md:gap-0 items-center md:items-start text-center md:text-left z-20 pb-4 md:pb-0 md:ml-auto md:mt-[-5rem] pt-2 md:pt-0 relative overflow-y-auto overflow-x-hidden scrollbar-hide">
-            {/* Mobile-only white fade behind text */}
-            <div className="md:hidden absolute top-[-2rem] left-[-2rem] right-[-2rem] bottom-[-5rem] bg-gradient-to-b from-transparent via-white to-white via-[15%] -z-10 pointer-events-none" />
 
             <motion.h1
               variants={headlineContainer}
