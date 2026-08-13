@@ -252,7 +252,7 @@ export default function OnboardingStep9() {
   const textShadowGlow = '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)';
 
   return (
-    <div className={`h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none transition-all duration-500 ${
+    <div className={`h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none transition-all duration-500 ${
       comboCount >= 2 ? 'shadow-[inset_0_0_40px_rgba(1,114,253,0.06)]' : ''
     }`}>
       
@@ -379,7 +379,7 @@ export default function OnboardingStep9() {
       </div>
 
       {/* Outer wrapper to space layout components properly in 100vh */}
-      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-5 md:px-10 pt-4 md:pt-8 pb-4 justify-between">
+      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-5 md:px-10 pt-4 md:pt-8 pb-2 md:pb-[2vh] justify-between">
         
         {/* Header Progress Bar & Accomplishments */}
         <div className="relative flex items-center justify-center w-full mb-3 md:mb-6 mt-4 md:mt-[2vh]">
@@ -457,7 +457,7 @@ export default function OnboardingStep9() {
             >
               <div className="flex-1 pr-4">
                 <h1 
-                  className="text-[9vw] sm:text-[8vw] md:text-[3.2vw] font-[900] tracking-tight text-[#071233] leading-none"
+                  className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl md:text-[3.2vw] font-[900] tracking-tight text-[#071233] leading-none"
                   style={{ fontFamily: 'var(--font-jakarta)', textShadow: textShadowGlow }}
                 >
                   Match <span className="text-[#0172FD]">the blocks</span>
@@ -577,7 +577,7 @@ export default function OnboardingStep9() {
         </div>
 
         {/* Footer controls row */}
-        <div className="w-full z-30 pt-3 border-t border-slate-100/50">
+        <div className="w-full z-30 pt-2 md:pt-3 border-t border-slate-100/50 shrink-0">
           
           {/* Mobile Footer */}
           <div className="md:hidden flex flex-col items-center gap-3 w-full pb-1">
