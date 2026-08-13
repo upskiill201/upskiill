@@ -232,11 +232,14 @@ export default function OnboardingStep12() {
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
   return (
-    <div className="w-full relative select-none bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden">
+    <div className="w-full h-[100dvh] md:h-auto md:min-h-screen relative select-none bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden">
       
-      {/* 📱 MOBILE-ONLY LAYOUT: Strict 50/50 Flex Split - 100dvh hard lock, no scroll */}
-      <div className="flex flex-col w-full relative z-10 md:hidden" style={{ height: '100dvh', overflow: 'hidden' }}>
+      {/* 📱 MOBILE-ONLY LAYOUT */}
+      <div className="flex flex-col w-full h-full relative z-10 md:hidden overflow-hidden">
         
+        {/* Mobile bottom soft fade hugging the character */}
+        <div className="absolute bottom-0 left-0 right-0 h-[60dvh] bg-gradient-to-b from-transparent via-[#F4F8FF] to-[#FFFFFF] via-[25%] md:hidden z-0 pointer-events-none" />
+
         {/* Top 50% Image Container */}
         <div className="flex-1 w-full flex flex-col justify-start items-center relative overflow-hidden">
           
@@ -265,7 +268,6 @@ export default function OnboardingStep12() {
               <MascotBackground />
             </div>
             <motion.div
-              layoutId="tey-mascot"
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
@@ -282,12 +284,11 @@ export default function OnboardingStep12() {
           </div>
         </div>
 
-        {/* Bottom 50% Text & CTA Container - top 40px fades out white background to show blue underneath */}
+        {/* Bottom 50% Text & CTA Container - overflow-hidden keeps content contained */}
         <div 
-          className="flex-1 w-full flex flex-col items-center relative z-20 overflow-hidden" 
+          className="flex-1 w-full flex flex-col items-center relative z-20 overflow-hidden bg-transparent" 
           style={{ 
-            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 40px, rgba(255, 255, 255, 1) 100%)'
+            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
           }}
         >
           
@@ -602,7 +603,6 @@ export default function OnboardingStep12() {
             <MascotBackground />
           </div>
           <motion.div
-            layoutId="tey-mascot-desktop"
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 220, damping: 24 }}
