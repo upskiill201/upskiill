@@ -50,9 +50,9 @@ export default function OnboardingStep7() {
   if (isLoading) return <StepSkeleton />;
 
   return (
-    <div className="h-[95vh] min-h-[95vh] max-h-[95vh] overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
 
-      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pt-8 md:pt-16 pb-6 justify-between">
+      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pt-4 md:pt-16 pb-4 md:pb-[2vh] justify-between">
 
         {/* Header Row */}
         <div className="flex items-center gap-4 w-full mb-4 md:mb-8">
@@ -100,7 +100,6 @@ export default function OnboardingStep7() {
             >
               <MascotBackground />
               <motion.div
-                layoutId="tey-mascot"
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1.0, y: 0 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 24, delay: 0.1 }}
@@ -123,7 +122,7 @@ export default function OnboardingStep7() {
         </div>
 
         {/* Continue Button */}
-        <div className="w-full z-30 pt-4 border-t border-slate-100/50">
+        <div className="w-full z-30 pt-3 md:pt-4 border-t border-slate-100/50 shrink-0">
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
