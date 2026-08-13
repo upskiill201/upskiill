@@ -45,7 +45,7 @@ export default function OnboardingStep1() {
   if (isLoading) return <StepSkeleton />;
 
   return (
-    <div className="min-h-[100svh] min-h-[100dvh] min-h-screen md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-x-clip md:overflow-visible relative">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5F8FF] to-[#E5EDFF] overflow-hidden md:overflow-visible relative">
       
       {/* Mobile bottom white soft fade */}
       <div className="absolute bottom-0 left-0 right-0 h-[50dvh] bg-gradient-to-b from-transparent via-[#F7F8FC] to-[#F7F8FC] via-[20%] md:hidden z-0" />
@@ -70,7 +70,7 @@ export default function OnboardingStep1() {
       </div>
 
       {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-1 pt-2 justify-between h-[100dvh]">
+      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-1 pt-2 justify-between h-full">
         
         {/* Top Image Container - stretches dynamically */}
         <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-2 overflow-visible">
@@ -96,8 +96,8 @@ export default function OnboardingStep1() {
 
           {/* Mascot Section */}
           <motion.div
-            initial={{ scale: 0.6, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
+            initial={{ scale: 0.6, y: -20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             className="w-full flex-1 relative select-none min-h-[25vh] mt-2"
           >
@@ -108,7 +108,7 @@ export default function OnboardingStep1() {
             
             {/* Mascot Image - absolutely positioned to fill the flex container on Safari */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div layoutId="tey-mascot" className="relative w-[90%] h-[90%] z-10 flex items-center justify-center">
+              <motion.div className="relative w-[90%] h-[90%] z-10 flex items-center justify-center">
                 <Image 
                   src="/User onbarding Assets/Tey_welcome.PNG" 
                   alt="Tey Welcome Mascot" 
