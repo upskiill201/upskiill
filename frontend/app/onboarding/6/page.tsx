@@ -171,9 +171,9 @@ export default function OnboardingStep6() {
   const headlineShadow = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.15), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
       
-      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-[100dvh] px-6 md:px-10 pb-[2vh] pt-12 md:pt-24">
+      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pb-0 md:pb-[2vh] pt-4 md:pt-24">
         
         {/* Mobile Progress Bar */}
         <div className="md:hidden absolute top-4 left-0 right-0 px-6 z-30">
@@ -220,13 +220,13 @@ export default function OnboardingStep6() {
         </div>
 
         {/* TOP SECTION: Mascot (Left) + Text/Form (Right) */}
-        <div className="flex flex-1 flex-col justify-start md:justify-start md:flex-row w-full relative z-10 md:mt-12 lg:mt-16 md:mb-12">
+        <div className="flex flex-1 min-h-0 flex-col justify-start md:justify-start md:flex-row w-full relative z-10 md:mt-12 lg:mt-16 md:mb-12">
           
-          {/* Mobile Mascot (Top 40% of Screen) */}
-          <div className="md:hidden relative w-full h-[38vh] flex items-center justify-center shrink-0 z-30 pointer-events-none mb-0">
-             <div className="relative w-full max-w-[400px] aspect-square scale-[0.9] sm:scale-[1.0] origin-center -translate-y-[1vh]">
+          {/* Mobile Mascot (Top Section of Screen) */}
+          <div className="md:hidden relative w-full h-[35vh] flex items-center justify-center shrink-0 z-30 pointer-events-none mb-1 mt-2">
+             <div className="relative w-full max-w-[400px] aspect-square scale-[0.9] origin-center">
                 <MascotBackground />
-                <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 scale-[1.15]">
+                <motion.div className="absolute inset-0 z-10">
                   <Image 
                     src="/User onbarding Assets/Step_6_mascot.webp" 
                     alt="Connect with Tey" 
@@ -239,15 +239,15 @@ export default function OnboardingStep6() {
           </div>
 
           {/* Text & Form Content (Right) */}
-          <div className="w-full md:w-[50%] h-[62vh] md:h-auto flex flex-col justify-start md:justify-center gap-4 md:gap-0 items-center md:items-start text-center md:text-left z-20 pb-[8vh] md:pb-0 md:ml-auto md:mt-[-5rem] pt-[1vh] md:pt-0 relative">
+          <div className="w-full flex-1 md:w-[50%] min-h-0 flex flex-col justify-start md:justify-center gap-2 md:gap-0 items-center md:items-start text-center md:text-left z-20 pb-4 md:pb-0 md:ml-auto md:mt-[-5rem] pt-2 md:pt-0 relative overflow-y-auto overflow-x-hidden scrollbar-hide">
             {/* Mobile-only white fade behind text */}
-            <div className="md:hidden absolute top-[-4rem] left-[-2rem] right-[-2rem] bottom-[-5rem] bg-gradient-to-b from-transparent via-white to-white via-[15%] -z-10 pointer-events-none" />
+            <div className="md:hidden absolute top-[-2rem] left-[-2rem] right-[-2rem] bottom-[-5rem] bg-gradient-to-b from-transparent via-white to-white via-[15%] -z-10 pointer-events-none" />
 
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[10vw] sm:text-[8vw] md:text-[5vw] lg:text-[4.5vw] leading-[1.05] font-[800] tracking-tight text-[#071233] w-full"
+              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl md:text-[5vw] lg:text-[4.5vw] leading-[1.05] font-[900] tracking-tight text-[#071233] w-full"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <div className="whitespace-nowrap">
@@ -261,8 +261,8 @@ export default function OnboardingStep6() {
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.3 }}
-              className="text-[2.8vw] sm:text-[2.2vw] md:text-[1.2vw] lg:text-[1.1vw] font-medium text-slate-500 leading-[1.4] max-w-[350px] md:max-w-none w-full mt-2 md:mt-4 md:mb-8"
-              style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)' }}
+              className="text-[clamp(0.9rem,3.5vw,1rem)] sm:text-[2.2vw] md:text-[1.2vw] lg:text-[1.1vw] font-medium text-slate-500 leading-tight max-w-[95%] md:max-w-none w-full mt-1 mb-3 md:mt-4 md:mb-8"
+              style={{ fontFamily: 'var(--font-jakarta)' }}
             >
               For Verification and learning reminders via WhatsApp. Tey checks in daily with reminders, streak alerts, and progress updates and definitely notices when you skip a lesson.
             </motion.p>
@@ -449,7 +449,7 @@ export default function OnboardingStep6() {
         <div className="hidden md:flex absolute ml-[-15rem] top-1/2 -translate-y-1/2 w-[55%] items-center justify-start z-10 pointer-events-none">
            <div className="relative w-[40vw] h-[40vw] scale-[1.2] origin-left">
               <MascotBackground />
-              <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10 md:scale-[0.95] lg:scale-[1.0]">
+              <motion.div className="absolute inset-0 z-10 md:scale-[0.95] lg:scale-[1.0]">
                 <Image 
                   src="/User onbarding Assets/Step_6_mascot.webp" 
                   alt="Connect with Tey" 
@@ -466,7 +466,7 @@ export default function OnboardingStep6() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.6 }}
-          className="absolute bottom-4 md:bottom-8 left-0 right-0 w-full flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-6 text-[10px] md:text-xs font-semibold text-slate-400 z-50 px-4 md:px-6 text-center"
+          className="relative md:absolute md:bottom-8 left-0 right-0 w-full flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-6 text-[10px] md:text-xs font-semibold text-slate-400 z-50 px-4 md:px-6 text-center mt-auto pb-4 md:pb-0"
         >
           <div className="flex items-center gap-1.5">
             <Lock className="w-3.5 h-3.5" />
