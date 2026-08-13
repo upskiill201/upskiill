@@ -446,7 +446,7 @@ export default function OnboardingStep9() {
         <div className="flex-1 flex flex-col md:grid md:grid-cols-[1.1fr_0.9fr] items-center justify-between w-full min-h-0 relative gap-4 md:gap-12">
           
           {/* Left Column: Heading + Game Area */}
-          <div className="w-full h-full flex flex-col justify-center gap-4 sm:gap-6 relative">
+          <div className="w-full h-full flex flex-col justify-center gap-2 sm:gap-6 relative">
             
             {/* Title Load animation sequence */}
             <motion.div 
@@ -493,7 +493,7 @@ export default function OnboardingStep9() {
               initial={{ opacity: 0, y: 20 }}
               animate={isLoaded ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, ease: "easeOut", delay: 0.12 }}
-              className="bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_30px_60px_rgba(61,90,254,0.06),_inset_0_1px_2px_rgba(255,255,255,0.7)] rounded-[2rem] p-5 md:p-6 w-full flex flex-col gap-4 md:gap-6 relative z-10"
+              className="bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_30px_60px_rgba(61,90,254,0.06),_inset_0_1px_2px_rgba(255,255,255,0.7)] rounded-[2rem] p-4 md:p-6 w-full flex flex-col gap-2 md:gap-6 relative z-10"
             >
               <div className="flex justify-between px-6 text-slate-400 font-extrabold text-xs tracking-wider">
                 <span>Left</span>
@@ -501,7 +501,7 @@ export default function OnboardingStep9() {
               </div>
 
               {/* Targets / slots list - staggered animation entry */}
-              <div className="flex flex-col gap-3.5 md:gap-5 relative">
+              <div className="flex flex-col gap-2 md:gap-5 relative">
                 {TARGETS.map((target, idx) => (
                   <motion.div 
                     key={target.id}
