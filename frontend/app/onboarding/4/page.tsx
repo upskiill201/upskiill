@@ -80,15 +80,15 @@ export default function OnboardingStep4() {
   const accentShadow   = '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(1,114,253,0.4), 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.9), 0 0 45px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5)';
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative">
       
-      {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
+      {/* MOBILE-ONLY LAYOUT */}
+      <div className="flex flex-col h-full w-full relative z-10 md:hidden overflow-hidden pb-0 pt-0 justify-between">
         
-        {/* Top 50% Image Container - 100% of device width */}
-        <div className="w-full h-[50dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible shrink-0">
+        {/* Top Image Container */}
+        <div className="w-full h-[40vh] shrink-0 flex flex-col justify-start items-center relative pt-0 overflow-visible">
           {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+          <div className="w-full px-6 flex items-center gap-4 mb-1 shrink-0 relative z-20 pt-3">
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: `${(3 / 15) * 100}%` }}
@@ -101,38 +101,37 @@ export default function OnboardingStep4() {
             <span className="text-sm font-[800] text-[#0172FD] shrink-0" style={{ textShadow: '0 0 10px rgba(255,255,255,1)' }}>4/15</span>
           </div>
 
-          {/* Mascot Section inside top container - stretches to 100% width of device */}
+          {/* Mascot Section inside top container */}
           <motion.div
-            initial={{ scale: 0.6, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
+            initial={{ scale: 0.6, y: -20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-center justify-center relative select-none mt-2 px-0"
+            className="w-full flex-1 flex items-center justify-center relative select-none mt-1 px-0"
           >
             {/* Bubble background spans 100% of container width */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
               <MascotBackground />
             </div>
-            {/* Mascot image is exactly 80% of device width and 40dvh height, centered vertically and horizontally with 1.2x scale */}
-            <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[40dvh] z-10 scale-[1.4] origin-center">
-              <Image src="/User onbarding Assets/Tey_step4_mobile.webp" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.2] origin-center" priority />
+            {/* Mascot image */}
+            <motion.div className="absolute w-[80vw] h-[80vw] z-10 origin-center flex items-center justify-center">
+              <Image src="/User onbarding Assets/Tey_step4_mobile.webp" alt="Tey Mascot" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.1]" priority />
             </motion.div>
           </motion.div>
         </div>
 
-        {/* Bottom 50% Text & CTA Container - padded horizontally with white background and soft top fade */}
-        <div className="w-full h-[50dvh] flex flex-col justify-start items-center relative z-20 pb-4 px-6 bg-white pt-2">
+        {/* Bottom Text & CTA Container */}
+        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative z-20 pb-6 px-6 bg-white pt-2">
           
-          {/* Soft white shadow fade overlay at the top boundary */}
-          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+          <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
           {/* Typography container - aligned top */}
-          <div className="w-full flex flex-col items-center text-center mt-1 mb-3 px-2 z-20 shrink-0">
-            {/* Relative scaled heading - constrained to 80% of device width */}
+          <div className="w-full flex flex-col items-center text-center mt-1 mb-2 px-2 z-20 shrink-0">
+            {/* Relative scaled heading */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[9.5vw] xs:text-[10vw] sm:text-4xl font-[900] leading-[1.08] mb-1.5 tracking-tight text-[#071233] w-[80vw] mx-auto text-center"
+              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl font-[900] leading-[1.1] mb-1 tracking-tight text-[#071233] w-[90%] mx-auto text-center"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <div className="whitespace-nowrap">
@@ -140,11 +139,9 @@ export default function OnboardingStep4() {
                 <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>much</motion.span>
                 <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>do</motion.span>
               </div>
-              <div className="whitespace-nowrap">
+              <div className="whitespace-nowrap -mt-1">
                 <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>you</motion.span>
-                <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>already</motion.span>
-              </div>
-              <div className="whitespace-nowrap">
+                <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>already</motion.span>
                 <motion.span variants={accentVariant} className="text-[#0172FD]" style={{ display: 'inline-block', textShadow: accentShadow }}>know?</motion.span>
               </div>
             </motion.h1>
@@ -154,7 +151,7 @@ export default function OnboardingStep4() {
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.3 }}
-              className="text-[3.8vw] xs:text-[4vw] sm:text-base font-medium text-slate-500 leading-tight max-w-[90%]"
+              className="text-[clamp(1rem,4vw,1.1rem)] sm:text-xl font-medium text-slate-500 leading-tight max-w-[95%] mb-2 mt-1"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
               This helps us personalize your learning experience.
@@ -238,12 +235,11 @@ export default function OnboardingStep4() {
 
           </div>
 
-          {/* CTA Buttons: Bouncy and anchored at the bottom */}
           <motion.div
             initial={{ y: 22, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.58 }}
-            className="w-full flex items-center gap-3 justify-center relative z-30 mb-6 shrink-0"
+            className="w-full flex items-center gap-3 justify-center relative z-30 mb-1 shrink-0"
           >
             <motion.button
               whileHover={{ scale: 1.03 }}
