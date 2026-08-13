@@ -33,9 +33,12 @@ export default function OnboardingStep8() {
   const subheadShadow  = '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)';
 
   return (
-    <div className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
       
-      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pt-6 md:pt-[5vh] pb-4 justify-between">
+      {/* Mobile bottom soft fade hugging the character */}
+      <div className="absolute bottom-0 left-0 right-0 h-[60dvh] bg-gradient-to-b from-transparent via-[#F4F8FF] to-[#FFFFFF] via-[25%] md:hidden z-0 pointer-events-none" />
+
+      <div className="flex-1 w-full flex flex-col relative z-10 max-w-[1200px] mx-auto h-full px-6 md:px-10 pt-4 md:pt-[5vh] pb-4 md:pb-[2vh] justify-between">
         
         {/* Header Progress Bar - Centered progress bar with absolute right-0 label to match mockup width constraint */}
         <div className="relative flex items-center justify-center w-full mb-2 md:mb-6 md:mt-[2vh]">
@@ -57,17 +60,14 @@ export default function OnboardingStep8() {
         <div className="flex-1 flex flex-col-reverse md:flex-row items-center justify-between w-full min-h-0 relative gap-4 md:gap-8">
           
           {/* Text Container */}
-          <div className="w-full md:w-[50%] h-[40%] md:h-auto flex flex-col justify-start md:justify-center items-center md:items-start text-center md:text-left z-20 relative pt-2 md:pt-0">
-            
-            {/* Mobile-only background fade to overlay Tey mascot background */}
-            <div className="md:hidden absolute top-[-3.5rem] left-[-2rem] right-[-2rem] bottom-[-2rem] bg-gradient-to-b from-transparent via-white to-white via-[12%] -z-10 pointer-events-none" />
+          <div className="w-full flex-1 md:w-[50%] min-h-0 flex flex-col justify-start md:justify-center items-center md:items-start text-center md:text-left z-20 relative pt-2 md:pt-0 overflow-y-auto overflow-x-hidden scrollbar-hide">
 
             {/* Heading with 3D text shadow, whitespace-nowrap wrapper blocks to force two exact lines on all resolutions */}
             <motion.h1
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-              className="text-[12vw] sm:text-[10vw] md:text-[4.8vw] lg:text-[4.5vw] xl:text-[4.2vw] leading-[1.05] font-[900] tracking-tight text-[#071233] w-full"
+              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl md:text-[4.8vw] lg:text-[4.5vw] xl:text-[4.2vw] leading-[1.05] font-[900] tracking-tight text-[#071233] w-full"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <span className="whitespace-nowrap">Let's try a</span>
@@ -139,7 +139,6 @@ export default function OnboardingStep8() {
 
               {/* Tey Mascot Image */}
               <motion.div 
-                layoutId="tey-mascot"
                 initial={{ opacity: 0, scale: 0.9, y: 15 }}
                 animate={{ opacity: 1, scale: 1.0, y: 0 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 24, delay: 0.1 }}
@@ -171,7 +170,7 @@ export default function OnboardingStep8() {
         </div>
 
         {/* Mobile Action Buttons (Start Challenge on top, Go Back below, locked at the bottom with 2vh margin) */}
-        <div className="md:hidden w-full z-30 pt-2 pb-2 mb-[2vh] flex flex-col gap-3">
+        <div className="md:hidden w-full z-30 pt-2 pb-2 shrink-0 flex flex-col gap-3">
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
