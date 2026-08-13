@@ -11,16 +11,16 @@ import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { StepSkeleton } from '@/components/onboarding/StepSkeleton';
 
 const SKILLS = [
-  { id: 'coding',      label: 'Coding',       image: '/User%20onbarding%20Assets/Step%202%20icons/Coding_3d_icon.png',       bg: '#EBF3FF' },
-  { id: 'photography', label: 'Photography',   image: '/User%20onbarding%20Assets/Step%202%20icons/Photography_3d_icon.PNG',  bg: '#EDE8FF' },
-  { id: 'cooking',     label: 'Cooking',       image: '/User%20onbarding%20Assets/Step%202%20icons/Cooking_3d_icon.PNG',      bg: '#FFF4E0' },
-  { id: 'design',      label: 'Design',        image: '/User%20onbarding%20Assets/Step%202%20icons/Design_3d_icon.PNG',       bg: '#E8FBF0' },
-  { id: 'marketing',   label: 'Marketing',     image: '/User%20onbarding%20Assets/Step%202%20icons/Marketing_3d_icon.PNG',    bg: '#FFE8F0' },
-  { id: 'fitness',     label: 'Fitness',       image: '/User%20onbarding%20Assets/Step%202%20icons/Fitness_3d_icon.png',      bg: '#FFF8E0' },
-  { id: 'writing',     label: 'Writing',       image: '/User%20onbarding%20Assets/Step%202%20icons/Writing_3d_icon.png',      bg: '#EEF0FF' },
-  { id: 'business',    label: 'Business',      image: '/User%20onbarding%20Assets/Step%202%20icons/Business_3d_icon.PNG',     bg: '#E0F4FF' },
-  { id: 'music',       label: 'Music',         image: '/User%20onbarding%20Assets/Step%202%20icons/music_3d_icon.PNG',        bg: '#FDE8FF' },
-  { id: 'other',       label: 'Other',         image: '/User%20onbarding%20Assets/Step%202%20icons/Other_3d_icon.PNG',        bg: '#F0F0F5' },
+  { id: 'coding',      label: 'Coding',       image: '/User onbarding Assets/Step 2 icons/Coding_3d_icon.png',       bg: '#EBF3FF' },
+  { id: 'photography', label: 'Photography',   image: '/User onbarding Assets/Step 2 icons/Photography_3d_icon.PNG',  bg: '#EDE8FF' },
+  { id: 'cooking',     label: 'Cooking',       image: '/User onbarding Assets/Step 2 icons/Cooking_3d_icon.PNG',      bg: '#FFF4E0' },
+  { id: 'design',      label: 'Design',        image: '/User onbarding Assets/Step 2 icons/Design_3d_icon.PNG',       bg: '#E8FBF0' },
+  { id: 'marketing',   label: 'Marketing',     image: '/User onbarding Assets/Step 2 icons/Marketing_3d_icon.PNG',    bg: '#FFE8F0' },
+  { id: 'fitness',     label: 'Fitness',       image: '/User onbarding Assets/Step 2 icons/Fitness_3d_icon.png',      bg: '#FFF8E0' },
+  { id: 'writing',     label: 'Writing',       image: '/User onbarding Assets/Step 2 icons/Writing_3d_icon.png',      bg: '#EEF0FF' },
+  { id: 'business',    label: 'Business',      image: '/User onbarding Assets/Step 2 icons/Business_3d_icon.PNG',     bg: '#E0F4FF' },
+  { id: 'music',       label: 'Music',         image: '/User onbarding Assets/Step 2 icons/music_3d_icon.PNG',        bg: '#FDE8FF' },
+  { id: 'other',       label: 'Other',         image: '/User onbarding Assets/Step 2 icons/Other_3d_icon.PNG',        bg: '#F0F0F5' },
 ];
 
 // ─── Animation variants ──────────────────────────────────────────────────────
@@ -171,11 +171,11 @@ export default function OnboardingStep2() {
   };
 
   return (
-    <div className="h-screen h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden relative">
       
-      <div className="flex flex-col h-screen h-[100dvh] w-full relative z-10 md:hidden overflow-hidden pb-6 pt-4 justify-between">
-        <div className="w-full h-[40dvh] flex flex-col justify-start items-center relative pt-4 overflow-visible shrink-0">
-          <div className="w-full px-6 flex items-center gap-4 mb-4 shrink-0 relative z-20">
+      <div className="flex flex-col h-full w-full relative z-10 md:hidden overflow-hidden pb-0 pt-0 justify-between">
+        <div className="w-full h-[30vh] shrink-0 flex flex-col justify-start items-center relative pt-0 overflow-visible">
+          <div className="w-full px-6 flex items-center gap-4 mb-1 shrink-0 relative z-20 pt-3">
             <div className="flex-1 h-2.5 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
@@ -189,32 +189,32 @@ export default function OnboardingStep2() {
           </div>
 
           <motion.div
-            initial={{ scale: 0.6, y: -20 }}
-            animate={{ scale: 1, y: 0 }}
+            initial={{ scale: 0.6, y: -20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 flex items-center justify-center relative select-none mt-2 px-0"
+            className="w-full flex-1 flex items-center justify-center relative select-none mt-1 px-0"
           >
             {/* Bubble background spans 100% of container width */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
               <MascotBackground />
             </div>
             {/* Mascot image is centered vertically and horizontally, taking 80% width with scale-[1.4] */}
-            <motion.div layoutId="tey-mascot" className="absolute w-[80vw] h-[80vw] z-10 scale-[1.4] origin-center">
-              <Image src="/User%20onbarding%20Assets/Tey_thinking%20_Mobile.PNG" alt="Tey Thinking Mobile" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]" priority />
+            <motion.div className="absolute w-[70vw] h-[70vw] z-10 origin-center flex items-center justify-center">
+              <Image src="/User onbarding Assets/Tey_thinking _Mobile.PNG" alt="Tey Thinking Mobile" fill className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] scale-[1.1]" priority />
             </motion.div>
           </motion.div>
         </div>
 
-        <div className="w-full h-[60dvh] flex flex-col justify-start items-center relative z-20 pb-4 px-6 bg-white pt-2">
-          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative z-20 pb-6 px-6 bg-white pt-2">
+          <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
-          <div className="w-full flex flex-col items-center text-center mt-1 mb-3 px-2 z-20 shrink-0">
+          <div className="w-full flex flex-col items-center text-center mt-1 mb-2 px-2 z-20 shrink-0">
             {/* Relative scaled heading - constrained to 80% width */}
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[10vw] xs:text-[11vw] sm:text-4xl font-[900] leading-[1.08] mb-1.5 tracking-tight text-[#071233] w-[80%] mx-auto"
+              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl font-[900] leading-[1.1] mb-1 tracking-tight text-[#071233] w-[90%] mx-auto"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>What</motion.span>
@@ -231,7 +231,7 @@ export default function OnboardingStep2() {
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.42 }}
-              className="text-[3.8vw] xs:text-[4vw] sm:text-base font-medium text-slate-500 leading-tight max-w-[90%]"
+              className="text-[clamp(1rem,4vw,1.1rem)] sm:text-xl font-medium text-slate-500 leading-tight max-w-[95%] mb-2"
               style={{ fontFamily: 'var(--font-jakarta)' }}
             >
               Choose a skill to create your personalized path.
@@ -253,7 +253,7 @@ export default function OnboardingStep2() {
             initial={{ y: 22, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.58 }}
-            className="w-full flex items-center gap-3 justify-center relative z-30 mb-6 shrink-0"
+            className="w-full flex items-center gap-3 justify-center relative z-30 mb-1 shrink-0"
           >
             <motion.button
               whileHover={{ scale: 1.03 }}
@@ -298,7 +298,7 @@ export default function OnboardingStep2() {
           <div className="relative w-[90%] aspect-square transition-transform z-10">
             <MascotBackground />
             <motion.div layoutId="tey-mascot" className="absolute inset-0 z-10">
-              <Image src="/User%20onbarding%20Assets/Tey_thinking_desktop.PNG" alt="Tey Thinking Desktop" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
+              <Image src="/User onbarding Assets/Tey_thinking_desktop.PNG" alt="Tey Thinking Desktop" fill className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" priority />
             </motion.div>
           </div>
         </motion.div>
