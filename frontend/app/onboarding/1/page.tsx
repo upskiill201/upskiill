@@ -70,12 +70,12 @@ export default function OnboardingStep1() {
       </div>
 
       {/* MOBILE-ONLY LAYOUT: Strict 50/50 Split */}
-      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-1 pt-2 justify-between h-full">
+      <div className="flex flex-col w-full relative z-10 md:hidden overflow-hidden pb-0 pt-0 justify-between h-full">
         
         {/* Top Image Container - stretches dynamically */}
-        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-2 overflow-visible">
+        <div className="w-full flex-1 min-h-0 flex flex-col justify-start items-center relative pt-0 overflow-visible">
           {/* Mobile Progress Bar - padded horizontally */}
-          <div className="w-full px-6 flex items-center gap-3.5 mb-2 shrink-0 sticky top-0 z-30 bg-gradient-to-b from-[#F5F8FF] to-transparent pt-2 pb-1">
+          <div className="w-full px-6 flex items-center gap-3.5 mb-1 shrink-0 sticky top-0 z-30 bg-gradient-to-b from-[#F5F8FF] to-transparent pt-3 pb-1">
             <button 
               onClick={() => router.push('/onboarding/0')} 
               className="w-10 h-10 bg-white/95 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shrink-0 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
@@ -99,7 +99,7 @@ export default function OnboardingStep1() {
             initial={{ scale: 0.6, y: -20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="w-full flex-1 relative select-none min-h-[25vh] mt-2"
+            className="w-full flex-1 relative select-none min-h-[15vh] mt-1"
           >
             {/* Bubble background spans 100% of container */}
             <div className="absolute inset-0 w-full h-full">
@@ -122,10 +122,10 @@ export default function OnboardingStep1() {
         </div>
 
         {/* Bottom Text & CTA Container */}
-        <div className="w-full flex-shrink-0 flex flex-col justify-end items-center relative z-20 pb-4 px-5 bg-white">
+        <div className="w-full flex-shrink-0 flex flex-col justify-end items-center relative z-20 pb-6 px-5 bg-white">
           
           {/* Soft white shadow fade overlay at the top boundary */}
-          <div className="absolute -top-14 left-0 right-0 h-14 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
+          <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
 
           {/* Centered Typography container */}
           <div className="w-full flex-1 flex flex-col justify-center items-center text-center px-1 z-10">
@@ -134,7 +134,7 @@ export default function OnboardingStep1() {
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl font-[900] leading-[1.1] mb-1.5 text-[#071233]"
+              className="text-[clamp(1.75rem,8vw,2rem)] sm:text-3xl font-[900] leading-[1.1] mb-1 text-[#071233]"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
               <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
@@ -154,7 +154,7 @@ export default function OnboardingStep1() {
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
-              className="text-[clamp(1rem,4vw,1.1rem)] sm:text-xl font-medium text-slate-600 leading-tight max-w-[95%] mb-4"
+              className="text-[clamp(1rem,4vw,1.1rem)] sm:text-xl font-medium text-slate-600 leading-tight max-w-[95%] mb-2"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1), 0 0 15px rgba(255,255,255,0.9)' }}
             >
               Your journey to mastering<br /> new skills starts here.
@@ -166,7 +166,7 @@ export default function OnboardingStep1() {
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28, delay: 0.65 }}
-            className="w-full max-w-[340px] px-2 mb-2 z-20"
+            className="w-full max-w-[340px] px-2 mb-1 z-20"
           >
             <motion.button
               animate={idle ? { scale: [1, 1.05, 1] } : { scale: 1 }}
