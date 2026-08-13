@@ -100,10 +100,10 @@ export default function OnboardingStep10() {
   const textShadowGlow = '0 0 15px rgba(255,255,255,1), 0 0 25px rgba(255,255,255,0.9), 0 0 35px rgba(255,255,255,0.7)';
 
   return (
-    <div className="h-[100dvh] min-h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex flex-col relative select-none">
       
       {/* Mobile bottom white soft gradient fade overlay (Matches Step 1) */}
-      <div className="absolute bottom-0 left-0 right-0 h-[55%] bg-gradient-to-b from-transparent via-white/90 to-white via-[25%] md:hidden z-0 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-[60dvh] bg-gradient-to-b from-transparent via-[#F4F8FF] to-[#FFFFFF] via-[25%] md:hidden z-0 pointer-events-none" />
 
       {/* Absolute Header Shimmer Progress Bar (Consistent header style matching step 9) */}
       <div className="w-full max-w-[1200px] mx-auto px-5 md:px-10 pt-4 md:pt-8 z-30">
@@ -233,7 +233,7 @@ export default function OnboardingStep10() {
             {/* Titles & Copy */}
             <div className="w-full flex flex-col items-center gap-2.5">
               <h1
-                className="text-[14vw] sm:text-6xl font-[900] tracking-tight text-[#071233] leading-[0.9] w-[90%] max-w-[340px] mx-auto"
+                className="text-[clamp(2.5rem,10vw,3.5rem)] sm:text-6xl font-[900] tracking-tight text-[#071233] leading-[0.9] w-[90%] max-w-[340px] mx-auto"
                 style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0px 2px 3px rgba(255,255,255,0.9), 0px -1px 2px rgba(0,0,0,0.1), 0 0 15px rgba(255,255,255,1), 0 0 35px rgba(255,255,255,0.95), 0 0 50px rgba(255,255,255,0.85)' }}
               >
                 Great <span className="text-[#0172FD]">job!</span>
@@ -266,7 +266,7 @@ export default function OnboardingStep10() {
           </motion.div>
 
           {/* Action Row */}
-          <div className="w-full flex items-center gap-3 max-w-[340px] mt-1">
+          <div className="w-full flex items-center gap-3 max-w-[340px] mt-1 shrink-0 mb-[2vh]">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
