@@ -13,7 +13,7 @@
  *  - advance()     → writes to localStorage + syncs to DB (non-blocking) + navigates
  *
  * Usage:
- *   const { currentAnswer, isLoading, saveAnswer, advance } = useOnboardingSession(2);
+ *   const { currentAnswer, isLoading, saveAnswer, advance } = useOnboardingSession({ currentStep: 2, onAdvance: () => {} });
  */
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -67,7 +67,14 @@ async function syncToBackend(payload: {
   }
 }
 
-export function useOnboardingSession(currentStep: number) {
+export function useOnboardingSession(options: { 
+  currentStep: number;
+  disableGuard?: boolean;
+} | number) {
+  // Support legacy API of just passing currentStep
+  const currentStep = typeof options === 'number' ? options : options.currentStep;
+  const disableGuard = typeof options === 'number' ? false : options.disableGuard;
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [answers, setAnswers] = useState<OnboardingAnswers>({});
@@ -84,7 +91,7 @@ export function useOnboardingSession(currentStep: number) {
     // 2. Step guard — prevent URL-skipping
     //    A user can only access a step if the previous step is complete.
     //    Step 1 is always accessible.
-    if (currentStep > 1) {
+    if (!disableGuard && currentStep > 1) {
       const furthestAllowed = local.completedSteps.length > 0
         ? Math.max(...local.completedSteps) + 1
         : 1;

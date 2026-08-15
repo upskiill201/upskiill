@@ -28,37 +28,49 @@ export default function OnboardingTemplate({
 
   const direction = directionRef.current;
 
+  // Duolingo-style: pure horizontal slide with spring physics
+  // Forward: new content slides in from right, old exits to left
+  // Backward: new content slides in from left, old exits to right
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? '-100%' : '100%',
+      opacity: 0,
+    }),
+  };
+
+  // Steps 1-15 are managed by the persistent OnboardingShell SPA
+  // We use a shared key so template.tsx does not remount / wipe the shell during step transitions
+  const templateKey = currentStep >= 1 && currentStep <= 15 ? 'onboarding-shell-all' : pathname;
+
   return (
-    <AnimatePresence mode="wait" custom={direction}>
-      <motion.div
-        key={pathname}
-        custom={direction}
-        initial={{ 
-          x: `${40 * direction}%`, 
-          opacity: 0, 
-          scale: 0.96 
-        }}
-        animate={{ 
-          x: 0, 
-          opacity: 1, 
-          scale: 1 
-        }}
-        exit={{ 
-          x: `${-40 * direction}%`, 
-          opacity: 0, 
-          scale: 0.96 
-        }}
-        transition={{
-          type: "spring",
-          stiffness: direction === 1 ? 380 : 320,
-          damping: 30,
-          opacity: { duration: 0.18 },
-          scale: { type: "spring", stiffness: 380, damping: 30 }
-        }}
-        className="w-full h-full"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    // Outer container: overflow-hidden clips the sliding content
+    <div className="relative w-full min-h-screen overflow-hidden">
+      <AnimatePresence mode="popLayout" custom={direction}>
+        <motion.div
+          key={templateKey}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: 'spring', stiffness: 320, damping: 32, mass: 0.9 },
+            opacity: { duration: 0.15, ease: 'easeOut' },
+          }}
+          className="w-full"
+          style={{ willChange: 'transform' }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
