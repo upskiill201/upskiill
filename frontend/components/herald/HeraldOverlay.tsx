@@ -72,7 +72,7 @@ interface HeraldBannerProps {
 
 function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
   const { setActiveOverlay } = useHerald();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const claimButtonRef = useRef<HTMLButtonElement>(null);
@@ -99,86 +99,66 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
   };
   const handleMouseLeave = () => startTimer();
 
-  // ── Inline claim (MISSION / WEEKLY_PROGRESS) ─────────────────────────────
+  // ── Fullscreen RewardRun claim (MISSION / WEEKLY_PROGRESS / CHEST) ──────────
 
-  const handleClaim = async () => {
+  const handleClaim = () => {
     if (claiming || claimed) return;
     playHaptic('medium');
-    setClaiming(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    onDismiss();
 
-    if (notification.type === 'WEEKLY_PROGRESS') {
-      playHaptic('success');
-      setClaimed(true);
-      if (claimButtonRef.current) {
-        triggerRewardAnimation({
-          originElement: claimButtonRef.current,
-          rewards: [{ currency: 'XP', amount: 50 }],
-        });
-      }
-      setTimeout(() => {
-        onDismiss();
-      }, 900);
-      setClaiming(false);
-      return;
-    }
+    const rewardCurrency: RewardCurrency = notification.rewardType === 'COINS' ? 'COINS' : 'XP';
+    const amount = notification.rewardAmount || (notification.type === 'WEEKLY_PROGRESS' ? 50 : 20);
 
-    if (!notification.missionId) {
-      onDismiss();
-      setClaiming(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        `/api/v2/missions/${notification.missionId}/claim`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        }
-      );
-
-      const data = res.headers.get('content-type')?.includes('application/json')
-        ? await res.json()
-        : {};
-
-      if (res.ok && data.success !== false) {
-        playHaptic('success');
-        setClaimed(true);
-
-        if (
-          notification.rewardAmount &&
-          notification.rewardType &&
-          claimButtonRef.current
-        ) {
-          const currency = notification.rewardType as RewardCurrency;
-          triggerRewardAnimation({
-            originElement: claimButtonRef.current,
-            rewards: [{ currency, amount: notification.rewardAmount }],
+    openClaimModal({
+      title: `+${amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
+      subtitle: notification.title || 'Reward Ready to Claim!',
+      rewards: [{ currency: rewardCurrency, amount }],
+      onClaim: async () => {
+        if (notification.type === 'WEEKLY_PROGRESS') return;
+        if (!notification.missionId) return;
+        try {
+          await fetch(`/api/v2/missions/${notification.missionId}/claim`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
           });
-        }
-
-        setTimeout(() => {
-          onDismiss();
           window.dispatchEvent(new CustomEvent('mission:refresh'));
-        }, 900);
-      } else {
-        onDismiss();
-      }
-    } catch {
-      onDismiss();
-    } finally {
-      setClaiming(false);
-    }
+        } catch (err) {
+          console.error('Failed to claim mission via banner:', err);
+        }
+      },
+    });
   };
 
-  // ── Launch reveal overlay (CHEST / SPIN) ──────────────────────────────────
+  // ── Launch reveal overlay (CHEST / SPIN / MISSIONS / STREAK) ──────────────
 
   const handleLaunchReveal = () => {
     playHaptic('medium');
     if (timerRef.current) clearTimeout(timerRef.current);
     onDismiss();
-    setActiveOverlay(notification.type as 'CHEST' | 'SPIN');
+    if (notification.type === 'MISSION') {
+      setActiveOverlay('MISSIONS');
+    } else if (notification.type === 'CHEST') {
+      openClaimModal({
+        title: '+50 GEMS',
+        subtitle: 'Mystery Chest Unlocked!',
+        rewards: [
+          { currency: 'XP', amount: 50 },
+          { currency: 'COINS', amount: 30 },
+        ],
+      });
+    } else if (notification.type === 'SPIN') {
+      setActiveOverlay('SPIN');
+    } else if (notification.type === 'WEEKLY_PROGRESS') {
+      setActiveOverlay('MISSIONS');
+    }
+  };
+
+  const handleBannerClick = (e: React.MouseEvent) => {
+    // If user clicks the banner background rather than specific buttons, open full modal
+    if ((e.target as HTMLElement).closest('button')) return;
+    handleLaunchReveal();
   };
 
   const mascotTitle = getMascotTitle(notification);
@@ -188,10 +168,12 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
   return (
     <div
       className={styles.banner}
+      onClick={handleBannerClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       role="alert"
       aria-live="polite"
+      style={{ cursor: 'pointer' }}
     >
       {/* Tey Mascot Avatar */}
       <div className={styles.mascotContainer}>

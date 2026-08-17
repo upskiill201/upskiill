@@ -24,97 +24,87 @@ export default function StreakStatusModal() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className={styles.overlay}
-        onClick={dismissStreakModal}
+        transition={{ duration: 0.25 }}
+        className={styles.fullscreenBackdrop}
       >
-        <motion.div
-          key="streak-status-modal-card"
-          initial={{ scale: 0.85, y: 20, opacity: 0 }}
-          animate={{ scale: 1, y: 0, opacity: 1 }}
-          exit={{ scale: 0.85, y: 20, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className={styles.modalCard}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className={isSaved ? styles.ambientRadialGlowSaved : styles.ambientRadialGlow} />
+
+        <div className={styles.centerStage}>
           {isSaved ? (
             <>
-              {/* Mascot / Ice Ring Illustration */}
+              {/* Protected Streak Mascot Graphic */}
               <div className={styles.mascotRingSaved}>
                 <Image
                   src="/Icons/burn.png"
                   alt="Protected Streak Flame"
-                  width={64}
-                  height={64}
+                  width={80}
+                  height={80}
                   style={{ objectFit: 'contain' }}
+                  priority
                 />
               </div>
 
-              <h2 className={styles.title}>🧊 Your streak was protected!</h2>
+              <h1 className={styles.title}>🧊 Your streak was protected!</h1>
 
               <p className={styles.description}>
-                You missed a day, but a <strong>Streak Freeze</strong> saved your daily progress! Keep learning today to maintain your streak.
+                You missed a day, but a <strong>Streak Freeze</strong> saved your daily progress! Complete a lesson today to keep your fire burning.
               </p>
 
               <div className={styles.statRow}>
                 <div className={styles.statPill}>
-                  <Image src="/Icons/burn.png" alt="Streak" width={24} height={24} />
+                  <Image src="/Icons/burn.png" alt="Streak" width={26} height={26} />
                   <span>{streakDays} Days Streak</span>
                 </div>
                 <div className={styles.freezePill}>
                   <span>🧊 {streakFreezeBank} Freezes left</span>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={dismissStreakModal}
-                className={styles.ctaBtn}
-              >
-                CONTINUE LEARNING
-              </button>
             </>
           ) : (
             <>
-              {/* Reset Broken Flame Illustration */}
+              {/* Reset Broken Flame Graphic */}
               <div className={styles.mascotRingReset}>
                 <Image
                   src="/Icons/burn.png"
                   alt="Streak Extinguished"
-                  width={60}
-                  height={60}
+                  width={75}
+                  height={75}
                   style={{ objectFit: 'contain', filter: 'grayscale(1) opacity(0.5)' }}
+                  priority
                 />
               </div>
 
-              <h2 className={styles.title}>💔 Flame Extinguished</h2>
+              <h1 className={styles.title}>💔 Flame Extinguished</h1>
 
               <p className={styles.description}>
                 {lostStreakCount > 0 ? (
                   <>Oh no! Your <strong>{lostStreakCount}-day streak</strong> slipped away because you missed consecutive learning days.</>
                 ) : (
-                  <>You missed consecutive days without completing a lesson. Your streak restarted!</>
+                  <>You missed consecutive days without completing a lesson. Let&apos;s reignite your streak today!</>
                 )}
               </p>
 
               <div className={styles.statRow}>
                 <div className={styles.statPill}>
-                  <Image src="/Icons/burn.png" alt="Streak" width={24} height={24} style={{ filter: 'grayscale(1)' }} />
+                  <Image src="/Icons/burn.png" alt="Streak" width={26} height={26} />
                   <span>0 Days Streak</span>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={dismissStreakModal}
-                className={styles.ctaBtn}
-              >
-                START A NEW FLAME TODAY
-              </button>
             </>
           )}
-        </motion.div>
+        </div>
+
+        {/* Bottom CTA Action Row */}
+        <div className={styles.bottomActionContainer}>
+          <button
+            type="button"
+            onClick={dismissStreakModal}
+            className={styles.primaryCtaBtn3D}
+          >
+            {isSaved ? 'CONTINUE LEARNING' : 'REIGNITE STREAK NOW 🔥'}
+          </button>
+        </div>
       </motion.div>
     </AnimatePresence>
   );
 }
-

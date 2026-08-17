@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRewardAnimation, FlyingParticle } from '@/context/RewardAnimationContext';
 import { emitAudioEvent, playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { playHaptic } from '@/lib/haptics';
+import RewardRunClaimModal from './RewardRunClaimModal';
 
 function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
   const { removeParticle } = useRewardAnimation();
@@ -18,7 +19,9 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
   const targetX = particle.endX - 18;
   const targetY = particle.endY - 18;
 
-  const overTargetY = Math.max(35, targetY - 45);
+  // Parabolic arc waypoint: climbs above direct line to create natural game trajectory
+  const midX = (pileX + targetX) / 2 + (Math.random() - 0.5) * 20;
+  const midY = Math.min(pileY, targetY) - 50 - Math.random() * 20;
 
   const trailColor =
     particle.currency === 'COINS'
@@ -33,22 +36,22 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
       initial={{
         x: originX,
         y: originY,
-        scale: 0.1,
+        scale: 0.2,
         opacity: 0,
         rotate: 0,
       }}
       animate={{
-        x: [originX, pileX, pileX, targetX, targetX],
-        y: [originY, pileY, pileY, overTargetY, targetY],
-        scale: [0.1, 1.45, 1.3, 1.1, 0.85],
-        opacity: [0, 1, 1, 1, 1],
-        rotate: particle.currency === 'COINS' ? [0, 90, 180, 270, 360] : [0, -12, 12, -6, 0],
+        x: [originX, pileX, midX, targetX],
+        y: [originY, pileY, midY, targetY],
+        scale: [0.2, 1.45, 1.15, 0.85],
+        opacity: [0, 1, 1, 1],
+        rotate: particle.currency === 'COINS' ? [0, 90, 240, 360] : [0, -15, 15, 0],
       }}
       transition={{
         duration: particle.durationMs / 1000,
         delay: particle.delayMs / 1000,
-        times: [0, 0.25, 0.45, 0.82, 1],
-        ease: ['easeOut', 'linear', 'easeInOut', 'easeOut'],
+        times: [0, 0.2, 0.65, 1],
+        ease: ['easeOut', 'easeInOut', 'easeIn'],
       }}
       onAnimationComplete={() => {
         // Feature 1: Ascending musical pitch feedback
@@ -74,7 +77,7 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
         width: 36,
         height: 36,
         pointerEvents: 'none',
-        zIndex: 99999,
+        zIndex: 100050,
         filter:
           particle.currency === 'COINS'
             ? 'drop-shadow(0 4px 12px rgba(234,179,8,0.6))'
@@ -115,6 +118,8 @@ export default function RewardAnimationOverlay() {
 
   return (
     <>
+      <RewardRunClaimModal />
+
       {/* Top Portal Overlay for Flying Icons & Shockwaves */}
       <div
         id="reward-animation-portal"
@@ -122,7 +127,7 @@ export default function RewardAnimationOverlay() {
           position: 'fixed',
           inset: 0,
           pointerEvents: 'none',
-          zIndex: 99999,
+          zIndex: 100050,
         }}
       >
         {/* Feature 3: Origin Explosion Radial Flash & Shockwave Rings */}
@@ -150,7 +155,7 @@ export default function RewardAnimationOverlay() {
                 height: 90,
                 borderRadius: '50%',
                 pointerEvents: 'none',
-                zIndex: 99998,
+                zIndex: 100049,
                 background:
                   sw.type === 'flash'
                     ? `radial-gradient(circle, ${sw.color} 0%, rgba(255,255,255,0.9) 40%, transparent 75%)`
@@ -184,7 +189,7 @@ export default function RewardAnimationOverlay() {
                 textShadow: '0 2px 8px rgba(0,0,0,0.4)',
                 fontFamily: 'var(--font-jakarta), sans-serif',
                 pointerEvents: 'none',
-                zIndex: 100001,
+                zIndex: 100052,
               }}
             >
               {ft.text}
@@ -198,6 +203,9 @@ export default function RewardAnimationOverlay() {
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Duolingo-Style RewardRun Claim Modal */}
+      <RewardRunClaimModal />
 
       {/* Full-Screen Level Up Celebration Modal */}
       <AnimatePresence>

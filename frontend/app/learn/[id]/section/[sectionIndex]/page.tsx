@@ -132,12 +132,20 @@ function SectionSidebar({
   xpPoints,
   triggerComingSoon,
 }: SectionSidebarProps) {
+  const { openClaimModal } = useRewardAnimation();
   const isCompleted = progressPercent === 100;
   const xpEarned = completedCount * 20;
 
   const handleClaim = () => {
     playHaptic('medium');
-    triggerComingSoon('Claim mystery chest!');
+    openClaimModal({
+      title: '+100 GEMS',
+      subtitle: 'Section Mystery Chest Unlocked! 🎉',
+      rewards: [
+        { currency: 'XP', amount: 100 },
+        { currency: 'COINS', amount: 50 },
+      ],
+    });
   };
 
   return (
@@ -303,7 +311,7 @@ function SectionViewContent({
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
   const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
   const params = useParams();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
@@ -2063,19 +2071,24 @@ function SectionViewContent({
                     {!isRewardsCollected ? (
                       <button
                         className={styles.letsGoBtn3D}
-                        style={{ backgroundColor: '#EAB308', borderColor: '#CA8A04' }}
+                        style={{ backgroundColor: '#0172FD', borderColor: '#0057C2' }}
                         onClick={() => {
-                          triggerRewardAnimation({
-                            originElement: xpCardRef.current || coinCardRef.current,
+                          playHaptic('medium', false);
+                          openClaimModal({
+                            title: `+${earnedRewards.xp} GEMS`,
+                            subtitle: 'Lesson Completed! 🎉',
                             rewards: [
                               { currency: 'XP', amount: earnedRewards.xp },
                               { currency: 'COINS', amount: earnedRewards.coins },
                             ],
+                            onComplete: () => {
+                              setIsRewardsCollected(true);
+                              setCelebrateStep(4);
+                            },
                           });
-                          setIsRewardsCollected(true);
                         }}
                       >
-                        CLAIM ALL REWARDS 🪙
+                        CLAIM LESSON REWARDS 💎
                       </button>
                     ) : (
                       <button

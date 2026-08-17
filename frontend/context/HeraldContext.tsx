@@ -53,7 +53,7 @@ const PRIORITY: Record<HeraldNotificationType, number> = {
   WEEKLY_PROGRESS: 3,
 };
 
-export type HeraldOverlayType = 'CHEST' | 'SPIN';
+export type HeraldOverlayType = 'CHEST' | 'SPIN' | 'MISSIONS' | 'STREAK' | 'CLAIM';
 
 interface HeraldContextValue {
   /** Push a new reward-ready signal. Herald deduplicates and queues it. */
@@ -65,6 +65,10 @@ interface HeraldContextValue {
   /** Which full-reveal overlay is currently open (null = none) */
   activeOverlay: HeraldOverlayType | null;
   setActiveOverlay: (type: HeraldOverlayType | null) => void;
+  openMissionsModal: () => void;
+  openStreakModal: () => void;
+  openChestModal: () => void;
+  openSpinModal: () => void;
   /**
    * Called by home-screen widgets on mount/unmount so Herald knows
    * whether the native widget for a reward type is currently visible.
@@ -311,6 +315,22 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     setActiveNotification(null);
   }, []);
 
+  const openMissionsModal = useCallback(() => {
+    setActiveOverlay('MISSIONS');
+  }, []);
+
+  const openStreakModal = useCallback(() => {
+    setActiveOverlay('STREAK');
+  }, []);
+
+  const openChestModal = useCallback(() => {
+    setActiveOverlay('CHEST');
+  }, []);
+
+  const openSpinModal = useCallback(() => {
+    setActiveOverlay('SPIN');
+  }, []);
+
   return (
     <HeraldContext.Provider
       value={{
@@ -319,6 +339,10 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
         dismissActive,
         activeOverlay,
         setActiveOverlay,
+        openMissionsModal,
+        openStreakModal,
+        openChestModal,
+        openSpinModal,
         registerNativeWidget,
         unregisterNativeWidget,
         suppressHerald,

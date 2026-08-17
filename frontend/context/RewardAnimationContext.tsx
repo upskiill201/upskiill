@@ -59,8 +59,23 @@ export interface LevelUpCelebration {
   bonusCoins?: number;
 }
 
+export interface ClaimModalOptions {
+  title?: string;
+  subtitle?: string;
+  rewards: RewardItem[];
+  originElement?: HTMLElement | null;
+  onClaim?: () => Promise<void> | void;
+  onComplete?: () => void;
+  primaryActionText?: string;
+  secondaryActionText?: string;
+  targetBalance?: number;
+}
+
 interface RewardAnimationContextValue {
   triggerRewardAnimation: (options: TriggerRewardOptions) => void;
+  openClaimModal: (options: ClaimModalOptions) => void;
+  closeClaimModal: () => void;
+  claimModalData: ClaimModalOptions | null;
   particles: FlyingParticle[];
   shockwaves: ShockwaveRing[];
   floatingTexts: FloatingText[];
@@ -99,6 +114,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
   const [shockwaves, setShockwaves] = useState<ShockwaveRing[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [levelUpData, setLevelUpData] = useState<LevelUpCelebration | null>(null);
+  const [claimModalData, setClaimModalData] = useState<ClaimModalOptions | null>(null);
 
   // Target element registry
   const targetMapRef = useRef<Map<string, HTMLElement>>(new Map());
@@ -106,6 +122,14 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
   const registerTarget = useCallback((currency: RewardCurrency, element: HTMLElement) => {
     const pillKey = CURRENCY_PILL_KEYS[currency];
     targetMapRef.current.set(pillKey, element);
+  }, []);
+
+  const openClaimModal = useCallback((options: ClaimModalOptions) => {
+    setClaimModalData(options);
+  }, []);
+
+  const closeClaimModal = useCallback(() => {
+    setClaimModalData(null);
   }, []);
 
   const removeParticle = useCallback(
@@ -121,6 +145,20 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
     ) => {
       setParticles((prev) => prev.filter((p) => p.id !== id));
 
+      // Dispatch global event for live counter ticking in UI
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('rewardrun:particle-land', {
+            detail: {
+              currency,
+              amount: _amount,
+              isFinal,
+              targetPillId,
+            },
+          })
+        );
+      }
+
       // Feature 4: Live Counter Floating Delta Text (+1 🪙 / +1 💎)
       const textId = `ft-${Date.now()}-${Math.random()}`;
       const color = CURRENCY_COLORS[currency] || '#0172FD';
@@ -128,7 +166,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
 
       setTimeout(() => {
         setFloatingTexts((prev) => prev.filter((ft) => ft.id !== textId));
-      }, 550);
+      }, 450);
 
       // Feature 5: Destination Stat Pill Aura Sweep & Impact Bounce
       const pillElem =
@@ -139,23 +177,22 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
 
       if (pillElem) {
         if (isFinal) {
-          // Luminous aura sweep burst on final particle landing
           pillElem.animate(
             [
               { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
-              { transform: 'scale(1.3)', filter: `drop-shadow(0 0 25px ${color})` },
+              { transform: 'scale(1.35)', filter: `drop-shadow(0 0 25px ${color})` },
               { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
             ],
-            { duration: 320, easing: 'ease-out' }
+            { duration: 280, easing: 'ease-out' }
           );
         } else {
           pillElem.animate(
             [
               { transform: 'scale(1)' },
-              { transform: 'scale(1.2)' },
+              { transform: 'scale(1.22)' },
               { transform: 'scale(1)' },
             ],
-            { duration: 160, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' }
+            { duration: 140, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' }
           );
         }
       }
@@ -184,7 +221,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         startY = originRect.y + (originRect.height ?? 0) / 2;
       }
 
-      // Feature 3: Origin Explosion Flash & Shockwave Rings
+      // Origin Shockwave Flash
       const primaryCurrency = rewards[0]?.currency || 'COINS';
       const shockColor = CURRENCY_COLORS[primaryCurrency] || '#0172FD';
       const shockId = `shock-${Date.now()}`;
@@ -197,7 +234,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
 
       setTimeout(() => {
         setShockwaves((prev) => prev.filter((sw) => !sw.id.startsWith(shockId)));
-      }, 600);
+      }, 500);
 
       const newParticles: FlyingParticle[] = [];
       let maxTotalDuration = 0;
@@ -207,7 +244,6 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         typeof window !== 'undefined' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Feature 6: Multi-Currency Wave Choreography
       let currentWaveStartTime = 0;
 
       rewards.forEach((reward) => {
@@ -244,23 +280,29 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
           return;
         }
 
-        const particleCount = reward.currency === 'HEARTS' ? Math.max(1, reward.amount) : Math.min(30, Math.max(1, reward.amount));
-        const amountPerParticle = 1;
-        const staggerStep = particleCount > 10 ? 120 : 160;
+        // Dynamic particle count: matching amount for 1-10, capped at 12 for 10+
+        const particleCount = reward.currency === 'HEARTS'
+          ? Math.max(1, reward.amount)
+          : reward.amount <= 10
+          ? Math.max(1, reward.amount)
+          : Math.min(12, reward.amount);
+
+        const amountPerParticle = Math.max(1, Math.round(reward.amount / particleCount));
+        const staggerStep = 60; // Snappy 60ms stagger between icons
 
         for (let i = 0; i < particleCount; i++) {
           const particleId = `particle-${Date.now()}-${reward.currency}-${i}-${Math.random().toString(36).substr(2, 4)}`;
-          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-          const radius = 25 + (i % 3) * 12 + Math.random() * 15;
+          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+          const radius = 35 + (i % 3) * 15 + Math.random() * 15;
           const burstX = Math.cos(angle) * radius;
           const burstY = Math.sin(angle) * radius - 15;
 
           const delayMs = currentWaveStartTime + i * staggerStep;
-          const durationMs = prefersReducedMotion ? 100 : 2000;
+          const durationMs = prefersReducedMotion ? 100 : 650; // Snappy 650ms flight
           const isFinalParticle = i === particleCount - 1;
 
-          const scatterX = (Math.random() - 0.5) * 40;
-          const scatterY = (Math.random() - 0.5) * 25;
+          const scatterX = (Math.random() - 0.5) * 30;
+          const scatterY = (Math.random() - 0.5) * 20;
 
           newParticles.push({
             id: particleId,
@@ -285,8 +327,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
           maxTotalDuration = Math.max(maxTotalDuration, delayMs + durationMs);
         }
 
-        // Advance wave start time for next currency in multi-currency rewards (Feature 6)
-        currentWaveStartTime += particleCount * staggerStep + 400;
+        currentWaveStartTime += particleCount * staggerStep + 250;
       });
 
       if (newParticles.length > 0) {
@@ -308,6 +349,9 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
     <RewardAnimationContext.Provider
       value={{
         triggerRewardAnimation,
+        openClaimModal,
+        closeClaimModal,
+        claimModalData,
         particles,
         shockwaves,
         floatingTexts,

@@ -33,7 +33,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     nextRewardClaimInMs,
     claimDailyReward,
   } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
 
   const [countdownStr, setCountdownStr] = useState('');
 
@@ -64,13 +64,28 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     return () => clearInterval(interval);
   }, [isEligibleForReward, nextRewardClaimInMs]);
 
-  const handleClaimReward = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClaimReward = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!isEligibleForReward) return;
     playHaptic('success');
-    triggerRewardAnimation({
-      originElement: e.currentTarget,
-      rewards: [{ currency: 'COINS', amount: 20 }]
+    const isDay7 = dailyRewardCyclePosition === 7;
+
+    openClaimModal({
+      title: isDay7 ? '+50 GEMS' : '+20 COINS',
+      subtitle: isDay7 ? 'Day 7 Mystery Chest Unlocked!' : `Day ${dailyRewardCyclePosition} Daily Reward Claimed!`,
+      rewards: isDay7
+        ? [
+            { currency: 'XP', amount: 50 },
+            { currency: 'COINS', amount: 30 },
+          ]
+        : [{ currency: 'COINS', amount: 20 }],
+      onClaim: async () => {
+        await claimDailyReward();
+      },
     });
-    await claimDailyReward();
   };
 
   const handleLetsGo = () => {
@@ -258,7 +273,17 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02' }}>Claimed! ✓</span>
                   ) : isFinished ? (
                     <button
-                      onClick={() => claimQuest('daily-lesson')}
+                      onClick={() => {
+                        playHaptic('medium');
+                        openClaimModal({
+                          title: '+20 GEMS',
+                          subtitle: 'Daily Quest: Complete 1 Lesson Completed!',
+                          rewards: [{ currency: 'XP', amount: 20 }],
+                          onClaim: async () => {
+                            await claimQuest('daily-lesson');
+                          },
+                        });
+                      }}
                       style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
                     >
                       CLAIM +20 XP
@@ -294,7 +319,17 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD' }}>Claimed! ✓</span>
                   ) : isFinished ? (
                     <button
-                      onClick={() => claimQuest('daily-consistent')}
+                      onClick={() => {
+                        playHaptic('medium');
+                        openClaimModal({
+                          title: '+10 GEMS',
+                          subtitle: 'Daily Quest: Earn 10 XP Completed!',
+                          rewards: [{ currency: 'XP', amount: 10 }],
+                          onClaim: async () => {
+                            await claimQuest('daily-consistent');
+                          },
+                        });
+                      }}
                       style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
                     >
                       CLAIM +10 XP
@@ -347,7 +382,19 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             </span>
           </div>
           
-          <div style={{ width: '64px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div
+            onClick={isEligibleForReward ? handleClaimReward : undefined}
+            style={{
+              width: '64px',
+              height: '54px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              cursor: isEligibleForReward ? 'pointer' : 'default',
+              transition: 'transform 0.15s ease',
+            }}
+          >
             <Image
               src="/Tressure box.png"
               alt="Mystery Chest"
@@ -390,6 +437,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   D{dayNum}
                 </span>
                 <div
+                  onClick={isActive ? handleClaimReward : undefined}
                   className={isDay7 && !isCompleted ? 'day7Glow' : ''}
                   style={{
                     width: isDay7 ? '32px' : '28px',
@@ -410,6 +458,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     fontWeight: 800,
                     fontSize: '11px',
                     boxShadow: isActive && !isDay7 ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
+                    cursor: isActive ? 'pointer' : 'default',
                     transition: 'all 0.2s ease'
                   }}
                 >

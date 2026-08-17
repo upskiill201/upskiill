@@ -142,6 +142,8 @@ import { HeraldProvider } from "../context/HeraldContext";
 import HeraldOverlay from "../components/herald/HeraldOverlay";
 import HeraldChestReveal from "../components/herald/HeraldChestReveal";
 import HeraldSpinReveal from "../components/herald/HeraldSpinReveal";
+import HeraldMissionsModal from "../components/herald/HeraldMissionsModal";
+import HeraldStreakReveal from "../components/herald/HeraldStreakReveal";
 import { StreakProvider } from "../context/StreakContext";
 import StreakModal from "../components/streak/StreakModal";
 import { AudioProvider } from "../context/AudioContext";
@@ -174,6 +176,8 @@ export default function RootLayout({
                         <HeraldOverlay />
                         <HeraldChestReveal />
                         <HeraldSpinReveal />
+                        <HeraldMissionsModal />
+                        <HeraldStreakReveal />
                         <StreakModal />
                         <TeyroLoaderProvider>
                           <HeaderWrapper />

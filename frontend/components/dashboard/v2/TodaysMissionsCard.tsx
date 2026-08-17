@@ -69,7 +69,7 @@ const getFallbackMissions = (): MissionItem[] => [
 
 export default function TodaysMissionsCard() {
   const { refresh } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
   const pathname = usePathname();
   const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
 
@@ -267,98 +267,74 @@ export default function TodaysMissionsCard() {
     });
   };
 
-  // Claim Mission Reward Handler
+  // Claim Mission Reward Handler (Launches Fullscreen RewardRun System)
   const handleClaim = async (missionItem: MissionItem, e: React.MouseEvent<HTMLButtonElement>) => {
     playHaptic('medium');
-    setClaimingId(missionItem.id);
+    const rewardCurrency = missionItem.reward.type === 'GEMS' ? 'COINS' : (missionItem.reward.type as RewardCurrency);
 
-    const buttonTarget = e.currentTarget;
-
-    if (missionItem.id.startsWith('m')) {
-      await fetchMissions();
-      return;
-    }
-
-    try {
-      const endpoint = `/api/v2/missions/${missionItem.id}/claim`;
-
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      const data = res.headers.get('content-type')?.includes('application/json')
-        ? await res.json()
-        : {};
-
-      if (res.ok && data.success) {
-        playHaptic('success');
-
-        const rewardCurrency = missionItem.reward.type === 'GEMS' ? 'COINS' : (missionItem.reward.type as RewardCurrency);
-        triggerRewardAnimation({
-          originElement: buttonTarget,
-          rewards: [{ currency: rewardCurrency, amount: missionItem.reward.amount }],
-        });
-
-        setActiveParticle({
-          id: missionItem.id,
-          text: `+${missionItem.reward.amount} ${rewardCurrency}! 🎉`,
-        });
-
-        setTimeout(() => setActiveParticle(null), 1400);
-
-        // Permanently lock local mission state to claimed
-        setMissions((prev) => {
-          const updated = prev.map((m) =>
-            m.id === missionItem.id
-              ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
-              : m,
-          );
-
-          // Check if all 3 missions are now claimed
-          const allClaimed = updated.every((m) => m.isClaimed || m.status === 'CLAIMED');
-          if (allClaimed || data.allMissionsClaimed) {
-            setTimeout(() => {
-              triggerCelebration();
-              triggerRewardAnimation({
-                originElement: buttonTarget,
-                rewards: [{ currency: 'COINS', amount: 15 }],
-              });
-            }, 800);
-          }
-
-          return updated;
-        });
-
-        // Refresh global balance context in navbar
-        if (refresh) {
-          await refresh();
+    openClaimModal({
+      title: `+${missionItem.reward.amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
+      subtitle: `Daily Mission: "${missionItem.title}" Completed!`,
+      rewards: [{ currency: rewardCurrency, amount: missionItem.reward.amount }],
+      onClaim: async () => {
+        if (missionItem.id.startsWith('m')) {
+          await fetchMissions();
+          return;
         }
-      } else if (res.status === 410) {
-        // Mission expired — refetch today's missions set
-        setShakingId(missionItem.id);
-        setTimeout(() => setShakingId(null), 500);
-        await fetchMissions();
-      } else if (res.status === 409 || data.error === 'ALREADY_CLAIMED') {
-        setMissions((prev) =>
-          prev.map((m) =>
-            m.id === missionItem.id
-              ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
-              : m,
-          ),
-        );
-      } else {
-        setShakingId(missionItem.id);
-        setTimeout(() => setShakingId(null), 500);
-      }
-    } catch (err) {
-      console.error('Error claiming mission reward:', err);
-      setShakingId(missionItem.id);
-      setTimeout(() => setShakingId(null), 500);
-    } finally {
-      setClaimingId(null);
-    }
+
+        try {
+          const endpoint = `/api/v2/missions/${missionItem.id}/claim`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          });
+
+          const data = res.headers.get('content-type')?.includes('application/json')
+            ? await res.json()
+            : {};
+
+          if (res.ok && data.success) {
+            setMissions((prev) => {
+              const updated = prev.map((m) =>
+                m.id === missionItem.id
+                  ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
+                  : m
+              );
+
+              const allClaimed = updated.every((m) => m.isClaimed || m.status === 'CLAIMED');
+              if (allClaimed || data.allMissionsClaimed) {
+                setTimeout(() => {
+                  triggerCelebration();
+                }, 600);
+              }
+
+              return updated;
+            });
+
+            // Refresh global balance context in navbar
+            if (refresh) {
+              await refresh();
+            }
+          } else if (res.status === 409 || data.error === 'ALREADY_CLAIMED') {
+            setMissions((prev) =>
+              prev.map((m) =>
+                m.id === missionItem.id
+                  ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
+                  : m
+              )
+            );
+          } else {
+            setShakingId(missionItem.id);
+            setTimeout(() => setShakingId(null), 500);
+          }
+        } catch (err) {
+          console.error('Error claiming mission reward:', err);
+          setShakingId(missionItem.id);
+          setTimeout(() => setShakingId(null), 500);
+        }
+      },
+    });
   };
 
   /**

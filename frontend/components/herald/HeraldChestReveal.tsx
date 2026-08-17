@@ -264,22 +264,108 @@ export default function HeraldChestReveal() {
               <X size={18} />
             </button>
 
+            {/* Duolingo Rarity Tier Header (Image 4 style) */}
+            <div style={{ marginBottom: 12 }}>
+              <span
+                style={{
+                  fontSize: 22,
+                  fontWeight: 900,
+                  color: '#D97706',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  fontFamily: 'var(--font-jakarta), sans-serif',
+                }}
+              >
+                COMMON
+              </span>
+              <div style={{ color: '#F59E0B', fontSize: 14, marginTop: 2 }}>✨</div>
+            </div>
+
             {/* Chest Image */}
-            <div ref={chestImgRef} style={{ position: 'relative' }}>
+            <div
+              ref={chestImgRef}
+              onClick={handleOpen}
+              style={{
+                position: 'relative',
+                cursor: isReady && !isRevealing ? 'pointer' : 'default',
+                margin: '8px 0',
+              }}
+            >
               <Image
                 src="/Tressure box.png"
                 alt="Mystery Chest"
-                width={150}
-                height={140}
+                width={160}
+                height={150}
                 style={{
                   objectFit: 'contain',
                   filter:
                     fetchError || (!isReady && !isAlreadyOpened && !isRevealing)
                       ? 'grayscale(40%) opacity(0.85)'
-                      : 'none',
+                      : 'drop-shadow(0 8px 24px rgba(234, 179, 8, 0.35))',
                 }}
                 priority
               />
+            </div>
+
+            {/* Upgrade Arrows Row (Image 4 style) */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+                margin: '12px 0 14px',
+              }}
+            >
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '50%',
+                  backgroundColor: '#F59E0B',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 900,
+                  fontSize: 18,
+                  boxShadow: '0 3px 0 #B45309',
+                }}
+              >
+                ↑
+              </div>
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '50%',
+                  backgroundColor: '#E2E8F0',
+                  color: '#94A3B8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 900,
+                  fontSize: 18,
+                }}
+              >
+                ↑
+              </div>
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '50%',
+                  backgroundColor: '#E2E8F0',
+                  color: '#94A3B8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 900,
+                  fontSize: 18,
+                }}
+              >
+                ↑
+              </div>
             </div>
 
             {/* Content & Action Buttons */}
@@ -332,13 +418,15 @@ export default function HeraldChestReveal() {
               </>
             ) : isReady || isRevealing ? (
               <>
-                <p className={styles.revealTitle}>
-                  {isRevealing ? 'Opening Your Chest...' : 'Your Chest is Ready! 🎁'}
-                </p>
-                <p className={styles.revealSubtitle}>
-                  {isRevealing
-                    ? 'Stand by for your daily reward...'
-                    : 'Tap the button below to crack it open!'}
+                <p
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: '#1E293B',
+                    margin: '0 0 16px',
+                  }}
+                >
+                  {isRevealing ? 'Opening Your Chest...' : 'Tap for a chance to upgrade!'}
                 </p>
 
                 <button
