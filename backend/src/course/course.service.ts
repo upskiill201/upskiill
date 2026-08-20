@@ -351,17 +351,137 @@ export class CourseService {
   }
 
   async getInstructorCourses(userId: string) {
-    return await this.prisma.course.findMany({
+    const courses = await this.prisma.course.findMany({
       where: { instructorId: userId },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        published: true,
-        createdAt: true,
-        _count: { select: { enrollments: true } },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        _count: { select: { enrollments: true, sections: true, reviews: true } },
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            _count: { select: { lessons: true } },
+            lessons: {
+              select: { id: true, title: true, durationMinutes: true },
+            },
+          },
+        },
       },
+    });
+
+    return courses.map((course) => {
+      let totalLessons = 0;
+      course.sections.forEach((sec) => {
+        totalLessons += sec._count?.lessons || sec.lessons?.length || 0;
+      });
+
+      const checklist = [
+        { id: 'title', label: 'Course title', complete: !!course.title && course.title.length >= 5 },
+        { id: 'category', label: 'Category & Level', complete: !!course.category && course.category !== 'Uncategorized' },
+        { id: 'thumbnail', label: 'Course thumbnail', complete: !!course.thumbnailUrl },
+        { id: 'description', label: 'Course description', complete: !!course.description && course.description.length >= 20 },
+        { id: 'sections', label: 'At least 1 module', complete: course.sections.length >= 1 },
+        { id: 'lessons', label: 'At least 2 lessons', complete: totalLessons >= 2 },
+      ];
+
+      const completedCount = checklist.filter((c) => c.complete).length;
+      const readinessPercentage = Math.round((completedCount / checklist.length) * 100);
+      const remainingItems = checklist.filter((c) => !c.complete).map((c) => c.label);
+
+      return {
+        ...course,
+        totalSections: course.sections.length,
+        totalLessons,
+        readinessPercentage,
+        remainingItems,
+      };
+    });
+  }
+
+  async duplicateCourse(userId: string, courseIdOrSlug: string) {
+    const source = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+        instructorId: userId,
+      },
+      include: {
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!source) throw new NotFoundException('Source course not found');
+
+    const baseSlug = `${source.title}-copy`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+    const uniqueHash = crypto.randomBytes(4).toString('hex').substring(0, 6);
+    const slug = `${baseSlug}-${uniqueHash}`;
+    const shortId = crypto.randomInt(1000000, 10000000).toString();
+
+    const newCourse = await this.prisma.course.create({
+      data: {
+        id: shortId,
+        title: `${source.title} (Copy)`,
+        slug,
+        category: source.category,
+        subcategory: source.subcategory,
+        level: source.level,
+        language: source.language,
+        description: source.description,
+        shortDescription: source.shortDescription,
+        thumbnailUrl: source.thumbnailUrl,
+        price: source.price,
+        originalPrice: source.originalPrice,
+        published: false,
+        instructorId: userId,
+        skills: (source.skills as any) ?? [],
+        requirements: (source.requirements as any) ?? [],
+        outcomes: (source.outcomes as any) ?? [],
+        sections: {
+          create: source.sections.map((section) => ({
+            title: section.title,
+            orderIndex: section.orderIndex,
+            lessons: {
+              create: section.lessons.map((lesson) => ({
+                title: lesson.title,
+                description: lesson.description,
+                durationMinutes: lesson.durationMinutes,
+                isFreePreview: lesson.isFreePreview,
+                lessonType: lesson.lessonType,
+                orderIndex: lesson.orderIndex,
+                contentBlocks: (lesson.contentBlocks as any) ?? {},
+                stepCompletion: (lesson.stepCompletion as any) ?? {},
+              })),
+            },
+          })),
+        },
+      },
+    });
+
+    return newCourse;
+  }
+
+  async unpublishCourse(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.course.update({
+      where: { id: course.id },
+      data: { published: false },
     });
   }
 
@@ -660,9 +780,10 @@ export class CourseService {
     data: {
       title?: string;
       description?: string;
-      videoUrl?: string;
+      shortDescription?: string;
       durationMinutes?: number;
       isFreePreview?: boolean;
+      contentBlocks?: any;
     },
   ) {
     const lesson = await this.prisma.lesson.findUnique({
@@ -675,9 +796,13 @@ export class CourseService {
       throw new ForbiddenException('You do not own this course');
     }
 
+    const { contentBlocks, ...scalarFields } = data;
     return await this.prisma.lesson.update({
       where: { id: lessonId },
-      data,
+      data: {
+        ...scalarFields,
+        ...(contentBlocks !== undefined ? { contentBlocks } : {}),
+      },
     });
   }
 

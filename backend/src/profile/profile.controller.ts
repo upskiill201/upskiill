@@ -4,6 +4,7 @@ import {
   Patch,
   Delete,
   Body,
+  Param,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -26,6 +27,15 @@ export class ProfileController {
   @Get('me')
   getMyProfile(@GetUser() user: User) {
     return this.profileService.getMyProfile(user.id);
+  }
+
+  /**
+   * GET /profile/check-username/:username
+   * Checks if a creator handle is valid and available.
+   */
+  @Get('check-username/:username')
+  checkUsername(@GetUser() user: User, @Param('username') username: string) {
+    return this.profileService.checkUsernameAvailability(username, user.id);
   }
 
   /**

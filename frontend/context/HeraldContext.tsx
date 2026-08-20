@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { usePathname } from 'next/navigation';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -89,6 +90,9 @@ const HeraldContext = createContext<HeraldContextValue | null>(null);
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function HeraldProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isCreatorPortal = pathname?.startsWith('/creator');
+
   const [queue, setQueue] = useState<HeraldNotification[]>([]);
   const [activeNotification, setActiveNotification] =
     useState<HeraldNotification | null>(null);
@@ -106,6 +110,15 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
   /** When true, Herald produces no banners */
   const suppressedRef = useRef(false);
+
+  // Clear any active banner or queue immediately when entering Creator Studio
+  useEffect(() => {
+    if (isCreatorPortal) {
+      setActiveNotification(null);
+      setQueue([]);
+      setActiveOverlay(null);
+    }
+  }, [isCreatorPortal]);
 
   // ── Widget registry ──────────────────────────────────────────────────────
 
@@ -125,6 +138,9 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
   const enqueueHeraldNotification = useCallback(
     (notification: HeraldNotification) => {
+      // Hard-stop: never show student notifications in Creator Studio
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/creator')) return;
+
       // Hard-stop: already surfaced this exact transition this session
       if (surfacedRef.current.has(notification.transitionKey)) return;
 
@@ -162,6 +178,8 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   // ── Automated Claimable Checker ─────────────────────────────────────────
 
   const checkClaimables = useCallback(async () => {
+    // Hard-stop: never check or trigger student gamification in Creator Studio
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/creator')) return;
     if (suppressedRef.current) return;
 
     try {

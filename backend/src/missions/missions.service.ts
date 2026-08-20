@@ -195,21 +195,17 @@ export class MissionsService {
         : 0;
 
       try {
-        // Create DailyMissionSet safely with unique constraint handling
+        // Create or get DailyMissionSet atomically to avoid race conditions
         missionSet = await this.prisma.$transaction(async (tx) => {
-          let set = await tx.dailyMissionSet.findUnique({
+          const set = await tx.dailyMissionSet.upsert({
             where: { userId_missionDay: { userId, missionDay: todayStr } },
+            update: {},
+            create: {
+              userId,
+              missionDay: todayStr,
+              resetAt,
+            },
           });
-
-          if (!set) {
-            set = await tx.dailyMissionSet.create({
-              data: {
-                userId,
-                missionDay: todayStr,
-                resetAt,
-              },
-            });
-          }
 
           for (const t of selectedTemplates) {
             // Dynamic target scaling calculation
@@ -252,8 +248,12 @@ export class MissionsService {
             },
           });
         });
-      } catch (err) {
-        this.logger.warn(`Race condition creating DailyMissionSet for user ${userId}: ${err}`);
+      } catch (err: any) {
+        if (err?.code === 'P2002') {
+          this.logger.debug(`Concurrent DailyMissionSet initialization handled for user ${userId}`);
+        } else {
+          this.logger.warn(`Race condition creating DailyMissionSet for user ${userId}: ${err?.message || err}`);
+        }
         // Re-fetch set created by concurrent request
         missionSet = await this.prisma.dailyMissionSet.findUnique({
           where: { userId_missionDay: { userId, missionDay: todayStr } },

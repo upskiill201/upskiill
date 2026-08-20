@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -267,6 +268,7 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
 // ─── HeraldOverlay — Root Renderer ───────────────────────────────────────────
 
 export default function HeraldOverlay() {
+  const pathname = usePathname();
   const { activeNotification, dismissActive } = useHerald();
   const [mounted, setMounted] = useState(false);
 
@@ -274,7 +276,7 @@ export default function HeraldOverlay() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || pathname?.startsWith('/creator')) return null;
 
   return createPortal(
     <AnimatePresence mode="wait">

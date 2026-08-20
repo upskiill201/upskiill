@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -46,11 +46,34 @@ export class ProfileService {
   }
 
   /**
+   * Checks if a @username is available for this user.
+   */
+  async checkUsernameAvailability(rawUsername: string, userId: string) {
+    const username = rawUsername.trim().toLowerCase().replace(/^@/, '');
+    if (!username || username.length < 3 || username.length > 30) {
+      return { available: false, message: 'Username must be 3-30 characters.' };
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      return { available: false, message: 'Only letters, numbers, and underscores.' };
+    }
+    const existing = await (this.prisma.profile as any).findFirst({
+      where: {
+        username: { equals: username, mode: 'insensitive' },
+        NOT: { userId },
+      },
+    });
+    if (existing) {
+      return { available: false, message: 'Username is already taken.' };
+    }
+    return { available: true, username };
+  }
+
+  /**
    * Updates profile and/or user fields in a single transaction.
-   * Handles User.fullName and User.avatarUrl updates.
+   * Handles User.fullName, avatarUrl, username checks, and all creator profile fields.
    */
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
-    const { fullName, avatarUrl, ...profileFields } = dto;
+    const { fullName, avatarUrl, username, ...profileFields } = dto;
 
     await this.prisma.$transaction(async (tx) => {
       // Update User fields if provided
@@ -65,9 +88,29 @@ export class ProfileService {
         });
       }
 
+      // Handle username if provided
+      const cleanProfileData: any = { ...profileFields };
+      if (avatarUrl !== undefined) cleanProfileData.avatarUrl = avatarUrl;
+
+      if (username !== undefined && username !== null) {
+        const cleanUsername = username.trim().toLowerCase().replace(/^@/, '');
+        if (cleanUsername) {
+          const existing = await (tx.profile as any).findFirst({
+            where: {
+              username: { equals: cleanUsername, mode: 'insensitive' },
+              NOT: { userId },
+            },
+          });
+          if (existing) {
+            throw new BadRequestException('This username is already taken.');
+          }
+          cleanProfileData.username = cleanUsername;
+          cleanProfileData.usernameLastChangedAt = new Date();
+        }
+      }
+
       // Upsert Profile row
-      const cleanProfileData = avatarUrl !== undefined ? { avatarUrl, ...profileFields } : profileFields;
-      await tx.profile.upsert({
+      await (tx.profile as any).upsert({
         where: { userId },
         create: { userId, ...cleanProfileData },
         update: cleanProfileData,
@@ -88,17 +131,6 @@ export class ProfileService {
   /**
    * Hydrates the creator Profile from their onboarding answers.
    * Called automatically by AuthService after a successful creator signup.
-   *
-   * Maps step answers → profile fields:
-   *   step3.categories[0]   → niche
-   *   step3.categories      → subCategories
-   *   step4.audienceSize    → audienceSize
-   *   step5.platforms       → platforms
-   *   step7.biggestChallenge → biggestChallenge
-   *   step8.teachingStyle   → teachingStyle
-   *   step9.weeklyHours     → weeklyHours
-   *   step12.launchGoal     → launchGoal
-   *   step13.bio            → bio
    */
   async hydrateFromOnboarding(userId: string, data: OnboardingPayload) {
     const profileData = {

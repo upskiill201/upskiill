@@ -140,6 +140,20 @@ export class CourseController {
     return await this.courseService.publishCourse(req.user.id as string, id);
   }
 
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post(':id/unpublish')
+  async unpublishCourse(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.unpublishCourse(req.user.id as string, id);
+  }
+
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post(':id/duplicate')
+  async duplicateCourse(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.duplicateCourse(req.user.id as string, id);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Post(':id/enroll')
   async enrollInCourse(@Req() req: any, @Param('id') id: string) {
@@ -232,9 +246,10 @@ export class CourseController {
     body: {
       title?: string;
       description?: string;
-      videoUrl?: string;
+      shortDescription?: string;
       durationMinutes?: number;
       isFreePreview?: boolean;
+      contentBlocks?: any;
     },
   ) {
     return await this.courseService.updateLesson(

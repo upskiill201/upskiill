@@ -69,11 +69,12 @@ async function bootstrap() {
     });
   });
 
-  // Render.com sets PORT dynamically; fallback to 3001 for local dev
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port, '0.0.0.0');
 
   console.log(`[Bootstrap] Environment: ${process.env.ENVIRONMENT ?? 'development'}`);
-  console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`); 
+  console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`);
+  console.log(`🚀 [Bootstrap] NestJS Backend is active and listening on http://localhost:${port}`);
 }
 
 void bootstrap();

@@ -108,18 +108,46 @@ model Profile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  headline  String?
-  bio       String? @db.Text
-  avatarUrl String?
+  username             String?   @unique
+  creatorStatus        String    @default("founding_creator")
+  headline             String?
+  bio                  String?   @db.Text
+  about                String?   @db.Text
+  avatarUrl            String?
+  coverImageUrl        String?
+  introVideoUrl        String?
+  tagline              String?
+  location             String?
+  languages            Json?
+  primaryExpertise     String?
+  skills               Json?
+  teachingLevels       Json?
+  contentFormats       Json?
 
-  // Social Links
-  website   String?
-  linkedin  String?
-  twitter   String?
-  youtube   String?
-  instagram String?
-  tiktok    String?
-  facebook  String?
+  // Experience, Education & Certifications
+  experiences          Json?
+  education            Json?
+  certifications       Json?
+
+  // Social & Professional Links
+  website              String?
+  linkedin             String?
+  github               String?
+  twitter              String?
+  youtube              String?
+  instagram            String?
+  tiktok               String?
+  facebook             String?
+  portfolio            String?
+
+  // Contact & Preferences
+  contactMethod        String?   @default("email")
+  businessEmail        String?
+  allowCollaboration   Boolean   @default(true)
+  profileVisibility    String    @default("PUBLIC")
+  privacySettings      Json?
+
+  usernameLastChangedAt DateTime?
 
   // Creator profile fields (hydrated from onboarding answers)
   niche            String? // Step 3: primary teaching category

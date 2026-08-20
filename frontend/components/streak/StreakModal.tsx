@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -20,6 +21,7 @@ export default function StreakModal() {
     fetchCalendar,
   } = useStreakModal();
 
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
 
@@ -36,7 +38,7 @@ export default function StreakModal() {
     }
   }, [isModalOpen, selectedMonth]);
 
-  if (!mounted) return null;
+  if (!mounted || pathname?.startsWith('/creator')) return null;
 
   const currentStreak = streakData?.currentStreak ?? 0;
   const longestStreak = streakData?.longestStreak ?? 0;

@@ -1,59 +1,155 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FaVideo, FaClipboardList } from 'react-icons/fa';
-import { useComingSoon } from '../layout'; 
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import {
+  FaGraduationCap,
+  FaClipboardCheck,
+  FaArrowRight,
+  FaArrowLeft,
+  FaWandMagicSparkles,
+  FaCheck,
+  FaXmark,
+  FaCode,
+  FaPalette,
+  FaBrain,
+  FaBriefcase,
+  FaChartPie,
+  FaBullhorn,
+  FaMobileScreen,
+  FaShieldHalved,
+  FaLightbulb,
+  FaMusic,
+  FaDumbbell,
+  FaQuestion,
+  FaBolt,
+  FaRocket,
+  FaFire,
+  FaBullseye,
+  FaTriangleExclamation
+} from 'react-icons/fa6';
+import { useComingSoon } from '../layout';
 import styles from './Wizard.module.css';
 
+// ─── VISUAL TAXONOMY CATEGORIES ───
 const CATEGORIES = [
-  "Development",
-  "Business",
-  "Finance & Accounting",
-  "IT & Software",
-  "Office Productivity",
-  "Personal Development",
-  "Design",
-  "Marketing",
-  "Lifestyle",
-  "Photography & Video",
-  "Health & Fitness",
-  "Music",
-  "Teaching & Academics",
-  "I don't know yet"
+  { id: 'Programming & Development', label: 'Development', icon: <FaCode /> },
+  { id: 'UI/UX & Product Design', label: 'Design', icon: <FaPalette /> },
+  { id: 'AI & Machine Learning', label: 'Artificial Intelligence', icon: <FaBrain /> },
+  { id: 'Business & Entrepreneurship', label: 'Business & Startups', icon: <FaBriefcase /> },
+  { id: 'Data Science & Analytics', label: 'Data Science', icon: <FaChartPie /> },
+  { id: 'Growth Marketing & SEO', label: 'Marketing', icon: <FaBullhorn /> },
+  { id: 'Mobile App Development', label: 'Mobile Apps', icon: <FaMobileScreen /> },
+  { id: 'Cybersecurity & Cloud', label: 'Cybersecurity', icon: <FaShieldHalved /> },
+  { id: 'Personal Development', label: 'Personal Growth', icon: <FaLightbulb /> },
+  { id: 'Music & Audio Production', label: 'Music & Audio', icon: <FaMusic /> },
+  { id: 'Health & Fitness', label: 'Health & Fitness', icon: <FaDumbbell /> },
+  { id: "I don't know yet", label: "I'll decide later", icon: <FaQuestion /> },
 ];
 
+// ─── WEEKLY TIME INVESTMENT OPTIONS ───
 const TIME_OPTIONS = [
-  { id: "0-2", label: "I'm very busy right now (0-2 hours)" },
-  { id: "2-4", label: "I'll work on this on the side (2-4 hours)" },
-  { id: "5+", label: "I have lots of flexibility (5+ hours)" },
-  { id: "undecided", label: "I haven't yet decided if I have time" }
+  {
+    id: '0-2',
+    label: "I'm very busy right now (0-2 hours)",
+    sub: 'Quick bite-sized micro-modules over time',
+    icon: <FaBolt />,
+    badge: 'Flexible'
+  },
+  {
+    id: '2-4',
+    label: "I'll work on this on the side (2-4 hours)",
+    sub: 'Steady progress alongside your day job',
+    icon: <FaRocket />,
+    badge: 'Popular'
+  },
+  {
+    id: '5+',
+    label: 'I have lots of flexibility (5+ hours)',
+    sub: 'Fast-track to launch in just a few weeks',
+    icon: <FaFire />,
+    badge: 'Sprint'
+  },
+  {
+    id: 'undecided',
+    label: "I haven't yet decided if I have time",
+    sub: 'Build at your own leisure with no pressure',
+    icon: <FaBullseye />,
+    badge: 'Casual'
+  }
+];
+
+// ─── QUICK TITLE STARTERS ───
+const TITLE_STARTERS = [
+  'The Complete Guide to ',
+  'Zero to Hero: ',
+  'Mastering ',
+  'Hands-On Bootcamp: ',
+  'Modern ',
+  'Deep Dive: '
+];
+
+// ─── MASCOT SPEECH BUBBLE CONTENT ───
+const STEP_COACHING = [
+  {
+    title: "What kind of learning experience are we creating?",
+    subtitle: "Choose the format that best delivers your unique teaching style."
+  },
+  {
+    title: "Every great course starts with an inspiring title!",
+    subtitle: "Don't worry, you can fine-tune and rename your course anytime later."
+  },
+  {
+    title: "Where does your superpower belong in the catalog?",
+    subtitle: "Categorizing your course helps motivated students discover your lessons."
+  },
+  {
+    title: "Consistency is key! How many hours a week can you invest?",
+    subtitle: "We'll adapt your milestones and guidance to fit your weekly schedule."
+  }
 ];
 
 export default function CourseCreationWizard() {
   const router = useRouter();
-  const { triggerComingSoon } = useComingSoon(); // ✅ Initialize global coming soon trigger
+  const { triggerComingSoon } = useComingSoon();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
+
   // Form State
-  const [courseType, setCourseType] = useState<'course' | 'test' | null>(null);
+  const [courseType, setCourseType] = useState<'course' | 'test' | null>('course');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [timeWeekly, setTimeWeekly] = useState('');
 
+  // Keyboard Shortcuts (Duolingo Style: Enter to proceed, 1/2 on Step 1)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.key === '1' && step === 1) {
+        setCourseType('course');
+      } else if (e.key === '2' && step === 1) {
+        setCourseType('test');
+      } else if (e.key === 'Enter' && !isNextDisabled()) {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, courseType, title, category, timeWeekly]);
+
   const handleNext = () => {
     if (step === 1 && courseType === 'test') {
-      triggerComingSoon('Practice Test Builder Engine'); // ✅ Triggers the global modal
+      triggerComingSoon('Practice Test Builder Engine');
       return;
     }
     if (step < 4) {
-      setStep(prev => prev + 1);
+      setStep((prev) => prev + 1);
     } else {
       submitCourse();
     }
@@ -61,17 +157,22 @@ export default function CourseCreationWizard() {
 
   const handlePrevious = () => {
     if (step > 1) {
-      setStep(prev => prev - 1);
+      setStep((prev) => prev - 1);
+    }
+  };
+
+  const handleApplyTitleStarter = (starter: string) => {
+    if (!title.startsWith(starter)) {
+      setTitle(starter);
     }
   };
 
   const submitCourse = async () => {
-    if (!title) return;
+    if (!title.trim()) return;
     setIsSubmitting(true);
     setErrorMsg(null);
+
     try {
-      // IMPORTANT: Must use /api/ proxy so the httpOnly session cookie is forwarded correctly.
-      // Direct calls to NEXT_PUBLIC_API_URL across domains will strip the cookie.
       const res = await fetch('/api/courses', {
         method: 'POST',
         headers: {
@@ -79,10 +180,10 @@ export default function CourseCreationWizard() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          title: title || 'Untitled Course',
+          title: title.trim() || 'Untitled Course',
           category: category || "I don't know yet",
-          creatorTimeWeekly: timeWeekly
-        })
+          creatorTimeWeekly: timeWeekly || "2-4 hours",
+        }),
       });
 
       if (res.ok) {
@@ -91,11 +192,14 @@ export default function CourseCreationWizard() {
       } else {
         const err = await res.json().catch(() => ({}));
         console.error('Failed to create course:', res.status, err);
-        setErrorMsg(`There was an error creating your course (${res.status}). Please verify your session and try again.`);
+        setErrorMsg(
+          err.message ||
+          `There was an error creating your course (${res.status}). Please try again.`
+        );
       }
     } catch (err) {
       console.error('Network error:', err);
-      setErrorMsg('A network error occurred. Please check your connection and try again.');
+      setErrorMsg('A network connection error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -109,139 +213,234 @@ export default function CourseCreationWizard() {
     return false;
   };
 
+  const currentCoach = STEP_COACHING[step - 1];
+
   return (
     <div className={styles.layout}>
-      {/* Header */}
+      {/* ─── STICKY DUOLINGO HEADER ─── */}
       <header className={styles.header}>
-        <div className={styles.progressBarContainer}>
-          <div 
-            className={styles.progressBarFill} 
-            style={{ width: `${(step / 4) * 100}%` }}
-          />
-        </div>
         <div className={styles.headerLeft}>
-          <Link href="/creator" className={styles.logo}>
-            <Image src="/logo.png" alt="Upskiill" width={100} height={28} style={{ width: 'auto', height: '24px' }} />
+          <Link href="/creator" className={styles.logoLink}>
+            <Image
+              src="/teyro-logo-blue.png"
+              alt="Teyro Studio"
+              width={100}
+              height={28}
+              priority
+              style={{ width: 'auto', height: '24px' }}
+            />
           </Link>
-          <span className={styles.stepIndicator}>Step {step} of 4</span>
+          <div className={`${styles.stepPill} ${styles.stepPillActive}`}>
+            <span>Step {step} of 4</span>
+          </div>
         </div>
-        <Link href="/creator" className={styles.exitBtn}>Exit</Link>
+
+        {/* Chunky 3D Segmented Progress Bar */}
+        <div className={styles.progressCenter}>
+          <div className={styles.progressTrack3D}>
+            <div
+              className={styles.progressFill3D}
+              style={{ width: `${(step / 4) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <Link href="/creator" className={styles.exitBtn}>
+          <FaXmark size={13} />
+          <span>Exit</span>
+        </Link>
       </header>
 
-      {/* Main Content Area */}
+      {/* ─── MAIN CONTENT ─── */}
       <main className={styles.contentWrapper}>
-        <div className={styles.stepContainer} key={step}>
+        
+        {/* Mascot Coaching Speech Bubble Header */}
+        <div className={styles.mascotHeaderRow}>
+          <div className={styles.mascotImageWrapper}>
+            <Image
+              src="/dashboard tey.png"
+              alt="Tey Mascot"
+              fill
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+          <div className={styles.speechBubble}>
+            <h1 className={styles.speechTitle}>{currentCoach.title}</h1>
+            <p className={styles.speechSubtitle}>{currentCoach.subtitle}</p>
+          </div>
+        </div>
+
+        {/* Error Notification */}
+        {errorMsg && (
+          <div className={styles.errorBanner}>
+            <FaTriangleExclamation size={16} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {/* Step Card Container */}
+        <div className={styles.stepCard} key={step}>
           
-          {errorMsg && (
-            <div style={{ padding: '12px 16px', background: '#FEE2E2', color: '#EF4444', borderRadius: '10px', marginBottom: '24px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #FCA5A5' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              {errorMsg}
+          {/* ─── STEP 1: COURSE TYPE ─── */}
+          {step === 1 && (
+            <div className={styles.typeGrid}>
+              <div
+                className={`${styles.typeCard} ${courseType === 'course' ? styles.selected : ''}`}
+                onClick={() => setCourseType('course')}
+              >
+                <div className={styles.typeTopRow}>
+                  <div className={styles.typeIconBox}>
+                    <FaGraduationCap />
+                  </div>
+                  <span className={styles.keyHintBadge}>1</span>
+                </div>
+                <div className={styles.typeLabel}>Interactive Course</div>
+                <p className={styles.typeDesc}>
+                  Deliver structured learning journeys with rich micro-modules, interactive practice cards, and deep-dive coding exercises.
+                </p>
+              </div>
+
+              <div
+                className={`${styles.typeCard} ${courseType === 'test' ? styles.selected : ''}`}
+                onClick={() => setCourseType('test')}
+              >
+                <div className={styles.typeTopRow}>
+                  <div className={styles.typeIconBox}>
+                    <FaClipboardCheck />
+                  </div>
+                  <span className={styles.keyHintBadge}>2</span>
+                </div>
+                <div className={styles.typeLabel}>Practice Exam Engine</div>
+                <p className={styles.typeDesc}>
+                  Prepare students for industry certifications with timed mock tests, question banks, and detailed rationale breakdowns.
+                </p>
+              </div>
             </div>
           )}
-          
-          {step === 1 && (
-            <>
-              <h1 className={styles.title}>First, let's find out what type of course you're making.</h1>
-              <div className={styles.typeGrid}>
-                <div 
-                  className={`${styles.typeCard} ${courseType === 'course' ? styles.selected : ''}`}
-                  onClick={() => setCourseType('course')}
-                >
-                  <FaVideo size={48} className={styles.iconWrapper} />
-                  <div className={styles.typeLabel}>Course</div>
-                  <div className={styles.typeDesc}>Create rich learning experiences with the help of video lectures, quizzes, coding exercises, etc.</div>
-                </div>
-                <div 
-                  className={`${styles.typeCard} ${courseType === 'test' ? styles.selected : ''}`}
-                  onClick={() => setCourseType('test')}
-                >
-                  <FaClipboardList size={48} className={styles.iconWrapper} />
-                  <div className={styles.typeLabel}>Practice Test</div>
-                  <div className={styles.typeDesc}>Help students prepare for certification exams by providing practice questions.</div>
-                </div>
-              </div>
-            </>
-          )}
 
+          {/* ─── STEP 2: WORKING TITLE ─── */}
           {step === 2 && (
-            <>
-              <h1 className={styles.title}>How about a working title?</h1>
-              <p className={styles.subtitle}>It's ok if you can't think of a good title now. You can change it later.</p>
-              <Input 
-                type="text" 
-                placeholder="e.g. Learn Photoshop CS6 from Scratch" 
-                maxLength={60}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                autoFocus
-              />
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <h1 className={styles.title}>What category best fits the knowledge you'll share?</h1>
-              <p className={styles.subtitle}>If you're not sure about the right category, you can change it later.</p>
-              <select 
-                className={styles.selectField}
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="" disabled>Choose a category</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </>
-          )}
-
-          {step === 4 && (
-            <>
-              <h1 className={styles.title}>How much time can you spend creating your course per week?</h1>
-              <p className={styles.subtitle}>There's no wrong answer. We can help you achieve your goals even if you don't have much time.</p>
-              <div className={styles.radioList}>
-                {TIME_OPTIONS.map(option => (
-                  <label 
-                    key={option.id} 
-                    className={`${styles.radioOption} ${timeWeekly === option.label ? styles.selected : ''}`}
-                  >
-                    <input 
-                      type="radio" 
-                      name="timeWeekly" 
-                      className={styles.radioInput}
-                      value={option.label}
-                      checked={timeWeekly === option.label}
-                      onChange={() => setTimeWeekly(option.label)}
-                    />
-                    <span className={styles.radioLabel}>{option.label}</span>
-                  </label>
-                ))}
+            <div>
+              <div className={styles.titleInputWrapper}>
+                <input
+                  type="text"
+                  className={styles.duoInput}
+                  placeholder="e.g. Full-Stack Next.js 15 & AI Engineering"
+                  maxLength={60}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && title.trim()) handleNext();
+                  }}
+                />
+                <div className={styles.charCount}>
+                  <span>{title.length} / 60 characters</span>
+                </div>
               </div>
-            </>
+
+              {/* Title Starters */}
+              <div className={styles.startersSection}>
+                <div className={styles.startersTitle}>
+                  <FaWandMagicSparkles size={12} color="#0172FD" />
+                  <span>Need inspiration? Try a title starter:</span>
+                </div>
+                <div className={styles.startersGrid}>
+                  {TITLE_STARTERS.map((starter) => (
+                    <button
+                      key={starter}
+                      type="button"
+                      className={styles.starterPill}
+                      onClick={() => handleApplyTitleStarter(starter)}
+                    >
+                      <span>{starter}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── STEP 3: CATEGORY & DOMAIN ─── */}
+          {step === 3 && (
+            <div className={styles.categoryGrid}>
+              {CATEGORIES.map((cat) => {
+                const isSelected = category === cat.id;
+                return (
+                  <div
+                    key={cat.id}
+                    className={`${styles.categoryCard} ${isSelected ? styles.selected : ''}`}
+                    onClick={() => setCategory(cat.id)}
+                  >
+                    <div className={styles.categoryIconBox}>
+                      {cat.icon}
+                    </div>
+                    <span className={styles.categoryTitle}>{cat.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ─── STEP 4: WEEKLY TIME COMMITMENT ─── */}
+          {step === 4 && (
+            <div className={styles.timeList}>
+              {TIME_OPTIONS.map((opt) => {
+                const isSelected = timeWeekly === opt.label;
+                return (
+                  <div
+                    key={opt.id}
+                    className={`${styles.timeCard} ${isSelected ? styles.selected : ''}`}
+                    onClick={() => setTimeWeekly(opt.label)}
+                  >
+                    <div className={styles.timeCardLeft}>
+                      <div className={styles.timeIconBox}>
+                        {opt.icon}
+                      </div>
+                      <div>
+                        <div className={styles.timeTitle}>{opt.label}</div>
+                        <div className={styles.timeSub}>{opt.sub}</div>
+                      </div>
+                    </div>
+
+                    <div className={styles.radioCircle}>
+                      {isSelected && <FaCheck size={11} />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
 
         </div>
       </main>
 
-      {/* Footer Controls */}
+      {/* ─── STICKY FOOTER ACTION BAR ─── */}
       <footer className={styles.footer}>
         {step > 1 ? (
-          <Button variant="outline" size="lg" onClick={handlePrevious}>
-            Previous
-          </Button>
+          <button
+            type="button"
+            className={styles.button3dSecondary}
+            onClick={handlePrevious}
+            disabled={isSubmitting}
+          >
+            <FaArrowLeft size={13} />
+            <span>Previous</span>
+          </button>
         ) : (
-          <div /> /* Empty div for flex-between spacing */
+          <div />
         )}
-        
-        <Button 
-          variant="primary" 
-          size="lg" 
+
+        <button
+          type="button"
+          className={styles.button3dPrimary}
           onClick={handleNext}
           disabled={isNextDisabled()}
-          loading={isSubmitting}
         >
-          {step === 4 ? 'Create Course' : 'Continue'}
-        </Button>
+          <span>{step === 4 ? (isSubmitting ? 'Creating Course...' : 'Create Course ✨') : 'Continue'}</span>
+          {step < 4 && <FaArrowRight size={13} />}
+        </button>
       </footer>
     </div>
   );

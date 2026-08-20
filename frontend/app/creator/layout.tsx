@@ -3,25 +3,26 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Home,
-  PlaySquare,
-  Users,
-  BarChart2,
-  DollarSign,
-  Star,
-  Wallet,
-  FolderOpen,
-  Megaphone,
-  Settings,
-  Bell,
-  ChevronDown,
-  Plus,
-  Sparkles,
-  Rocket,
-  LogOut,
-  Menu,
-  X as CloseIcon
-} from 'lucide-react';
+  FaHouse,
+  FaGraduationCap,
+  FaUsers,
+  FaChartSimple,
+  FaSackDollar,
+  FaStar,
+  FaWallet,
+  FaFolderOpen,
+  FaBullhorn,
+  FaGear,
+  FaBell,
+  FaChevronDown,
+  FaPlus,
+  FaWandMagicSparkles,
+  FaRocket,
+  FaArrowRightFromBracket,
+  FaBars,
+  FaXmark,
+  FaLayerGroup
+} from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
@@ -53,16 +54,16 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { id: 'dashboard', label: 'Dashboard', href: '/creator', icon: <Home size={18} /> },
-  { id: 'courses', label: 'Courses', href: '/creator/courses', icon: <PlaySquare size={18} /> },
-  { id: 'students', label: 'Students', href: '/creator/students', icon: <Users size={18} />, isComingSoon: true },
-  { id: 'analytics', label: 'Analytics', href: '/creator/analytics', icon: <BarChart2 size={18} /> },
-  { id: 'earnings', label: 'Earnings', href: '/creator/earnings', icon: <DollarSign size={18} />, isComingSoon: true },
-  { id: 'reviews', label: 'Reviews', href: '/creator/reviews', icon: <Star size={18} />, isComingSoon: true },
-  { id: 'payouts', label: 'Payouts', href: '/creator/payouts', icon: <Wallet size={18} />, isComingSoon: true },
-  { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FolderOpen size={18} />, isComingSoon: true },
-  { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <Megaphone size={18} />, isComingSoon: true },
-  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <Settings size={18} /> },
+  { id: 'dashboard', label: 'Dashboard', href: '/creator', icon: <FaHouse size={17} /> },
+  { id: 'courses', label: 'Courses', href: '/creator/courses', icon: <FaGraduationCap size={17} /> },
+  { id: 'students', label: 'Students', href: '/creator/students', icon: <FaUsers size={17} />, isComingSoon: true },
+  { id: 'analytics', label: 'Analytics', href: '/creator/analytics', icon: <FaChartSimple size={17} />, isComingSoon: true },
+  { id: 'earnings', label: 'Earnings', href: '/creator/earnings', icon: <FaSackDollar size={17} />, isComingSoon: true },
+  { id: 'reviews', label: 'Reviews', href: '/creator/reviews', icon: <FaStar size={17} />, isComingSoon: true },
+  { id: 'payouts', label: 'Payouts', href: '/creator/payouts', icon: <FaWallet size={17} />, isComingSoon: true },
+  { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FaFolderOpen size={17} />, isComingSoon: true },
+  { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <FaBullhorn size={17} />, isComingSoon: true },
+  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <FaGear size={17} /> },
 ];
 
 export default function CreatorLayout({ children }: { children: React.ReactNode }) {
@@ -172,10 +173,11 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
         <aside className={`${styles.sidebarWrapper} ${isMobileSidebarOpen ? styles.mobileSidebarOpen : ''}`}>
           <div className={styles.sidebarHeader}>
             <Link href="/creator" className={styles.logoLink} onClick={() => setIsMobileSidebarOpen(false)}>
-              <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} priority className={styles.sidebarLogo} />
+              <Image src="/teyro-logo-blue.png" alt="Teyro" width={100} height={28} priority className={styles.sidebarLogo} style={{ width: 'auto', height: 'auto' }} />
+              <span className={styles.creatorBadge}>Studio</span>
             </Link>
             <button className={styles.mobileCloseBtn} onClick={() => setIsMobileSidebarOpen(false)} aria-label="Close sidebar">
-              <CloseIcon size={24} />
+              <FaXmark size={20} />
             </button>
           </div>
 
@@ -196,8 +198,13 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                     }}
                     className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                   >
-                    <span className={styles.icon}>{link.icon}</span>
-                    <span className={styles.label}>{link.label}</span>
+                    <div className={styles.navItemLeft}>
+                      <span className={styles.icon}>{link.icon}</span>
+                      <span className={styles.label}>{link.label}</span>
+                    </div>
+                    {link.isComingSoon && (
+                      <span className={styles.soonBadge}>Soon</span>
+                    )}
                   </Link>
                 );
               })}
@@ -205,7 +212,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           </nav>
 
           {/* Role switcher — only visible to dual-role users */}
-          <div style={{ padding: '0 12px 16px' }}>
+          <div style={{ padding: '0 14px 16px' }}>
             <RoleSwitcher
               activeRole="INSTRUCTOR"
               hasStudentAccess={hasStudentAccess}
@@ -226,23 +233,25 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             <header className={styles.header}>
               <div className={styles.headerLeft}>
                 <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)} aria-label="Open navigation menu">
-                  <Menu size={24} />
+                  <FaBars size={18} />
                 </button>
                 <div className={styles.pageTitleWrapper}>
-                  <BarChart2 size={20} className={styles.titleIcon} />
+                  <div className={styles.titleIconBox}>
+                    <FaLayerGroup size={17} />
+                  </div>
                   <h1 className={styles.pageTitle}>Creator Studio</h1>
                 </div>
               </div>
 
               <div className={styles.headerRight}>
                 <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')}>
-                  <Plus size={16} />
-                  <span>Create New Course</span>
+                  <FaPlus size={13} />
+                  <span>Create Course</span>
                 </button>
 
                 <div className={styles.headerControls}>
                   <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
-                    <Bell size={20} />
+                    <FaBell size={17} />
                     <span className={styles.notifBadge}>3</span>
                   </button>
 
@@ -256,7 +265,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                       <div className={styles.userInfo}>
                         <div className={styles.userNameRow}>
                           <span className={styles.userName}>{creatorName || 'Creator'}</span>
-                          <ChevronDown size={14} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+                          <FaChevronDown size={11} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
                         </div>
                         <span className={styles.userRole}>Instructor</span>
                       </div>
@@ -265,10 +274,10 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                     {isMounted && isDropdownOpen && (
                       <div className={styles.profileDropdownMenu}>
                         <Link href="/creator/settings" className={styles.profileDropdownItem} onClick={() => setIsDropdownOpen(false)}>
-                          <Settings size={16} /> Profile & Settings
+                          <FaGear size={15} /> Profile & Settings
                         </Link>
                         <button className={styles.profileDropdownLogout} onClick={handleLogout}>
-                          <LogOut size={16} /> Logout
+                          <FaArrowRightFromBracket size={15} /> Logout
                         </button>
                       </div>
                     )}
@@ -286,7 +295,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
       <Modal isOpen={!!comingSoonFeature} onClose={() => setComingSoonFeature(null)} size="md">
         <div className={styles.modalBody}>
           <div className={styles.modalIconWrapper}>
-            <Sparkles size={36} className={styles.sparkleIcon} />
+            <FaWandMagicSparkles size={32} className={styles.sparkleIcon} />
           </div>
           <h2 className={styles.modalTitle}>{comingSoonFeature} is Coming Soon!</h2>
           <p className={styles.modalDescription}>
@@ -294,7 +303,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             for creators. It will be available in the next platform update — stay tuned!
           </p>
           <div className={styles.modalActions}>
-            <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Rocket size={16} />}>
+            <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<FaRocket size={14} />}>
               Got it!
             </Button>
           </div>

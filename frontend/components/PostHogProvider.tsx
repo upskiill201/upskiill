@@ -25,13 +25,19 @@ function PostHogPageview() {
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && !posthog.__loaded) {
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-        api_host: "/ingest",
-        ui_host: "https://app.posthog.com",
-        capture_pageview: false, // We do this manually below
-        capture_pageleave: true,
-        autocapture: true,
-      })
+      const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+      if (key) {
+        const isDev = process.env.NODE_ENV === 'development';
+        posthog.init(key, {
+          // In development, send directly from client to prevent Next.js dev server ETIMEDOUT proxy logs
+          api_host: isDev ? (process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com') : '/ingest',
+          ui_host: 'https://app.posthog.com',
+          capture_pageview: false,
+          capture_pageleave: !isDev,
+          autocapture: !isDev,
+          disable_session_recording: isDev,
+        });
+      }
     }
   }, [])
 
