@@ -244,14 +244,15 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
               </div>
 
               <div className={styles.headerRight}>
-                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')}>
-                  <FaPlus size={13} />
-                  <span>Create Course</span>
+                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')} aria-label="Create new course">
+                  <FaPlus size={11} />
+                  <span className={styles.createBtnTextDesktop}>Create Course</span>
+                  <span className={styles.createBtnTextMobile}>New</span>
                 </button>
 
                 <div className={styles.headerControls}>
                   <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
-                    <FaBell size={17} />
+                    <FaBell size={15} />
                     <span className={styles.notifBadge}>3</span>
                   </button>
 

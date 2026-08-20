@@ -8,6 +8,10 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
+  creatorStatus?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(30)
   @Matches(/^[a-zA-Z0-9_]+$/, {
     message: 'Username can only contain letters, numbers, and underscores',

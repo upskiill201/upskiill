@@ -109,51 +109,46 @@ export function ReviewPublishTab({
       {/* Celebration Banner */}
       <div 
         ref={bannerRef}
-        className="w-full flex items-center justify-between p-5 mb-8 rounded-xl border shadow-md text-white"
-        style={{ 
-          backgroundColor: '#3D5AFE', 
-          borderColor: '#2D4AEE',
-          boxShadow: '0 4px 20px rgba(61, 90, 254, 0.15)'
-        }}
+        className="w-full flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 mb-5 rounded-[18px] border-2 border-[#0172FD] border-b-4 border-b-[#0050B3] text-white bg-[#0172FD] shadow-[0_4px_16px_rgba(1,114,253,0.15)] gap-3"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/20 text-white">
-            <Sparkles size={20} className="animate-pulse" />
+          <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white/20 text-white shrink-0">
+            <Sparkles size={18} className="animate-pulse" />
           </div>
           <div>
-            <h3 className="text-[16px] font-semibold flex items-center gap-2 text-white">
-              Final step! You're almost there <PartyPopper size={16} className="text-blue-200" />
+            <h3 className="text-[14.5px] font-extrabold flex items-center gap-2 text-white font-[family-name:var(--font-jakarta)]">
+              Final step! You're almost ready <PartyPopper size={16} className="text-blue-100" />
             </h3>
-            <p className="text-[14px] mt-0.5 text-blue-100">
-              Review your lesson content and publish when you're ready.
+            <p className="text-[12px] mt-0.5 text-blue-100">
+              Review your lesson curriculum and publish when you're ready.
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-[13px] bg-white/10 text-white border border-white/20">
-            <Check size={14} strokeWidth={3} className="text-green-300" />
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-[12px] bg-white/15 text-white border border-white/25 font-[family-name:var(--font-jakarta)]">
+            <Check size={13} strokeWidth={3} className="text-green-300" />
             Quality Score: {qualityScore}/100
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5">
         <div>
-          <h2 className="text-[18px] font-bold text-gray-900">Lesson Preview</h2>
-          <p className="text-[14px] text-gray-500">Review how your lesson will appear to learners.</p>
+          <h2 className="text-[14.5px] font-extrabold text-[#0F172A] font-[family-name:var(--font-jakarta)]">Lesson Preview</h2>
+          <p className="text-[11.5px] text-[#64748B]">Review how your lesson will appear to learners.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={expandAll}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-[11.5px] font-bold text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors border border-[#CBD5E1] font-[family-name:var(--font-jakarta)]"
           >
-            <Maximize2 size={14} /> Expand All
+            <Maximize2 size={12} /> Expand All
           </button>
           <button 
             onClick={collapseAll}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-[11.5px] font-bold text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors border border-[#CBD5E1] font-[family-name:var(--font-jakarta)]"
           >
-            <Minimize2 size={14} /> Collapse All
+            <Minimize2 size={12} /> Collapse All
           </button>
         </div>
       </div>

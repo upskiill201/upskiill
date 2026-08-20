@@ -130,7 +130,7 @@ function SortableLesson({
   return (
     <motion.div
       layout="position"
-      whileHover={{ scale: 1.01, backgroundColor: '#F8FAFC' }}
+      whileHover={{ scale: 1.005, backgroundColor: '#F8FAFC' }}
       ref={setNodeRef} style={style}
       className={`${styles.lessonRow} ${isDragging ? styles.lessonRowDragging : ''}`}
       onClick={() => onBuildLesson(lesson.id)}
@@ -152,7 +152,7 @@ function SortableLesson({
         {s.text}
       </span>
 
-      <div onClick={e => e.stopPropagation()}>
+      <div onClick={e => e.stopPropagation()} className={styles.buildLessonBtnWrap}>
         <button className={`${styles.buildLessonBtn} ${s.btnCls}`} onClick={() => onBuildLesson(lesson.id)}>
           {s.btn}
         </button>
@@ -211,27 +211,32 @@ function SortableModule({
       className={`${styles.moduleCard} ${isDragging ? styles.moduleCardDragging : ''}`}
     >
       <div className={styles.moduleHeader} onClick={onToggle}>
-        <div className={styles.dragHandle} {...attributes} {...listeners} onClick={e => e.stopPropagation()}>
-          <GripVertical size={16} />
-        </div>
-        <div className={styles.moduleNum}>{index + 1}</div>
-        <div className={styles.moduleInfo}>
-          <div className={styles.moduleTitleRow}>
-            <span className={styles.moduleTitle}>{section.title}</span>
+        <div className={styles.moduleHeaderLeft}>
+          <div className={styles.dragHandle} {...attributes} {...listeners} onClick={e => e.stopPropagation()}>
+            <GripVertical size={16} />
           </div>
-          {section.goal && <div className={styles.moduleDesc}>{section.goal}</div>}
+          <div className={styles.moduleNum}>{index + 1}</div>
+          <div className={styles.moduleInfo}>
+            <div className={styles.moduleTitleRow}>
+              <span className={styles.moduleTitle}>{section.title}</span>
+            </div>
+            {section.goal && <div className={styles.moduleDesc}>{section.goal}</div>}
+          </div>
         </div>
-        <div className={styles.moduleMeta}>
-          <span className={styles.moduleMetaText}>{section.lessons.length} lessons • {durStr}</span>
+
+        <div className={styles.moduleHeaderRight}>
+          <div className={styles.moduleMeta}>
+            <span className={styles.moduleMetaText}>{section.lessons.length} lessons • {durStr}</span>
+          </div>
+          <div className={styles.moduleActions} onClick={e => e.stopPropagation()}>
+            <button className={styles.moduleActionBtn} title="Edit" aria-label="Edit module" onClick={onEdit}><Edit2 size={14} /></button>
+            <button className={styles.moduleActionBtn} title="Duplicate" aria-label="Duplicate module" onClick={onDuplicate}><Copy size={14} /></button>
+            <button className={`${styles.moduleActionBtn} ${styles.danger}`} title="Delete" aria-label="Delete module" onClick={onDelete}><Trash2 size={14} /></button>
+          </div>
+          <button className={styles.moduleChevron} aria-label={expanded ? "Collapse module" : "Expand module"}>
+            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
         </div>
-        <div className={styles.moduleActions} onClick={e => e.stopPropagation()}>
-          <button className={styles.moduleActionBtn} title="Edit" aria-label="Edit module" onClick={onEdit}><Edit2 size={14} /></button>
-          <button className={styles.moduleActionBtn} title="Duplicate" aria-label="Duplicate module" onClick={onDuplicate}><Copy size={14} /></button>
-          <button className={`${styles.moduleActionBtn} ${styles.danger}`} title="Delete" aria-label="Delete module" onClick={onDelete}><Trash2 size={14} /></button>
-        </div>
-        <button className={styles.moduleChevron} aria-label={expanded ? "Collapse module" : "Expand module"}>
-          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </button>
       </div>
 
       {expanded && (

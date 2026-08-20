@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   FaUser,
   FaAward,
@@ -18,7 +19,10 @@ import {
   FaCamera,
   FaLock,
   FaCircleInfo,
-  FaCircleCheck
+  FaCircleCheck,
+  FaTriangleExclamation,
+  FaXmark,
+  FaArrowRight
 } from 'react-icons/fa6';
 import { FaLinkedin, FaGithub, FaTwitter, FaYoutube, FaInstagram } from 'react-icons/fa';
 import styles from './CreatorSettings.module.css';
@@ -52,6 +56,7 @@ export default function CreatorProfileSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Avatar Upload Ref
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -340,6 +345,14 @@ export default function CreatorProfileSettingsPage() {
   const handleSaveProfile = async () => {
     setSaving(true);
     setSaveSuccess(false);
+    setSaveError(null);
+
+    // Client-side quick check
+    if (!formData.fullName.trim()) {
+      setSaveError('Please provide your full name before saving.');
+      setSaving(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/profile', {
@@ -350,14 +363,28 @@ export default function CreatorProfileSettingsPage() {
 
       if (res.ok) {
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3500);
+        setSaveError(null);
+        if (formData.username) {
+          setInitialUsername(formData.username);
+        }
       } else {
-        const errorData = await res.json();
-        alert(errorData.message || 'Failed to save profile.');
+        const errorData = await res.json().catch(() => ({}));
+        let friendlyMessage = 'We could not save your profile changes. Please review your details and try again.';
+        if (errorData.message) {
+          if (Array.isArray(errorData.message)) {
+            friendlyMessage = errorData.message.join('. ');
+          } else {
+            friendlyMessage = errorData.message;
+          }
+        }
+        if (res.status === 401) {
+          friendlyMessage = 'Your session has expired. Please log in again to save your profile.';
+        }
+        setSaveError(friendlyMessage);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving profile:', error);
-      alert('Network error while saving profile.');
+      setSaveError('A network error occurred while saving your profile. Please check your connection and try again.');
     } finally {
       setSaving(false);
     }
@@ -373,6 +400,61 @@ export default function CreatorProfileSettingsPage() {
 
   return (
     <div className={styles.settingsRoot}>
+      {/* ─── SUCCESS NOTIFICATION BANNER ─── */}
+      {saveSuccess && (
+        <div className={styles.notificationBannerSuccess}>
+          <div className={styles.bannerContent}>
+            <div className={styles.bannerIconSuccess}>
+              <FaCircleCheck size={18} />
+            </div>
+            <div>
+              <h3 className={styles.bannerTitle}>Profile Saved Successfully!</h3>
+              <p className={styles.bannerSubtitle}>
+                Your changes are now live across Teyro and visible on your public creator profile.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Link
+              href={`/creator-profile/${encodeURIComponent(formData.username || 'me')}`}
+              className={styles.viewProfileLink}
+            >
+              <span>View Public Profile</span>
+              <FaArrowRight size={12} />
+            </Link>
+            <button
+              className={styles.dismissBtn}
+              onClick={() => setSaveSuccess(false)}
+              aria-label="Dismiss message"
+            >
+              <FaXmark size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── ERROR NOTIFICATION BANNER ─── */}
+      {saveError && (
+        <div className={styles.notificationBannerError}>
+          <div className={styles.bannerContent}>
+            <div className={styles.bannerIconError}>
+              <FaTriangleExclamation size={18} />
+            </div>
+            <div>
+              <h3 className={styles.bannerTitle}>Couldn&apos;t Save Profile Changes</h3>
+              <p className={styles.bannerSubtitle}>{saveError}</p>
+            </div>
+          </div>
+          <button
+            className={styles.dismissBtn}
+            onClick={() => setSaveError(null)}
+            aria-label="Dismiss error"
+          >
+            <FaXmark size={14} />
+          </button>
+        </div>
+      )}
+
       {/* ─── PAGE HEADER ─── */}
       <div className={styles.pageHeader}>
         <div className={styles.headerTop}>
@@ -386,7 +468,7 @@ export default function CreatorProfileSettingsPage() {
             disabled={saving}
           >
             <FaFloppyDisk size={14} />
-            <span>{saving ? 'Saving...' : 'Save Profile'}</span>
+            <span>{saving ? 'Saving...' : saveSuccess ? 'Saved ✓' : 'Save Profile'}</span>
           </button>
         </div>
 
@@ -401,7 +483,7 @@ export default function CreatorProfileSettingsPage() {
                 <h2 className={styles.milestoneTitle}>Complete Your Creator Profile</h2>
                 <p className={styles.milestoneSubtitle}>
                   {completionMilestones.percentage === 100
-                    ? '🎉 Your creator profile is 100% complete and fully optimized!'
+                    ? 'Your creator profile is 100% complete and fully optimized!'
                     : `You have completed ${completionMilestones.completedCount} of ${completionMilestones.milestones.length} profile steps.`}
                 </p>
               </div>
@@ -1059,12 +1141,25 @@ export default function CreatorProfileSettingsPage() {
       {/* ─── STICKY BOTTOM SAVE ACTION BAR ─── */}
       <div className={styles.stickyBottomBar}>
         <div>
-          {saveSuccess && (
+          {saveSuccess ? (
             <div className={styles.saveSuccessPill}>
               <FaCircleCheck size={16} />
-              <span>Creator Profile updated successfully!</span>
+              <span>Profile updated successfully!</span>
+              <Link
+                href={`/creator-profile/${encodeURIComponent(formData.username || 'me')}`}
+                className={styles.viewProfileLink}
+                style={{ marginLeft: '12px', padding: '6px 12px', fontSize: '11.5px' }}
+              >
+                <span>View Public Profile</span>
+                <FaArrowRight size={11} />
+              </Link>
             </div>
-          )}
+          ) : saveError ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#DC2626', fontSize: '13px', fontWeight: 700 }}>
+              <FaTriangleExclamation size={16} />
+              <span>Could not save profile changes. Please review above.</span>
+            </div>
+          ) : null}
         </div>
         <button
           className={styles.button3dPrimary}
@@ -1072,7 +1167,7 @@ export default function CreatorProfileSettingsPage() {
           disabled={saving}
         >
           <FaFloppyDisk size={14} />
-          <span>{saving ? 'Saving...' : 'Save Profile'}</span>
+          <span>{saving ? 'Saving...' : saveSuccess ? 'Saved ✓' : 'Save Profile'}</span>
         </button>
       </div>
     </div>

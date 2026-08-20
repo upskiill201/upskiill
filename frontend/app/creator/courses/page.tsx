@@ -411,7 +411,7 @@ export default function CreatorCoursesPage() {
                   <Link
                     href={`/creator/builder/${course.id}`}
                     className={styles.button3dPrimary}
-                    style={{ flex: 1, padding: '10px 16px', fontSize: 13.5 }}
+                    style={{ flex: 1 }}
                   >
                     <span>{isDraft ? 'Continue Editing' : 'Manage Course'}</span>
                     <FaArrowRight size={13} />

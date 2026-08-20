@@ -476,7 +476,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: isApplyComplete ? 'Completed' : 'Not started' },
     { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: isReflectComplete ? 'Completed' : 'Not started' },
     { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: isDeepenComplete ? 'Completed' : 'Not started' },
-    { id: 'review',  num: '5', title: 'Review & Publish', sub: 'Finalize and publish', status: 'Not started' },
+    { id: 'review',  num: '5', title: 'Review',  sub: 'Finalize & publish',   status: 'Not started' },
   ];
 
   // Calculate Quality Score dynamically
@@ -673,7 +673,17 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               <div className={styles.contentSplit}>
                 {/* Left: Content card */}
                 <div className={styles.contentCard}>
-                  <div className={styles.blockLabel}>2. Add Content</div>
+                  <div className={styles.contentCardHeader}>
+                    <div className={styles.contentCardHeaderTitle}>
+                      <span className={styles.blockLabel} style={{ margin: 0 }}>2. Add Content</span>
+                      <span className={styles.contentCardTypeBadge}>
+                        {contentType === 'video' && 'Video Lesson'}
+                        {contentType === 'text' && 'Article / Reading'}
+                        {contentType === 'audio' && 'Audio Podcast'}
+                        {contentType === 'interactive' && 'Interactive Demo'}
+                      </span>
+                    </div>
+                  </div>
 
                   {/* VIDEO TYPE */}
                   {contentType === 'video' && (
@@ -746,13 +756,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
                   {/* TEXT TYPE */}
                   {contentType === 'text' && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className={styles.textContentWrap}>
                       <ReactQuill 
                         theme="snow" 
                         value={lesson?.learnText || ''} 
                         onChange={(val) => setLesson((l: any) => ({ ...l, learnText: val }))}
                         modules={quillModules}
-                        placeholder="Write your lesson content here..."
+                        placeholder="Write the full instructional lesson content here. Support rich formatting, code blocks, bullet points, and links..."
                       />
                     </div>
                   )}
@@ -834,88 +844,107 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
 
-              {/* Input row: title + desc */}
-              <div className={styles.inputRow}>
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    Lesson Title <span className={styles.inputSub}>(Shown to students)</span>
-                    <span className={styles.inputReq}>*</span>
-                  </label>
-                  <div className={styles.inputWrap}>
-                    <input
-                      className={styles.inputField}
-                      value={lesson?.title || ''}
-                      onChange={e => setLesson((l: any) => ({ ...l, title: e.target.value }))}
-                      placeholder="What is UI Design?"
-                      maxLength={100}
-                    />
-                    <span className={styles.charCount} style={{ color: (lesson?.title || '').length >= 90 ? '#EF4444' : '#CBD5E1' }}>
-                      {(lesson?.title || '').length}/100
-                    </span>
+              {/* 4. LESSON DETAILS CARD */}
+              <div className={styles.detailsCard}>
+                <div className={styles.detailsCardHeader}>
+                  <div className={styles.detailsCardTitleWrap}>
+                    <div className={styles.detailsCardBadge}>4</div>
+                    <div>
+                      <h3 className={styles.detailsCardTitle}>Lesson Details</h3>
+                      <p className={styles.detailsCardSub}>Information visible to students on the course player and syllabus.</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    Short Description <span className={styles.inputSub}>(Shown to students)</span>
-                  </label>
-                  <div style={{ marginTop: 8, position: 'relative' }}>
-                    <ReactQuill 
-                      theme="snow" 
-                      value={lesson?.shortDescription || ''} 
-                      onChange={(val) => setLesson((l: any) => ({ ...l, shortDescription: val }))}
-                      modules={quillModules}
-                      placeholder="Learn the basics of UI design and why it plays a crucial role in creating beautiful and usable digital products."
-                    />
-                    <span className={styles.charCount} style={{ 
-                      position: 'absolute', bottom: -20, right: 0, 
-                      color: (lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length >= 280 ? '#EF4444' : '#94A3B8' 
-                    }}>
-                      {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
-                    </span>
+                <div className={styles.detailsBody}>
+                  {/* Lesson Title */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>
+                        Lesson Title <span className={styles.fieldReq}>*</span>
+                      </label>
+                      <span className={styles.charCountBadge} style={{ color: (lesson?.title || '').length >= 90 ? '#EF4444' : '#64748B' }}>
+                        {(lesson?.title || '').length}/100
+                      </span>
+                    </div>
+                    <span className={styles.fieldHint}>Give this lesson a clear, engaging action-oriented name.</span>
+                    <div className={styles.inputWrap}>
+                      <input
+                        className={styles.inputField}
+                        value={lesson?.title || ''}
+                        onChange={e => setLesson((l: any) => ({ ...l, title: e.target.value }))}
+                        placeholder="e.g. Master the Core Framework & Architecture"
+                        maxLength={100}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.inputGroup} style={{ marginTop: 32 }}>
-                  <label className={styles.inputLabel}>
-                    What You&apos;ll Learn <span className={styles.inputSub}>(Add up to 5 key learning points)</span>
-                  </label>
-                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {whatYouWillLearn.map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>{idx + 1}.</span>
-                        <input
-                          className={styles.inputField}
-                          style={{ flex: 1 }}
-                          value={item}
-                          onChange={e => {
-                            const newPoints = [...whatYouWillLearn];
-                            newPoints[idx] = e.target.value;
-                            setWhatYouWillLearn(newPoints);
-                          }}
-                          placeholder={`e.g. Learn how to define your unique value`}
-                          maxLength={100}
-                        />
-                        <button
-                          className={styles.btnOutlineSquare}
-                          type="button"
-                          onClick={() => {
-                            setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== idx));
-                          }}
-                          style={{ borderColor: '#EF4444', color: '#EF4444', height: 48, width: 48, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
+                  {/* Short Description */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>Short Description</label>
+                      <span className={styles.charCountBadge} style={{ 
+                        color: (lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length >= 280 ? '#EF4444' : '#64748B' 
+                      }}>
+                        {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
+                      </span>
+                    </div>
+                    <span className={styles.fieldHint}>Summarize what students will learn and practice in 1–2 sentences.</span>
+                    <div className={styles.editorWrap}>
+                      <ReactQuill 
+                        theme="snow" 
+                        value={lesson?.shortDescription || ''} 
+                        onChange={(val) => setLesson((l: any) => ({ ...l, shortDescription: val }))}
+                        modules={quillModules}
+                        placeholder="Explain what students will learn and practice in this lesson..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* What You'll Learn (Key Takeaways) */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>Key Takeaways / Outcomes</label>
+                      <span className={styles.charCountBadge}>{whatYouWillLearn.length}/5 points</span>
+                    </div>
+                    <span className={styles.fieldHint}>Bullet points showing what students will be able to do after completing this lesson.</span>
+                    
+                    <div className={styles.takeawaysList}>
+                      {whatYouWillLearn.map((item, idx) => (
+                        <div key={idx} className={styles.takeawayRow}>
+                          <div className={styles.takeawayNumPill}>{idx + 1}</div>
+                          <input
+                            className={styles.takeawayInput}
+                            value={item}
+                            onChange={e => {
+                              const newPoints = [...whatYouWillLearn];
+                              newPoints[idx] = e.target.value;
+                              setWhatYouWillLearn(newPoints);
+                            }}
+                            placeholder={`e.g. Understand the fundamental trade-offs in architecture decisions`}
+                            maxLength={100}
+                          />
+                          <button
+                            type="button"
+                            className={styles.takeawayDeleteBtn}
+                            onClick={() => {
+                              setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== idx));
+                            }}
+                            title="Remove point"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
                     {whatYouWillLearn.length < 5 && (
                       <button
-                        className={styles.btnOutline}
                         type="button"
+                        className={styles.addTakeawayBtn}
                         onClick={() => setWhatYouWillLearn([...whatYouWillLearn, ''])}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'fit-content', marginTop: 4 }}
                       >
-                        <Plus size={14} /> Add Learning Point ({whatYouWillLearn.length}/5)
+                        <Plus size={15} /> Add Key Takeaway ({whatYouWillLearn.length}/5)
                       </button>
                     )}
                   </div>
@@ -1077,8 +1106,8 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       <footer className={styles.footer}>
         <div className={styles.footerLeft}>
           <div className={styles.footerTextGroup}>
-            <div className={styles.footerFlowLabel}>Lesson Builder Flow</div>
-            <div style={{ fontSize: 11.5, color: '#94A3B8' }}>Build each step to create a complete learning experience.</div>
+            <div className={styles.footerFlowLabel}>Lesson Flow</div>
+            <div className={styles.footerFlowSub}>5-step interactive curriculum</div>
           </div>
           <div className={styles.footerFlow}>
             {FLOW_STEPS.map((s, i) => (

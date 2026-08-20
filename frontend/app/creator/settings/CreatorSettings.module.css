@@ -776,6 +776,129 @@
   color: #059669;
   font-weight: 800;
   font-size: 14px;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+/* ─── DELIGHTFUL FEEDBACK BANNERS ─── */
+.notificationBannerSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ECFDF5;
+  border: 2px solid #A7F3D0;
+  border-bottom: 4px solid #6EE7B7;
+  border-radius: 16px;
+  padding: 14px 18px;
+  gap: 12px;
+  animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.notificationBannerError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FEF2F2;
+  border: 2px solid #FECACA;
+  border-bottom: 4px solid #FCA5A5;
+  border-radius: 16px;
+  padding: 14px 18px;
+  gap: 12px;
+  animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bannerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bannerIconSuccess {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #10B981;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bannerIconError {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #EF4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bannerTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.bannerSubtitle {
+  font-size: 12.5px;
+  color: #475569;
+  margin: 2px 0 0;
+}
+
+.viewProfileLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #0172FD;
+  color: white;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 3px 0 0 #0050B3;
+  font-family: var(--font-jakarta), sans-serif;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.viewProfileLink:hover {
+  background: #0060D6;
+  transform: translateY(-1px);
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.dismissBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0F172A;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -798,4 +921,11 @@
     gap: 12px;
     align-items: stretch;
   }
+
+  .notificationBannerSuccess, .notificationBannerError {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
+
