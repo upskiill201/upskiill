@@ -897,88 +897,304 @@
 /* RESPONSIVENESS */
 /* ──────────────────────────────────────────────────────────────────────────── */
 
+/* ─── PLAYFUL 2-COLUMN GAMIFIED CARDS GRID (DESKTOP & MOBILE) ─── */
+.gameCardsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* ─── MOBILE SIDEBAR DRAWER & GAMIFIED FAB ─── */
+.mobileSidebarFab {
+  display: none; /* hidden on desktop */
+}
+
+.mobileSidebarDrawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 380px;
+  height: 100vh;
+  background: #F8FAFC;
+  z-index: 1050;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+}
+
+.mobileSidebarDrawerOpen {
+  right: 0;
+}
+
+.mobileSidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.drawerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobileSidebarTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.mobileSidebarCloseBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mobileSidebarCloseBtn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.mobileSidebarBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+}
+
+.mobileSidebarBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1040;
+}
+
 @media (max-width: 1024px) {
   .dashboardGrid {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 24px;
   }
 
   .rightColumn {
-    display: none; /* Hide Right Sidebar on tablet per spec */
+    display: none; /* Hide Right Sidebar inline on tablet/mobile */
   }
 
   .middleColumn {
-    max-width: 640px;
+    max-width: 680px;
     margin: 0 auto;
+  }
+
+  .mobileSidebarFab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    bottom: 76px;
+    right: 16px;
+    z-index: 998;
+    background: #0172FD;
+    color: #FFFFFF;
+    border: none;
+    border-bottom: 3.5px solid #0056C6;
+    border-radius: 999px;
+    padding: 9px 15px;
+    box-shadow: 0 6px 18px rgba(1, 114, 253, 0.4);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  .mobileSidebarFab:active {
+    transform: translateY(2px);
+    border-bottom-width: 1.5px;
+  }
+
+  .mobileSidebarFabBadge {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
   }
 }
 
 @media (max-width: 768px) {
+  .gameCardsGrid {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
   .topHeaderRow {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 24px;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
   }
 
   .welcomeBanner {
     order: 2;
   }
 
-  .statsRow {
-    order: 1;
-    width: 100%;
-    justify-content: space-between;
-    gap: 12px;
+  .welcomeTitle {
+    font-size: 18.5px;
+    font-weight: 800;
+  }
+
+  .welcomeSubtitle {
+    font-size: 12px;
+    margin-top: 1px;
   }
 
   .dashboardGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 14px;
   }
 
   .middleColumn {
     max-width: 100%;
+    gap: 14px;
   }
 
-  .welcomeTitle {
-    font-size: 24px;
-  }
-
+  /* Current Focus Hero Card (Gamified Mobile Experience) */
   .focusCard {
     flex-direction: column !important;
-    gap: 24px !important;
-    padding: 20px !important;
+    gap: 14px !important;
+    padding: 15px 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 6px 20px rgba(1, 114, 253, 0.2) !important;
   }
 
   .focusCardLeft {
     order: 2 !important;
   }
 
+  .focusHeader {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .focusCourseTitle {
+    font-size: 16.5px !important;
+    margin: 0 0 4px !important;
+    line-height: 1.25 !important;
+  }
+
+  .focusCourseDesc {
+    font-size: 12px !important;
+    margin: 0 0 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .progressContainer {
+    max-width: 100% !important;
+    margin-bottom: 12px !important;
+    gap: 4px;
+  }
+
+  .progressBarWrapper {
+    height: 10px !important;
+  }
+
+  .progressPct {
+    font-size: 9.5px !important;
+  }
+
+  .progressUnit {
+    font-size: 9.5px !important;
+  }
+
+  .button3dPrimary {
+    width: 100% !important;
+    height: 42px !important;
+    font-size: 13.5px !important;
+    justify-content: center !important;
+    border-radius: 11px !important;
+  }
+
   .focusCardRight {
     width: 100% !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
     order: 1 !important;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 8px 12px;
   }
 
   .mascotBubble {
     position: relative;
     top: 0;
     right: 0;
-    width: 100%;
-    margin-bottom: 12px;
+    width: auto;
+    max-width: 100%;
+    margin-bottom: 0;
+    flex: 1;
+    font-size: 11.5px;
+    padding: 6px 10px;
+    box-shadow: none;
+    border-radius: 8px;
+    line-height: 1.3;
   }
 
   .mascotBubbleTail {
     display: none;
   }
 
+  .focusMascotImageWrapper {
+    width: 52px;
+    height: 52px;
+    margin-top: 0;
+    flex-shrink: 0;
+  }
+
+  .focusMascotImage {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .sectionHeader {
+    margin-bottom: 8px;
+  }
+
+  .sectionTitle {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .viewAllBtn {
+    font-size: 11px;
+  }
+
   .journeyCard {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
-    padding: 16px;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .journeyTitle {
+    font-size: 13.5px;
+  }
+
+  .journeySubtitle {
+    font-size: 10px;
   }
 
   .journeyCardRight {
@@ -989,13 +1205,92 @@
     flex: 1;
   }
 
-  .motivationCard {
-    flex-direction: column;
-    text-align: center;
-    padding: 16px;
+  .button3dOutline {
+    font-size: 11px;
+    padding: 6px 12px;
   }
 
-  .motivationBubbleTail {
-    display: none;
+  .motivationCard {
+    padding: 12px 14px;
+    border-radius: 12px;
+    gap: 10px;
+  }
+
+  .motivationMascotWrapper {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .motivationMascot {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .motivationBubble {
+    font-size: 11.5px;
+    line-height: 1.35;
   }
 }
+
+/* ─── NARROW MOBILE & ULTRA-COMPACT (<360px & <=320px) ─── */
+@media (max-width: 360px) {
+  .gameCardsGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .welcomeTitle {
+    font-size: 16.5px;
+  }
+
+  .welcomeSubtitle {
+    font-size: 11px;
+  }
+
+  .focusCard {
+    padding: 12px 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .focusCourseTitle {
+    font-size: 15px !important;
+  }
+
+  .focusCourseDesc {
+    font-size: 11.5px !important;
+  }
+
+  .focusCardRight {
+    padding: 6px 8px;
+    gap: 6px !important;
+  }
+
+  .focusMascotImageWrapper {
+    width: 44px;
+    height: 44px;
+  }
+
+  .focusMascotImage {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .mascotBubble {
+    font-size: 10.5px;
+    padding: 5px 7px;
+  }
+
+  .button3dPrimary {
+    height: 38px !important;
+    font-size: 12.5px !important;
+  }
+
+  .mobileSidebarFab {
+    bottom: 72px;
+    right: 10px;
+    padding: 7px 11px;
+  }
+}
+

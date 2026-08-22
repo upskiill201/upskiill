@@ -1,5 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  levelFromXp,
+  widthForLevel,
+  xpToNextLevel,
+  xpWithinLevel,
+  applyLevelUpsInTx,
+} from '../common/levels';
 
 @Injectable()
 export class GamificationService {
@@ -164,6 +171,9 @@ export class GamificationService {
       throw new BadRequestException('Insufficient XP balance. A life refill costs 100 XP.');
     }
 
+    // XP is spent here, so the level may recompute DOWNWARD. Downward
+    // crossings are deliberately silent — no celebration, no bonus, no ledger
+    // row (see applyLevelUpsInTx in common/levels.ts).
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
       data: {
@@ -190,6 +200,9 @@ export class GamificationService {
       throw new BadRequestException('Insufficient XP balance. A streak freeze costs 150 XP.');
     }
 
+    // XP is spent here, so the level may recompute DOWNWARD. Downward
+    // crossings are deliberately silent — no celebration, no bonus, no ledger
+    // row (see applyLevelUpsInTx in common/levels.ts).
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
       data: {
@@ -247,18 +260,28 @@ export class GamificationService {
       newStreak = 1;
     }
 
-    const updated = await this.prisma.studentProfile.update({
-      where: { userId },
-      data: {
-        xp: { increment: xpReward },
-        completedQuests: completed,
-        lastQuestResetAt: now,
-        lastActiveAt: now,
-        streakDays: newStreak,
-      },
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const txUpdated = await tx.studentProfile.update({
+        where: { userId },
+        data: {
+          xp: { increment: xpReward },
+          completedQuests: completed,
+          lastQuestResetAt: now,
+          lastActiveAt: now,
+          streakDays: newStreak,
+        },
+      });
+
+      // Detect a level crossing inside the same transaction and grant the bonus.
+      const levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, txUpdated.xp);
+
+      return { txUpdated, levelUp };
     });
 
-    return this.buildResponse(updated, timezoneOffsetMinutes);
+    return {
+      ...(await this.buildResponse(updated.txUpdated, timezoneOffsetMinutes)),
+      levelUp: updated.levelUp,
+    };
   }
 
   /**
@@ -327,20 +350,28 @@ export class GamificationService {
     const nextPosition = currentPosition === 7 ? 1 : currentPosition + 1;
 
     // 5. Commit state updates
-    const updated = await this.prisma.studentProfile.update({
-      where: { userId },
-      data: {
-        xp: { increment: xpReward },
-        lastRewardClaimedAt: now,
-        dailyRewardCyclePosition: nextPosition,
-        streakFreezeBank: newFreezeCount,
-      },
+    const { txUpdated, levelUp } = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.studentProfile.update({
+        where: { userId },
+        data: {
+          xp: { increment: xpReward },
+          lastRewardClaimedAt: now,
+          dailyRewardCyclePosition: nextPosition,
+          streakFreezeBank: newFreezeCount,
+        },
+      });
+
+      // Detect a level crossing inside the same transaction and grant the bonus.
+      const crossing = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
+
+      return { txUpdated: updated, levelUp: crossing };
     });
 
     return {
-      ...(await this.buildResponse(updated, timezoneOffsetMinutes)),
+      ...(await this.buildResponse(txUpdated, timezoneOffsetMinutes)),
       justClaimedXp: xpReward,
       justClaimedCycleDay: currentPosition,
+      levelUp,
     };
   }
 
@@ -411,12 +442,22 @@ export class GamificationService {
     }
     if (dto.streak) updateData.streakDays = { increment: dto.streak };
 
-    const updated = await this.prisma.studentProfile.update({
-      where: { userId },
-      data: updateData,
+    const { txUpdated, levelUp } = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.studentProfile.update({
+        where: { userId },
+        data: updateData,
+      });
+
+      // Detect a level crossing inside the same transaction and grant the bonus.
+      const crossing = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
+
+      return { txUpdated: updated, levelUp: crossing };
     });
 
-    return this.buildResponse(updated);
+    return {
+      ...(await this.buildResponse(txUpdated)),
+      levelUp,
+    };
   }
 
   async awardGems(userId: string, amount: number, source: string) {
@@ -482,24 +523,18 @@ export class GamificationService {
 
     const nextRewardClaimInMs = this.getNextMidnightMs(now, timezoneOffsetMinutes);
 
-    // Level calculation (exponential curve)
-    let userLevel = 1;
+    // Level calculation — shared curve from common/levels.ts (mirrored by the
+    // frontend in lib/levels.ts). This API is the single source of truth.
     const totalXp = profile.xp || 0;
-    while (true) {
-      const nextReq = 50 * userLevel * (userLevel + 1);
-      if (totalXp >= nextReq) {
-        userLevel++;
-      } else {
-        break;
-      }
-    }
-    const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
-    const xpInCurrentLevel = Math.max(0, totalXp - currentLevelBaseXp);
+    const userLevel = levelFromXp(totalXp);
+    const xpInCurrentLevel = xpWithinLevel(totalXp);
 
     return {
       xp: profile.xp,
       userLevel,
       xpInCurrentLevel,
+      xpToNextLevel: xpToNextLevel(totalXp),
+      currentLevelWidth: widthForLevel(userLevel),
       streakDays: profile.streakDays,
       longestStreak: profile.longestStreak ?? Math.max(3, profile.streakDays),
       gems: profile.coins ?? 50,

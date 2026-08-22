@@ -58,8 +58,47 @@ function VerifyPendingContent() {
     }
   };
 
+  const [code, setCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code.trim().length !== 6) {
+      setVerifyError('Please enter a 6-digit code');
+      return;
+    }
+    setVerifying(true);
+    setVerifyError('');
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          code: code.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Invalid verification code');
+      }
+
+      // Success — redirect to Step 16 onboarding congratulations
+      window.location.href = '/creator/onboarding/16';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Verification failed';
+      setVerifyError(msg);
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F1EDFC] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F1EDFC] px-4 py-8">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center relative overflow-hidden">
         
         {/* Top decorative gradient */}
@@ -72,14 +111,52 @@ function VerifyPendingContent() {
         <h1 className="text-2xl font-bold text-gray-900 mb-3">Check your email</h1>
         
         <p className="text-gray-600 mb-6 leading-relaxed">
-          We've sent a verification link to <br/>
+          We've sent a verification code & link to <br/>
           <strong className="text-gray-900 font-semibold">{maskEmail(email)}</strong>
         </p>
+
+        {/* Code Input Form */}
+        <form onSubmit={handleVerifyCode} className="mb-6">
+          <div className="mb-3">
+            <input
+              type="text"
+              maxLength={6}
+              placeholder="Enter 6-digit code"
+              value={code}
+              onChange={(e) => {
+                setVerifyError('');
+                setCode(e.target.value.replace(/\D/g, ''));
+              }}
+              className="w-full h-12 text-center text-xl tracking-[0.3em] font-bold border-2 border-gray-200 rounded-xl focus:border-blue-600 outline-none transition-colors"
+            />
+          </div>
+
+          {verifyError && (
+            <p className="text-sm text-red-600 mb-3 flex items-center justify-center gap-1">
+              <AlertCircle className="w-4 h-4" /> {verifyError}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full justify-center h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md"
+            disabled={verifying || code.trim().length !== 6}
+          >
+            {verifying ? 'Verifying...' : 'Verify Code & Enter Studio'}
+          </Button>
+        </form>
+
+        <div className="relative flex items-center justify-center my-4">
+          <div className="border-t border-gray-200 w-full" />
+          <span className="bg-white px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider absolute">
+            or click the link in your email
+          </span>
+        </div>
         
-        <div className="bg-gray-50 rounded-xl p-4 mb-8 text-sm text-gray-600 text-left flex gap-3">
+        <div className="bg-gray-50 rounded-xl p-4 mb-6 text-sm text-gray-600 text-left flex gap-3">
           <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
           <div>
-            The link will expire in 24 hours. If you don't see it, be sure to check your spam folder.
+            The verification link and code will expire in 24 hours. Check your spam folder if you don't see it.
           </div>
         </div>
 

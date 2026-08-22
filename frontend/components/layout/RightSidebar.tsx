@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Lock, BookOpen } from 'lucide-react';
+import { Bot, Lock, BookOpen, Target, Check } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
 import { useGamification } from '@/context/GamificationContext';
@@ -199,7 +199,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
           {sectionComplete && (
             <p className={styles.sectionCompleteMsg}>
-              Amazing! 🎉 You&apos;ve completed this section.
+              Amazing! You&apos;ve completed this section.
             </p>
           )}
 
@@ -229,7 +229,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             <span className={styles.messageHeader}>Tey&apos;s Message</span>
             <p className={styles.messageText}>
               {sectionComplete
-                ? `"Excellent work${userName ? `, ${userName}` : ''}! You've completed this section. You're one step closer to becoming a pro! 🎉"`
+                ? `"Excellent work${userName ? `, ${userName}` : ''}! You've completed this section. You're one step closer to becoming a pro!"`
                 : `"Keep going${userName ? `, ${userName}` : ''}! You're making great progress. ${sectionTotalLessons - sectionCompletedCount} more lesson${sectionTotalLessons - sectionCompletedCount !== 1 ? 's' : ''} to go!"`
               }
             </p>
@@ -257,7 +257,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             return (
               <div className={styles.questItem} style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
                 <div className={styles.questIconWrapper}>
-                  <span>🎯</span>
+                  <Target size={18} className={styles.questLightningIcon} />
                 </div>
                 <div className={styles.questContent} style={{ width: '100%' }}>
                   <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -270,7 +270,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#58cc02', width: `${isFinished ? 100 : 0}%` }} />
                   </div>
                   {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02' }}>Claimed! ✓</span>
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02', display: 'flex', alignItems: 'center', gap: '4px' }}>Claimed! <Check size={14} /></span>
                   ) : isFinished ? (
                     <button
                       onClick={() => {
@@ -303,7 +303,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             return (
               <div className={styles.questItem}>
                 <div className={styles.questIconWrapper}>
-                  <span>💎</span>
+                  <Image src="/Icons/gem.png" alt="XP" width={18} height={18} />
                 </div>
                 <div className={styles.questContent} style={{ width: '100%' }}>
                   <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -316,7 +316,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#0172FD', width: `${Math.min((sectionXpEarned / 10) * 100, 100)}%` }} />
                   </div>
                   {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD' }}>Claimed! ✓</span>
+                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD', display: 'flex', alignItems: 'center', gap: '4px' }}>Claimed! <Check size={14} /></span>
                   ) : isFinished ? (
                     <button
                       onClick={() => {
@@ -372,10 +372,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#777777', fontFamily: 'var(--font-jakarta), sans-serif', lineHeight: '1.4' }}>
               {(() => {
                 if (isEligibleForReward) {
-                  if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
+                  if (dailyRewardCyclePosition === 7) return "Day 7 Mystery Chest is ready!";
                   return "Claim your reward to build a daily habit!";
                 } else {
-                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked! 🎉";
+                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked!";
                   return `Next chest in ${countdownStr}`;
                 }
               })()}
@@ -463,7 +463,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   }}
                 >
                   {isCompleted ? (
-                    '✓'
+                    <Check size={14} />
                   ) : isDay7 ? (
                     <div style={{ position: 'relative', width: 20, height: 18 }}>
                       <Image
@@ -488,8 +488,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
           className={isEligibleForReward ? styles.dailyRewardClaimBtn : styles.dailyRewardClaimBtnDisabled}
         >
           {isEligibleForReward
-            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
-            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED ✓' : 'CLAIMED ✓')
+            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
+            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED' : 'CLAIMED')
           }
         </button>
       </div>
@@ -566,8 +566,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
               <div className={styles.courseStatItem}>
                 <span className={styles.courseStatLabel}>Total XP Earned</span>
-                <span className={styles.courseStatVal}>
-                  💎 <strong>{totalXp} XP</strong>
+                <span className={styles.courseStatVal} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Image src="/Icons/gem.png" alt="XP" width={14} height={14} /> <strong>{totalXp} XP</strong>
                 </span>
               </div>
             </div>
@@ -598,7 +598,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             onClick={handleLetsGo}
             className={styles.button3dWhite}
           >
-            Let&apos;s Go! 🚀
+            Let&apos;s Go!
           </button>
         </div>
       </div>
@@ -619,7 +619,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
         <div className={styles.questItem}>
           <div className={styles.questIconWrapper}>
-            <span>💎</span>
+            <Image src="/Icons/gem.png" alt="XP" width={18} height={18} />
           </div>
           <div className={styles.questContent}>
             <div className={styles.questInfoRow}>
@@ -662,9 +662,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       <div className={styles.rewardCard}>
         <span className={styles.rewardHeader}>DAILY REWARD</span>
         <div className={styles.treasureBoxWrapper}>
-          <span className={`${styles.sparkleStar} ${styles.sparkle1}`}>✨</span>
-          <span className={`${styles.sparkleStar} ${styles.sparkle2}`}>✨</span>
-          <span className={`${styles.sparkleStar} ${styles.sparkle3}`}>✨</span>
           <Image
             src="/Tressure box.png"
             alt="Treasure Box"

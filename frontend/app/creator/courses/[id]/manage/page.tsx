@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Plus, Check, Settings, Loader2, BookOpen, Wrench, Library } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
+import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
 import styles from './Studio.module.css';
 
 // Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
@@ -240,6 +241,117 @@ function CourseStructurePanel() {
   );
 }
 
+function PricingPanel({
+  courseId,
+  initialPrice,
+}: {
+  courseId: string;
+  initialPrice: number;
+}) {
+  const [price, setPrice] = useState<number>(initialPrice || 0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const ladder = calculateCoursePricingLadder(price);
+
+  const save = async () => {
+    setIsSaving(true);
+    try {
+      await fetch(`/api/courses/${courseId}/draft`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ price }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error('Failed to save price', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div>
+          <h1 className={styles.sectionTitle}>Course Pricing</h1>
+          <p className={styles.sectionSubtitle}>
+            Set your course base value. Teyro automatically generates time-based learner subscriptions (Weekly, Monthly, Yearly).
+          </p>
+        </div>
+        <Button variant="primary" onClick={save} disabled={isSaving}>
+          {isSaving ? <Loader2 size={16} className="animate-spin" /> : saved ? <Check size={16} /> : null}
+          {saved ? 'Saved' : 'Save'}
+        </Button>
+      </div>
+
+      <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', maxWidth: '600px', marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+          Course Base Value (USD)
+        </label>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+          <span style={{ position: 'absolute', left: 16, fontSize: 18, color: '#94A3B8', fontWeight: 600 }}>$</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            className={styles.fieldInput}
+            style={{ paddingLeft: '36px', fontSize: '18px', fontWeight: 700 }}
+            value={price || ''}
+            placeholder="30"
+            onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+          />
+        </div>
+
+        {/* Live Calculation Table */}
+        <div style={{ background: '#F8FAFC', borderRadius: '12px', padding: '16px', border: '1px solid #E2E8F0' }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+            Generated Learner Access Plans
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #EEF2F6' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B' }}>7 Days (Weekly)</div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>Convenience access</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>{ladder.weekly.formattedPrice}</div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #EEF2F6' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#16A34A', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>30 Days (Monthly)</span>
+                  <span style={{ fontSize: '9.5px', background: '#DCFCE7', color: '#15803D', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>⭐ POPULAR</span>
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>30% discount vs weekly</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#16A34A' }}>{ladder.monthly.formattedPrice}</div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#D97706', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>365 Days (Yearly)</span>
+                  <span style={{ fontSize: '9.5px', background: '#FEF3C7', color: '#B45309', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>🏆 BEST VALUE</span>
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>Best deal for committed learners</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#D97706' }}>{ladder.yearly.formattedPrice}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '14px', fontSize: '12px', color: '#2563EB', background: 'rgba(59, 130, 246, 0.05)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(59, 130, 246, 0.15)' }}>
+          💡 Longer plans are automatically discounted to encourage longer learning commitments.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ComingSoonPanel({ title }: { title: string }) {
   return (
     <div className={styles.panel}>
@@ -266,6 +378,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
     whatYouWillLearn: string[];
     requirements: string[];
     targetAudience: string[];
+    price?: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -282,6 +395,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
             whatYouWillLearn: Array.isArray(data.whatYouWillLearn) ? data.whatYouWillLearn : [],
             requirements: Array.isArray(data.requirements) ? data.requirements : [],
             targetAudience: Array.isArray(data.targetAudience) ? data.targetAudience : [],
+            price: typeof data.price === 'number' ? data.price : 0,
           });
         }
       } catch (err) {
@@ -309,6 +423,8 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
         return <IntendedLearnersPanel courseId={courseId} initialData={course} />;
       case 'course-structure':
         return <CourseStructurePanel />;
+      case 'pricing':
+        return <PricingPanel courseId={courseId} initialPrice={course.price || 0} />;
       default:
         return (
           <ComingSoonPanel

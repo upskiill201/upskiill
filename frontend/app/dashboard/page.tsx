@@ -1,28 +1,24 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { 
-  ChevronRight, 
-  ArrowRight
-} from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
+import Image from 'next/image';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
-import { StatPill } from '@/components/ui/StatPill';
 import { StatsBar } from '@/components/ui/StatsBar';
 import { useGamification } from '@/context/GamificationContext';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
-import MomentumCard from '@/components/dashboard/v2/MomentumCard';
-import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
+import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
+import CurrentQuestCard from '@/components/dashboard/v2/CurrentQuestCard';
+import JourneyPathMap from '@/components/dashboard/v2/JourneyPathMap';
 import TodaysMissionsCard from '@/components/dashboard/v2/TodaysMissionsCard';
 import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
-import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
-import NextAchievementCard from '@/components/dashboard/v2/NextAchievementCard';
-import AlmostThereCard from '@/components/dashboard/v2/AlmostThereCard';
+import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBanner';
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
+import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import styles from './Page.module.css';
 
@@ -33,6 +29,7 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState<string | null>(null);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
@@ -51,7 +48,7 @@ export default function DashboardPage() {
     // 2. Trigger loader with 15s hold configuration and suppressed connection check popups
     showLoader(undefined, false, 15000, true);
 
-    // 2. Fetch all backend data (me & enrollments) in parallel
+    // 3. Fetch all backend data (me & enrollments) in parallel
     const loadAllDashboardData = async () => {
       try {
         await Promise.allSettled([
@@ -85,24 +82,6 @@ export default function DashboardPage() {
     loadAllDashboardData();
   }, [showLoader, hideLoader]);
 
-  const getJourneyIcon = (category: string) => {
-    const cat = (category || '').toLowerCase();
-    if (cat === 'design') return '🚀';
-    if (cat === 'development') return '💻';
-    if (cat === 'business') return '🧠';
-    if (cat === 'it & software') return '🤖';
-    return '📚';
-  };
-
-  const getJourneyColor = (category: string) => {
-    const cat = (category || '').toLowerCase();
-    if (cat === 'design') return '#0172FD';
-    if (cat === 'development') return '#22C55E';
-    if (cat === 'business') return '#FF8A00';
-    if (cat === 'it & software') return '#8B5CF6';
-    return '#64748B';
-  };
-
   const handleContinueLearning = () => {
     playHaptic('medium');
     showLoaderImmediate(
@@ -119,254 +98,115 @@ export default function DashboardPage() {
     }
   };
 
-  const handleJumpToUnit = (courseIdOrName: string) => {
-    playHaptic('medium');
-    showLoaderImmediate(
-      "Tey is building your interactive practice cards...",
-      false, // Preserves desktop sidebar
-      15000, // 15 seconds display duration
-      true,  // Suppress connection check unless actual error occurs
-      'working'
-    );
-    if (courseIdOrName && (courseIdOrName.includes('-') || courseIdOrName.startsWith('sec-') || courseIdOrName.length > 15)) {
-      router.push(`/learn/${courseIdOrName}`);
-    } else {
-      router.push('/learn/advanced-product-design-ux-strategy');
-    }
-  };
-
-  const handleViewAllJourneys = () => {
-    playHaptic('medium');
-    router.push('/dashboard/my-learning');
-  };
-
   const currentEnrollment = enrollments.length > 0 ? enrollments[0] : null;
-  const journeysToDisplay = enrollments.length > 0 ? enrollments.slice(0, 2) : [];
+  const currentMissionNum = currentEnrollment
+    ? Math.max(1, Math.round((currentEnrollment.progress / 100) * 25) || 12)
+    : 12;
 
   return (
     <div className={styles.container}>
       
-      {/* TOP HEADER ROW: Welcome greeting on left, Borderless Stats on right */}
+      {/* TOP GAME HUD ROW */}
       <div className={styles.topHeaderRow}>
         <div className={styles.welcomeBanner}>
           <h2 className={styles.welcomeTitle}>
-            Welcome back, {userName ? `${userName}! 👋` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
+            Welcome back, {userName ? `${userName}!` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
           </h2>
           <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
         </div>
 
-        {/* BORDERLESS TOP-RIGHT STATS ROW */}
+        {/* BORDERED GAME HUD STAT PILLS */}
         <StatsBar />
       </div>
 
-      {/* TWO-COLUMN GRID CONTAINER (Desktop/Tablet) */}
+      {/* TWO-COLUMN GRID CONTAINER (Desktop / Mobile) */}
       <div className={styles.dashboardGrid}>
         
-        {/* MIDDLE COLUMN: Focus Content */}
+        {/* MIDDLE COLUMN: GAME ACTION LOOP */}
         <div className={styles.middleColumn}>
-          {/* CURRENT FOCUS CARD */}
-          {currentEnrollment ? (
-            <div className={styles.focusCard}>
-              <div className={styles.focusCardLeft}>
-                <span className={styles.focusHeader}>CURRENT FOCUS</span>
-                <h3 className={styles.focusCourseTitle}>{currentEnrollment.course.title}</h3>
-                <p className={styles.focusCourseDesc}>{currentEnrollment.course.shortDescription || currentEnrollment.course.subtitle}</p>
-                
-                {/* Focus Progress Bar */}
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressBarWrapper}>
-                    <div className={styles.progressBarFill} style={{ width: `${currentEnrollment.progress}%` }} />
-                  </div>
-                  <div className={styles.progressLabels}>
-                    <span className={styles.progressPct}>{currentEnrollment.progress}% COMPLETE</span>
-                    <span className={styles.progressUnit}>
-                      LESSON {Math.round((currentEnrollment.progress / 100) * 25) || 1} / 25
-                    </span>
-                  </div>
-                </div>
+          
+          {/* 1. LEVEL PROGRESSION BANNER */}
+          <LevelProgressionBanner />
 
-                {/* 3D Action Button */}
-                <button 
-                  onClick={handleContinueLearning}
-                  className={styles.button3dPrimary}
-                >
-                  <span>Continue Learning</span>
-                  <span className={styles.buttonIconCircle}>
-                    <ArrowRight size={16} />
-                  </span>
-                </button>
-              </div>
+          {/* 2. CURRENT QUEST HERO CARD */}
+          <CurrentQuestCard
+            currentEnrollment={currentEnrollment}
+            onPlay={handleContinueLearning}
+          />
 
-              {/* Focus Mascot Section */}
-              <div className={styles.focusCardRight}>
-                <div className={styles.mascotBubble}>
-                  <span>Let&apos;s master {currentEnrollment ? currentEnrollment.course.title.split(':')[0] : 'UI/UX'} step-by-step!</span>
-                  <div className={styles.mascotBubbleTail} />
-                </div>
-                <div className={styles.focusMascotImageWrapper}>
-                  <Image 
-                    src="/dashboard tey.png" 
-                    alt="Tey Mascot" 
-                    width={150} 
-                    height={150} 
-                    priority
-                    className={styles.focusMascotImage}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.focusCard}>
-              <div className={styles.focusCardLeft}>
-                <span className={styles.focusHeader}>GET STARTED</span>
-                <h3 className={styles.focusCourseTitle}>Welcome to Teyro!</h3>
-                <p className={styles.focusCourseDesc}>You haven&apos;t enrolled in any courses yet. Explore our interactive catalog to start learning!</p>
-                
-                {/* 3D Action Button */}
-                <button 
-                  onClick={() => router.push('/courses')}
-                  className={styles.button3dPrimary}
-                  style={{ marginTop: '16px' }}
-                >
-                  <span>Explore Courses</span>
-                  <span className={styles.buttonIconCircle}>
-                    <ArrowRight size={16} />
-                  </span>
-                </button>
-              </div>
+          {/* 3. YOUR JOURNEY PATH MAP */}
+          <JourneyPathMap
+            currentLessonIndex={currentMissionNum}
+            totalLessons={25}
+          />
 
-              {/* Focus Mascot Section */}
-              <div className={styles.focusCardRight}>
-                <div className={styles.mascotBubble}>
-                  <span>Pick a course from our catalog to start building skills!</span>
-                  <div className={styles.mascotBubbleTail} />
-                </div>
-                <div className={styles.focusMascotImageWrapper}>
-                  <Image 
-                    src="/dashboard tey.png" 
-                    alt="Tey Mascot" 
-                    width={150} 
-                    height={150} 
-                    priority
-                    className={styles.focusMascotImage}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* REWARDRUN LAB & TEST BENCH WIDGET */}
-          <RewardRunTestWidget />
-
-          {/* 1. MOMENTUM CARD */}
-          <MomentumCard onAction={handleContinueLearning} />
-
-          {/* 2. TODAY'S MISSIONS */}
-          <TodaysMissionsCard />
-
-          {/* 3. MYSTERY CHEST + WEEKLY PROGRESS (2-Column Grid Row) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+          {/* 4. 2-COLUMN GAME GRID: DAILY QUESTS + MYSTERY CHEST */}
+          <div className={styles.gameCardsGrid}>
+            <TodaysMissionsCard />
             <MysteryChestCard />
-            <WeeklyProgressCard />
           </div>
 
-          {/* 4. NEXT ACHIEVEMENT + ALMOST THERE (2-Column Grid Row) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-            <NextAchievementCard />
-            <AlmostThereCard onAction={handleContinueLearning} />
-          </div>
+          {/* 5. LEVEL UP INCOMING! BANNER */}
+          <LevelUpIncomingBanner onPlay={handleContinueLearning} />
 
-          {/* 5. CONTINUE LEARNING CAROUSEL */}
+          {/* 6. CONTINUE LEARNING CAROUSEL */}
           <ContinueLearningCarousel enrollments={enrollments} />
 
-          {/* MY JOURNEYS SECTION */}
-          <div className={styles.journeysSection}>
-            <div className={styles.sectionHeader}>
-              <h4 className={styles.sectionTitle}>MY JOURNEYS</h4>
-              <button 
-                onClick={handleViewAllJourneys}
-                className={styles.viewAllBtn}
-              >
-                View All
-              </button>
-            </div>
+          {/* 7. DEV TEST BENCH (Collapsible) */}
+          <RewardRunTestWidget />
 
-            <div className={styles.journeysList}>
-              {journeysToDisplay.length > 0 ? (
-                journeysToDisplay.map((enrollment) => (
-                  <div key={enrollment.id} className={styles.journeyCard}>
-                    <div className={styles.journeyCardLeft}>
-                      <div className={styles.journeyIconWrapper}>
-                        <span className={styles.journeyIcon}>
-                          {getJourneyIcon(enrollment.course.category)}
-                        </span>
-                      </div>
-                      <div className={styles.journeyInfo}>
-                        <h5 className={styles.journeyTitle}>{enrollment.course.title}</h5>
-                        <span className={styles.journeySubtitle}>
-                          {enrollment.course.category} · {enrollment.course.level}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles.journeyCardRight}>
-                      <div className={styles.journeyProgressWrapper}>
-                        <div className={styles.journeyProgressBar}>
-                          <div 
-                            className={styles.journeyProgressFill} 
-                            style={{ 
-                              width: `${enrollment.progress}%`, 
-                              backgroundColor: getJourneyColor(enrollment.course.category) 
-                            }} 
-                          />
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => handleJumpToUnit(enrollment.course.id)}
-                        className={styles.button3dOutline}
-                      >
-                        Jump to Unit
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div style={{ padding: '24px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1px dashed #CBD5E1', width: '100%' }}>
-                  <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#475569' }}>
-                    You haven&apos;t enrolled in any courses yet.
-                  </p>
-                  <button
-                    onClick={() => router.push('/courses')}
-                    style={{ marginTop: '12px', background: '#0172FD', color: '#FFFFFF', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Browse Catalog →
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* MASCOT CONSISTENCY MOTIVATION CARD */}
-          <div className={styles.motivationCard}>
-            <div className={styles.motivationMascotWrapper}>
-              <Image 
-                src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
-                alt="Tey Verified" 
-                width={80} 
-                height={80} 
-                className={styles.motivationMascot}
-              />
-            </div>
-            <div className={styles.motivationBubble}>
-              <p>&ldquo;Consistency is the secret to mastery! You&apos;ve maintained your streak for {streakDays} {streakDays === 1 ? 'day' : 'days'}. Keep it up!&rdquo;</p>
-              <div className={styles.motivationBubbleTail} />
-            </div>
-          </div>
         </div>
 
-        {/* RIGHT COLUMN: Sidebar Stats & Quests */}
-        <RightSidebar />
+        {/* RIGHT COLUMN: Sidebar Stats & Quests (Desktop View) */}
+        <div className={styles.rightColumn}>
+          <RightSidebar />
+        </div>
 
       </div>
+
+      {/* ─── MOBILE GAMIFIED SIDEBAR FLOATING ACTION BUTTON ─── */}
+      <button
+        type="button"
+        onClick={() => {
+          playHaptic('medium');
+          setMobileSidebarOpen(true);
+        }}
+        className={styles.mobileSidebarFab}
+        aria-label="Open Gamified Quests & Sidebar"
+      >
+        <Image src="/Tressure box.png" width={26} height={26} alt="Quests" priority />
+        <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
+      </button>
+
+      {/* ─── MOBILE SIDEBAR DRAWER OVERLAY ─── */}
+      <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
+        <div className={styles.mobileSidebarHeader}>
+          <div className={styles.drawerTitleRow}>
+            <Image src="/Tressure box.png" width={24} height={24} alt="Quests" />
+            <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => {
+              playHaptic('light');
+              setMobileSidebarOpen(false);
+            }} 
+            className={styles.mobileSidebarCloseBtn}
+            aria-label="Close drawer"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
+        </div>
+        <div className={styles.mobileSidebarBody}>
+          <RightSidebar />
+        </div>
+      </div>
+      {mobileSidebarOpen && (
+        <div 
+          className={styles.mobileSidebarBackdrop} 
+          onClick={() => setMobileSidebarOpen(false)} 
+        />
+      )}
     </div>
   );
 }

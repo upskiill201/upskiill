@@ -83,6 +83,7 @@ export default function HeraldMissionsModal() {
       title: `+${amount} ${currency === 'XP' ? 'GEMS' : currency}`,
       subtitle: `Completed: ${mission.title}!`,
       rewards: [{ currency, amount }],
+      skipBackendPersist: true,
       onClaim: async () => {
         try {
           await fetch(`/api/v2/missions/${mission.id}/claim`, {

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowRight, BookOpen, X } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
@@ -15,6 +15,7 @@ export default function MyLearningPage() {
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Trigger loader without overrideText so it polls the 36 motivational text pool!
@@ -164,8 +165,59 @@ export default function MyLearningPage() {
             </div>
           )}
         </div>
-        <RightSidebar />
+        <div className={styles.rightColumn}>
+          <RightSidebar />
+        </div>
       </div>
+
+      {/* ─── MOBILE GAMIFIED SIDEBAR FLOATING ACTION BUTTON ─── */}
+      <button
+        type="button"
+        onClick={() => {
+          playHaptic('medium');
+          setMobileSidebarOpen(true);
+        }}
+        className={styles.mobileSidebarFab}
+        aria-label="Open Gamified Quests & Sidebar"
+      >
+        <Image src="/Tressure box.png" width={26} height={26} alt="Quests" priority />
+        <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
+      </button>
+
+      {/* ─── MOBILE SIDEBAR DRAWER OVERLAY ─── */}
+      <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
+        <div className={styles.mobileSidebarHeader}>
+          <div className={styles.drawerTitleRow}>
+            <Image src="/Tressure box.png" width={24} height={24} alt="Quests" />
+            <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => {
+              playHaptic('light');
+              setMobileSidebarOpen(false);
+            }} 
+            className={styles.mobileSidebarCloseBtn}
+            aria-label="Close drawer"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
+        </div>
+        <div className={styles.mobileSidebarBody}>
+          <RightSidebar />
+        </div>
+      </div>
+
+      {/* Backdrop for mobile sidebar */}
+      {mobileSidebarOpen && (
+        <div 
+          className={styles.mobileSidebarBackdrop} 
+          onClick={() => {
+            playHaptic('light');
+            setMobileSidebarOpen(false);
+          }} 
+        />
+      )}
     </div>
   );
 }

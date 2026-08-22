@@ -17,6 +17,7 @@ import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
 import { VideoPoolModal, VideoPreviewCard, PoolLesson } from '@/components/features/VideoPoolModal';
 import Step4PreviewPublish, { CurriculumSection } from './Step4PreviewPublish';
+import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
 import styles from './Builder.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -1137,7 +1138,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                     </div>
                     <h3 className={styles.widgetTitle} style={{ margin: 0, fontSize: 16 }}>Course Pricing</h3>
                   </div>
-                  <p className={styles.widgetDesc} style={{ margin: 0, marginTop: 6, fontSize: 13 }}>Set your enrollment fee strategy.</p>
+                  <p className={styles.widgetDesc} style={{ margin: 0, marginTop: 6, fontSize: 13 }}>
+                    Set your course base value. Teyro automatically generates weekly, monthly, and yearly access subscriptions.
+                  </p>
                 </div>
                 
                 <div style={{ padding: '24px' }}>
@@ -1156,11 +1159,11 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                         boxShadow: data.price === 0 ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
                       }}
                     >
-                      Free
+                      Free Course
                     </motion.button>
                     <motion.button
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => updateField('price', data.price === 0 ? 49.99 : data.price)}
+                      onClick={() => updateField('price', data.price === 0 ? 30 : data.price)}
                       style={{ 
                         flex: 1, padding: '12px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
                         fontSize: 13.5, fontWeight: 600, transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -1169,59 +1172,102 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
                         boxShadow: data.price > 0 ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
                       }}
                     >
-                      Paid
+                      Paid Subscription
                     </motion.button>
                   </div>
 
                   <AnimatePresence>
-                    {data.price > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, height: 'auto', scale: 1, y: 0 }}
-                        exit={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                        style={{ transformOrigin: 'top center', overflow: 'hidden' }}
-                      >
-                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#64748B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Price Amount (USD)
-                        </label>
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                          <span style={{ position: 'absolute', left: 16, fontSize: 18, color: '#94A3B8', fontWeight: 500, pointerEvents: 'none' }}>$</span>
-                          <input 
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            style={{ 
-                              width: '100%', height: 48, paddingLeft: 36, paddingRight: 16, 
-                              fontSize: 16, fontWeight: 600, color: '#1F2A44',
-                              borderRadius: 10, border: '2px solid #E2E8F0', outline: 'none',
-                              backgroundColor: '#fff',
-                              transition: 'all 0.2s ease',
-                              boxSizing: 'border-box'
-                            }}
-                            placeholder="49.99"
-                            value={data.price || ''}
-                            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                            onFocus={(e) => {
-                              e.target.style.borderColor = '#3D5AFE';
-                              e.target.style.boxShadow = '0 0 0 4px rgba(61,90,254,0.1)';
-                            }}
-                            onBlur={(e) => {
-                              e.target.style.borderColor = '#E2E8F0';
-                              e.target.style.boxShadow = 'none';
-                            }}
-                          />
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '12px 14px', background: 'rgba(16, 185, 129, 0.05)', borderRadius: 10, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                          <div style={{ background: '#10B981', borderRadius: '50%', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Check size={10} color="#fff" strokeWidth={3} />
+                    {data.price > 0 && (() => {
+                      const ladder = calculateCoursePricingLadder(data.price);
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
+                          animate={{ opacity: 1, height: 'auto', scale: 1, y: 0 }}
+                          exit={{ opacity: 0, height: 0, scale: 0.95, y: -10 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                          style={{ transformOrigin: 'top center', overflow: 'hidden' }}
+                        >
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#64748B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Course Base Value (USD)
+                          </label>
+                          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+                            <span style={{ position: 'absolute', left: 16, fontSize: 18, color: '#94A3B8', fontWeight: 500, pointerEvents: 'none' }}>$</span>
+                            <input 
+                              type="number"
+                              min="0"
+                              step="1"
+                              style={{ 
+                                width: '100%', height: 48, paddingLeft: 36, paddingRight: 16, 
+                                fontSize: 16, fontWeight: 700, color: '#1F2A44',
+                                borderRadius: 10, border: '2px solid #E2E8F0', outline: 'none',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.2s ease',
+                                boxSizing: 'border-box'
+                              }}
+                              placeholder="30"
+                              value={data.price || ''}
+                              onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#3D5AFE';
+                                e.target.style.boxShadow = '0 0 0 4px rgba(61,90,254,0.1)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#E2E8F0';
+                                e.target.style.boxShadow = 'none';
+                              }}
+                            />
                           </div>
-                          <span style={{ fontSize: 11.5, color: '#059669', lineHeight: 1.4, fontWeight: 500 }}>
-                            Students get lifetime access
-                          </span>
-                        </div>
-                      </motion.div>
-                    )}
+
+                          {/* Calculated Subscription Ladder Table */}
+                          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '14px 16px', border: '1px solid #E2E8F0', marginBottom: 14 }}>
+                            <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
+                              Generated Learner Pricing
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              {/* Weekly */}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #EEF2F6' }}>
+                                <div>
+                                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>7 Days (Weekly)</div>
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>Convenience access</div>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{ladder.weekly.formattedPrice}</div>
+                              </div>
+
+                              {/* Monthly */}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #EEF2F6' }}>
+                                <div>
+                                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#16A34A', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <span>30 Days (Monthly)</span>
+                                    <span style={{ fontSize: '9.5px', background: '#DCFCE7', color: '#15803D', padding: '1px 5px', borderRadius: 4, fontWeight: 800 }}>⭐ POPULAR</span>
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>30% discount vs weekly</div>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: 800, color: '#16A34A' }}>{ladder.monthly.formattedPrice}</div>
+                              </div>
+
+                              {/* Yearly */}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}>
+                                <div>
+                                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#D97706', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <span>365 Days (Yearly)</span>
+                                    <span style={{ fontSize: '9.5px', background: '#FEF3C7', color: '#B45309', padding: '1px 5px', borderRadius: 4, fontWeight: 800 }}>🏆 BEST VALUE</span>
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>Best deal for committed learners</div>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: 800, color: '#D97706' }}>{ladder.yearly.formattedPrice}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: 10, border: '1px solid rgba(59, 130, 246, 0.15)' }}>
+                            <span style={{ fontSize: '11.5px', color: '#2563EB', lineHeight: 1.4, fontWeight: 500 }}>
+                              💡 Longer plans are automatically discounted to encourage longer learning commitments.
+                            </span>
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
                   </AnimatePresence>
                 </div>
               </div>

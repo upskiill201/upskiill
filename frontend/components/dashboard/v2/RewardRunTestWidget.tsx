@@ -14,6 +14,7 @@ export default function RewardRunTestWidget() {
   const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
   const { openMissionsModal, openStreakModal, openChestModal, openSpinModal } = useHerald();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleOpenDuolingoClaim = (currency: 'COINS' | 'XP' | 'HEARTS', amount: number) => {
     playHaptic('medium');
@@ -33,6 +34,29 @@ export default function RewardRunTestWidget() {
       },
     });
   };
+
+  if (!isExpanded) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
+        <button
+          type="button"
+          onClick={() => setIsExpanded(true)}
+          style={{
+            background: 'none',
+            border: '1px dashed #CBD5E1',
+            borderRadius: '8px',
+            padding: '3px 8px',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: '#94A3B8',
+            cursor: 'pointer',
+          }}
+        >
+          ⚡ Dev Test Bench (Click to expand)
+        </button>
+      </div>
+    );
+  }
 
   const handleTriggerReward = async (
     e: React.MouseEvent<HTMLButtonElement>,

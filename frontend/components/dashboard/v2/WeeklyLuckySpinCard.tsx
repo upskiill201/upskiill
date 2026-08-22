@@ -15,13 +15,24 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(CustomEase);
 }
 
+const DEFAULT_WHEEL_CONFIG = [
+  { id: 'seg-0', segmentIndex: 0, rewardType: 'COINS', amountMin: 50, amountMax: 50, rarityTier: 'common', weight: 30, colorKey: '#3B82F6' },
+  { id: 'seg-1', segmentIndex: 1, rewardType: 'XP', amountMin: 20, amountMax: 20, rarityTier: 'common', weight: 20, colorKey: '#EC4899' },
+  { id: 'seg-2', segmentIndex: 2, rewardType: 'COINS', amountMin: 100, amountMax: 100, rarityTier: 'uncommon', weight: 15, colorKey: '#EAB308' },
+  { id: 'seg-3', segmentIndex: 3, rewardType: 'HEARTS', amountMin: 1, amountMax: 1, rarityTier: 'common', weight: 15, colorKey: '#22C55E' },
+  { id: 'seg-4', segmentIndex: 4, rewardType: 'XP', amountMin: 50, amountMax: 50, rarityTier: 'uncommon', weight: 10, colorKey: '#A855F7' },
+  { id: 'seg-5', segmentIndex: 5, rewardType: 'COINS', amountMin: 200, amountMax: 200, rarityTier: 'rare', weight: 4, colorKey: '#EF4444' },
+  { id: 'seg-6', segmentIndex: 6, rewardType: 'XP', amountMin: 100, amountMax: 100, rarityTier: 'rare', weight: 5, colorKey: '#3B82F6' },
+  { id: 'seg-7', segmentIndex: 7, rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 1, colorKey: '#EAB308' },
+];
+
 export default function WeeklyLuckySpinCard() {
   const { refresh } = useGamification();
   const { triggerRewardAnimation } = useRewardAnimation();
   const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [showModal, setShowModal] = useState(false);
-  const [spinState, setSpinState] = useState<'LOADING' | 'AVAILABLE' | 'SPUN'>('LOADING');
-  const [wheelConfig, setWheelConfig] = useState<any[]>([]);
+  const [spinState, setSpinState] = useState<'LOADING' | 'AVAILABLE' | 'SPUN'>('AVAILABLE');
+  const [wheelConfig, setWheelConfig] = useState<any[]>(DEFAULT_WHEEL_CONFIG);
   const [isSpinning, setIsSpinning] = useState(false);
   const [prizeMessage, setPrizeMessage] = useState<string | null>(null);
 
@@ -38,15 +49,12 @@ export default function WeeklyLuckySpinCard() {
 
   // Fetch initial state + emit Herald signal if spin is available
   useEffect(() => {
-       fetch('/api/v2/spin/current-week', {
-         credentials: 'include',
-       })
-         .then(res => {
-           if (!res.ok) throw new Error('Failed to fetch spin state');
-           return res.json();
-         })
+    fetch('/api/v2/spin/current-week', {
+      credentials: 'include',
+    })
+      .then(res => (res.ok ? res.json() : null))
       .then(data => {
-        if (data.status) {
+        if (data && data.status) {
           setSpinState(data.status);
           if (data.status === 'SPUN') {
             setPrizeMessage(`🎉 YOU WON ${data.rewardSnapshotAmount} ${data.rewardSnapshotType}!`);
@@ -70,27 +78,23 @@ export default function WeeklyLuckySpinCard() {
           }
         }
       })
-      .catch(err => {
-        console.error('Failed to load current week spin:', err);
+      .catch(() => {
         setSpinState('AVAILABLE'); // Fallback to let them click and see any error if backend is down
       });
 
-      fetch('/api/v2/spin/wheel-config', {
-        credentials: 'include',
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch wheel config');
-          return res.json();
-        })
+    fetch('/api/v2/spin/wheel-config', {
+      credentials: 'include',
+    })
+      .then(res => (res.ok ? res.json() : null))
       .then(data => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setWheelConfig(data);
         }
       })
-      .catch(err => {
-        console.error('Failed to load wheel config:', err);
+      .catch(() => {
+        // Keep DEFAULT_WHEEL_CONFIG
       });
-  }, []);
+  }, [enqueueHeraldNotification]);
 
   const totalSegments = wheelConfig.length || 8;
   const degreesPerSegment = 360 / totalSegments;

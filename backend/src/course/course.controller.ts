@@ -45,6 +45,17 @@ export class CourseController {
     return await this.courseService.findOne(id);
   }
 
+  @Get(':id/plans')
+  async getPricingPlans(@Param('id') id: string) {
+    return await this.courseService.getCoursePricingPlans(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/access')
+  async getAccess(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.getCourseAccess(req.user.id as string, id);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get(':id/progress')
   async getProgress(@Req() req: any, @Param('id') id: string) {
@@ -66,6 +77,13 @@ export class CourseController {
       timezoneOffset ?? 0,
     );
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id/enrollment')
+  async unenroll(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.unenrollUser(req.user.id as string, id);
+  }
+
   @Roles(Role.INSTRUCTOR, Role.ADMIN)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post()

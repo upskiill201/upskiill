@@ -2,8 +2,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   flex-shrink: 0;
+  max-width: 100%;
 }
 
 .label {
@@ -28,9 +29,34 @@
   transition: transform 0.1s ease;
 }
 
-/* Auto-hide labels on smaller screens so all five stats stay in one row */
-@media (max-width: 900px) {
+/* ─── MOBILE HUD GAMIFIED STYLING ─── */
+@media (max-width: 768px) {
+  .bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-bottom: 3.5px solid #CBD5E1;
+    border-radius: 16px;
+    padding: 5px 6px;
+    box-shadow: 0 4px 12px rgba(7, 18, 51, 0.04);
+    overflow: visible;
+    position: relative;
+    z-index: 100;
+  }
+
   .label {
-    display: none;
+    display: none !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .bar {
+    gap: 2px;
+    padding: 4px 4px;
+    border-radius: 12px;
   }
 }

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
+import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
 import styles from './Builder.module.css';
 
 export interface CurriculumLesson {
@@ -270,7 +271,7 @@ export default function Step4PreviewPublish({
           )}
 
           {/* Instructor & Price Row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid #E2E8F0', flexWrap: 'wrap', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Avatar src={instructorAvatar || undefined} name={instructorName} size="md" />
               <div>
@@ -280,10 +281,32 @@ export default function Step4PreviewPublish({
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Price</div>
-              <div style={{ fontSize: '24px', fontWeight: 800, color: '#0172FD' }}>
-                {data.price === 0 ? 'FREE' : `$${data.price}`}
-              </div>
+              {data.price === 0 ? (
+                <div>
+                  <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>Pricing</div>
+                  <div style={{ fontSize: '24px', fontWeight: 800, color: '#10B981' }}>FREE</div>
+                </div>
+              ) : (() => {
+                const ladder = calculateCoursePricingLadder(data.price);
+                return (
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>
+                      Base Value: <strong style={{ color: '#0F172A' }}>${data.price}</strong>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <span style={{ fontSize: '12px', background: '#F1F5F9', padding: '4px 8px', borderRadius: 6, fontWeight: 700, color: '#334155' }}>
+                        {ladder.weekly.formattedPrice}/wk
+                      </span>
+                      <span style={{ fontSize: '12px', background: '#DCFCE7', padding: '4px 8px', borderRadius: 6, fontWeight: 800, color: '#15803D' }}>
+                        {ladder.monthly.formattedPrice}/mo ⭐
+                      </span>
+                      <span style={{ fontSize: '12px', background: '#FEF3C7', padding: '4px 8px', borderRadius: 6, fontWeight: 800, color: '#B45309' }}>
+                        {ladder.yearly.formattedPrice}/yr 🏆
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

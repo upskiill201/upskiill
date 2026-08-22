@@ -39,6 +39,8 @@ model User {
   onboardingDraft     CreatorOnboardingDraft?
   PasswordResetToken  PasswordResetToken[]
   onboardingSession   OnboardingSession?
+  accessEntitlements  CourseAccessEntitlement[]
+  courseSubscriptions CourseSubscription[]
 
   // Social Connections — Followers & Following
   following UserFollow[] @relation("UserFollower")
@@ -207,6 +209,8 @@ model Course {
   updatedAt DateTime @updatedAt
 
   enrollments          Enrollment[]
+  accessEntitlements   CourseAccessEntitlement[]
+  courseSubscriptions  CourseSubscription[]
   orderItems           OrderItem[]
   userCourseProgresses UserCourseProgress[]
   community            Community?
@@ -351,6 +355,85 @@ model Enrollment {
   user             User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+}
+
+enum AccessPlan {
+  WEEKLY
+  MONTHLY
+  YEARLY
+  LIFETIME
+}
+
+enum AccessStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+model CourseAccessEntitlement {
+  id                   String       @id @default(uuid())
+  userId               String
+  courseId             String
+  plan                 AccessPlan   @default(MONTHLY)
+  status               AccessStatus @default(ACTIVE)
+  startDate            DateTime     @default(now())
+  expiresAt            DateTime
+  cancelAtPeriodEnd    Boolean      @default(false)
+  stripeSubscriptionId String?
+  stripeCustomerId     String?
+  pricePaid            Float?
+
+  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course               Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId, courseId, status, expiresAt])
+  @@map("course_access_entitlements")
+}
+
+enum PaymentProviderType {
+  STRIPE
+  MESOMB
+  MANUAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+model CourseSubscription {
+  id                     String              @id @default(uuid())
+  userId                 String
+  courseId               String
+  provider               PaymentProviderType @default(STRIPE)
+  providerSubscriptionId String?
+  providerCustomerId     String?
+  plan                   AccessPlan          @default(MONTHLY)
+  status                 SubscriptionStatus  @default(ACTIVE)
+  startedAt              DateTime            @default(now())
+  currentPeriodStart     DateTime            @default(now())
+  currentPeriodEnd       DateTime
+  cancelledAt            DateTime?
+  endedAt                DateTime?
+  autoRenew              Boolean             @default(true)
+  pricePaid              Float?
+  currency               String              @default("USD")
+
+  user                   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course                 Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  @@index([userId, courseId, status])
+  @@index([provider, providerSubscriptionId])
+  @@map("course_subscriptions")
 }
 
 enum OrderStatus {

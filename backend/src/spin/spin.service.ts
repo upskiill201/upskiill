@@ -1,6 +1,18 @@
 import { Injectable, BadRequestException, GoneException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
 import * as crypto from 'crypto';
+
+const DEFAULT_SEGMENTS = [
+  { id: 'seg-0', segmentIndex: 0, rewardType: 'COINS', amountMin: 50, amountMax: 50, rarityTier: 'common', weight: 30, colorKey: '#3B82F6', active: true },
+  { id: 'seg-1', segmentIndex: 1, rewardType: 'XP', amountMin: 20, amountMax: 20, rarityTier: 'common', weight: 20, colorKey: '#EC4899', active: true },
+  { id: 'seg-2', segmentIndex: 2, rewardType: 'COINS', amountMin: 100, amountMax: 100, rarityTier: 'uncommon', weight: 15, colorKey: '#EAB308', active: true },
+  { id: 'seg-3', segmentIndex: 3, rewardType: 'HEARTS', amountMin: 1, amountMax: 1, rarityTier: 'common', weight: 15, colorKey: '#22C55E', active: true },
+  { id: 'seg-4', segmentIndex: 4, rewardType: 'XP', amountMin: 50, amountMax: 50, rarityTier: 'uncommon', weight: 10, colorKey: '#A855F7', active: true },
+  { id: 'seg-5', segmentIndex: 5, rewardType: 'COINS', amountMin: 200, amountMax: 200, rarityTier: 'rare', weight: 4, colorKey: '#EF4444', active: true },
+  { id: 'seg-6', segmentIndex: 6, rewardType: 'XP', amountMin: 100, amountMax: 100, rarityTier: 'rare', weight: 5, colorKey: '#3B82F6', active: true },
+  { id: 'seg-7', segmentIndex: 7, rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 1, colorKey: '#EAB308', active: true },
+];
 
 @Injectable()
 export class SpinService {
@@ -23,11 +35,18 @@ export class SpinService {
   }
 
   async getWheelConfig() {
-    const segments = await this.prisma.spinWheelSegment.findMany({
-      where: { active: true },
-      orderBy: { segmentIndex: 'asc' },
-    });
-    return segments;
+    try {
+      const segments = await this.prisma.spinWheelSegment.findMany({
+        where: { active: true },
+        orderBy: { segmentIndex: 'asc' },
+      });
+      if (segments && segments.length > 0) {
+        return segments;
+      }
+    } catch {
+      // Return defaults if table is empty or error
+    }
+    return DEFAULT_SEGMENTS;
   }
 
   async getCurrentWeekSpin(userId: string, timezoneOffsetMinutes: number = 0) {
@@ -51,25 +70,37 @@ export class SpinService {
     
     return await this.prisma.$transaction(async (tx) => {
       // 1. Get current week spin
-      const currentSpin = await tx.weeklySpin.findUnique({
+      let currentSpin = await tx.weeklySpin.findUnique({
         where: { userId_weekStart: { userId, weekStart } },
       });
 
       if (!currentSpin) {
-        throw new BadRequestException('Spin row not initialized. Call current-week first.');
+        currentSpin = await tx.weeklySpin.create({
+          data: {
+            userId,
+            weekStart,
+            status: 'AVAILABLE',
+          },
+        });
       }
+
       if (currentSpin.status === 'SPUN') {
         throw new GoneException('Spin already used this week.');
       }
 
       // 2. Fetch config
-      const segments = await tx.spinWheelSegment.findMany({
-        where: { active: true },
-        orderBy: { segmentIndex: 'asc' },
-      });
+      let segments: any[] = [];
+      try {
+        segments = await tx.spinWheelSegment.findMany({
+          where: { active: true },
+          orderBy: { segmentIndex: 'asc' },
+        });
+      } catch {
+        segments = [];
+      }
 
-      if (segments.length === 0) {
-        throw new Error('No active spin wheel segments configured.');
+      if (!segments || segments.length === 0) {
+        segments = DEFAULT_SEGMENTS;
       }
 
       // 3. Weighted roll with CSPRNG
@@ -102,6 +133,7 @@ export class SpinService {
 
       // 5. Grant Reward
       const profile = await tx.studentProfile.findUnique({ where: { userId } });
+      let levelUp: LevelUpPayload | null = null;
       if (profile) {
         if (winningSegment.rewardType === 'COINS' || winningSegment.rewardType === 'GEMS') {
           await tx.studentProfile.update({
@@ -109,10 +141,12 @@ export class SpinService {
             data: { coins: { increment: rewardAmount } }
           });
         } else if (winningSegment.rewardType === 'XP') {
-          await tx.studentProfile.update({
+          const updated = await tx.studentProfile.update({
             where: { userId },
             data: { xp: { increment: rewardAmount } }
           });
+          // Detect a level crossing inside the same transaction and grant the bonus.
+          levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
         } else if (winningSegment.rewardType === 'HEARTS') {
           const newLives = Math.min(profile.lives + rewardAmount, profile.maxLives);
           await tx.studentProfile.update({
@@ -127,9 +161,7 @@ export class SpinService {
         }
       }
 
-      // Idempotent reward transaction — upsert avoids throwing inside the
-      // Prisma 5.x interactive transaction (a thrown error rolls back the tx,
-      // and catching it leaves 'tx' in an invalid state → "Transaction not found").
+      // Idempotent reward transaction
       await tx.rewardTransaction.upsert({
         where: { idempotencyKey: `spin_claim:${currentSpin.id}` },
         update: {},
@@ -143,7 +175,19 @@ export class SpinService {
         },
       });
 
-      return updatedSpin;
+      // Post-grant balances so clients can update without an extra round-trip.
+      const finalProfile = await tx.studentProfile.findUnique({ where: { userId } });
+
+      // Spread the spin row at top level so existing frontend destructuring
+      // (landedSegmentIndex / rewardSnapshotType / rewardSnapshotAmount) keeps
+      // working; balances + levelUp are additive.
+      return {
+        ...updatedSpin,
+        balances: finalProfile
+          ? { xp: finalProfile.xp, coins: finalProfile.coins, lives: finalProfile.lives }
+          : null,
+        levelUp,
+      };
     });
   }
 }

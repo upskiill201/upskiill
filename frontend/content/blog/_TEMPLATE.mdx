@@ -1,0 +1,35 @@
+---
+# TEMPLATE — copy this file, rename to your post slug (lowercase-kebab, e.g.
+# how-to-learn-python-fast.mdx), and fill in the frontmatter. Files starting
+# with "_" are ignored by the blog loader. Delete this comment block after copying.
+
+# ── REQUIRED ────────────────────────────────────────────────────────────────
+title: "Your Keyword-Rich Post Title"          # H1 + basis of meta title (<60 chars ideal)
+description: "One-sentence summary of the post, 150-160 characters, written for the target keyword. This becomes the meta description AND the card excerpt."
+publishedDate: "2026-01-01"                     # YYYY-MM-DD
+category: study-techniques                      # one of: study-techniques | language-learning |
+                                                # productivity-focus | ai-learning | exam-prep | skill-building
+
+# ── OPTIONAL ────────────────────────────────────────────────────────────────
+updatedDate: "2026-02-01"                       # set when you meaningfully revise a post (freshness signal)
+tags: [keyword one, keyword two]                # used by on-site search
+coverImage: "/blog/covers/my-cover.png"         # omit → generated gradient placeholder with Tey mascot
+authorSlug: teyro-team                          # from lib/blog/authors.ts (default: teyro-team)
+draft: false                                    # true = hidden from production builds
+cta:                                            # override the default signup CTA block
+  # title: "Custom CTA headline"
+  # text: "Custom CTA copy tied to this post's topic."
+  href: /signup                                 # default: /
+  label: Start learning free                    # button text (default: "Try Teyro free")
+faq:                                            # rendered as accordion + FAQPage schema (great for SEO/AI citations)
+  - question: "Naturally phrased question people actually search?"
+    answer: "Direct 40-80 word answer. Google lifts these verbatim into People Also Ask boxes."
+---
+
+Write the post body below in Markdown/MDX. Rules of thumb:
+
+- First paragraph: hook + promise, no heading above it (the page renders the H1).
+- Use real `##` H2s and `###` H3s — Google and AI answer engines parse these for extractable structure. Posts over ~800 words automatically get a table of contents built from them.
+- Do not use curly braces or raw `<` in prose (MDX treats them as code).
+- Link internally: every post should point at Teyro (homepage or signup) plus 1-2 other relevant posts, e.g. [other post](/blog/spaced-repetition-how-to-study-smarter).
+- End with a short wrap-up section ("The Bottom Line") before the CTA block renders.

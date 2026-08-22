@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import styles from './StatPill.module.css';
 
 export type StatType = 'streak' | 'gem' | 'lives' | 'coin' | 'level';
 
@@ -26,61 +27,51 @@ const STAT_CONFIG: Record<
     defaultLabel: string;
     color: string;
     glow: string;
-    hoverBg: string;
-    hoverBorder: string;
-    activeBg: string;
   }
 > = {
   streak: {
     icon: '/Icons/burn.png',
-    defaultLabel: 'Day Streak',
-    color: '#FF8A00',
+    defaultLabel: 'Streak',
+    color: '#EA580C',
     glow: 'rgba(255,138,0,0.25)',
-    hoverBg: '#FFF7ED',
-    hoverBorder: '#FED7AA',
-    activeBg: '#FFEDD5',
   },
   gem: {
     icon: '/Icons/gem.png',
-    defaultLabel: 'XP Points',
+    defaultLabel: 'XP',
     color: '#0172FD',
     glow: 'rgba(1,114,253,0.22)',
-    hoverBg: '#EFF6FF',
-    hoverBorder: '#BFDBFE',
-    activeBg: '#DBEAFE',
   },
   lives: {
     icon: '/Icons/heart.png',
     defaultLabel: 'Lives',
-    color: '#FF4B4B',
+    color: '#E11D48',
     glow: 'rgba(255,75,75,0.22)',
-    hoverBg: '#FEF2F2',
-    hoverBorder: '#FCA5A5',
-    activeBg: '#FECACA',
   },
   coin: {
     icon: '/Icons/Coin.png',
     defaultLabel: 'Coins',
-    color: '#EAB308',
+    color: '#CA8A04',
     glow: 'rgba(234,179,8,0.25)',
-    hoverBg: '#FEFCE8',
-    hoverBorder: '#FDE047',
-    activeBg: '#FEF08A',
   },
   level: {
     icon: '/Icons/user-profile.png',
     defaultLabel: 'Level',
-    color: '#A855F7',
+    color: '#9333EA',
     glow: 'rgba(168,85,247,0.25)',
-    hoverBg: '#FAF5FF',
-    hoverBorder: '#DDD6FE',
-    activeBg: '#E9D5FF',
   },
 };
 
+function formatStatValue(val: number | string): string {
+  if (typeof val === 'number') {
+    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (val >= 1_000) return `${(val / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+    return String(val);
+  }
+  return String(val);
+}
+
 /**
- * Duolingo-style gamified stat pill.
- * Fixed size capsule container with soft hover highlight & 3D active press effect (no balloon/scaling growth).
+ * Duolingo-style gamified stat pill with tactile 3D borders.
  */
 export const StatPill: React.FC<StatPillProps> = ({
   type,
@@ -94,7 +85,6 @@ export const StatPill: React.FC<StatPillProps> = ({
   const cfg = STAT_CONFIG[type];
   const displayLabel = label ?? cfg.defaultLabel;
   const [isHovered, setIsHovered] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
 
   // Dynamic icon for Coins
   const iconSrc =
@@ -104,6 +94,9 @@ export const StatPill: React.FC<StatPillProps> = ({
         : '/Icons/Coin_empty.png'
       : cfg.icon;
 
+  const formattedValue = formatStatValue(value);
+  const typePillClass = styles[`pill_${type}`] || '';
+
   return (
     <motion.button
       type="button"
@@ -111,109 +104,45 @@ export const StatPill: React.FC<StatPillProps> = ({
       data-stat-pill={type}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsPressed(false);
-      }}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: compact ? 6 : 8,
-        padding: compact ? '4px 10px' : '6px 12px',
-        borderRadius: 14,
-        background: isPressed
-          ? cfg.activeBg
-          : isHovered
-          ? cfg.hoverBg
-          : 'transparent',
-        border: `2px solid ${
-          isPressed
-            ? cfg.hoverBorder
-            : isHovered
-            ? cfg.hoverBorder
-            : 'transparent'
-        }`,
-        cursor: onClick ? 'pointer' : 'default',
-        transform: isPressed ? 'translateY(2px)' : 'translateY(0)',
-        transition:
-          'background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease',
-        userSelect: 'none',
-        outline: 'none',
-      }}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`${styles.pillBtn} ${typePillClass} ${compact ? styles.pillBtnCompact : ''} ${className || ''}`}
       aria-label={`${displayLabel}: ${value}`}
     >
       {/* 3D icon with subtle hover micro-bounce */}
       <motion.div
-        style={{ position: 'relative', width: 32, height: 32, flexShrink: 0 }}
+        className={styles.iconWrapper}
         animate={{
-          y: isHovered ? [0, -3, 0] : 0,
-          rotate: isHovered && type === 'streak' ? [0, -6, 6, 0] : 0,
+          y: isHovered ? [0, -2, 0] : 0,
+          rotate: isHovered && type === 'streak' ? [0, -5, 5, 0] : 0,
         }}
         transition={{
-          duration: 0.4,
+          duration: 0.35,
           ease: 'easeInOut',
         }}
       >
-        {/* Soft icon shadow glow */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -2,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 24,
-            height: 8,
-            borderRadius: '50%',
-            background: cfg.glow,
-            filter: 'blur(5px)',
-            zIndex: 0,
-          }}
-        />
         <Image
           src={iconSrc}
           alt={displayLabel}
           fill
-          sizes="32px"
-          style={{ objectFit: 'contain', zIndex: 1 }}
+          sizes="28px"
+          style={{ objectFit: 'contain' }}
           priority
         />
       </motion.div>
 
       {/* Number + label */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          lineHeight: 1,
-        }}
-      >
+      <div className={styles.textCol}>
         <span
-          style={{
-            fontSize: 16,
-            fontWeight: 900,
-            color: cfg.color,
-            fontFamily: 'var(--font-jakarta), sans-serif',
-            letterSpacing: '-0.01em',
-          }}
+          className={styles.statValue}
+          style={{ color: cfg.color }}
         >
-          {value}
+          {formattedValue}
         </span>
 
         {!compact && (
           <span
-            className={labelClassName}
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: cfg.color,
-              opacity: 0.85,
-              whiteSpace: 'nowrap',
-              marginTop: 2,
-            }}
+            className={`${styles.statLabel} ${labelClassName || ''}`}
+            style={{ color: cfg.color }}
           >
             {displayLabel}
           </span>

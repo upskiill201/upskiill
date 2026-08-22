@@ -203,21 +203,23 @@ export default function RewardRunClaimModal() {
     }
 
     // Persist to backend
-    try {
-      const payload: { coins?: number; xp?: number; hearts?: number; streak?: number } = {};
-      if (currency === 'COINS') payload.coins = amount;
-      if (currency === 'XP') payload.xp = amount;
+    if (!claimModalData.skipBackendPersist) {
+      try {
+        const payload: { coins?: number; xp?: number; hearts?: number; streak?: number } = {};
+        if (currency === 'COINS') payload.coins = amount;
+        if (currency === 'XP') payload.xp = amount;
       if (currency === 'HEARTS') payload.hearts = amount;
       if (currency === 'STREAK') payload.streak = amount;
 
-      await fetch('/api/gamification/test-reward', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      }).catch(() => {});
-    } catch {
-      // ignore
+        await fetch('/api/gamification/test-reward', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        }).catch(() => {});
+      } catch {
+        // ignore
+      }
     }
 
     // Safety fallback: guarantee button unlocks even under fast animations

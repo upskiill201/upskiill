@@ -1,0 +1,47 @@
+.image {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* Branded placeholder used when a post has no coverImage */
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(61, 90, 254, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61, 90, 254, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.wordmark {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(61, 90, 254, 0.55);
+}
+
+.mascot {
+  position: absolute;
+  right: -12px;
+  bottom: -18px;
+  width: 58%;
+  height: 82%;
+  background-image: url('/dashboard tey.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  opacity: 0.9;
+}

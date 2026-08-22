@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { applyLevelUpsInTx, LevelUpPayload } from "../common/levels";
 
 // --- Badge Registry ---
 
@@ -189,6 +190,9 @@ export class AchievementsService {
     );
 
     const newlyUnlocked: any[] = [];
+    // Running XP total so each tier grant's level-crossing detection sees the
+    // correct pre-grant balance (multiple tiers can unlock in one run).
+    let currentXp = profile.xp || 0;
 
     for (const badge of BADGE_REGISTRY) {
       let val = 0;
@@ -207,16 +211,24 @@ export class AchievementsService {
             },
           });
 
-          await this.prisma.studentProfile.update({
-            where: { userId },
-            data: { xp: { increment: t.xpReward } },
+          // XP grant + level-crossing detection in one transaction.
+          const { updatedProfile, levelUp } = await this.prisma.$transaction(async (tx) => {
+            const txProfile = await tx.studentProfile.update({
+              where: { userId },
+              data: { xp: { increment: t.xpReward } },
+            });
+            const crossing = await applyLevelUpsInTx(tx, userId, currentXp, txProfile.xp);
+            return { updatedProfile: txProfile, levelUp: crossing };
           });
+
+          currentXp = updatedProfile.xp;
 
           newlyUnlocked.push({
             achievementId: badge.id,
             title: badge.title,
             tier: t.level,
             reward: `${t.xpReward} XP`,
+            levelUp,
           });
         }
       }
@@ -244,9 +256,20 @@ export class AchievementsService {
       throw new BadRequestException("Tier not found.");
     }
 
-    const profile = await this.prisma.studentProfile.update({
-      where: { userId },
-      data: { xp: { increment: tierObj.xpReward } },
+    const { profile, levelUp } = await this.prisma.$transaction(async (tx) => {
+      const profileBefore = await tx.studentProfile.findUnique({ where: { userId } });
+      const txProfile = await tx.studentProfile.update({
+        where: { userId },
+        data: { xp: { increment: tierObj.xpReward } },
+      });
+      // Detect a level crossing inside the same transaction and grant the bonus.
+      const crossing = await applyLevelUpsInTx(
+        tx,
+        userId,
+        profileBefore?.xp ?? txProfile.xp,
+        txProfile.xp,
+      );
+      return { profile: txProfile, levelUp: crossing };
     });
 
     return {
@@ -255,6 +278,7 @@ export class AchievementsService {
       tier: level,
       xpAwarded: tierObj.xpReward,
       newXpTotal: profile.xp,
+      levelUp,
     };
   }
 

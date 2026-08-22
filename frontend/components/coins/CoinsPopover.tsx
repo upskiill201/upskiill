@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, Zap, ShoppingBag } from 'lucide-react';
+import { ShieldAlert, Zap, ShoppingBag, Snowflake } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './CoinsPopover.module.css';
@@ -53,7 +53,7 @@ export default function CoinsPopover({ onClose }: CoinsPopoverProps) {
         {/* Shop Item 1: Streak Freeze */}
         <div className={styles.shopItemCard} onClick={handleGoToShop}>
           <div className={styles.itemIconWrap} style={{ background: '#E0F2FE' }}>
-            <span className={styles.itemEmoji}>🧊</span>
+            <Snowflake size={22} color="#0284C7" />
           </div>
           <div className={styles.itemText}>
             <div className={styles.itemHeaderRow}>
@@ -81,15 +81,17 @@ export default function CoinsPopover({ onClose }: CoinsPopoverProps) {
             </p>
           </div>
         </div>
+      </div>
 
-        {/* Bottom 3D CTA Button */}
+      {/* Popover Action Button (Go to Shop) */}
+      <div className={styles.footerRow}>
         <button
           type="button"
-          className={styles.goToShopBtn3D}
           onClick={handleGoToShop}
+          className={styles.actionBtn3D}
         >
           <ShoppingBag size={18} />
-          <span>GO TO SHOP</span>
+          <span>VISIT SHOP</span>
         </button>
       </div>
     </div>

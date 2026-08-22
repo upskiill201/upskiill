@@ -17,8 +17,8 @@
     max-width: none;
     padding-top: max(16px, env(safe-area-inset-top));
     padding-bottom: max(16px, env(safe-area-inset-bottom));
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 0;
+    padding-right: 0;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -59,6 +59,20 @@
   display: flex;
   align-items: center;
   gap: 32px;
+}
+
+@media (max-width: 768px) {
+  .statsRow {
+    gap: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 4px; /* for any potential scrollbar area */
+  }
+  .statsRow::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ─── GRID LAYOUT ─── */
@@ -199,6 +213,12 @@
   color: white;
   width: 100%;
   flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .duolingoHeader {
+    padding: 16px 20px;
+  }
 }
 
 .headerLeft {
@@ -396,6 +416,23 @@
 @keyframes bounceStart {
   0% { transform: translate(-50%, 0); }
   100% { transform: translate(-50%, -6px); }
+}
+
+@media (max-width: 768px) {
+  .duoPedestal {
+    width: 64px;
+    height: 64px;
+  }
+  .activeTargetRing {
+    width: 92px;
+    height: 92px;
+    box-shadow: inset 0 0 0 8px #FFFFFF;
+  }
+  .startBadgeBubble {
+    bottom: 78px;
+    font-size: 11px;
+    padding: 5px 10px;
+  }
 }
 
 /* Permanent Lesson Info Card on Side (Desktop Only) */
@@ -1335,8 +1372,8 @@
   }
 
   .mainColumn:not(:has(.lessonPlayerInnerContainer)) {
-    height: auto;
-    overflow-y: visible;
+    height: 100%;
+    overflow-y: auto;
   }
 
   .rightColumn:not(.mobileSidebarOpen) {
@@ -1345,7 +1382,7 @@
   }
 
   .pathMascotLeft, .pathMascotRight {
-    display: none;
+    /* Kept visible on mobile, reduced size handled inline or in queries */
   }
 
   .nodeSideBubble {
@@ -1498,9 +1535,13 @@
 .stepperContainer {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  position: relative;
   width: 100%;
   margin: 16px 0 8px; /* Reduced bottom margin as requested */
+  padding: 0 16px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .stepperWrapper {
@@ -1513,19 +1554,19 @@
 
 .stepperLineBg {
   position: absolute;
-  top: 19px;
+  top: 24px;
   left: 24px;
   right: 24px;
-  height: 3px;
+  height: 4px;
   background-color: #E2E8F0;
   z-index: 1;
 }
 
 .stepperLineActive {
   position: absolute;
-  top: 19px;
+  top: 24px;
   left: 24px;
-  height: 3px;
+  height: 4px;
   background-color: #58cc02;
   z-index: 2;
   transition: width 0.3s ease;
@@ -1541,13 +1582,13 @@
 }
 
 .stepperCircle {
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
   background-color: white;
   transition: all 0.25s ease;
@@ -1558,14 +1599,21 @@
   background-color: #58cc02;
   color: white;
   border: none;
-  box-shadow: 0 3px 0 #46a302;
+  box-shadow: 0 4px 0 #46a302;
+}
+
+.circleCompleted {
+  background-color: #58cc02;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 0 #46a302;
 }
 
 .circleUpcoming {
-  background-color: white;
+  background-color: #e5e5e5;
   color: #AFBFCF;
-  border: 2px solid #E2E8F0;
-  box-shadow: 0 3px 0 #E2E8F0;
+  border: none;
+  box-shadow: 0 4px 0 #cccccc;
 }
 
 .circleText {
@@ -2092,7 +2140,10 @@
 }
 
 .closeLearnBtn {
-  background: none;
+  position: absolute;
+  right: 16px;
+  top: 0;
+  background: #F1F5F9;
   border: none;
   cursor: pointer;
   padding: 8px;
@@ -2101,10 +2152,17 @@
   justify-content: center;
   border-radius: 50%;
   transition: background-color 0.2s ease;
+  box-shadow: 0 3px 0 #E2E8F0;
+  z-index: 20;
+}
+
+.closeLearnBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #E2E8F0;
 }
 
 .closeLearnBtn:hover {
-  background-color: #F1F5F9;
+  background-color: #E2E8F0;
 }
 
 .learnContentScroll {
@@ -2121,6 +2179,15 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .learnContentScroll {
+    padding: 0 0 140px 0; /* Add bottom padding so fixed footer doesn't hide content */
+  }
+  .learnHeader {
+    padding: 0 16px;
+  }
 }
 
 .letsLearnText {
@@ -2151,6 +2218,15 @@
   flex-shrink: 1;
   min-height: 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .videoPlayerWrap {
+    width: 100%;
+    border-radius: 0;
+  }
 }
 
 .videoPlayOverlay {
@@ -2812,7 +2888,7 @@
 }
 
 .reflectTitle {
-  font-size: 28px;
+  font-size: clamp(17px, 4.5vw, 28px);
   font-weight: 900;
   color: #071233;
   margin: 0 0 12px 0;
@@ -2820,7 +2896,7 @@
 }
 
 .reflectPrompt {
-  font-size: 16px;
+  font-size: clamp(13px, 3.5vw, 16px);
   color: #475569;
   line-height: 1.5;
   margin: 0;
@@ -2841,7 +2917,7 @@
 }
 
 .reflectStartersTitle {
-  font-size: 15px;
+  font-size: clamp(13px, 3.5vw, 15px);
   font-weight: 800;
   color: #334155;
   margin: 0 0 12px 0;
@@ -2859,7 +2935,7 @@
   border: 2px solid #E2E8F0;
   border-radius: 100px;
   padding: 10px 16px;
-  font-size: 15px;
+  font-size: clamp(13px, 3.5vw, 15px);
   font-weight: 700;
   color: #334155;
   cursor: pointer;
@@ -3009,7 +3085,7 @@
 }
 
 .guidedQuestionTitle {
-  font-size: 18px;
+  font-size: clamp(15px, 4vw, 18px);
   font-weight: 700;
   color: #071233;
   margin: 0 0 16px 0;
@@ -3110,7 +3186,7 @@
   }
   
   .applyQuestionTitle {
-    font-size: clamp(18px, 4.5vw, 22px) !important;
+    font-size: clamp(15px, 3.8vw, 18px) !important;
     line-height: 1.25 !important;
   }
   
@@ -3153,10 +3229,29 @@
     font-size: 13.5px !important;
     line-height: 1.4 !important;
   }
-  
+  .applyBottomArea {
+    border-radius: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+  }
+
   .applyBottomBtnWrap {
     padding: 16px !important;
-    border-radius: 16px 16px 0 0 !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  .celebrationTitleCorrect, .celebrationTitleWrong {
+    font-size: 18px !important;
+  }
+  
+  .celebrationExplanation, .celebrationExplanationWrong {
+    font-size: 13px !important;
   }
 
   /* Learn Step Mobile Responsive Overrides */
@@ -3784,85 +3879,101 @@
 
   /* Celebrate responsive overrides */
   .celebrateContent {
-    padding: 16px 16px max(1rem, env(safe-area-inset-bottom)) !important;
+    padding: 16px 16px max(16px, env(safe-area-inset-bottom)) !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important; /* Allow scroll if content is tall */
     align-items: center !important;
     height: 100% !important;
     max-height: 100% !important;
     box-sizing: border-box !important;
     flex: 1 !important;
-    gap: 0 !important;
+    gap: 16px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
 
   .celebrateTop {
     margin-bottom: 0 !important;
-    gap: 12px !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+    justify-content: center !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .celebrateTitleSvg {
-    width: 85vw !important;
-    max-width: 360px !important;
+    width: 90vw !important;
+    max-width: 260px !important;
     height: auto !important;
   }
 
   .svgTextLesson, .svgTextComplete {
-    font-size: 40px !important;
-    stroke-width: 9px !important;
+    font-size: 38px !important;
+    stroke-width: 8px !important;
   }
 
   .celebrateMascotImg {
-    width: 65vw !important;
-    max-width: 210px !important;
+    width: 60vw !important;
+    max-width: 140px !important;
     height: auto !important;
   }
 
   .celebrateBottom {
     gap: 12px !important;
     width: 100% !important;
-    max-width: 400px !important;
+    max-width: 100% !important;
+    margin-top: auto !important;
   }
 
   .celebrateStatsRow {
     gap: 10px !important;
+    width: 100% !important;
   }
 
   .celebrateStatCard {
-    padding: 12px 14px !important;
-    gap: 10px !important;
+    padding: 12px 10px !important;
+    gap: 8px !important;
     border-width: 2px !important;
     border-radius: 16px !important;
+    flex: 1 !important;
+    justify-content: center !important;
   }
 
   .celebrateStatValue {
-    font-size: 16.5px !important;
+    font-size: clamp(16px, 4.5vw, 22px) !important;
+  }
+  
+  .celebrateStatLabel {
+    font-size: clamp(9px, 2.5vw, 11px) !important;
   }
 
   .celebrateStatIconWrap {
-    width: 32px !important;
-    height: 32px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
 
   .celebrateProgressCard {
     border-width: 2px !important;
     border-radius: 16px !important;
     padding: 12px 16px !important;
+    width: 100% !important;
   }
 
   .celebrateProgressBarContainer {
-    height: 26px !important;
+    height: 24px !important;
   }
 
   .celebrateProgressPercentText {
-    font-size: 12px !important;
+    font-size: 11px !important;
   }
 
   .letsGoBtn3D {
-    padding: 14px !important;
+    padding: 16px !important;
     font-size: 15px !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     border-bottom-width: 4px !important;
+    width: 100% !important;
   }
 }
 
@@ -4255,6 +4366,12 @@
   margin: 16px 0;
 }
 
+@media (max-width: 768px) {
+  .streakCalendarRow {
+    gap: 4px;
+  }
+}
+
 .dayPill {
   display: flex;
   flex-direction: column;
@@ -4271,8 +4388,8 @@
 }
 
 .dayPillCircle {
-  width: 36px;
-  height: 36px;
+  width: clamp(28px, 8vw, 36px);
+  height: clamp(28px, 8vw, 36px);
   border-radius: 50%;
   background-color: #F1F5F9;
   border: 2px solid #E2E8F0;

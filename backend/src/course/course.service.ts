@@ -8,6 +8,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
+import { StripeProvider } from '../payment/providers/stripe.provider';
+import { calculateCoursePricingLadder } from './pricing-engine';
+import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -17,6 +20,7 @@ export class CourseService {
     private eventEmitter: EventEmitter2,
     private missionsService: MissionsService,
     private chestService: ChestService,
+    private stripeProvider: StripeProvider,
   ) {}
 
   async findAll(query: {
@@ -87,7 +91,29 @@ export class CourseService {
             avatarUrl: true,
             profile: {
               select: {
+                username: true,
+                headline: true,
                 bio: true,
+                about: true,
+                creatorStatus: true,
+                avatarUrl: true,
+                primaryExpertise: true,
+                location: true,
+              },
+            },
+            instructorProfile: {
+              select: {
+                displayName: true,
+                professionalHeadline: true,
+                bio: true,
+                avatarUrl: true,
+                verificationStatus: true,
+              },
+            },
+            _count: {
+              select: {
+                courses: true,
+                followers: true,
               },
             },
           },
@@ -109,6 +135,119 @@ export class CourseService {
 
     if (!course) throw new NotFoundException('Course not found');
     return course;
+  }
+
+  async getCoursePricingPlans(idOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+      },
+      select: { id: true, title: true, price: true, published: true },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const pricing = calculateCoursePricingLadder(course.price);
+    return {
+      courseId: course.id,
+      title: course.title,
+      price: course.price,
+      ...pricing,
+    };
+  }
+
+  async getCourseAccess(userId: string, idOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+      },
+      include: {
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+              select: { id: true, isFreePreview: true, orderIndex: true },
+            },
+          },
+        },
+      },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+
+    // Collect all lessons in sequential order
+    const orderedLessons: { id: string; isFreePreview: boolean }[] = [];
+    course.sections.forEach((sec) => {
+      sec.lessons.forEach((l) => {
+        orderedLessons.push({ id: l.id, isFreePreview: l.isFreePreview });
+      });
+    });
+
+    // Rule: First 2 lessons of the course (index 0 & 1) or any explicitly flagged isFreePreview are free preview
+    const freePreviewLessonIds = orderedLessons
+      .filter((l, idx) => idx < 2 || l.isFreePreview)
+      .map((l) => l.id);
+
+    // Instructor has full creator access
+    if (course.instructorId === userId) {
+      return {
+        hasAccess: true,
+        isInstructor: true,
+        accessType: 'INSTRUCTOR',
+        freePreviewLessonIds,
+        pricing: calculateCoursePricingLadder(course.price),
+      };
+    }
+
+    // Check course access entitlement (subscription)
+    const entitlement = await this.prisma.courseAccessEntitlement.findUnique({
+      where: {
+        userId_courseId: { userId, courseId: course.id },
+      },
+    });
+
+    const now = new Date();
+    if (
+      entitlement &&
+      entitlement.status === 'ACTIVE' &&
+      entitlement.expiresAt > now
+    ) {
+      return {
+        hasAccess: true,
+        isInstructor: false,
+        accessType: 'SUBSCRIPTION',
+        plan: entitlement.plan,
+        expiresAt: entitlement.expiresAt,
+        cancelAtPeriodEnd: entitlement.cancelAtPeriodEnd,
+        freePreviewLessonIds,
+        pricing: calculateCoursePricingLadder(course.price),
+      };
+    }
+
+    // Free course case
+    if (course.price === 0) {
+      return {
+        hasAccess: true,
+        isInstructor: false,
+        accessType: 'FREE_COURSE',
+        freePreviewLessonIds,
+        pricing: calculateCoursePricingLadder(0),
+      };
+    }
+
+    const isExpired = Boolean(
+      entitlement &&
+        (entitlement.status === 'EXPIRED' || entitlement.expiresAt <= now),
+    );
+
+    return {
+      hasAccess: false,
+      isInstructor: false,
+      accessType: 'NONE',
+      isExpired,
+      expiredAt: isExpired ? entitlement?.expiresAt : undefined,
+      freePreviewLessonIds,
+      pricing: calculateCoursePricingLadder(course.price),
+    };
   }
 
   async getProgress(userId: string, idOrSlug: string) {
@@ -253,13 +392,19 @@ export class CourseService {
       const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
       const updatedLongest = Math.max(currentLongest, newStreak);
 
-      // Fast Critical Path: Atomic transaction for enrollment & student profile (<50ms)
-      const [updatedEnrollment, updatedProfile] = await this.prisma.$transaction([
-        this.prisma.enrollment.update({
+      // Fast Critical Path: Atomic transaction for enrollment & student profile (<50ms).
+      // Interactive form so the level-crossing detection runs in the same
+      // transaction as the XP grant.
+      let updatedProfile = profile;
+      let levelUp: LevelUpPayload | null = null;
+
+      await this.prisma.$transaction(async (tx) => {
+        await tx.enrollment.update({
           where: { id: enrollment.id },
           data: { completedLessons: currentCompleted, progress },
-        }),
-        this.prisma.studentProfile.update({
+        });
+
+        updatedProfile = await tx.studentProfile.update({
           where: { userId },
           data: {
             xp: { increment: xpEarned },
@@ -271,16 +416,20 @@ export class CourseService {
             ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
             ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
           },
-        }),
-        this.prisma.gemTransaction.create({
+        });
+
+        // Detect a level crossing inside the same transaction and grant the bonus.
+        levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, updatedProfile.xp);
+
+        await tx.gemTransaction.create({
           data: {
             userId,
             type: 'EARN',
             amount: coinReward,
             source: 'LESSON',
           },
-        }),
-      ]);
+        });
+      });
 
       newXpTotal = updatedProfile.xp;
       newStreakDaysTotal = updatedProfile.streakDays;
@@ -310,9 +459,10 @@ export class CourseService {
       coinsEarned: isNewCompletion ? 5 : 0,
       newXp: newXpTotal,
       newStreakDays: newStreakDaysTotal,
-      newCoins: isNewCompletion ? (profile.coins + 5) : profile.coins,
+      newCoins: isNewCompletion ? (profile.coins + 5 + (levelUp?.bonusCoins ?? 0)) : profile.coins,
       sectionCompleted,
       isFirstStreakOfDay,
+      levelUp,
     };
   }
 
@@ -820,5 +970,80 @@ export class CourseService {
     return await this.prisma.lesson.delete({
       where: { id: lessonId },
     });
+  }
+  async unenrollUser(userId: string, idOrSlug: string) {
+    try {
+      console.log(`[Unenroll] Attempting to unenroll user ${userId} from course ${idOrSlug}`);
+      const course = await this.findOne(idOrSlug);
+      const courseId = course.id;
+
+      // 1. Cancel Stripe Subscription (if any)
+      try {
+        const subscriptions = await this.prisma.courseSubscription.findMany({
+          where: { userId, courseId, status: 'ACTIVE' },
+        });
+
+        for (const sub of subscriptions) {
+          if (sub.provider === 'STRIPE' && sub.providerSubscriptionId) {
+            try {
+              await this.stripeProvider.cancelSubscription(sub.providerSubscriptionId);
+            } catch (error: any) {
+              console.error(`[Unenroll] Failed to cancel Stripe subscription: ${error?.message || error}`);
+            }
+          }
+
+          await this.prisma.courseSubscription.update({
+            where: { id: sub.id },
+            data: {
+              status: 'CANCELLED',
+              autoRenew: false,
+              cancelledAt: new Date(),
+            },
+          });
+        }
+      } catch (subErr: any) {
+        console.warn(`[Unenroll] Error processing courseSubscription: ${subErr?.message || subErr}`);
+      }
+
+      // 2. Mark Entitlement as Cancelled
+      try {
+        const entitlements = await this.prisma.courseAccessEntitlement.findMany({
+          where: { userId, courseId, status: 'ACTIVE' },
+        });
+
+        for (const ent of entitlements) {
+          await this.prisma.courseAccessEntitlement.update({
+            where: { id: ent.id },
+            data: {
+              status: 'CANCELLED',
+              cancelAtPeriodEnd: true,
+            },
+          });
+        }
+      } catch (entErr: any) {
+        console.warn(`[Unenroll] Error processing courseAccessEntitlement: ${entErr?.message || entErr}`);
+      }
+
+      // 3. Delete Enrollment Record if exists (we keep UserCourseProgress as per design)
+      try {
+        const enrollment = await this.prisma.enrollment.findUnique({
+          where: { userId_courseId: { userId, courseId } },
+        });
+
+        if (enrollment) {
+          await this.prisma.enrollment.delete({
+            where: { id: enrollment.id },
+          });
+          console.log(`[Unenroll] Successfully deleted enrollment ${enrollment.id}`);
+        }
+      } catch (enrErr: any) {
+        console.warn(`[Unenroll] Error processing enrollment: ${enrErr?.message || enrErr}`);
+      }
+
+      return { message: 'Successfully unenrolled from course' };
+    } catch (err: any) {
+      console.error(`[Unenroll] Fatal error in unenrollUser:`, err);
+      throw err;
+    }
   }
 }

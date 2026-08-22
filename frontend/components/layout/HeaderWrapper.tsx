@@ -9,7 +9,11 @@ export default function HeaderWrapper() {
   const pathname = usePathname();
 
   // Waitlist routes: show the dedicated WaitlistHeader
-  const isWaitlistRoute = pathname === '/' || pathname === '/terms' || pathname === '/privacy';
+  const isWaitlistRoute =
+    pathname === '/' ||
+    pathname === '/terms' ||
+    pathname === '/privacy' ||
+    pathname?.startsWith('/blog');
 
   // Routes that show NO header at all
   const isHiddenRoute =
@@ -19,6 +23,7 @@ export default function HeaderWrapper() {
     pathname === '/creator/login' ||
     pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/courses') ||
     pathname.startsWith('/learn') ||
     pathname.startsWith('/creator');
 

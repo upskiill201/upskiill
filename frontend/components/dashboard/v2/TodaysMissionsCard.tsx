@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import { gsap } from 'gsap';
-import { Clock, BookOpen, Sparkles, Check } from 'lucide-react';
+import { Clock, BookOpen, Sparkles, Check, ArrowRight } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
 import { GamificationIcon } from '@/components/ui/GamificationIcon';
@@ -276,6 +276,7 @@ export default function TodaysMissionsCard() {
       title: `+${missionItem.reward.amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
       subtitle: `Daily Mission: "${missionItem.title}" Completed!`,
       rewards: [{ currency: rewardCurrency, amount: missionItem.reward.amount }],
+      skipBackendPersist: true,
       onClaim: async () => {
         if (missionItem.id.startsWith('m')) {
           await fetchMissions();
@@ -371,8 +372,7 @@ export default function TodaysMissionsCard() {
     <div ref={containerRef} className={styles.sectionWrapper}>
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
-          <Sparkles size={20} color="#0172FD" />
-          <h2 className={styles.sectionTitle}>TODAY&apos;S MISSIONS</h2>
+          <h2 className={styles.sectionTitle}>DAILY QUESTS</h2>
         </div>
         <div className={`${styles.resetTimer} ${isWarningReset ? styles.resetTimerWarning : ''}`}>
           <Clock size={15} />
@@ -430,54 +430,66 @@ export default function TodaysMissionsCard() {
                 )}
 
                 <div className={`${styles.iconWrap} ${iconClass}`}>{icon}</div>
-                <h3 className={styles.missionTitle}>{m.title}</h3>
 
-                {/* Tactile 3D Progress Bar */}
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressTrack3D}>
-                    <div
-                      className={[
-                        styles.progressFill3D,
-                        isCompleted ? styles.progressFillCompleted : '',
-                      ].join(' ')}
-                      style={{ width: `${pct}%` }}
-                    />
+                <div className={styles.missionContent}>
+                  <h3 className={styles.missionTitle}>{m.title}</h3>
+
+                  {/* Tactile 3D Progress Bar */}
+                  <div className={styles.progressContainer}>
+                    <div className={styles.progressTrack3D}>
+                      <div
+                        className={[
+                          styles.progressFill3D,
+                          isCompleted ? styles.progressFillCompleted : '',
+                        ].join(' ')}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className={styles.progressText}>
+                      {m.currentProgress} / {m.targetValue}
+                    </span>
                   </div>
-                  <span className={styles.progressText}>
-                    {m.currentProgress} / {m.targetValue}
-                  </span>
                 </div>
 
-                <div className={styles.rewardRow}>
-                  <span className={styles.rewardBadge}>
-                    <Image src={getRewardIcon(displayRewardType)} alt={displayRewardType} width={15} height={15} />
-                    +{m.reward.amount} {displayRewardType}
-                  </span>
-                </div>
+                <div className={styles.missionActionCol}>
+                  <div className={styles.rewardRow}>
+                    <span className={styles.rewardBadge}>
+                      <Image src={getRewardIcon(displayRewardType)} alt={displayRewardType} width={14} height={14} />
+                      +{m.reward.amount} {displayRewardType}
+                    </span>
+                  </div>
 
-                {/* Mission Action / Claim Button / Permanent Claimed Label */}
-                {isClaimed ? (
-                  <span className={styles.claimedTag}>
-                    <Check size={16} /> Claimed ✓
-                  </span>
-                ) : isCompleted ? (
-                  <button
-                    type="button"
-                    onClick={(e) => handleClaim(m, e)}
-                    disabled={isClaiming}
-                    className={`${styles.claimBtn3D} ${isShaking ? styles.claimBtnShake : ''}`}
-                  >
-                    {isClaiming ? 'Claiming...' : 'CLAIM REWARD'}
-                  </button>
-                ) : (
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#94A3B8', marginTop: '0.25rem' }}>
-                    In Progress
-                  </span>
-                )}
+                  {/* Mission Action / Claim Button / Permanent Claimed Label */}
+                  {isClaimed ? (
+                    <span className={styles.claimedTag}>
+                      <Check size={14} strokeWidth={3} /> Claimed
+                    </span>
+                  ) : isCompleted ? (
+                    <button
+                      type="button"
+                      onClick={(e) => handleClaim(m, e)}
+                      disabled={isClaiming}
+                      className={`${styles.claimBtn3D} ${isShaking ? styles.claimBtnShake : ''}`}
+                    >
+                      {isClaiming ? 'Claiming...' : 'CLAIM'}
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8' }}>
+                      In Progress
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })
         )}
+      </div>
+
+      <div className={styles.unlockBanner}>
+        <span className={styles.unlockBannerText}>Complete all quests to unlock chest!</span>
+        <div className={styles.unlockBannerIcon}>
+          <ArrowRight size={14} />
+        </div>
       </div>
     </div>
   );

@@ -404,7 +404,7 @@
   }
 
   .content {
-    padding: 20px 20px 84px !important;
+    padding: 16px 14px 84px !important;
   }
 
   .mobileBottomNav {
@@ -449,6 +449,16 @@
 
   .activeBottomItem {
     color: #0172FD;
+  }
+}
+
+@media (max-width: 360px) {
+  .content {
+    padding: 12px 8px 84px !important;
+  }
+  .mobileHeader {
+    padding: 8px 12px !important;
+    height: 52px !important;
   }
 }
 

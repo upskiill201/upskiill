@@ -7,6 +7,12 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import {
+  levelFromXp,
+  widthForLevel,
+  xpToNextLevel,
+  xpWithinLevel,
+} from '@/lib/levels';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -29,8 +35,6 @@ export interface GamificationState {
   dailyRewardCyclePosition: number;
   isEligibleForReward: boolean;
   nextRewardClaimInMs: number;
-  userLevel?: number;
-  xpInCurrentLevel?: number;
   isLoading: boolean;
 }
 
@@ -47,6 +51,8 @@ interface GamificationContextValue extends GamificationState {
   dismissStreakModal: () => void;
   userLevel: number;
   xpInCurrentLevel: number;
+  xpToNextLevel: number;
+  currentLevelWidth: number;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -123,8 +129,6 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
         isEligibleForReward: data.isEligibleForReward ?? true,
         nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
-        userLevel: data.userLevel,
-        xpInCurrentLevel: data.xpInCurrentLevel,
         isLoading: false,
       });
     } catch {
@@ -312,21 +316,15 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // level logic: exponential curve matching backend
-  let userLevel = state.userLevel || 1;
-  if (!state.userLevel) {
-    const totalXp = state.xp || 0;
-    while (true) {
-      const nextReq = 50 * userLevel * (userLevel + 1);
-      if (totalXp >= nextReq) {
-        userLevel++;
-      } else {
-        break;
-      }
-    }
-  }
-  const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
-  const xpInCurrentLevel = state.xpInCurrentLevel ?? Math.max(0, (state.xp || 0) - currentLevelBaseXp);
+  // Level logic — always derived locally from xp via the shared curve
+  // (lib/levels.ts mirrors backend/src/common/levels.ts bit-for-bit). Local
+  // derivation keeps level values correct even in optimistic-update windows
+  // (applyLessonReward / claimQuest) before the next server refresh.
+  const totalXp = state.xp || 0;
+  const userLevel = levelFromXp(totalXp);
+  const xpInCurrentLevel = xpWithinLevel(totalXp);
+  const xpToNextLevelValue = xpToNextLevel(totalXp);
+  const currentLevelWidth = widthForLevel(userLevel);
 
   return (
     <GamificationContext.Provider
@@ -344,6 +342,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         dismissStreakModal,
         userLevel,
         xpInCurrentLevel,
+        xpToNextLevel: xpToNextLevelValue,
+        currentLevelWidth,
       }}
     >
       {children}

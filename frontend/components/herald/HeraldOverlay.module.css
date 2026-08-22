@@ -24,6 +24,7 @@
   border-bottom: 6px solid #020617;
   border-radius: 24px;
   overflow: hidden;
+  box-sizing: border-box;
   box-shadow:
     0 20px 50px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.12) inset,
@@ -243,26 +244,64 @@
 @media (max-width: 600px) {
   .heraldRoot {
     top: 68px;
-    width: min(520px, calc(100vw - 24px));
+    width: calc(100vw - 16px);
   }
 
   .banner {
-    padding: 13px 15px;
-    gap: 12px;
+    padding: 12px 36px 12px 12px; /* Extra right padding for absolute dismiss button */
+    gap: 8px;
+    align-items: center; 
+  }
+  
+  .mascotContainer {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .mascotBadge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    bottom: -4px;
+    right: -4px;
+  }
+
+  .bannerCopy {
+    gap: 4px;
+  }
+
+  .bannerHeaderRow {
+    gap: 6px;
   }
 
   .bannerTitle {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    line-height: 1.1;
   }
 
   .bannerSubtitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .rewardTag {
+    padding: 2px 6px;
+    font-size: 0.7rem;
   }
 
   .claimBtn3D,
   .openBtn3D {
-    height: 38px;
-    padding: 0 14px;
-    font-size: 0.82rem;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .dismissBtn {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    top: 10px;
+    right: 8px;
   }
 }

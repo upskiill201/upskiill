@@ -11,7 +11,7 @@ interface MomentumCardProps {
 }
 
 export default function MomentumCard({ onAction }: MomentumCardProps) {
-  const { streakDays, isEligibleForReward, userLevel, xpInCurrentLevel, lastLessonCompletedAt } = useGamification();
+  const { streakDays, isEligibleForReward, userLevel, xpToNextLevel, lastLessonCompletedAt } = useGamification();
 
   // Priority order evaluation:
   // 1. Protect streak (if last lesson was completed > 24 hours ago)
@@ -35,7 +35,7 @@ export default function MomentumCard({ onAction }: MomentumCardProps) {
       xpReward = 15;
       coinReward = 10;
     } else {
-      const remainingXp = 100 - xpInCurrentLevel;
+      const remainingXp = Math.max(0, xpToNextLevel);
       icon = '/Icons/gem.png';
       title = `You're only ${remainingXp} XP away from Level ${userLevel + 1}!`;
       xpReward = 20;

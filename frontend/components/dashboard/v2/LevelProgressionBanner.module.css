@@ -1,0 +1,170 @@
+.banner {
+  background: linear-gradient(135deg, #0172FD 0%, #0052BF 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(1, 114, 253, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: visible;
+  color: #FFFFFF;
+}
+
+.avatarGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.mascotCircle {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.mascotImg {
+  object-fit: contain;
+}
+
+.levelBadge {
+  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+  border: 2px solid #BAE6FD;
+  border-radius: 10px;
+  padding: 3px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 0 #0369A1;
+  line-height: 1;
+}
+
+.levelLabel {
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #E0F2FE;
+  text-transform: uppercase;
+}
+
+.levelNum {
+  font-size: 15px;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.progressCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.progressTitle {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #FACC15 0%, #FB923C 100%);
+  border-radius: 9999px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.progressSub {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: right;
+}
+
+.chestContainer {
+  position: relative;
+  width: 52px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chestImg {
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(250, 204, 21, 0.45));
+  animation: floatChest 3s ease-in-out infinite;
+}
+
+@keyframes floatChest {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@media (max-width: 640px) {
+  .banner {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .mascotCircle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .levelBadge {
+    padding: 2px 6px;
+  }
+
+  .levelNum {
+    font-size: 13px;
+  }
+
+  .progressTitle {
+    font-size: 12px;
+  }
+
+  .progressTrack {
+    height: 8px;
+  }
+
+  .progressSub {
+    font-size: 9.5px;
+  }
+
+  .chestContainer {
+    width: 42px;
+    height: 38px;
+  }
+}

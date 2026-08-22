@@ -26,6 +26,7 @@ import Step16Content from './steps/Step16Content';
 import DuolingoButton3D from './DuolingoButton3D';
 
 import { getOnboardingData, saveOnboardingStep, saveDraftId, clearOnboardingData } from '@/lib/onboarding';
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 
 interface CreatorOnboardingShellProps {
   initialStep: number;
@@ -39,6 +40,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   // Step Data State (Optimistic In-Memory)
   const [step2Type, setStep2Type] = useState<string | null>(null);
@@ -68,6 +70,22 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
     if (data.step8?.teachingStyle) setStep8Revenue(data.step8.teachingStyle);
     if (data.step12?.courseFormat) setStep12Format(data.step12.courseFormat);
     if (data.step13?.communityOption) setStep13Community(data.step13.communityOption);
+
+    // Hydrate user info if available from cache or server
+    const cached = getCachedUser();
+    if (cached?.fullName) {
+      setStep15Data((prev) => ({ ...prev, fullName: cached.fullName || prev.fullName, email: cached.email || prev.email }));
+    } else {
+      fetch('/api/auth/me', { credentials: 'include' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((user) => {
+          if (user?.fullName) {
+            setCachedUser(user);
+            setStep15Data((prev) => ({ ...prev, fullName: user.fullName, email: user.email || prev.email }));
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   // Sync with browser URL back/forward navigation
@@ -153,7 +171,14 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
   };
 
   const handleStep15Change = (field: string, value: string) => {
+    setAuthError('');
     setStep15Data((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleGoogleSuccess = (name: string, email: string) => {
+    setAuthError('');
+    setStep15Data((prev) => ({ ...prev, fullName: name, email }));
+    goToStep(16);
   };
 
   // Next Step Advance Router
@@ -235,21 +260,70 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
       posthog.capture('onboarding_step_completed', { step: 14 });
       goToStep(15);
     } else if (currentStep === 15) {
+      if (!step15Data.fullName.trim() || !step15Data.email.trim() || !step15Data.password) {
+        setAuthError('Please fill in all fields to create your account.');
+        return;
+      }
+      if (step15Data.password.length < 6) {
+        setAuthError('Password must be at least 6 characters.');
+        return;
+      }
+
       setIsLoading(true);
-      // Simulate / perform creation sync
-      saveOnboardingStep(15, { accountCreated: true });
-      posthog.capture('creator_account_created', { email: step15Data.email });
-      setTimeout(() => {
-        setIsLoading(false);
+      setAuthError('');
+
+      try {
+        const onboardingData = getOnboardingData();
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: step15Data.email.toLowerCase().trim(),
+            password: step15Data.password,
+            fullName: step15Data.fullName.trim(),
+            role: 'INSTRUCTOR',
+            draftId: onboardingData.draftId,
+            onboarding: onboardingData,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (data.requiresVerification) {
+            saveOnboardingStep(15, { accountCreated: true, email: step15Data.email });
+            window.location.href = `/creator/verify-pending?email=${encodeURIComponent(data.email || step15Data.email)}`;
+            return;
+          }
+          const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
+          throw new Error(errMsg || 'Account creation failed');
+        }
+
+        if (data.requiresVerification) {
+          saveOnboardingStep(15, { accountCreated: true, email: step15Data.email });
+          window.location.href = `/creator/verify-pending?email=${encodeURIComponent(step15Data.email)}`;
+          return;
+        }
+
+        // Account is active and session token is issued
+        saveOnboardingStep(15, { accountCreated: true });
+        if (data.user || data) setCachedUser(data.user || data);
+        posthog.capture('creator_account_created', { email: step15Data.email, method: 'email' });
         goToStep(16);
-      }, 600);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Registration failed';
+        setAuthError(msg);
+      } finally {
+        setIsLoading(false);
+      }
     } else if (currentStep === 16) {
       setIsLoading(true);
       clearOnboardingData();
       posthog.capture('creator_studio_entered');
       setTimeout(() => {
-        router.push('/creator/dashboard');
-      }, 500);
+        window.location.href = '/creator';
+      }, 300);
     }
   };
 
@@ -271,7 +345,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
     if (currentStep === 8 && !step8Revenue) return true;
     if (currentStep === 12 && !step12Format) return true;
     if (currentStep === 13 && !step13Community) return true;
-    if (currentStep === 15 && (!step15Data.fullName || !step15Data.email)) return true;
+    if (currentStep === 15 && (!step15Data.fullName.trim() || !step15Data.email.trim() || !step15Data.password || step15Data.password.length < 6)) return true;
     return false;
   };
 
@@ -466,12 +540,15 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
               <Step15Content
                 formData={step15Data}
                 onChange={handleStep15Change}
+                authError={authError}
+                onGoogleSuccess={handleGoogleSuccess}
+                onSubmit={handleNext}
               />
             )}
 
             {currentStep === 16 && (
               <Step16Content
-                creatorName={step15Data.fullName}
+                creatorName={step15Data.fullName || getCachedUser()?.fullName || ''}
               />
             )}
           </motion.div>

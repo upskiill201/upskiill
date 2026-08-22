@@ -65,14 +65,14 @@ export default function HeraldSpinReveal() {
 
     Promise.all([
       fetch('/api/v2/spin/current-week', { credentials: 'include' }).then((r) =>
-        r.json()
+        r.ok ? r.json() : null
       ),
       fetch('/api/v2/spin/wheel-config', { credentials: 'include' }).then((r) =>
-        r.json()
+        r.ok ? r.json() : null
       ),
     ])
       .then(([statusData, configData]) => {
-        if (statusData.status) {
+        if (statusData && statusData.status) {
           setSpinState(statusData.status);
           if (statusData.status === 'SPUN') {
             setPrizeMessage(
@@ -80,7 +80,7 @@ export default function HeraldSpinReveal() {
             );
           }
         }
-        if (Array.isArray(configData)) {
+        if (Array.isArray(configData) && configData.length > 0) {
           setWheelConfig(configData);
         }
       })

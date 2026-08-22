@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Lock, CheckCircle2, Layers, BarChart2, LayoutGrid, Info, Star, Users, Clock, Check } from 'lucide-react';
+import { ArrowLeft, BookOpen, Lock, CheckCircle2, Layers, BarChart2, LayoutGrid, Info, Star, Users, Clock, Check, X } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import { RightSidebar } from '@/components/layout/RightSidebar';
@@ -58,6 +58,8 @@ const popoverItemVariants = {
   visible: { opacity: 1, x: 0, scale: 1, transition: SPRING_BOUNCE },
 };
 
+import CoursePaywallModal from '@/components/features/course-paywall/CoursePaywallModal';
+
 interface LearnCourseContentProps {
   course: any;
   completedLessons: string[];
@@ -68,7 +70,66 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
-  
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isUnenrollModalOpen, setIsUnenrollModalOpen] = useState(false);
+  const [unenrollLoading, setUnenrollLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const res = await fetch(`/api/courses/${params.id}/access`, { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setHasAccess(data.hasAccess === true);
+        }
+      } catch {
+        // default to preview
+      }
+    };
+    checkAccess();
+  }, [params.id]);
+
+  const handleUnenroll = async () => {
+    try {
+      setUnenrollLoading(true);
+      const courseIdOrSlug = course.id || course.slug || params.id;
+      const res = await fetch(`/api/courses/${courseIdOrSlug}/enrollment`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        setToastMessage({ message: 'Successfully unenrolled. Redirecting...', type: 'success' });
+        setIsUnenrollModalOpen(false);
+        setTimeout(() => router.push('/dashboard/my-learning'), 1500);
+      } else {
+        const text = await res.text();
+        let err: any = null;
+        try {
+          err = JSON.parse(text);
+        } catch {
+          err = { message: text };
+        }
+        console.error('Unenroll error status:', res.status, 'body:', err);
+        setToastMessage({ 
+          message: err?.error?.message || err?.message || 'Failed to unenroll. Please try again.', 
+          type: 'error' 
+        });
+      }
+    } catch (e: any) {
+      console.error('Unenroll fetch exception:', e);
+      setToastMessage({ message: e?.message || 'A network error occurred. Please try again.', type: 'error' });
+    } finally {
+      setUnenrollLoading(false);
+    }
+  };
+
   // Live stats are rendered by <StatsBar /> from the global gamification context
 
   const sections = course.sections || course.curriculum || [];
@@ -97,13 +158,17 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
   const handleStartOrContinue = (sIdx?: number) => {
     playHaptic('medium');
     const targetIndex = sIdx !== undefined ? sIdx : currentActiveIndex;
+    if (targetIndex > 0 && !hasAccess) {
+      setIsPaywallOpen(true);
+      return;
+    }
     router.push(`/learn/${params.id}/section/${targetIndex}`);
   };
 
   const handleJumpToSection = (sIdx: number, isLocked: boolean) => {
     playHaptic('medium');
-    if (isLocked) {
-      triggerComingSoon('Unlock this section by earning more XP!');
+    if ((isLocked || sIdx > 0) && !hasAccess) {
+      setIsPaywallOpen(true);
     } else {
       router.push(`/learn/${params.id}/section/${sIdx}`);
     }
@@ -510,6 +575,17 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
               );
             })}
           </div>
+
+          {/* Unenroll Section */}
+          <div className={styles.unenrollContainer}>
+            <button
+              onClick={() => setIsUnenrollModalOpen(true)}
+              className={styles.unenrollBtn}
+              aria-label="Unenroll from course"
+            >
+              Unenroll from Course
+            </button>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: sticky sidebar */}
@@ -517,6 +593,128 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
           <RightSidebar course={course} completedLessons={completedLessons} />
         </div>
       </div>
+
+      {/* CUSTOM TOAST */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className={`${styles.customToast} ${toastMessage.type === 'error' ? styles.toastError : styles.toastSuccess}`}
+          >
+            {toastMessage.type === 'success' ? (
+              <CheckCircle2 size={18} />
+            ) : (
+              <Info size={18} />
+            )}
+            <span>{toastMessage.message}</span>
+            <button className={styles.toastClose} onClick={() => setToastMessage(null)}>
+              <X size={16} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* UNENROLL CONFIRMATION MODAL */}
+      <AnimatePresence>
+        {isUnenrollModalOpen && (
+          <div className={styles.modalBackdrop} style={{ zIndex: 99999 }}>
+            <motion.div
+              className={styles.modalContent}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            >
+              <h3 className={styles.modalTitle}>Cancel Subscription & Unenroll?</h3>
+              <p className={styles.modalDescription}>
+                Are you sure you want to unenroll from <strong>{course.title}</strong>? 
+                This will immediately cancel any active subscriptions. Your learning progress will be saved if you decide to return.
+              </p>
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.modalCancelBtn}
+                  onClick={() => setIsUnenrollModalOpen(false)}
+                  disabled={unenrollLoading}
+                >
+                  Keep Learning
+                </button>
+                <button
+                  className={styles.modalConfirmBtn}
+                  onClick={handleUnenroll}
+                  disabled={unenrollLoading}
+                >
+                  {unenrollLoading ? 'Unenrolling...' : 'Yes, Unenroll'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── MOBILE GAMIFIED SIDEBAR FLOATING ACTION BUTTON ─── */}
+      <button
+        type="button"
+        onClick={() => {
+          playHaptic('medium');
+          setMobileSidebarOpen(true);
+        }}
+        className={styles.mobileSidebarFab}
+        aria-label="Open Gamified Quests & Sidebar"
+      >
+        <Image src="/Tressure box.png" width={26} height={26} alt="Quests" priority />
+        <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
+      </button>
+
+      {/* ─── MOBILE SIDEBAR DRAWER OVERLAY ─── */}
+      <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
+        <div className={styles.mobileSidebarHeader}>
+          <div className={styles.drawerTitleRow}>
+            <Image src="/Tressure box.png" width={24} height={24} alt="Quests" />
+            <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => {
+              playHaptic('light');
+              setMobileSidebarOpen(false);
+            }} 
+            className={styles.mobileSidebarCloseBtn}
+            aria-label="Close drawer"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
+        </div>
+        <div className={styles.mobileSidebarBody}>
+          <RightSidebar course={course} completedLessons={completedLessons} />
+        </div>
+      </div>
+
+      {/* Backdrop for mobile sidebar */}
+      {mobileSidebarOpen && (
+        <div 
+          className={styles.mobileSidebarBackdrop} 
+          onClick={() => {
+            playHaptic('light');
+            setMobileSidebarOpen(false);
+          }} 
+        />
+      )}
+
+      {/* ── COURSE ACCESS PAYWALL MODAL ── */}
+      <CoursePaywallModal
+        isOpen={isPaywallOpen}
+        onClose={() => setIsPaywallOpen(false)}
+        courseId={course.id || (params.id as string)}
+        courseTitle={course.title}
+        basePrice={course.price || 30}
+        course={course}
+        completedLessons={completedLessons}
+        onSuccess={() => {
+          setIsPaywallOpen(false);
+          setHasAccess(true);
+        }}
+      />
     </motion.div>
   );
 }

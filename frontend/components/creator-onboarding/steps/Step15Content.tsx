@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { User, Mail, Lock, Eye, EyeOff, Sparkles, CheckCircle2 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { signInWithGoogle } from '@/lib/firebase';
+import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
+import { setCachedUser } from '@/lib/user-cache';
+import posthog from 'posthog-js';
 
 interface Step15ContentProps {
   formData: {
@@ -13,25 +16,77 @@ interface Step15ContentProps {
     password: string;
   };
   onChange: (field: string, value: string) => void;
+  authError?: string;
+  onGoogleSuccess?: (name: string, email: string) => void;
+  onSubmit?: () => void;
 }
 
 export default function Step15Content({
   formData,
   onChange,
+  authError,
+  onGoogleSuccess,
+  onSubmit,
 }: Step15ContentProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [localError, setLocalError] = useState('');
+
+  const displayError = authError || localError;
 
   const handleGoogleSignup = async () => {
     try {
+      setLocalError('');
       setIsGoogleLoading(true);
       const result = await signInWithGoogle();
-      if (result?.user?.displayName) onChange('fullName', result.user.displayName);
-      if (result?.user?.email) onChange('email', result.user.email);
-    } catch (err) {
+      const idToken = await result.user.getIdToken();
+      const onboardingData = getOnboardingData();
+
+      const res = await fetch('/api/auth/firebase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          idToken,
+          role: 'INSTRUCTOR',
+          draftId: onboardingData.draftId,
+          onboarding: onboardingData,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Google authentication failed');
+      }
+
+      if (data) {
+        setCachedUser(data.user || data);
+      }
+
+      const displayName = result?.user?.displayName || data?.user?.fullName || data?.fullName || 'Creator';
+      const userEmail = result?.user?.email || data?.user?.email || data?.email || '';
+
+      onChange('fullName', displayName);
+      onChange('email', userEmail);
+      saveOnboardingStep(15, { accountCreated: true, method: 'google' });
+      posthog.capture('creator_account_created', { email: userEmail, method: 'google' });
+
+      if (onGoogleSuccess) {
+        onGoogleSuccess(displayName, userEmail);
+      }
+    } catch (err: unknown) {
       console.error(err);
+      const msg = err instanceof Error ? err.message : 'Google authentication failed';
+      setLocalError(msg);
     } finally {
       setIsGoogleLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && onSubmit) {
+      e.preventDefault();
+      onSubmit();
     }
   };
 
@@ -82,10 +137,10 @@ export default function Step15Content({
             type="button"
             onClick={handleGoogleSignup}
             disabled={isGoogleLoading}
-            className="w-full h-[48px] rounded-2xl border-2 border-gray-200 border-b-[4px] border-b-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 font-extrabold text-[14.5px] text-gray-800 transition-all active:translate-y-[1px]"
+            className="w-full h-[48px] rounded-2xl border-2 border-gray-200 border-b-[4px] border-b-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 font-extrabold text-[14.5px] text-gray-800 transition-all active:translate-y-[1px] cursor-pointer disabled:opacity-50"
           >
             <FcGoogle size={20} />
-            <span>Continue with Google</span>
+            <span>{isGoogleLoading ? 'Connecting with Google...' : 'Continue with Google'}</span>
           </button>
 
           <div className="relative flex items-center justify-center my-4">
@@ -95,7 +150,13 @@ export default function Step15Content({
             </span>
           </div>
 
-          <div className="flex flex-col gap-3">
+          {displayError && (
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[13px] font-semibold">
+              {displayError}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3" onKeyDown={handleKeyDown}>
             {/* Full Name */}
             <div>
               <label className="block text-[13px] font-extrabold text-gray-700 mb-1">
@@ -107,7 +168,10 @@ export default function Step15Content({
                   type="text"
                   placeholder="e.g. Sarah Jenkins"
                   value={formData.fullName}
-                  onChange={(e) => onChange('fullName', e.target.value)}
+                  onChange={(e) => {
+                    setLocalError('');
+                    onChange('fullName', e.target.value);
+                  }}
                   className="w-full h-[48px] pl-10 pr-4 rounded-xl border-2 border-gray-200 focus:border-blue-600 outline-none text-[14.5px] font-medium text-gray-900 transition-colors"
                 />
               </div>
@@ -124,7 +188,10 @@ export default function Step15Content({
                   type="email"
                   placeholder="sarah@example.com"
                   value={formData.email}
-                  onChange={(e) => onChange('email', e.target.value)}
+                  onChange={(e) => {
+                    setLocalError('');
+                    onChange('email', e.target.value);
+                  }}
                   className="w-full h-[48px] pl-10 pr-4 rounded-xl border-2 border-gray-200 focus:border-blue-600 outline-none text-[14.5px] font-medium text-gray-900 transition-colors"
                 />
               </div>
@@ -139,15 +206,18 @@ export default function Step15Content({
                 <Lock size={18} className="absolute left-3.5 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Minimum 8 characters"
+                  placeholder="Minimum 6 characters"
                   value={formData.password}
-                  onChange={(e) => onChange('password', e.target.value)}
+                  onChange={(e) => {
+                    setLocalError('');
+                    onChange('password', e.target.value);
+                  }}
                   className="w-full h-[48px] pl-10 pr-10 rounded-xl border-2 border-gray-200 focus:border-blue-600 outline-none text-[14.5px] font-medium text-gray-900 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3.5 text-gray-400 hover:text-gray-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>

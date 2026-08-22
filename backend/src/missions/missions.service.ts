@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
 
 export type ObjectiveType = 'LESSON_COUNT' | 'XP_EARNED' | 'STREAK_ACTIVE';
 export type RewardType = 'XP' | 'COINS' | 'GEMS';
@@ -435,11 +436,18 @@ export class MissionsService {
       let updatedProfile;
       const displayReward = mission.rewardType === 'GEMS' ? 'COINS' : mission.rewardType;
 
+      const profileBefore = await tx.studentProfile.findUnique({ where: { userId } });
+      let levelUp: LevelUpPayload | null = null;
+
       if (displayReward === 'XP') {
         updatedProfile = await tx.studentProfile.update({
           where: { userId },
           data: { xp: { increment: mission.rewardAmount } },
         });
+        // Detect a level crossing inside the same transaction and grant the bonus.
+        if (profileBefore) {
+          levelUp = await applyLevelUpsInTx(tx, userId, profileBefore.xp, updatedProfile.xp);
+        }
       } else if (displayReward === 'COINS') {
         updatedProfile = await tx.studentProfile.update({
           where: { userId },
@@ -480,6 +488,7 @@ export class MissionsService {
           gems: updatedProfile?.gems ?? 0,
         },
         allMissionsClaimed,
+        levelUp,
       };
     });
   }

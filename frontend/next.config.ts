@@ -5,8 +5,27 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // Required for next-mdx-remote under Turbopack (blog MDX pipeline)
+  transpilePackages: ['next-mdx-remote'],
+  // Guarantee the blog OG-image fonts ship with the server bundle
+  outputFileTracingIncludes: {
+    '/blog': ['./app/blog/_fonts/**'],
+    '/blog/[slug]': ['./app/blog/_fonts/**'],
+  },
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',

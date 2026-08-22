@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import LearnSectionSkeleton from './LearnSectionSkeleton';
 import { StatsBar } from '@/components/ui/StatsBar';
+import CoursePaywallModal from '@/components/features/course-paywall/CoursePaywallModal';
 import confetti from 'canvas-confetti';
 import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
@@ -327,6 +328,31 @@ function SectionViewContent({
   const [earnedRewards, setEarnedRewards] = useState<{ xp: number; coins: number; isNewCompletion: boolean }>({ xp: 20, coins: 5, isNewCompletion: true });
   const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
   const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
+  const [showPaywall, setShowPaywall] = useState<boolean>(false);
+  const [accessInfo, setAccessInfo] = useState<{
+    hasAccess: boolean;
+    isInstructor?: boolean;
+    isExpired?: boolean;
+    freePreviewLessonIds?: string[];
+  } | null>(null);
+
+  const fetchAccess = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/courses/${course?.id || params.id}/access`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAccessInfo(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch course access:', err);
+    }
+  }, [course?.id, params.id]);
+
+  useEffect(() => {
+    fetchAccess();
+  }, [fetchAccess]);
 
   // Animated counters & progress bar fill states for Duolingo victory stepper
   const [displayXp, setDisplayXp] = useState<number>(0);
@@ -994,6 +1020,18 @@ function SectionViewContent({
     if (item.type === 'lesson') {
       const fullLesson = lessons.find((l: any) => l.id === item.id);
       if (fullLesson) {
+        // Check if lesson is free preview or if user has active entitlement
+        const isFree = accessInfo?.freePreviewLessonIds?.length 
+          ? accessInfo.freePreviewLessonIds.includes(item.id)
+          : (item.lessonIndex !== undefined && item.lessonIndex < 2);
+        
+        const isUnlocked = accessInfo?.hasAccess || isFree;
+
+        if (!isUnlocked) {
+          setShowPaywall(true);
+          return;
+        }
+
         setActiveLesson(fullLesson);
       } else {
         triggerComingSoon(`Lesson Player: ${item.title}`);
@@ -1082,7 +1120,7 @@ function SectionViewContent({
                   >
                     <ArrowLeft size={18} strokeWidth={3} color="white" />
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: 'clamp(10px, 2.5vw, 11px)', fontWeight: 800, letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <span>SECTION {sectionIndex + 1}, UNIT 1</span>
                         {isReviewMode && (
                           <span style={{ backgroundColor: '#22C55E', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 900 }}>
@@ -1090,7 +1128,7 @@ function SectionViewContent({
                           </span>
                         )}
                       </span>
-                      <h1 className={styles.headerTitleText} style={{ color: 'white', margin: 0, padding: 0, fontSize: '20px', fontWeight: 800, lineHeight: 1.2 }}>
+                      <h1 className={styles.headerTitleText} style={{ color: 'white', margin: 0, padding: 0, fontSize: 'clamp(17px, 4vw, 20px)', fontWeight: 800, lineHeight: 1.2 }}>
                         {section.title}
                       </h1>
                     </div>
@@ -2081,6 +2119,7 @@ function SectionViewContent({
                               { currency: 'XP', amount: earnedRewards.xp },
                               { currency: 'COINS', amount: earnedRewards.coins },
                             ],
+                            skipBackendPersist: true,
                             onComplete: () => {
                               setIsRewardsCollected(true);
                               setCelebrateStep(4);
@@ -2188,14 +2227,14 @@ function SectionViewContent({
                 
                 {/* Always Visible Big Mascots on Left/Right Backdrop */}
                 <div className={styles.pathMascotLeft}>
-                  <Image
-                    src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
-                    alt="Tey Mascot Left"
-                    width={130}
-                    height={130}
-                    className={styles.sideMascotImg}
-                    priority
-                  />
+                    <Image
+                      src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+                      alt="Tey Mascot Left"
+                      width={100}
+                      height={100}
+                      className={styles.sideMascotImg}
+                      priority
+                    />
                 </div>
 
                 <div className={styles.pathMascotRight}>
@@ -2550,6 +2589,20 @@ function SectionViewContent({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Course Unlock Paywall Modal */}
+      <CoursePaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        courseId={course?.id || String(params.id)}
+        courseTitle={course?.title}
+        basePrice={course?.price || 30}
+        course={course}
+        completedLessons={completedLessons}
+        onSuccess={() => {
+          fetchAccess();
+        }}
+      />
     </motion.div>
   );
 }

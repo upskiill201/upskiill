@@ -330,7 +330,7 @@ export default function DashboardLayout({
                   <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" className={styles.profileAvatar} />
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{userName}</span>
-                    <span className={styles.sidebarCardSubtitle}>Level {userLevel} 👑</span>
+                    <span className={styles.sidebarCardSubtitle}>Level {userLevel}</span>
                   </div>
                   <ChevronRight size={14} className={styles.sidebarCardChevron} />
                 </div>

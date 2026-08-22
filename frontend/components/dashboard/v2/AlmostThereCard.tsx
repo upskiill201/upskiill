@@ -10,11 +10,11 @@ interface AlmostThereCardProps {
 }
 
 export default function AlmostThereCard({ onAction }: AlmostThereCardProps) {
-  const { xpInCurrentLevel, userLevel } = useGamification();
+  const { xpInCurrentLevel, xpToNextLevel, currentLevelWidth, userLevel } = useGamification();
 
-  const targetXp = 100;
-  const remaining = Math.max(0, targetXp - xpInCurrentLevel);
-  const pct = Math.round((xpInCurrentLevel / targetXp) * 100);
+  const targetXp = currentLevelWidth;
+  const remaining = Math.max(0, xpToNextLevel);
+  const pct = Math.min(100, Math.round((xpInCurrentLevel / targetXp) * 100));
 
   return (
     <div className={styles.card}>

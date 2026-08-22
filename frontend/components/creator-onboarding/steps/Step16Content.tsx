@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { PartyPopper, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+import { getCachedUser } from '@/lib/user-cache';
+
 interface Step16ContentProps {
   creatorName: string;
 }
@@ -12,6 +14,8 @@ interface Step16ContentProps {
 export default function Step16Content({
   creatorName,
 }: Step16ContentProps) {
+  const displayName = creatorName || getCachedUser()?.fullName || 'Creator';
+
   useEffect(() => {
     // Fire festive celebration confetti
     try {
@@ -32,7 +36,7 @@ export default function Step16Content({
         <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-violet-50 border border-violet-200 mb-4 shadow-sm">
           <PartyPopper size={18} className="text-violet-600" />
           <span className="text-[14px] font-extrabold text-violet-700">
-            All set, {creatorName || 'Creator'}!
+            All set, {displayName}!
           </span>
         </div>
 

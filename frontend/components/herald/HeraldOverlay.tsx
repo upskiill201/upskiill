@@ -115,6 +115,7 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
       title: `+${amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
       subtitle: notification.title || 'Reward Ready to Claim!',
       rewards: [{ currency: rewardCurrency, amount }],
+      skipBackendPersist: true,
       onClaim: async () => {
         if (notification.type === 'WEEKLY_PROGRESS') return;
         if (!notification.missionId) return;
@@ -284,9 +285,9 @@ export default function HeraldOverlay() {
         <motion.div
           key={activeNotification.id}
           className={styles.heraldRoot}
-          initial={{ opacity: 0, y: -60, scale: 0.9, rotateX: 10 }}
-          animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-          exit={{ opacity: 0, y: -40, scale: 0.92 }}
+          initial={{ opacity: 0, x: "-50%", y: -60, scale: 0.9, rotateX: 10 }}
+          animate={{ opacity: 1, x: "-50%", y: 0, scale: 1, rotateX: 0 }}
+          exit={{ opacity: 0, x: "-50%", y: -40, scale: 0.92 }}
           transition={{ type: 'spring', stiffness: 480, damping: 28 }}
         >
           <HeraldBanner

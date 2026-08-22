@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   Req,
@@ -14,6 +15,63 @@ import type { Request } from 'express';
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
+
+  // ── COURSE ACCESS SUBSCRIPTIONS (MULTI-RAIL) ─────────────────────────────────
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('subscribe')
+  async subscribeCourse(
+    @Req() req: Request,
+    @Body('courseId') courseId: string,
+    @Body('plan') plan: 'WEEKLY' | 'MONTHLY' | 'YEARLY',
+    @Body('provider') provider?: 'STRIPE' | 'MESOMB' | 'MANUAL',
+    @Body('phone') phone?: string,
+    @Body('service') service?: string,
+    @Body('pricePaid') pricePaid?: number,
+    @Body('successUrl') successUrl?: string,
+    @Body('cancelUrl') cancelUrl?: string,
+  ) {
+    if (!courseId) {
+      throw new BadRequestException('Course ID is required');
+    }
+    const validPlans = ['WEEKLY', 'MONTHLY', 'YEARLY'];
+    const chosenPlan = validPlans.includes(plan) ? plan : 'MONTHLY';
+    const userId = (req.user as { id: string }).id;
+
+    return this.paymentService.subscribeCourse(
+      userId,
+      courseId,
+      chosenPlan,
+      provider || 'STRIPE',
+      {
+        phone,
+        service,
+        pricePaid,
+        successUrl,
+        cancelUrl,
+      },
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('cancel-subscription')
+  async cancelSubscription(
+    @Req() req: Request,
+    @Body('courseId') courseId: string,
+  ) {
+    if (!courseId) {
+      throw new BadRequestException('Course ID is required');
+    }
+    const userId = (req.user as { id: string }).id;
+    return this.paymentService.cancelCourseSubscription(userId, courseId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('my-subscriptions')
+  async getMySubscriptions(@Req() req: Request) {
+    const userId = (req.user as { id: string }).id;
+    return this.paymentService.getMySubscriptions(userId);
+  }
 
   // ── STRIPE ──────────────────────────────────────────────────────────────────
 

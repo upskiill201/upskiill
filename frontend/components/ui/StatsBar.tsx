@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { StatPill, StatType } from './StatPill';
 import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
+import { playHaptic } from '@/lib/haptics';
 import StreakPopover from '@/components/streak/StreakPopover';
 import CoinsPopover from '@/components/coins/CoinsPopover';
 import styles from './StatsBar.module.css';
@@ -72,6 +73,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   }, []);
 
   const handleStreakClick = () => {
+    playHaptic('medium');
     if (onStreakClick) {
       onStreakClick();
     } else {
@@ -80,6 +82,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   };
 
   const handleCoinClick = () => {
+    playHaptic('medium');
     if (onCoinsClick) {
       onCoinsClick();
     } else {
