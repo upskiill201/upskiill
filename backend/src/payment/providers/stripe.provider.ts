@@ -43,8 +43,12 @@ export class StripeProvider implements IPaymentProvider {
 
       const planInterval = intervalMap[plan] || intervalMap.MONTHLY;
 
-      // If Stripe secret is a mock placeholder (or in test environment), create an active test response
-      if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('placeholder')) {
+      // Mock activation ONLY outside production — a missing/placeholder key
+      // in production previously granted free access to every course.
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('placeholder'))
+      ) {
         this.logger.log(
           `[Stripe Test Mode] Auto-activating subscription for User: ${userId}, Course: ${courseId}, Plan: ${plan}`,
         );
@@ -76,6 +80,14 @@ export class StripeProvider implements IPaymentProvider {
         }
       }
 
+      // App origin used for checkout return URLs. Matches the fallback chain
+      // used by auth/email services (APP_URL) with the frontend-style
+      // NEXT_PUBLIC_APP_URL taking precedence when both are present.
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.APP_URL ||
+        'http://localhost:3000';
+
       // Create Stripe Checkout Session in subscription mode
       const session = await this.stripe.checkout.sessions.create({
         customer: customerId,
@@ -100,10 +112,9 @@ export class StripeProvider implements IPaymentProvider {
         mode: 'subscription',
         success_url:
           successUrl ||
-          `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/courses/${courseId}?session_id={CHECKOUT_SESSION_ID}&unlocked=true`,
+          `${appUrl}/courses/${courseId}?session_id={CHECKOUT_SESSION_ID}&unlocked=true`,
         cancel_url:
-          cancelUrl ||
-          `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/courses/${courseId}?cancelled=true`,
+          cancelUrl || `${appUrl}/courses/${courseId}?cancelled=true`,
         metadata: {
           userId,
           courseId,

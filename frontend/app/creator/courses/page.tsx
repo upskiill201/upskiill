@@ -159,10 +159,13 @@ export default function CreatorCoursesPage() {
       if (res.ok) {
         setCourses(prev => prev.filter(c => c.id !== courseId));
       } else {
-        alert('Failed to delete course.');
+        // Surface the server's reason — e.g. "has N enrolled students, unpublish instead"
+        const errData = await res.json().catch(() => null);
+        alert(errData?.message || 'Failed to delete course.');
       }
     } catch (err) {
       console.error('Error deleting course:', err);
+      alert('A network error occurred while deleting the course.');
     }
   };
 

@@ -1,6 +1,7 @@
-import { Injectable, BadRequestException, GoneException } from '@nestjs/common';
+import { Injectable, GoneException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import * as crypto from 'crypto';
 
 const DEFAULT_SEGMENTS = [
@@ -16,7 +17,10 @@ const DEFAULT_SEGMENTS = [
 
 @Injectable()
 export class SpinService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * Helper to compute Monday of the week in user's local timezone.
@@ -67,8 +71,8 @@ export class SpinService {
 
   async executeSpin(userId: string, timezoneOffsetMinutes: number = 0) {
     const weekStart = this.getLocalWeekStart(timezoneOffsetMinutes);
-    
-    return await this.prisma.$transaction(async (tx) => {
+
+    const updatedSpin = await this.prisma.$transaction(async (tx) => {
       // 1. Get current week spin
       let currentSpin = await tx.weeklySpin.findUnique({
         where: { userId_weekStart: { userId, weekStart } },
@@ -104,90 +108,95 @@ export class SpinService {
       }
 
       // 3. Weighted roll with CSPRNG
-      const totalWeight = segments.reduce((sum, seg) => sum + seg.weight, 0);
-      const randInt = crypto.randomInt(0, totalWeight);
+      const totalWeight = segments.reduce((sum, seg) => sum + (seg.weight || 1), 0);
+      const randInt = crypto.randomInt(0, Math.max(1, totalWeight));
       
       let runningSum = 0;
       let winningSegment = segments[0];
       for (const seg of segments) {
-        runningSum += seg.weight;
+        runningSum += (seg.weight || 1);
         if (randInt < runningSum) {
           winningSegment = seg;
           break;
         }
       }
 
-      const rewardAmount = Math.floor(Math.random() * (winningSegment.amountMax - winningSegment.amountMin + 1)) + winningSegment.amountMin;
+      let rewardAmount = Math.floor(Math.random() * (winningSegment.amountMax - winningSegment.amountMin + 1)) + winningSegment.amountMin;
+      let rewardType = winningSegment.rewardType;
 
-      // 4. Update the spin row to lock it
+      // 4. Full hearts substitution (+15 Coins) & Full Freeze substitution (+25 Coins)
+      const profile = await tx.studentProfile.findUnique({ where: { userId } });
+      if (profile && rewardType === 'HEARTS' && profile.lives >= profile.maxLives) {
+        rewardType = 'COINS';
+        rewardAmount = 15;
+      } else if (profile && rewardType === 'STREAK_FREEZE' && profile.streakFreezeBank >= 2) {
+        rewardType = 'COINS';
+        rewardAmount = 25;
+      }
+
+      // 5. Update the spin row to lock it
       const updatedSpin = await tx.weeklySpin.update({
         where: { id: currentSpin.id },
         data: {
           status: 'SPUN',
           spunAt: new Date(),
           landedSegmentIndex: winningSegment.segmentIndex,
-          rewardSnapshotType: winningSegment.rewardType,
+          rewardSnapshotType: rewardType,
           rewardSnapshotAmount: rewardAmount,
-        }
+        },
       });
 
-      // 5. Grant Reward
-      const profile = await tx.studentProfile.findUnique({ where: { userId } });
-      let levelUp: LevelUpPayload | null = null;
+      // 6. Grant Reward
       if (profile) {
-        if (winningSegment.rewardType === 'COINS' || winningSegment.rewardType === 'GEMS') {
+        if (rewardType === 'COINS' || rewardType === 'GEMS') {
           await tx.studentProfile.update({
             where: { userId },
-            data: { coins: { increment: rewardAmount } }
+            data: { coins: { increment: rewardAmount } },
           });
-        } else if (winningSegment.rewardType === 'XP') {
-          const updated = await tx.studentProfile.update({
+        } else if (rewardType === 'XP') {
+          await tx.studentProfile.update({
             where: { userId },
-            data: { xp: { increment: rewardAmount } }
+            data: { xp: { increment: rewardAmount } },
           });
-          // Detect a level crossing inside the same transaction and grant the bonus.
-          levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
-        } else if (winningSegment.rewardType === 'HEARTS') {
+        } else if (rewardType === 'HEARTS') {
           const newLives = Math.min(profile.lives + rewardAmount, profile.maxLives);
           await tx.studentProfile.update({
             where: { userId },
-            data: { lives: newLives }
+            data: { lives: newLives },
           });
-        } else if (winningSegment.rewardType === 'STREAK_FREEZE') {
+        } else if (rewardType === 'STREAK_FREEZE') {
           await tx.studentProfile.update({
             where: { userId },
-            data: { streakFreezeBank: { increment: rewardAmount } }
+            data: { streakFreezeBank: { increment: rewardAmount } },
           });
         }
       }
 
-      // Idempotent reward transaction
+      // 7. Idempotent reward transaction
       await tx.rewardTransaction.upsert({
         where: { idempotencyKey: `spin_claim:${currentSpin.id}` },
         update: {},
         create: {
           userId,
-          currency: winningSegment.rewardType,
+          currency: rewardType === 'GEMS' ? 'COINS' : rewardType,
           amount: rewardAmount,
           sourceType: 'LUCKY_SPIN',
           sourceId: currentSpin.id,
-          idempotencyKey: `spin_claim:${currentSpin.id}`
+          idempotencyKey: `spin_claim:${currentSpin.id}`,
         },
       });
 
-      // Post-grant balances so clients can update without an extra round-trip.
-      const finalProfile = await tx.studentProfile.findUnique({ where: { userId } });
-
-      // Spread the spin row at top level so existing frontend destructuring
-      // (landedSegmentIndex / rewardSnapshotType / rewardSnapshotAmount) keeps
-      // working; balances + levelUp are additive.
-      return {
-        ...updatedSpin,
-        balances: finalProfile
-          ? { xp: finalProfile.xp, coins: finalProfile.coins, lives: finalProfile.lives }
-          : null,
-        levelUp,
-      };
+      return updatedSpin;
     });
+
+    // Credit the weekly league standings (async, non-blocking).
+    if (updatedSpin.rewardSnapshotType === 'XP') {
+      this.eventEmitter.emit(
+        'xp.awarded',
+        new XpAwardedEvent(userId, updatedSpin.rewardSnapshotAmount ?? 0, 'SPIN'),
+      );
+    }
+
+    return updatedSpin;
   }
 }

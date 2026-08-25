@@ -1,6 +1,7 @@
 import { Controller, Get, Post, UseGuards, Req, Query, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GamificationService } from './gamification.service';
+import { parseTimezoneOffset } from '../common/utils/parse-timezone-offset';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('gamification')
@@ -16,8 +17,10 @@ export class GamificationController {
     @Req() req: any,
     @Query('timezoneOffset') timezoneOffset?: string,
   ) {
-    const offset = timezoneOffset ? parseInt(timezoneOffset, 10) : 0;
-    return this.gamificationService.getMyStats(req.user.id as string, offset);
+    return this.gamificationService.getMyStats(
+      req.user.id as string,
+      parseTimezoneOffset(timezoneOffset),
+    );
   }
 
   /**
@@ -47,11 +50,24 @@ export class GamificationController {
 
   /**
    * POST /api/gamification/buy-freeze
-   * Buys a streak freeze card for 150 XP.
+   * Buys a streak freeze card.
    */
   @Post('buy-freeze')
   async buyStreakFreeze(@Req() req: any) {
     return this.gamificationService.buyStreakFreeze(req.user.id as string);
+  }
+
+  /**
+   * POST /api/gamification/repair-streak
+   * Restores a lost streak using 150 Coins or 100 XP.
+   */
+  @Post('repair-streak')
+  async repairStreak(
+    @Req() req: any,
+    @Body() body: { timezoneOffset?: number },
+  ) {
+    const offset = body?.timezoneOffset ?? 0;
+    return this.gamificationService.repairStreak(req.user.id as string, offset);
   }
 
   /**

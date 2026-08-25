@@ -27,6 +27,13 @@ const LEVELS = [
   { id: 'expert', label: 'Expert', desc: 'Teaching others' },
 ];
 
+// Interpolate a dot's color along the blue→purple brand gradient by index
+const dotColor = (i: number, count: number) => {
+  const t = count <= 1 ? 0 : i / (count - 1);
+  const mix = (a: number, b: number) => Math.round(a + (b - a) * t);
+  return `rgb(${mix(0x01, 0x64)}, ${mix(0x72, 0x52)}, ${mix(0xfd, 0xf8)})`;
+};
+
 interface Step4ContentProps {
   onNext: () => void;
 }
@@ -76,7 +83,7 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           variants={headlineContainer}
           initial="hidden"
           animate="show"
-          className="text-[clamp(1.6rem,7vw,1.85rem)] md:text-[3.5rem] lg:text-[4rem] font-[900] leading-[1.05] mb-1 tracking-tight text-[#071233]"
+          className="text-[clamp(1.75rem,8vw,2.25rem)] md:text-[3.5rem] lg:text-[4rem] font-[900] leading-[1.08] md:leading-[1.05] mb-1.5 md:mb-4 tracking-tight text-[#071233]"
           style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
         >
           <div className="whitespace-nowrap inline-block md:block">
@@ -87,6 +94,7 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           <div className="whitespace-nowrap inline-block md:block md:-mt-1">
             <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>you</motion.span>
             <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>already</motion.span>
+            <br className="md:hidden" />
             <motion.span variants={accentVariant} className="text-[#0172FD]" style={{ display: 'inline-block', textShadow: accentShadow }}>know?</motion.span>
           </div>
         </motion.h1>
@@ -95,58 +103,48 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           initial={{ y: 14, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.3 }}
-          className="text-[clamp(0.9rem,3.5vw,1rem)] md:text-xl font-medium text-slate-500 leading-tight"
+          className="text-[clamp(1rem,4.8vw,1.2rem)] md:text-xl font-medium text-slate-500 leading-snug"
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
-          <span className="md:hidden">This helps us personalize your learning experience.</span>
+          <span className="md:hidden">
+            This helps us personalize your
+            <br />
+            learning experience.
+          </span>
           <span className="hidden md:inline">This helps me personalize your learning experience just for you.</span>
         </motion.p>
       </div>
 
-      {/* ── SLIDER CONTAINER ── */}
-      <div className="w-full flex-1 flex flex-col justify-center items-center z-20 max-w-[400px] md:max-w-[700px] mx-auto md:mx-0 min-h-0 py-2">
-        {/* Mobile / Desktop Slider Pill */}
-        <div className="w-full bg-white/95 rounded-[1.75rem] md:rounded-[3rem] p-6 md:p-8 border-2 border-slate-100 shadow-[0_12px_24px_-5px_rgba(0,0,0,0.04)]">
-          <div className="flex justify-between items-center w-full mb-3 px-1">
-            <span className="text-[#0172FD] font-extrabold text-[0.88rem] md:text-base tracking-tight">Beginner</span>
-            {selectedIndex !== null && (
-              <span className="text-slate-600 font-extrabold text-[0.85rem] md:text-sm bg-slate-100 px-2 py-0.5 rounded-md">
-                {LEVELS[selectedIndex].label}
-              </span>
-            )}
-            <span className="text-[#6452F8] font-extrabold text-[0.88rem] md:text-base tracking-tight">Expert</span>
+      {/* ── SLIDER CARD (compact — no flex filler, matches concept spacing) ── */}
+      <div className="w-full shrink-0 z-20 max-w-[400px] md:max-w-[700px] mx-auto md:mx-0 mt-1 mb-5">
+        <div className="w-full bg-white rounded-[1.75rem] md:rounded-[3rem] p-5 md:p-8 shadow-[0_14px_30px_-10px_rgba(1,114,253,0.14)]">
+          <div className="flex justify-between items-center w-full mb-3.5 px-1">
+            <span className="text-[#0172FD] font-extrabold text-[1.05rem] md:text-base tracking-tight">Beginner</span>
+            <span className="text-[#6452F8] font-extrabold text-[1.05rem] md:text-base tracking-tight">Expert</span>
           </div>
 
-          {/* Track */}
-          <div className="relative w-full h-3 md:h-3.5 bg-slate-200 rounded-full flex items-center" ref={trackRef}>
-            <div className="absolute inset-0 rounded-full shadow-inner opacity-50 pointer-events-none" />
-
-            {/* Active Fill */}
-            {selectedIndex !== null && (
-              <motion.div
-                className="absolute left-0 top-0 bottom-0 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${(selectedIndex / 4) * 100}%` }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                style={{ background: 'linear-gradient(90deg, #0172FD 0%, #6452F8 100%)' }}
+          {/* Level dots — tinted along the blue→purple gradient like the concept */}
+          <div className="flex justify-between items-center px-[7px] mb-2.5">
+            {LEVELS.map((_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-transform duration-200 ${
+                  selectedIndex === i ? 'scale-150' : ''
+                }`}
+                style={{ backgroundColor: dotColor(i, LEVELS.length) }}
               />
-            )}
+            ))}
+          </div>
 
-            {/* Tick Marks */}
-            <div className="absolute inset-0 flex justify-between items-center px-1 pointer-events-none">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-colors duration-300 ${
-                    selectedIndex !== null && selectedIndex >= i ? 'bg-white/80' : 'bg-slate-400/30'
-                  }`}
-                />
-              ))}
-            </div>
-
+          {/* Track — full gradient at all times, like the concept */}
+          <div
+            className="relative w-full h-3.5 md:h-4 rounded-full"
+            style={{ background: 'linear-gradient(90deg, #0172FD 0%, #6452F8 100%)' }}
+            ref={trackRef}
+          >
             {/* Clickable Hitboxes */}
             <div className="absolute inset-0 flex justify-between">
-              {[0, 1, 2, 3, 4].map((i) => (
+              {LEVELS.map((_, i) => (
                 <div
                   key={i}
                   className="flex-1 h-12 -mt-4 cursor-pointer z-10"
@@ -158,30 +156,32 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
             {/* Thumb */}
             {selectedIndex !== null && (
               <motion.div
-                className="absolute top-1/2 -mt-3.5 md:-mt-4 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white z-20 flex items-center justify-center cursor-pointer"
+                className="absolute top-1/2 -mt-[18px] md:-mt-5 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white z-20 flex items-center justify-center cursor-pointer"
                 initial={false}
-                animate={{ left: `calc(${(selectedIndex / 4) * 100}% - 14px)` }}
+                animate={{ left: `calc(${(selectedIndex / (LEVELS.length - 1)) * 100}% - 18px)` }}
                 transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                 style={{
                   boxShadow: '0 0 0 5px rgba(1,114,253,0.15), 0 3px 8px rgba(0,0,0,0.15)',
                 }}
               >
-                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-gradient-to-b from-[#0172FD] to-[#3A96FF]" />
+                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-b from-[#0172FD] to-[#6452F8]" />
               </motion.div>
             )}
           </div>
-        </div>
 
-        {/* Level description */}
-        {selectedIndex !== null && (
-          <motion.span
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-xs md:text-sm font-semibold text-slate-400 mt-2 text-center"
-          >
-            {LEVELS[selectedIndex].desc}
-          </motion.span>
-        )}
+          {/* Selected level hint — quiet confirmation under the track */}
+          {selectedIndex !== null && (
+            <motion.span
+              key={selectedIndex}
+              initial={{ opacity: 0, y: 3 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+              className="block text-[0.8rem] md:text-sm font-medium text-slate-400 mt-3 text-center"
+            >
+              {LEVELS[selectedIndex].desc}
+            </motion.span>
+          )}
+        </div>
       </div>
 
       {/* ── CTA ── */}
@@ -202,7 +202,7 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           whileTap={selectedIndex !== null ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
           onClick={handleNext}
           disabled={selectedIndex === null}
-          className={`relative w-full md:w-[240px] flex items-center justify-center h-12 md:h-16 rounded-xl md:rounded-[2rem] font-bold text-base md:text-xl transition-all ${
+          className={`relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg md:text-xl transition-all ${
             selectedIndex !== null ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
           }`}
           style={
@@ -212,7 +212,7 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           }
         >
           <span>Continue</span>
-          <ArrowRight className={`absolute right-4 md:right-8 w-5 h-5 md:w-6 md:h-6 stroke-[3] ${selectedIndex === null && 'opacity-50'}`} />
+          <ArrowRight className={`absolute right-4 md:right-8 w-6 h-6 md:w-6 md:h-6 stroke-[3] ${selectedIndex === null && 'opacity-50'}`} />
         </motion.button>
       </motion.div>
     </div>

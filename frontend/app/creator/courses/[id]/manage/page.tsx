@@ -97,26 +97,36 @@ function IntendedLearnersPanel({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = useCallback(async () => {
     setIsSaving(true);
+    setSaveError(null);
     try {
-      await fetch(`/api/courses/${courseId}`, {
+      // The Course model stores these as `outcomes` and `requirements` —
+      // the payload used to send `whatYouWillLearn`/`targetAudience`, which
+      // the backend silently dropped, so learning goals were never saved.
+      const res = await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          whatYouWillLearn: learningGoals.filter(x => x.trim()),
+          outcomes: learningGoals.filter(x => x.trim()),
           requirements: requirements.filter(x => x.trim()),
-          targetAudience: targetAudience.filter(x => x.trim()),
         }),
       });
+      if (!res.ok) {
+        setSaveError('Your changes could not be saved. Please try again.');
+        return;
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setSaveError('A network error occurred. Please check your connection and try again.');
     } finally {
       setIsSaving(false);
     }
-  }, [courseId, learningGoals, requirements, targetAudience]);
+  }, [courseId, learningGoals, requirements]);
 
   return (
     <div className={styles.panel}>
@@ -165,7 +175,14 @@ function IntendedLearnersPanel({
           placeholder="Example: Beginner Python developers curious about data science"
           maxLength={160}
         />
+        <p className={styles.formHint}>
+          Note: the &ldquo;who is this course for&rdquo; description isn&apos;t shown on your landing page yet — learning objectives and requirements are.
+        </p>
       </div>
+
+      {saveError && (
+        <p style={{ color: '#DC2626', fontSize: 13, margin: '8px 0 0' }}>{saveError}</p>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8 }}>
         <Button id="global-save-btn" variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
@@ -257,16 +274,24 @@ function PricingPanel({
   const save = async () => {
     setIsSaving(true);
     try {
-      await fetch(`/api/courses/${courseId}/draft`, {
+      // PATCH /courses/:id/draft doesn't exist on the backend — the price was
+      // never persisted even though the UI showed "Saved". The course PATCH is
+      // the real endpoint.
+      const res = await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ price }),
       });
+      if (!res.ok) {
+        alert('Your price could not be saved. Please try again.');
+        return;
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err) {
       console.error('Failed to save price', err);
+      alert('A network error occurred while saving your price.');
     } finally {
       setIsSaving(false);
     }
@@ -390,9 +415,15 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
         });
         if (res.ok) {
           const data = await res.json();
+          // DB stores objectives as `outcomes`; fall back for older payloads.
+          const objectives = Array.isArray(data.outcomes)
+            ? data.outcomes
+            : Array.isArray(data.whatYouWillLearn)
+              ? data.whatYouWillLearn
+              : [];
           setCourse({
             title: data.title || 'Untitled Course',
-            whatYouWillLearn: Array.isArray(data.whatYouWillLearn) ? data.whatYouWillLearn : [],
+            whatYouWillLearn: objectives,
             requirements: Array.isArray(data.requirements) ? data.requirements : [],
             targetAudience: Array.isArray(data.targetAudience) ? data.targetAudience : [],
             price: typeof data.price === 'number' ? data.price : 0,

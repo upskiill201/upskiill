@@ -48,38 +48,41 @@ interface StepMeta {
   desktop: string;
   mobileMascotHeight?: string;
   hideShellMascot?: boolean; // Step provides its own integrated mascot layout (e.g. step 7, 8, 9, 10, 12)
+  fullBleed?: boolean; // Hero steps: mascot area flexes to absorb leftover space, content sits directly on the gradient (no white band)
+  softBg?: boolean; // Calmer bubble field behind the mascot (hero/question steps where Tey is the focus)
 }
 
 const STEP_CONFIG: Record<number, StepMeta> = {
   1: {
-    mobile: '/User onbarding Assets/Tey_welcome.PNG',
-    desktop: '/User onbarding Assets/Tey_welcome.PNG',
-    mobileMascotHeight: '48dvh',
+    mobile: '/User onbarding Assets/Tey_welcome.webp',
+    desktop: '/User onbarding Assets/Tey_welcome.webp',
+    fullBleed: true,
   },
   2: {
     mobile: '/User onbarding Assets/Tey_thinking _Mobile.PNG',
     desktop: '/User onbarding Assets/Tey_thinking_desktop.PNG',
-    mobileMascotHeight: '28dvh',
+    mobileMascotHeight: '30dvh',
+    softBg: true,
   },
   3: {
     mobile: '/User onbarding Assets/Tey_step3_mobile.webp',
     desktop: '/User onbarding Assets/Tey_step3_desktop.webp',
-    mobileMascotHeight: '30dvh',
+    fullBleed: true,
   },
   4: {
     mobile: '/User onbarding Assets/Tey_step4_mobile.webp',
     desktop: '/User onbarding Assets/Tey_step4_desktop.webp',
-    mobileMascotHeight: '32dvh',
+    fullBleed: true,
   },
   5: {
     mobile: '/User onbarding Assets/Step_5_mobile_mascot.webp',
     desktop: '/User onbarding Assets/step_5_desktop_mascot.webp',
-    mobileMascotHeight: '30dvh',
+    fullBleed: true,
   },
   6: {
     mobile: '/User onbarding Assets/Step_6_mascot.webp',
     desktop: '/User onbarding Assets/Step_6_mascot.webp',
-    mobileMascotHeight: '26dvh',
+    fullBleed: true,
   },
   7: {
     mobile: '/User onbarding Assets/Step_7_tey_verified_state.webp',
@@ -104,7 +107,7 @@ const STEP_CONFIG: Record<number, StepMeta> = {
   11: {
     mobile: '/User onbarding Assets/Step_11_image_mobile.webp',
     desktop: '/User onbarding Assets/Step_11_image_desktop.webp',
-    mobileMascotHeight: '44dvh',
+    fullBleed: true,
   },
   12: {
     mobile: '/User onbarding Assets/Step_12_image_mobile.webp',
@@ -321,7 +324,7 @@ export function OnboardingShell({ initialStep }: OnboardingShellProps) {
           </button>
 
           {/* Progress bar track */}
-          <div className="flex-1 h-[10px] bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner relative">
+          <div className="flex-1 h-2 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner relative">
             {/* PERSISTENT FILL */}
             <motion.div
               animate={{ width: `${progressPct}%` }}
@@ -350,14 +353,18 @@ export function OnboardingShell({ initialStep }: OnboardingShellProps) {
         {/* ── MASCOT AREA (only rendered when step doesn't provide integrated mascot layout) ── */}
         {!isCustomMascot && (
           <div
-            className="w-full shrink-0 relative overflow-hidden"
-            style={{
-              height: config.mobileMascotHeight || '32dvh',
-              transition: 'height 420ms cubic-bezier(0.32, 0.72, 0, 1)',
-            }}
+            className={`w-full relative overflow-hidden ${config.fullBleed ? 'flex-1 min-h-0' : 'shrink-0'}`}
+            style={
+              config.fullBleed
+                ? undefined
+                : {
+                    height: config.mobileMascotHeight || '32dvh',
+                    transition: 'height 420ms cubic-bezier(0.32, 0.72, 0, 1)',
+                  }
+            }
           >
             <div className="absolute inset-0 w-full h-full pointer-events-none">
-              <MascotBackground />
+              <MascotBackground variant={config.fullBleed || config.softBg ? 'soft' : 'default'} />
             </div>
 
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
@@ -371,7 +378,7 @@ export function OnboardingShell({ initialStep }: OnboardingShellProps) {
                 transition={SLIDE_TRANSITION}
                 className="absolute inset-0 flex items-center justify-center z-10"
               >
-                <div className="relative w-[70vw] h-[70vw] max-w-[260px] max-h-[260px]">
+                <div className={`relative ${config.fullBleed ? 'w-full h-full' : 'h-full aspect-square max-w-[80vw] mx-auto'}`}>
                   <Image
                     src={config.mobile}
                     alt="Tey Mascot"
@@ -386,8 +393,12 @@ export function OnboardingShell({ initialStep }: OnboardingShellProps) {
         )}
 
         {/* ── CONTENT AREA (slides horizontally with 40ms stagger) ── */}
-        <div className={`w-full flex-1 relative ${isCustomMascot ? 'bg-transparent' : 'bg-white'} min-h-0`}>
-          {!isCustomMascot && (
+        <div
+          className={`w-full relative min-h-0 ${
+            config.fullBleed ? 'shrink-0' : `flex-1 ${isCustomMascot ? 'bg-transparent' : 'bg-white'}`
+          }`}
+        >
+          {!isCustomMascot && !config.fullBleed && (
             <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
           )}
 
@@ -400,7 +411,7 @@ export function OnboardingShell({ initialStep }: OnboardingShellProps) {
               animate="center"
               exit="exit"
               transition={{ ...SLIDE_TRANSITION, delay: 0.04 }}
-              className="absolute inset-0 w-full h-full"
+              className={config.fullBleed ? 'relative w-full' : 'absolute inset-0 w-full h-full'}
               style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
             >
               {contentForStep(step)}

@@ -1,0 +1,187 @@
+/* CommentThread — Facebook-style bubbles with Duolingo press states */
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 2px solid var(--border);
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.lockedNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-section);
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.comment {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+}
+.bubbleCol { flex: 1; min-width: 0; }
+.bubble {
+  background: var(--bg-section);
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 14px;
+}
+.authorName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-right: 6px;
+}
+.time { font-size: 11.5px; color: var(--text-muted); font-weight: 600; }
+.text {
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.actions { display: flex; align-items: center; gap: 2px; margin-top: 4px; padding-left: 4px; }
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, transform 100ms ease;
+}
+.actionBtn:hover { background: var(--bg-section); color: var(--text-primary); }
+.actionBtn:active { transform: scale(0.94); }
+.liked { color: var(--brand-blue); }
+
+.replies {
+  margin-top: 6px;
+  margin-left: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 2px solid var(--border);
+  padding-left: 12px;
+}
+
+.replyFormRow { display: flex; gap: 8px; margin-top: 6px; }
+.replyInput {
+  flex: 1;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  outline: none;
+  transition: border-color 120ms ease;
+}
+.replyInput:focus { border-color: var(--brand-blue); }
+
+.composerRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+.textareaWrap { flex: 1; }
+.textarea {
+  width: 100%;
+  min-height: 44px;
+  max-height: 160px;
+  resize: vertical;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  outline: none;
+  transition: border-color 120ms ease;
+}
+.textarea:focus { border-color: var(--brand-blue); }
+.sendBtn { margin-top: 6px; }
+
+.errorText {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-top: 6px;
+}
+
+.loadMoreBtn {
+  align-self: center;
+  margin-top: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease,
+    border-color 120ms ease, color 120ms ease;
+}
+.loadMoreBtn:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
+.loadMoreBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border);
+}
+.loadMoreBtn:disabled { opacity: 0.6; cursor: wait; }
+
+.deleted {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* Primary chunky send button */
+.sendBtn3d {
+  border: none;
+  background: var(--brand-blue);
+  box-shadow: 0 3px 0 var(--brand-blue-hover);
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-on-blue);
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease, opacity 120ms ease;
+}
+.sendBtn3d:hover:not(:disabled) { background: var(--brand-blue-hover); }
+.sendBtn3d:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--brand-blue-hover);
+}
+.sendBtn3d:disabled { opacity: 0.6; cursor: wait; }
+
+/* ── Mobile — tighter thread indent, full-width reply inputs ──────────── */
+@media (max-width: 768px) {
+  .replies { margin-left: 18px; padding-left: 10px; }
+  .replyInput { padding: 10px 14px; font-size: 16px; } /* 16px kills iOS zoom-on-focus */
+  .textarea { font-size: 16px; } /* same — no autofocus zoom */
+}

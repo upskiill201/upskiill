@@ -13,6 +13,21 @@ export interface ResourceItem {
   time?: string;
   url: string;
   estimatedReadMin?: number;
+  description?: string;
+  category?: string;
+}
+
+const MAX_RESOURCES = 10;
+
+/** "12.3 MB" → bytes. Returns 0 for non-size labels like "Link". */
+function parseSizeToBytes(size?: string): number {
+  if (!size) return 0;
+  const match = size.match(/^([\d.]+)\s*(B|KB|MB|GB)$/i);
+  if (!match) return 0;
+  const value = parseFloat(match[1]);
+  const unit = match[2].toUpperCase();
+  const multiplier = unit === 'GB' ? 1024 ** 3 : unit === 'MB' ? 1024 ** 2 : unit === 'KB' ? 1024 : 1;
+  return Math.round(value * multiplier);
 }
 
 interface Props {
@@ -161,40 +176,82 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
   const { uploading, progress } = useS3Upload();
 
   const remove = async (id: string) => {
+    // Optimistically remove from the list…
+    const previous = resources;
+    onChange(resources.filter(r => r.id !== id));
     try {
-      await fetch(`/api/lesson/${lessonId}/resources/${id}`, { method: 'DELETE' });
-      onChange(resources.filter(r => r.id !== id));
+      const res = await fetch(`/api/lesson/${lessonId}/resources/${id}`, { method: 'DELETE' });
+      if (!res.ok && res.status !== 404) {
+        // …and restore if the server refused (404 means it was already gone)
+        onChange(previous);
+        console.error('Failed to delete resource', res.status);
+      }
     } catch (err) {
+      onChange(previous);
       console.error('Failed to delete resource', err);
     }
+  };
+
+  /** Persist a resource's details/replace-file change via the update endpoint. */
+  const persistResourceUpdate = (resource: ResourceItem) => {
+    return fetch(`/api/lesson/${lessonId}/resources/${resource.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: resource.title,
+        type: resource.type,
+        storageUrl: resource.url,
+        estimatedReadMin: parseInt(resource.time || '') || 0,
+        description: resource.description,
+        category: resource.category,
+      }),
+    });
   };
 
   const handleAddResource = async (resource: any) => {
     try {
       if (editingResource) {
-        // Technically backend needs an update route if editing. But if not, we skip.
-        onChange(resources.map(r => r.id === editingResource.id ? { ...resource, id: editingResource.id } : r));
-      } else {
-        const res = await fetch(`/api/lesson/${lessonId}/resources`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: resource.title,
-            type: resource.type,
-            storageUrl: resource.url,
-            sizeBytes: parseInt(resource.size) || 0,
-            originalName: resource.title,
-            estimatedReadMin: parseInt(resource.time) || 0,
-            displayOrder: resources.length,
-          }),
-        });
-        if (res.ok) {
-          const newRes = await res.json();
-          onChange([...resources, { ...resource, id: newRes.id }]);
+        const updated = { ...resource, id: editingResource.id };
+        // Optimistic UI update, then persist through the PATCH endpoint
+        onChange(resources.map(r => r.id === editingResource.id ? updated : r));
+        setShowModal(false);
+        setEditingResource(null);
+        try {
+          const res = await persistResourceUpdate(updated as ResourceItem);
+          if (!res.ok) throw new Error(String(res.status));
+        } catch (err) {
+          console.error('Failed to save resource changes', err);
+          onChange(resources); // revert
+          alert('Your resource changes could not be saved. Please try again.');
         }
+        return;
+      }
+
+      const res = await fetch(`/api/lesson/${lessonId}/resources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: resource.title,
+          type: resource.type,
+          storageUrl: resource.url,
+          sizeBytes: parseSizeToBytes(resource.size),
+          originalName: resource.title,
+          estimatedReadMin: parseInt(resource.time) || 0,
+          description: resource.description,
+          category: resource.category,
+          displayOrder: resources.length,
+        }),
+      });
+      if (res.ok) {
+        const newRes = await res.json();
+        onChange([...resources, { ...resource, id: newRes.id }]);
+      } else {
+        console.error('Failed to add resource', res.status);
+        alert('The resource could not be added. Please try again.');
       }
     } catch (err) {
       console.error('Failed to add resource', err);
+      alert('The resource could not be added. Please check your connection and try again.');
     }
     setShowModal(false);
     setEditingResource(null);
@@ -213,6 +270,10 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
   };
 
   const openNewModal = () => {
+    if (resources.length >= MAX_RESOURCES) {
+      alert(`This lesson already has the maximum of ${MAX_RESOURCES} resources.`);
+      return;
+    }
     setEditingResource(null);
     setEditMode('details');
     setShowModal(true);

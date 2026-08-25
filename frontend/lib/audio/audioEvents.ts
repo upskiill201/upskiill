@@ -8,6 +8,7 @@
 
 import { SoundId, SoundConfig } from './soundRegistry';
 import { soundManager } from './soundManager';
+import { playPentatonicTick } from './uiSounds';
 
 export type AppAudioEvent =
   | 'BUTTON_PRIMARY_CLICK'
@@ -64,10 +65,6 @@ export async function emitAudioEvent(
  */
 export async function playAscendingPopSound(index: number = 0): Promise<void> {
   if (typeof window === 'undefined') return;
-
-  const scale = [1.0, 1.06, 1.12, 1.22, 1.33, 1.48, 1.65, 1.8, 2.0];
-  const noteSpeed = scale[Math.min(index, scale.length - 1)];
-
-  void soundManager.play('BUTTON_SECONDARY', { speed: noteSpeed, cooldownMs: 0 });
+  playPentatonicTick(index);
 }
 

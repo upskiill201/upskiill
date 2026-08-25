@@ -35,6 +35,13 @@ export class ProgressService {
   }
 
   /**
+   * Short day single-character label ('M', 'T', 'W', 'T', 'F', 'S', 'S')
+   */
+  private getDaySingleLabel(index: number): string {
+    return ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index] || 'M';
+  }
+
+  /**
    * Short day label ("Mon", "Tue", etc.)
    */
   private getDayLabel(dateStr: string): string {
@@ -50,6 +57,17 @@ export class ProgressService {
     const start = new Date(mondayStr + 'T00:00:00Z').toLocaleDateString('en-US', opts);
     const end = new Date(sundayStr + 'T00:00:00Z').toLocaleDateString('en-US', opts);
     return `${start} – ${end}`;
+  }
+
+  /**
+   * Formats seconds into human-readable duration e.g. "2.5h" or "45m" or "0m"
+   */
+  private formatTimeSpent(totalSeconds: number): string {
+    if (!totalSeconds || totalSeconds <= 0) return '0m';
+    const totalMinutes = Math.round(totalSeconds / 60);
+    if (totalMinutes < 60) return `${totalMinutes}m`;
+    const hours = Math.round((totalSeconds / 3600) * 10) / 10;
+    return `${hours}h`;
   }
 
   /**
@@ -209,38 +227,213 @@ export class ProgressService {
         },
       });
     }
+
+    // Atomic StudentProfile Streak Update on First Lesson Today
+    if (isFirstLessonToday) {
+      const profile = await this.prisma.studentProfile.findUnique({
+        where: { userId },
+      });
+
+      if (profile) {
+        let newStreak = 1;
+        if (profile.lastStreakEarnedAt) {
+          const lastStreakStr = this.getLocalDateString(new Date(profile.lastStreakEarnedAt), timezoneOffsetMinutes);
+          const diff = this.getDaysDiff(todayStr, lastStreakStr);
+          if (diff === 1) {
+            newStreak = (profile.streakDays || 0) + 1;
+          } else if (diff === 0) {
+            newStreak = Math.max(1, profile.streakDays || 1);
+          } else {
+            newStreak = 1;
+          }
+        }
+
+        const newLongest = Math.max(profile.longestStreak || 0, newStreak);
+        await this.prisma.studentProfile.update({
+          where: { userId },
+          data: {
+            streakDays: newStreak,
+            longestStreak: newLongest,
+            lastStreakEarnedAt: now,
+            lastLessonCompletedAt: now,
+            lastActiveAt: now,
+          },
+        });
+      }
+    }
   }
 
+  /** Weekly XP goal surfaced across the dashboard widgets. */
+  private static readonly WEEKLY_XP_TARGET = 300;
+
   /**
-   * Returns aggregated learning stats summary for user dashboard.
+   * Returns aggregated learning stats summary for user dashboard filtered by week, month, or all-time.
    */
-  async getStatsSummary(userId: string) {
-    const dailyActivities = await this.prisma.userDailyActivity.findMany({
-      where: { userId },
+  async getStatsSummary(userId: string, filter: 'week' | 'month' | 'all' = 'week', timezoneOffsetMinutes = 0) {
+    const now = new Date();
+    const todayStr = this.getLocalDateString(now, timezoneOffsetMinutes);
+    const mondayStr = this.getMondayOfWeek(todayStr);
+    const sundayStr = this.addDays(mondayStr, 6);
+    const monthStartStr = todayStr.slice(0, 7) + '-01';
+
+    // 1. Fetch 7-day activity for the current week regardless of filter
+    const weekRecords = await this.prisma.userDailyActivity.findMany({
+      where: {
+        userId,
+        date: {
+          gte: mondayStr,
+          lte: sundayStr,
+        },
+      },
     });
 
-    const totalLessons = dailyActivities.reduce((acc, a) => acc + (a.lessonsCompleted || 0), 0);
-    const totalSeconds = dailyActivities.reduce((acc, a) => acc + ((a as any).timeSpentSeconds || 300), 0);
-    const totalHours = Math.round((totalSeconds / 3600) * 10) / 10;
+    const weekRecordMap = new Map<string, { lessonsCompleted: number; xpEarned: number; timeSpentSeconds: number; streakExtended: boolean }>();
+    for (const r of weekRecords) {
+      weekRecordMap.set(r.date, {
+        lessonsCompleted: r.lessonsCompleted || 0,
+        xpEarned: r.xpEarned || 0,
+        timeSpentSeconds: (r as any).timeSpentSeconds ?? 0,
+        streakExtended: (r as any).streakExtended ?? false,
+      });
+    }
 
+    const weekActivity: Array<{
+      day: string;
+      date: string;
+      xp: number;
+      lessonsCompleted: number;
+      hasStreak: boolean;
+      isToday: boolean;
+    }> = [];
+    let weeklyXp = 0;
+    for (let i = 0; i < 7; i++) {
+      const dateStr = this.addDays(mondayStr, i);
+      const record = weekRecordMap.get(dateStr);
+      const dayXp = record?.xpEarned || 0;
+      weeklyXp += dayXp;
+
+      weekActivity.push({
+        day: this.getDaySingleLabel(i),
+        date: dateStr,
+        xp: dayXp,
+        lessonsCompleted: record?.lessonsCompleted || 0,
+        hasStreak: Boolean(record?.streakExtended || (record?.lessonsCompleted && record.lessonsCompleted > 0)),
+        isToday: dateStr === todayStr,
+      });
+    }
+
+    // 2. Query filtered activities
+    let dateFilter: { gte?: string; lte?: string } | undefined;
+    if (filter === 'week') {
+      dateFilter = { gte: mondayStr, lte: sundayStr };
+    } else if (filter === 'month') {
+      dateFilter = { gte: monthStartStr, lte: todayStr };
+    }
+
+    const activities = await this.prisma.userDailyActivity.findMany({
+      where: { userId, ...(dateFilter ? { date: dateFilter } : {}) },
+    });
+
+    const lessonsCompleted = activities.reduce((acc, a) => acc + (a.lessonsCompleted || 0), 0);
+    const timeSpentSeconds = activities.reduce((acc, a) => acc + ((a as any).timeSpentSeconds || 0), 0);
+    const xpFiltered = activities.reduce((acc, a) => acc + (a.xpEarned || 0), 0);
+    const activeDays = activities.filter((a) => (a.lessonsCompleted || 0) > 0).length;
+
+    // 3. User profile data
     const profile = await this.prisma.studentProfile.findUnique({
       where: { userId },
-      select: { xp: true },
+      select: { xp: true, streakDays: true, longestStreak: true },
     });
 
-    const xpEarned = profile?.xp ?? 0;
+    const lifetimeXp = profile?.xp ?? 0;
+    const currentXp = filter === 'all' ? lifetimeXp : xpFiltered;
 
+    // 4. Dynamic Percentile Calculation based on all active users
     let rankPercentile = 'Top 10%';
-    if (xpEarned < 50) rankPercentile = 'Top 50%';
-    else if (xpEarned < 200) rankPercentile = 'Top 25%';
-    else if (xpEarned < 500) rankPercentile = 'Top 15%';
-    else rankPercentile = 'Top 5%';
+    try {
+      const totalStudents = await this.prisma.studentProfile.count();
+      if (totalStudents > 1) {
+        const higherStudents = await this.prisma.studentProfile.count({
+          where: { xp: { gt: lifetimeXp } },
+        });
+        const pct = Math.max(1, Math.min(99, Math.round(((higherStudents + 1) / totalStudents) * 100)));
+        rankPercentile = `Top ${pct}%`;
+      }
+    } catch {
+      rankPercentile = lifetimeXp > 200 ? 'Top 10%' : lifetimeXp > 50 ? 'Top 25%' : 'Top 50%';
+    }
+
+    // 5. Accuracy Rate — real Apply-phase quiz scores from completed lessons in
+    // the selected window. null when the learner hasn't taken a scored quiz yet,
+    // so the UI can show an honest "no data" state instead of a made-up number.
+    let accuracyRate: number | null = null;
+    try {
+      const scoredLessons = await this.prisma.userLessonProgress.aggregate({
+        where: {
+          userId,
+          quizScore: { not: null },
+          ...(dateFilter
+            ? {
+                completedAt: {
+                  gte: this.toUtcDate(dateFilter.gte),
+                  lte: this.toEndOfDayUtc(dateFilter.lte),
+                },
+              }
+            : {}),
+        },
+        _avg: { quizScore: true },
+      });
+      const avg = scoredLessons._avg.quizScore;
+      if (avg !== null && avg !== undefined) {
+        accuracyRate = Math.round(avg);
+      }
+    } catch {
+      accuracyRate = null;
+    }
+
+    // 6. Courses fully completed (progress reached 100%)
+    let coursesCompleted = 0;
+    try {
+      coursesCompleted = await this.prisma.userCourseProgress.count({
+        where: { userId, status: 'completed' },
+      });
+    } catch {
+      coursesCompleted = 0;
+    }
 
     return {
-      lessonsCompleted: totalLessons,
-      hoursLearned: totalHours > 0 ? totalHours : 0.5,
-      xpEarned,
+      filter,
+      lessonsCompleted,
+      hoursLearned: this.formatTimeSpent(timeSpentSeconds),
+      xpEarned: currentXp,
+      totalXp: lifetimeXp,
+      weeklyXp,
+      weeklyTarget: ProgressService.WEEKLY_XP_TARGET,
+      activeDays,
+      coursesCompleted,
+      accuracyRate,
       rankPercentile,
+      currentStreak: profile?.streakDays ?? 0,
+      longestStreak: profile?.longestStreak ?? profile?.streakDays ?? 0,
+      weekActivity,
     };
+  }
+
+  /** Midnight UTC Date for a YYYY-MM-DD string (or undefined when absent). */
+  private toUtcDate(dateStr?: string): Date | undefined {
+    return dateStr ? new Date(`${dateStr}T00:00:00.000Z`) : undefined;
+  }
+
+  /** Last moment of a YYYY-MM-DD day in UTC (or undefined when absent). */
+  private toEndOfDayUtc(dateStr?: string): Date | undefined {
+    return dateStr ? new Date(`${dateStr}T23:59:59.999Z`) : undefined;
+  }
+
+  private getDaysDiff(day1: string, day2: string): number {
+    const [y1, m1, d1] = day1.split('-').map(Number);
+    const [y2, m2, d2] = day2.split('-').map(Number);
+    const utc1 = Date.UTC(y1, m1 - 1, d1);
+    const utc2 = Date.UTC(y2, m2 - 1, d2);
+    return Math.round((utc1 - utc2) / (1000 * 60 * 60 * 24));
   }
 }

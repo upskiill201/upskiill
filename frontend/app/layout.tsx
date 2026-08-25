@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Baloo_2 } from "next/font/google";
 import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
@@ -13,6 +13,14 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+});
+
+// Rounded display font for the Celebration Engine scenes only (Duolingo-style
+// bubbly headlines/CTAs) — scoped to --font-celebration, never used elsewhere.
+const baloo2 = Baloo_2({
+  variable: "--font-celebration",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -140,15 +148,20 @@ import { RewardAnimationProvider } from "../context/RewardAnimationContext";
 import RewardAnimationOverlay from "../components/ui/RewardAnimationOverlay";
 import { HeraldProvider } from "../context/HeraldContext";
 import HeraldOverlay from "../components/herald/HeraldOverlay";
-import HeraldChestReveal from "../components/herald/HeraldChestReveal";
 import HeraldSpinReveal from "../components/herald/HeraldSpinReveal";
-import HeraldMissionsModal from "../components/herald/HeraldMissionsModal";
 import HeraldStreakReveal from "../components/herald/HeraldStreakReveal";
 import { StreakProvider } from "../context/StreakContext";
 import StreakModal from "../components/streak/StreakModal";
 import { AudioProvider } from "../context/AudioContext";
 import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
 import { TeyroLoaderProvider } from "../components/providers/TeyroLoaderProvider";
+// Celebration Engine — full-page Duolingo-style scene takeovers
+import { CelebrationProvider } from "../context/CelebrationContext";
+import CelebrationEngine from "../components/celebration/CelebrationEngine";
+// Auto-surfaces the Daily Login Reward as a scene on app entry / unlock
+import DailyRewardWatcher from "../components/gamification/DailyRewardWatcher";
+// Surfaces Monthly Quest beats + claim deposits after lessons
+import QuestProgressWatcher from "../components/quests/QuestProgressWatcher";
 
 export default function RootLayout({
   children,
@@ -156,7 +169,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${baloo2.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href={fontAwesomeLink} />
         <link rel="preload" href="/Loading Screens/Teyro_loading.webm" as="video" type="video/webm" />
@@ -167,29 +180,34 @@ export default function RootLayout({
             <CartProvider>
               <AudioProvider>
                 <BackgroundMusicManager />
-                <GamificationProvider>
-                  <RewardAnimationProvider>
-                    <RewardAnimationOverlay />
-                    <HeraldProvider>
-                      <StreakProvider>
-                        {/* Herald & Streak portals — router-independent, render into document.body */}
-                        <HeraldOverlay />
-                        <HeraldChestReveal />
-                        <HeraldSpinReveal />
-                        <HeraldMissionsModal />
-                        <HeraldStreakReveal />
-                        <StreakModal />
-                        <TeyroLoaderProvider>
-                          <HeaderWrapper />
-                          <main className="flex-1" style={{ overflow: 'visible' }}>
-                            {children}
-                          </main>
-                          <FooterWrapper />
-                        </TeyroLoaderProvider>
-                      </StreakProvider>
-                    </HeraldProvider>
-                  </RewardAnimationProvider>
-                </GamificationProvider>
+                {/* Celebration Engine sits high in the tree so any layer
+                    (RewardRun adapter, Herald, Gamification) can queue scenes */}
+                <CelebrationProvider>
+                  <GamificationProvider>
+                    <RewardAnimationProvider>
+                      <RewardAnimationOverlay />
+                      <HeraldProvider>
+                        <StreakProvider>
+                          <CelebrationEngine />
+                          <DailyRewardWatcher />
+                          <QuestProgressWatcher />
+                          {/* Herald & Streak portals — router-independent, render into document.body */}
+                          <HeraldOverlay />
+                          <HeraldSpinReveal />
+                          <HeraldStreakReveal />
+                          <StreakModal />
+                          <TeyroLoaderProvider>
+                            <HeaderWrapper />
+                            <main className="flex-1" style={{ overflow: 'visible' }}>
+                              {children}
+                            </main>
+                            <FooterWrapper />
+                          </TeyroLoaderProvider>
+                        </StreakProvider>
+                      </HeraldProvider>
+                    </RewardAnimationProvider>
+                  </GamificationProvider>
+                </CelebrationProvider>
               </AudioProvider>
             </CartProvider>
           </IntercomProvider>

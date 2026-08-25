@@ -23,11 +23,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/dist/CustomEase';
 import { useHerald } from '@/context/HeraldContext';
-import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
+import { useCelebration } from '@/context/CelebrationContext';
+import type { CelebrationScene } from '@/context/CelebrationContext';
+import { currencyDisplayName, toCelebrationCurrency } from '@/components/celebration/currency';
 import { useGamification } from '@/context/GamificationContext';
 import { playHaptic } from '@/lib/haptics';
 import { playTickSound, playWinSound } from '@/utils/audio';
 import styles from '../dashboard/v2/WeeklyLuckySpin.module.css';
+// Same default segments as the sidebar card — guarantees the wheel is always
+// spinnable even if /spin/wheel-config is down or returns an empty config.
+const DEFAULT_WHEEL_CONFIG = [
+  { id: 'seg-0', segmentIndex: 0, rewardType: 'COINS', amountMin: 50, amountMax: 50, rarityTier: 'common', weight: 30, colorKey: '#3B82F6' },
+  { id: 'seg-1', segmentIndex: 1, rewardType: 'XP', amountMin: 20, amountMax: 20, rarityTier: 'common', weight: 20, colorKey: '#EC4899' },
+  { id: 'seg-2', segmentIndex: 2, rewardType: 'COINS', amountMin: 100, amountMax: 100, rarityTier: 'uncommon', weight: 15, colorKey: '#EAB308' },
+  { id: 'seg-3', segmentIndex: 3, rewardType: 'HEARTS', amountMin: 1, amountMax: 1, rarityTier: 'common', weight: 15, colorKey: '#22C55E' },
+  { id: 'seg-4', segmentIndex: 4, rewardType: 'XP', amountMin: 50, amountMax: 50, rarityTier: 'uncommon', weight: 10, colorKey: '#A855F7' },
+  { id: 'seg-5', segmentIndex: 5, rewardType: 'COINS', amountMin: 200, amountMax: 200, rarityTier: 'rare', weight: 4, colorKey: '#EF4444' },
+  { id: 'seg-6', segmentIndex: 6, rewardType: 'XP', amountMin: 100, amountMax: 100, rarityTier: 'rare', weight: 5, colorKey: '#3B82F6' },
+  { id: 'seg-7', segmentIndex: 7, rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 1, colorKey: '#EAB308' },
+];
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(CustomEase);
@@ -35,7 +49,7 @@ if (typeof window !== 'undefined') {
 
 export default function HeraldSpinReveal() {
   const { activeOverlay, setActiveOverlay } = useHerald();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { celebrate } = useCelebration();
   const { refresh } = useGamification();
 
   const [mounted, setMounted] = useState(false);
@@ -76,16 +90,19 @@ export default function HeraldSpinReveal() {
           setSpinState(statusData.status);
           if (statusData.status === 'SPUN') {
             setPrizeMessage(
-              `🎉 YOU WON ${statusData.rewardSnapshotAmount} ${statusData.rewardSnapshotType}!`
+              `🎉 YOU WON ${statusData.rewardSnapshotAmount} ${currencyDisplayName(statusData.rewardSnapshotType)}!`
             );
           }
         }
         if (Array.isArray(configData) && configData.length > 0) {
           setWheelConfig(configData);
+        } else {
+          setWheelConfig(DEFAULT_WHEEL_CONFIG);
         }
       })
       .catch(() => {
         setSpinState('AVAILABLE'); // Fallback
+        setWheelConfig(DEFAULT_WHEEL_CONFIG);
       });
   }, [isOpen]);
 
@@ -171,21 +188,29 @@ export default function HeraldSpinReveal() {
             onComplete: async () => {
               setIsSpinning(false);
               setSpinState('SPUN');
-              setPrizeMessage(
-                `🎉 YOU WON ${rewardSnapshotAmount} ${rewardSnapshotType}!`
-              );
+              const prizeName = currencyDisplayName(rewardSnapshotType);
+              setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${prizeName}!`);
+              playWinSound();
               playHaptic('success');
-              const mappedCurrency =
-                rewardSnapshotType === 'GEMS'
-                  ? 'COINS'
-                  : (rewardSnapshotType as RewardCurrency);
-              triggerRewardAnimation({
-                originElement: wheelRef.current,
-                rewards: [{ currency: mappedCurrency, amount: rewardSnapshotAmount }],
-              });
-              if (refresh) await refresh();
-              // Let the spin card on home screen know to update
-              window.dispatchEvent(new Event('focus'));
+              // Persisted server-first by POST /spin/spin — the full-page
+              // CLAIM scene choreographs the payout reveal.
+              const scene: CelebrationScene = {
+                kind: 'CLAIM',
+                title: `+${rewardSnapshotAmount} ${prizeName}`,
+                subtitle: 'Lucky Spin winnings!',
+                rewards: [
+                  {
+                    currency: toCelebrationCurrency(rewardSnapshotType),
+                    amount: rewardSnapshotAmount,
+                  },
+                ],
+                onComplete: () => {
+                  void refresh();
+                  // Let the spin card on home screen know to update
+                  window.dispatchEvent(new Event('focus'));
+                },
+              };
+              celebrate(scene);
             },
           });
         },

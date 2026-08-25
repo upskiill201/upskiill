@@ -34,7 +34,11 @@ import styles from './Builder.module.css';
 export interface CurriculumLesson {
   id: string;
   title: string;
+  /** Real field on the Lesson model — legacy callers may still pass `type`. */
+  lessonType?: string;
   type?: 'video' | 'text' | 'quiz' | string;
+  /** draft | published | scheduled | archived */
+  status?: string;
   videoUrl?: string;
   storageUrl?: string;
   content?: string;
@@ -82,6 +86,10 @@ interface Step4PreviewPublishProps {
   instructorAvatar?: string;
 }
 
+// Prefer the real `lessonType` column; fall back to the legacy `type` field.
+const effectiveLessonType = (lesson: CurriculumLesson): string =>
+  lesson.lessonType || lesson.type || '';
+
 export default function Step4PreviewPublish({
   courseId,
   data,
@@ -93,6 +101,7 @@ export default function Step4PreviewPublish({
   const router = useRouter();
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [openSectionIds, setOpenSectionIds] = useState<string[]>(
     sections.map((s) => s.id)
   );
@@ -155,14 +164,13 @@ export default function Step4PreviewPublish({
       id: 'lesson-content-check',
       category: 'Step 3: Lessons',
       rule: 'Lesson Media & Content',
-      message: 'All lessons must have complete video, text, or quiz content.',
+      message: 'Every lesson must be published from the Lesson Builder (open a lesson, complete all 4 phases, then Publish).',
+      // Lessons carry their completion on `status` — the old check looked at
+      // fields (type/videoUrl/content) that don't exist on the Lesson model,
+      // which permanently locked the publish button.
       passed:
         allLessons.length > 0 &&
-        allLessons.every((l) => {
-          if (l.type === 'video') return Boolean(l.videoUrl || l.storageUrl);
-          if (l.type === 'quiz') return Boolean(l.quizQuestions && l.quizQuestions.length > 0);
-          return Boolean(l.content && l.content.trim().length > 0);
-        }),
+        allLessons.every((l) => l.status === 'published'),
       stepNum: 3,
     },
   ];
@@ -180,6 +188,7 @@ export default function Step4PreviewPublish({
   const handlePublish = async () => {
     if (!isReadyToPublish || isPublishing) return;
     setIsPublishing(true);
+    setPublishError(null);
     try {
       const res = await fetch(`/api/courses/${courseId}/publish`, {
         method: 'POST',
@@ -188,7 +197,10 @@ export default function Step4PreviewPublish({
       });
 
       if (!res.ok) {
-        throw new Error('Publish API request failed');
+        const errorData = await res.json().catch(() => null);
+        const details: string[] = errorData?.errors || [];
+        const base = errorData?.message || 'Could not publish course. Please try again.';
+        throw new Error(details.length > 0 ? `${base} ${details.join(' ')}` : base);
       }
 
       setPublishSuccess(true);
@@ -205,7 +217,7 @@ export default function Step4PreviewPublish({
       }, 3000);
     } catch (err) {
       console.error('Failed to publish course:', err);
-      alert('Could not publish course. Please try again.');
+      setPublishError(err instanceof Error ? err.message : 'Could not publish course. Please try again.');
     } finally {
       setIsPublishing(false);
     }
@@ -406,17 +418,17 @@ export default function Step4PreviewPublish({
                           section.lessons.map((lesson, lIdx) => (
                             <div key={lesson.id || lIdx} style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '14px', color: '#334155', borderBottom: lIdx === section.lessons.length - 1 ? 'none' : '1px solid #F8FAFC' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                {lesson.type === 'video' ? (
+                                {effectiveLessonType(lesson) === 'video' ? (
                                   <Play size={14} style={{ color: '#0172FD' }} />
-                                ) : lesson.type === 'quiz' ? (
+                                ) : effectiveLessonType(lesson) === 'quiz' ? (
                                   <HelpCircle size={14} style={{ color: '#8B5CF6' }} />
                                 ) : (
                                   <FileText size={14} style={{ color: '#10B981' }} />
                                 )}
                                 <span>{lesson.title}</span>
                               </div>
-                              <span style={{ fontSize: '12px', color: '#94A3B8', textTransform: 'capitalize' }}>
-                                {lesson.type || 'lesson'}
+                              <span style={{ fontSize: '12px', color: lesson.status === 'published' ? '#10B981' : '#94A3B8', textTransform: 'capitalize' }}>
+                                {lesson.status === 'published' ? 'Published ✓' : (effectiveLessonType(lesson) || 'Draft')}
                               </span>
                             </div>
                           ))
@@ -501,6 +513,23 @@ export default function Step4PreviewPublish({
               </div>
             ))}
           </div>
+
+          {/* Publish error surfaced from the server (validation, ownership…) */}
+          {publishError && (
+            <div style={{
+              padding: '12px 14px',
+              borderRadius: '12px',
+              border: '1.5px solid #FECACA',
+              background: '#FEF2F2',
+              marginBottom: '12px',
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'flex-start',
+            }}>
+              <AlertCircle size={16} style={{ color: '#EF4444', flexShrink: 0, marginTop: '2px' }} />
+              <p style={{ margin: 0, fontSize: '12.5px', color: '#B91C1C', lineHeight: 1.45 }}>{publishError}</p>
+            </div>
+          )}
 
           {/* Primary Publish Action Button */}
           <Button

@@ -1,182 +1,175 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Search, Clock, BookOpen, Check, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Search,
+  Clock,
+  BookOpen,
+  Check,
+  ArrowRight,
+  Sparkles,
+  Star,
+  Zap,
+  Users,
+} from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
+import Avatar from '@/components/ui/Avatar';
 import styles from './Explore.module.css';
 
 interface Instructor {
   id: string;
   fullName: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
+  username?: string | null;
 }
 
+/** Shape returned by GET /api/courses — every stat is computed server-side
+ *  from real relations, so the UI never has to invent one. */
 interface Course {
   id: string;
-  title: string;
   slug: string;
+  title: string;
   description?: string;
   shortDescription?: string;
-  thumbnailUrl?: string;
+  thumbnailUrl?: string | null;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | null;
   category: string;
   level: string;
   duration?: string;
-  rating?: number;
-  reviewsCount?: number;
+  modulesCount?: number;
+  lessonsCount?: number;
+  durationMinutes?: number;
   studentsCount?: number;
+  ratingAvg?: number | null;
+  reviewsCount?: number;
   instructor?: Instructor;
-  sections?: any[];
 }
 
-interface Enrollment {
-  id: string;
-  courseId: string;
-  progress: number;
-  completedLessons?: string[];
-  course?: Course;
-}
-
-const CATEGORIES = ['All', 'Design', 'Development', 'Business', 'IT & Software'];
-const LEVELS = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
+const MAX_FILTER_CHIPS = 10;
 
 export default function ExplorePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showLoaderImmediate } = useTeyroLoader();
 
   const [courses, setCourses] = useState<Course[]>([]);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [enrolledIds, setEnrolledIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters State
-  const [searchQuery, setSearchQuery] = useState('');
+  // Filters State — search can be seeded via /dashboard/explore?q=...
+  const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') ?? '');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedLevel, setSelectedLevel] = useState('All Levels');
+  const [selectedLevel, setSelectedLevel] = useState('All');
 
-  // Enrolling state per course ID
-  const [enrollingCourseId, setEnrollingCourseId] = useState<string | null>(null);
-  const [justEnrolledId, setJustEnrolledId] = useState<string | null>(null);
+  const fetchCatalog = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    const fetchCatalog = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+      // Fetch courses and student's enrollments in parallel. Enrollment
+      // failure is non-fatal (guests can browse); catalog failure is.
+      const [coursesRes, enrollRes] = await Promise.allSettled([
+        fetch('/api/courses'),
+        fetch('/api/auth/me/enrollments', { credentials: 'include' }),
+      ]);
 
-        // Fetch courses and student's enrollments in parallel
-        const [coursesRes, enrollRes] = await Promise.allSettled([
-          fetch('/api/courses'),
-          fetch('/api/auth/me/enrollments', { credentials: 'include' }),
-        ]);
-
-        if (coursesRes.status === 'fulfilled' && coursesRes.value.ok) {
-          const data = await coursesRes.value.json();
-          setCourses(Array.isArray(data) ? data : []);
-        } else {
-          setError('Failed to load course catalog. Please refresh.');
-        }
-
-        if (enrollRes.status === 'fulfilled' && enrollRes.value.ok) {
-          const enrollData = await enrollRes.value.json();
-          setEnrollments(Array.isArray(enrollData) ? enrollData : []);
-        }
-      } catch (err) {
-        console.error('Explore page fetch error:', err);
-        setError('Network error. Please check your connection.');
-      } finally {
-        setLoading(false);
+      if (coursesRes.status === 'fulfilled' && coursesRes.value.ok) {
+        const data = await coursesRes.value.json();
+        setCourses(Array.isArray(data) ? data : []);
+      } else {
+        setError('Failed to load course catalog.');
+        setCourses([]);
       }
-    };
 
-    fetchCatalog();
+      if (enrollRes.status === 'fulfilled' && enrollRes.value.ok) {
+        const enrollData = await enrollRes.value.json();
+        const ids = Array.isArray(enrollData)
+          ? new Set<string>(enrollData.map((e: { courseId: string }) => e.courseId))
+          : new Set<string>();
+        setEnrolledIds(ids);
+      }
+    } catch (err) {
+      console.error('Explore page fetch error:', err);
+      setError('Network error. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Map of courseId -> Enrollment
-  const enrollmentMap = useMemo(() => {
-    const map = new Map<string, Enrollment>();
-    enrollments.forEach((e) => {
-      map.set(e.courseId, e);
+  useEffect(() => {
+    fetchCatalog();
+  }, [fetchCatalog]);
+
+  // Filters derived from the REAL catalog — hardcoded lists drifted out
+  // of sync with what creators actually publish ("IT & Software" matched
+  // nothing; real categories were unreachable).
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    courses.forEach((c) => {
+      if (c.category && c.category !== 'Uncategorized') set.add(c.category);
     });
-    return map;
-  }, [enrollments]);
+    return ['All', ...Array.from(set).sort().slice(0, MAX_FILTER_CHIPS)];
+  }, [courses]);
+
+  const levels = useMemo(() => {
+    const set = new Set<string>();
+    courses.forEach((c) => {
+      if (c.level) set.add(c.level);
+    });
+    return ['All', ...Array.from(set).sort()];
+  }, [courses]);
+
+  // Reset a filter that no longer exists in the derived chip list (e.g. after
+  // a refetch shrinks the catalog)
+  useEffect(() => {
+    if (!categories.includes(selectedCategory)) setSelectedCategory('All');
+    if (!levels.includes(selectedLevel)) setSelectedLevel('All');
+  }, [categories, levels, selectedCategory, selectedLevel]);
 
   // Filtered Courses
   const filteredCourses = useMemo(() => {
     return courses.filter((course) => {
-      // Search term filter
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
         course.title.toLowerCase().includes(q) ||
         (course.shortDescription || '').toLowerCase().includes(q) ||
-        (course.category || '').toLowerCase().includes(q);
+        (course.description || '').toLowerCase().includes(q) ||
+        (course.category || '').toLowerCase().includes(q) ||
+        (course.instructor?.fullName || '').toLowerCase().includes(q);
 
-      // Category filter
       const matchesCategory =
         selectedCategory === 'All' ||
         course.category?.toLowerCase() === selectedCategory.toLowerCase();
 
-      // Level filter
       const matchesLevel =
-        selectedLevel === 'All Levels' ||
+        selectedLevel === 'All' ||
         course.level?.toLowerCase() === selectedLevel.toLowerCase();
 
       return matchesSearch && matchesCategory && matchesLevel;
     });
   }, [courses, searchQuery, selectedCategory, selectedLevel]);
 
-  // Handle Enrollment Action
-  const handleEnroll = async (courseId: string) => {
+  const formatDuration = (minutes?: number) => {
+    if (!minutes || minutes <= 0) return null;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m > 0 ? `${m}m` : ''}`.trim() : `${m}m`;
+  };
+
+  // EVERY card click — thumbnail, body, and the CTA button alike — advances
+  // the funnel to the course page, where the enrollment wizard lives (with
+  // auth gating, the welcome reward celebration, and the paywall). Enrollment
+  // never happens silently from the grid anymore.
+  const openCourse = (course: Course) => {
     playHaptic('medium');
-    setEnrollingCourseId(courseId);
-
-    try {
-      const res = await fetch(`/api/courses/${courseId}/enroll`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      if (res.status === 401) {
-        router.push('/login?redirect=/dashboard/explore');
-        return;
-      }
-
-      if (res.ok) {
-        const data = await res.json();
-        playHaptic('success');
-        setJustEnrolledId(courseId);
-
-        // Optimistically add to enrollments state
-        setEnrollments((prev) => [
-          ...prev,
-          {
-            id: data.enrollmentId || `enroll-${Date.now()}`,
-            courseId,
-            progress: 0,
-            completedLessons: [],
-          },
-        ]);
-
-        // Hide success banner after 3.5 seconds
-        setTimeout(() => {
-          setJustEnrolledId(null);
-        }, 3500);
-      } else {
-        alert('Could not complete enrollment. Please try again.');
-      }
-    } catch (err) {
-      console.error('Enrollment error:', err);
-      alert('Failed to enroll in course.');
-    } finally {
-      setEnrollingCourseId(null);
-    }
+    router.push(`/courses/${course.slug || course.id}`);
   };
 
   const handleContinueLearning = (courseId: string) => {
@@ -189,7 +182,7 @@ export default function ExplorePage() {
     playHaptic('light');
     setSearchQuery('');
     setSelectedCategory('All');
-    setSelectedLevel('All Levels');
+    setSelectedLevel('All');
   };
 
   return (
@@ -214,6 +207,7 @@ export default function ExplorePage() {
               type="text"
               className={styles.searchInput}
               placeholder="Search courses by keyword, topic, or skills..."
+              aria-label="Search courses"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -221,7 +215,7 @@ export default function ExplorePage() {
 
           {/* Category Chips */}
           <div className={styles.categoriesScroll}>
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => {
@@ -229,6 +223,7 @@ export default function ExplorePage() {
                   setSelectedCategory(cat);
                 }}
                 className={`${styles.chip} ${selectedCategory === cat ? styles.chipActive : ''}`}
+                aria-pressed={selectedCategory === cat}
               >
                 {cat}
               </button>
@@ -243,8 +238,9 @@ export default function ExplorePage() {
               setSelectedLevel(e.target.value);
             }}
             className={styles.filterSelect}
+            aria-label="Filter by level"
           >
-            {LEVELS.map((lvl) => (
+            {levels.map((lvl) => (
               <option key={lvl} value={lvl}>
                 {lvl}
               </option>
@@ -252,47 +248,6 @@ export default function ExplorePage() {
           </select>
         </div>
       </div>
-
-      {/* RECENT ENROLLMENT SUCCESS BANNER */}
-      {justEnrolledId && (
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
-            color: 'white',
-            padding: '16px 24px',
-            borderRadius: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: '0 4px 14px rgba(34, 197, 94, 0.25)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <CheckCircle2 size={24} />
-            <div>
-              <strong style={{ fontSize: '15px', display: 'block' }}>You&apos;re Enrolled! 🎉</strong>
-              <span style={{ fontSize: '13px', opacity: 0.9 }}>
-                Course added to My Learning. Click to start your first lesson!
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleContinueLearning(justEnrolledId)}
-            style={{
-              background: 'white',
-              color: '#16A34A',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              fontWeight: 800,
-              fontSize: '13px',
-              cursor: 'pointer',
-            }}
-          >
-            Start Now →
-          </button>
-        </div>
-      )}
 
       {/* COURSE CATALOG GRID */}
       {loading ? (
@@ -309,7 +264,7 @@ export default function ExplorePage() {
         <div className={styles.emptyState}>
           <p className={styles.emptyTitle}>Unable to load courses</p>
           <p className={styles.emptyDesc}>{error}</p>
-          <button onClick={() => window.location.reload()} className={styles.resetBtn}>
+          <button onClick={fetchCatalog} className={styles.resetBtn}>
             Retry
           </button>
         </div>
@@ -326,25 +281,52 @@ export default function ExplorePage() {
       ) : (
         <div className={styles.courseGrid}>
           {filteredCourses.map((course) => {
-            const enrollment = enrollmentMap.get(course.id);
-            const isEnrolled = !!enrollment;
-            const isEnrolling = enrollingCourseId === course.id;
+            const isEnrolled = enrolledIds.has(course.id);
+            const isFree = !course.price || course.price === 0;
+            const duration = formatDuration(course.durationMinutes);
+            const hasRating = (course.reviewsCount ?? 0) > 0 && !!course.ratingAvg;
 
             return (
-              <div key={course.id} className={styles.exploreCardWrapper}>
+              <div
+                key={course.id}
+                role="link"
+                tabIndex={0}
+                aria-label={`View ${course.title}`}
+                onClick={() => openCourse(course)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openCourse(course);
+                  }
+                }}
+                className={styles.exploreCardWrapper}
+              >
                 {/* Thumbnail Header */}
                 <div className={styles.thumbnailContainer}>
-                  <Image
-                    src={
-                      course.thumbnailUrl ||
-                      'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop'
-                    }
-                    alt={course.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={styles.thumbnailImg}
-                  />
+                  {course.thumbnailUrl ? (
+                    <Image
+                      src={course.thumbnailUrl}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className={styles.thumbnailImg}
+                    />
+                  ) : (
+                    <div className={styles.thumbFallback}>
+                      <BookOpen size={28} />
+                      <span>{course.title}</span>
+                    </div>
+                  )}
                   <span className={styles.categoryBadge}>{course.category || 'General'}</span>
+
+                  {/* Price tag — real pricing, hidden once enrolled */}
+                  {!isEnrolled && (
+                    <span
+                      className={`${styles.priceTagBadge} ${isFree ? styles.priceTagFree : ''}`}
+                    >
+                      {isFree ? 'FREE' : `$${Number(course.price).toFixed(0)}`}
+                    </span>
+                  )}
 
                   {isEnrolled && (
                     <span className={styles.enrolledBadge}>
@@ -355,68 +337,111 @@ export default function ExplorePage() {
 
                 {/* Card Body */}
                 <div className={styles.cardBody}>
-                  <Link href={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
-                    <h3 className={styles.courseTitle}>{course.title}</h3>
-                  </Link>
+                  <h3 className={styles.courseTitle}>{course.title}</h3>
                   <p className={styles.courseDesc}>
-                    {course.shortDescription || course.description || 'Master real-world skills with interactive challenges and projects.'}
+                    {course.shortDescription || course.description}
                   </p>
 
-                  {/* Instructor Row */}
+                  {/* Instructor Row — the one link that goes sideways (to the
+                      creator profile), so it opts out of the card navigation */}
                   <div className={styles.instructorRow}>
-                    <Image
-                      src={
-                        course.instructor?.avatarUrl ||
-                        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'
-                      }
-                      alt={course.instructor?.fullName || 'Instructor'}
-                      width={28}
-                      height={28}
-                      className={styles.instructorAvatar}
+                    <Avatar
+                      src={course.instructor?.avatarUrl || undefined}
+                      name={course.instructor?.fullName || 'Creator'}
+                      size="xs"
                     />
-                    <span className={styles.instructorName}>
-                      {course.instructor?.fullName || 'Teyro Creator'}
-                    </span>
+                    {course.instructor?.username ? (
+                      <Link
+                        href={`/creator-profile/${course.instructor.username}`}
+                        className={styles.instructorName}
+                        style={{ textDecoration: 'none' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {course.instructor.fullName}
+                      </Link>
+                    ) : (
+                      <span className={styles.instructorName}>{course.instructor?.fullName}</span>
+                    )}
                   </div>
 
-                  {/* Meta Details Row */}
+                  {/* Meta Details Row — real stats only; items without data are omitted */}
                   <div className={styles.metaRow}>
-                    <div className={styles.metaItem}>
-                      <Clock size={14} /> {course.duration || '5h'}
-                    </div>
-                    <div className={styles.metaItem}>
-                      <BookOpen size={14} /> {course.sections?.length ? `${course.sections.length} modules` : '5 modules'}
-                    </div>
-                    <div className={styles.metaItem}>
-                      <Sparkles size={14} color="#FF8A00" /> {course.level || 'Beginner'}
-                    </div>
+                    {duration && (
+                      <div className={styles.metaItem}>
+                        <Clock size={14} /> {duration}
+                      </div>
+                    )}
+                    {!!course.lessonsCount && (
+                      <div className={styles.metaItem}>
+                        <BookOpen size={14} /> {course.lessonsCount} lesson{course.lessonsCount === 1 ? '' : 's'}
+                      </div>
+                    )}
+                    {!!course.modulesCount && (
+                      <div className={styles.metaItem}>
+                        <Sparkles size={14} /> {course.modulesCount} modules
+                      </div>
+                    )}
+                    {hasRating && (
+                      <div className={styles.metaItem}>
+                        <Star size={13} color="#F59E0B" fill="#F59E0B" /> {course.ratingAvg}
+                      </div>
+                    )}
+                    {!!course.studentsCount && (
+                      <div className={styles.metaItem}>
+                        <Users size={14} /> {course.studentsCount.toLocaleString()}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Footer Action Row */}
+                  {/* Footer Action Row — both buttons advance to the course page;
+                      only enrolled learners skip ahead into /learn */}
                   <div className={styles.cardFooter}>
                     <div className={styles.price}>
-                      {course.price === 0 ? (
+                      {isFree ? (
                         <span className={styles.priceFree}>Free</span>
                       ) : (
-                        <span>${course.price.toFixed(2)}</span>
+                        <span className={styles.priceRow}>
+                          {course.originalPrice != null && course.originalPrice > course.price && (
+                            <span className={styles.originalPrice}>
+                              ${Number(course.originalPrice).toFixed(2)}
+                            </span>
+                          )}
+                          <span>${Number(course.price ?? 0).toFixed(2)}</span>
+                        </span>
                       )}
                     </div>
 
                     {isEnrolled ? (
                       <button
-                        onClick={() => handleContinueLearning(course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleContinueLearning(course.id);
+                        }}
                         className={styles.continueBtn}
                       >
                         Continue <ArrowRight size={14} />
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleEnroll(course.id)}
-                        disabled={isEnrolling}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openCourse(course);
+                        }}
                         className={styles.enrollBtn}
+                        aria-label={
+                          isFree
+                            ? `Enroll in ${course.title} for free`
+                            : `Start ${course.title} free`
+                        }
                       >
-                        {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
-                        {!isEnrolling && <ArrowRight size={14} />}
+                        {isFree ? (
+                          'Enroll for Free'
+                        ) : (
+                          <>
+                            <Zap size={15} fill="currentColor" /> Start Learning Free
+                          </>
+                        )}
+                        <ArrowRight size={14} />
                       </button>
                     )}
                   </div>

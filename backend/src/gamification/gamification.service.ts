@@ -1,21 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  levelFromXp,
-  widthForLevel,
-  xpToNextLevel,
-  xpWithinLevel,
-  applyLevelUpsInTx,
-} from '../common/levels';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 
 @Injectable()
 export class GamificationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * Returns the student's current gamification state.
    * Creates a StudentProfile with defaults if one doesn't exist.
-   * Reconciles daily streak resets, daily quests, and daily login rewards.
+   * Reconciles daily streak resets, multi-day freeze consumption, and daily login rewards.
    */
   async getMyStats(userId: string, timezoneOffsetMinutes = 0) {
     let profile = await this.prisma.studentProfile.upsert({
@@ -28,26 +26,48 @@ export class GamificationService {
     const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
     let updatedFields: any = {};
 
-    // 1. Timezone-aware Daily Streak Check and Freeze Consumption
+    // 1. Timezone-aware Daily Streak Check and Multi-Day Freeze Consumption
     let streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL';
-    // Capture streak count BEFORE any reset — used by the RESET modal to show "Your X-day streak slipped away"
     let lostStreakCount = 0;
-    if (profile.lastStreakEarnedAt) {
+
+    if (profile.lastStreakEarnedAt && profile.streakDays > 0) {
       const lastActiveStr = this.getLocalDayString(profile.lastStreakEarnedAt, timezoneOffsetMinutes);
       const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
 
       if (diffDays > 1) {
-        // Missed a day! Check if they have a streak freeze banked
-        if (profile.streakFreezeBank > 0) {
-          updatedFields.streakFreezeBank = profile.streakFreezeBank - 1;
-          // Set lastStreakEarnedAt to yesterday to preserve streak
+        const missedDays = diffDays - 1;
+        const availableFreezes = profile.streakFreezeBank || 0;
+
+        if (availableFreezes >= missedDays) {
+          // Protected! Consume exact missed days of freezes
+          updatedFields.streakFreezeBank = availableFreezes - missedDays;
           const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           updatedFields.lastStreakEarnedAt = yesterday;
           streakStatus = 'SAVED';
-          console.log(`[Gamification] Streak freeze consumed for user ${userId}. Streak maintained.`);
+
+          // Idempotent audit log for freeze usage
+          const freezeKey = `freeze_consumed:${userId}_${todayStr}_${missedDays}`;
+          try {
+            await this.prisma.rewardTransaction.upsert({
+              where: { idempotencyKey: freezeKey },
+              update: {},
+              create: {
+                userId,
+                currency: 'FREEZE',
+                amount: -missedDays,
+                sourceType: 'STREAK',
+                sourceId: `streak_protected_${todayStr}`,
+                idempotencyKey: freezeKey,
+              },
+            });
+          } catch (e) {
+            // Ignore duplicate key race condition
+          }
         } else {
-          lostStreakCount = profile.streakDays; // Remember what was lost before wiping
+          // Freeze buffer exhausted! Wipe streak
+          lostStreakCount = profile.streakDays;
           updatedFields.streakDays = 0;
+          updatedFields.streakFreezeBank = 0; // Exhausted
           streakStatus = 'RESET';
         }
       }
@@ -77,19 +97,13 @@ export class GamificationService {
       const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
       const diffClaims = this.getDaysDiff(todayStr, lastClaimStr);
 
-      // If they missed at least one calendar day of claiming
       if (diffClaims > 1) {
-        // Does the user have a streak freeze banked to protect their reward cycle position?
-        if (profile.streakFreezeBank > 0) {
-          // Consume 1 freeze to protect the daily reward cycle position
-          updatedFields.streakFreezeBank = (updatedFields.streakFreezeBank ?? profile.streakFreezeBank) - 1;
-          
-          // Set lastRewardClaimedAt to yesterday to prevent resetting the cycle
+        const currentFreezes = updatedFields.streakFreezeBank ?? profile.streakFreezeBank;
+        if (currentFreezes > 0) {
+          updatedFields.streakFreezeBank = Math.max(0, currentFreezes - 1);
           const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           updatedFields.lastRewardClaimedAt = yesterday;
-          console.log(`[Gamification] Streak freeze consumed to protect Daily Reward cycle for user ${userId}.`);
         } else {
-          // No freeze left — cycle resets to Day 1
           updatedFields.dailyRewardCyclePosition = 1;
         }
       }
@@ -158,7 +172,7 @@ export class GamificationService {
   }
 
   /**
-   * Refilling lives using 100 XP points.
+   * Refilling lives using 120 Coins/XP.
    */
   async refillLivesWithXp(userId: string) {
     const profile = await this.prisma.studentProfile.upsert({
@@ -167,17 +181,14 @@ export class GamificationService {
       update: {},
     });
 
-    if (profile.xp < 100) {
-      throw new BadRequestException('Insufficient XP balance. A life refill costs 100 XP.');
+    if (profile.coins < 120 && profile.xp < 100) {
+      throw new BadRequestException('Insufficient balance to refill hearts.');
     }
 
-    // XP is spent here, so the level may recompute DOWNWARD. Downward
-    // crossings are deliberately silent — no celebration, no bonus, no ledger
-    // row (see applyLevelUpsInTx in common/levels.ts).
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
       data: {
-        xp: { decrement: 100 },
+        ...(profile.coins >= 120 ? { coins: { decrement: 120 } } : { xp: { decrement: 100 } }),
         lives: profile.maxLives,
         livesLastLostAt: null,
       },
@@ -187,7 +198,7 @@ export class GamificationService {
   }
 
   /**
-   * Purchase a streak freeze card for 150 XP.
+   * Purchase a streak freeze card with max capacity enforcement (max 2, VIP max 3).
    */
   async buyStreakFreeze(userId: string) {
     const profile = await this.prisma.studentProfile.upsert({
@@ -196,18 +207,31 @@ export class GamificationService {
       update: {},
     });
 
-    if (profile.xp < 150) {
-      throw new BadRequestException('Insufficient XP balance. A streak freeze costs 150 XP.');
+    const maxFreezes = profile.streakDays >= 7 ? 3 : 2;
+    if (profile.streakFreezeBank >= maxFreezes) {
+      throw new BadRequestException(`Maximum streak freeze capacity reached (${maxFreezes} max).`);
     }
 
-    // XP is spent here, so the level may recompute DOWNWARD. Downward
-    // crossings are deliberately silent — no celebration, no bonus, no ledger
-    // row (see applyLevelUpsInTx in common/levels.ts).
+    if (profile.coins < 200 && profile.xp < 150) {
+      throw new BadRequestException('Insufficient balance to purchase a streak freeze.');
+    }
+
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
       data: {
-        xp: { decrement: 150 },
+        ...(profile.coins >= 200 ? { coins: { decrement: 200 } } : { xp: { decrement: 150 } }),
         streakFreezeBank: { increment: 1 },
+      },
+    });
+
+    await this.prisma.rewardTransaction.create({
+      data: {
+        userId,
+        currency: 'FREEZE',
+        amount: 1,
+        sourceType: 'SHOP',
+        sourceId: 'buy_freeze',
+        idempotencyKey: `buy_freeze:${userId}_${Date.now()}`,
       },
     });
 
@@ -215,7 +239,36 @@ export class GamificationService {
   }
 
   /**
-   * Claims a completed Daily Quest, awards XP, and triggers a daily active streak update.
+   * Repair a lost streak using 150 Coins or 100 XP.
+   */
+  async repairStreak(userId: string, timezoneOffsetMinutes = 0) {
+    const profile = await this.prisma.studentProfile.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
+
+    if (profile.coins < 150 && profile.xp < 100) {
+      throw new BadRequestException('Insufficient balance to repair streak.');
+    }
+
+    const now = new Date();
+    const restoredCount = Math.max(1, profile.longestStreak || 1);
+
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: {
+        ...(profile.coins >= 150 ? { coins: { decrement: 150 } } : { xp: { decrement: 100 } }),
+        streakDays: restoredCount,
+        lastStreakEarnedAt: now,
+      },
+    });
+
+    return this.buildResponse(updated, timezoneOffsetMinutes);
+  }
+
+  /**
+   * Claims a completed Daily Quest, awards XP, and keeps streak intact.
    */
   async claimQuest(userId: string, questId: string, timezoneOffsetMinutes = 0) {
     const profile = await this.prisma.studentProfile.upsert({
@@ -240,54 +293,26 @@ export class GamificationService {
 
     const xpReward = rewards[questId] || 10;
     completed.push(questId);
-
     const now = new Date();
-    const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
-    let newStreak = profile.streakDays;
 
-    if (profile.lastActiveAt) {
-      const lastActiveStr = this.getLocalDayString(profile.lastActiveAt, timezoneOffsetMinutes);
-      const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
-
-      if (diffDays === 1) {
-        newStreak = profile.streakDays + 1;
-      } else if (diffDays === 0) {
-        newStreak = profile.streakDays || 1;
-      } else {
-        newStreak = 1;
-      }
-    } else {
-      newStreak = 1;
-    }
-
-    const updated = await this.prisma.$transaction(async (tx) => {
-      const txUpdated = await tx.studentProfile.update({
-        where: { userId },
-        data: {
-          xp: { increment: xpReward },
-          completedQuests: completed,
-          lastQuestResetAt: now,
-          lastActiveAt: now,
-          streakDays: newStreak,
-        },
-      });
-
-      // Detect a level crossing inside the same transaction and grant the bonus.
-      const levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, txUpdated.xp);
-
-      return { txUpdated, levelUp };
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: {
+        xp: { increment: xpReward },
+        completedQuests: completed,
+        lastQuestResetAt: now,
+        lastActiveAt: now,
+      },
     });
 
-    return {
-      ...(await this.buildResponse(updated.txUpdated, timezoneOffsetMinutes)),
-      levelUp: updated.levelUp,
-    };
+    // Credit the weekly league standings (async, non-blocking).
+    this.eventEmitter.emit('xp.awarded', new XpAwardedEvent(userId, xpReward, 'QUEST'));
+
+    return this.buildResponse(updated, timezoneOffsetMinutes);
   }
 
   /**
    * Claims the Daily Login Reward (chest).
-   * Verifies timezone eligibility, applies streak freeze protection if they missed a day,
-   * awards the day's XP, and updates their cycle position (1 to 7).
    */
   async claimDailyReward(userId: string, timezoneOffsetMinutes = 0) {
     const profile = await this.prisma.studentProfile.upsert({
@@ -299,7 +324,6 @@ export class GamificationService {
     const now = new Date();
     const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
 
-    // 1. Check eligibility
     if (profile.lastRewardClaimedAt) {
       const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
       if (todayStr === lastClaimStr) {
@@ -307,71 +331,43 @@ export class GamificationService {
       }
     }
 
-    // 2. Resolve cycle position after potential missed day(s)
-    let currentPosition = profile.dailyRewardCyclePosition;
-    let newFreezeCount = profile.streakFreezeBank;
-    let cheatLastClaimedDate: Date | null = null;
-
-    if (profile.lastRewardClaimedAt) {
-      const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
-      const diffClaims = this.getDaysDiff(todayStr, lastClaimStr);
-
-      if (diffClaims > 1) {
-        // Missed a day! Does freeze bank protect it?
-        if (profile.streakFreezeBank > 0) {
-          newFreezeCount = profile.streakFreezeBank - 1;
-          // Freeze consumed — do not reset position!
-          console.log(`[Gamification] Freeze consumed to protect Daily Reward claim for user ${userId}.`);
-        } else {
-          // Reset cycle position to 1
-          currentPosition = 1;
-        }
-      }
-    }
-
-    // 3. Compute day's reward XP
-    const rewardsMap: Record<number, number> = {
-      1: 5,
-      2: 10,
-      3: 15,
-      4: 20,
-      5: 25,
-      6: 30,
-    };
-
-    let xpReward = rewardsMap[currentPosition] || 5;
-
-    // Day 7 is the Mystery Chest (randomized 50-100 XP)
-    if (currentPosition === 7) {
-      xpReward = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
-    }
-
-    // 4. Update cycle position for next claim
+    let currentPosition = profile.dailyRewardCyclePosition || 1;
+    const coinsReward = currentPosition === 7 ? 30 : 20;
+    const xpReward = currentPosition === 7 ? 50 : 10;
     const nextPosition = currentPosition === 7 ? 1 : currentPosition + 1;
 
-    // 5. Commit state updates
-    const { txUpdated, levelUp } = await this.prisma.$transaction(async (tx) => {
-      const updated = await tx.studentProfile.update({
-        where: { userId },
-        data: {
-          xp: { increment: xpReward },
-          lastRewardClaimedAt: now,
-          dailyRewardCyclePosition: nextPosition,
-          streakFreezeBank: newFreezeCount,
-        },
-      });
+    const updated = await this.prisma.studentProfile.update({
+      where: { userId },
+      data: {
+        coins: { increment: coinsReward },
+        xp: { increment: xpReward },
+        lastRewardClaimedAt: now,
+        dailyRewardCyclePosition: nextPosition,
+      },
+    });
 
-      // Detect a level crossing inside the same transaction and grant the bonus.
-      const crossing = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
+    // Credit the weekly league standings (async, non-blocking).
+    this.eventEmitter.emit('xp.awarded', new XpAwardedEvent(userId, xpReward, 'DAILY_REWARD'));
 
-      return { txUpdated: updated, levelUp: crossing };
+    const idempotencyKey = `daily_login_claim:${userId}_${todayStr}`;
+    await this.prisma.rewardTransaction.upsert({
+      where: { idempotencyKey },
+      update: {},
+      create: {
+        userId,
+        currency: 'COINS',
+        amount: coinsReward,
+        sourceType: 'DAILY_LOGIN_REWARD',
+        sourceId: `day_${currentPosition}`,
+        idempotencyKey,
+      },
     });
 
     return {
-      ...(await this.buildResponse(txUpdated, timezoneOffsetMinutes)),
+      ...(await this.buildResponse(updated, timezoneOffsetMinutes)),
+      justClaimedCoins: coinsReward,
       justClaimedXp: xpReward,
       justClaimedCycleDay: currentPosition,
-      levelUp,
     };
   }
 
@@ -386,12 +382,14 @@ export class GamificationService {
   }
 
   /**
-   * Calculates difference in calendar days.
+   * Calculates difference in calendar days based strictly on UTC calendar dates (DST immune).
    */
   private getDaysDiff(day1: string, day2: string): number {
-    const d1 = new Date(day1 + 'T00:00:00Z');
-    const d2 = new Date(day2 + 'T00:00:00Z');
-    return Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
+    const [y1, m1, d1] = day1.split('-').map(Number);
+    const [y2, m2, d2] = day2.split('-').map(Number);
+    const utc1 = Date.UTC(y1, m1 - 1, d1);
+    const utc2 = Date.UTC(y2, m2 - 1, d2);
+    return Math.round((utc1 - utc2) / (1000 * 60 * 60 * 24));
   }
 
   /**
@@ -442,40 +440,12 @@ export class GamificationService {
     }
     if (dto.streak) updateData.streakDays = { increment: dto.streak };
 
-    const { txUpdated, levelUp } = await this.prisma.$transaction(async (tx) => {
-      const updated = await tx.studentProfile.update({
-        where: { userId },
-        data: updateData,
-      });
-
-      // Detect a level crossing inside the same transaction and grant the bonus.
-      const crossing = await applyLevelUpsInTx(tx, userId, profile.xp, updated.xp);
-
-      return { txUpdated: updated, levelUp: crossing };
-    });
-
-    return {
-      ...(await this.buildResponse(txUpdated)),
-      levelUp,
-    };
-  }
-
-  async awardGems(userId: string, amount: number, source: string) {
     const updated = await this.prisma.studentProfile.update({
       where: { userId },
-      data: { gems: { increment: amount } },
+      data: updateData,
     });
 
-    await this.prisma.gemTransaction.create({
-      data: {
-        userId,
-        type: 'EARN',
-        amount,
-        source,
-      },
-    });
-
-    return updated.gems;
+    return this.buildResponse(updated);
   }
 
   /**
@@ -512,46 +482,37 @@ export class GamificationService {
       livesRefillAt = new Date(nextRefillMs).toISOString();
     }
 
-    // Daily login reward eligibility and countdown
     const now = new Date();
     let isEligibleForReward = true;
     if (profile.lastRewardClaimedAt) {
-      const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
       const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
-      isEligibleForReward = todayStr !== lastClaimStr;
+      const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
+      isEligibleForReward = lastClaimStr !== todayStr;
     }
 
-    const nextRewardClaimInMs = this.getNextMidnightMs(now, timezoneOffsetMinutes);
-
-    // Level calculation — shared curve from common/levels.ts (mirrored by the
-    // frontend in lib/levels.ts). This API is the single source of truth.
-    const totalXp = profile.xp || 0;
-    const userLevel = levelFromXp(totalXp);
-    const xpInCurrentLevel = xpWithinLevel(totalXp);
+    const nextRewardClaimInMs = isEligibleForReward ? 0 : this.getNextMidnightMs(now, timezoneOffsetMinutes);
 
     return {
       xp: profile.xp,
-      userLevel,
-      xpInCurrentLevel,
-      xpToNextLevel: xpToNextLevel(totalXp),
-      currentLevelWidth: widthForLevel(userLevel),
+      gems: profile.coins ?? 0,
+      coins: profile.coins ?? 0,
       streakDays: profile.streakDays,
-      longestStreak: profile.longestStreak ?? Math.max(3, profile.streakDays),
-      gems: profile.coins ?? 50,
-      coins: profile.coins ?? 50,
+      longestStreak: Math.max(profile.longestStreak ?? 0, profile.streakDays),
       lives: profile.lives,
       maxLives: profile.maxLives,
+      livesRefillAt,
       streakFreezeBank: profile.streakFreezeBank,
       streakStatus,
       lostStreakCount,
-      completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
-      livesRefillAt,
       lastLessonCompletedAt: profile.lastLessonCompletedAt ? profile.lastLessonCompletedAt.toISOString() : null,
-      // Daily reward fields
+      completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       lastRewardClaimedAt: profile.lastRewardClaimedAt ? profile.lastRewardClaimedAt.toISOString() : null,
       dailyRewardCyclePosition: profile.dailyRewardCyclePosition || 1,
       isEligibleForReward,
       nextRewardClaimInMs,
+      userLevel: Math.floor(profile.xp / 100) + 1,
+      xpInCurrentLevel: profile.xp % 100,
+      xpTargetForCurrentLevel: 100,
     };
   }
 }

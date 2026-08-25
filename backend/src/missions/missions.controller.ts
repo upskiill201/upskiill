@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MissionsService } from './missions.service';
+import { parseTimezoneOffset } from '../common/utils/parse-timezone-offset';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller(['missions', 'v2/missions'])
@@ -24,8 +25,10 @@ export class MissionsController {
     @Req() req: any,
     @Query('timezoneOffset') timezoneOffset?: string,
   ) {
-    const offset = timezoneOffset ? parseInt(timezoneOffset, 10) : 0;
-    return this.missionsService.getTodayMissions(req.user.id as string, offset);
+    return this.missionsService.getTodayMissions(
+      req.user.id as string,
+      parseTimezoneOffset(timezoneOffset),
+    );
   }
 
   /**
@@ -36,10 +39,12 @@ export class MissionsController {
   async claimMissionReward(
     @Req() req: any,
     @Param('missionId') missionId: string,
+    @Query('timezoneOffset') timezoneOffset?: string,
   ) {
     return this.missionsService.claimMissionReward(
       req.user.id as string,
       missionId,
+      parseTimezoneOffset(timezoneOffset),
     );
   }
 }

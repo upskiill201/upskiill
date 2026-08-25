@@ -6,6 +6,7 @@ import { ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { playHaptic } from '@/lib/haptics';
 import { useHerald } from '@/context/HeraldContext';
+import { useGamification } from '@/context/GamificationContext';
 import styles from './WeeklyProgressCard.module.css';
 
 interface DailyBlock {
@@ -26,7 +27,7 @@ interface WeeklyProgressData {
 }
 
 // Generate fallback weekly structure if backend API fails or returns unauthenticated
-const getFallbackWeeklyData = (): WeeklyProgressData => {
+const getFallbackWeeklyData = (fallbackStreak = 0): WeeklyProgressData => {
   const now = new Date();
   const day = now.getDay();
   const diffToMon = day === 0 ? -6 : 1 - day;
@@ -71,17 +72,18 @@ const getFallbackWeeklyData = (): WeeklyProgressData => {
       completionPercentage: 0,
     },
     dailyBlocks,
-    currentStreak: 0,
+    currentStreak: fallbackStreak,
   };
 };
 
 export default function WeeklyProgressCard() {
   const router = useRouter();
+  const { streakDays } = useGamification();
   const { registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [data, setData] = useState<WeeklyProgressData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Register this widget as visible — Herald suppresses weekly progress banner when this card is on screen
+  // Register this widget as visible — Herald suppresses weekly progress floating banner when this card is on screen
   useEffect(() => {
     registerNativeWidget('weekly-progress');
     return () => unregisterNativeWidget('weekly-progress');
@@ -101,14 +103,14 @@ export default function WeeklyProgressCard() {
         }
       }
       // If res is not ok or json is invalid, use fallback
-      setData(getFallbackWeeklyData());
+      setData(getFallbackWeeklyData(streakDays));
     } catch (err) {
       console.error('WeeklyProgressCard fetch error:', err);
-      setData(getFallbackWeeklyData());
+      setData(getFallbackWeeklyData(streakDays));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [streakDays]);
 
   useEffect(() => {
     fetchWeeklyProgress();
@@ -130,17 +132,17 @@ export default function WeeklyProgressCard() {
         <div className={styles.topRow}>
           <div className={styles.titleGroup}>
             <h3 className={styles.header}>WEEKLY PROGRESS</h3>
-            <span className={styles.subHeader} style={{ opacity: 0.4 }}>Loading...</span>
+            <span className={styles.subHeader} style={{ opacity: 0.5 }}>Loading...</span>
           </div>
-          <div className={styles.dayLabels}>
-            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-              <span key={i} style={{ width: 18, textAlign: 'center' }}>{d}</span>
-            ))}
-          </div>
+          <div className={styles.skeleton} style={{ height: 20, width: 44, borderRadius: 6 }} />
         </div>
         <div className={styles.statRow}>
-          <div className={styles.skeleton} style={{ height: 16, width: 130, borderRadius: 4 }} />
-          <div className={styles.skeleton} style={{ height: 16, width: 36, borderRadius: 4 }} />
+          <div className={styles.skeleton} style={{ height: 16, width: 140, borderRadius: 4 }} />
+        </div>
+        <div className={styles.dayLabels}>
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+            <span key={i}>{d}</span>
+          ))}
         </div>
         <div className={styles.heatmapContainer}>
           <div className={styles.heatmapGrid}>
@@ -150,15 +152,16 @@ export default function WeeklyProgressCard() {
           </div>
         </div>
         <div className={styles.bottomRow}>
-          <div className={styles.skeleton} style={{ height: 14, width: 100, borderRadius: 4 }} />
-          <div className={styles.skeleton} style={{ height: 14, width: 70, borderRadius: 4 }} />
+          <div className={styles.skeleton} style={{ height: 16, width: 110, borderRadius: 4 }} />
+          <div className={styles.skeleton} style={{ height: 16, width: 75, borderRadius: 4 }} />
         </div>
       </div>
     );
   }
 
-  const activeData = data || getFallbackWeeklyData();
-  const { weekRange, progress, dailyBlocks, currentStreak } = activeData;
+  const activeData = data || getFallbackWeeklyData(streakDays);
+  const { weekRange, progress, dailyBlocks } = activeData;
+  const displayStreak = activeData.currentStreak || streakDays || 0;
 
   return (
     <div className={styles.card}>
@@ -168,23 +171,24 @@ export default function WeeklyProgressCard() {
           <span className={styles.subHeader}>{weekRange.label}</span>
         </div>
 
-        <div className={styles.dayLabels}>
-          {dailyBlocks.map((block) => (
-            <span key={block.date} style={{ width: '18px', textAlign: 'center' }}>
-              {block.day.charAt(0)}
-            </span>
-          ))}
-        </div>
+        <span className={styles.pctBadge}>{progress.completionPercentage}%</span>
       </div>
 
       <div className={styles.statRow}>
         <span className={styles.statText}>
           {progress.daysLearned} of {progress.totalDays} learning days
         </span>
-        <span className={styles.pctBadge}>{progress.completionPercentage}%</span>
       </div>
 
-      {/* 7-Day Block Grid */}
+      <div className={styles.dayLabels}>
+        {dailyBlocks.map((block) => (
+          <span key={`label-${block.date}`}>
+            {block.day.charAt(0)}
+          </span>
+        ))}
+      </div>
+
+      {/* 7-Day Heatmap Grid */}
       <div className={styles.heatmapContainer}>
         <div className={styles.heatmapGrid}>
           {dailyBlocks.map((block) => (
@@ -193,37 +197,35 @@ export default function WeeklyProgressCard() {
               onMouseEnter={handleBlockHover}
               title={
                 block.isCompleted
-                  ? `${block.day}: ${block.lessonsCompleted} lesson${block.lessonsCompleted !== 1 ? 's' : ''} · ${block.xpEarned} XP`
+                  ? `${block.day} (${block.date}): ${block.lessonsCompleted} lesson${block.lessonsCompleted !== 1 ? 's' : ''} completed · +${block.xpEarned} XP`
                   : block.isToday
-                  ? `${block.day}: No lesson yet today`
+                  ? `${block.day} (Today): No lesson yet`
                   : block.isFuture
                   ? `${block.day}: Upcoming`
-                  : `${block.day}: No lesson`
+                  : `${block.day}: No activity`
               }
               className={[
                 styles.dotCell,
-                block.isCompleted
-                  ? styles.dotActive
-                  : block.isToday
-                  ? styles.dotToday
-                  : styles.dotEmpty,
-              ].join(' ')}
+                block.isCompleted ? styles.dotActive : '',
+                block.isToday ? styles.dotToday : '',
+                !block.isCompleted && !block.isToday ? styles.dotEmpty : '',
+              ].filter(Boolean).join(' ')}
             />
           ))}
         </div>
       </div>
 
       <div className={styles.bottomRow}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+        <div className={styles.streakWrapper}>
           <Image src="/Icons/burn.png" alt="Streak" width={18} height={18} />
-          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#FF9600' }}>
-            {currentStreak} Day{currentStreak !== 1 ? 's' : ''} Streak
+          <span className={styles.streakText}>
+            {displayStreak} Day{displayStreak !== 1 ? 's' : ''} Streak
           </span>
         </div>
 
-        <button type="button" className={styles.viewMoreBtn} onClick={handleViewMore}>
-          <span>View More</span>
-          <ChevronRight size={16} className={styles.chevronIcon} />
+        <button type="button" className={styles.viewMoreBtn} onClick={handleViewMore} aria-label="View learning analytics">
+          <span>Analytics</span>
+          <ChevronRight size={15} className={styles.chevronIcon} />
         </button>
       </div>
     </div>

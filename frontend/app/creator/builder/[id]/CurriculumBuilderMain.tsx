@@ -8,7 +8,7 @@ import {
   Plus, ChevronDown, ChevronUp, GripVertical, Edit2, Copy, Trash2,
   Play, Video, FileText, Clock, BookOpen, Lightbulb, Target,
   Check, ExternalLink, ArrowRight, MoreVertical, Sparkles, Brain, X, HelpCircle,
-  Lock, CheckCircle2, PenTool, LayoutTemplate, ShieldCheck, List, Film
+  Lock, CheckCircle2, PenTool, LayoutTemplate, ShieldCheck, List, Film, AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/ui/Button';
@@ -95,6 +95,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   const moduleSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   // ─── FETCH ───
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const fetchCurriculum = useCallback(async () => {
     try {
       const ts = new Date().getTime(); // Cache busting
@@ -104,9 +105,18 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
         const sorted = (data as Section[]).sort((a, b) => a.orderIndex - b.orderIndex);
         setSections(sorted);
         if (sorted.length > 0) setExpandedIds(new Set([sorted[0].id]));
+        setFetchError(null);
+      } else {
+        // Without this branch a failed load (expired session, 500…) used to
+        // render the "No modules yet" empty state over real content.
+        setFetchError(res.status === 401
+          ? 'Your session has expired. Refresh the page and sign in again to see your modules.'
+          : `Could not load your curriculum (error ${res.status}).`);
       }
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) {
+      console.error(e);
+      setFetchError('A network error occurred while loading your curriculum.');
+    } finally { setLoading(false); }
   }, [courseId]);
 
   useEffect(() => { fetchCurriculum(); }, [fetchCurriculum]);
@@ -161,7 +171,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
         res = await fetch(`/api/courses/${courseId}/sections`, {
           method: 'POST', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: trimmedTitle }),
+          body: JSON.stringify({ title: trimmedTitle, goal: moduleForm.goal }),
         });
       }
 
@@ -215,7 +225,14 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
     onConfirm: async () => {
       setConfirmModal(null); onSaveStatus('saving');
       try {
-        await fetch(`/api/courses/sections/${sectionId}`, { method: 'DELETE', credentials: 'include' });
+        const res = await fetch(`/api/courses/sections/${sectionId}`, { method: 'DELETE', credentials: 'include' });
+        if (!res.ok) {
+          onSaveStatus('error');
+          setTimeout(() => onSaveStatus('idle'), 3000);
+          alert('The module could not be deleted. Please try again.');
+          return;
+        }
+        setSections(prev => prev.filter(s => s.id !== sectionId));
         await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
       } catch { onSaveStatus('error'); }
     }
@@ -229,18 +246,27 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: `${section.title} (Copy)` }),
       });
-      if (res.ok) {
-        const newSec = await res.json();
-        for (const l of section.lessons) {
-          await fetch(`/api/courses/sections/${newSec.id}/lessons`, {
-            method: 'POST', credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: l.title, lessonType: l.lessonType }),
-          });
+      if (!res.ok) throw new Error(`Section copy failed (${res.status})`);
+      const newSec = await res.json();
+      for (const l of section.lessons) {
+        // Check each lesson copy — a mid-loop failure used to leave a silent
+        // partial duplicate that was still reported as "saved".
+        const lessonRes = await fetch(`/api/courses/sections/${newSec.id}/lessons`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: l.title, lessonType: l.lessonType }),
+        });
+        if (!lessonRes.ok) {
+          console.error('Duplicate module partially failed at lesson:', l.title, lessonRes.status);
+          await fetchCurriculum();
+          onSaveStatus('error');
+          alert('Some lessons could not be copied — the module was duplicated but may be incomplete.');
+          setTimeout(() => onSaveStatus('idle'), 3000);
+          return;
         }
       }
       await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
-    } catch { onSaveStatus('error'); }
+    } catch { onSaveStatus('error'); alert('The module could not be duplicated. Please try again.'); }
   };
 
   // ─── LESSON CRUD ───
@@ -280,7 +306,9 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
         res = await fetch(`/api/courses/lessons/${editingLesson.id}`, {
           method: 'PATCH', credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: trimmedTitle }),
+          // Send the type too — the Edit modal lets creators switch it, and the
+          // backend now accepts and persists `lessonType`.
+          body: JSON.stringify({ title: trimmedTitle, lessonType: lessonForm.lessonType }),
         });
       } else {
         res = await fetch(`/api/courses/sections/${lessonModalSectionId}/lessons`, {
@@ -304,7 +332,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
         setSections(prev => prev.map(sec => ({
           ...sec,
           lessons: sec.lessons.map(l =>
-            l.id === editingLesson.id ? { ...l, title: trimmedTitle } : l
+            l.id === editingLesson.id ? { ...l, title: trimmedTitle, lessonType: lessonForm.lessonType } : l
           )
         })));
       } else {
@@ -345,7 +373,17 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
     onConfirm: async () => {
       setConfirmModal(null); onSaveStatus('saving');
       try {
-        await fetch(`/api/courses/lessons/${lessonId}`, { method: 'DELETE', credentials: 'include' });
+        const res = await fetch(`/api/courses/lessons/${lessonId}`, { method: 'DELETE', credentials: 'include' });
+        if (!res.ok) {
+          onSaveStatus('error');
+          setTimeout(() => onSaveStatus('idle'), 3000);
+          alert('The lesson could not be deleted. Please try again.');
+          return;
+        }
+        setSections(prev => prev.map(sec => ({
+          ...sec,
+          lessons: sec.lessons.filter(l => l.id !== lessonId),
+        })));
         await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
       } catch { onSaveStatus('error'); }
     }
@@ -354,13 +392,14 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   const duplicateLesson = async (sectionId: string, lesson: Lesson) => {
     onSaveStatus('saving');
     try {
-      await fetch(`/api/courses/sections/${sectionId}/lessons`, {
+      const res = await fetch(`/api/courses/sections/${sectionId}/lessons`, {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: `${lesson.title} (Copy)`, lessonType: lesson.lessonType }),
       });
+      if (!res.ok) throw new Error(String(res.status));
       await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
-    } catch { onSaveStatus('error'); }
+    } catch { onSaveStatus('error'); alert('The lesson could not be duplicated. Please try again.'); }
   };
 
   // ─── DRAG END (MODULES) ───
@@ -369,20 +408,67 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
     if (!over || active.id === over.id) return;
     const oi = sections.findIndex(s => s.id === active.id);
     const ni = sections.findIndex(s => s.id === over.id);
-    if (oi !== -1 && ni !== -1) setSections(prev => arrayMove(prev, oi, ni));
+    if (oi !== -1 && ni !== -1) {
+      const previous = sections;
+      const next = arrayMove(sections, oi, ni);
+      setSections(next);
+      // Persist the new order — previously this was local-only and any
+      // refetch snapped the modules straight back to their old positions.
+      onSaveStatus('saving');
+      fetch(`/api/courses/${courseId}/sections/reorder`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds: next.map(s => s.id) }),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          onSaveStatus('saved');
+          setTimeout(() => onSaveStatus('idle'), 3000);
+        })
+        .catch((err) => {
+          console.error('Failed to persist module order', err);
+          setSections(previous); // revert so the UI matches the server
+          onSaveStatus('error');
+          setTimeout(() => onSaveStatus('idle'), 3000);
+        });
+    }
   };
 
   // ─── DRAG END (LESSONS inside a module) ───
   const handleLessonDragEnd = (sectionId: string, event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
+    let reordered: Lesson[] | null = null;
     setSections(prev => prev.map(sec => {
       if (sec.id !== sectionId) return sec;
       const oi = sec.lessons.findIndex(l => l.id === active.id);
       const ni = sec.lessons.findIndex(l => l.id === over.id);
       if (oi === -1 || ni === -1) return sec;
-      return { ...sec, lessons: arrayMove(sec.lessons, oi, ni) };
+      reordered = arrayMove(sec.lessons, oi, ni);
+      return { ...sec, lessons: reordered };
     }));
+
+    const orderedIds = (reordered as Lesson[] | null)?.map(l => l.id);
+    if (!orderedIds) return;
+
+    onSaveStatus('saving');
+    fetch(`/api/courses/sections/${sectionId}/lessons/reorder`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderedIds }),
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        onSaveStatus('saved');
+        setTimeout(() => onSaveStatus('idle'), 3000);
+      })
+      .catch((err) => {
+        console.error('Failed to persist lesson order', err);
+        // Revert by refetching — simplest way to restore the server's order
+        fetchCurriculum();
+        onSaveStatus('error');
+        setTimeout(() => onSaveStatus('idle'), 3000);
+      });
   };
 
   const handleBuildLesson = (lessonId: string) => {
@@ -468,13 +554,29 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
             </div>
           </div>
 
-          {sections.length === 0 ? (
+          {fetchError && (
+            <div style={{
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              padding: '12px 14px', marginBottom: 16,
+              background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 12,
+            }}>
+              <AlertCircle size={16} style={{ color: '#EF4444', flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <p style={{ margin: '0 0 6px', fontSize: 13, color: '#B91C1C' }}>{fetchError}</p>
+                <button type="button" onClick={() => fetchCurriculum()} style={{ background: 'none', border: 'none', padding: 0, color: '#0172FD', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}>
+                  Try again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {sections.length === 0 && !fetchError ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyStateTitle}>No modules yet</div>
               <div className={styles.emptyStateDesc}>Start by adding your first module to organize your curriculum.</div>
               <button type="button" className={styles.addModuleBtn} onClick={openAddModule}><Plus size={14} /> Add Your First Module</button>
             </div>
-          ) : (
+          ) : sections.length > 0 ? (
             <DndContext sensors={moduleSensors} collisionDetection={closestCenter} onDragEnd={handleModuleDragEnd}>
               <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
                 <div className={styles.moduleList}>
@@ -497,7 +599,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
                 </div>
               </SortableContext>
             </DndContext>
-          )}
+          ) : null}
 
           {sections.length > 0 && (
             <motion.div 

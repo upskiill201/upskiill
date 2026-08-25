@@ -42,7 +42,7 @@ export default function Step1Content({ onNext }: Step1ContentProps) {
         variants={headlineContainer}
         initial="hidden"
         animate="show"
-        className="text-[clamp(1.75rem,8vw,2rem)] md:text-[4.5rem] lg:text-[6rem] xl:text-[7.5rem] font-[900] leading-[1.1] mb-1 md:mb-4 tracking-tight text-[#071233]"
+        className="text-[clamp(2.5rem,14vw,3.5rem)] md:text-[4.5rem] lg:text-[6rem] xl:text-[7.5rem] font-[900] leading-[1.05] md:leading-[1.1] mb-2 md:mb-4 tracking-tight text-[#071233]"
         style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
       >
         <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>
@@ -62,7 +62,7 @@ export default function Step1Content({ onNext }: Step1ContentProps) {
         initial={{ y: 14, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.5 }}
-        className="text-[clamp(1rem,4vw,1.1rem)] md:text-xl lg:text-[1.35rem] mb-6 md:mb-10 font-medium text-slate-600 leading-tight md:leading-snug max-w-[95%] md:max-w-none"
+        className="text-[clamp(1.05rem,5vw,1.25rem)] md:text-xl lg:text-[1.35rem] mb-8 md:mb-10 font-medium text-slate-500 md:text-slate-600 leading-snug max-w-[92%] md:max-w-none"
         style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
       >
         Your journey to mastering
@@ -91,7 +91,7 @@ export default function Step1Content({ onNext }: Step1ContentProps) {
             playHaptic('medium');
             onNext();
           }}
-          className="relative w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-4 md:py-6 rounded-[1.5rem] md:rounded-[2rem] text-white font-bold text-lg md:text-2xl cursor-pointer"
+          className="relative w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-4 md:py-6 rounded-[1.75rem] md:rounded-[2rem] text-white font-bold text-[1.3rem] md:text-2xl cursor-pointer"
           style={{
             backgroundColor: '#0172FD',
             boxShadow:
@@ -99,7 +99,7 @@ export default function Step1Content({ onNext }: Step1ContentProps) {
           }}
         >
           <span>Get Started</span>
-          <ArrowRight className="absolute right-5 md:right-10 w-5 h-5 md:w-7 md:h-7 stroke-[3]" />
+          <ArrowRight className="absolute right-5 md:right-10 w-6 h-6 md:w-7 md:h-7 stroke-[3]" />
         </motion.button>
       </motion.div>
     </div>

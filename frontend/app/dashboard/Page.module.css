@@ -13,6 +13,25 @@
   width: 100%;
 }
 
+/* MOBILE HUD CLUSTER: inline menu trigger + stat pills (headerless homescreen) */
+.hudTopCluster {
+  display: flex;
+  align-items: center;
+}
+
+.hudStats {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileMenuBtn {
+  display: none; /* desktop keeps the sticky header — trigger is mobile-only */
+}
+
+.hudBell {
+  display: none; /* desktop reads notifications from the sidebar bell instead */
+}
+
 .welcomeBanner {
   display: flex;
   flex-direction: column;
@@ -900,7 +919,7 @@
 /* ─── PLAYFUL 2-COLUMN GAMIFIED CARDS GRID (DESKTOP & MOBILE) ─── */
 .gameCardsGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   margin-bottom: 2rem;
   width: 100%;
@@ -1032,8 +1051,45 @@
 
 @media (max-width: 768px) {
   .gameCardsGrid {
-    gap: 10px;
-    margin-bottom: 14px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* Inline Duolingo-style menu trigger — lives in the stats row, costs no vertical space */
+  .mobileMenuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    margin-left: -6px; /* optically align icon with content edge */
+    background: none;
+    border: none;
+    color: #071233;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  .mobileMenuBtn:hover {
+    opacity: 0.75;
+  }
+
+  /* Bell lives outside the drawer menu so it's never hidden with the menu */
+  .hudBell {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .mobileMenuBtn:active {
+    transform: scale(0.88);
+  }
+
+  .hudTopCluster {
+    width: 100%;
+    gap: 4px;
   }
 
   .topHeaderRow {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -125,6 +125,7 @@ export default function CourseCreationWizard() {
   const [timeWeekly, setTimeWeekly] = useState('');
 
   // Keyboard Shortcuts (Duolingo Style: Enter to proceed, 1/2 on Step 1)
+  const isSubmittingRef = useRef(false);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
@@ -141,6 +142,7 @@ export default function CourseCreationWizard() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, courseType, title, category, timeWeekly]);
 
   const handleNext = () => {
@@ -169,6 +171,10 @@ export default function CourseCreationWizard() {
 
   const submitCourse = async () => {
     if (!title.trim()) return;
+    // Guard both the keyboard path and the button path against double-fires —
+    // two rapid Enter presses used to create two identical courses.
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     setErrorMsg(null);
 
@@ -201,6 +207,7 @@ export default function CourseCreationWizard() {
       console.error('Network error:', err);
       setErrorMsg('A network connection error occurred. Please try again.');
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };

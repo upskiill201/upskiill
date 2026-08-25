@@ -37,6 +37,13 @@
   min-height: 80px;
 }
 
+/* Desktop sidebar bell only — on mobile the bell moves out of the drawer to
+   always-visible surfaces (sticky header, home HUD). */
+.sidebarBellSlot {
+  display: flex;
+  align-items: center;
+}
+
 .logoContainer {
   display: flex;
   align-items: center;
@@ -362,6 +369,8 @@
   }
 
   .sidebarToggle { display: none; }
+  /* Bell is not part of the mobile menu — it lives outside the drawer */
+  .sidebarBellSlot { display: none; }
   .mobileClose {
     display: flex;
     background: none;
@@ -464,14 +473,22 @@
 
 /* Immersive mode (e.g. lesson player): hide mobile chrome, use full height */
 .immersiveContent {
+  /* Own the box EXACTLY: reset .content's min-height:100vh floor (on real
+     phones vh is the largest viewport, so the floor grows the box past the
+     visible viewport and overflow:hidden clips docked CTAs) and fall back
+     to vh for browsers without dynamic-viewport units. */
+  height: 100vh;
   height: 100dvh;
+  min-height: 0;
   overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .immersiveContent {
     padding: 0 16px !important;
+    height: 100vh;
     height: 100dvh;
+    min-height: 0;
     overflow: hidden;
   }
 }

@@ -77,6 +77,7 @@ model User {
   userInventories    UserInventory[]
   dailyChests        DailyChest[]
   dailyActivities    UserDailyActivity[]
+  monthlyQuests      UserMonthlyQuest[]
   userMomentum       UserMomentum?
   rewardLogs             RewardLog[]
   xpEvents               XpEvent[]
@@ -88,6 +89,10 @@ model User {
   viewerFriendActivities FriendActivity[]       @relation("ViewerFriendActivities")
   actorFriendActivities  FriendActivity[]       @relation("ActorFriendActivities")
   notifications          Notification[]
+  notificationActors     Notification[]         @relation("NotificationActor")
+  pollVotes              PollVote[]
+  courseWeeklyXp         CourseWeeklyXp[]
+  leagueMembers          LeagueMember[]
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -215,6 +220,27 @@ model Course {
   userCourseProgresses UserCourseProgress[]
   community            Community?
   posts                Post[]
+  weeklyXpRows         CourseWeeklyXp[]
+  views                CourseView[]
+}
+
+/// Daily page-view aggregate for a course detail page. One row per
+/// (course, day), incremented on visit — powers funnel stage 1 ("viewed")
+/// and the enrollment conversion rate. Never per-user, so nothing here can
+/// identify a visitor.
+model CourseView {
+  id       String   @id @default(uuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  day      DateTime @db.Date
+  count    Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, day])
+  @@index([courseId])
+  @@map("course_views")
 }
 
 model Section {
@@ -266,6 +292,7 @@ model Lesson {
   resources LessonResource[]
   steps     LessonStep[]
   userLessonProgresses UserLessonProgress[]
+  posts     Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -323,6 +350,8 @@ model LessonResource {
   originalName     String?
   estimatedReadMin Int     @default(0)
   displayOrder     Int     @default(0)
+  description      String? // optional creator-written summary shown in resource lists
+  category         String? // Reference | Template | Exercise | Supplemental
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -392,6 +421,20 @@ model CourseAccessEntitlement {
   @@unique([userId, courseId])
   @@index([userId, courseId, status, expiresAt])
   @@map("course_access_entitlements")
+}
+
+/// Idempotency ledger for provider webhooks. Stripe (and other providers)
+/// retry deliveries and legitimately fire overlapping events — without this
+/// table every replay would stack another free period onto the entitlement.
+model ProcessedWebhookEvent {
+  id         String   @id @default(uuid())
+  provider   String // STRIPE | MESOMB
+  eventId    String
+  eventType  String?
+  receivedAt DateTime @default(now())
+
+  @@unique([provider, eventId])
+  @@map("processed_webhook_events")
 }
 
 enum PaymentProviderType {
@@ -554,6 +597,15 @@ model StudentProfile {
   longestStreak         Int       @default(3)
   lastLessonCompletedAt DateTime? // Exact timestamp when a lesson was finished
 
+  // Daily goal (XP/day) — Duolingo-style commitment level
+  // 20 Casual | 50 Regular | 100 Serious | 200 Intense
+  dailyGoalXp           Int       @default(20)
+
+  // Weekly league standing (Duolingo-style leaderboards). Source of truth for
+  // which tier the user joins next week; mutated only by league settlement.
+  leagueTier     LeagueTier @default(BRONZE)
+  tournamentWins Int        @default(0) // Diamond Tournament championships
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -610,12 +662,15 @@ model UserFollow {
 }
 
 model UserAchievement {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievementId String   // 'wildfire' | 'sage' | 'champion' | 'explorer' | 'marathon'
-  tier          Int      @default(1)
-  unlockedAt    DateTime @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String    // 'wildfire' | 'sage' | 'champion' | 'sharpshooter' | 'explorer' | 'marathon'
+  tier          Int       @default(1)
+  unlockedAt    DateTime  @default(now())
+  // Achievements are their own reward — seenAt only tracks whether the student
+  // has viewed the unlock (celebration scene / collection) so Herald stops nudging.
+  seenAt        DateTime?
 
   @@unique([userId, achievementId, tier])
   @@index([userId])
@@ -721,6 +776,9 @@ model UserLessonProgress {
   timeSpentSeconds   Int       @default(0)
   attemptsCount      Int       @default(0)
   lastStepId         String?
+  // Apply-phase accuracy (0–100) reported by the player at completion time.
+  // Null for lessons without an activity or completions before this existed.
+  quizScore          Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -837,6 +895,92 @@ model UserWeeklyProgress {
   @@unique([userId, weekStartDate])
   @@index([userId, weekStartDate])
   @@map("user_weekly_progress")
+}
+
+/// Per-course weekly XP ledger for The Arena (course-scoped leaderboard).
+/// One row per (user, course, UTC week) — written by ArenaService on lesson
+/// completion. Weeks are fixed UTC Mondays so everyone on a course shares one
+/// board (deliberately different from UserWeeklyProgress, which is user-local).
+/// `divisionId` is reserved for future Bronze→Diamond-style split boards.
+model CourseWeeklyXp {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  divisionId       String?
+  weekStartDate    String   // YYYY-MM-DD, always a Monday in UTC
+  xpEarned         Int      @default(0)
+  lessonsCompleted Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId, weekStartDate])
+  @@index([courseId, weekStartDate, xpEarned(sort: Desc)])
+  @@map("course_weekly_xp")
+}
+
+// Weekly league ladder for the global Duolingo-style leaderboard.
+// Order matters — settlement promotes/demotes by index.
+enum LeagueTier {
+  BRONZE
+  SILVER
+  GOLD
+  SAPPHIRE
+  RUBY
+  EMERALD
+  AMETHYST
+  PEARL
+  DIAMOND
+  DIAMOND_TOURNAMENT
+}
+
+/// One weekly competition group of up to 30 users within a league tier.
+/// Tournament cohorts are rows with league = DIAMOND_TOURNAMENT. Weeks are
+/// fixed UTC Mondays so every user shares one clock (like CourseWeeklyXp).
+model LeagueCohort {
+  id          String    @id @default(uuid())
+  league      LeagueTier
+  weekStart   String    // YYYY-MM-DD, always a Monday in UTC
+  cohortIndex Int       // sequential within (league, weekStart)
+  status      String    @default("ACTIVE") // 'ACTIVE' | 'SETTLED'
+  settledAt   DateTime?
+  members     LeagueMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([league, weekStart, cohortIndex])
+  @@index([weekStart])
+  @@map("league_cohorts")
+}
+
+/// One user's standing in one league week. `cohortId` is null for synthetic
+/// inactivity-demotion rows (user was in a league but earned no XP that week).
+/// `outcome` + `seenAt` drive the one-time settlement celebration scene.
+model LeagueMember {
+  id          String        @id @default(uuid())
+  cohortId    String?
+  cohort      LeagueCohort? @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart   String        // YYYY-MM-DD Monday UTC (denormalized for unique + queries)
+  league      LeagueTier    // tier the user competed in this week
+  weeklyXp    Int           @default(0)
+  xpUpdatedAt DateTime      @default(now()) // tie-break: earlier reach = higher rank
+  joinedAt    DateTime      @default(now())
+  rank        Int?
+  outcome     String?       // 'PROMOTED' | 'DEMOTED' | 'STAYED' | 'CHAMPION' | 'TOURNAMENT_EXIT' | 'INACTIVE_DEMOTED'
+  seenAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+  @@index([cohortId, weeklyXp(sort: Desc)])
+  @@index([userId, weekStart(sort: Desc)])
+  @@map("league_members")
 }
 
 model LearningEvent {
@@ -992,34 +1136,101 @@ model Post {
   community    Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
   courseId     String?
   course       Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  postType     String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT'
+  postType     String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT' | 'GENERAL' | 'MILESTONE' | 'TIP' | 'WIN' | 'RESOURCE' | 'DISCUSSION' | 'POLL' | 'ANNOUNCEMENT' | 'CHALLENGE'
+  title        String?    // optional headline (150 chars max, enforced in DTOs)
   contentText  String     @db.Text
   mediaUrl     String?
+  images       String[]   // ordered image URLs uploaded direct-to-S3
+  lessonId     String? // lesson-linked discussions ("Discuss this lesson")
+  lesson       Lesson?    @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  isPinned     Boolean    @default(false) // Commons moderation — pinned posts float to top of feed page 1
+  isLocked     Boolean    @default(false) // creator locked comments
+  status       String     @default("ACTIVE") // 'ACTIVE' | 'REMOVED' (moderation soft-delete)
   likeCount    Int        @default(0)
   commentCount Int        @default(0)
+  viewCount    Int        @default(0)
+  lastActivityAt DateTime @default(now()) // bumped on comment; drives feed recency
+  editedAt     DateTime?
   createdAt    DateTime   @default(now())
 
-  comments Comment[]
+  comments    Comment[]
+  pollOptions PollOption[]
+  pollVotes   PollVote[]
+  attachments PostAttachment[]
 
   @@index([userId])
   @@index([communityId])
   @@index([courseId])
+  @@index([lessonId])
   @@index([createdAt(sort: Desc)])
+  @@index([lastActivityAt(sort: Desc)])
   @@map("posts")
 }
 
 model Comment {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   postId      String
-  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId    String? // one-level threading: replies attach to a top-level comment
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  contentText String   @db.Text
-  createdAt   DateTime @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentText String    @db.Text
+  status      String    @default("ACTIVE") // 'ACTIVE' | 'REMOVED'
+  likeCount   Int       @default(0)
+  editedAt    DateTime?
+  createdAt   DateTime  @default(now())
 
   @@index([postId])
   @@index([userId])
+  @@index([parentId])
   @@map("comments")
+}
+
+model PollOption {
+  id        String @id @default(uuid())
+  postId    String
+  post      Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  text      String @db.VarChar(200)
+  position  Int    @default(0)
+  voteCount Int    @default(0)
+
+  votes PollVote[]
+
+  @@index([postId])
+  @@map("poll_options")
+}
+
+model PollVote {
+  id       String     @id @default(uuid())
+  postId   String
+  post     Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  optionId String
+  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  // one vote per user per poll — enforced at the DB level
+  @@unique([postId, userId])
+  @@index([optionId])
+  @@index([userId])
+  @@map("poll_votes")
+}
+
+model PostAttachment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String
+  mimeType  String?
+  sizeBytes Int?
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@map("post_attachments")
 }
 
 model Like {
@@ -1071,7 +1282,9 @@ model Notification {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type       String   // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM'
+  actorId    String? // who triggered it (liker/replier/mentioner/creator)
+  actor      User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  type       String   // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM' | 'POST_LIKE' | 'COMMENT_LIKE' | 'REPLY' | 'MENTION' | 'ANNOUNCEMENT'
   entityType String?
   entityId   String?
   title      String?
@@ -1188,5 +1401,201 @@ model WeeklySpin {
   @@unique([userId, weekStart])
   @@index([userId])
   @@map("weekly_spins")
+}
+
+// Monthly Quest — one row per user per local month. Progress = goal-days:
+// a day counts when UserDailyActivity.xpEarned >= dailyGoalXp AND at least
+// one lesson was completed that day. goalSnapshot is append-only so a day
+// stays counted even if the user changes their dailyGoalXp tier mid-month.
+model UserMonthlyQuest {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthKey           String   // 'YYYY-MM' local timezone
+  status             String   @default("ACTIVE") // 'ACTIVE' | 'COMPLETED' | 'FULLY_CLAIMED'
+  dailyGoalXpAtStart Int // dailyGoalXp snapshot at creation (informational)
+  targetDays         Int // required goal-days for 100% — fixed at creation (prorated for mid-month joiners)
+  goalDays           Int      @default(0) // denormalized count of goalSnapshot entries
+  goalSnapshot       Json     @default("[]") // append-only [{ date, xpEarned, dailyGoalXp }]
+  milestonesClaimed  Json     @default("[]") // e.g. ["M1", "M2"]; 'FINAL' appended on final claim
+  finalRewardType    String? // written at final claim — mirrors WeeklySpin.rewardSnapshotType
+  finalRewardAmount  Int?
+  badgeId            String? // e.g. 'monthly_quest_2026_08' — future badge gallery reads this
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, monthKey])
+  @@index([userId])
+  @@map("user_monthly_quests")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CREATOR EARNINGS — immutable ledger, revenue-share agreements, payouts.
+// Money rules: every amount is an INTEGER in minor units (cents). The only
+// float→int boundary is Math.round(x * 100) at the payment-service call
+// sites. Ledger rows are append-only (enforced by a DB trigger); all
+// corrections are NEW rows that reference the original via
+// relatedTransactionId. No FK relations on ledger tables by design — they
+// must survive user/course deletion (GemTransaction precedent).
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CreatorTier {
+  STANDARD
+  FOUNDING
+}
+
+enum EarningsEntryType {
+  SALE // first paid grant for a (student, course)
+  RENEWAL // subsequent period on an already-ACTIVE entitlement
+  REFUND // negative entry, proportional, matched to the original sale
+  CHARGEBACK // negative entry when a dispute opens
+  REVERSAL // positive entry restoring a won dispute
+  ADJUSTMENT // manual admin correction (either sign), reason mandatory
+}
+
+enum PayoutStatus {
+  REQUESTED
+  UNDER_REVIEW
+  PROCESSING
+  PAID
+  REJECTED
+  FAILED
+  CANCELLED
+}
+
+enum PayoutMethodType {
+  BANK
+  MOBILE_MONEY
+}
+
+/// One revenue-share agreement per period. Active = effectiveUntil NULL.
+/// New agreements close the previous row — history is never rewritten.
+model CreatorEarningsAgreement {
+  id              String      @id @default(uuid())
+  userId          String
+  tier            CreatorTier @default(STANDARD)
+  creatorSharePct Int // 70 | 80 — percent of netMinor
+  isFounding      Boolean     @default(false)
+  effectiveFrom   DateTime    @default(now())
+  effectiveUntil  DateTime?
+  notes           String?
+  createdBy       String? // admin userId when set manually
+  createdAt       DateTime    @default(now())
+
+  @@index([userId, effectiveUntil])
+  @@map("creator_earnings_agreements")
+}
+
+/// Append-only earnings ledger. creatorSharePct is SNAPSHOTTED per row so a
+/// later tier change never rewrites history. Signed amounts: credits > 0,
+/// debits < 0. teyroAmountMinor = netMinor − creatorAmountMinor always.
+model EarningsTransaction {
+  id                   String            @id @default(uuid())
+  publicId             String            @unique // "ET-XXXXXXXX" support reference
+  creatorId            String
+  courseId             String?
+  studentId            String?
+  orderId              String?
+
+  type                 EarningsEntryType
+  grossMinor           Int
+  discountMinor        Int               @default(0)
+  feeMinor             Int               @default(0) // processing fee; 0 until fee capture exists
+  netMinor             Int // gross − discount − fee
+  currency             String            @default("USD") // ledger currency (USD-only v1)
+  nativeCurrency       String? // e.g. XAF — reference only, never summed
+  nativeAmountMinor    Int?
+
+  creatorSharePct      Int
+  creatorAmountMinor   Int // signed
+  teyroAmountMinor     Int // signed
+
+  provider             String // STRIPE | MESOMB | MANUAL
+  providerReference    String? // pi_/in_/cs_/re_/dp_/pk ids — dedupe key
+  relatedTransactionId String? // reversal entries → original row
+  reason               String? // MANDATORY for REFUND / CHARGEBACK / ADJUSTMENT
+  occurredAt           DateTime          @default(now()) // drives the clearing window
+  metadata             Json?
+
+  createdAt            DateTime          @default(now()) // intentionally NO @updatedAt
+
+  @@unique([provider, type, providerReference])
+  @@index([creatorId, occurredAt])
+  @@index([creatorId, type])
+  @@index([courseId])
+  @@index([orderId])
+  @@index([providerReference])
+  @@map("earnings_transactions")
+}
+
+/// Where creators get paid. FULL account details are AES-256-GCM encrypted
+/// at rest; only masked display data is ever returned by APIs.
+model CreatorPayoutMethod {
+  id                String          @id @default(uuid())
+  userId            String          @unique
+  type              PayoutMethodType
+  encryptedData     String // "v1:<keyVersion>:<iv>:<tag>:<cipher>"
+  keyVersion        Int             @default(1) // supports future key rotation
+  holderName        String?
+  maskedDisplay     String? // "Bank Acct **4821"
+  bankName          String? // display-only metadata
+  country           String?
+  receivingCurrency String?
+  isVerified        Boolean         @default(false)
+  verifiedAt        DateTime?
+  eligibilityNote   String?
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@map("creator_payout_methods")
+}
+
+/// Payout requests. Funds are RESERVED from available balance while status
+/// is REQUESTED / UNDER_REVIEW / PROCESSING. externalReference is the
+/// drop-in slot for an automated rail (Stripe Connect transfer id).
+model CreatorPayout {
+  id                String       @id @default(uuid())
+  publicId          String       @unique
+  userId            String
+  amountMinor       Int
+  currency          String       @default("USD")
+  status            PayoutStatus @default(REQUESTED)
+  methodSnapshot    Json? // frozen masked method at request time
+  requestedAt       DateTime     @default(now())
+  reviewedAt        DateTime?
+  processedAt       DateTime?
+  paidAt            DateTime?
+  closedAt          DateTime? // any terminal transition
+  reviewedBy        String? // admin userId
+  rejectionReason   String? // mandatory on REJECTED
+  failureReason     String? // mandatory on FAILED
+  cancelReason      String? // mandatory on CANCELLED
+  adminNote         String?
+  externalReference String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, requestedAt(sort: Desc)])
+  @@index([status, requestedAt(sort: Desc)])
+  @@map("creator_payouts")
+}
+
+/// Audit trail for every earnings mutation: agreement changes, payout state
+/// transitions, adjustments, refund matching failures, method updates.
+model EarningsAuditLog {
+  id         String   @id @default(uuid())
+  actorId    String? // null = system/webhook
+  actorType  String   @default("SYSTEM") // ADMIN | CREATOR | SYSTEM
+  action     String
+  entityType String // EarningsTransaction | CreatorPayout | Agreement | PayoutMethod
+  entityId   String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("earnings_audit_logs")
 }
 

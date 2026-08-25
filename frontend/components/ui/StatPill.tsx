@@ -7,15 +7,20 @@ import styles from './StatPill.module.css';
 
 export type StatType = 'streak' | 'gem' | 'lives' | 'coin' | 'level';
 
+/**
+ * - 'flat': borderless Duolingo homescreen style — bare icon + bold colored number
+ * - 'candy': tactile 3D pills with per-stat colors (shop coin card context)
+ */
+export type StatVariant = 'flat' | 'candy';
+
 interface StatPillProps {
   type: StatType;
   value: number | string;
-  /** Extra label below the number, defaults match each type */
+  /** Accessible name only — values render without visible text labels (Duolingo style) */
   label?: string;
-  /** Compact mode (icon only + number, no label) */
+  /** Tighter gutters for narrow containers (drawer / mobile) */
   compact?: boolean;
-  /** Extra class for the label span (used for responsive hiding) */
-  labelClassName?: string;
+  variant?: StatVariant;
   onClick?: () => void;
   className?: string;
 }
@@ -26,40 +31,37 @@ const STAT_CONFIG: Record<
     icon: string;
     defaultLabel: string;
     color: string;
-    glow: string;
   }
 > = {
   streak: {
     icon: '/Icons/burn.png',
     defaultLabel: 'Streak',
     color: '#EA580C',
-    glow: 'rgba(255,138,0,0.25)',
   },
   gem: {
     icon: '/Icons/gem.png',
     defaultLabel: 'XP',
     color: '#0172FD',
-    glow: 'rgba(1,114,253,0.22)',
   },
   lives: {
     icon: '/Icons/heart.png',
     defaultLabel: 'Lives',
     color: '#E11D48',
-    glow: 'rgba(255,75,75,0.22)',
   },
   coin: {
     icon: '/Icons/Coin.png',
     defaultLabel: 'Coins',
     color: '#CA8A04',
-    glow: 'rgba(234,179,8,0.25)',
   },
   level: {
     icon: '/Icons/user-profile.png',
     defaultLabel: 'Level',
     color: '#9333EA',
-    glow: 'rgba(168,85,247,0.25)',
   },
 };
+
+/** Brand --text-muted: used for a cold (0-day) streak, like Duolingo's gray fire */
+const INACTIVE_COLOR = '#94A3B8';
 
 function formatStatValue(val: number | string): string {
   if (typeof val === 'number') {
@@ -71,14 +73,14 @@ function formatStatValue(val: number | string): string {
 }
 
 /**
- * Duolingo-style gamified stat pill with tactile 3D borders.
+ * Duolingo-style flat game stat: icon + bold colored number, no border, no 3D.
  */
 export const StatPill: React.FC<StatPillProps> = ({
   type,
   value,
   label,
   compact = false,
-  labelClassName,
+  variant = 'flat',
   onClick,
   className,
 }) => {
@@ -94,6 +96,10 @@ export const StatPill: React.FC<StatPillProps> = ({
         : '/Icons/Coin_empty.png'
       : cfg.icon;
 
+  // A cold (0-day) streak renders grayed-out, like Duolingo's inactive fire
+  const isInactive = type === 'streak' && Number(value) <= 0;
+  const valueColor = isInactive ? INACTIVE_COLOR : cfg.color;
+
   const formattedValue = formatStatValue(value);
   const typePillClass = styles[`pill_${type}`] || '';
 
@@ -105,12 +111,21 @@ export const StatPill: React.FC<StatPillProps> = ({
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`${styles.pillBtn} ${typePillClass} ${compact ? styles.pillBtnCompact : ''} ${className || ''}`}
+      className={[
+        styles.pillBtn,
+        typePillClass,
+        variant === 'candy' ? styles.candy : '',
+        compact ? styles.pillBtnCompact : '',
+        className || '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       aria-label={`${displayLabel}: ${value}`}
     >
-      {/* 3D icon with subtle hover micro-bounce */}
+      {/* Icon with subtle hover micro-bounce */}
       <motion.div
         className={styles.iconWrapper}
+        style={isInactive ? { filter: 'grayscale(1) opacity(0.55)' } : undefined}
         animate={{
           y: isHovered ? [0, -2, 0] : 0,
           rotate: isHovered && type === 'streak' ? [0, -5, 5, 0] : 0,
@@ -122,7 +137,7 @@ export const StatPill: React.FC<StatPillProps> = ({
       >
         <Image
           src={iconSrc}
-          alt={displayLabel}
+          alt=""
           fill
           sizes="28px"
           style={{ objectFit: 'contain' }}
@@ -130,24 +145,10 @@ export const StatPill: React.FC<StatPillProps> = ({
         />
       </motion.div>
 
-      {/* Number + label */}
-      <div className={styles.textCol}>
-        <span
-          className={styles.statValue}
-          style={{ color: cfg.color }}
-        >
-          {formattedValue}
-        </span>
-
-        {!compact && (
-          <span
-            className={`${styles.statLabel} ${labelClassName || ''}`}
-            style={{ color: cfg.color }}
-          >
-            {displayLabel}
-          </span>
-        )}
-      </div>
+      {/* Bold colored value, Duolingo-style */}
+      <span className={styles.statValue} style={{ color: valueColor }}>
+        {formattedValue}
+      </span>
     </motion.button>
   );
 };

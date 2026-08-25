@@ -1,0 +1,229 @@
+/* PostCard — one community post in a feed or list.
+ * Duolingo skin: chunky 2px-border card sitting on a 3D bottom shadow;
+ * hover floats it off the shadow. */
+
+.card {
+  display: block;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
+  padding: 16px;
+  transition: transform 150ms ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.pinned {
+  border-color: var(--brand-blue);
+  background: linear-gradient(135deg, var(--light-blue-bg) 0%, var(--bg-section) 100%);
+}
+
+/* ── Header: avatar · name/meta … origin … ⋯ menu ─────────────────────── */
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.authorBlock { display: flex; flex-direction: column; min-width: 0; }
+.authorName {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.authorName:hover { color: var(--brand-blue); }
+.metaRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.streak { font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 3px; }
+.dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-strong); }
+
+.originChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 4px 0 6px;
+  line-height: 1.35;
+}
+
+.body {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bodyFull { display: block; -webkit-line-clamp: unset; }
+
+.lessonTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--light-blue-bg);
+  border: 1px dashed var(--brand-blue);
+  color: var(--brand-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.imageGrid img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.attachments { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.attachmentLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-blue);
+  background: var(--bg-section);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.attachmentLink:hover { border-color: var(--brand-blue); }
+
+/* ── Engagement bar: stats line + action row split by a hairline ──────── */
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.actionBtn:hover { background: var(--bg-section); color: var(--text-primary); }
+.actionBtnLiked { color: var(--brand-blue); }
+.actionBtnLiked:hover { color: var(--brand-blue-hover); background: var(--light-blue-bg); }
+
+.spacer { flex: 1; }
+.views { font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px; }
+
+.menuWrap { position: relative; }
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 30;
+  min-width: 170px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(31, 42, 68, 0.12);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.menuItem:hover { background: var(--bg-section); }
+.menuItemDanger { color: #dc2626; }
+.menuItemDanger:hover { background: #fef2f2; }
+
+/* Loading skeleton card — mirrors the 3D card shell */
+.skeletonCard {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+}
+.skeletonCol { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Mobile ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .card { padding: 14px; }
+  .authorName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .originChip { max-width: 130px; }
+
+  /* Equal-thirds Like · Comment · Copy link bar, like the FB app */
+  .footerRow { gap: 4px; }
+  .actionBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 9px 6px;
+  }
+}

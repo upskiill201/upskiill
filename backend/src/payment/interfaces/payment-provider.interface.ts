@@ -7,6 +7,8 @@ export interface CreateSubscriptionInput {
   customerName?: string;
   phone?: string;
   service?: 'MTN' | 'ORANGE' | string;
+  /** ISO-2 country for Mobile Money rails (MeSomb) — defaults to CM. */
+  country?: string;
   successUrl?: string;
   cancelUrl?: string;
 }

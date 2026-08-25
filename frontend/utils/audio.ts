@@ -1,133 +1,92 @@
-// Synthesizes a mechanical tick sound for the lucky spin wheel
+// Synthesized UI sound effects for the learn flow.
+//
+// Every tone routes through the central SoundManager's shared AudioContext
+// (synth bus) so that:
+//  1. We never leak AudioContexts — browsers cap concurrent contexts (~6) and
+//     the old per-call `new AudioContext()` pattern silently killed all sound
+//     after a handful of plays on the Deepen screen.
+//  2. Autoplay policy is handled — the shared context resumes itself, whereas
+//     fresh contexts created outside a user gesture stayed suspended forever.
+//  3. The global mute / SFX toggle / volume settings apply automatically.
+
+import soundManager from '@/lib/audio/soundManager';
+
+type Bus = { ctx: AudioContext; output: GainNode };
+
+function getBus(): Bus | null {
+  if (typeof window === 'undefined') return null;
+  return soundManager.getSynthBus();
+}
+
+/** One enveloped oscillator note on the shared synth bus. */
+function playTone(
+  bus: Bus,
+  opts: {
+    freq: number;
+    at?: number;
+    dur?: number;
+    type?: OscillatorType;
+    gain?: number;
+    slideTo?: number;
+  }
+) {
+  const { ctx, output } = bus;
+  const { freq, at = 0, dur = 0.12, type = 'sine', gain = 0.15, slideTo } = opts;
+  const t0 = ctx.currentTime + at;
+
+  const osc = ctx.createOscillator();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t0);
+  if (slideTo !== undefined) {
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), t0 + dur);
+  }
+
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(0.0001, t0);
+  env.gain.exponentialRampToValueAtTime(gain, t0 + 0.01);
+  env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+  osc.connect(env);
+  env.connect(output);
+  osc.start(t0);
+  osc.stop(t0 + dur + 0.05);
+}
+
+/** Mechanical tick — lucky spin wheel passing a segment. */
 export const playTickSound = () => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(800, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
-
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
-  } catch (err) {
-    // Ignore audio context errors (e.g. autoplay policy)
-    console.warn('Audio tick failed', err);
-  }
+  const bus = getBus();
+  if (!bus) return;
+  playTone(bus, { freq: 800, dur: 0.05, type: 'triangle', gain: 0.12, slideTo: 100 });
 };
 
+/** Happy major-chord arpeggio — wins, unlocks, correct answers. */
 export const playWinSound = () => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    
-    const ctx = new AudioContext();
-    
-    // Play a happy major chord arpeggio
-    const playNote = (freq: number, startTime: number, duration: number) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start(startTime);
-      osc.stop(startTime + duration);
-    };
-
-    const now = ctx.currentTime;
-    playNote(523.25, now, 0.5);       // C5
-    playNote(659.25, now + 0.1, 0.5); // E5
-    playNote(783.99, now + 0.2, 0.5); // G5
-    playNote(1046.50, now + 0.3, 0.8);// C6
-    
-  } catch (err) {
-    console.warn('Audio win failed', err);
-  }
+  const bus = getBus();
+  if (!bus) return;
+  // C5 E5 G5 C6
+  [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+    playTone(bus, { freq, at: i * 0.09, dur: i === 3 ? 0.6 : 0.35, type: 'sine', gain: 0.14 });
+    playTone(bus, { freq: freq * 2, at: i * 0.09, dur: 0.18, type: 'triangle', gain: 0.04 });
+  });
 };
 
+/** Short rising pop — small confirmations. */
 export const playPopSound = () => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.04);
-
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
-  } catch {
-    // Ignore autoplay restriction errors
-  }
+  const bus = getBus();
+  if (!bus) return;
+  playTone(bus, { freq: 600, dur: 0.06, type: 'sine', gain: 0.14, slideTo: 1200 });
 };
 
 /**
- * Plays an ascending pentatonic pop chime for sequential reward landings (Feature 1).
+ * Ascending pentatonic pop chime for sequential reward landings.
+ * Safe to call in a tight loop — shares one context and respects cooldowns.
  */
 export const playAscendingPopSound = (index: number = 0) => {
-  if (typeof window === 'undefined') return;
+  const bus = getBus();
+  if (!bus) return;
 
-  try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    // Pentatonic scale frequencies (C5, D5, E5, G5, A5, C6, D6, E6, G6, A6)
-    const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98, 1760.00];
-    const noteIdx = Math.min(index, scale.length - 1);
-    const baseFreq = scale[noteIdx];
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, ctx.currentTime + 0.06);
-
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.07);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.07);
-  } catch {
-    // Ignore audio context errors
-  }
+  // Pentatonic scale frequencies (C5, D5, E5, G5, A5, C6, D6, E6, G6, A6)
+  const scale = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98, 1760.0];
+  const baseFreq = scale[Math.min(index, scale.length - 1)];
+  playTone(bus, { freq: baseFreq, dur: 0.08, type: 'sine', gain: 0.16, slideTo: baseFreq * 1.35 });
 };
-

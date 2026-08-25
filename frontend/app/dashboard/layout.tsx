@@ -14,6 +14,7 @@ import {
   Settings,
   Headphones,
   LogOut,
+  Newspaper,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,11 +22,12 @@ import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
+import NotificationBell from '@/components/community/NotificationBell';
+import LeagueResultWatcher from '@/components/leaderboard/LeagueResultWatcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
-import StreakStatusModal from '@/components/gamification/StreakStatusModal';
 import { getCachedUser, setCachedUser, clearCachedUser } from '@/lib/user-cache';
 import styles from './Dashboard.module.css';
 
@@ -39,6 +41,21 @@ const ComingSoonContext = createContext<ComingSoonContextType | undefined>(undef
 export const useComingSoon = () => {
   const context = useContext(ComingSoonContext);
   if (!context) throw new Error('useComingSoon must be used within DashboardLayout');
+  return context;
+};
+
+// ─── MOBILE MENU CONTEXT ───
+// Lets pages embedded in the layout (e.g. the headerless student homescreen)
+// open the sidebar drawer from their own inline menu triggers.
+interface MobileMenuContextType {
+  openMobileMenu: () => void;
+}
+
+const MobileMenuContext = createContext<MobileMenuContextType | undefined>(undefined);
+
+export const useMobileMenu = () => {
+  const context = useContext(MobileMenuContext);
+  if (!context) throw new Error('useMobileMenu must be used within DashboardLayout');
   return context;
 };
 
@@ -59,6 +76,9 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
+  // Student homescreen goes headerless on mobile (Duolingo-style) — the page
+  // renders its own inline menu trigger instead of a sticky top bar.
+  const isStudentHome = pathname === '/dashboard';
   const { streakDays, xp, lives, coins, userLevel } = useGamification();
   const { openStreakModal } = useStreakModal();
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
@@ -138,26 +158,33 @@ export default function DashboardLayout({
       icon: <Image src="/Icons/my-learning.png" alt="My Learning" width={28} height={28} className={styles.navIcon} />, 
       isComingSoon: false 
     },
-    { 
-      id: 'explore', 
-      label: 'Explore', 
-      href: '/dashboard/explore', 
-      icon: <Image src="/Icons/explore.png" alt="Explore" width={28} height={28} className={styles.navIcon} />, 
-      isComingSoon: false 
+    {
+      id: 'explore',
+      label: 'Explore',
+      href: '/dashboard/explore',
+      icon: <Image src="/Icons/explore.png" alt="Explore" width={28} height={28} className={styles.navIcon} />,
+      isComingSoon: false
     },
-    { 
-      id: 'leaderboards', 
-      label: 'Leaderboards', 
-      href: '/dashboard', 
-      icon: <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={28} height={28} className={styles.navIcon} />, 
-      isComingSoon: true 
+    {
+      id: 'feed',
+      label: 'Feed',
+      href: '/dashboard/feed',
+      icon: <Newspaper size={22} className={styles.navIcon} />,
+      isComingSoon: false
     },
-    { 
-      id: 'quests', 
-      label: 'Quests', 
-      href: '/dashboard', 
-      icon: <Image src="/Icons/Quests.png" alt="Quests" width={28} height={28} className={styles.navIcon} />, 
-      isComingSoon: true 
+    {
+      id: 'leaderboards',
+      label: 'Leaderboards',
+      href: '/dashboard/leaderboards',
+      icon: <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={28} height={28} className={styles.navIcon} />,
+      isComingSoon: false
+    },
+    {
+      id: 'quests',
+      label: 'Quests',
+      href: '/dashboard/quests',
+      icon: <Image src="/Icons/Quests.png" alt="Quests" width={28} height={28} className={styles.navIcon} />,
+      isComingSoon: false
     },
     { 
       id: 'profile', 
@@ -192,6 +219,7 @@ export default function DashboardLayout({
 
   return (
     <ComingSoonContext.Provider value={{ triggerComingSoon }}>
+      <MobileMenuContext.Provider value={{ openMobileMenu: () => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(true); } }}>
       <div className={styles.dashboardContainer}>
         {/* SIDEBAR CONTAINER */}
         <aside className={`${styles.sidebarWrapper} ${isSidebarCollapsed ? styles.collapsed : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
@@ -199,12 +227,12 @@ export default function DashboardLayout({
             <div className={styles.logoContainer}>
               <Link href="/dashboard" className={styles.logoLink}>
                 {!isSidebarCollapsed ? (
-                  <Image 
-                    src="/teyro-logo-blue.png" 
-                    alt="Teyro" 
-                    width={105} 
-                    height={30} 
-                    priority 
+                  <Image
+                    src="/teyro-logo-blue.png"
+                    alt="Teyro"
+                    width={105}
+                    height={30}
+                    priority
                     className={styles.sidebarLogo}
                     style={{ width: 'auto', height: 'auto' }}
                   />
@@ -213,8 +241,15 @@ export default function DashboardLayout({
                 )}
               </Link>
             </div>
-            
-            <button 
+
+            {/* Bell lives in the sidebar header on DESKTOP only. On mobile it would be
+                trapped inside the off-canvas drawer, so each always-visible surface
+                mounts its own bell instead (sticky header / home HUD). */}
+            <div className={styles.sidebarBellSlot}>
+              <NotificationBell panelAlign="left" />
+            </div>
+
+            <button
               className={styles.sidebarToggle} 
               onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsSidebarCollapsed(!isSidebarCollapsed); }}
               aria-label="Toggle Sidebar"
@@ -325,8 +360,14 @@ export default function DashboardLayout({
                   <ChevronRight size={14} className={styles.sidebarCardChevron} style={{ color: '#FF4B4B' }} />
                 </div>
 
-                {/* Profile Card */}
-                <div className={styles.sidebarCard} onClick={() => triggerComingSoon('Profile Settings')}>
+                {/* Profile Card — opens the student profile & settings page */}
+                <div
+                  className={styles.sidebarCard}
+                  onClick={() => { void emitAudioEvent('TAB_SWITCH'); router.push('/dashboard/profile'); }}
+                  style={{ cursor: 'pointer' }}
+                  role="button"
+                  aria-label="Open profile settings"
+                >
                   <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" className={styles.profileAvatar} />
                   <div className={styles.sidebarCardContent}>
                     <span className={styles.sidebarCardTitle}>{userName}</span>
@@ -383,14 +424,13 @@ export default function DashboardLayout({
             <Image src="/Icons/my-learning.png" alt="My Learning" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>My Learning</span>
           </Link>
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); triggerComingSoon('Leaderboards'); }} 
-            className={styles.bottomNavItem}
+          <Link
+            href="/dashboard/leaderboards"
+            className={`${styles.bottomNavItem} ${pathname.startsWith('/dashboard/leaderboards') ? styles.activeBottomItem : ''}`}
           >
             <Image src="/Icons/Leaderboard.png" alt="Leaderboards" width={24} height={24} className={styles.bottomNavIcon} />
             <span className={styles.bottomNavLabel}>Leaderboards</span>
-          </a>
+          </Link>
           <Link 
             href="/dashboard/profile" 
             className={`${styles.bottomNavItem} ${pathname === '/dashboard/profile' ? styles.activeBottomItem : ''}`}
@@ -403,8 +443,8 @@ export default function DashboardLayout({
 
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
-          {/* MOBILE-ONLY STICKY HEADER */}
-          {!hideMobileChrome && (
+          {/* MOBILE-ONLY STICKY HEADER — hidden on the student homescreen (Duolingo-style headerless home) */}
+          {!hideMobileChrome && !isStudentHome && (
           <header className={styles.mobileHeader}>
             <button 
               className={styles.mobileToggle} 
@@ -414,16 +454,19 @@ export default function DashboardLayout({
               <Menu size={22} />
             </button>
             <div className={styles.mobileLogoContainer}>
-              <Image 
-                src="/teyro-logo-blue.png" 
-                alt="Teyro" 
-                width={85} 
-                height={24} 
-                priority 
+              <Image
+                src="/teyro-logo-blue.png"
+                alt="Teyro"
+                width={85}
+                height={24}
+                priority
                 style={{ width: 'auto', height: 'auto' }}
               />
             </div>
-            <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <NotificationBell />
+              <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" />
+            </div>
           </header>
           )}
 
@@ -456,9 +499,14 @@ export default function DashboardLayout({
           </div>
         </Modal>
 
-        {/* GAMIFIED STREAK SAVED / RESET MODAL */}
-        <StreakStatusModal />
+        {/* GAMIFIED STREAK SAVED / RESET moments are now handled by the
+            Celebration Engine (teyro:streak-status → full-page scene) */}
+
+        {/* Weekly league settlement — promotion/demotion scene plays once per
+            settled week (server seenAt flag + session dedupe) */}
+        <LeagueResultWatcher />
       </div>
+      </MobileMenuContext.Provider>
     </ComingSoonContext.Provider>
   );
 }

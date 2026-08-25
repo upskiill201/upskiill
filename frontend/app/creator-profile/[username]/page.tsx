@@ -21,11 +21,11 @@ import {
   MapPin,
   Globe,
   Trophy,
-  Gem,
   Code2,
   AlertCircle
 } from 'lucide-react';
 import { FaJs, FaPython, FaReact, FaNodeJs } from 'react-icons/fa6';
+import Avatar from '@/components/ui/Avatar';
 import styles from './CreatorProfile.module.css';
 
 interface CreatorCourse {
@@ -36,7 +36,8 @@ interface CreatorCourse {
   level: string;
   lessonsCount: number;
   studentsCount: number;
-  rating: number;
+  /** Real review average — null when the course has no reviews yet. */
+  rating: number | null;
   category: string;
   thumbnailUrl?: string | null;
   iconType?: string;
@@ -53,21 +54,21 @@ interface CreatorProfileData {
   id: string;
   fullName: string;
   username: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
   isVerified: boolean;
   creatorStatus: string;
   headline: string;
   bio: string;
   about: string;
-  location: string;
+  location: string | null;
   languages: string[];
   skills: string[];
-  yearsOfExperience: number;
+  yearsOfExperience: number | null;
   followersCount: number;
   followingCount: number;
   coursesCount: number;
   learnersCount: number;
-  rating: number;
+  rating: number | null;
   isFollowing: boolean;
   featuredCourse: CreatorCourse | null;
   courses: CreatorCourse[];
@@ -86,6 +87,7 @@ export default function CreatorProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [followError, setFollowError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadCreator() {
@@ -120,26 +122,42 @@ export default function CreatorProfilePage() {
 
   const handleToggleFollow = async () => {
     if (!creator || isFollowLoading) return;
+
+    // Optimistic update with a snapshot so a failed request rolls back
+    // exactly (the old code left the wrong count on screen forever).
+    const prevFollowing = isFollowing;
+    const prevCount = followersCount;
+    setIsFollowLoading(true);
+    setFollowError(null);
     try {
-      setIsFollowLoading(true);
-      const newStatus = !isFollowing;
+      const newStatus = !prevFollowing;
       setIsFollowing(newStatus);
-      setFollowersCount((prev) => (newStatus ? prev + 1 : Math.max(0, prev - 1)));
+      setFollowersCount((prev) => Math.max(0, newStatus ? prev + 1 : prev - 1));
 
       const res = await fetch(`/api/profile/follow/${encodeURIComponent(creator.id)}`, {
         method: 'POST',
+        credentials: 'include',
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.isFollowing !== undefined) {
-          setIsFollowing(data.isFollowing);
-          if (data.followersCount !== undefined) {
-            setFollowersCount(data.followersCount);
-          }
-        }
+
+      if (res.status === 401) {
+        router.push(`/login?redirect=/creator-profile/${encodeURIComponent(rawUsername)}`);
+        return;
+      }
+      if (!res.ok) throw new Error(`Follow failed (${res.status})`);
+
+      const data = await res.json();
+      if (data.isFollowing !== undefined) {
+        setIsFollowing(data.isFollowing);
+      }
+      if (data.followersCount !== undefined) {
+        setFollowersCount(data.followersCount);
       }
     } catch (err) {
       console.error('Failed to toggle follow:', err);
+      setIsFollowing(prevFollowing);
+      setFollowersCount(prevCount);
+      setFollowError('Could not update follow — please try again.');
+      setTimeout(() => setFollowError(null), 3500);
     } finally {
       setIsFollowLoading(false);
     }
@@ -220,7 +238,7 @@ export default function CreatorProfilePage() {
             <p className={styles.notFoundDesc}>
               We couldn&apos;t find a creator profile for &ldquo;{rawUsername}&rdquo;. The creator might have changed their username or doesn&apos;t exist.
             </p>
-            <Link href="/explore" className={styles.exploreBtn}>
+            <Link href="/dashboard/explore" className={styles.exploreBtn}>
               Explore Courses
             </Link>
           </div>
@@ -264,16 +282,11 @@ export default function CreatorProfilePage() {
           <div className={styles.sidebarCol}>
             <div className={styles.heroCardDesktop}>
               <div className={styles.avatarWrap}>
-                <Image
-                  src={
-                    creator.avatarUrl ||
-                    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(creator.fullName)}`
-                  }
+                <Avatar
+                  src={creator.avatarUrl || undefined}
                   alt={creator.fullName}
-                  width={110}
-                  height={110}
-                  className={styles.avatarImg}
-                  unoptimized
+                  name={creator.fullName}
+                  size="xl"
                 />
               </div>
 
@@ -283,7 +296,9 @@ export default function CreatorProfilePage() {
                   {creator.isVerified && <BadgeCheck size={18} className={styles.verifiedBadge} />}
                 </div>
 
-                <p className={styles.creatorHeadline}>{creator.headline}</p>
+                {creator.headline && (
+                  <p className={styles.creatorHeadline}>{creator.headline}</p>
+                )}
 
                 {creator.creatorStatus === 'founding_creator' && (
                   <div className={styles.foundingBadge}>
@@ -292,7 +307,7 @@ export default function CreatorProfilePage() {
                   </div>
                 )}
 
-                <p className={styles.creatorBio}>{creator.bio}</p>
+                {creator.bio && <p className={styles.creatorBio}>{creator.bio}</p>}
               </div>
             </div>
 
@@ -318,13 +333,16 @@ export default function CreatorProfilePage() {
                 <span className={styles.statLabel}>Courses</span>
               </div>
 
-              <div className={styles.statItem}>
-                <div className={styles.statHeader}>
-                  <Star size={14} className="text-amber-500 fill-amber-500" />
-                  <span className={styles.statValue}>{creator.rating}</span>
+              {/* Rating only appears once real reviews exist — no invented stars */}
+              {creator.rating !== null && (
+                <div className={styles.statItem}>
+                  <div className={styles.statHeader}>
+                    <Star size={14} className="text-amber-500 fill-amber-500" />
+                    <span className={styles.statValue}>{creator.rating}</span>
+                  </div>
+                  <span className={styles.statLabel}>Rating</span>
                 </div>
-                <span className={styles.statLabel}>Rating</span>
-              </div>
+              )}
 
               <button
                 className={`${styles.followBtn} ${isFollowing ? styles.followingActive : ''}`}
@@ -345,48 +363,65 @@ export default function CreatorProfilePage() {
               </button>
             </div>
 
-            {/* ── ABOUT CARD (IN SIDEBAR ON DESKTOP) ── */}
-            <div className={styles.aboutCard}>
-              <div className={styles.cardHeadRow}>
-                <h3 className={styles.cardHeadTitle}>About</h3>
-              </div>
-              <p className={styles.aboutText}>
-                {isAboutExpanded || creator.about.length <= 130
-                  ? creator.about
-                  : `${creator.about.slice(0, 130)}...`}
+            {followError && (
+              <p role="alert" style={{ color: '#DC2626', fontSize: 12, fontWeight: 700, margin: '-6px 0 8px 4px' }}>
+                {followError}
               </p>
-              {creator.about.length > 130 && (
-                <button
-                  className={styles.readMoreBtn}
-                  onClick={() => setIsAboutExpanded(!isAboutExpanded)}
-                >
-                  {isAboutExpanded ? 'Show less' : 'Read more'}
-                </button>
-              )}
-            </div>
+            )}
 
-            {/* ── FOOTER INFO STRIP ── */}
-            <div className={styles.footerInfoStrip}>
-              <div className={styles.footerInfoItem}>
-                <GraduationCap size={15} className={styles.footerInfoIcon} />
-                <span>{creator.yearsOfExperience}+ Years Experience</span>
+            {/* ── ABOUT CARD (IN SIDEBAR ON DESKTOP) — hidden when empty ── */}
+            {creator.about && (
+              <div className={styles.aboutCard}>
+                <div className={styles.cardHeadRow}>
+                  <h3 className={styles.cardHeadTitle}>About</h3>
+                </div>
+                <p className={styles.aboutText}>
+                  {isAboutExpanded || creator.about.length <= 130
+                    ? creator.about
+                    : `${creator.about.slice(0, 130)}...`}
+                </p>
+                {creator.about.length > 130 && (
+                  <button
+                    className={styles.readMoreBtn}
+                    onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                  >
+                    {isAboutExpanded ? 'Show less' : 'Read more'}
+                  </button>
+                )}
               </div>
+            )}
 
-              <div className={styles.footerInfoItem}>
-                <MapPin size={15} className={styles.footerInfoIcon} />
-                <span>{creator.location}</span>
-              </div>
+            {/* ── FOOTER INFO STRIP (only rows with real data) ── */}
+            {(creator.yearsOfExperience !== null || creator.location || creator.languages.length > 0) && (
+              <div className={styles.footerInfoStrip}>
+                {creator.yearsOfExperience !== null && (
+                  <div className={styles.footerInfoItem}>
+                    <GraduationCap size={15} className={styles.footerInfoIcon} />
+                    <span>{creator.yearsOfExperience}+ Years Experience</span>
+                  </div>
+                )}
 
-              <div className={styles.footerInfoItem}>
-                <Globe size={15} className={styles.footerInfoIcon} />
-                <span>{creator.languages.join(' · ')}</span>
+                {creator.location && (
+                  <div className={styles.footerInfoItem}>
+                    <MapPin size={15} className={styles.footerInfoIcon} />
+                    <span>{creator.location}</span>
+                  </div>
+                )}
+
+                {creator.languages.length > 0 && (
+                  <div className={styles.footerInfoItem}>
+                    <Globe size={15} className={styles.footerInfoIcon} />
+                    <span>{creator.languages.join(' · ')}</span>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
 
           {/* RIGHT MAIN CONTENT AREA */}
           <div className={styles.mainContentCol}>
-            {/* ── WHAT I TEACH ── */}
+            {/* ── WHAT I TEACH — hidden when the creator has no real skills ── */}
+            {creator.skills.length > 0 && (
             <div className={styles.skillsSection}>
               <h2 className={styles.sectionTitle}>What I teach</h2>
               <div className={styles.skillsGrid}>
@@ -402,23 +437,36 @@ export default function CreatorProfilePage() {
                 })}
               </div>
             </div>
+            )}
 
             {/* ── FEATURED COURSE CARD ── */}
             {featured && (
               <div className={styles.featuredCard}>
                 <div className={styles.featuredTop}>
                   <div className={styles.featuredVisual}>
-                    <div className={styles.featuredVisualInner}>
-                      <Code2 size={26} className="text-[#0172FD]" />
-                      <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                      </div>
-                    </div>
-                    <div className={styles.playCircle}>
-                      <Play size={10} className="fill-white translate-x-0.5" />
-                    </div>
+                    {featured.thumbnailUrl ? (
+                      <Image
+                        src={featured.thumbnailUrl}
+                        alt=""
+                        fill
+                        sizes="160px"
+                        className={styles.featuredThumbImg}
+                      />
+                    ) : (
+                      <>
+                        <div className={styles.featuredVisualInner}>
+                          <Code2 size={26} className="text-[#0172FD]" />
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                          </div>
+                        </div>
+                        <div className={styles.playCircle}>
+                          <Play size={10} className="fill-white translate-x-0.5" />
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <div className={styles.featuredInfo}>
@@ -429,19 +477,27 @@ export default function CreatorProfilePage() {
                     )}
 
                     <div className={styles.featuredMeta}>
-                      <span className={styles.metaItem}>
-                        <Star size={11} className="text-amber-500 fill-amber-500" />
-                        {featured.rating}
-                      </span>
-                      <span>•</span>
+                      {featured.rating !== null && (
+                        <>
+                          <span className={styles.metaItem}>
+                            <Star size={11} className="text-amber-500 fill-amber-500" />
+                            {featured.rating}
+                          </span>
+                          <span>•</span>
+                        </>
+                      )}
                       <span className={styles.metaItem}>
                         <Users size={11} className="text-[#0172FD]" />
                         {featured.studentsCount >= 1000
                           ? `${(featured.studentsCount / 1000).toFixed(1).replace('.0', '')}K learners`
                           : `${featured.studentsCount} learners`}
                       </span>
-                      <span>•</span>
-                      <span>{featured.level}</span>
+                      {featured.level && (
+                        <>
+                          <span>•</span>
+                          <span>{featured.level}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -459,7 +515,7 @@ export default function CreatorProfilePage() {
                 <div className={styles.sectionHeaderRow}>
                   <h2 className={styles.sectionTitle}>Courses by {firstName}</h2>
                   <Link
-                    href={`/explore?creator=${encodeURIComponent(creator.username)}`}
+                    href={`/dashboard/explore?q=${encodeURIComponent(creator.fullName)}`}
                     className={styles.viewAllLink}
                   >
                     <span>View all</span>
@@ -474,36 +530,52 @@ export default function CreatorProfilePage() {
                       href={`/courses/${c.slug || c.id}`}
                       className={styles.courseItemCard}
                     >
-                      <div
-                        className={`${styles.courseThumb} ${
-                          c.iconType === 'js'
-                            ? styles.thumbJs
-                            : c.iconType === 'python'
-                            ? styles.thumbPython
-                            : styles.thumbGeneral
-                        }`}
-                      >
-                        {c.iconType === 'js' ? (
-                          <FaJs size={22} />
-                        ) : c.iconType === 'python' ? (
-                          <FaPython size={22} />
-                        ) : c.iconType === 'react' ? (
-                          <FaReact size={22} />
-                        ) : (
-                          <Code2 size={22} />
-                        )}
-                      </div>
+                      {c.thumbnailUrl ? (
+                        <div className={styles.courseThumb}>
+                          <Image
+                            src={c.thumbnailUrl}
+                            alt=""
+                            fill
+                            sizes="56px"
+                            className={styles.courseThumbImg}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={`${styles.courseThumb} ${
+                            c.iconType === 'js'
+                              ? styles.thumbJs
+                              : c.iconType === 'python'
+                              ? styles.thumbPython
+                              : styles.thumbGeneral
+                          }`}
+                        >
+                          {c.iconType === 'js' ? (
+                            <FaJs size={22} />
+                          ) : c.iconType === 'python' ? (
+                            <FaPython size={22} />
+                          ) : c.iconType === 'react' ? (
+                            <FaReact size={22} />
+                          ) : (
+                            <Code2 size={22} />
+                          )}
+                        </div>
+                      )}
 
                       <div className={styles.courseItemInfo}>
                         <h3 className={styles.courseItemTitle}>{c.title}</h3>
                         <span className={styles.courseItemSub}>
-                          {c.level} • {c.lessonsCount} lessons
+                          {[c.level, c.lessonsCount > 0 ? `${c.lessonsCount} lessons` : null]
+                            .filter(Boolean)
+                            .join(' • ')}
                         </span>
                         <div className={styles.courseItemMeta}>
-                          <span className="flex items-center gap-1">
-                            <Star size={10} className="text-amber-500 fill-amber-500" />
-                            {c.rating}
-                          </span>
+                          {c.rating !== null && (
+                            <span className="flex items-center gap-1">
+                              <Star size={10} className="text-amber-500 fill-amber-500" />
+                              {c.rating}
+                            </span>
+                          )}
                           <span>•</span>
                           <span className="flex items-center gap-1">
                             <Users size={10} className="text-[#0172FD]" />
@@ -521,7 +593,8 @@ export default function CreatorProfilePage() {
               </div>
             )}
 
-            {/* ── ACHIEVEMENTS CARD ── */}
+            {/* ── ACHIEVEMENTS CARD — only real, earned badges; hidden when none ── */}
+            {creator.achievements.length > 0 && (
             <div className={styles.achievementsCard}>
               <div className={styles.cardHeadRow}>
                 <h3 className={styles.cardHeadTitle}>Achievements</h3>
@@ -540,10 +613,10 @@ export default function CreatorProfilePage() {
                           : styles.badgeBlue
                       }`}
                     >
-                      {ach.icon === 'diamond' ? (
-                        <Gem size={18} />
-                      ) : ach.icon === 'users' ? (
+                      {ach.icon === 'users' ? (
                         <Users size={18} />
+                      ) : ach.icon === 'star' ? (
+                        <Star size={18} />
                       ) : (
                         <Trophy size={18} />
                       )}
@@ -553,6 +626,7 @@ export default function CreatorProfilePage() {
                 ))}
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>

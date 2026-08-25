@@ -50,6 +50,44 @@ const TABS = [
   { id: 'appearance', label: 'Appearance & Privacy', icon: <FaEye size={15} /> },
 ];
 
+/* Duolingo-style toggle switch row used for privacy & collaboration prefs */
+function ToggleRow({ title, sub, on, onChange }: { title: string; sub: string; on: boolean; onChange: () => void }) {
+  return (
+    <div className={styles.toggleRow}>
+      <div className={styles.toggleTexts}>
+        <span className={styles.toggleTitle}>{title}</span>
+        <span className={styles.toggleSub}>{sub}</span>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={title}
+        className={`${styles.toggleSwitch} ${on ? styles.switchOn : ''}`}
+        onClick={onChange}
+      >
+        <span className={styles.toggleKnob} />
+      </button>
+    </div>
+  );
+}
+
+const PRIVACY_TOGGLES: { key: keyof CreatorSettingsPrivacy; title: string; sub: string }[] = [
+  { key: 'showLocation', title: 'Location', sub: 'Show your city or region on your public profile' },
+  { key: 'showExperience', title: 'Work Experience', sub: 'Show your career history publicly' },
+  { key: 'showEducation', title: 'Education', sub: 'Show degrees and institutions publicly' },
+  { key: 'showCertifications', title: 'Certifications', sub: 'Show earned certificates publicly' },
+  { key: 'showSocials', title: 'Social Links', sub: 'Show linked social accounts publicly' },
+];
+
+interface CreatorSettingsPrivacy {
+  showLocation: boolean;
+  showExperience: boolean;
+  showEducation: boolean;
+  showCertifications: boolean;
+  showSocials: boolean;
+}
+
 export default function CreatorProfileSettingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('identity');
@@ -57,6 +95,11 @@ export default function CreatorProfileSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Dirty-state tracking: snapshot of the last-saved form; any drift means
+  // unsaved changes (drives the Save button, the chip and beforeunload).
+  const [savedSnapshot, setSavedSnapshot] = useState('');
 
   // Avatar Upload Ref
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -116,6 +159,21 @@ export default function CreatorProfileSettingsPage() {
     },
   });
 
+  const isDirty = useMemo(
+    () => JSON.stringify(formData) !== savedSnapshot,
+    [formData, savedSnapshot],
+  );
+
+  // Warn before leaving with unsaved changes (tab close / external nav)
+  useEffect(() => {
+    if (!isDirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isDirty]);
+
   // New Skill Input State
   const [newSkillName, setNewSkillName] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState('Intermediate');
@@ -144,7 +202,7 @@ export default function CreatorProfileSettingsPage() {
         const prof = data.profile || {};
         
         // Auto-fill existing answers from profile/onboarding
-        setFormData({
+        const next = {
           fullName: data.fullName || '',
           username: prof.username || '',
           headline: prof.headline || '',
@@ -181,14 +239,18 @@ export default function CreatorProfileSettingsPage() {
           businessEmail: prof.businessEmail || data.email || '',
           allowCollaboration: prof.allowCollaboration !== false,
           profileVisibility: prof.profileVisibility || 'PUBLIC',
-          privacySettings: prof.privacySettings || {
-            showLocation: true,
-            showExperience: true,
-            showEducation: true,
-            showCertifications: true,
-            showSocials: true,
+          // Merge stored flags over defaults — unset means VISIBLE, matching
+          // the backend's enforcement in getPublicCreatorProfile.
+          privacySettings: {
+            showLocation: prof.privacySettings?.showLocation !== false,
+            showExperience: prof.privacySettings?.showExperience !== false,
+            showEducation: prof.privacySettings?.showEducation !== false,
+            showCertifications: prof.privacySettings?.showCertifications !== false,
+            showSocials: prof.privacySettings?.showSocials !== false,
           },
-        });
+        };
+        setFormData(next);
+        setSavedSnapshot(JSON.stringify(next));
 
         if (prof.username) {
           setInitialUsername(prof.username);
@@ -220,12 +282,20 @@ export default function CreatorProfileSettingsPage() {
     return { milestones, completedCount, percentage };
   }, [formData]);
 
-  // Username change handler with debounce availability check
+  // Username input: normalize to a legal handle. The availability check
+  // itself lives in the effect below.
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
     setFormData(prev => ({ ...prev, username: val }));
     setSaveSuccess(false);
+  };
 
+  // Debounced availability check — as an effect so pending timers are always
+  // cancelled on every keystroke (the old inline version returned a cleanup
+  // function from onChange, which React never invokes → stale responses could
+  // overwrite fresh ones).
+  useEffect(() => {
+    const val = formData.username;
     if (!val || val === initialUsername) {
       setUsernameCheck({ status: 'idle' });
       return;
@@ -246,36 +316,76 @@ export default function CreatorProfileSettingsPage() {
         } else {
           setUsernameCheck({ status: 'taken', message: data.message || 'Handle is already taken' });
         }
-      } catch (err) {
+      } catch {
         setUsernameCheck({ status: 'idle' });
       }
     }, 400);
 
     return () => clearTimeout(timer);
+  }, [formData.username, initialUsername]);
+
+  // ── Image uploads (avatar & cover): validate before anything leaves the page
+  const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+  const validateImageFile = (file: File): string | null => {
+    if (!file.type.startsWith('image/')) {
+      return 'That file is not an image — use JPG, PNG or WEBP.';
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      return 'That image is over 5MB — please pick a smaller one.';
+    }
+    return null;
+  };
+
+  const uploadImage = async (file: File, target: 'avatarUrl' | 'coverImageUrl') => {
+    setUploadError(null);
+    setSaving(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/upload/avatar', { method: 'POST', body: form });
+      if (res.ok) {
+        const data = await res.json();
+        setFormData(prev => ({ ...prev, [target]: data.url }));
+      } else {
+        setUploadError('Upload failed — please try again.');
+      }
+    } catch {
+      setUploadError('A network error interrupted the upload — please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Avatar Upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const form = new FormData();
-    form.append('file', file);
-
-    setSaving(true);
-    try {
-      const res = await fetch('/api/upload/avatar', { method: 'POST', body: form });
-      if (res.ok) {
-        const data = await res.json();
-        setFormData(prev => ({ ...prev, avatarUrl: data.url }));
-      }
-    } catch (err) {
-      console.error('Error uploading avatar:', err);
-    } finally {
-      setSaving(false);
+    const problem = validateImageFile(file);
+    if (problem) {
+      setUploadError(problem);
       if (avatarInputRef.current) avatarInputRef.current.value = '';
+      return;
     }
+    await uploadImage(file, 'avatarUrl');
+    if (avatarInputRef.current) avatarInputRef.current.value = '';
   };
+
+  // Cover Upload
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const problem = validateImageFile(file);
+    if (problem) {
+      setUploadError(problem);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+      return;
+    }
+    await uploadImage(file, 'coverImageUrl');
+    if (coverInputRef.current) coverInputRef.current.value = '';
+  };
+
+  const handleRemoveCover = () => setFormData(prev => ({ ...prev, coverImageUrl: '' }));
 
   // Add Skill Tag
   const handleAddSkill = () => {
@@ -354,16 +464,21 @@ export default function CreatorProfileSettingsPage() {
       return;
     }
 
+    // creatorStatus is system-controlled ("Founding Creator") — it is never
+    // sent from the client, and the backend strips it defensively as well.
+    const { creatorStatus: _ignoredStatus, ...payload } = formData;
+
     try {
       const res = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
         setSaveSuccess(true);
         setSaveError(null);
+        setSavedSnapshot(JSON.stringify(formData));
         if (formData.username) {
           setInitialUsername(formData.username);
         }
@@ -393,7 +508,7 @@ export default function CreatorProfileSettingsPage() {
   if (loading) {
     return (
       <div className={styles.settingsRoot} style={{ alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
-        <p style={{ color: '#64748B', fontWeight: 700 }}>Loading Creator Profile...</p>
+        <p style={{ color: '#777777', fontWeight: 700 }}>Loading Creator Profile…</p>
       </div>
     );
   }
@@ -455,6 +570,22 @@ export default function CreatorProfileSettingsPage() {
         </div>
       )}
 
+      {/* ─── UPLOAD ERROR NOTE ─── */}
+      {uploadError && (
+        <div className={styles.uploadErrorNote} role="alert">
+          <FaTriangleExclamation size={14} />
+          <span>{uploadError}</span>
+          <button
+            className={styles.dismissBtn}
+            style={{ marginLeft: 'auto' }}
+            onClick={() => setUploadError(null)}
+            aria-label="Dismiss"
+          >
+            <FaXmark size={12} />
+          </button>
+        </div>
+      )}
+
       {/* ─── PAGE HEADER ─── */}
       <div className={styles.pageHeader}>
         <div className={styles.headerTop}>
@@ -462,14 +593,19 @@ export default function CreatorProfileSettingsPage() {
             <h1>Creator Profile Settings</h1>
             <p>Customize your public identity, teaching credentials, and creator status.</p>
           </div>
-          <button
-            className={styles.button3dPrimary}
-            onClick={handleSaveProfile}
-            disabled={saving}
-          >
-            <FaFloppyDisk size={14} />
-            <span>{saving ? 'Saving...' : saveSuccess ? 'Saved ✓' : 'Save Profile'}</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {isDirty && !saveSuccess && !saveError && (
+              <span className={styles.unsavedChip}>Unsaved changes</span>
+            )}
+            <button
+              className={styles.button3dPrimary}
+              onClick={handleSaveProfile}
+              disabled={saving || !isDirty}
+            >
+              <FaFloppyDisk size={14} />
+              <span>{saving ? 'Saving…' : isDirty ? 'Save Changes' : 'All Saved'}</span>
+            </button>
+          </div>
         </div>
 
         {/* ─── DUOLINGO-STYLE 3D PROFILE COMPLETION MILESTONE TRACKER ─── */}
@@ -687,7 +823,9 @@ export default function CreatorProfileSettingsPage() {
               </div>
               <div className={styles.foundingBadgeContent}>
                 <div className={styles.badgePillRow}>
-                  <span className={styles.foundingPill}>🏅 Founding Creator</span>
+                  <span className={styles.foundingPill}>
+                    <FaAward size={12} /> Founding Creator
+                  </span>
                   <span className={styles.systemControlledTag}>
                     <FaLock size={10} style={{ display: 'inline', marginRight: 3 }} /> System Verified
                   </span>
@@ -701,9 +839,9 @@ export default function CreatorProfileSettingsPage() {
               </div>
             </div>
 
-            <div style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 16, padding: 18, display: 'flex', gap: 12, alignItems: 'center' }}>
-              <FaCircleInfo size={18} color="#0172FD" />
-              <p style={{ margin: 0, fontSize: 13.5, color: '#475569', fontWeight: 600 }}>
+            <div className={styles.infoPanel}>
+              <FaCircleInfo size={18} color="#1899d6" />
+              <p className={styles.infoPanelText}>
                 Creator status badges are strictly system-governed. As Teyro expands, top milestone achievements (such as <em>Verified Creator</em> and <em>Expert Creator</em>) will be automatically unlocked.
               </p>
             </div>
@@ -800,7 +938,7 @@ export default function CreatorProfileSettingsPage() {
                         className={`${styles.checkboxTile} ${isSelected ? styles.selected : ''}`}
                         onClick={() => toggleTeachingLevel(lvl)}
                       >
-                        <div className={styles.checkCircle} style={isSelected ? { background: '#0172FD', color: 'white' } : undefined}>
+                        <div className={styles.checkCircle} style={isSelected ? { background: '#1899d6', borderColor: '#1899d6' } : undefined}>
                           {isSelected && <FaCheck size={10} />}
                         </div>
                         <span>{lvl}</span>
@@ -852,8 +990,8 @@ export default function CreatorProfileSettingsPage() {
 
             {/* Work Experience Section */}
             <div className={styles.formSection}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0F172A' }}>Work Experience</h4>
+              <div className={styles.sectionRow}>
+                <h4 className={styles.sectionHeading}>Work Experience</h4>
                 <button
                   type="button"
                   className={styles.button3dSecondary}
@@ -865,7 +1003,7 @@ export default function CreatorProfileSettingsPage() {
 
               {/* Inline Form */}
               {showExpForm && (
-                <div style={{ background: '#F8FAFC', border: '2px solid #E2E8F0', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className={styles.inlineFormPanel}>
                   <div className={styles.formGrid}>
                     <input
                       type="text"
@@ -913,7 +1051,7 @@ export default function CreatorProfileSettingsPage() {
               {/* List */}
               <div className={styles.entriesList}>
                 {formData.experiences.length === 0 && !showExpForm && (
-                  <p style={{ color: '#94A3B8', fontSize: 13.5, fontStyle: 'italic', margin: '4px 0' }}>No experience entries added yet.</p>
+                  <p className={styles.emptyNote}>No experience entries added yet.</p>
                 )}
                 {formData.experiences.map((exp) => (
                   <div key={exp.id} className={styles.entryCard}>
@@ -935,8 +1073,8 @@ export default function CreatorProfileSettingsPage() {
               </div>
 
               {/* Education Section */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-                <h4 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0F172A' }}>Education</h4>
+              <div className={`${styles.sectionRow} ${styles.sectionRowPushed}`}>
+                <h4 className={styles.sectionHeading}>Education</h4>
                 <button
                   type="button"
                   className={styles.button3dSecondary}
@@ -947,7 +1085,7 @@ export default function CreatorProfileSettingsPage() {
               </div>
 
               {showEduForm && (
-                <div style={{ background: '#F8FAFC', border: '2px solid #E2E8F0', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className={styles.inlineFormPanel}>
                   <div className={styles.formGrid}>
                     <input
                       type="text"
@@ -973,7 +1111,7 @@ export default function CreatorProfileSettingsPage() {
 
               <div className={styles.entriesList}>
                 {formData.education.length === 0 && !showEduForm && (
-                  <p style={{ color: '#94A3B8', fontSize: 13.5, fontStyle: 'italic', margin: '4px 0' }}>No education entries added yet.</p>
+                  <p className={styles.emptyNote}>No education entries added yet.</p>
                 )}
                 {formData.education.map((edu) => (
                   <div key={edu.id} className={styles.entryCard}>
@@ -985,6 +1123,97 @@ export default function CreatorProfileSettingsPage() {
                       type="button"
                       className={styles.removeEntryBtn}
                       onClick={() => setFormData({ ...formData, education: formData.education.filter(e => e.id !== edu.id) })}
+                    >
+                      <FaTrashCan size={12} /> Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Certifications Section */}
+              <div className={`${styles.sectionRow} ${styles.sectionRowPushed}`}>
+                <h4 className={styles.sectionHeading}>Certifications</h4>
+                <button
+                  type="button"
+                  className={styles.button3dSecondary}
+                  onClick={() => setShowCertForm(!showCertForm)}
+                >
+                  <FaPlus size={13} /> Add Certification
+                </button>
+              </div>
+
+              {showCertForm && (
+                <div className={styles.inlineFormPanel}>
+                  <div className={styles.formGrid}>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Certification name"
+                      value={certDraft.name}
+                      onChange={(e) => setCertDraft({ ...certDraft, name: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Issuing organization"
+                      value={certDraft.organization}
+                      onChange={(e) => setCertDraft({ ...certDraft, organization: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Issue date (e.g. 2023)"
+                      value={certDraft.issueDate}
+                      onChange={(e) => setCertDraft({ ...certDraft, issueDate: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Expiry date (or None)"
+                      value={certDraft.expiryDate}
+                      onChange={(e) => setCertDraft({ ...certDraft, expiryDate: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Credential ID (optional)"
+                      value={certDraft.credentialId}
+                      onChange={(e) => setCertDraft({ ...certDraft, credentialId: e.target.value })}
+                    />
+                    <input
+                      type="url"
+                      className={styles.input}
+                      placeholder="Credential URL (optional)"
+                      value={certDraft.credentialUrl}
+                      onChange={(e) => setCertDraft({ ...certDraft, credentialUrl: e.target.value })}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                    <button type="button" className={styles.button3dSecondary} onClick={() => setShowCertForm(false)}>Cancel</button>
+                    <button type="button" className={styles.button3dPrimary} onClick={handleAddCertification}>Save Certification</button>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.entriesList}>
+                {formData.certifications.length === 0 && !showCertForm && (
+                  <p className={styles.emptyNote}>No certifications added yet.</p>
+                )}
+                {formData.certifications.map((cert) => (
+                  <div key={cert.id} className={styles.entryCard}>
+                    <div className={styles.entryCardInfo}>
+                      <h5 className={styles.entryTitle}>{cert.name}</h5>
+                      <span className={styles.entrySubtitle}>{cert.organization}</span>
+                      {(cert.issueDate || cert.credentialId) && (
+                        <span className={styles.entryDate}>
+                          {cert.issueDate ? `Issued ${cert.issueDate}` : ''}{cert.issueDate && cert.credentialId ? ' · ' : ''}{cert.credentialId ? `ID ${cert.credentialId}` : ''}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.removeEntryBtn}
+                      onClick={() => setFormData({ ...formData, certifications: formData.certifications.filter(c => c.id !== cert.id) })}
                     >
                       <FaTrashCan size={12} /> Remove
                     </button>
@@ -1086,6 +1315,38 @@ export default function CreatorProfileSettingsPage() {
             </div>
 
             <div className={styles.formSection}>
+              {/* Cover Image */}
+              <div className={styles.formGroupFull}>
+                <label className={styles.label}>Cover Image</label>
+                {formData.coverImageUrl ? (
+                  <div className={styles.coverWrapper}>
+                    <Image src={formData.coverImageUrl} alt="Profile cover" fill className={styles.coverPreviewImg} />
+                    <button type="button" className={styles.coverRemoveBtn} onClick={handleRemoveCover}>
+                      <FaTrashCan size={11} /> Remove
+                    </button>
+                  </div>
+                ) : (
+                  <p className={styles.emptyNote}>
+                    No cover yet — a wide banner makes your public profile pop (1200×400px works best).
+                  </p>
+                )}
+                <input
+                  type="file"
+                  ref={coverInputRef}
+                  style={{ display: 'none' }}
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                />
+                <button
+                  type="button"
+                  className={styles.button3dSecondary}
+                  style={{ alignSelf: 'flex-start' }}
+                  onClick={() => coverInputRef.current?.click()}
+                >
+                  <FaCamera size={14} /> {formData.coverImageUrl ? 'Change Cover' : 'Upload Cover'}
+                </button>
+              </div>
+
               {/* Profile Intro Video */}
               <div className={styles.formGroupFull}>
                 <label className={styles.label}>Intro Video URL (YouTube / Vimeo / Loom)</label>
@@ -1124,13 +1385,71 @@ export default function CreatorProfileSettingsPage() {
                       className={`${styles.checkboxTile} ${formData.profileVisibility === vis.id ? styles.selected : ''}`}
                       onClick={() => setFormData({ ...formData, profileVisibility: vis.id })}
                     >
-                      <div className={styles.checkCircle} style={formData.profileVisibility === vis.id ? { background: '#0172FD', color: 'white' } : undefined}>
+                      <div className={styles.checkCircle} style={formData.profileVisibility === vis.id ? { background: '#1899d6', borderColor: '#1899d6' } : undefined}>
                         {formData.profileVisibility === vis.id && <FaCheck size={10} />}
                       </div>
                       <span>{vis.label}</span>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Contact & Collaboration */}
+              <h4 className={`${styles.sectionHeading} ${styles.sectionRowPushed}`}>Contact &amp; Collaboration</h4>
+              <div className={styles.formGrid}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Preferred Contact Method</label>
+                  <select
+                    className={styles.select}
+                    value={formData.contactMethod}
+                    onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value })}
+                  >
+                    <option value="email">Email</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="website">Website contact form</option>
+                  </select>
+                </div>
+
+                {formData.contactMethod === 'email' && (
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Business Email (shown publicly)</label>
+                    <input
+                      type="email"
+                      className={styles.input}
+                      value={formData.businessEmail}
+                      onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
+                      placeholder="e.g. hello@yourdomain.com"
+                    />
+                  </div>
+                )}
+
+                <div className={styles.formGroupFull}>
+                  <ToggleRow
+                    title="Open to collaborations"
+                    sub="Let brands and fellow creators know they can reach out"
+                    on={formData.allowCollaboration}
+                    onChange={() => setFormData({ ...formData, allowCollaboration: !formData.allowCollaboration })}
+                  />
+                </div>
+              </div>
+
+              {/* Privacy — what learners see */}
+              <h4 className={`${styles.sectionHeading} ${styles.sectionRowPushed}`}>What learners see on your public profile</h4>
+              <div className={styles.privacyGrid}>
+                {PRIVACY_TOGGLES.map((t) => (
+                  <ToggleRow
+                    key={t.key}
+                    title={t.title}
+                    sub={t.sub}
+                    on={formData.privacySettings[t.key]}
+                    onChange={() =>
+                      setFormData(prev => ({
+                        ...prev,
+                        privacySettings: { ...prev.privacySettings, [t.key]: !prev.privacySettings[t.key] },
+                      }))
+                    }
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -1155,19 +1474,23 @@ export default function CreatorProfileSettingsPage() {
               </Link>
             </div>
           ) : saveError ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#DC2626', fontSize: '13px', fontWeight: 700 }}>
+            <div className={styles.errorInlineText}>
               <FaTriangleExclamation size={16} />
               <span>Could not save profile changes. Please review above.</span>
             </div>
+          ) : isDirty ? (
+            <span className={styles.unsavedChip}>
+              <FaCircleInfo size={13} /> You have unsaved changes
+            </span>
           ) : null}
         </div>
         <button
           className={styles.button3dPrimary}
           onClick={handleSaveProfile}
-          disabled={saving}
+          disabled={saving || !isDirty}
         >
           <FaFloppyDisk size={14} />
-          <span>{saving ? 'Saving...' : saveSuccess ? 'Saved ✓' : 'Save Profile'}</span>
+          <span>{saving ? 'Saving…' : isDirty ? 'Save Changes' : 'All Saved'}</span>
         </button>
       </div>
     </div>

@@ -58,7 +58,8 @@ const popoverItemVariants = {
   visible: { opacity: 1, x: 0, scale: 1, transition: SPRING_BOUNCE },
 };
 
-import CoursePaywallModal from '@/components/features/course-paywall/CoursePaywallModal';
+import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
+import { buildUnlockHref } from '@/lib/return-to';
 
 interface LearnCourseContentProps {
   course: any;
@@ -70,7 +71,6 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
-  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isUnenrollModalOpen, setIsUnenrollModalOpen] = useState(false);
@@ -91,6 +91,18 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
     };
     checkAccess();
   }, [params.id]);
+
+  // Post-payment unlock watcher: returning from Stripe checkout with
+  // ?payment=success — poll briefly until the webhook grants entitlement.
+  const { isPolling: isAwaitingUnlock } = usePostPaymentUnlock(params.id as string, {
+    onUnlocked: () => {
+      setHasAccess(true);
+      setToastMessage({ message: '🎉 Course unlocked — welcome back! Happy learning!', type: 'success' });
+    },
+    onExhausted: (message) => {
+      setToastMessage({ message, type: 'error' });
+    },
+  });
 
   const handleUnenroll = async () => {
     try {
@@ -159,7 +171,15 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
     playHaptic('medium');
     const targetIndex = sIdx !== undefined ? sIdx : currentActiveIndex;
     if (targetIndex > 0 && !hasAccess) {
-      setIsPaywallOpen(true);
+      // The learner may have just paid — the unlock watcher is still polling,
+      // so don't flash the paywall back at them.
+      if (isAwaitingUnlock) return;
+      router.push(
+        buildUnlockHref(
+          String(params.id),
+          `${window.location.pathname}${window.location.search}`,
+        ),
+      );
       return;
     }
     router.push(`/learn/${params.id}/section/${targetIndex}`);
@@ -168,7 +188,14 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
   const handleJumpToSection = (sIdx: number, isLocked: boolean) => {
     playHaptic('medium');
     if ((isLocked || sIdx > 0) && !hasAccess) {
-      setIsPaywallOpen(true);
+      if (!isAwaitingUnlock) {
+        router.push(
+          buildUnlockHref(
+            String(params.id),
+            `${window.location.pathname}${window.location.search}`,
+          ),
+        );
+      }
     } else {
       router.push(`/learn/${params.id}/section/${sIdx}`);
     }
@@ -697,24 +724,9 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
           onClick={() => {
             playHaptic('light');
             setMobileSidebarOpen(false);
-          }} 
+          }}
         />
       )}
-
-      {/* ── COURSE ACCESS PAYWALL MODAL ── */}
-      <CoursePaywallModal
-        isOpen={isPaywallOpen}
-        onClose={() => setIsPaywallOpen(false)}
-        courseId={course.id || (params.id as string)}
-        courseTitle={course.title}
-        basePrice={course.price || 30}
-        course={course}
-        completedLessons={completedLessons}
-        onSuccess={() => {
-          setIsPaywallOpen(false);
-          setHasAccess(true);
-        }}
-      />
     </motion.div>
   );
 }

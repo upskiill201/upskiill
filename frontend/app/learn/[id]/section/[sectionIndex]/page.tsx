@@ -5,19 +5,21 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate } from 'lucide-react';
+import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import LearnSectionSkeleton from './LearnSectionSkeleton';
 import { StatsBar } from '@/components/ui/StatsBar';
-import CoursePaywallModal from '@/components/features/course-paywall/CoursePaywallModal';
+import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
+import { buildUnlockHref } from '@/lib/return-to';
 import confetti from 'canvas-confetti';
 import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
+import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
 import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
@@ -140,7 +142,7 @@ function SectionSidebar({
   const handleClaim = () => {
     playHaptic('medium');
     openClaimModal({
-      title: '+100 GEMS',
+      title: '+100 XP',
       subtitle: 'Section Mystery Chest Unlocked! 🎉',
       rewards: [
         { currency: 'XP', amount: 100 },
@@ -311,9 +313,10 @@ function SectionViewContent({
   setCompletedLessons,
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
-  const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays } = useGamification();
-  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
+  const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
+  const { celebrate } = useCelebration();
   const params = useParams();
+  const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
   const mapRef = useRef<HTMLDivElement>(null);
@@ -322,13 +325,6 @@ function SectionViewContent({
   const lessonStartTimeRef = useRef<number>(Date.now());
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const [celebrateStep, setCelebrateStep] = useState<1 | 2 | 3 | 4>(1);
-  const [isRewardsCollected, setIsRewardsCollected] = useState<boolean>(false);
-  const [timeSpentSeconds, setTimeSpentSeconds] = useState<number>(120);
-  const [earnedRewards, setEarnedRewards] = useState<{ xp: number; coins: number; isNewCompletion: boolean }>({ xp: 20, coins: 5, isNewCompletion: true });
-  const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
-  const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
-  const [showPaywall, setShowPaywall] = useState<boolean>(false);
   const [accessInfo, setAccessInfo] = useState<{
     hasAccess: boolean;
     isInstructor?: boolean;
@@ -354,11 +350,22 @@ function SectionViewContent({
     fetchAccess();
   }, [fetchAccess]);
 
-  // Animated counters & progress bar fill states for Duolingo victory stepper
-  const [displayXp, setDisplayXp] = useState<number>(0);
-  const [displayCoins, setDisplayCoins] = useState<number>(0);
-  const [animatedAccuracy, setAnimatedAccuracy] = useState<number>(0);
-  const [animatedLevelPct, setAnimatedLevelPct] = useState<number>(0);
+  // ── Post-payment unlock watcher ─────────────────────────────────────────
+  // After Stripe checkout the learner lands back here with ?payment=success,
+  // but the entitlement is created by the STRIPE WEBHOOK, which may still be
+  // in flight. The shared hook polls access briefly instead of showing the
+  // paywall again to someone who just paid.
+  usePostPaymentUnlock(course?.id || params.id, {
+    onUnlocked: () => {
+      fetchAccess();
+      setLockedToast({ message: '🎉 Course unlocked — welcome back! Happy learning!', key: Date.now() });
+      setTimeout(() => setLockedToast((prev) => (prev?.key ? null : prev)), 5000);
+    },
+    onExhausted: (message) => {
+      setLockedToast({ message, key: Date.now() });
+      setTimeout(() => setLockedToast((prev) => (prev?.key ? null : prev)), 6000);
+    },
+  });
 
   const completedInSection = lessons.filter((l: any) =>
     completedLessons.includes(l.id)
@@ -373,8 +380,10 @@ function SectionViewContent({
 
   const [activePopoverIndex, setActivePopoverIndex] = useState<number | null>(null);
   const [showGuidebook, setShowGuidebook] = useState(false);
+  const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
+  const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
   const [activeLesson, setActiveLesson] = useState<any>(null);
-  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen' | 'celebrate'>('start');
+  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
@@ -382,9 +391,6 @@ function SectionViewContent({
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
 
   const isReviewMode = activeLesson ? completedLessons.includes(activeLesson.id) : false;
-
-  const currentLessonIndex = activeLesson ? lessons.findIndex((l: any) => l.id === activeLesson.id) : -1;
-  const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < lessons.length - 1 ? lessons[currentLessonIndex + 1] : null;
 
   useEffect(() => {
     if (activeLesson) {
@@ -437,101 +443,21 @@ function SectionViewContent({
     }
   }, [lessonPhase, currentActiveLessonIndex, justUnlockedIndex]);
 
-  const targetAccuracy = Math.max(60, Math.min(100, Math.round((livesCount / 5) * 100)));
   const targetLevelXpNeeded = 100 * (userLevel || 1);
   const targetLevelPct = Math.min(100, Math.max(0, Math.round((xpInCurrentLevel / targetLevelXpNeeded) * 100)));
-
-  useEffect(() => {
-    if (lessonPhase === 'celebrate') {
-      const elapsed = Math.max(30, Math.round((Date.now() - lessonStartTimeRef.current) / 1000));
-      setTimeSpentSeconds(elapsed);
-
-      try {
-        playWinSound();
-        confetti({
-          particleCount: 90,
-          spread: 75,
-          origin: { y: 0.6 },
-          colors: ['#0172FD', '#58CC02', '#EAB308', '#FF8A00'],
-        });
-      } catch {}
-    } else {
-      setIsRewardsCollected(false);
-      setCelebrateStep(1);
-    }
-  }, [lessonPhase]);
-
-  // Stepper animations per step
-  useEffect(() => {
-    if (lessonPhase !== 'celebrate') return;
-
-    if (celebrateStep === 1) {
-      setDisplayXp(0);
-      setAnimatedAccuracy(0);
-
-      let startXp = 0;
-      const targetXp = earnedRewards.xp || 20;
-      const xpStepTime = Math.max(20, Math.floor(800 / Math.max(1, targetXp)));
-
-      const xpTimer = setInterval(() => {
-        startXp += 1;
-        setDisplayXp(startXp);
-        playAscendingPopSound(startXp);
-        if (startXp >= targetXp) clearInterval(xpTimer);
-      }, xpStepTime);
-
-      const accTimer = setTimeout(() => {
-        setAnimatedAccuracy(targetAccuracy);
-      }, 150);
-
-      return () => {
-        clearInterval(xpTimer);
-        clearTimeout(accTimer);
-      };
-    } else if (celebrateStep === 3) {
-      setDisplayCoins(0);
-      let startCoins = 0;
-      const targetCoins = earnedRewards.coins || 5;
-      const coinStepTime = Math.max(40, Math.floor(800 / Math.max(1, targetCoins)));
-
-      const coinTimer = setInterval(() => {
-        startCoins += 1;
-        setDisplayCoins(startCoins);
-        playAscendingPopSound(startCoins);
-        if (startCoins >= targetCoins) clearInterval(coinTimer);
-      }, coinStepTime);
-
-      return () => clearInterval(coinTimer);
-    } else if (celebrateStep === 4) {
-      setAnimatedLevelPct(0);
-      const lvlTimer = setTimeout(() => {
-        setAnimatedLevelPct(targetLevelPct);
-      }, 150);
-
-      return () => clearTimeout(lvlTimer);
-    }
-  }, [lessonPhase, celebrateStep, earnedRewards.xp, earnedRewards.coins, targetAccuracy, targetLevelPct]);
 
   let applyData = null;
   if (activeLesson?.contentBlocks?.apply && Array.isArray(activeLesson.contentBlocks.apply)) {
     applyData = activeLesson.contentBlocks.apply.find((b: any) => b.type === 'mcqActivity')?.value;
   }
 
-  const applyQuestions = applyData?.questions && Array.isArray(applyData.questions) && applyData.questions.length > 0 
-    ? applyData.questions 
-    : [
-        {
-          questionText: "Which of the following is the main purpose of personal branding?",
-          options: [
-            { id: "opt_1", text: "To become famous on social media" },
-            { id: "opt_2", text: "To copy other people and fit in" },
-            { id: "opt_3", text: "To communicate your unique value and build trust" },
-            { id: "opt_4", text: "To get more followers as quickly as possible" }
-          ],
-          correctOptionId: "opt_3",
-          explanation: "Personal branding helps people understand who you are, what you stand for, and why you're different."
-        }
-      ];
+  // NO fake fallback questions — if a creator hasn't built an Apply activity
+  // for this lesson, we skip the phase entirely instead of quizzing students
+  // on unrelated hardcoded content.
+  const applyQuestions = applyData?.questions && Array.isArray(applyData.questions)
+    ? applyData.questions.filter((q: any) => q?.questionText && Array.isArray(q.options) && q.options.length >= 2)
+    : [];
+  const hasApplyActivity = applyQuestions.length > 0;
 
   const applyScenario = applyData?.scenario || '';
   const currentQuestion = applyQuestions[currentQuestionIndex] || applyQuestions[0];
@@ -548,6 +474,13 @@ function SectionViewContent({
     }
   }, [isReviewMode, lessonPhase, currentQuestionIndex, currentQuestion]);
 
+  // Quiz performance tracking — feeds creator analytics (attempts + accuracy)
+  const applyWrongCountRef = useRef(0);
+
+  useEffect(() => {
+    if (activeLesson) applyWrongCountRef.current = 0;
+  }, [activeLesson]);
+
   const handleCheckAnswer = () => {
     if (selectedOptionIndex === null) return;
     playHaptic('medium');
@@ -557,9 +490,8 @@ function SectionViewContent({
     setIsAnswerCorrect(correct);
     if (correct) {
       playWinSound();
-    }
-    // Deduct a life on wrong answer (global context + backend) — ONLY if NOT in Review Mode
-    if (!correct && !isReviewMode) {
+    } else if (!isReviewMode) {
+      applyWrongCountRef.current += 1;
       loseLife();
     }
   };
@@ -652,12 +584,15 @@ function SectionViewContent({
         setLessonPhase('learn');
       }
     } else if (lessonPhase === 'reflect') {
-      setLessonPhase('apply');
-      // Go back to the last question of the apply step
-      setCurrentQuestionIndex(applyQuestions.length - 1);
-      setSelectedOptionIndex(null);
-      setIsAnswerChecked(false);
-      setIsAnswerCorrect(false);
+      // Lessons without an Apply activity step back into Learn instead
+      setLessonPhase(hasApplyActivity ? 'apply' : 'learn');
+      if (hasApplyActivity) {
+        // Go back to the last question of the apply step
+        setCurrentQuestionIndex(applyQuestions.length - 1);
+        setSelectedOptionIndex(null);
+        setIsAnswerChecked(false);
+        setIsAnswerCorrect(false);
+      }
     } else if (lessonPhase === 'deepen') {
       setLessonPhase('reflect');
     }
@@ -683,10 +618,24 @@ function SectionViewContent({
   const nextStepConfig = deepenData?.recommendedNextStep || { type: 'practice' };
 
   const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
+
+  /** Close the lesson player and land back on the map with the unlock moment. */
+  const returnToMapAfterLesson = () => {
+    playHaptic('medium');
+    const newlyUnlockedIdx = currentActiveLessonIndex + 1;
+    setJustUnlockedIndex(newlyUnlockedIdx);
+    setActiveLesson(null);
+    setLessonPhase('start');
+    try {
+      playAscendingPopSound(4);
+    } catch {}
+  };
 
   const handleDeepenFinish = async () => {
     if (isCompletingLesson) return;
     setIsCompletingLesson(true);
+    setFinishError(null);
     playHaptic('success');
     try {
       const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
@@ -696,6 +645,18 @@ function SectionViewContent({
         body: JSON.stringify({
           lessonId: activeLesson.id,
           timezoneOffset: new Date().getTimezoneOffset(),
+          // Real wall-clock time + quiz performance — feeds creator analytics
+          timeSpentSeconds: Math.max(
+            0,
+            Math.round((Date.now() - lessonStartTimeRef.current) / 1000),
+          ),
+          ...(hasApplyActivity && applyQuestions.length > 0 && {
+            attemptsCount: applyWrongCountRef.current + 1,
+            quizScorePct: Math.round(
+              ((applyQuestions.length - Math.min(applyWrongCountRef.current, applyQuestions.length)) /
+                applyQuestions.length) * 100,
+            ),
+          }),
         })
       });
       if (res.ok) {
@@ -703,40 +664,89 @@ function SectionViewContent({
         if (!completedLessons.includes(activeLesson.id)) {
           setCompletedLessons(prev => [...prev, activeLesson.id]);
         }
-        setEarnedRewards({
-          xp: data.xpEarned ?? (activeLesson?.xpReward || 20),
-          coins: data.coinsEarned ?? 5,
-          isNewCompletion: data.isNewCompletion !== false,
-        });
         // Instantly update global context with server-confirmed new totals
         if (data.newXp !== undefined && data.newStreakDays !== undefined) {
           applyLessonReward(data.newXp, data.newStreakDays, data.newCoins);
         }
         // Signal Today's Missions card to re-fetch or merge instantly
+        window.dispatchEvent(new Event('lesson:completed'));
         if (data.missionsUpdated) {
           window.dispatchEvent(new CustomEvent('missions:updated', { detail: data.missionsUpdated }));
         }
         window.dispatchEvent(new Event('mission:refresh'));
+        // Re-sync level/streak/coins from the server — a level-up here queues a
+        // LEVEL_UP scene behind the payout chain below.
+        void refresh();
+
+        // ── The Celebration Engine owns the entire lesson-complete moment:
+        // CLAIM (XP + coins payout with level progress) → STREAK EXTENDED
+        // (first lesson today) → back to the map. No second victory screen —
+        // that legacy screen double-celebrated and clashed audio with scenes.
+        if (data.isNewCompletion !== false) {
+          const newXp = typeof data.newXp === 'number' ? data.newXp : null;
+          // Pin post-claim balances from the server so the count-up starts at
+          // (total − earned); live balances were already optimistically bumped.
+          const targetBalances: Partial<Record<CelebrationCurrency, number>> = {};
+          if (newXp !== null) targetBalances.XP = newXp;
+          if (typeof data.newCoins === 'number') targetBalances.COINS = data.newCoins;
+
+          const claimScene: CelebrationScene = {
+            kind: 'CLAIM',
+            title: 'Lesson complete!',
+            rewards: [
+              { currency: 'XP', amount: data.xpEarned ?? (activeLesson?.xpReward || 20) },
+              { currency: 'COINS', amount: data.coinsEarned ?? 5 },
+            ],
+            targetBalances,
+            ...(newXp !== null && {
+              levelProgress: {
+                current: newXp % 100,
+                target: 100,
+                level: Math.floor(newXp / 100) + 1,
+              },
+            }),
+            progressCaption:
+              newXp !== null
+                ? `LEVEL ${Math.floor(newXp / 100) + 1} · ${newXp % 100} / 100 XP`
+                : undefined,
+          };
+
+          const scenes: CelebrationScene[] = [claimScene];
+          if (data.isFirstStreakOfDay) {
+            const todayIdx = (new Date().getDay() + 6) % 7; // Monday-first index
+            scenes.push({
+              kind: 'STREAK',
+              mode: 'EXTENDED',
+              days: data.newStreakDays ?? streakDays,
+              weekDays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, idx) => ({
+                label,
+                completed: idx <= todayIdx,
+                isToday: idx === todayIdx,
+              })),
+            });
+          }
+
+          // Returning to the map is owned by the LAST scene's completion.
+          const last = scenes[scenes.length - 1] as Extract<CelebrationScene, { onComplete?: () => void }>;
+          last.onComplete = returnToMapAfterLesson;
+          celebrate(scenes);
+        } else {
+          // Repeat completion (review mode): no payout to replay — head
+          // straight back to the map with the unlock shatter.
+          returnToMapAfterLesson();
+        }
+      } else if (res.status === 403) {
+        // Server-side paywall refusal — surface it instead of faking success
+        setFinishError('This lesson is locked. Unlock the full course to save your progress.');
+      } else {
+        setFinishError('Your progress could not be saved just now. Check your connection and tap FINISH LESSON again.');
       }
     } catch (e) {
       console.error('Error completing lesson:', e);
+      setFinishError('Your progress could not be saved just now. Check your connection and tap FINISH LESSON again.');
     } finally {
       setIsCompletingLesson(false);
     }
-    setLessonPhase('celebrate');
-  };
-
-
-  const handleCelebrateFinish = () => {
-    playHaptic('medium');
-    const newlyUnlockedIdx = currentActiveLessonIndex + 1;
-    setJustUnlockedIndex(newlyUnlockedIdx);
-    setActiveLesson(null);
-    setLessonPhase('start');
-
-    try {
-      playAscendingPopSound(4);
-    } catch {}
   };
 
   const getSerpentineRows = (items: any[]) => {
@@ -782,56 +792,6 @@ function SectionViewContent({
         };
     }
   };
-
-  const confettiParticles = React.useMemo(() => {
-    const colors = ['#FF4B4B', '#FFC800', '#58CC02', '#00C9A7', '#FF6B8B', '#0172FD', '#A259FF'];
-    
-    // 170 Quick Explosive Burst particles
-    const burstList = Array.from({ length: 170 }).map((_, i) => {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 100 + Math.random() * 320;
-      const destX = Math.cos(angle) * speed;
-      const destY = Math.sin(angle) * speed - 60; // Bias upward
-      return {
-        id: `b-${i}`,
-        color: colors[i % colors.length],
-        shape: ['circle', 'square', 'streamer'][i % 3],
-        size: 5 + Math.random() * 9,
-        startX: 0,
-        startY: 50,
-        destX,
-        destY,
-        rotate: Math.random() * 1080,
-        delay: Math.random() * 0.25,
-        duration: 1.0 + Math.random() * 1.5,
-        type: 'burst' as const
-      };
-    });
-
-    // 80 Continuous cascading falling particles
-    const fallingList = Array.from({ length: 80 }).map((_, i) => {
-      const startX = -200 + Math.random() * 400;
-      const startY = -300 - Math.random() * 150;
-      const destX = startX + (-60 + Math.random() * 120);
-      const destY = 500 + Math.random() * 150;
-      return {
-        id: `f-${i}`,
-        color: colors[i % colors.length],
-        shape: ['circle', 'square', 'streamer'][i % 3],
-        size: 5 + Math.random() * 9,
-        startX,
-        startY,
-        destX,
-        destY,
-        rotate: Math.random() * 1440,
-        delay: Math.random() * 4,
-        duration: 4.5 + Math.random() * 4.0,
-        type: 'falling' as const
-      };
-    });
-
-    return [...burstList, ...fallingList];
-  }, []);
 
   const getResourceIconInfo = (type: string) => {
     const t = type?.toLowerCase() || 'link';
@@ -997,6 +957,37 @@ function SectionViewContent({
     return null;
   }, [activeLesson]);
 
+  // Text and audio lessons were previously INVISIBLE — the player only ever
+  // rendered video. Now all three Learn formats are supported.
+  const learnAudioUrl = React.useMemo(() => {
+    const learnBlocks = activeLesson?.contentBlocks?.learn;
+    if (Array.isArray(learnBlocks)) {
+      const b = learnBlocks.find((x: any) => x.type === 'audioUrl');
+      if (b && typeof b.value === 'string' && b.value.trim() !== '') return b.value;
+    }
+    return null;
+  }, [activeLesson]);
+
+  const learnTextHtml = React.useMemo(() => {
+    const learnBlocks = activeLesson?.contentBlocks?.learn;
+    if (Array.isArray(learnBlocks)) {
+      const b = learnBlocks.find((x: any) => x.type === 'text');
+      if (typeof b?.value === 'string' && b.value.trim() !== '' && b.value !== '<p><br></p>') {
+        return b.value;
+      }
+    }
+    return '';
+  }, [activeLesson]);
+
+  // "Watch the full lesson to continue" — now actually enforced: the Learn
+  // phase's Continue unlocks once the video finishes (or instantly when there
+  // is no video). A broken/unloadable video never traps the student.
+  const [videoEnded, setVideoEnded] = useState(false);
+  useEffect(() => {
+    setVideoEnded(false);
+  }, [activeLesson]);
+  const canContinueFromLearn = !videoUrl || videoEnded;
+
   const handleNodeClick = (idx: number, isLocked: boolean) => {
     if (isLocked) {
       playHaptic('warning');
@@ -1014,25 +1005,68 @@ function SectionViewContent({
     setActivePopoverIndex(activePopoverIndex === idx ? null : idx);
   };
 
+  /** Normalise contentBlocks once — every consumer below assumes an object. */
+  const normalizeLesson = (raw: any) => {
+    let blocks = raw?.contentBlocks;
+    if (typeof blocks === 'string') {
+      try { blocks = JSON.parse(blocks); } catch { blocks = {}; }
+    }
+    return { ...raw, contentBlocks: blocks || {} };
+  };
+
+  const [startingLesson, setStartingLesson] = useState(false);
+
+  /**
+   * Opens a lesson by fetching its FULL content from the guarded student
+   * endpoint. The catalog response no longer carries paid lesson content, so
+   * the server is the single source of truth for the paywall: 403 here means
+   * "this lesson is locked" and we route to the full-page unlock experience.
+   */
+  const openLesson = async (lessonId: string) => {
+    if (startingLesson) return;
+    setStartingLesson(true);
+    try {
+      const res = await fetch(`/api/courses/${course?.id || params.id}/lessons/${lessonId}`, {
+        credentials: 'include',
+      });
+      if (res.status === 403) {
+        playHaptic('light');
+        router.push(
+          buildUnlockHref(
+            String(course?.id || params.id),
+            `/learn/${params.id}/section/${sectionIndex}`,
+          ),
+        );
+        return;
+      }
+      if (!res.ok) {
+        triggerComingSoon('This lesson could not be loaded');
+        return;
+      }
+      const fullLesson = normalizeLesson(await res.json());
+      setSelectedOptionIndex(null);
+      setIsAnswerChecked(false);
+      setIsAnswerCorrect(false);
+      setCurrentQuestionIndex(0);
+      setReflectionText('');
+      setGuidedAnswers([]);
+      setActiveLesson(fullLesson);
+      setLessonPhase('start');
+    } catch (err) {
+      console.error('Failed to load lesson:', err);
+      triggerComingSoon('Could not reach the lesson — check your connection');
+    } finally {
+      setStartingLesson(false);
+    }
+  };
+
   const handleStartAction = (item: any) => {
     playHaptic('medium');
     setActivePopoverIndex(null);
     if (item.type === 'lesson') {
-      const fullLesson = lessons.find((l: any) => l.id === item.id);
-      if (fullLesson) {
-        // Check if lesson is free preview or if user has active entitlement
-        const isFree = accessInfo?.freePreviewLessonIds?.length 
-          ? accessInfo.freePreviewLessonIds.includes(item.id)
-          : (item.lessonIndex !== undefined && item.lessonIndex < 2);
-        
-        const isUnlocked = accessInfo?.hasAccess || isFree;
-
-        if (!isUnlocked) {
-          setShowPaywall(true);
-          return;
-        }
-
-        setActiveLesson(fullLesson);
+      const exists = lessons.some((l: any) => l.id === item.id);
+      if (exists) {
+        void openLesson(item.id);
       } else {
         triggerComingSoon(`Lesson Player: ${item.title}`);
       }
@@ -1246,6 +1280,16 @@ function SectionViewContent({
                     </div>
                   )}
 
+                  {/* Community deep-link — course community pre-filtered to this lesson */}
+                  <Link
+                    href={`/dashboard/community/${course?.id || params.id}?lesson=${activeLesson.id}&lessonTitle=${encodeURIComponent(activeLesson.title ?? '')}`}
+                    className={styles.discussLessonLink}
+                    onClick={() => playHaptic('light')}
+                  >
+                    <MessagesSquare size={15} />
+                    Discuss this lesson
+                  </Link>
+
                   {/* What you'll learn Carousel Slider */}
                   {wylList && Array.isArray(wylList) && wylList.filter(Boolean).length > 0 && (
                     <div className={styles.carouselContainer}>
@@ -1313,38 +1357,36 @@ function SectionViewContent({
           ) : activeLesson && lessonPhase !== 'start' ? (
             <div className={styles.lessonLearnContainer}>
               {/* Stepper Progress Indicator (reusing same logic) */}
-              {lessonPhase !== 'celebrate' && (
-                <div className={styles.stepperContainer}>
-                  <div className={styles.stepperWrapper}>
-                    <div className={styles.stepperLineBg}></div>
-                    <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
-                    <div className={styles.stepperItem}>
-                      <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
-                      <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
-                    </div>
-                    <div className={styles.stepperItem}>
-                      <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
-                      <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
-                    </div>
-                    <div className={styles.stepperItem}>
-                      <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
-                      <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
-                    </div>
-                    <div className={styles.stepperItem}>
-                      <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
-                      <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
-                    </div>
+              <div className={styles.stepperContainer}>
+                <div className={styles.stepperWrapper}>
+                  <div className={styles.stepperLineBg}></div>
+                  <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
                   </div>
-                  
-                  {/* Close Button on Right side of Stepper */}
-                  <button 
-                    onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
-                    className={styles.closeLearnBtn}
-                  >
-                    <X size={20} strokeWidth={2.5} color="#AFBFCF" />
-                  </button>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
+                  </div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
+                  </div>
+                  <div className={styles.stepperItem}>
+                    <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
+                    <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
+                  </div>
                 </div>
-              )}
+
+                {/* Close Button on Right side of Stepper */}
+                <button
+                  onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+                  className={styles.closeLearnBtn}
+                >
+                  <X size={20} strokeWidth={2.5} color="#AFBFCF" />
+                </button>
+              </div>
 
               {/* LEARN PHASE */}
               {lessonPhase === 'learn' && (
@@ -1357,21 +1399,42 @@ function SectionViewContent({
 
                 {videoUrl ? (
                   <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
-                    <video 
-                      src={videoUrl} 
-                      controls 
+                    <video
+                      src={videoUrl}
+                      controls
                       controlsList="nodownload"
+                      onEnded={() => setVideoEnded(true)}
+                      onError={() => setVideoEnded(true)}
                       style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                   </div>
-                ) : (
+                ) : learnAudioUrl ? (
+                  <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', flexDirection: 'column', gap: 16, padding: 24 }}>
+                    <Image src="/Icons/headphones.png" width={64} height={64} alt="Audio lesson" />
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <audio
+                      src={learnAudioUrl}
+                      controls
+                      onEnded={() => setVideoEnded(true)}
+                      onError={() => setVideoEnded(true)}
+                      style={{ width: '100%', maxWidth: 480 }}
+                    />
+                  </div>
+                ) : !learnTextHtml ? (
                   <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F5F9', boxShadow: 'none', border: '2px dashed #E2E8F0' }}>
                     <div style={{ textAlign: 'center', color: '#64748B' }}>
                       <Info size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No video uploaded</h3>
-                      <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached a video to this lesson yet.</p>
+                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No lesson content yet</h3>
+                      <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached media or reading material to this lesson yet.</p>
                     </div>
                   </div>
+                ) : null}
+
+                {learnTextHtml && (
+                  <div
+                    className={styles.learnArticleBody}
+                    dangerouslySetInnerHTML={{ __html: learnTextHtml }}
+                  />
                 )}
 
                 {/* Resources Section */}
@@ -1444,11 +1507,18 @@ function SectionViewContent({
               </div>
               
               <div className={styles.reflectBottomBtnWrap}>
-                <button 
-                  className={styles.reflectSubmitBtn}
-                  onClick={() => { playHaptic('medium'); setLessonPhase('apply'); }}
+                <button
+                  className={`${styles.reflectSubmitBtn} ${!canContinueFromLearn ? styles.reflectBtnDisabled : ''}`}
+                  onClick={() => {
+                    playHaptic('medium');
+                    // Lessons with a real Apply activity go to the quiz; the
+                    // rest skip straight to Reflect instead of faking one.
+                    setLessonPhase(hasApplyActivity ? 'apply' : 'reflect');
+                  }}
+                  disabled={!canContinueFromLearn}
                 >
-                  CONTINUE
+                  {!canContinueFromLearn && <Lock size={18} strokeWidth={2.5} />}
+                  {hasApplyActivity ? 'CONTINUE' : 'CONTINUE TO REFLECTION'}
                 </button>
               </div>
             </>
@@ -1763,6 +1833,20 @@ function SectionViewContent({
 
                 {/* Text container carrying the recommended step banner and finish lesson button */}
                 <div className={styles.deepenTextCol}>
+                  {finishError && (
+                    <div style={{
+                      backgroundColor: '#FEF2F2',
+                      border: '1.5px solid #FECACA',
+                      color: '#B91C1C',
+                      borderRadius: 14,
+                      padding: '12px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      marginBottom: 12,
+                    }}>
+                      ⚠️ {finishError}
+                    </div>
+                  )}
                   {/* Recommended Next Step Banner */}
                   <div className={styles.nextStepBanner}>
                     <div className={styles.nextStepIconCircle}>
@@ -1846,339 +1930,6 @@ function SectionViewContent({
                 )}
               </AnimatePresence>
             </>
-          )}
-
-          {/* CELEBRATION PHASE */}
-          {lessonPhase === 'celebrate' && (
-            <div className={styles.celebrateContent}>
-              {/* Confetti Explosion Burst */}
-              <div className={styles.confettiWrapper}>
-                {confettiParticles.map((p) => (
-                  <motion.div
-                    key={p.id}
-                    className={`${styles.confettiPiece} ${styles[p.shape]}`}
-                    style={{
-                      backgroundColor: p.shape !== 'streamer' ? p.color : undefined,
-                      borderColor: p.shape === 'streamer' ? p.color : undefined,
-                      width: p.size,
-                      height: p.shape === 'streamer' ? p.size * 2 : p.size,
-                      position: 'absolute',
-                      top: p.type === 'burst' ? '55%' : '0%',
-                      left: p.type === 'burst' ? '50%' : '50%',
-                      zIndex: 3,
-                    }}
-                    initial={{ 
-                      x: p.startX, 
-                      y: p.startY, 
-                      scale: p.type === 'burst' ? 0.1 : 1, 
-                      opacity: p.type === 'burst' ? 0 : 0.8, 
-                      rotate: 0 
-                    }}
-                    animate={{
-                      x: p.destX,
-                      y: p.destY,
-                      scale: p.type === 'burst' ? [0.1, 1, 1, 0.8, 0] : 1,
-                      opacity: p.type === 'burst' ? [0, 1, 1, 0.8, 0] : [0, 0.9, 0.9, 0],
-                      rotate: p.rotate,
-                    }}
-                    transition={{
-                      duration: p.duration,
-                      delay: p.delay,
-                      ease: p.type === 'burst' ? 'easeOut' : 'linear',
-                      repeat: Infinity,
-                      repeatDelay: p.type === 'burst' ? Math.random() * 1.5 : 0.5,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* TOP CONTAINER - Mascot & Curved Title */}
-              <div className={styles.celebrateTop}>
-                {/* Duolingo style 3D Multi-colored SVG Curved Title */}
-                <svg viewBox="0 0 500 160" className={styles.celebrateTitleSvg}>
-                  <defs>
-                    <path id="curveLesson" d="M 60 70 Q 250 15, 440 70" fill="none" />
-                    <path id="curveComplete" d="M 40 145 Q 250 85, 460 145" fill="none" />
-                  </defs>
-                  <text className={styles.svgTextLesson}>
-                    <textPath href="#curveLesson" startOffset="50%" textAnchor="middle">
-                      <tspan fill="#FF4B4B">L</tspan>
-                      <tspan fill="#FFC800">E</tspan>
-                      <tspan fill="#58CC02">S</tspan>
-                      <tspan fill="#00C9A7">S</tspan>
-                      <tspan fill="#FF6B8B">O</tspan>
-                      <tspan fill="#0172FD">N</tspan>
-                    </textPath>
-                  </text>
-                  <text className={styles.svgTextComplete}>
-                    <textPath href="#curveComplete" startOffset="50%" textAnchor="middle">
-                      <tspan fill="#0172FD">C</tspan>
-                      <tspan fill="#FF6B8B">O</tspan>
-                      <tspan fill="#FF4B4B">M</tspan>
-                      <tspan fill="#1CB0F6">P</tspan>
-                      <tspan fill="#58CC02">L</tspan>
-                      <tspan fill="#FFC800">E</tspan>
-                      <tspan fill="#A259FF">T</tspan>
-                      <tspan fill="#00C9A7">E</tspan>
-                      <tspan fill="#FF4B4B">!</tspan>
-                    </textPath>
-                  </text>
-                </svg>
-
-                {/* Big Celebration Mascot Image */}
-                <div className={styles.celebrateMascotContainer}>
-                  <img 
-                    src="/User onbarding Assets/Step_10_image.webp" 
-                    alt="Lesson Complete Mascot" 
-                    className={styles.celebrateMascotImg}
-                  />
-                </div>
-              </div>
-
-              {/* BOTTOM CONTAINER - Duolingo 4-Screen Victory Stepper */}
-              <div className={styles.celebrateBottom}>
-                {/* Top 4-Dot Progress Indicator */}
-                <div className={styles.stepperProgressDots}>
-                  {[1, 2, 3, 4].map((step) => (
-                    <div
-                      key={step}
-                      className={`${styles.stepperDot} ${celebrateStep === step ? styles.stepperDotActive : ''}`}
-                    />
-                  ))}
-                </div>
-
-                {/* SCREEN 1: LESSON VICTORY & PERFORMANCE SUMMARY */}
-                {celebrateStep === 1 && (
-                  <>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, backgroundColor: '#FEF9C3', color: '#CA8A04', border: '2px solid #FACC15', borderRadius: 9999, padding: '4px 14px', fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>
-                      <span>⭐ PERFECT RUN!</span>
-                    </div>
-
-                    <div className={styles.celebrateStatsRow}>
-                      {/* Card 1: XP */}
-                      <div className={styles.celebrateStatCard} style={{ borderColor: '#84D8FF' }}>
-                        <div className={styles.celebrateStatIconWrap}>
-                          <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
-                        </div>
-                        <div className={styles.celebrateStatTextGroup}>
-                          <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{displayXp} XP</span>
-                          <span className={styles.celebrateStatLabel}>XP EARNED</span>
-                        </div>
-                      </div>
-
-                      {/* Card 2: Time Spent */}
-                      <div className={styles.celebrateStatCard} style={{ borderColor: '#BBF7D0' }}>
-                        <div className={styles.celebrateStatIconWrap}>
-                          <span style={{ fontSize: 26 }}>⏱️</span>
-                        </div>
-                        <div className={styles.celebrateStatTextGroup}>
-                          <span className={styles.celebrateStatValue} style={{ color: '#16A34A' }}>
-                            {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s
-                          </span>
-                          <span className={styles.celebrateStatLabel}>Time Spent</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Accuracy Card */}
-                    <div className={styles.celebrateProgressCard}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: 13, fontWeight: 900, color: '#58CC02' }}>
-                        <span>ACCURACY RATING</span>
-                        <span>{animatedAccuracy}%</span>
-                      </div>
-                      <div className={styles.celebrateProgressBarContainer}>
-                        <div className={styles.celebrateProgressBarFill} style={{ width: `${animatedAccuracy}%`, transition: 'width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-                          <span className={styles.celebrateProgressPercentText}>
-                            {animatedAccuracy}%
-                          </span>
-                        </div>
-                      </div>
-                      <p className={styles.celebrateProgressSub}>
-                        🎯 <strong style={{ color: '#58CC02' }}>Great Accuracy!</strong> Practice makes perfect!
-                      </p>
-                    </div>
-
-                    <button
-                      className={styles.letsGoBtn3D}
-                      onClick={() => {
-                        playHaptic('medium', false);
-                        setCelebrateStep(2);
-                      }}
-                    >
-                      CONTINUE ➔
-                    </button>
-                  </>
-                )}
-
-                {/* SCREEN 2: STREAK FLAME IGNITION CALENDAR */}
-                {celebrateStep === 2 && (
-                  <>
-                    <div style={{ textAlign: 'center', marginBottom: 4 }}>
-                      <h3 style={{ fontSize: 19, fontWeight: 900, color: '#FF8A00', margin: '0 0 4px 0', fontFamily: 'var(--font-jakarta)' }}>
-                        🔥 {streakDays > 0 ? streakDays : 1}-DAY STREAK EXTENDED!
-                      </h3>
-                      <p style={{ fontSize: 12.5, fontWeight: 700, color: '#64748B', margin: 0 }}>
-                        {streakDays > 1 
-                          ? `${streakDays}-Day Streak Extended! You completed a lesson today to keep your flame burning bright!`
-                          : `1-Day Streak Started! Keep building your daily habit!`
-                        }
-                      </p>
-                    </div>
-
-                    {/* 7-Day Flame Calendar */}
-                    <div className={styles.streakCalendarRow}>
-                      {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((dayLabel, idx) => {
-                        const todayIdx = (new Date().getDay() + 6) % 7;
-                        const isToday = idx === todayIdx;
-                        const isPast = idx <= todayIdx;
-
-                        return (
-                          <div key={idx} className={styles.dayPill}>
-                            <span className={styles.dayPillLabel}>{dayLabel}</span>
-                            <div className={`${styles.dayPillCircle} ${isToday ? styles.dayPillIgnited : ''}`}>
-                              {isPast ? (
-                                <Image src="/Icons/burn.png" width={22} height={22} alt="Streak Flame" />
-                              ) : (
-                                <span>·</span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className={styles.celebrateProgressCard} style={{ backgroundColor: '#FFF7ED', borderColor: '#FFEDD5' }}>
-                      <p style={{ fontSize: 12.5, fontWeight: 800, color: '#C2410C', margin: 0 }}>
-                        ⚡ Consistent daily practice accelerates brain retention by 3x!
-                      </p>
-                    </div>
-
-                    <button
-                      className={styles.letsGoBtn3D}
-                      style={{ backgroundColor: '#FF8A00', borderColor: '#EA580C' }}
-                      onClick={() => {
-                        playHaptic('medium', false);
-                        setCelebrateStep(3);
-                      }}
-                    >
-                      CONTINUE ➔
-                    </button>
-                  </>
-                )}
-
-                {/* SCREEN 3: TODAY'S MISSIONS & REWARDRUN FLIGHT */}
-                {celebrateStep === 3 && (
-                  <>
-                    <div style={{ textAlign: 'center', marginBottom: 4 }}>
-                      <h3 style={{ fontSize: 19, fontWeight: 900, color: '#0172FD', margin: '0 0 4px 0', fontFamily: 'var(--font-jakarta)' }}>
-                        🎯 DAILY MISSIONS & REWARDS
-                      </h3>
-                      <p style={{ fontSize: 12.5, fontWeight: 700, color: '#64748B', margin: 0 }}>
-                        Claim your rewards to launch them into your stats!
-                      </p>
-                    </div>
-
-                    <div className={styles.celebrateStatsRow}>
-                      {/* Card 1: XP */}
-                      <div ref={xpCardRef} className={styles.celebrateStatCard} style={{ borderColor: isRewardsCollected ? '#22C55E' : '#84D8FF', transition: 'border-color 0.3s ease' }}>
-                        <div className={styles.celebrateStatIconWrap}>
-                          <Image src="/Icons/gem.png" width={42} height={42} alt="Gem XP Icon" className={styles.statIconImg} />
-                        </div>
-                        <div className={styles.celebrateStatTextGroup}>
-                          <span className={styles.celebrateStatValue} style={{ color: '#0172FD' }}>+{displayXp} XP</span>
-                          <span className={styles.celebrateStatLabel} style={{ color: isRewardsCollected ? '#22C55E' : '#94A3B8' }}>
-                            {isRewardsCollected ? 'COLLECTED! ✓' : 'XP EARNED'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Card 2: Coins Earned */}
-                      <div ref={coinCardRef} className={styles.celebrateStatCard} style={{ borderColor: isRewardsCollected ? '#22C55E' : '#FEF9C3', transition: 'border-color 0.3s ease' }}>
-                        <div className={styles.celebrateStatIconWrap}>
-                          <Image src="/Icons/Coin.png" width={42} height={42} alt="Coins Icon" className={styles.statIconImg} />
-                        </div>
-                        <div className={styles.celebrateStatTextGroup}>
-                          <span className={styles.celebrateStatValue} style={{ color: '#EAB308' }}>+{displayCoins} Coins</span>
-                          <span className={styles.celebrateStatLabel} style={{ color: isRewardsCollected ? '#22C55E' : '#94A3B8' }}>
-                            {isRewardsCollected ? 'COLLECTED! ✓' : 'COINS EARNED'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {!isRewardsCollected ? (
-                      <button
-                        className={styles.letsGoBtn3D}
-                        style={{ backgroundColor: '#0172FD', borderColor: '#0057C2' }}
-                        onClick={() => {
-                          playHaptic('medium', false);
-                          openClaimModal({
-                            title: `+${earnedRewards.xp} GEMS`,
-                            subtitle: 'Lesson Completed! 🎉',
-                            rewards: [
-                              { currency: 'XP', amount: earnedRewards.xp },
-                              { currency: 'COINS', amount: earnedRewards.coins },
-                            ],
-                            skipBackendPersist: true,
-                            onComplete: () => {
-                              setIsRewardsCollected(true);
-                              setCelebrateStep(4);
-                            },
-                          });
-                        }}
-                      >
-                        CLAIM LESSON REWARDS 💎
-                      </button>
-                    ) : (
-                      <button
-                        className={styles.letsGoBtn3D}
-                        onClick={() => {
-                          playHaptic('medium', false);
-                          setCelebrateStep(4);
-                        }}
-                      >
-                        CONTINUE ➔
-                      </button>
-                    )}
-                  </>
-                )}
-
-                {/* SCREEN 4: LEVEL PROGRESS & UP NEXT TEASER */}
-                {celebrateStep === 4 && (
-                  <>
-                    <div className={styles.celebrateProgressCard}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: 12, fontWeight: 900, color: '#0172FD' }}>
-                        <span>LEVEL {userLevel} PROGRESS</span>
-                        <span>{xpInCurrentLevel} / {targetLevelXpNeeded} XP</span>
-                      </div>
-                      <div className={styles.celebrateProgressBarContainer}>
-                        <div className={styles.celebrateProgressBarFill} style={{ width: `${animatedLevelPct}%`, transition: 'width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-                          <span className={styles.celebrateProgressPercentText}>
-                            {animatedLevelPct}%
-                          </span>
-                        </div>
-                      </div>
-                      <p className={styles.celebrateProgressSub}>
-                        👑 <strong style={{ color: '#0172FD' }}>Level {userLevel} Master!</strong> Keep ascending!
-                      </p>
-                    </div>
-
-                    {nextLesson && (
-                      <div style={{ width: '100%', backgroundColor: '#EFF6FF', color: '#0172FD', borderRadius: 14, padding: '12px 16px', fontSize: 12.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, border: '1.5px solid #BFDBFE', textAlign: 'center' }}>
-                        UP NEXT ➔ {nextLesson.title}
-                      </div>
-                    )}
-
-                    <button 
-                      className={styles.letsGoBtn3D}
-                      onClick={() => handleCelebrateFinish()}
-                    >
-                      FINISH & RETURN TO MAP ➔
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
           )}
 
         </div>
@@ -2569,40 +2320,34 @@ function SectionViewContent({
               <div className={styles.modalBody}>
                 <h4 className={styles.guideSectionTitle}>Section Overview</h4>
                 <p className={styles.guideSectionText}>
-                  {section.goal || "Welcome to the guidebook! Review these concepts to build core competencies."}
+                  {section.goal || `This section contains ${lessons.length} structured lesson${lessons.length === 1 ? '' : 's'}. Work through each step to master the material.`}
                 </p>
-                
-                <h4 className={styles.guideSectionTitle}>Key Concepts & Vocabulary</h4>
+
+                <h4 className={styles.guideSectionTitle}>Lessons in this Section</h4>
                 <ul className={styles.guideConceptsList}>
-                  <li>
-                    <strong>Design Thinking</strong>: A user-centric design method prioritizing empathy and feedback.
-                  </li>
-                  <li>
-                    <strong>Information Architecture</strong>: Structure details so users find content easily.
-                  </li>
-                  <li>
-                    <strong>Figma Basics</strong>: Navigating frames, vector shapes, layers, and layout grids.
-                  </li>
+                  {lessons.map((l: any, i: number) => (
+                    <li key={l.id || i}>
+                      <strong>{i + 1}. {l.title}</strong>
+                      {l.shortDescription ? `: ${cleanHtml(l.shortDescription)}` : ''}
+                    </li>
+                  ))}
                 </ul>
+
+                {Array.isArray(course?.outcomes) && course.outcomes.length > 0 && (
+                  <>
+                    <h4 className={styles.guideSectionTitle}>What You&apos;ll Learn in this Course</h4>
+                    <ul className={styles.guideConceptsList}>
+                      {course.outcomes.slice(0, 6).map((o: string, i: number) => (
+                        <li key={i}>{cleanHtml(String(o))}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Course Unlock Paywall Modal */}
-      <CoursePaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        courseId={course?.id || String(params.id)}
-        courseTitle={course?.title}
-        basePrice={course?.price || 30}
-        course={course}
-        completedLessons={completedLessons}
-        onSuccess={() => {
-          fetchAccess();
-        }}
-      />
     </motion.div>
   );
 }

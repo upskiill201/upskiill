@@ -33,7 +33,6 @@ export interface SoundConfig {
   id: SoundId;
   name: string;
   category: SoundCategory;
-  src: string;
   enabled: boolean;
   /** Volume from 0.0 to 1.0 */
   volume: number;
@@ -60,7 +59,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'BUTTON_PRIMARY',
     name: 'Primary Button Tap',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_BUTTON_PRIMARY.mp3',
     enabled: true,
     volume: 0.8,
     delayMs: 0,
@@ -77,7 +75,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'BUTTON_SECONDARY',
     name: 'Secondary Button Tap',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_BUTTON_SECONDARY.mp3',
     enabled: true,
     volume: 0.85,
     delayMs: 0,
@@ -94,7 +91,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'SELECTION',
     name: 'Selection / Chip Tap',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_SELECTION.mp3',
     enabled: true,
     volume: 0.75,
     delayMs: 0,
@@ -111,7 +107,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'SUCCESS_CONFIRM',
     name: 'Success Confirm',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_SUCCESS_CONFIRM.mp3',
     enabled: true,
     volume: 0.85,
     delayMs: 0,
@@ -128,7 +123,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'ERROR_SOFT',
     name: 'Soft Error Alert',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_ERROR_SOFT.mp3',
     enabled: true,
     volume: 0.75,
     delayMs: 0,
@@ -145,7 +139,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'CORRECT',
     name: 'Correct Answer Fanfare',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_CORRECT.mp3',
     enabled: true,
     volume: 0.9,
     delayMs: 0,
@@ -162,7 +155,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'TAB_SWITCH',
     name: 'Tab Switch',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_TAB_SWITCH.mp3',
     enabled: false,
     volume: 0.6,
     delayMs: 0,
@@ -179,7 +171,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'MENU_OPEN_CLOSE',
     name: 'Menu Open / Close',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_MENU_OPEN_CLOSE.mp3',
     enabled: true,
     volume: 0.85,
     delayMs: 0,
@@ -196,7 +187,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'TOGGLE',
     name: 'Switch Toggle',
     category: 'ui',
-    src: '/assets/sounds/ui/UI_TOGGLE_ON_OFF.mp3',
     enabled: true,
     volume: 0.7,
     delayMs: 0,
@@ -213,7 +203,6 @@ export const DEFAULT_SOUND_REGISTRY: Record<SoundId, SoundConfig> = {
     id: 'BACKGROUND_MUSIC',
     name: 'Background Ambience',
     category: 'music',
-    src: '/assets/sounds/ui/UI_BG_MUSIC.mp3',
     enabled: false,
     volume: 0.35,
     delayMs: 0,

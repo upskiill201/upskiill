@@ -1,8 +1,9 @@
 /**
  * Teyro High-Performance Web Audio Engine (Sound Manager Singleton)
  *
- * Built using the Web Audio API (`AudioContext`) with buffer caching, sub-20ms latency,
- * audio pooling, cooldown rate limiting, category volume controls, and music fading.
+ * All UI sounds are synthesized at play time from oscillator recipes
+ * (see `uiSounds.ts`) and routed through a shared AudioContext with
+ * master + category gain nodes, cooldown rate limiting, and mute/toggle state.
  */
 
 import {
@@ -11,7 +12,7 @@ import {
   SoundConfig,
   DEFAULT_SOUND_REGISTRY,
 } from './soundRegistry';
-import { EMBEDDED_SOUND_DATA } from './soundData';
+import { playUiSound } from './uiSounds';
 
 export interface CategoryVolumes {
   master: number;
@@ -28,8 +29,6 @@ export interface SoundManagerOptions {
   volumes?: Partial<CategoryVolumes>;
 }
 
-const MAX_SIMULTANEOUS_SFX = 8;
-
 class SoundManager {
   private ctx: AudioContext | null = null;
   private masterGainNode: GainNode | null = null;
@@ -43,17 +42,6 @@ class SoundManager {
 
   /** Dynamic registry configuration */
   private registry: Record<SoundId, SoundConfig> = { ...DEFAULT_SOUND_REGISTRY };
-
-  /** Audio buffer cache (url -> AudioBuffer) */
-  private bufferCache = new Map<string, AudioBuffer>();
-
-  /** Active audio sources for pooling & simultaneous SFX limit */
-  private activeSfxSources: { id: SoundId; source: AudioBufferSourceNode; gain: GainNode }[] = [];
-
-  /** Active background music player state */
-  private musicSource: AudioBufferSourceNode | null = null;
-  private musicGainNode: GainNode | null = null;
-  private currentMusicId: SoundId | null = null;
 
   /** Cooldown tracker (soundId -> timestamp ms) */
   private lastPlayTimes = new Map<SoundId, number>();
@@ -70,7 +58,6 @@ class SoundManager {
   private isMuted = false;
   private isSfxEnabled = true;
   private isMusicEnabled = true;
-  private isInitialised = false;
 
   constructor() {
     // Lazy initialised on first user click/touch or preload call
@@ -101,7 +88,6 @@ class SoundManager {
       });
 
       this.categoryGainNodes.master = this.masterGainNode;
-      this.isInitialised = true;
     }
 
     if (this.ctx.state === 'suspended') {
@@ -111,67 +97,19 @@ class SoundManager {
     return this.ctx;
   }
 
-  // ─── Preloading & Caching ──────────────────────────────────────────────────
-
-  /**
-   * Preloads sounds into Web Audio API buffers for sub-20ms playback latency.
-   */
-  async preload(soundIds?: SoundId[]): Promise<void> {
-    if (typeof window === 'undefined') return;
-    const ctx = this.initContext();
-    if (!ctx) return;
-
-    const idsToLoad =
-      soundIds ||
-      (Object.keys(this.registry) as SoundId[]).filter((id) => this.registry[id].preload);
-
-    const promises = idsToLoad.map(async (id) => {
-      const cfg = this.registry[id];
-      if (!cfg || !cfg.enabled || this.bufferCache.has(cfg.src)) return;
-
-      try {
-        const response = await fetch(cfg.src);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-        this.bufferCache.set(cfg.src, audioBuffer);
-      } catch (err) {
-        console.warn(`[SoundManager] Failed to preload sound "${id}" (${cfg.src}):`, err);
-      }
-    });
-
-    await Promise.all(promises);
-  }
-
-  /** Fetch or decode AudioBuffer from Base64 Data URI or network URL */
-  private async getAudioBuffer(url: string, id?: SoundId): Promise<AudioBuffer | null> {
-    if (this.bufferCache.has(url)) {
-      return this.bufferCache.get(url)!;
-    }
-
-    const ctx = this.initContext();
-    if (!ctx) return null;
-
-    // Resolve Base64 embedded URI to bypass HTTP requests & browser download extensions
-    const fileNameKey = url.split('/').pop()?.replace('.mp3', '') || id || '';
-    const embeddedBase64 = EMBEDDED_SOUND_DATA[fileNameKey] || (url.startsWith('data:') ? url : null);
-    const sourceUrl = embeddedBase64 || url;
-
-    try {
-      const response = await fetch(sourceUrl);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-      this.bufferCache.set(url, audioBuffer);
-      return audioBuffer;
-    } catch (err) {
-      console.warn(`[SoundManager] Failed to decode audio buffer for ${id || url}:`, err);
-      return null;
-    }
-  }
-
   // ─── Playback Controls ─────────────────────────────────────────────────────
 
   /**
-   * Plays a registered sound effect by SoundId.
+   * Preloads the audio engine. Synthesized sounds need no asset fetching —
+   * this simply unlocks the shared AudioContext on the first user gesture.
+   */
+  async preload(_soundIds?: SoundId[]): Promise<void> {
+    if (typeof window === 'undefined') return;
+    this.initContext();
+  }
+
+  /**
+   * Plays a registered sound by SoundId using its synthesized recipe.
    */
   async play(id: SoundId, overrideConfig?: Partial<SoundConfig>): Promise<void> {
     if (typeof window === 'undefined') return;
@@ -198,153 +136,17 @@ class SoundManager {
       } catch {}
     }
 
-    const fileNameKey = cfg.src.split('/').pop()?.replace('.mp3', '') || id;
-    const sourceUrl = EMBEDDED_SOUND_DATA[fileNameKey] || (cfg.src.startsWith('data:') ? cfg.src : null) || cfg.src;
-
-    const buffer = await this.getAudioBuffer(cfg.src, id);
-    if (!buffer || !ctx) {
-      // HTML5 Audio element fallback (guarantees instant playback from Base64 Data URI)
-      try {
-        const audio = new Audio(sourceUrl);
-        const catVol = this.volumes[cfg.category as keyof CategoryVolumes] ?? 1.0;
-        audio.volume = Math.max(0, Math.min(1, cfg.volume * catVol * (this.isMuted ? 0 : this.volumes.master)));
-        audio.playbackRate = cfg.speed || 1.0;
-        audio.loop = cfg.loop || false;
-        void audio.play().catch(e => console.warn('[SoundManager] HTML5 audio play prevented:', e));
-      } catch (err) {
-        console.warn(`[SoundManager] HTML5 fallback failed for ${id}:`, err);
-      }
-      return;
-    }
-
-    // Route music separately
-    if (cfg.category === 'music' || cfg.loop) {
-      this.playMusicBuffer(id, buffer, cfg);
-      return;
-    }
-
-    // Enforce simultaneous SFX pool limit
-    if (this.activeSfxSources.length >= MAX_SIMULTANEOUS_SFX) {
-      const oldest = this.activeSfxSources.shift();
-      if (oldest) {
-        try {
-          oldest.source.stop();
-        } catch {}
-      }
-    }
-
-    // Create Source and Gain Node
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.playbackRate.value = cfg.speed || 1.0;
-
-    const gainNode = ctx.createGain();
-    gainNode.gain.value = cfg.volume;
-
-    // Connect to category gain node
-    const catGain = this.categoryGainNodes[cfg.category as keyof CategoryVolumes] || this.masterGainNode;
-    gainNode.connect(catGain || ctx.destination);
-    source.connect(gainNode);
-
-    const startTime = ctx.currentTime + (cfg.delayMs ? cfg.delayMs / 1000 : 0);
-    source.start(startTime);
-
-    const poolEntry = { id, source, gain: gainNode };
-    this.activeSfxSources.push(poolEntry);
-
-    source.onended = () => {
-      this.activeSfxSources = this.activeSfxSources.filter((s) => s.source !== source);
-    };
+    playUiSound(id, cfg.volume, cfg.speed);
   }
 
-  /** Plays background music with seamless looping & optional fade-in */
-  private playMusicBuffer(id: SoundId, buffer: AudioBuffer, cfg: SoundConfig) {
-    if (!this.ctx) return;
-
-    // If the exact same music track is ALREADY playing, let it continue seamlessly!
-    if (this.currentMusicId === id && this.musicSource) {
-      return;
-    }
-
-    if (this.musicSource) {
-      try {
-        this.musicSource.stop();
-      } catch {}
-      this.musicSource = null;
-    }
-
-    const source = this.ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    source.playbackRate.value = cfg.speed || 1.0;
-
-    const gainNode = this.ctx.createGain();
-    const musicCategoryGain = this.categoryGainNodes.music || this.masterGainNode;
-    gainNode.connect(musicCategoryGain || this.ctx.destination);
-    source.connect(gainNode);
-
-    const targetVolume = cfg.volume;
-
-    if (cfg.fadeInSec && cfg.fadeInSec > 0) {
-      gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(targetVolume, this.ctx.currentTime + cfg.fadeInSec);
-    } else {
-      gainNode.gain.value = targetVolume;
-    }
-
-    source.start(0);
-    this.musicSource = source;
-    this.musicGainNode = gainNode;
-    this.currentMusicId = id;
+  /** Fades out background music. Retained for API compatibility; music is disabled. */
+  fadeOut(_id?: SoundId, _durationSec = 1.0): void {
+    // No-op — all sounds are synthesized one-shots, nothing to fade.
   }
 
-  /** Plays background music loop seamlessly */
-  playLoop(id: SoundId): void {
-    void this.play(id, { loop: true });
-  }
-
-  /** Plays one sound randomly from an array of SoundIds */
-  playRandom(ids: SoundId[]): void {
-    if (!ids || ids.length === 0) return;
-    const randId = ids[Math.floor(Math.random() * ids.length)];
-    void this.play(randId);
-  }
-
-  /** Fades out currently playing music or sound */
-  fadeOut(id?: SoundId, durationSec = 1.0): void {
-    if (this.ctx && this.musicGainNode && (!id || this.currentMusicId === id)) {
-      this.musicGainNode.gain.linearRampToValueAtTime(
-        0,
-        this.ctx.currentTime + durationSec,
-      );
-      setTimeout(() => {
-        if (this.musicSource) {
-          try {
-            this.musicSource.stop();
-          } catch {}
-          this.musicSource = null;
-          this.currentMusicId = null;
-        }
-      }, durationSec * 1000);
-    }
-  }
-
-  /** Stops all active SFX & music */
+  /** Stops all active sounds. Retained for API compatibility. */
   stopAll(): void {
-    this.activeSfxSources.forEach((entry) => {
-      try {
-        entry.source.stop();
-      } catch {}
-    });
-    this.activeSfxSources = [];
-
-    if (this.musicSource) {
-      try {
-        this.musicSource.stop();
-      } catch {}
-      this.musicSource = null;
-      this.currentMusicId = null;
-    }
+    // Synth notes are short scheduled one-shots (<1s); nothing persistent to stop.
   }
 
   /** Pause AudioContext */
@@ -403,13 +205,29 @@ class SoundManager {
 
   setMusicEnabled(enabled: boolean): void {
     this.isMusicEnabled = enabled;
-    if (!enabled) {
-      this.fadeOut(undefined, 0.5);
-    }
   }
 
   getSfxEnabled(): boolean {
     return this.isSfxEnabled;
+  }
+
+  /**
+   * Returns the shared AudioContext plus the sfx category gain node so
+   * synthesized (oscillator-based) sounds can route through the same
+   * master/sfx volume + mute graph as buffer-based SFX.
+   * Returns null when audio is unavailable or muted/sfx disabled.
+   */
+  getSynthBus(): { ctx: AudioContext; output: GainNode } | null {
+    if (typeof window === 'undefined') return null;
+    if (this.isMuted || !this.isSfxEnabled) return null;
+
+    const ctx = this.initContext();
+    if (!ctx) return null;
+
+    const sfxGain = this.categoryGainNodes.sfx || this.masterGainNode;
+    if (!sfxGain) return null;
+
+    return { ctx, output: sfxGain };
   }
 
   getMusicEnabled(): boolean {
@@ -457,7 +275,15 @@ class SoundManager {
       if (typeof parsed.isMuted === 'boolean') this.mute(parsed.isMuted);
       if (typeof parsed.isSfxEnabled === 'boolean') this.setSfxEnabled(parsed.isSfxEnabled);
       if (typeof parsed.isMusicEnabled === 'boolean') this.setMusicEnabled(parsed.isMusicEnabled);
-      if (parsed.registry) this.registry = { ...this.registry, ...parsed.registry };
+      if (parsed.registry) {
+        // Merge saved per-sound settings onto the current registry so stale
+        // fields from older exports (e.g. removed `src` paths) are dropped.
+        (Object.keys(this.registry) as SoundId[]).forEach((id) => {
+          if (parsed.registry[id]) {
+            this.registry[id] = { ...this.registry[id], ...parsed.registry[id] };
+          }
+        });
+      }
 
       // Apply master gain update
       if (this.masterGainNode && this.ctx) {

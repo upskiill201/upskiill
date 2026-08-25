@@ -1,0 +1,297 @@
+'use client';
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import type { LeagueTier } from '@/lib/leagues';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export type CelebrationCurrency = 'COINS' | 'XP' | 'HEARTS' | 'STREAK' | 'FREEZE';
+
+export interface CelebrationReward {
+  currency: CelebrationCurrency;
+  amount: number;
+}
+
+export interface StreakWeekDay {
+  label: string;
+  completed: boolean;
+  isToday?: boolean;
+}
+
+export interface QuestRow {
+  id?: string;
+  label: string;
+  current: number;
+  target: number;
+  /** Row that just completed — gets the shine-sweep treatment */
+  highlight?: boolean;
+  /** What completing this quest pays (coin/XP icon chip on the row). */
+  reward?: { currency: CelebrationCurrency; amount: number };
+}
+
+/**
+ * A single full-screen celebration scene. Scenes are queued and played one at a
+ * time (Duolingo chaining: claim → streak → quest → chest). Every scene is a
+ * full-page takeover rendered by <CelebrationEngine /> — never a centered dialog.
+ */
+export type CelebrationScene =
+  | {
+      kind: 'CLAIM';
+      title?: string;
+      subtitle?: string;
+      rewards: CelebrationReward[];
+      /** Server-first claim executed when the deposit beat begins. Omit when the reward was already persisted.
+       * May resolve with exact post-claim balances (e.g. from the claim API response) so the count-up
+       * includes server-side extras like the all-missions-claimed coin bonus. */
+      claim?: () => Promise<Partial<Record<CelebrationCurrency, number>> | void> | void;
+      /** Exact post-claim balances for the count-up (falls back to live gamification state). */
+      targetBalances?: Partial<Record<CelebrationCurrency, number>>;
+      /** XP progress shown under the balance row: [current, target] for the current level. */
+      levelProgress?: { current: number; target: number; level: number };
+      progressCaption?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'LEVEL_UP';
+      oldLevel: number;
+      newLevel: number;
+      bonusCoins?: number;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'STREAK';
+      mode: 'EXTENDED' | 'SAVED' | 'LOST';
+      days: number;
+      /** Count-up origin (e.g. 4 → 5). Defaults to days - 1 for EXTENDED. */
+      previousDays?: number;
+      lostCount?: number;
+      personalBest?: boolean;
+      weekDays?: StreakWeekDay[];
+      speech?: string;
+      /** LOST only — repair action wired to the CTA. */
+      onRepair?: () => Promise<void> | void;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'CHEST';
+      /** When omitted the scene fetches /chest/today itself. */
+      chestId?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'QUEST';
+      headline: string;
+      subhead?: string;
+      rows: QuestRow[];
+      ctaText?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'ACHIEVEMENT';
+      badgeId: string;
+      /** Display name of the achievement tier that just unlocked (e.g. "On Fire"). */
+      badgeTitle: string;
+      /** The tier that unlocked (1-based). */
+      tier: number;
+      maxTier: number;
+      tierDescription: string;
+      badgeBg: string;
+      iconSrc?: string | null;
+      /** CTA label — "CONTINUE" in-app, or a deep-link action like "VIEW ACHIEVEMENT". */
+      ctaText?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'LEAGUE';
+      /** Weekly settlement verdict. */
+      outcome: 'PROMOTED' | 'DEMOTED' | 'INACTIVE_DEMOTED' | 'CHAMPION';
+      /** LeagueTier keys the user moved from/to. */
+      fromTier: LeagueTier;
+      toTier: LeagueTier;
+      /** Final rank in the settled cohort (null for inactivity demotions). */
+      rank?: number | null;
+      totalXp: number;
+      weekStart: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    };
+
+interface CelebrationContextValue {
+  /** Queue one or more scenes. They play one at a time, in order. */
+  celebrate: (input: CelebrationScene | CelebrationScene[]) => void;
+  /** Advance past the current scene (CTA press) → next scene or close. */
+  advance: () => void;
+  /** Drop everything (navigation, logout). */
+  closeAll: () => void;
+  activeScene: CelebrationScene | null;
+  isCelebrating: boolean;
+}
+
+const CelebrationContext = createContext<CelebrationContextValue | null>(null);
+
+// ─── Session dedup + cross-layer visibility (module scope, SSR-safe) ─────────
+
+/** transitionKeys already surfaced this session — cleared on full reload. */
+const surfacedKeys = new Set<string>();
+
+/** Module-level flag so non-React layers (Herald) can suppress while a scene plays. */
+let activeCount = 0;
+export function isCelebrationActive(): boolean {
+  return activeCount > 0;
+}
+
+// ─── Provider ────────────────────────────────────────────────────────────────
+
+export function CelebrationProvider({ children }: { children: React.ReactNode }) {
+  const [queue, setQueue] = useState<CelebrationScene[]>([]);
+  const [activeScene, setActiveScene] = useState<CelebrationScene | null>(null);
+
+  // Mirror of activeScene so advance() can read it without a side-effecting
+  // state updater (StrictMode double-invokes updaters → onComplete fired twice).
+  const activeSceneRef = useRef<CelebrationScene | null>(null);
+  activeSceneRef.current = activeScene;
+
+  const celebrate = useCallback((input: CelebrationScene | CelebrationScene[]) => {
+    const incoming = Array.isArray(input) ? input : [input];
+    if (incoming.length === 0) return;
+
+    setQueue((prev) => {
+      const next = [...prev];
+      for (const scene of incoming) {
+        if (scene.dedupeKey) {
+          // Skip if already surfaced this session OR already waiting in queue
+          if (surfacedKeys.has(scene.dedupeKey)) continue;
+          if (next.some((s) => s.dedupeKey === scene.dedupeKey)) continue;
+        }
+        next.push(scene);
+      }
+      return next;
+    });
+  }, []);
+
+  const advance = useCallback(() => {
+    const current = activeSceneRef.current;
+    if (!current) return; // re-entry guard (double-tap on the CTA)
+    activeSceneRef.current = null;
+    setActiveScene(null);
+    if (current.onComplete) {
+      try {
+        current.onComplete();
+      } catch (e) {
+        console.error('CelebrationScene onComplete failed:', e);
+      }
+    }
+  }, []);
+
+  const closeAll = useCallback(() => {
+    activeSceneRef.current = null;
+    setQueue([]);
+    setActiveScene(null);
+  }, []);
+
+  // ── Drain queue → active ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (activeScene !== null) return;
+    if (queue.length === 0) {
+      return;
+    }
+    const [next, ...rest] = queue;
+    if (next.dedupeKey) surfacedKeys.add(next.dedupeKey);
+    setActiveScene(next);
+    setQueue(rest);
+  }, [queue, activeScene]);
+
+  // Track active count for isCelebrationActive()
+  useEffect(() => {
+    activeCount = activeScene !== null || queue.length > 0 ? 1 : 0;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('celebration:visibility'));
+    }
+    return () => {
+      activeCount = 0;
+    };
+  }, [activeScene, queue.length]);
+
+  // ── Global triggers (decoupled producers dispatch window events) ──────────
+
+  useEffect(() => {
+    const handleLevelUp = (e: Event) => {
+      const detail = (e as CustomEvent<{ oldLevel: number; newLevel: number; bonusCoins?: number }>).detail;
+      if (!detail || typeof detail.newLevel !== 'number') return;
+      celebrate({
+        kind: 'LEVEL_UP',
+        oldLevel: detail.oldLevel,
+        newLevel: detail.newLevel,
+        bonusCoins: detail.bonusCoins,
+        // Stable key per level transition — a Date.now() suffix would defeat
+        // dedupe entirely (every dispatch would look unique).
+        dedupeKey: `level-up-${detail.oldLevel}-${detail.newLevel}`,
+      });
+    };
+
+    const handleStreakStatus = (e: Event) => {
+      const detail = (e as CustomEvent<{
+        mode: 'SAVED' | 'LOST';
+        days: number;
+        lostCount?: number;
+        personalBest?: boolean;
+        weekDays?: StreakWeekDay[];
+      }>).detail;
+      if (!detail) return;
+      celebrate({
+        kind: 'STREAK',
+        mode: detail.mode,
+        days: detail.days,
+        lostCount: detail.lostCount,
+        personalBest: detail.personalBest,
+        weekDays: detail.weekDays,
+        dedupeKey: `streak-${detail.mode}-${detail.days}-${detail.lostCount ?? 0}`,
+      });
+    };
+
+    window.addEventListener('teyro:level-up', handleLevelUp);
+    window.addEventListener('teyro:streak-status', handleStreakStatus);
+    return () => {
+      window.removeEventListener('teyro:level-up', handleLevelUp);
+      window.removeEventListener('teyro:streak-status', handleStreakStatus);
+    };
+  }, [celebrate]);
+
+  return (
+    <CelebrationContext.Provider
+      value={{
+        celebrate,
+        advance,
+        closeAll,
+        activeScene,
+        isCelebrating: activeScene !== null,
+      }}
+    >
+      {children}
+    </CelebrationContext.Provider>
+  );
+}
+
+// ─── Hook ────────────────────────────────────────────────────────────────────
+
+export function useCelebration() {
+  const ctx = useContext(CelebrationContext);
+  if (!ctx) {
+    throw new Error('useCelebration must be used inside <CelebrationProvider>');
+  }
+  return ctx;
+}

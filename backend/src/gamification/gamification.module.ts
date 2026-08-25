@@ -5,12 +5,13 @@ import { AchievementsController } from './achievements.controller';
 import { AchievementsService } from './achievements.service';
 import { GamificationListener } from './listeners/gamification.listener';
 import { MissionsModule } from '../missions/missions.module';
+import { MonthlyQuestModule } from '../monthly-quest/monthly-quest.module';
 import { ProgressModule } from '../progress/progress.module';
 import { ChestModule } from '../chest/chest.module';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [MissionsModule, ProgressModule, ChestModule, PrismaModule],
+  imports: [MissionsModule, MonthlyQuestModule, ProgressModule, ChestModule, PrismaModule],
   controllers: [GamificationController, AchievementsController],
   providers: [GamificationService, AchievementsService, GamificationListener],
   exports: [GamificationService, AchievementsService],

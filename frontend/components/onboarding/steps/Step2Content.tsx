@@ -80,17 +80,14 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
 
   const renderCard = (skill: (typeof SKILLS)[number]) => {
     const isSelected = selectedSkill === skill.id;
-    const anySelected = selectedSkill !== '';
     return (
       <motion.div
         key={skill.id}
         variants={deckCard}
-        animate={{ opacity: anySelected && !isSelected ? 0.55 : 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
         className="relative"
       >
         <motion.button
-          whileHover={!anySelected || isSelected ? { scale: 1.06, y: -3 } : {}}
+          whileHover={{ scale: 1.06, y: -3 }}
           whileTap={{ scale: 0.91, transition: { type: 'spring', stiffness: 600, damping: 18 } }}
           onClick={() => handleSelect(skill.id)}
           className={`relative flex flex-col items-center justify-center p-1.5 md:p-4 rounded-[1rem] md:rounded-2xl border-2 transition-colors duration-150 w-full aspect-square bg-white ${
@@ -117,7 +114,7 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           </AnimatePresence>
 
           <div
-            className="w-14 h-14 md:w-[4.5rem] md:h-[4.5rem] rounded-xl md:rounded-2xl mb-1 md:mb-3 flex items-center justify-center relative overflow-hidden flex-shrink-0"
+            className="w-[3.75rem] h-[3.75rem] md:w-[4.5rem] md:h-[4.5rem] rounded-xl md:rounded-2xl mb-1 md:mb-3 flex items-center justify-center relative overflow-hidden flex-shrink-0"
             style={{ background: skill.bg }}
           >
             <motion.div
@@ -140,7 +137,7 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           </div>
 
           <span
-            className={`font-bold text-[11px] md:text-sm tracking-tight ${isSelected ? 'text-[#0172FD]' : 'text-[#0b132b]'}`}
+            className={`font-bold text-xs md:text-sm tracking-tight ${isSelected ? 'text-[#0172FD]' : 'text-[#0b132b]'}`}
             style={{ fontFamily: 'var(--font-jakarta)' }}
           >
             {skill.label}
@@ -158,7 +155,7 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           variants={headlineContainer}
           initial="hidden"
           animate="show"
-          className="text-[clamp(1.6rem,7vw,1.85rem)] md:text-[3.5rem] lg:text-[4rem] font-[900] leading-[1.1] mb-1 tracking-tight text-[#071233] text-center md:text-left"
+          className="text-[clamp(1.75rem,8vw,2.25rem)] md:text-[3.5rem] lg:text-[4rem] font-[900] leading-[1.08] md:leading-[1.1] mb-1.5 md:mb-4 tracking-tight text-[#071233] text-center md:text-left"
           style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
         >
           <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>What</motion.span>
@@ -177,10 +174,14 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           initial={{ y: 14, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.42 }}
-          className="text-[clamp(0.9rem,3.5vw,1rem)] md:text-xl font-medium text-slate-500 leading-tight text-center md:text-left"
+          className="text-[clamp(1rem,4.8vw,1.2rem)] md:text-xl font-medium text-slate-500 leading-snug text-center md:text-left"
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
-          <span className="md:hidden">Choose a skill to create your personalized path.</span>
+          <span className="md:hidden">
+            Choose a skill to start
+            <br />
+            your learning adventure.
+          </span>
           <span className="hidden md:inline">
             Choose a skill you&apos;re passionate about.
             <br />
@@ -220,7 +221,7 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           whileTap={selectedSkill ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
           onClick={handleNext}
           disabled={!selectedSkill}
-          className={`relative w-full md:w-[240px] flex items-center justify-center h-12 md:h-16 rounded-xl md:rounded-[2rem] font-bold text-base md:text-xl transition-all ${
+          className={`relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg md:text-xl transition-all ${
             selectedSkill ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
           }`}
           style={
@@ -230,7 +231,7 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           }
         >
           <span>Continue</span>
-          <ArrowRight className={`absolute right-4 md:right-8 w-5 h-5 md:w-6 md:h-6 stroke-[3] ${!selectedSkill && 'opacity-50'}`} />
+          <ArrowRight className={`absolute right-4 md:right-8 w-6 h-6 md:w-6 md:h-6 stroke-[3] ${!selectedSkill && 'opacity-50'}`} />
         </motion.button>
       </motion.div>
     </div>

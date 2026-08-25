@@ -4,6 +4,7 @@ import { LessonCompletedEvent } from '../../course/events/lesson-completed.event
 import { GamificationService } from '../gamification.service';
 import { AchievementsService } from '../achievements.service';
 import { MissionsService } from '../../missions/missions.service';
+import { MonthlyQuestService } from '../../monthly-quest/monthly-quest.service';
 import { ProgressService } from '../../progress/progress.service';
 import { ChestService } from '../../chest/chest.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -16,6 +17,7 @@ export class GamificationListener {
     private readonly gamificationService: GamificationService,
     private readonly achievementsService: AchievementsService,
     private readonly missionsService: MissionsService,
+    private readonly monthlyQuestService: MonthlyQuestService,
     private readonly progressService: ProgressService,
     private readonly chestService: ChestService,
     private readonly prisma: PrismaService,
@@ -47,35 +49,42 @@ export class GamificationListener {
       this.logger.error(`[Event Error] Failed updating missions in background listener`, err);
     }
 
-    // 2. Unlock Today's Chest
+    // 2. Unlock Today's Daily Chest
     try {
       await this.chestService.unlockTodayChest(userId, timezoneOffsetMinutes);
     } catch (err) {
       this.logger.error(`[Event Error] Failed unlocking today chest in background listener`, err);
     }
 
-    // 3. Record daily activity & weekly aggregate in ProgressService
+    // 3. Record daily activity & weekly aggregate in ProgressService (Single source of truth)
+    // Real wall-clock study time flows through so Learning Stats hours are accurate
+    // (undefined falls back to the service's 300s estimate for legacy callers).
     try {
-      await this.progressService.recordLearningActivity(userId, xpEarned || 10, timezoneOffsetMinutes);
+      await this.progressService.recordLearningActivity(
+        userId,
+        xpEarned || 10,
+        timezoneOffsetMinutes,
+        event.timeSpentSeconds,
+      );
     } catch (err) {
       this.logger.error(`[Event Error] Failed recording learning activity`, err);
+    }
+
+    // 3b. Advance the Monthly Quest (goal-day counting). Runs after
+    // recordLearningActivity — evaluateProgress reads the UserDailyActivity
+    // row that step just wrote.
+    try {
+      await this.monthlyQuestService.evaluateProgress(userId, undefined, timezoneOffsetMinutes);
+    } catch (err) {
+      this.logger.error(`[Event Error] Failed evaluating monthly quest`, err);
     }
 
     // 4. Audit Log & Denormalized UserStats Update
     try {
       const profile = await this.prisma.studentProfile.findUnique({ where: { userId } });
       const now = new Date();
-      const localMs = now.getTime() - timezoneOffsetMinutes * 60 * 1000;
-      const localDate = new Date(localMs);
-      const todayStr = `${localDate.getUTCFullYear()}-${String(localDate.getUTCMonth() + 1).padStart(2, '0')}-${String(localDate.getUTCDate()).padStart(2, '0')}`;
 
       if (profile) {
-        await this.prisma.userDailyActivity.upsert({
-          where: { userId_date: { userId, date: todayStr } },
-          create: { userId, date: todayStr, lessonsCompleted: 1, xpEarned: xpEarned || 10 },
-          update: { lessonsCompleted: { increment: 1 }, xpEarned: { increment: xpEarned || 10 } },
-        });
-
         await this.prisma.userStats.upsert({
           where: { userId },
           create: {

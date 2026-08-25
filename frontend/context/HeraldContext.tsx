@@ -12,13 +12,20 @@ import { usePathname } from 'next/navigation';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type HeraldRewardType = 'XP' | 'COINS';
-export type HeraldNotificationType = 'MISSION' | 'CHEST' | 'SPIN' | 'WEEKLY_PROGRESS';
+export type HeraldRewardType = 'XP' | 'COINS' | 'FREEZE';
+export type HeraldNotificationType =
+  | 'MISSION'
+  | 'ACHIEVEMENT'
+  | 'CHEST'
+  | 'SPIN'
+  | 'WEEKLY_PROGRESS';
 
 /**
  * A claimable-reward signal pushed into Herald's queue.
  *
  * - type=MISSION          → inline quick-claim right in the banner
+ * - type=ACHIEVEMENT      → unlock nudge that launches the full-page
+ *                           AchievementScene in the Celebration Engine
  * - type=CHEST            → nudge banner that launches HeraldChestReveal portal
  * - type=SPIN             → nudge banner that launches HeraldSpinReveal portal
  * - type=WEEKLY_PROGRESS  → celebratory banner for weekly progress milestone
@@ -44,17 +51,30 @@ export interface HeraldNotification {
   missionId?: string;
   /** Only present for CHEST type */
   chestId?: string;
+  /** Only present for ACHIEVEMENT type — everything AchievementScene needs to render */
+  achievement?: {
+    badgeId: string;
+    /** Badge family name (e.g. "Wildfire") */
+    badgeName: string;
+    /** Display name of the unlocked tier (e.g. "On Fire") */
+    tierName: string;
+    tier: number;
+    maxTier: number;
+    description: string;
+    badgeBg: string;
+  };
 }
 
-/** Priority order: MISSION (quickest claim) → CHEST → SPIN → WEEKLY_PROGRESS */
+/** Priority order: MISSION (quickest claim) → ACHIEVEMENT → CHEST → SPIN → WEEKLY_PROGRESS */
 const PRIORITY: Record<HeraldNotificationType, number> = {
   MISSION: 0,
-  CHEST: 1,
-  SPIN: 2,
-  WEEKLY_PROGRESS: 3,
+  ACHIEVEMENT: 1,
+  CHEST: 2,
+  SPIN: 3,
+  WEEKLY_PROGRESS: 4,
 };
 
-export type HeraldOverlayType = 'CHEST' | 'SPIN' | 'MISSIONS' | 'STREAK' | 'CLAIM';
+export type HeraldOverlayType = 'CHEST' | 'SPIN' | 'STREAK' | 'CLAIM' | 'MISSIONS';
 
 interface HeraldContextValue {
   /** Push a new reward-ready signal. Herald deduplicates and queues it. */
@@ -66,7 +86,6 @@ interface HeraldContextValue {
   /** Which full-reveal overlay is currently open (null = none) */
   activeOverlay: HeraldOverlayType | null;
   setActiveOverlay: (type: HeraldOverlayType | null) => void;
-  openMissionsModal: () => void;
   openStreakModal: () => void;
   openChestModal: () => void;
   openSpinModal: () => void;
@@ -151,6 +170,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       // (§2.1) — map notification type → widget ids the card registers under
       const widgetMap: Record<HeraldNotificationType, string[]> = {
         MISSION: ['mission-card'],
+        ACHIEVEMENT: [],
         CHEST: ['mystery-chest'],
         SPIN: ['weekly-spin'],
         WEEKLY_PROGRESS: ['weekly-progress'],
@@ -201,9 +221,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
             const isClaimed = m.isClaimed || m.status === 'CLAIMED';
 
             if (isCompleted && !isClaimed) {
-              const transitionKey = `mission-${m.id}-${Math.floor(
-                Date.now() / 60000
-              )}`;
+              const transitionKey = `mission-${m.id}-${data.date || new Date().toISOString().split('T')[0]}`;
               const rewardType =
                 m.reward?.type === 'GEMS'
                   ? 'COINS'
@@ -234,11 +252,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       if (chestRes.ok) {
         const chestData = await chestRes.json();
         if (chestData.status === 'READY_TO_OPEN' && chestData.id) {
-          const transitionKey = `chest-${chestData.id}-${Math.floor(
-            (chestData.unlockedAt
-              ? new Date(chestData.unlockedAt).getTime()
-              : Date.now()) / 60000
-          )}`;
+          const transitionKey = `chest-${chestData.id}-${chestData.chestDay || new Date().toISOString().split('T')[0]}`;
           enqueueHeraldNotification({
             id: `herald-chest-${chestData.id}-${Date.now()}`,
             type: 'CHEST',
@@ -283,6 +297,40 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
           }
         }
       }
+      // 4. Check unseen achievement unlocks — the achievement itself is the
+      // reward (no claim step), so each stays pending until the student views
+      // it; the transitionKey is stable per tier rather than time-bucketed.
+      const achRes = await fetch(`/api/gamification/achievements/unseen`, {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      if (achRes.ok) {
+        const achData = await achRes.json();
+        if (Array.isArray(achData.unseen)) {
+          // Cap per sweep so a fresh account crossing many tiers at once
+          // doesn't flood the banner queue — the rest surface after viewing.
+          achData.unseen.slice(0, 3).forEach((c: any) => {
+            enqueueHeraldNotification({
+              id: `herald-achievement-${c.badgeId}-${c.tier}-${Date.now()}`,
+              type: 'ACHIEVEMENT',
+              entityId: `${c.badgeId}_${c.tier}`,
+              transitionKey: `achievement-${c.badgeId}-${c.tier}`,
+              title: c.tierName || c.badgeTitle,
+              subtitle: c.description,
+              // Full payload so the banner can launch the AchievementScene
+              achievement: {
+                badgeId: c.badgeId,
+                badgeName: c.badgeTitle,
+                tierName: c.tierName,
+                tier: c.tier,
+                maxTier: c.maxTier,
+                description: c.description,
+                badgeBg: c.badgeBg,
+              },
+            });
+          });
+        }
+      }
     } catch (e) {
       console.error('Herald checkClaimables failed:', e);
     }
@@ -300,6 +348,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('mission:refresh', handleRefresh);
     window.addEventListener('missions:updated', handleRefresh);
     window.addEventListener('lesson:completed', handleRefresh);
+    window.addEventListener('achievement:refresh', handleRefresh);
     window.addEventListener('focus', handleRefresh);
     document.addEventListener('visibilitychange', handleRefresh);
 
@@ -307,6 +356,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('mission:refresh', handleRefresh);
       window.removeEventListener('missions:updated', handleRefresh);
       window.removeEventListener('lesson:completed', handleRefresh);
+      window.removeEventListener('achievement:refresh', handleRefresh);
       window.removeEventListener('focus', handleRefresh);
       document.removeEventListener('visibilitychange', handleRefresh);
     };
@@ -333,10 +383,6 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     setActiveNotification(null);
   }, []);
 
-  const openMissionsModal = useCallback(() => {
-    setActiveOverlay('MISSIONS');
-  }, []);
-
   const openStreakModal = useCallback(() => {
     setActiveOverlay('STREAK');
   }, []);
@@ -357,7 +403,6 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
         dismissActive,
         activeOverlay,
         setActiveOverlay,
-        openMissionsModal,
         openStreakModal,
         openChestModal,
         openSpinModal,

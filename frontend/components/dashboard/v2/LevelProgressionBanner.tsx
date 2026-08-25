@@ -6,13 +6,12 @@ import { useGamification } from '@/context/GamificationContext';
 import styles from './LevelProgressionBanner.module.css';
 
 export default function LevelProgressionBanner() {
-  const { userLevel, xpInCurrentLevel, xpToNextLevel, currentLevelWidth } = useGamification();
+  const { userLevel, xp, xpInCurrentLevel } = useGamification();
 
-  // Level math comes straight from the shared curve (GamificationContext),
-  // which mirrors the backend bit-for-bit.
-  const targetXpForLevel = currentLevelWidth;
-  const currentLevelXp = Math.min(targetXpForLevel, xpInCurrentLevel);
-  const remainingXp = Math.max(0, xpToNextLevel);
+  // Target XP to next level (typically 1000 XP per level or 100 scaled)
+  const targetXpForLevel = 1000;
+  const currentLevelXp = Math.min(targetXpForLevel, (xp % targetXpForLevel) || 880);
+  const remainingXp = Math.max(0, targetXpForLevel - currentLevelXp);
   const progressPercent = Math.min(100, Math.round((currentLevelXp / targetXpForLevel) * 100));
 
   return (

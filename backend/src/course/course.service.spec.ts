@@ -1,16 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CourseService } from './course.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { MissionsService } from '../missions/missions.service';
+import { ChestService } from '../chest/chest.service';
+import { StripeProvider } from '../payment/providers/stripe.provider';
 
 const mockPrismaService = {
   course: {
     create: jest.fn(),
+    findFirst: jest.fn(),
   },
+  community: {
+    create: jest.fn(),
+  },
+  enrollment: {
+    findUnique: jest.fn(),
+    count: jest.fn(),
+    create: jest.fn(),
+  },
+  studentProfile: {
+    findUnique: jest.fn(),
+    update: jest.fn(),
+  },
+  section: {
+    findMany: jest.fn(),
+  },
+  // Interactive transactions run against this same mock object
+  // ($transaction(fn) → fn(mockPrismaService)).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $transaction: jest.fn((fn: (tx: any) => unknown) => fn(mockPrismaService)),
 };
 
 describe('CourseService', () => {
   let service: CourseService;
   let prisma: PrismaService;
+  let eventEmitter: EventEmitter2;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,11 +45,16 @@ describe('CourseService', () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: MissionsService, useValue: {} },
+        { provide: ChestService, useValue: {} },
+        { provide: StripeProvider, useValue: {} },
       ],
     }).compile();
 
     service = module.get<CourseService>(CourseService);
     prisma = module.get<PrismaService>(PrismaService);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
   afterEach(() => {
@@ -130,6 +160,113 @@ describe('CourseService', () => {
       expect(generatedId).toMatch(/^\d{7}$/);
       expect(Number(generatedId)).toBeGreaterThanOrEqual(1000000);
       expect(Number(generatedId)).toBeLessThanOrEqual(9999999);
+    });
+  });
+
+  describe('enrollInCourse', () => {
+    const userId = 'learner-1';
+    const publishedCourse = {
+      id: 'course-1',
+      title: 'Intro to Design',
+      published: true,
+      instructorId: 'creator-1',
+    };
+
+    // getEnrollPreview source data — two sections, three published lessons
+    const previewSections = [
+      {
+        lessons: [
+          { id: 'lesson-1', title: 'Getting Started', durationMinutes: 10, xpReward: 25 },
+          { id: 'lesson-2', title: 'Deep Dive', durationMinutes: 15, xpReward: 25 },
+        ],
+      },
+      {
+        lessons: [{ id: 'lesson-3', title: 'Practice', durationMinutes: 20, xpReward: 50 }],
+      },
+    ];
+
+    it('creates the enrollment and grants the welcome bonus once on a first-ever enroll', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(publishedCourse);
+      mockPrismaService.enrollment.findUnique.mockResolvedValue(null);
+      mockPrismaService.enrollment.count.mockResolvedValue(0);
+      mockPrismaService.enrollment.create.mockResolvedValue({ id: 'enr-1' });
+      mockPrismaService.studentProfile.findUnique.mockResolvedValue({ xp: 100, coins: 50 });
+      mockPrismaService.studentProfile.update.mockResolvedValue({ xp: 125, coins: 60 });
+      mockPrismaService.section.findMany.mockResolvedValue(previewSections);
+      // Interactive transaction runs against the same mocks
+      mockPrismaService.$transaction.mockImplementation((fn) => fn(mockPrismaService));
+
+      const result = await service.enrollInCourse(userId, 'course-1');
+
+      expect(result.enrolled).toBe(true);
+      expect(result.alreadyEnrolled).toBe(false);
+      expect(result.welcomeReward).toEqual({ xp: 25, coins: 10 });
+      expect(result.balances).toEqual({ xp: 125, coins: 60 });
+      expect(result.firstLesson).toEqual({ id: 'lesson-1', title: 'Getting Started' });
+      expect(result.stats).toEqual({ totalLessons: 3, totalXp: 100, totalMinutes: 45 });
+
+      expect(mockPrismaService.studentProfile.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId },
+          data: { xp: { increment: 25 }, coins: { increment: 10 } },
+        }),
+      );
+
+      const emit = eventEmitter.emit as jest.Mock;
+      expect(emit).toHaveBeenCalledWith('xp.awarded', expect.objectContaining({ source: 'ENROLL' }));
+      expect(emit).toHaveBeenCalledWith('enrollment.created', expect.anything());
+    });
+
+    it('returns alreadyEnrolled for a repeat enroll without re-granting the bonus', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(publishedCourse);
+      mockPrismaService.enrollment.findUnique.mockResolvedValue({ id: 'enr-existing' });
+      mockPrismaService.section.findMany.mockResolvedValue([]);
+
+      const result = await service.enrollInCourse(userId, 'course-1');
+
+      expect(result.enrolled).toBe(true);
+      expect(result.alreadyEnrolled).toBe(true);
+      expect(result.welcomeReward).toBeNull();
+      expect(result.balances).toBeNull();
+
+      expect(mockPrismaService.enrollment.create).not.toHaveBeenCalled();
+      expect(mockPrismaService.studentProfile.update).not.toHaveBeenCalled();
+
+      const emit = eventEmitter.emit as jest.Mock;
+      expect(emit).not.toHaveBeenCalledWith('xp.awarded', expect.anything());
+      // Community seating still fires on repeat calls (listener upsert is safe)
+      expect(emit).toHaveBeenCalledWith('enrollment.created', expect.anything());
+    });
+
+    it('skips the bonus (but still enrolls) when no StudentProfile exists', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(publishedCourse);
+      mockPrismaService.enrollment.findUnique.mockResolvedValue(null);
+      mockPrismaService.enrollment.count.mockResolvedValue(0);
+      mockPrismaService.enrollment.create.mockResolvedValue({ id: 'enr-2' });
+      mockPrismaService.studentProfile.findUnique.mockResolvedValue(null);
+      mockPrismaService.section.findMany.mockResolvedValue([]);
+      mockPrismaService.$transaction.mockImplementation((fn) => fn(mockPrismaService));
+
+      const result = await service.enrollInCourse(userId, 'course-1');
+
+      expect(result.enrolled).toBe(true);
+      expect(result.alreadyEnrolled).toBe(false);
+      expect(result.welcomeReward).toBeNull();
+      expect(mockPrismaService.studentProfile.update).not.toHaveBeenCalled();
+
+      const emit = eventEmitter.emit as jest.Mock;
+      expect(emit).not.toHaveBeenCalledWith('xp.awarded', expect.anything());
+    });
+
+    it('rejects enrollment into a draft course the user does not own', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        ...publishedCourse,
+        published: false,
+        instructorId: 'someone-else',
+      });
+
+      await expect(service.enrollInCourse(userId, 'course-1')).rejects.toThrow();
+      expect(mockPrismaService.enrollment.create).not.toHaveBeenCalled();
     });
   });
 });

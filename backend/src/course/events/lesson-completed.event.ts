@@ -9,5 +9,7 @@ export class LessonCompletedEvent {
     public readonly xpEarned: number = 10,
     public readonly streakDays: number = 1,
     public readonly isFirstStreakOfDay: boolean = false,
+    public readonly timeSpentSeconds?: number,
+    public readonly quizScorePct?: number,
   ) {}
 }

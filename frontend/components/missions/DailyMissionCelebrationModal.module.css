@@ -1,0 +1,271 @@
+/* DailyMissionCelebrationModal.module.css - 1:1 Duolingo Style */
+
+.overlayBackdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(16px, 4vh, 36px) clamp(16px, 4vw, 32px);
+  overflow-y: auto;
+  user-select: none;
+  font-family: var(--font-jakarta), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Center Stage Content */
+.centerStage {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto 0;
+  padding: 16px 0;
+}
+
+/* Bright Yellow Duolingo Heading */
+.celebrationHeading {
+  font-size: clamp(26px, 5.5vw, 36px);
+  font-weight: 900;
+  color: #FFC800;
+  text-shadow: 0 2px 0 rgba(234, 179, 8, 0.2);
+  margin: 0 0 24px;
+  text-align: center;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Mission Cards Stack */
+.missionsList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Individual Duolingo Mission Card */
+.missionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #FFFFFF;
+  border: 2px solid #E5E7EB;
+  box-shadow: 0 2px 0 0 #F1F5F9;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.missionCardCompleted {
+  border-color: #FFD233;
+  box-shadow: 0 4px 0 0 #F59E0B;
+}
+
+/* Icon Badge */
+.iconBadge {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconYellow {
+  background: #FEF9C3;
+  color: #EAB308;
+}
+
+.iconBlue {
+  background: #E0F2FE;
+  color: #0284C7;
+}
+
+.iconOrange {
+  background: #FFEDD5;
+  color: #EA580C;
+}
+
+.iconGreen {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+/* Card Content Details */
+.cardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.missionTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1E293B;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Progress Row with Attached Chest */
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Full Width Rounded Track */
+.progressTrack {
+  flex: 1;
+  height: 18px;
+  background: #E5E7EB;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Golden Yellow Progress Fill */
+.progressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #FFD233 0%, #FFB800 100%);
+  border-radius: 10px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  transition: width 1.2s cubic-bezier(0.34, 1.35, 0.64, 1);
+}
+
+.progressFillGlowing {
+  background: linear-gradient(180deg, #FFE066 0%, #FFC800 100%);
+  box-shadow: 0 0 12px rgba(255, 200, 0, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Progress Numbers Label */
+.progressLabel {
+  position: relative;
+  z-index: 3;
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #475569;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Attached Treasure Chest */
+.chestWrap {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chestWrapPopped {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 8px rgba(255, 184, 0, 0.8));
+}
+
+/* Bottom Action Bar */
+.bottomActionBar {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #F1F5F9;
+}
+
+/* Desktop Review Lesson Button */
+.reviewBtn {
+  height: 52px;
+  padding: 0 24px;
+  background: #FFFFFF;
+  color: #64748B;
+  border: 2px solid #E2E8F0;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 0 #CBD5E1;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.reviewBtn:hover {
+  background: #F8FAFC;
+  color: #0F172A;
+}
+
+.reviewBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #CBD5E1;
+}
+
+/* Vibrant Green 3D Continue Button */
+.continueBtn3D {
+  flex: 1;
+  height: 54px;
+  background: #58CC02;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 5px 0 0 #46A302, 0 10px 20px rgba(88, 204, 2, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease, opacity 0.3s ease;
+}
+
+.continueBtn3D:hover:not(:disabled) {
+  background: #61E002;
+}
+
+.continueBtn3D:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 0 #46A302;
+}
+
+.continueBtnDisabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #94A3B8;
+  box-shadow: 0 5px 0 0 #64748B;
+}
+
+/* Mobile specific styling */
+@media (max-width: 600px) {
+  .bottomActionBar {
+    flex-direction: column-reverse;
+  }
+  .reviewBtn {
+    width: 100%;
+  }
+  .continueBtn3D {
+    width: 100%;
+  }
+}

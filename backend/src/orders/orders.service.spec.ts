@@ -15,6 +15,8 @@ describe('OrdersService', () => {
     course: {
       findMany: jest.fn(),
       update: jest.fn(),
+      // checkout bumps studentsCount inside its transaction via updateMany
+      updateMany: jest.fn(),
     },
     enrollment: {
       findMany: jest.fn(),
@@ -178,10 +180,9 @@ describe('OrdersService', () => {
         ],
       });
 
-      // Verify course student count updates
-      expect(mockPrismaService.course.update).toHaveBeenCalledTimes(2);
-      expect(mockPrismaService.course.update).toHaveBeenCalledWith({
-        where: { id: 'course-1' },
+      // Verify course student count updates (single bulk increment)
+      expect(mockPrismaService.course.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['course-1', 'course-2'] } },
         data: { studentsCount: { increment: 1 } },
       });
 

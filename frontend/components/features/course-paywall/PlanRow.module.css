@@ -1,0 +1,135 @@
+/* PlanRow — Duolingo-style selectable plan row */
+
+.planRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.planRow:hover {
+  border-color: var(--border-strong, #cbd5e1);
+}
+
+.planRow:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+  outline-offset: 2px;
+}
+
+.planRowSelected {
+  border-color: var(--brand-blue, #3d5afe);
+  background: #f5f7ff;
+  box-shadow: 0 2px 8px rgba(61, 90, 254, 0.1);
+}
+
+/* ── Gold ribbon badge (MOST POPULAR / BEST VALUE) ─────────────────── */
+.badgeChip {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #ffc800; /* premium gold family — established exception */
+  color: #b45309;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+}
+
+/* ── Radio circle ──────────────────────────────────────────────────── */
+.radioCircle {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.planRowSelected .radioCircle {
+  border-color: var(--brand-blue, #3d5afe);
+}
+
+.radioDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--brand-blue, #3d5afe);
+}
+
+/* ── Info block ────────────────────────────────────────────────────── */
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.planName {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #1f2a44);
+}
+
+.savingsText {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--success-green, #22c55e);
+}
+
+.savingsTextNeutral {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+/* ── Price block ───────────────────────────────────────────────────── */
+.priceGroup {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.priceAmount {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-primary, #1f2a44);
+}
+
+.priceInterval {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.effectiveNote {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+}

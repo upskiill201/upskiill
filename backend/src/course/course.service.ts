@@ -2,16 +2,28 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
+  ConflictException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
+import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
+import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
 import { calculateCoursePricingLadder } from './pricing-engine';
-import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
 import * as crypto from 'crypto';
+
+const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
+
+/** One-time reward for a learner's very first enrollment. Real, server-side —
+ *  the enroll wizard surfaces exactly these amounts on its success screen. */
+export const WELCOME_BONUS_XP = 25;
+export const WELCOME_BONUS_COINS = 10;
 
 @Injectable()
 export class CourseService {
@@ -23,16 +35,27 @@ export class CourseService {
     private stripeProvider: StripeProvider,
   ) {}
 
+  /**
+   * Public catalog for the explore page — published courses only, with every
+   * stat the cards render computed from REAL relations. The UI must never
+   * have to invent durations, module counts or ratings, so this payload
+   * carries them; `curriculum` and other heavy builder fields are
+   * deliberately omitted.
+   */
   async findAll(query: {
     search?: string;
     category?: string;
     level?: string;
     minPrice?: number;
     maxPrice?: number;
+    take?: number;
   }) {
     const { search, category, level, minPrice, maxPrice } = query;
+    // Bounded result set — no pagination UI yet, but the endpoint can't be
+    // asked to serialize an unbounded catalog either.
+    const take = Math.min(Math.max(query.take ?? 100, 1), 100);
 
-    return await this.prisma.course.findMany({
+    const courses = await this.prisma.course.findMany({
       where: {
         published: true,
         AND: [
@@ -52,31 +75,104 @@ export class CourseService {
                 ],
               }
             : {},
-          category
-            ? { category: { equals: category, mode: 'insensitive' } }
-            : {},
+          category ? { category: { equals: category, mode: 'insensitive' } } : {},
           level ? { level: { equals: level, mode: 'insensitive' } } : {},
           minPrice !== undefined ? { price: { gte: Number(minPrice) } } : {},
           maxPrice !== undefined ? { price: { lte: Number(maxPrice) } } : {},
         ],
       },
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        shortDescription: true,
+        thumbnailUrl: true,
+        price: true,
+        originalPrice: true,
+        category: true,
+        subcategory: true,
+        level: true,
+        language: true,
+        duration: true,
+        studentsCount: true,
+        createdAt: true,
+        _count: { select: { enrollments: true, sections: true } },
+        sections: {
+          orderBy: { orderIndex: 'asc' as const },
+          select: {
+            lessons: {
+              where: { status: 'published' },
+              orderBy: { orderIndex: 'asc' as const },
+              select: { durationMinutes: true },
+            },
+          },
+        },
+        reviews: { select: { rating: true } },
         instructor: {
           select: {
             id: true,
             fullName: true,
             avatarUrl: true,
+            profile: { select: { username: true } },
           },
         },
       },
       orderBy: {
         createdAt: 'desc',
       },
+      take,
+    });
+
+    return courses.map((c) => {
+      const lessons = c.sections.flatMap((s) => s.lessons);
+      const ratings = c.reviews.map((r) => r.rating);
+
+      return {
+        id: c.id,
+        slug: c.slug,
+        title: c.title,
+        description: c.description,
+        shortDescription: c.shortDescription,
+        thumbnailUrl: c.thumbnailUrl,
+        price: c.price,
+        originalPrice: c.originalPrice,
+        category: c.category,
+        subcategory: c.subcategory,
+        level: c.level,
+        language: c.language,
+        duration: c.duration,
+        studentsCount: c._count.enrollments || c.studentsCount || 0,
+        modulesCount: c._count.sections,
+        lessonsCount: lessons.length,
+        durationMinutes: lessons.reduce(
+          (acc, l) => acc + (l.durationMinutes ?? 0),
+          0,
+        ),
+        ratingAvg:
+          ratings.length > 0
+            ? Number(
+                (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1),
+              )
+            : null,
+        reviewsCount: ratings.length,
+        instructor: {
+          id: c.instructor.id,
+          fullName: c.instructor.fullName,
+          avatarUrl: c.instructor.avatarUrl,
+          username: c.instructor.profile?.username ?? null,
+        },
+      };
     });
   }
 
-  async findOne(idOrSlug: string) {
-    const course = await this.prisma.course.findFirst({
+  /**
+   * Raw fetch by id or slug with the full public shape — NO visibility rules.
+   * Internal callers (unenroll, progress writes) use this; external requests
+   * must go through findOne() so draft content never leaks.
+   */
+  private async findCourseAny(idOrSlug: string) {
+    return this.prisma.course.findFirst({
       where: {
         OR: [
           { id: idOrSlug },
@@ -127,14 +223,111 @@ export class CourseService {
             },
           },
         },
+        reviews: { select: { rating: true } },
         _count: {
           select: { enrollments: true },
         },
       },
     });
+  }
+
+  /**
+   * Public course detail.
+   *
+   * Visibility rules:
+   *  - Unpublished (draft) courses are only visible to their owner or an admin
+   *  - Students only ever see PUBLISHED lessons — unfinished content never
+   *    leaks into the learning experience, and progress percentages stay
+   *    computable (a hidden draft used to make 100% impossible)
+   *
+   * Honesty rules: every stat the discovery page renders (learners, rating,
+   * review count, lesson/duration/XP totals, creator track record) is computed
+   * here from REAL rows under `stats` / `instructor.stats`. The UI renders
+   * these verbatim or hides them — it never invents a fallback number.
+   * For non-privileged viewers lessons are trimmed to a light public shape:
+   * locked video payloads (contentBlocks/resources) must not ride along on a
+   * public page — actual content is served per-lesson by getStudentLesson().
+   */
+  async findOne(idOrSlug: string, requesterId?: string, isAdmin = false) {
+    const course = await this.findCourseAny(idOrSlug);
 
     if (!course) throw new NotFoundException('Course not found');
-    return course;
+
+    const isOwner = !!requesterId && course.instructorId === requesterId;
+    const isPrivileged = isOwner || isAdmin;
+
+    if (!course.published && !isPrivileged) {
+      // Same response as a missing course — don't reveal draft existence
+      throw new NotFoundException('Course not found');
+    }
+
+    const sections = isPrivileged
+      ? course.sections
+      : course.sections.map((s) => ({
+          ...s,
+          lessons: s.lessons
+            .filter((l) => l.status === 'published')
+            .map(({ contentBlocks: _cb, stepCompletion: _sc, resources: _res, ...publicLesson }) => publicLesson),
+        }));
+    const visibleLessons = isPrivileged ? course.sections.flatMap((s) => s.lessons) : sections.flatMap((s) => s.lessons);
+
+    const ratings = course.reviews.map((r) => r.rating);
+    const { reviews: _reviews, ...courseWithoutReviews } = course;
+
+    return {
+      ...courseWithoutReviews,
+      sections,
+      studentsCount: course._count.enrollments,
+      stats: {
+        modulesCount: sections.length,
+        lessonsCount: visibleLessons.length,
+        durationMinutes: visibleLessons.reduce(
+          (acc, l) => acc + (l.durationMinutes ?? 0),
+          0,
+        ),
+        totalXp: visibleLessons.reduce((acc, l) => acc + (l.xpReward ?? 0), 0),
+        ratingAvg:
+          ratings.length > 0
+            ? Number(
+                (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1),
+              )
+            : null,
+        reviewsCount: ratings.length,
+      },
+      instructor: {
+        ...course.instructor,
+        stats: await this.getInstructorPublicStats(course.instructorId),
+      },
+    };
+  }
+
+  /**
+   * A creator's real, published-body-of-work numbers for their profile card:
+   * published course count, total enrolled students across those courses, and
+   * their average rating across real reviews (null when nobody has reviewed
+   * them yet — never a fabricated default).
+   */
+  private async getInstructorPublicStats(instructorId: string) {
+    const publishedWhere = { course: { instructorId, published: true } };
+    const [coursesCount, studentsCount, reviewAgg] = await Promise.all([
+      this.prisma.course.count({ where: { instructorId, published: true } }),
+      this.prisma.enrollment.count({ where: publishedWhere }),
+      this.prisma.review.aggregate({
+        where: publishedWhere,
+        _avg: { rating: true },
+        _count: true,
+      }),
+    ]);
+
+    return {
+      coursesCount,
+      studentsCount,
+      reviewsCount: reviewAgg._count,
+      ratingAvg:
+        reviewAgg._count > 0 && reviewAgg._avg.rating !== null
+          ? Number(reviewAgg._avg.rating.toFixed(1))
+          : null,
+    };
   }
 
   async getCoursePricingPlans(idOrSlug: string) {
@@ -155,32 +348,64 @@ export class CourseService {
     };
   }
 
+  /**
+   * Record a course detail-page view into the daily aggregate. Anonymous-safe
+   * (no user data is stored — just a counter per course per day) and
+   * fire-and-forget friendly: failures must never break the page itself.
+   */
+  async recordView(idOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }], published: true },
+      select: { id: true },
+    });
+    if (!course) return { recorded: false };
+
+    const day = new Date();
+    day.setUTCHours(0, 0, 0, 0);
+    try {
+      await this.prisma.courseView.upsert({
+        where: { courseId_day: { courseId: course.id, day } },
+        create: { courseId: course.id, day, count: 1 },
+        update: { count: { increment: 1 } },
+      });
+    } catch {
+      // Analytics must never break browsing
+      return { recorded: false };
+    }
+    return { recorded: true };
+  }
+
+  /**
+   * All of a course's PUBLISHED lessons in learning order. Shared by the
+   * access check and the free-preview rule so every consumer agrees on which
+   * lessons are "the first two".
+   */
+  private async getCourseLessonOrder(courseId: string) {
+    const secs = await this.prisma.section.findMany({
+      where: { courseId },
+      orderBy: { orderIndex: 'asc' },
+      select: {
+        lessons: {
+          where: { status: 'published' },
+          orderBy: { orderIndex: 'asc' },
+          select: { id: true, isFreePreview: true },
+        },
+      },
+    });
+    const ordered: { id: string; isFreePreview: boolean }[] = [];
+    secs.forEach((sec) => sec.lessons.forEach((l) => ordered.push(l)));
+    return ordered;
+  }
+
   async getCourseAccess(userId: string, idOrSlug: string) {
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
       },
-      include: {
-        sections: {
-          orderBy: { orderIndex: 'asc' },
-          include: {
-            lessons: {
-              orderBy: { orderIndex: 'asc' },
-              select: { id: true, isFreePreview: true, orderIndex: true },
-            },
-          },
-        },
-      },
     });
     if (!course) throw new NotFoundException('Course not found');
 
-    // Collect all lessons in sequential order
-    const orderedLessons: { id: string; isFreePreview: boolean }[] = [];
-    course.sections.forEach((sec) => {
-      sec.lessons.forEach((l) => {
-        orderedLessons.push({ id: l.id, isFreePreview: l.isFreePreview });
-      });
-    });
+    const orderedLessons = await this.getCourseLessonOrder(course.id);
 
     // Rule: First 2 lessons of the course (index 0 & 1) or any explicitly flagged isFreePreview are free preview
     const freePreviewLessonIds = orderedLessons
@@ -199,18 +424,17 @@ export class CourseService {
     }
 
     // Check course access entitlement (subscription)
-    const entitlement = await this.prisma.courseAccessEntitlement.findUnique({
-      where: {
-        userId_courseId: { userId, courseId: course.id },
-      },
+    const entitlementRaw = await this.prisma.courseAccessEntitlement.findUnique({
+      where: { userId_courseId: { userId, courseId: course.id } },
     });
+    const entitlement =
+      entitlementRaw &&
+      entitlementRaw.status === 'ACTIVE' &&
+      entitlementRaw.expiresAt > new Date()
+        ? entitlementRaw
+        : null;
 
-    const now = new Date();
-    if (
-      entitlement &&
-      entitlement.status === 'ACTIVE' &&
-      entitlement.expiresAt > now
-    ) {
+    if (entitlement) {
       return {
         hasAccess: true,
         isInstructor: false,
@@ -235,8 +459,8 @@ export class CourseService {
     }
 
     const isExpired = Boolean(
-      entitlement &&
-        (entitlement.status === 'EXPIRED' || entitlement.expiresAt <= now),
+      entitlementRaw &&
+        (entitlementRaw.status === 'EXPIRED' || entitlementRaw.expiresAt <= new Date()),
     );
 
     return {
@@ -244,10 +468,81 @@ export class CourseService {
       isInstructor: false,
       accessType: 'NONE',
       isExpired,
-      expiredAt: isExpired ? entitlement?.expiresAt : undefined,
+      expiredAt: isExpired ? entitlementRaw?.expiresAt : undefined,
       freePreviewLessonIds,
       pricing: calculateCoursePricingLadder(course.price),
     };
+  }
+
+  /** ACTIVE, unexpired course entitlement for a user. */
+  private async getActiveEntitlement(userId: string, courseId: string) {
+    const entitlement = await this.prisma.courseAccessEntitlement.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (
+      entitlement &&
+      entitlement.status === 'ACTIVE' &&
+      entitlement.expiresAt > new Date()
+    ) {
+      return entitlement;
+    }
+    return null;
+  }
+
+  /**
+   * Student-facing lesson content endpoint.
+   *
+   * THE paywall enforcement point: lesson content (video URLs, resources,
+   * activity data) is only returned when the requester is the course owner,
+   * an admin, holds an active entitlement, the course is free, or the lesson
+   * is part of the free preview. Everyone else gets 403 — the full catalog
+   * response no longer carries paid content for the client to "hide".
+   */
+  async getStudentLesson(userId: string, idOrSlug: string, lessonId: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+      },
+      select: { id: true, price: true, published: true, instructorId: true },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const isAdmin = false; // student endpoint never exposes drafts to admins' students
+    const isOwner = course.instructorId === userId;
+
+    if (!course.published && !isOwner) {
+      throw new NotFoundException('Course not found');
+    }
+
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+        section: { courseId: course.id },
+      },
+      include: { resources: { orderBy: { displayOrder: 'asc' } } },
+    });
+
+    // Draft lessons stay invisible to students even inside published courses
+    if (!lesson || (!isOwner && lesson.status !== 'published')) {
+      throw new NotFoundException('Lesson not found in this course');
+    }
+
+    const orderedLessons = await this.getCourseLessonOrder(course.id);
+    const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
+    const isFreePreview = globalIndex > -1 && (globalIndex < 2 || lesson.isFreePreview);
+
+    let hasAccess = isOwner || course.price === 0 || isFreePreview;
+    if (!hasAccess && userId) {
+      hasAccess = !!(await this.getActiveEntitlement(userId, course.id));
+    }
+    if (!hasAccess) {
+      throw new ForbiddenException({
+        requiresPayment: true,
+        message: 'This lesson requires enrollment. Unlock the full course to continue.',
+      });
+    }
+
+    return lesson;
   }
 
   async getProgress(userId: string, idOrSlug: string) {
@@ -277,8 +572,58 @@ export class CourseService {
     };
   }
 
-  async markLessonComplete(userId: string, idOrSlug: string, lessonId: string, timezoneOffsetMinutes = 0) {
-    const course = await this.findOne(idOrSlug);
+  async markLessonComplete(
+    userId: string,
+    idOrSlug: string,
+    lessonId: string,
+    timezoneOffsetMinutes = 0,
+    isAdmin = false,
+    timeSpentSeconds?: number,
+    attemptsCount?: number,
+    quizScorePct?: number,
+  ) {
+    if (!lessonId) {
+      throw new BadRequestException('lessonId is required');
+    }
+
+    // Visibility-aware fetch — students can't complete lessons in draft
+    // courses, and the section/lesson lists already exclude drafts.
+    const course = await this.findOne(idOrSlug, userId, isAdmin);
+
+    const isOwner = course.instructorId === userId;
+    const isPrivileged = isOwner || isAdmin;
+
+    // ─── VALIDATE THE LESSON ──────────────────────────────────────────────
+    // The lesson must exist AND belong to THIS course. Previously any UUID
+    // was accepted here, which meant free XP + coins for every random id.
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+        section: { courseId: course.id },
+        ...(isPrivileged ? {} : { status: 'published' }),
+      },
+      select: { id: true, xpReward: true, isFreePreview: true },
+    });
+    if (!lesson) {
+      throw new NotFoundException(`Lesson ${lessonId} not found in this course`);
+    }
+
+    // ─── ENFORCE ACCESS (server-side paywall) ─────────────────────────────
+    if (!isPrivileged && course.price !== 0) {
+      const orderedLessons = await this.getCourseLessonOrder(course.id);
+      const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
+      const isFreePreview = globalIndex > -1 && (globalIndex < 2 || lesson.isFreePreview);
+      if (!isFreePreview) {
+        const entitlement = await this.getActiveEntitlement(userId, course.id);
+        if (!entitlement) {
+          throw new ForbiddenException({
+            requiresPayment: true,
+            message: 'Complete this lesson by unlocking the full course first.',
+          });
+        }
+      }
+    }
+
     let enrollment = await this.prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },
     });
@@ -293,133 +638,142 @@ export class CourseService {
           progress: 0,
         },
       });
+      this.eventEmitter.emit(
+        'enrollment.created',
+        new EnrollmentCreatedEvent(userId, course.id),
+      );
     }
-
-    const profile = await this.prisma.studentProfile.upsert({
-      where: { userId },
-      create: { userId }, // Prisma uses schema defaults (e.g. 30 XP, 1 freeze, 5 lives)
-      update: {},
-    });
 
     const currentCompleted = Array.isArray(enrollment.completedLessons)
       ? (enrollment.completedLessons as string[])
       : [];
 
     let isNewCompletion = false;
-    let xpEarned = 0;
-    let sectionCompleted = false;
-    let newXpTotal = profile.xp;
-    let newStreakDaysTotal = profile.streakDays;
-    let isFirstStreakOfDay = false;
 
     if (!currentCompleted.includes(lessonId)) {
       isNewCompletion = true;
-      currentCompleted.push(lessonId);
 
-      // Fetch lesson to calculate XP & section completion bonus
-      const lesson = await this.prisma.lesson.findUnique({
-        where: { id: lessonId },
-        include: { section: { include: { lessons: true } } },
-      });
+      // All mutation below happens inside ONE transaction that re-reads the
+      // enrollment, so two tabs completing different lessons can no longer
+      // silently overwrite each other's completion.
+      const txResult = await this.prisma.$transaction(async (tx) => {
+        const profile = await tx.studentProfile.upsert({
+          where: { userId },
+          create: { userId }, // Prisma uses schema defaults (e.g. 30 XP, 1 freeze, 5 lives)
+          update: {},
+        });
 
-      let baseLessonXp = 10;
-      if (lesson?.section?.lessons) {
-        sectionCompleted = lesson.section.lessons.every((l) =>
-          currentCompleted.includes(l.id),
+        const freshEnrollment = await tx.enrollment.findUnique({
+          where: { id: enrollment!.id },
+          select: { completedLessons: true },
+        });
+        const completed = Array.isArray(freshEnrollment?.completedLessons)
+          ? (freshEnrollment!.completedLessons as string[])
+          : [];
+
+        // Another tab may have just completed it — honour that instead of
+        // double-awarding XP for the same lesson.
+        if (completed.includes(lessonId)) {
+          return { alreadyCompleted: true as const };
+        }
+        completed.push(lessonId);
+
+        // Section-completion bonus counts only PUBLISHED sibling lessons
+        const siblingLessons = await tx.lesson.findMany({
+          where: {
+            section: { courseId: course.id },
+            status: 'published',
+          },
+          select: { id: true, sectionId: true },
+        });
+        const lessonSectionId = (
+          await tx.lesson.findUnique({ where: { id: lessonId }, select: { sectionId: true } })
+        )?.sectionId;
+        const sectionPublishedIds = siblingLessons
+          .filter((l) => l.sectionId === lessonSectionId)
+          .map((l) => l.id);
+        const sectionCompleted =
+          sectionPublishedIds.length > 0 &&
+          sectionPublishedIds.every((id) => completed.includes(id));
+
+        // Honour the creator-configured reward (fallback 10) — previously a
+        // flat 10 was paid no matter what the lesson promised.
+        const baseLessonXp = Math.max(1, Math.min(500, lesson.xpReward ?? 10));
+        const xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
+
+        // Compute course progress percentage against published lessons only
+        const totalPublished = siblingLessons.length || 1;
+        const progress = Math.min(
+          100,
+          Math.round((completed.length / totalPublished) * 100),
         );
-      }
 
-      xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
+        // Calculate streak & timezone-aware daily activity
+        const now = new Date();
+        let newStreak = profile.streakDays || 0;
 
-      // Compute course progress percentage
-      let totalLessons = 0;
-      if (course.sections) {
-        totalLessons = course.sections.reduce(
-          (acc, s) => acc + (s.lessons?.length || 0),
-          0,
-        );
-      }
-      totalLessons = totalLessons || 1;
-      const progress = Math.min(
-        100,
-        Math.round((currentCompleted.length / totalLessons) * 100),
-      );
+        const getLocalDayStr = (d: Date) => {
+          const localMs = d.getTime() - timezoneOffsetMinutes * 60 * 1000;
+          const localDate = new Date(localMs);
+          return `${localDate.getUTCFullYear()}-${String(localDate.getUTCMonth() + 1).padStart(2, '0')}-${String(localDate.getUTCDate()).padStart(2, '0')}`;
+        };
 
-      // Calculate streak & timezone-aware daily activity
-      const now = new Date();
-      let newStreak = profile.streakDays || 0;
+        const todayStr = getLocalDayStr(now);
+        const lastStreakDate = profile.lastStreakEarnedAt;
+        let shouldUpdateStreakEarnedDate = false;
+        let consumeStreakFreeze = false;
 
-      const getLocalDayStr = (d: Date) => {
-        const localMs = d.getTime() - timezoneOffsetMinutes * 60 * 1000;
-        const localDate = new Date(localMs);
-        return `${localDate.getUTCFullYear()}-${String(localDate.getUTCMonth() + 1).padStart(2, '0')}-${String(localDate.getUTCDate()).padStart(2, '0')}`;
-      };
-
-      const todayStr = getLocalDayStr(now);
-      const lastStreakDate = profile.lastStreakEarnedAt;
-      let shouldUpdateStreakEarnedDate = false;
-      let consumeStreakFreeze = false;
-
-      if (!lastStreakDate) {
-        newStreak = Math.max(1, profile.streakDays || 1);
-        shouldUpdateStreakEarnedDate = true;
-      } else {
-        const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
-        const d1 = new Date(todayStr + 'T00:00:00Z');
-        const d2 = new Date(lastStreakStr + 'T00:00:00Z');
-        const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) {
-          newStreak = profile.streakDays || 1;
-          shouldUpdateStreakEarnedDate = false;
-        } else if (diffDays === 1) {
-          newStreak = (profile.streakDays || 0) + 1;
+        if (!lastStreakDate) {
+          newStreak = Math.max(1, profile.streakDays || 1);
           shouldUpdateStreakEarnedDate = true;
         } else {
-          if (profile.streakFreezeBank > 0) {
+          const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
+          const d1 = new Date(todayStr + 'T00:00:00Z');
+          const d2 = new Date(lastStreakStr + 'T00:00:00Z');
+          const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 0) {
+            newStreak = profile.streakDays || 1;
+            shouldUpdateStreakEarnedDate = false;
+          } else if (diffDays === 1) {
             newStreak = (profile.streakDays || 0) + 1;
             shouldUpdateStreakEarnedDate = true;
-            consumeStreakFreeze = true;
           } else {
-            newStreak = 1;
-            shouldUpdateStreakEarnedDate = true;
+            if (profile.streakFreezeBank > 0) {
+              newStreak = (profile.streakDays || 0) + 1;
+              shouldUpdateStreakEarnedDate = true;
+              consumeStreakFreeze = true;
+            } else {
+              newStreak = 1;
+              shouldUpdateStreakEarnedDate = true;
+            }
           }
         }
-      }
 
-      isFirstStreakOfDay = shouldUpdateStreakEarnedDate;
-      const coinReward = 5;
-      const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
-      const updatedLongest = Math.max(currentLongest, newStreak);
+        const isFirstStreakOfDay = shouldUpdateStreakEarnedDate;
+        const coinReward = 5;
+        const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
+        const updatedLongest = Math.max(currentLongest, newStreak);
 
-      // Fast Critical Path: Atomic transaction for enrollment & student profile (<50ms).
-      // Interactive form so the level-crossing detection runs in the same
-      // transaction as the XP grant.
-      let updatedProfile = profile;
-      let levelUp: LevelUpPayload | null = null;
-
-      await this.prisma.$transaction(async (tx) => {
-        await tx.enrollment.update({
-          where: { id: enrollment.id },
-          data: { completedLessons: currentCompleted, progress },
-        });
-
-        updatedProfile = await tx.studentProfile.update({
-          where: { userId },
-          data: {
-            xp: { increment: xpEarned },
-            coins: { increment: coinReward },
-            streakDays: newStreak,
-            longestStreak: updatedLongest,
-            lastActiveAt: now,
-            lastLessonCompletedAt: now,
-            ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
-            ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
-          },
-        });
-
-        // Detect a level crossing inside the same transaction and grant the bonus.
-        levelUp = await applyLevelUpsInTx(tx, userId, profile.xp, updatedProfile.xp);
+        const [updatedEnrollment, updatedProfile] = await Promise.all([
+          tx.enrollment.update({
+            where: { id: enrollment!.id },
+            data: { completedLessons: completed, progress },
+          }),
+          tx.studentProfile.update({
+            where: { userId },
+            data: {
+              xp: { increment: xpEarned },
+              coins: { increment: coinReward },
+              streakDays: newStreak,
+              longestStreak: updatedLongest,
+              lastActiveAt: now,
+              lastLessonCompletedAt: now,
+              ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
+              ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
+            },
+          }),
+        ]);
 
         await tx.gemTransaction.create({
           data: {
@@ -429,40 +783,160 @@ export class CourseService {
             source: 'LESSON',
           },
         });
+
+        return {
+          alreadyCompleted: false as const,
+          completed,
+          sectionCompleted,
+          xpEarned,
+          newXpTotal: updatedProfile.xp,
+          newStreakDaysTotal: updatedProfile.streakDays,
+          newCoinsTotal: updatedProfile.coins,
+          isFirstStreakOfDay,
+          progressPct: progress,
+        };
       });
 
-      newXpTotal = updatedProfile.xp;
-      newStreakDaysTotal = updatedProfile.streakDays;
+      if (txResult.alreadyCompleted) {
+        // Another tab/device completed this lesson inside the transaction —
+        // return an idempotent no-reward summary instead of double-paying.
+        const profileNow = await this.prisma.studentProfile.findUnique({
+          where: { userId },
+        });
+        return {
+          success: true,
+          isNewCompletion: false,
+          completedLessons: currentCompleted,
+          xpEarned: 0,
+          coinsEarned: 0,
+          newXp: profileNow?.xp ?? 0,
+          newStreakDays: profileNow?.streakDays ?? 0,
+          newCoins: profileNow?.coins ?? 0,
+          sectionCompleted: false,
+          isFirstStreakOfDay: false,
+        };
+      }
+
+      // ── Denormalised per-lesson / per-course progress records ───────────
+      // These power creator analytics (time spent, completion timestamps).
+      // Non-critical: failures must never block the student's reward flow.
+      const clampedTimeSpent =
+        typeof timeSpentSeconds === 'number'
+          ? Math.max(0, Math.min(4 * 3600, Math.round(timeSpentSeconds)))
+          : undefined;
+      const clampedAttempts =
+        typeof attemptsCount === 'number'
+          ? Math.max(1, Math.min(20, Math.round(attemptsCount)))
+          : undefined;
+      const clampedQuizScore =
+        typeof quizScorePct === 'number'
+          ? Math.max(0, Math.min(100, Math.round(quizScorePct)))
+          : undefined;
+
+      // Publish LessonCompletedEvent — all secondary writes (missions, chests,
+      // heatmaps, achievements, audit logs) run asynchronously in GamificationListener
+      this.eventEmitter.emit(
+        'lesson.completed',
+        new LessonCompletedEvent(
+          userId,
+          lessonId,
+          course.id,
+          isNewCompletion,
+          new Date(),
+          timezoneOffsetMinutes,
+          txResult.xpEarned,
+          txResult.newStreakDaysTotal,
+          txResult.isFirstStreakOfDay,
+          clampedTimeSpent,
+          clampedQuizScore,
+        ),
+      );
+
+      // Credit the weekly league standings (async, non-blocking).
+      this.eventEmitter.emit(
+        'xp.awarded',
+        new XpAwardedEvent(userId, txResult.xpEarned, 'LESSON'),
+      );
+      const now = new Date();
+      void this.prisma.userLessonProgress
+        .upsert({
+          where: { userId_lessonId: { userId, lessonId } },
+          create: {
+            userId,
+            lessonId,
+            status: 'completed',
+            progressPercentage: 100,
+            startedAt: now,
+            completedAt: now,
+            ...(clampedTimeSpent !== undefined && { timeSpentSeconds: clampedTimeSpent }),
+            ...(clampedAttempts !== undefined && { attemptsCount: clampedAttempts }),
+            ...(clampedQuizScore !== undefined && { quizScore: clampedQuizScore }),
+          },
+          update: {
+            status: 'completed',
+            completedAt: now,
+            ...(clampedTimeSpent !== undefined && { timeSpentSeconds: { increment: clampedTimeSpent } }),
+            ...(clampedAttempts !== undefined && { attemptsCount: clampedAttempts }),
+            ...(clampedQuizScore !== undefined && { quizScore: clampedQuizScore }),
+          },
+        })
+        .catch(() => {});
+
+      void this.prisma.userCourseProgress
+        .upsert({
+          where: { userId_courseId: { userId, courseId: course.id } },
+          create: {
+            userId,
+            courseId: course.id,
+            status: txResult.progressPct >= 100 ? 'completed' : 'in_progress',
+            progressPercentage: txResult.progressPct,
+            currentLessonId: lessonId,
+            startedAt: now,
+            lastActiveAt: now,
+            ...(txResult.progressPct >= 100 && { completedAt: now }),
+          },
+          update: {
+            status: txResult.progressPct >= 100 ? 'completed' : 'in_progress',
+            progressPercentage: txResult.progressPct,
+            currentLessonId: lessonId,
+            lastActiveAt: now,
+            ...(txResult.progressPct >= 100 && { completedAt: now }),
+          },
+        })
+        .catch(() => {});
+
+      return {
+        success: true,
+        isNewCompletion: true,
+        completedLessons: txResult.completed,
+        xpEarned: txResult.xpEarned,
+        coinsEarned: 5,
+        newXp: txResult.newXpTotal,
+        newStreakDays: txResult.newStreakDaysTotal,
+        newCoins: txResult.newCoinsTotal,
+        sectionCompleted: txResult.sectionCompleted,
+        isFirstStreakOfDay: txResult.isFirstStreakOfDay,
+      };
     }
 
-    // Publish LessonCompletedEvent — all secondary writes (missions, chests, heatmaps, achievements, audit logs) run asynchronously in GamificationListener
-    this.eventEmitter.emit(
-      'lesson.completed',
-      new LessonCompletedEvent(
-        userId,
-        lessonId,
-        course.id,
-        isNewCompletion,
-        new Date(),
-        timezoneOffsetMinutes,
-        xpEarned,
-        newStreakDaysTotal,
-        isFirstStreakOfDay,
-      ),
-    );
+    // Already completed before this request — idempotent summary, no rewards
+    const profile = await this.prisma.studentProfile.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
 
     return {
       success: true,
-      isNewCompletion,
+      isNewCompletion: false,
       completedLessons: currentCompleted,
-      xpEarned: isNewCompletion ? xpEarned : 0,
-      coinsEarned: isNewCompletion ? 5 : 0,
-      newXp: newXpTotal,
-      newStreakDays: newStreakDaysTotal,
-      newCoins: isNewCompletion ? (profile.coins + 5 + (levelUp?.bonusCoins ?? 0)) : profile.coins,
-      sectionCompleted,
-      isFirstStreakOfDay,
-      levelUp,
+      xpEarned: 0,
+      coinsEarned: 0,
+      newXp: profile.xp,
+      newStreakDays: profile.streakDays,
+      newCoins: profile.coins,
+      sectionCompleted: false,
+      isFirstStreakOfDay: false,
     };
   }
 
@@ -483,18 +957,25 @@ export class CourseService {
     // Generate a 7 digit numeric ID string (e.g. "7127813")
     const shortId = crypto.randomInt(1000000, 10000000).toString();
 
-    const newCourse = await this.prisma.course.create({
-      data: {
-        id: shortId,
-        title: data.title,
-        slug: slug,
-        category: data.category,
-        creatorTimeWeekly: data.creatorTimeWeekly,
-        instructorId: userId,
-        description: 'New Course Draft',
-        price: 0,
-        published: false,
-      },
+    // Course + its community are born together — every course gets a home.
+    const newCourse = await this.prisma.$transaction(async (tx) => {
+      const course = await tx.course.create({
+        data: {
+          id: shortId,
+          title: data.title,
+          slug: slug,
+          category: data.category,
+          creatorTimeWeekly: data.creatorTimeWeekly,
+          instructorId: userId,
+          description: 'New Course Draft',
+          price: 0,
+          published: false,
+        },
+      });
+      await tx.community.create({
+        data: { name: data.title, courseId: course.id },
+      });
+      return course;
     });
 
     return newCourse;
@@ -754,10 +1235,45 @@ export class CourseService {
       where: {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
+      include: {
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+              select: { id: true, title: true, status: true },
+            },
+          },
+        },
+      },
     });
     if (!course) throw new NotFoundException('Course not found');
     if (course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
+    }
+
+    // Server-side quality gate — the UI checklist is advisory, this is enforced.
+    const errors: string[] = [];
+    if (course.sections.length === 0) {
+      errors.push('Add at least one module before publishing.');
+    }
+    for (const section of course.sections) {
+      if (section.lessons.length === 0) {
+        errors.push(`Module "${section.title}" has no lessons yet.`);
+        continue;
+      }
+      for (const lesson of section.lessons) {
+        if (lesson.status !== 'published') {
+          errors.push(`Lesson "${lesson.title}" is still a draft. Open it in the Lesson Builder and publish it first.`);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new UnprocessableEntityException({
+        message: 'This course is not ready to be published.',
+        errors,
+      });
     }
 
     return await this.prisma.course.update({
@@ -766,31 +1282,158 @@ export class CourseService {
     });
   }
 
-  async enrollInCourse(userId: string, courseIdOrSlug: string) {
+  async enrollInCourse(userId: string, courseIdOrSlug: string, isAdmin = false) {
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
+      select: { id: true, title: true, published: true, instructorId: true },
     });
     if (!course) throw new NotFoundException('Course not found');
 
-    const enrollment = await this.prisma.enrollment.upsert({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId: course.id,
-        },
-      },
-      create: {
-        userId,
-        courseId: course.id,
-        progress: 0,
-        completedLessons: [],
-      },
-      update: {},
+    // Draft courses accept no new students — only the owner/admin can "enroll"
+    // (e.g. while previewing their own course)
+    if (!course.published && course.instructorId !== userId && !isAdmin) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // ─── IDEMPOTENT ENROLLMENT + ONE-TIME WELCOME BONUS ────────────────────
+    const existing = await this.prisma.enrollment.findUnique({
+      where: { userId_courseId: { userId, courseId: course.id } },
+      select: { id: true },
     });
 
-    return { enrolled: true, courseId: course.id, enrollmentId: enrollment.id };
+    let enrollmentId = existing?.id ?? null;
+    let createdNew = false;
+    let welcomeReward: { xp: number; coins: number } | null = null;
+    let balances: { xp: number; coins: number } | null = null;
+
+    if (!enrollmentId) {
+      // The welcome bonus is granted only on a learner's FIRST-EVER
+      // enrollment, counted BEFORE the create so unenroll→re-enroll cycles
+      // can't farm it. Known edge: two concurrent first enrolls to different
+      // courses could both see count 0 and both grant — 25 XP, accepted for
+      // a solo-op product; a strict lifetime ledger isn't worth the schema.
+      const isFirstEverEnrollment =
+        (await this.prisma.enrollment.count({ where: { userId } })) === 0;
+
+      try {
+        const created = await this.prisma.$transaction(async (tx) => {
+          const row = await tx.enrollment.create({
+            data: {
+              userId,
+              courseId: course.id,
+              progress: 0,
+              completedLessons: [],
+            },
+            select: { id: true },
+          });
+
+          if (isFirstEverEnrollment) {
+            // Bonus lives in the same transaction as the enrollment so one
+            // never lands without the other. A missing StudentProfile just
+            // skips the reward — enrollment must never fail because of it.
+            const profile = await tx.studentProfile.findUnique({
+              where: { userId },
+              select: { xp: true, coins: true },
+            });
+            if (profile) {
+              const updated = await tx.studentProfile.update({
+                where: { userId },
+                data: {
+                  xp: { increment: WELCOME_BONUS_XP },
+                  coins: { increment: WELCOME_BONUS_COINS },
+                },
+                select: { xp: true, coins: true },
+              });
+              welcomeReward = { xp: WELCOME_BONUS_XP, coins: WELCOME_BONUS_COINS };
+              balances = { xp: updated.xp, coins: updated.coins };
+            }
+          }
+
+          return row;
+        });
+        enrollmentId = created.id;
+        createdNew = true;
+      } catch (err: any) {
+        // Lost a create race against a concurrent enroll for the same course —
+        // the unique constraint fired. Treat as already-enrolled below.
+        if (
+          !(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+        ) {
+          throw err;
+        }
+        const winner = await this.prisma.enrollment.findUnique({
+          where: { userId_courseId: { userId, courseId: course.id } },
+          select: { id: true },
+        });
+        enrollmentId = winner?.id ?? null;
+        welcomeReward = null;
+        balances = null;
+      }
+    }
+
+    if (!enrollmentId) {
+      // Unreachable in practice — either we created the row or the race
+      // winner's row exists. Guards the response build below.
+      throw new ConflictException('Could not complete enrollment');
+    }
+
+    // Idempotent on the listener side (membership is an upsert), so firing
+    // this on every enroll call is safe and covers backfill gaps.
+    this.eventEmitter.emit(
+      'enrollment.created',
+      new EnrollmentCreatedEvent(userId, course.id),
+    );
+
+    if (welcomeReward) {
+      // Keeps the weekly league in sync like every other XP source.
+      this.eventEmitter.emit(
+        'xp.awarded',
+        new XpAwardedEvent(userId, WELCOME_BONUS_XP, 'ENROLL'),
+      );
+    }
+
+    return {
+      enrolled: true,
+      alreadyEnrolled: !createdNew,
+      courseId: course.id,
+      enrollmentId,
+      welcomeReward,
+      balances,
+      ...(await this.getEnrollPreview(course.id)),
+    };
+  }
+
+  /** Entry point + headline stats for the enroll wizard's success screen. */
+  private async getEnrollPreview(courseId: string) {
+    const secs = await this.prisma.section.findMany({
+      where: { courseId },
+      orderBy: { orderIndex: 'asc' },
+      select: {
+        lessons: {
+          where: { status: 'published' },
+          orderBy: { orderIndex: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            durationMinutes: true,
+            xpReward: true,
+          },
+        },
+      },
+    });
+    const lessons = secs.flatMap((s) => s.lessons);
+    return {
+      firstLesson: lessons[0]
+        ? { id: lessons[0].id, title: lessons[0].title }
+        : null,
+      stats: {
+        totalLessons: lessons.length,
+        totalXp: lessons.reduce((acc, l) => acc + (l.xpReward ?? 0), 0),
+        totalMinutes: lessons.reduce((acc, l) => acc + (l.durationMinutes ?? 0), 0),
+      },
+    };
   }
 
   async deleteCourse(userId: string, courseIdOrSlug: string) {
@@ -798,6 +1441,7 @@ export class CourseService {
       where: {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
+      include: { _count: { select: { enrollments: true } } },
     });
 
     if (!course) throw new NotFoundException('Course not found');
@@ -805,9 +1449,27 @@ export class CourseService {
       throw new ForbiddenException('You do not own this course');
     }
 
-    return await this.prisma.course.delete({
-      where: { id: course.id },
-    });
+    // Enrollments and order items reference courses without a cascade, so a
+    // bare delete throws an opaque P2003 once anyone has enrolled. Surface a
+    // clear conflict instead of letting the request die as a 500.
+    if (course._count.enrollments > 0) {
+      throw new ConflictException(
+        `This course has ${course._count.enrollments} enrolled student${course._count.enrollments === 1 ? '' : 's'}, so it can't be deleted. Unpublish it instead to remove it from the catalog.`,
+      );
+    }
+
+    try {
+      return await this.prisma.course.delete({
+        where: { id: course.id },
+      });
+    } catch (err: any) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+        throw new ConflictException(
+          "This course has purchase or enrollment records attached, so it can't be deleted. Unpublish it instead.",
+        );
+      }
+      throw err;
+    }
   }
 
   // ─── CURRICULUM MANAGEMENT ───
@@ -825,9 +1487,9 @@ export class CourseService {
     });
   }
 
-  async createSection(userId: string, courseId: string, title: string) {
+  async createSection(userId: string, courseId: string, title: string, goal?: string) {
     const trimmedTitle = (title || '').trim();
-    if (!trimmedTitle) throw new Error('Module title is required');
+    if (!trimmedTitle) throw new BadRequestException('Module title is required');
 
     const course = await this.getOwnedDraft(userId, courseId);
 
@@ -836,6 +1498,7 @@ export class CourseService {
       return await tx.section.create({
         data: {
           title: trimmedTitle,
+          ...(goal !== undefined && goal !== null && { goal }),
           orderIndex: count,
           courseId: course.id,
         },
@@ -844,7 +1507,7 @@ export class CourseService {
     });
   }
 
-  async updateSection(userId: string, sectionId: string, title: string) {
+  async updateSection(userId: string, sectionId: string, data: { title?: string; goal?: string }) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
       include: { course: true },
@@ -854,11 +1517,78 @@ export class CourseService {
     if (section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    if (data.title !== undefined && !data.title.trim()) {
+      throw new BadRequestException('Module title is required');
+    }
 
     return await this.prisma.section.update({
       where: { id: sectionId },
-      data: { title },
+      data: {
+        ...(data.title !== undefined && { title: data.title.trim() }),
+        ...(data.goal !== undefined && { goal: data.goal }),
+      },
     });
+  }
+
+  /**
+   * Persist a drag-to-reorder of a course's modules. `orderedIds` must contain
+   * every section of the course exactly once, in the desired order.
+   */
+  async reorderSections(userId: string, courseIdOrSlug: string, orderedIds: string[]) {
+    const course = await this.getOwnedDraft(userId, courseIdOrSlug);
+
+    const existing = await this.prisma.section.findMany({
+      where: { courseId: course.id },
+      select: { id: true },
+    });
+    const existingIds = existing.map((s) => s.id).sort();
+    if (JSON.stringify([...orderedIds].sort()) !== JSON.stringify(existingIds)) {
+      throw new BadRequestException('orderedIds must match the course modules exactly.');
+    }
+
+    await this.prisma.$transaction(
+      orderedIds.map((id, index) =>
+        this.prisma.section.update({
+          where: { id },
+          data: { orderIndex: index },
+        }),
+      ),
+    );
+
+    return { ok: true };
+  }
+
+  /** Persist a drag-to-reorder of lessons inside one module. */
+  async reorderLessons(userId: string, sectionId: string, orderedIds: string[]) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: { course: { select: { instructorId: true } } },
+    });
+
+    if (!section) throw new NotFoundException('Section not found');
+    if (section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    const existing = await this.prisma.lesson.findMany({
+      where: { sectionId },
+      select: { id: true },
+    });
+    const existingIds = existing.map((l) => l.id).sort();
+    if (JSON.stringify([...orderedIds].sort()) !== JSON.stringify(existingIds)) {
+      throw new BadRequestException('orderedIds must match the module lessons exactly.');
+    }
+
+    await this.prisma.$transaction(
+      orderedIds.map((id, index) =>
+        this.prisma.lesson.update({
+          where: { id },
+          data: { orderIndex: index },
+        }),
+      ),
+    );
+
+    return { ok: true };
   }
 
   async deleteSection(userId: string, sectionId: string) {
@@ -886,15 +1616,14 @@ export class CourseService {
     // Validate and sanitize title
     const trimmedTitle = (title || '').trim();
     if (!trimmedTitle) {
-      throw new Error('Lesson title is required');
+      throw new BadRequestException('Lesson title is required');
     }
     if (trimmedTitle.length > 100) {
-      throw new Error('Lesson title must be 100 characters or less');
+      throw new BadRequestException('Lesson title must be 100 characters or less');
     }
 
     // Validate lessonType against allowed values
-    const ALLOWED_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
-    const safeType = ALLOWED_TYPES.includes(lessonType || '') ? lessonType : 'video';
+    const safeType = ALLOWED_LESSON_TYPES.includes(lessonType || '') ? lessonType : 'video';
 
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
@@ -929,6 +1658,7 @@ export class CourseService {
     lessonId: string,
     data: {
       title?: string;
+      lessonType?: string;
       description?: string;
       shortDescription?: string;
       durationMinutes?: number;
@@ -945,12 +1675,23 @@ export class CourseService {
     if (lesson.section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    if (data.title !== undefined && data.title.trim().length > 100) {
+      throw new BadRequestException('Lesson title must be 100 characters or less');
+    }
 
-    const { contentBlocks, ...scalarFields } = data;
+    const { contentBlocks, title, lessonType, ...restFields } = data;
     return await this.prisma.lesson.update({
       where: { id: lessonId },
       data: {
-        ...scalarFields,
+        // The curriculum-builder "Edit Lesson" modal lets creators switch the
+        // lesson type — validate and persist it instead of silently dropping it.
+        ...(title !== undefined && { title: title.trim() }),
+        ...(lessonType !== undefined && {
+          lessonType: ALLOWED_LESSON_TYPES.includes(lessonType)
+            ? lessonType
+            : lesson.lessonType,
+        }),
+        ...restFields,
         ...(contentBlocks !== undefined ? { contentBlocks } : {}),
       },
     });
@@ -974,7 +1715,10 @@ export class CourseService {
   async unenrollUser(userId: string, idOrSlug: string) {
     try {
       console.log(`[Unenroll] Attempting to unenroll user ${userId} from course ${idOrSlug}`);
-      const course = await this.findOne(idOrSlug);
+      // Unenroll must work even if the course has since been unpublished —
+      // the visibility-aware findOne would 404 it, so use the raw finder.
+      const course = await this.findCourseAny(idOrSlug);
+      if (!course) throw new NotFoundException('Course not found');
       const courseId = course.id;
 
       // 1. Cancel Stripe Subscription (if any)

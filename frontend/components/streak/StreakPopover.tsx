@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Lock } from 'lucide-react';
+import { Lock, Crown, Shield } from 'lucide-react';
 import { useStreakModal } from '@/context/StreakContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './StreakPopover.module.css';
@@ -17,6 +17,7 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
   const currentStreak = streakData?.currentStreak ?? 0;
   const isNewPersonalBest = streakData?.isNewPersonalBest ?? false;
   const streakSocietyUnlocked = streakData?.streakSocietyUnlocked ?? (currentStreak >= 7);
+  const freezesAvailable = streakData?.freezesAvailable ?? 0;
 
   // Generate 7-day mini row (Sun-Sat) for current week
   const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -34,7 +35,6 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
   }
 
   const weekDayStatus = daysOfWeek.map((label, idx) => {
-    // Offset from current day of week
     const diff = idx - currentDayOfWeek;
     const targetDate = new Date(now.getTime() + diff * 24 * 60 * 60 * 1000);
     const yyyy = targetDate.getFullYear();
@@ -45,7 +45,6 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
     const isToday = idx === currentDayOfWeek;
     let isCompleted = calendarMap.get(dateStr) ?? false;
 
-    // Fallback if currentStreak active
     if (!isCompleted && currentStreak > 0) {
       if (isToday) {
         isCompleted = streakData?.hasCompletedToday ?? false;
@@ -62,20 +61,20 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
     };
   });
 
-  const handleOpenPersonalModal = () => {
+  const handleOpenPersonalModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
     playHaptic('medium');
     if (onClose) onClose();
     openStreakModal('PERSONAL');
   };
 
-  const handleOpenFriendsModal = () => {
-    playHaptic('medium');
-    if (onClose) onClose();
-    openStreakModal('FRIENDS');
-  };
-
   return (
-    <div className={styles.popoverCard} role="dialog" aria-label="Streak Popover">
+    <div
+      className={styles.popoverCard}
+      role="dialog"
+      aria-label="Streak Popover"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Top Hero Banner */}
       <div className={styles.heroHeader}>
         <div className={styles.heroTopRow}>
@@ -135,31 +134,28 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
 
       {/* Popover Content Cards */}
       <div className={styles.cardContent}>
-        {/* Card 1: Friend Streaks */}
+        {/* Card 1: Streak Freeze Status */}
         <div className={styles.friendsTeaserCard}>
           <div className={styles.friendsTeaserLeft}>
-            <div className={styles.friendsAvatarGroup}>
-              <Image
-                src="/dashboard tey.png"
-                alt="Tey & Friend"
-                width={42}
-                height={42}
-                className={styles.friendsMascotAvatar}
-              />
-              <span className={styles.friendsFlameBadge}>🔥</span>
+            <div className={styles.friendsAvatarGroup} style={{ backgroundColor: '#EFF6FF', border: '1.5px solid #BAE6FD' }}>
+              <Shield size={20} className="text-[#0172FD]" />
             </div>
             <div className={styles.friendsText}>
-              <h4 className={styles.friendsTitle}>Friend Streaks</h4>
-              <p className={styles.friendsSubtitle}>0 active Friend Streaks</p>
+              <h4 className={styles.friendsTitle}>Streak Freeze</h4>
+              <p className={styles.friendsSubtitle}>
+                {freezesAvailable > 0
+                  ? `${freezesAvailable} of 2 freezes active`
+                  : 'No active freezes equipped'}
+              </p>
             </div>
           </div>
 
           <button
             type="button"
             className={styles.viewListBtn}
-            onClick={handleOpenFriendsModal}
+            onClick={handleOpenPersonalModal}
           >
-            VIEW LIST
+            {freezesAvailable > 0 ? 'VIEW' : 'EQUIP'}
           </button>
         </div>
 
@@ -171,7 +167,7 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
         >
           <div className={styles.societyIconWrap}>
             {streakSocietyUnlocked ? (
-              <span className={styles.unlockedBadgeIcon}>👑</span>
+              <Crown size={20} className="text-[#EAB308]" />
             ) : (
               <Lock size={20} color="#94A3B8" />
             )}
@@ -192,7 +188,7 @@ export default function StreakPopover({ onClose }: StreakPopoverProps) {
           className={styles.viewMoreBtn3D}
           onClick={handleOpenPersonalModal}
         >
-          VIEW MORE
+          VIEW STREAK CALENDAR
         </button>
       </div>
     </div>

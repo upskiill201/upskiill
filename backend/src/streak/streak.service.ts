@@ -9,6 +9,7 @@ export interface StreakStatsResponse {
   hasCompletedToday: boolean;
   isNewPersonalBest: boolean;
   streakSocietyUnlocked: boolean;
+  streakStatus: 'NORMAL' | 'SAVED' | 'RESET';
 }
 
 export interface CalendarDay {
@@ -39,13 +40,24 @@ export class StreakService {
   }
 
   /**
-   * Returns canonical streak stats for the current user
+   * Calculates difference in calendar days based strictly on UTC calendar dates (DST immune).
+   */
+  private getDaysDiff(day1: string, day2: string): number {
+    const [y1, m1, d1] = day1.split('-').map(Number);
+    const [y2, m2, d2] = day2.split('-').map(Number);
+    const utc1 = Date.UTC(y1, m1 - 1, d1);
+    const utc2 = Date.UTC(y2, m2 - 1, d2);
+    return Math.round((utc1 - utc2) / (1000 * 60 * 60 * 24));
+  }
+
+  /**
+   * Returns canonical streak stats for the current user reconciled with midnight expiration.
    */
   async getStreakStats(
     userId: string,
     timezoneOffsetMinutes = 0
   ): Promise<StreakStatsResponse> {
-    const profile = await this.prisma.studentProfile.upsert({
+    let profile = await this.prisma.studentProfile.upsert({
       where: { userId },
       create: { userId },
       update: {},
@@ -53,6 +65,39 @@ export class StreakService {
 
     const now = new Date();
     const todayStr = this.getLocalDateString(now, timezoneOffsetMinutes);
+
+    let streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL';
+    let updatedFields: any = {};
+
+    // Reconcile Streak Expiration / Freeze Protection
+    if (profile.lastStreakEarnedAt && profile.streakDays > 0) {
+      const lastActiveStr = this.getLocalDateString(
+        new Date(profile.lastStreakEarnedAt),
+        timezoneOffsetMinutes
+      );
+      const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
+
+      if (diffDays > 1) {
+        const missedDays = diffDays - 1;
+        const availableFreezes = profile.streakFreezeBank || 0;
+
+        if (availableFreezes >= missedDays) {
+          updatedFields.streakFreezeBank = availableFreezes - missedDays;
+          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          updatedFields.lastStreakEarnedAt = yesterday;
+          streakStatus = 'SAVED';
+        } else {
+          updatedFields.streakDays = 0;
+          updatedFields.streakFreezeBank = 0;
+          streakStatus = 'RESET';
+        }
+
+        profile = await this.prisma.studentProfile.update({
+          where: { userId },
+          data: updatedFields,
+        });
+      }
+    }
 
     let lastStreakDateStr: string | null = null;
     let hasCompletedToday = false;
@@ -79,11 +124,12 @@ export class StreakService {
       hasCompletedToday,
       isNewPersonalBest,
       streakSocietyUnlocked,
+      streakStatus,
     };
   }
 
   /**
-   * Returns active/inactive day grid for a given YYYY-MM month backed by UserDailyActivity & active streak logic
+   * Returns active/inactive day grid for a given YYYY-MM month backed by UserDailyActivity & active streak logic.
    */
   async getStreakCalendar(
     userId: string,
@@ -102,7 +148,6 @@ export class StreakService {
     const targetMonth = monthStr || todayStr.substring(0, 7); // e.g. "2026-08"
     const [year, month] = targetMonth.split('-').map(Number);
 
-    // Calculate start and end dates of the requested month
     const daysInMonth = new Date(year, month, 0).getDate();
 
     // Query user_daily_activity records for this month
@@ -117,6 +162,25 @@ export class StreakService {
 
     const activityMap = new Map<string, (typeof activities)[0]>();
     activities.forEach((act) => activityMap.set(act.date, act));
+
+    // Query freeze transactions for this month
+    const freezeLogs = await this.prisma.rewardTransaction.findMany({
+      where: {
+        userId,
+        currency: 'FREEZE',
+        sourceType: 'STREAK',
+        createdAt: {
+          gte: new Date(`${targetMonth}-01T00:00:00Z`),
+          lte: new Date(`${targetMonth}-${daysInMonth}T23:59:59Z`),
+        },
+      },
+    });
+
+    const freezeDatesSet = new Set<string>();
+    freezeLogs.forEach((log) => {
+      const logDate = this.getLocalDateString(log.createdAt, timezoneOffsetMinutes);
+      freezeDatesSet.add(logDate);
+    });
 
     // Build active streak dates set
     const currentStreak = profile.streakDays || 0;
@@ -149,7 +213,8 @@ export class StreakService {
 
       const lessonsCompleted = act?.lessonsCompleted || 0;
       const xpEarned = act?.xpEarned || 0;
-      const isCompleted = lessonsCompleted > 0 || streakDatesSet.has(dateStr);
+      const isFreezeUsed = freezeDatesSet.has(dateStr);
+      const isCompleted = lessonsCompleted > 0 || streakDatesSet.has(dateStr) || isFreezeUsed;
       const isToday = dateStr === todayStr;
       const isFuture = dateStr > todayStr;
 
@@ -161,6 +226,7 @@ export class StreakService {
         isCompleted,
         isToday,
         isFuture,
+        isFreezeUsed,
       });
     }
 

@@ -17,7 +17,7 @@ export interface StatsBarProps {
   compact?: boolean;
   /**
    * Visual style:
-   * - 'default': borderless, like the dashboard homescreen
+   * - 'default': flat Duolingo homescreen style — bare icons + bold numbers, no chrome
    * - 'pill': candy-3D rounded pills with per-stat colors, like the shop coin card
    */
   variant?: 'default' | 'pill';
@@ -93,12 +93,12 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   const showStreakPopover = isStreakHovered || isStreakPinned;
   const showCoinPopover = isCoinHovered || isCoinPinned;
 
-  const stats: { type: StatType; value: number | string; onClick?: () => void; pillClass: string }[] = [
-    { type: 'streak', value: streakDays, onClick: handleStreakClick, pillClass: styles.pillStreak },
-    { type: 'coin', value: coins, onClick: handleCoinClick, pillClass: styles.pillCoin },
-    { type: 'gem', value: xp, onClick: onXpClick, pillClass: styles.pillGem },
-    { type: 'lives', value: lives, onClick: onLivesClick, pillClass: styles.pillLives },
-    { type: 'level', value: `Lvl ${userLevel}`, onClick: onLevelClick, pillClass: styles.pillLevel },
+  const stats: { type: StatType; value: number | string; onClick?: () => void }[] = [
+    { type: 'streak', value: streakDays, onClick: handleStreakClick },
+    { type: 'coin', value: coins, onClick: handleCoinClick },
+    { type: 'gem', value: xp, onClick: onXpClick },
+    { type: 'lives', value: lives, onClick: onLivesClick },
+    { type: 'level', value: `Lvl ${userLevel}`, onClick: onLevelClick },
   ];
 
   return (
@@ -131,14 +131,14 @@ export const StatsBar: React.FC<StatsBarProps> = ({
                 ? () => setIsCoinHovered(false)
                 : undefined
             }
-            className={variant === 'pill' ? `${styles.pill} ${s.pillClass}` : undefined}
+            className={variant === 'pill' ? styles.pill : undefined}
           >
             <StatPill
               type={s.type}
               value={s.value}
               compact={compact}
+              variant={variant === 'pill' ? 'candy' : 'flat'}
               onClick={s.onClick}
-              labelClassName={styles.label}
             />
 
             {isStreak && showStreakPopover && (

@@ -1,0 +1,957 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Course Unlock — full-page stepped-scene journey (celebrate → wall →
+   plans) plus the waiting/success beats.
+
+   Lives inside DashboardLayout's `.immersiveContent` (height:100dvh,
+   overflow:hidden) — this module owns everything below that line and
+   manages its own internal scrolling.
+
+   Tokens come from app/globals.css (—brand-blue, —text-primary, …).
+   The gold/premium family (#FFC800 / #F59E0B / #B45309) is hardcoded
+   deliberately: it is the established premium accent used by the
+   celebration scenes and has no CSS variable yet.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Stage ─────────────────────────────────────────────────────────── */
+/* Fits the DashboardLayout immersive content box EXACTLY (height:100%)
+   and clamps to the dynamic viewport: the parent keeps a legacy
+   `min-height: 100vh` that is taller than the visual viewport on mobile
+   (browser chrome), so min-height/100dvh here would push the dock CTA
+   below the fold and get it clipped by the parent's overflow:hidden. */
+.stage {
+  position: relative;
+  /* vh fallback for browsers without dynamic-viewport units (there the
+     dvh declaration would be dropped, leaving max-height unset and the
+     docked CTA pushed below the fold); dvh refines on modern browsers. */
+  max-height: 100vh;
+  max-height: 100dvh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary, #1f2a44);
+}
+
+.sceneViewport {
+  position: relative;
+  flex: 1 1 auto;
+  /* Explicit shrinkability: a flex item's default min-height:auto refuses
+     to shrink below content, which would push the docked CTA out of the
+     clipped stage instead of letting the scroll area above absorb it. */
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* One sliding pane per scene — AnimatePresence swaps these. */
+.slidePane {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Shared scene scaffolding ──────────────────────────────────────── */
+.sceneScroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 20px 24px;
+}
+
+.backBtn {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--border, #e2e8f0);
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.backBtn:hover {
+  background: var(--bg-section, #f5f7fb);
+  color: var(--text-primary, #1f2a44);
+}
+
+.backBtn:active {
+  transform: scale(0.94);
+}
+
+.backBtn:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+  outline-offset: 2px;
+}
+
+.exitLink {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: color 0.15s ease;
+}
+
+.exitLink:hover {
+  color: var(--text-secondary, #64748b);
+}
+
+.exitLink:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+}
+
+/* Bottom-docked CTA area shared by celebrate/wall/plans */
+.sceneDock {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  /* Top padding keeps the CTA clear of the mascot above; bottom padding
+     reserves safe-area space — the CTA must stay fully on-screen at every
+     height, so the scroll area above shrinks instead of the dock. */
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 32%);
+}
+
+.cta3D {
+  width: 100%;
+  max-width: 420px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  /* Premium gold family — established celebration CTA treatment */
+  background: #f59e0b;
+  border-bottom: 4px solid #b45309;
+  border-radius: 14px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(180, 83, 9, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease,
+    filter 0.1s ease;
+}
+
+.cta3D:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.cta3D:active:not(:disabled) {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.cta3D:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.cta3D:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.45);
+  outline-offset: 2px;
+}
+
+.spinner {
+  animation: unlockSpin 1s linear infinite;
+}
+
+@keyframes unlockSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.5s; /* keep visible feedback, slow it down */
+  }
+}
+
+/* ── Scene 1 · Celebrate ───────────────────────────────────────────── */
+.sceneHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.celebrateMascot {
+  margin-top: 8px;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+}
+
+.headline {
+  margin: 12px 0 0;
+  font-family: inherit;
+  font-size: clamp(20px, 4.5vw, 26px);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  text-align: center;
+  max-width: 420px;
+}
+
+.titleAccent {
+  color: var(--brand-blue, #3d5afe);
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  font-size: clamp(13px, 2.4vw, 15px);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-secondary, #64748b);
+  text-align: center;
+  max-width: 380px;
+}
+
+.subtitle strong {
+  color: var(--success-green, #22c55e);
+  font-weight: 800;
+}
+
+/* Progress path — mirrors the overview timeline node language */
+.nodeColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0 8px;
+}
+
+.nodeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timelineNode {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.nodeDone {
+  background: #22c55e;
+  border: 3px solid #22c55e;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+.nodeCheck {
+  color: #ffffff;
+}
+
+.nodeCompress {
+  height: 30px;
+  min-width: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 3px solid var(--border, #e2e8f0);
+  color: var(--text-secondary, #64748b);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.nodeFrontier {
+  background: #fffbeb;
+  border: 3px solid #f59e0b;
+  color: #b45309;
+  animation: frontierPulse 1.8s ease-out infinite;
+}
+
+@keyframes frontierPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.nodeLink {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--border, #e2e8f0);
+}
+
+.nodeLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Scene 2 · Wall ────────────────────────────────────────────────── */
+.wallMascot {
+  margin-top: 8px;
+  /* 2:3 portrait asset (800x1200) — cap by width, height follows the ratio */
+  max-width: min(48vw, 180px);
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+}
+
+.gateCard {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px;
+  background: #ffffff;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.gateLockCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffbeb;
+  border: 3px solid #f59e0b;
+  color: #b45309;
+}
+
+.wallCount {
+  font-family: inherit;
+  font-size: clamp(17px, 3.6vw, 21px);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.wallSub {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.wallSub strong {
+  color: var(--text-primary, #1f2a44);
+  font-weight: 800;
+}
+
+/* ── Scene 3 · Plans ───────────────────────────────────────────────── */
+.plansLayout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  width: 100%;
+}
+
+/* Desktop-only companion column: Tey thinks it over beside the form so
+   the wide layout doesn't leave a dead void on the left. */
+.plansAside {
+  display: none;
+}
+
+.plansMascot {
+  /* 670x1176 full-bleed portrait — sized so the robot reads at ~400px tall
+     on wide screens instead of shrinking inside a padded landscape canvas */
+  width: clamp(190px, 16vw, 240px);
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+}
+
+.plansAsideNote {
+  margin: 0;
+  max-width: 240px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary, #64748b);
+}
+
+@media (min-width: 1024px) {
+  .plansAside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 260px;
+    text-align: center;
+  }
+}
+
+.plansColumn {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.planGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Room for the ribbon chips that overhang the first two rows */
+  padding-top: 10px;
+}
+
+.railGroup {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-section, #f5f7fb);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+}
+
+.segmentBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 9px 4px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.segmentBtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.segmentBtn:hover {
+  color: var(--text-primary, #1f2a44);
+}
+
+.segmentBtn:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+  outline-offset: 1px;
+}
+
+.segmentBtnActive {
+  background: #ffffff;
+  color: var(--brand-blue, #3d5afe);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+}
+
+.momoBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+}
+
+.pickerLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary, #64748b);
+}
+
+.countrySelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text-primary, #1f2a44);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.countrySelect:focus {
+  outline: none;
+  border-color: var(--warning, #f59e0b);
+}
+
+.countrySelect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.opChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.opChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-secondary, #64748b);
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease,
+    background-color 0.15s ease, transform 0.1s ease;
+}
+
+.opChip:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.opChip:hover:not(:disabled):not(.opChipActive) {
+  border-color: var(--warning, #f59e0b);
+  color: var(--text-primary, #1f2a44);
+}
+
+.opChip:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.45);
+  outline-offset: 2px;
+}
+
+.opChipActive {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.opChip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.phoneRow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.dialChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+}
+
+.phoneInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-primary, #1f2a44);
+  transition: border-color 0.15s ease;
+}
+
+.phoneInput::placeholder {
+  color: var(--text-muted, #94a3b8);
+  font-weight: 500;
+}
+
+.phoneInput:focus {
+  outline: none;
+  border-color: var(--warning, #f59e0b);
+}
+
+.phoneInputInvalid {
+  border-color: var(--error-red, #ef4444);
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--error-red, #ef4444);
+}
+
+.localNotice {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-secondary, #64748b);
+}
+
+.localNotice strong {
+  color: var(--text-primary, #1f2a44);
+  font-weight: 800;
+}
+
+.msgBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.msgBox svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.msgInfo {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.msgError {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.footerDock {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.trustBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.trustItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+}
+
+.trustItem svg {
+  color: var(--success-green, #22c55e);
+}
+
+.logoChips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 24px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--text-secondary, #64748b);
+}
+
+.textChip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #64748b);
+}
+
+.billingNotice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+}
+
+.billingNotice svg {
+  flex: 0 0 auto;
+}
+
+.refundLink {
+  color: var(--brand-blue, #3d5afe);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.refundLink:hover {
+  text-decoration: underline;
+}
+
+/* ── Waiting-for-approval panel ────────────────────────────────────── */
+.waitingPanel {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px;
+  background: #ffffff;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.waitingSpinnerWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  color: var(--brand-blue, #3d5afe);
+}
+
+.waitingActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.secondaryBtn {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid var(--border-strong, #cbd5e1);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--text-primary, #1f2a44);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--bg-section, #f5f7fb);
+  border-color: var(--border, #e2e8f0);
+}
+
+.secondaryBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.secondaryBtn:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+  outline-offset: 2px;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Success beat ──────────────────────────────────────────────────── */
+.successOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000; /* below DailyMissionCelebrationModal (999999) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-align: center;
+}
+
+.successMascot {
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+}
+
+.successHeadline {
+  margin: 0;
+  font-family: inherit;
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--success-green, #22c55e);
+}
+
+.successSub {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+}
+
+/* ── Skeleton / error shells ───────────────────────────────────────── */
+.centerShell {
+  height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.errorShell h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary, #1f2a44);
+}
+
+.errorShell p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  max-width: 340px;
+  line-height: 1.5;
+}
+
+.errorBtn {
+  min-height: 46px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-bottom: 4px solid #2d4aee;
+  border-radius: 12px;
+  background: var(--brand-blue, #3d5afe);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.errorBtn:hover {
+  filter: brightness(1.05);
+}
+
+.errorBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* ── Desktop composition ───────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .sceneScroll {
+    padding: 24px 24px 32px;
+  }
+
+  .celebrateMascot {
+    margin-top: 16px;
+    /* 110px wide reads postage-stamp on desktop; keep the 670:1176 ratio */
+    width: 150px;
+    height: auto;
+  }
+}

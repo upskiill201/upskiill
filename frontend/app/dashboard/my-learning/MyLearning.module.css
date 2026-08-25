@@ -410,6 +410,27 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Ghost pill under "Continue Learning" — opens the course community */
+.communityLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #1E293B;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.communityLinkBtn:hover {
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+}
+
 /* Focus Card Mascot Column */
 .focusCardRight {
   display: flex;

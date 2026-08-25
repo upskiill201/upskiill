@@ -1,6 +1,16 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+
+/**
+ * Handles reserved for platform routes — a creator can never claim these,
+ * otherwise public profile URLs would collide with app routes.
+ */
+const RESERVED_USERNAMES = new Set([
+  'admin', 'api', 'me', 'teyro', 'support', 'help', 'null', 'undefined',
+  'creator', 'creators', 'dashboard', 'login', 'signup', 'settings', 'courses',
+]);
 
 // Shape of one step's answers coming from the onboarding localStorage payload
 interface OnboardingPayload {
@@ -17,18 +27,101 @@ interface OnboardingPayload {
   step13?: { bio?: string };
 }
 
+/**
+ * Shared include for public creator lookups — kept in one place so the
+ * exact-match query and the slug-fallback refetch stay identical.
+ *
+ * Deliberately typed with `satisfies` instead of a `Prisma.UserInclude`
+ * return annotation: Prisma can only infer query payload types from the
+ * LITERAL include shape. An explicit annotation widens the type and
+ * findFirst would silently return the bare User model (no courses/_count).
+ */
+const creatorInclude = (viewerUserId?: string) =>
+  ({
+    profile: true,
+    instructorProfile: true,
+    courses: {
+      // PUBLIC endpoint — drafts never leave the creator studio.
+      where: { published: true },
+      include: {
+        sections: {
+          include: {
+            lessons: {
+              select: { id: true, durationMinutes: true },
+            },
+          },
+        },
+        reviews: {
+          select: { rating: true },
+        },
+        _count: {
+          select: {
+            enrollments: true,
+            reviews: true,
+            sections: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    },
+    // Always shaped as an include (a conditional `false` branch would also
+    // break payload inference). When there is no viewer we simply filter to
+    // nothing — follower ids never equal this sentinel.
+    followers: {
+      where: viewerUserId ? { followerId: viewerUserId } : { followerId: 'no-viewer' },
+    },
+    _count: {
+      select: {
+        followers: true,
+        following: true,
+        courses: true,
+      },
+    },
+  }) satisfies Prisma.UserInclude;
+
+type CreatorUserPayload = Prisma.UserGetPayload<{
+  include: ReturnType<typeof creatorInclude>;
+}>;
+
 @Injectable()
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Returns the full creator profile merged with User fields.
+   * Returns the full profile merged with User fields.
    * Used by GET /profile/me and enriched GET /auth/me.
+   *
+   * Uses an explicit select — never spread the raw User row, which would leak
+   * the password hash, verifyToken and lockout counters to the client.
    */
   async getMyProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { profile: true },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        avatarUrl: true,
+        role: true,
+        isVerified: true,
+        hasStudentAccess: true,
+        hasCreatorAccess: true,
+        whatsappVerified: true,
+        createdAt: true,
+        profile: true,
+        studentProfile: {
+          select: {
+            xp: true,
+            coins: true,
+            gems: true,
+            lives: true,
+            maxLives: true,
+            streakDays: true,
+            longestStreak: true,
+            dailyGoalXp: true,
+          },
+        },
+      },
     });
 
     if (!user) throw new NotFoundException('User not found');
@@ -70,30 +163,63 @@ export class ProfileService {
 
   /**
    * Updates profile and/or user fields in a single transaction.
-   * Handles User.fullName, avatarUrl, username checks, and all creator profile fields.
+   * Handles User.fullName, avatarUrl, username checks, all creator profile
+   * fields, and student settings (dailyGoalXp → StudentProfile).
    */
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
-    const { fullName, avatarUrl, username, ...profileFields } = dto;
+    // The global ValidationPipe runs without `whitelist`, so undeclared keys
+    // survive onto the instance. creatorStatus is system-controlled ("Founding
+    // Creator" etc.) — strip it defensively so no client can grant itself a badge.
+    const incoming = dto as UpdateProfileDto & Record<string, unknown>;
+    delete incoming.creatorStatus;
 
-    await this.prisma.$transaction(async (tx) => {
-      // 1. Update User fields if provided
-      const userUpdates: any = {};
-      if (fullName !== undefined) userUpdates.fullName = fullName.trim();
-      if (avatarUrl !== undefined) userUpdates.avatarUrl = avatarUrl;
+    const { fullName, avatarUrl, username, dailyGoalXp, ...profileFields } = incoming;
 
-      if (Object.keys(userUpdates).length > 0) {
-        await tx.user.update({
-          where: { id: userId },
-          data: userUpdates,
-        });
+    // Policy check on the handle (the DTO validates shape; this enforces the rules).
+    let cleanUsername: string | null = null;
+    if (username !== undefined && username !== null) {
+      const candidate = username.trim().toLowerCase().replace(/^@/, '');
+      if (candidate) {
+        if (candidate.length < 3 || candidate.length > 30) {
+          throw new BadRequestException('Username must be 3-30 characters.');
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(candidate)) {
+          throw new BadRequestException('Usernames can only contain letters, numbers, and underscores.');
+        }
+        if (RESERVED_USERNAMES.has(candidate)) {
+          throw new BadRequestException(`@${candidate} is reserved by Teyro.`);
+        }
+        cleanUsername = candidate;
       }
+    }
 
-      // 2. Handle username if provided
-      const cleanProfileData: any = { ...profileFields };
-      if (avatarUrl !== undefined) cleanProfileData.avatarUrl = avatarUrl;
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        // 1. Update User fields if provided (never blank out the identity)
+        const userUpdates: any = {};
+        if (fullName !== undefined && fullName.trim()) userUpdates.fullName = fullName.trim();
+        if (avatarUrl !== undefined) userUpdates.avatarUrl = avatarUrl;
 
-      if (username !== undefined && username !== null) {
-        const cleanUsername = username.trim().toLowerCase().replace(/^@/, '');
+        if (Object.keys(userUpdates).length > 0) {
+          await tx.user.update({
+            where: { id: userId },
+            data: userUpdates,
+          });
+        }
+
+        // 2. Student settings — daily goal lives on StudentProfile, not Profile
+        if (dailyGoalXp !== undefined) {
+          await tx.studentProfile.upsert({
+            where: { userId },
+            create: { userId, dailyGoalXp },
+            update: { dailyGoalXp },
+          });
+        }
+
+        // 3. Handle username if provided
+        const cleanProfileData: any = { ...profileFields };
+        if (avatarUrl !== undefined) cleanProfileData.avatarUrl = avatarUrl;
+
         if (cleanUsername) {
           const existing = await tx.profile.findFirst({
             where: {
@@ -107,16 +233,15 @@ export class ProfileService {
           cleanProfileData.username = cleanUsername;
           cleanProfileData.usernameLastChangedAt = new Date();
         }
-      }
 
-      // 3. Upsert Profile row
+      // 4. Upsert Profile row
       await tx.profile.upsert({
         where: { userId },
         create: { userId, ...cleanProfileData },
         update: cleanProfileData,
       });
 
-      // 4. Also synchronize InstructorProfile row if it exists or for creator status
+      // 5. Also synchronize InstructorProfile row if it exists or for creator status
       const instructorData: any = {};
       if (fullName) instructorData.displayName = fullName.trim();
       if (cleanProfileData.headline) instructorData.professionalHeadline = cleanProfileData.headline;
@@ -138,7 +263,15 @@ export class ProfileService {
           update: instructorData,
         });
       }
-    });
+      });
+    } catch (e) {
+      // Two creators racing for the same handle: the DB unique index is the
+      // final arbiter — surface it as a friendly 400 instead of a raw 500.
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        throw new BadRequestException('That username was just taken by someone else — pick another.');
+      }
+      throw e;
+    }
 
     return this.getMyProfile(userId);
   }
@@ -188,120 +321,61 @@ export class ProfileService {
   async getPublicCreatorProfile(rawIdentifier: string, viewerUserId?: string) {
     const identifier = rawIdentifier.trim().toLowerCase().replace(/^@/, '');
 
-    let user = await this.prisma.user.findFirst({
+    // NOTE: deliberately NOT matchable by email — a public endpoint that
+    // resolves email addresses would let anyone probe who has an account.
+    let user: CreatorUserPayload | null = await this.prisma.user.findFirst({
       where: {
         OR: [
           { id: rawIdentifier },
           { profile: { username: { equals: identifier, mode: 'insensitive' } } },
           { instructorProfile: { displayName: { equals: rawIdentifier, mode: 'insensitive' } } },
           { fullName: { equals: rawIdentifier, mode: 'insensitive' } },
-          { email: { equals: rawIdentifier, mode: 'insensitive' } },
         ],
       },
-      include: {
-        profile: true,
-        instructorProfile: true,
-        courses: {
-          include: {
-            sections: {
-              include: {
-                lessons: {
-                  select: { id: true, durationMinutes: true },
-                },
-              },
-            },
-            reviews: {
-              select: { rating: true },
-            },
-            _count: {
-              select: {
-                enrollments: true,
-                reviews: true,
-                sections: true,
-              },
-            },
-          },
-          orderBy: { createdAt: 'desc' },
-        },
-        followers: viewerUserId
-          ? {
-              where: { followerId: viewerUserId },
-            }
-          : false,
-        _count: {
-          select: {
-            followers: true,
-            following: true,
-            courses: true,
-          },
-        },
-      },
+      include: creatorInclude(viewerUserId),
     });
 
-    // Flexible slug matching if not found by exact match
+    // Flexible slug matching if not found by exact match ("Ada Lovelace" →
+    // "adalovelace"). BOUNDED + EXACT: the previous implementation also did
+    // bidirectional substring matching, which let "/creator-profile/ma"
+    // resolve to "Maria Johnson" — an unintended profile becomes one guess
+    // away. We fetch slim candidates only, require full equality, then load
+    // that single creator fully.
     if (!user) {
-      const allUsers = await this.prisma.user.findMany({
-        include: {
-          profile: true,
-          instructorProfile: true,
-          courses: {
-            include: {
-              sections: {
-                include: {
-                  lessons: {
-                    select: { id: true, durationMinutes: true },
-                  },
-                },
-              },
-              reviews: {
-                select: { rating: true },
-              },
-              _count: {
-                select: {
-                  enrollments: true,
-                  reviews: true,
-                  sections: true,
-                },
-              },
-            },
-            orderBy: { createdAt: 'desc' },
-          },
-          followers: viewerUserId
-            ? {
-                where: { followerId: viewerUserId },
-              }
-            : false,
-          _count: {
-            select: {
-              followers: true,
-              following: true,
-              courses: true,
-            },
-          },
+      const candidates = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          fullName: true,
+          profile: { select: { username: true } },
         },
+        orderBy: { createdAt: 'desc' },
+        take: 2000,
       });
 
       const cleanSearch = identifier.replace(/[^a-z0-9]/g, '');
-      user =
-        allUsers.find((u) => {
-          const slug1 = u.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const slug2 = (u.profile?.username || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          const slug3 = u.email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
-          return (
-            slug1 === cleanSearch ||
-            slug2 === cleanSearch ||
-            slug3 === cleanSearch ||
-            slug1.includes(cleanSearch) ||
-            cleanSearch.includes(slug1)
-          );
-        }) || null;
+      const match = candidates.find((u) => {
+        const slugName = u.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const slugHandle = (u.profile?.username || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        return (
+          cleanSearch.length > 0 &&
+          (slugName === cleanSearch || slugHandle === cleanSearch)
+        );
+      });
+
+      if (match) {
+        user = await this.prisma.user.findFirst({
+          where: { id: match.id },
+          include: creatorInclude(viewerUserId),
+        });
+      }
     }
 
     if (!user) {
       throw new NotFoundException(`Creator @${rawIdentifier} not found`);
     }
 
-    // Calculate aggregated metrics
+    // Calculate aggregated metrics — REAL data only. A creator with no
+    // reviews has no rating; the UI hides the row instead of inventing one.
     const totalLearners = user.courses.reduce(
       (sum, c) => sum + (c._count?.enrollments || c.studentsCount || 0),
       0
@@ -309,27 +383,33 @@ export class ProfileService {
 
     const allRatings: number[] = [];
     user.courses.forEach((c) => {
-      if (c.rating && c.rating > 0) allRatings.push(c.rating);
       c.reviews?.forEach((r) => allRatings.push(r.rating));
     });
     const avgRating =
       allRatings.length > 0
         ? Number((allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1))
-        : user.courses.length > 0
-        ? 4.8
-        : 5.0;
+        : null;
 
     const formattedCourses = user.courses.map((c) => {
       const lessonCount = c.sections.reduce((acc, s) => acc + s.lessons.length, 0);
+      const courseRatings = (c.reviews ?? []).map((r) => r.rating);
       return {
         id: c.id,
         slug: c.slug || c.id,
         title: c.title,
         description: c.shortDescription || c.description,
         level: c.level || 'Beginner',
-        lessonsCount: lessonCount || (c.curriculum ? (Array.isArray(c.curriculum) ? c.curriculum.length : 12) : 12),
+        lessonsCount: lessonCount,
         studentsCount: c._count?.enrollments || c.studentsCount || 0,
-        rating: c.rating || 4.8,
+        rating:
+          courseRatings.length > 0
+            ? Number(
+                (
+                  courseRatings.reduce((a, b) => a + b, 0) / courseRatings.length
+                ).toFixed(1),
+              )
+            : null,
+        reviewsCount: courseRatings.length,
         category: c.category || 'General',
         thumbnailUrl: c.thumbnailUrl,
         iconType: c.category?.toLowerCase().includes('python') || c.title?.toLowerCase().includes('python')
@@ -365,67 +445,67 @@ export class ProfileService {
     }
 
     if (skills.length === 0) {
+      // Derive from real course data only — never pad with a fake list. The
+      // frontend hides the "What I teach" section when this stays empty.
       const courseSkills = new Set<string>();
       user.courses.forEach((c) => {
         if (c.category && c.category !== 'Uncategorized') courseSkills.add(c.category);
         if (Array.isArray(c.skills)) c.skills.forEach((s: any) => courseSkills.add(String(s)));
       });
-      if (courseSkills.size > 0) {
-        skills = Array.from(courseSkills).slice(0, 8);
-      } else {
-        skills = ['Course Creator', 'Education', 'Online Learning'];
-      }
+      skills = Array.from(courseSkills).slice(0, 8);
     }
 
     const languages =
-      (Array.isArray(user.profile?.languages) ? (user.profile.languages as string[]) : null) || ['English'];
+      (Array.isArray(user.profile?.languages) ? (user.profile.languages as string[]) : null) || [];
 
     const headline =
       user.instructorProfile?.professionalHeadline ||
       user.profile?.headline ||
       user.profile?.niche ||
-      (user.courses.length > 0 ? `Instructor of ${user.courses[0].title}` : 'Educator & Content Creator');
+      '';
 
     const bio =
       user.instructorProfile?.bio ||
       user.profile?.bio ||
       user.profile?.tagline ||
-      (user.courses.length > 0
-        ? `I teach online courses on Teyro with practical, real-world examples.`
-        : 'Educator and course author helping learners build practical skills.');
+      '';
 
     const about =
       user.profile?.about ||
       user.instructorProfile?.bio ||
       user.profile?.bio ||
-      `Passionate instructor on Teyro dedicated to providing high-quality learning experiences.`;
+      '';
 
     const avatarUrl =
       user.instructorProfile?.avatarUrl ||
       user.profile?.avatarUrl ||
       user.avatarUrl ||
-      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.fullName)}`;
+      null;
 
-    const achievements = [
-      {
-        id: 'creator-badge',
-        title: user.courses.length >= 3 ? 'Prolific Creator' : 'Verified Educator',
-        icon: 'diamond',
-        color: 'purple',
-      },
-      {
+    // Honest badges only — derived from real data, omitted when unearned.
+    // The frontend hides the whole achievements card when this list is empty.
+    const achievements: { id: string; title: string; icon: string; color: string }[] = [];
+    if (user.profile?.creatorStatus === 'founding_creator') {
+      achievements.push({ id: 'founding-badge', title: 'Founding Creator', icon: 'trophy', color: 'purple' });
+    }
+    if (user.courses.length >= 3) {
+      achievements.push({ id: 'creator-badge', title: 'Prolific Creator', icon: 'trophy', color: 'blue' });
+    }
+    if (totalLearners >= 1000) {
+      achievements.push({
         id: 'learners-badge',
-        title: totalLearners >= 1000 ? `${(totalLearners / 1000).toFixed(0)}K Learners` : `${totalLearners} Learners`,
+        title: `${(totalLearners / 1000).toFixed(0)}K Learners`,
         icon: 'users',
         color: 'amber',
-      },
-      {
-        id: 'rating-badge',
-        title: avgRating >= 4.7 ? 'Top Rated' : 'High Completion',
-        icon: 'trophy',
-        color: 'blue',
-      },
-    ];
+      });
+    }
+    if (avgRating !== null && avgRating >= 4.5) {
+      achievements.push({ id: 'rating-badge', title: 'Top Rated', icon: 'star', color: 'amber' });
+    }
+
+    // Honor the creator's privacy toggles (unset = visible; explicit false hides).
+    const privacy = (user.profile?.privacySettings ?? {}) as Record<string, boolean>;
+    const canShow = (flag: string): boolean => privacy[flag] !== false;
 
     return {
       id: user.id,
@@ -437,10 +517,10 @@ export class ProfileService {
       headline,
       bio,
       about,
-      location: user.profile?.location || 'Remote',
+      location: canShow('showLocation') ? user.profile?.location || null : null,
       languages,
       skills,
-      yearsOfExperience: user.instructorProfile?.yearsOfExperience || (user.courses.length >= 3 ? 5 : 2),
+      yearsOfExperience: user.instructorProfile?.yearsOfExperience ?? null,
       followersCount: user._count?.followers || 0,
       followingCount: user._count?.following || 0,
       coursesCount: user.courses.length,
@@ -461,34 +541,48 @@ export class ProfileService {
       throw new BadRequestException('You cannot follow yourself');
     }
 
-    const existing = await this.prisma.userFollow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId,
-          followingId: creatorId,
-        },
-      },
+    // An unknown target must 404, not surface as a Prisma FK violation (500).
+    const creator = await this.prisma.user.findUnique({
+      where: { id: creatorId },
+      select: { id: true },
     });
-
-    if (existing) {
-      await this.prisma.userFollow.delete({
-        where: { id: existing.id },
-      });
-      const followersCount = await this.prisma.userFollow.count({
-        where: { followingId: creatorId },
-      });
-      return { isFollowing: false, followersCount };
-    } else {
-      await this.prisma.userFollow.create({
-        data: {
-          followerId,
-          followingId: creatorId,
-        },
-      });
-      const followersCount = await this.prisma.userFollow.count({
-        where: { followingId: creatorId },
-      });
-      return { isFollowing: true, followersCount };
+    if (!creator) {
+      throw new NotFoundException('Creator not found');
     }
+
+    // Toggle + recount atomically so a concurrent follow can't skew the count.
+    const { isFollowing, followersCount } = await this.prisma.$transaction(
+      async (tx) => {
+        const existing = await tx.userFollow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId,
+              followingId: creatorId,
+            },
+          },
+          select: { id: true },
+        });
+
+        if (existing) {
+          await tx.userFollow.delete({
+            where: { id: existing.id },
+          });
+        } else {
+          await tx.userFollow.create({
+            data: {
+              followerId,
+              followingId: creatorId,
+            },
+          });
+        }
+
+        const followersCount = await tx.userFollow.count({
+          where: { followingId: creatorId },
+        });
+        return { isFollowing: !existing, followersCount };
+      },
+    );
+
+    return { isFollowing, followersCount };
   }
 }

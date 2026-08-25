@@ -11,10 +11,10 @@ import { playHaptic } from '@/lib/haptics';
 import styles from './HeraldStreakReveal.module.css';
 
 const SPEECH_MESSAGES = [
-  "Try to make it a whole week. I'll be watching! 👀",
-  "You're building an unstoppable habit! Keep it blazing! 🔥",
-  "Consistency is your superpower! High five! 👋",
-  "Another day, another step closer to mastery! 🚀",
+  "Try to make it a whole week. I'll be watching!",
+  "You're building an unstoppable habit! Keep it blazing!",
+  "Consistency is your superpower! High five!",
+  "Another day, another step closer to mastery!",
 ];
 
 const WEEK_DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -56,7 +56,7 @@ export default function HeraldStreakReveal() {
       try {
         await navigator.share({
           title: `I'm on a ${currentStreak}-day streak on Teyro!`,
-          text: `Check out my learning progress on Teyro! I have a ${currentStreak}-day learning streak! 🔥`,
+          text: `Check out my learning progress on Teyro! I have a ${currentStreak}-day learning streak!`,
           url: window.location.origin,
         });
       } catch {

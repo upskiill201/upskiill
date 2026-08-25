@@ -1,132 +1,129 @@
+/* ─── Flat base (Duolingo homescreen style): bare icon + bold number, no chrome ─── */
 .pillBtn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 10px;
-  border-radius: 14px;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
   cursor: pointer;
   user-select: none;
   outline: none;
-  border: 2px solid #E2E8F0;
-  background: #FFFFFF;
-  box-shadow: 0 2px 0 0 #CBD5E1;
-  transition: all 0.12s ease;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.12s ease;
   flex-shrink: 0;
 }
 
 .pillBtn:hover {
-  filter: brightness(1.03);
+  background: rgba(15, 23, 42, 0.05);
 }
 
 .pillBtn:active {
+  background: rgba(15, 23, 42, 0.09);
+  transform: none;
+}
+
+/* ─── Candy-3D variant (opt-in only, e.g. shop coin balance card) ─── */
+.candy.pillBtn {
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  box-shadow: 0 2px 0 0 #CBD5E1;
+  transition: all 0.12s ease;
+}
+
+.candy.pillBtn:hover {
+  background: #FFFFFF;
+  filter: brightness(1.03);
+}
+
+.candy.pillBtn:active {
   transform: translateY(2px);
   box-shadow: none !important;
 }
 
-/* Individual Gamified 3D Borders & Colors */
-.pill_streak {
+/* Individual Gamified 3D Borders & Colors (candy variant only) */
+.candy.pill_streak {
   border-color: #FED7AA;
   background: #FFF7ED;
   box-shadow: 0 2.5px 0 0 #FDBA74;
 }
 
-.pill_coin {
+.candy.pill_coin {
   border-color: #FDE047;
   background: #FEFCE8;
   box-shadow: 0 2.5px 0 0 #FACC15;
 }
 
-.pill_gem {
+.candy.pill_gem {
   border-color: #BFDBFE;
   background: #EFF6FF;
   box-shadow: 0 2.5px 0 0 #93C5FD;
 }
 
-.pill_lives {
+.candy.pill_lives {
   border-color: #FECDD3;
   background: #FFF1F2;
   box-shadow: 0 2.5px 0 0 #FDA4AF;
 }
 
-.pill_level {
+.candy.pill_level {
   border-color: #DDD6FE;
   background: #FAF5FF;
   box-shadow: 0 2.5px 0 0 #C4B5FD;
 }
 
+/* ─── Compact mode (narrow drawer) ─── */
 .pillBtnCompact {
-  gap: 4px;
-  padding: 4px 7px;
+  gap: 6px;
+  padding: 4px 6px;
 }
 
 .iconWrapper {
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
 }
 
-.textCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1;
-}
-
 .statValue {
-  font-size: 14.5px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 800;
   font-family: var(--font-jakarta), sans-serif;
   letter-spacing: -0.01em;
-  line-height: 1.1;
-}
-
-.statLabel {
-  font-size: 10px;
-  font-weight: 700;
+  line-height: 1;
   white-space: nowrap;
-  margin-top: 2px;
-  opacity: 0.85;
 }
 
-/* ─── MOBILE RESPONSIVE (AUTO-COMPACT FOR SLEEK GAME HUD) ─── */
+/* ─── MOBILE RESPONSIVE ─── */
 @media (max-width: 768px) {
   .pillBtn {
-    gap: 4px;
+    gap: 5px;
     padding: 4px 6px;
-    border-radius: 11px;
-    border-width: 1.5px;
-    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.08);
   }
 
   .iconWrapper {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
 
   .statValue {
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .statLabel {
-    display: none !important;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 340px) {
   .pillBtn {
-    gap: 2px;
+    gap: 4px;
     padding: 3px 4px;
-    border-radius: 9px;
   }
 
   .iconWrapper {
-    width: 17px;
-    height: 17px;
+    width: 19px;
+    height: 19px;
   }
 
   .statValue {
-    font-size: 11.5px;
+    font-size: 12.5px;
   }
 }

@@ -6,10 +6,10 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
   const [isOnline, setIsOnline] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('saved');
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
-  
+
   // Use a ref for version to avoid stale closures in back-to-back await calls
   const versionRef = useRef(initialVersion);
-  
+
   // Keep it synced if the parent passes a new initialVersion
   useEffect(() => {
     versionRef.current = initialVersion;
@@ -74,6 +74,37 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     }
   };
 
+  /** Re-sync the version from the server after a conflict. Returns latest known version or null. */
+  const resyncVersion = async (): Promise<number | null> => {
+    try {
+      const latest = await fetch(`/api/lesson/${lessonId}`);
+      if (latest.ok) {
+        const latestData = await latest.json();
+        versionRef.current = latestData.version || versionRef.current;
+        return versionRef.current;
+      }
+    } catch {
+      // ignore refetch errors
+    }
+    return null;
+  };
+
+  /**
+   * Called by the parent after a successful full-save / publish so the
+   * granular autosave stays in sync with the server's version counter and
+   * the dirty flag doesn't get stuck on.
+   */
+  const adoptServerVersion = useCallback((serverVersion?: number | null) => {
+    if (typeof serverVersion === 'number' && serverVersion > 0) {
+      versionRef.current = serverVersion;
+    } else {
+      versionRef.current += 1;
+    }
+    setIsDirty(false);
+    setSyncStatus('saved');
+    setLastSavedAt(new Date());
+  }, []);
+
   // Returns { ok: boolean } — never throws, so callers don't crash
   const syncMetadata = async (data: any): Promise<{ ok: boolean }> => {
     setIsDirty(true);
@@ -96,16 +127,22 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
 
         if (!res.ok) {
           if (res.status === 409) {
-            // Version conflict — fetch latest version and re-sync
+            // Version conflict — re-sync and retry once so edits aren't silently dropped
             console.warn('Version conflict on metadata sync, attempting re-sync');
-            try {
-              const latest = await fetch(`/api/lesson/${lessonId}`);
-              if (latest.ok) {
-                const latestData = await latest.json();
-                versionRef.current = latestData.version || versionRef.current;
+            const latestVersion = await resyncVersion();
+            if (latestVersion !== null) {
+              const retry = await fetch(`/api/lesson/${lessonId}/metadata`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, version: versionRef.current }),
+              });
+              if (retry.ok) {
+                versionRef.current += 1;
+                setSyncStatus('saved');
+                setLastSavedAt(new Date());
+                localStorage.removeItem(`lesson_${lessonId}_metadata`);
+                return;
               }
-            } catch {
-              // ignore refetch errors
             }
           }
           console.error('Failed to save metadata', res.status);
@@ -153,28 +190,22 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
           if (res.status === 409) {
             // Version conflict — fetch latest version and re-sync
             console.warn(`Version conflict on phase ${phase} sync, re-syncing version`);
-            try {
-              const latest = await fetch(`/api/lesson/${lessonId}`);
-              if (latest.ok) {
-                const latestData = await latest.json();
-                versionRef.current = latestData.version || versionRef.current;
-              }
-            } catch {
-              // ignore
-            }
+            const latestVersion = await resyncVersion();
             // Retry once with updated version
-            const retry = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...data, version: versionRef.current }),
-            });
-            if (retry.ok) {
-              versionRef.current += 1;
-              setSyncStatus('saved');
-              setLastSavedAt(new Date());
-              setIsDirty(false);
-              localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
-              return;
+            if (latestVersion !== null) {
+              const retry = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, version: versionRef.current }),
+              });
+              if (retry.ok) {
+                versionRef.current += 1;
+                setSyncStatus('saved');
+                setLastSavedAt(new Date());
+                setIsDirty(false);
+                localStorage.removeItem(`lesson_${lessonId}_phase_${phase}`);
+                return;
+              }
             }
           }
           console.error(`Failed to save phase ${phase}`, res.status);
@@ -198,18 +229,50 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     return { ok };
   };
 
+  /**
+   * On reconnect, replay any unsaved local backups through the granular
+   * endpoints. Previously this only flipped the status to "saved" without
+   * actually persisting anything, which silently dropped offline edits.
+   */
   const flushQueue = useCallback(async () => {
     setSyncStatus('saving');
     try {
-      setTimeout(() => {
+      const keys = Object.keys(localStorage).filter(k =>
+        k.startsWith(`lesson_${lessonId}_`) && !k.endsWith('_timestamp')
+      );
+      let allOk = true;
+
+      for (const key of keys) {
+        const suffix = key.replace(`lesson_${lessonId}_`, '');
+        try {
+          const entry = JSON.parse(localStorage.getItem(key) || 'null');
+          if (!entry?.data) continue;
+
+          if (suffix === 'metadata') {
+            const result = await syncMetadata(entry.data);
+            if (!result.ok) allOk = false;
+          } else if (suffix.startsWith('phase_')) {
+            const phase = suffix.replace('phase_', '');
+            const result = await syncPhase(phase, entry.data);
+            if (!result.ok) allOk = false;
+          }
+        } catch {
+          allOk = false;
+        }
+      }
+
+      if (allOk) {
         setSyncStatus('saved');
         setLastSavedAt(new Date());
         setIsDirty(false);
-      }, 500);
+      } else {
+        setSyncStatus('error');
+      }
     } catch (e) {
       setSyncStatus('error');
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId]);
 
   return {
     isOnline,
@@ -218,6 +281,8 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     isDirty,
     syncMetadata,
     syncPhase,
-    setDirty: useCallback(() => setIsDirty(true), [])
+    setDirty: useCallback(() => setIsDirty(true), []),
+    adoptServerVersion,
+    getVersion: useCallback(() => versionRef.current, []),
   };
 }

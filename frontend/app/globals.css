@@ -12,6 +12,7 @@
   --brand-blue-hover: #2D4AEE;
   --soft-blue:      #6C8CFF;
   --light-blue-bg:  #EEF2FF;
+  --gradient-brand: linear-gradient(135deg, #3D5AFE 0%, #6352FF 100%);
 
   /* Scribe-Inspired Design System */
   --brand-indigo:   #6352FF;

@@ -5,15 +5,14 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
+import { useCelebration } from '@/context/CelebrationContext';
 import { useHerald } from '@/context/HeraldContext';
-import gsap from 'gsap';
-import confetti from 'canvas-confetti';
+import { playHaptic } from '@/lib/haptics';
 import styles from './MysteryChestCard.module.css';
 
 export default function MysteryChestCard() {
   const { refresh } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { celebrate } = useCelebration();
   const { registerNativeWidget, unregisterNativeWidget } = useHerald();
 
   const [chestState, setChestState] = useState<{ status: string; chestId?: string }>({ status: 'LOCKED' });
@@ -45,43 +44,21 @@ export default function MysteryChestCard() {
     fetchChestStatus();
   }, []);
 
-  const handleClaim = async () => {
+  // Full-page Celebration Engine reveal — the scene opens the chest
+  // server-first and choreographs shake → beam → reward pile.
+  const handleClaim = () => {
     if (chestState.status !== 'READY_TO_OPEN' || isRevealing || !chestState.chestId) return;
-
-    try {
-      const tzOffset = new Date().getTimezoneOffset();
-      const res = await fetch(`/api/chest/${chestState.chestId}/open`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'x-timezone-offset': tzOffset.toString() },
-      });
-
-      if (!res.ok) throw new Error('Failed to open chest');
-
-      const data = await res.json();
-      setIsRevealing(true);
-
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: ['#FFD700', '#9333EA', '#FFFFFF'],
-      });
-
-      setTimeout(() => {
+    playHaptic('medium');
+    setIsRevealing(true);
+    celebrate({
+      kind: 'CHEST',
+      chestId: chestState.chestId,
+      onComplete: () => {
         setChestState({ status: 'OPENED' });
         setIsRevealing(false);
-        const mappedCurrency = data.rewardType === 'GEMS' ? 'COINS' : (data.rewardType as RewardCurrency);
-        triggerRewardAnimation({
-          originElement: chestRef.current,
-          rewards: [{ currency: mappedCurrency, amount: data.rewardAmount }],
-        });
-        if (refresh) refresh();
-      }, 600);
-    } catch (error) {
-      console.error(error);
-      fetchChestStatus();
-    }
+        void refresh();
+      },
+    });
   };
 
   const isUnlocked = chestState.status === 'READY_TO_OPEN';

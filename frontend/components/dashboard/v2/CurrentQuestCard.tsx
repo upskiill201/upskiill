@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import styles from './CurrentQuestCard.module.css';
 
@@ -12,13 +12,46 @@ interface CurrentQuestCardProps {
 }
 
 export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQuestCardProps) {
-  const courseTitle = currentEnrollment?.course?.title || 'Digital Marketing Mastery 2025';
-  const shortDesc = currentEnrollment?.course?.shortDescription ||
-    currentEnrollment?.course?.subtitle ||
-    'Create your first social media marketing campaign that converts.';
-  const progress = currentEnrollment?.progress || 48;
-  const currentMission = Math.max(1, Math.round((progress / 100) * 25) || 12);
-  const totalMissions = 25;
+  // Course info
+  const course = currentEnrollment?.course;
+  const category = (course?.category || 'DESIGN').toUpperCase();
+  const level = (course?.level || 'BEGINNER').toUpperCase();
+  const courseTitle = course?.title || 'Figma UI/UX Essentials: Zero to Hero';
+  const shortDesc =
+    course?.shortDescription ||
+    course?.subtitle ||
+    'Master the complete design lifecycle in Figma — components, auto-layout, prototyping, and developer handoff.';
+
+  // Progress metrics
+  const completedLessons = Array.isArray(currentEnrollment?.completedLessons)
+    ? currentEnrollment.completedLessons
+    : [];
+  const completedCount = completedLessons.length;
+  
+  // Calculate total lessons from sections if available
+  const sections = course?.sections || [];
+  let allLessons: any[] = [];
+  sections.forEach((sec: any) => {
+    if (Array.isArray(sec.lessons)) {
+      allLessons.push(...sec.lessons);
+    }
+  });
+
+  const totalLessons = allLessons.length > 0 ? allLessons.length : 25;
+  const currentLessonNum = Math.min(totalLessons, completedCount + 1);
+  const progressPct =
+    currentEnrollment?.progress !== undefined
+      ? Math.round(currentEnrollment.progress)
+      : Math.round((completedCount / totalLessons) * 100) || 8;
+
+  // Find the actual next lesson the student needs to learn
+  const nextLesson = allLessons.find(
+    (lesson: any) => !completedLessons.includes(lesson.id)
+  );
+
+  const speechBubbleText = nextLesson?.title
+    ? `${nextLesson.title} will level up your skills!`
+    : 'Figma variants and auto-layout make designs 10x faster!';
 
   const handleAction = () => {
     playHaptic('medium');
@@ -27,59 +60,73 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
 
   return (
     <div className={styles.card}>
-      <span className={styles.questHeader}>CURRENT QUEST</span>
+      {/* Left Column: Course Info, Progress Bar & CTA */}
+      <div className={styles.leftCol}>
+        <span className={styles.categoryTag}>
+          {category} • {level}
+        </span>
 
-      <div className={styles.contentRow}>
-        <div className={styles.leftCol}>
-          <div className={styles.titleRow}>
-            <div className={styles.targetIconWrap}>
-              <span>🎯</span>
-            </div>
-            <div className={styles.titleGroup}>
-              <h2 className={styles.courseTitle}>{courseTitle}</h2>
-              <span className={styles.missionSubtitle}>
-                Mission {currentMission} / {totalMissions}
-              </span>
-            </div>
+        <h2 className={styles.courseTitle}>{courseTitle}</h2>
+        <p className={styles.courseDesc}>{shortDesc}</p>
+
+        {/* Progress Bar & Labels */}
+        <div className={styles.progressSection}>
+          <div className={styles.progressTrack}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${Math.max(6, Math.min(100, progressPct))}%` }}
+            />
           </div>
 
-          <p className={styles.missionDesc}>{shortDesc}</p>
-
-          <div className={styles.rewardChipsRow}>
-            <span className={styles.rewardChip}>
-              <Image src="/Icons/gem.png" alt="XP" width={14} height={14} />
-              +20 XP
-            </span>
-            <span className={styles.rewardChip}>
-              <Image src="/Icons/Coin.png" alt="Coins" width={14} height={14} />
-              +10 Coins
+          <div className={styles.progressLabelsRow}>
+            <span>{progressPct}% COMPLETE</span>
+            <span>
+              LESSON {currentLessonNum} / {totalLessons}
             </span>
           </div>
         </div>
 
-        {/* Right 3D Visual Illustration (Desktop/Tablet) */}
-        <div className={styles.rightCol}>
-          <div className={styles.illustrationCard}>
-            <div className={styles.screenGraphic}>
-              <Image src="/Icons/explore.png" alt="Learn" width={36} height={36} />
-            </div>
-            <div className={styles.reactionBadge1}>❤️</div>
-            <div className={styles.reactionBadge2}>👍</div>
+        {/* 3D White CTA Button */}
+        <button
+          type="button"
+          onClick={handleAction}
+          className={styles.continueBtn}
+        >
+          <span>Continue Learning</span>
+          <ArrowRight size={17} strokeWidth={2.8} />
+        </button>
+      </div>
+
+      {/* Right Column: Speech Bubble + Celebrating Mascot */}
+      <div className={styles.rightCol}>
+        {/* White Speech Bubble */}
+        <div className={styles.speechBubble}>
+          <span className={styles.speechText}>{speechBubbleText}</span>
+        </div>
+
+        {/* Mascot with Vector Sparkle Stars */}
+        <div className={styles.mascotStage}>
+          <span className={styles.sparkle1}>
+            <Sparkles size={18} className="text-[#BAE6FD]" />
+          </span>
+          <span className={styles.sparkle2}>
+            <Sparkles size={16} className="text-[#BAE6FD]" />
+          </span>
+          <span className={styles.sparkle3}>
+            <Sparkles size={14} className="text-[#BAE6FD]" />
+          </span>
+
+          <div className={styles.mascotImg}>
+            <Image
+              src="/dashboard tey.png"
+              alt="Tey Mascot Celebrating"
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+            />
           </div>
         </div>
       </div>
-
-      {/* 3D Soft Primary Play Button */}
-      <button
-        type="button"
-        onClick={handleAction}
-        className={styles.ctaButton3D}
-      >
-        <span>PLAY MISSION {currentMission}</span>
-        <span className={styles.btnArrowCircle}>
-          <ArrowRight size={14} strokeWidth={3} />
-        </span>
-      </button>
     </div>
   );
 }

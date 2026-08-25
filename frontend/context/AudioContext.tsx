@@ -5,7 +5,10 @@ import soundManager, { CategoryVolumes } from '@/lib/audio/soundManager';
 import { SoundId, SoundConfig } from '@/lib/audio/soundRegistry';
 import { AppAudioEvent, emitAudioEvent } from '@/lib/audio/audioEvents';
 
-const STORAGE_KEY = 'teyro_audio_settings_v1';
+// v2: the audio engine moved from MP3 assets to synthesized sounds —
+// stale v1 preferences (mute flags, per-sound toggles tuned for the old
+// assets) must not silently disable the new engine.
+const STORAGE_KEY = 'teyro_audio_settings_v2';
 
 export interface AudioContextType {
   isMuted: boolean;

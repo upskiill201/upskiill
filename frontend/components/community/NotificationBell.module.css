@@ -1,0 +1,139 @@
+/* NotificationBell + dropdown panel */
+
+.wrap { position: relative; }
+
+.bellBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-section);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.bellBtn:hover { background: #eef2ff; color: var(--brand-blue); }
+
+.badgeCount {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--bg-card);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  width: min(380px, calc(100vw - 32px));
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(31, 42, 68, 0.16);
+  overflow: hidden;
+}
+
+/* Variant for triggers near the left screen edge (desktop sidebar) —
+   opens rightward so it can't clip off-screen. */
+.panelLeft {
+  right: auto;
+  left: 0;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--bg-section);
+}
+.panelTitle { font-size: 15px; font-weight: 900; color: var(--text-primary); }
+.markAllBtn {
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--brand-blue);
+  cursor: pointer;
+}
+.markAllBtn:hover { text-decoration: underline; }
+
+.list {
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  transition: background 120ms ease;
+}
+.item:hover { background: var(--bg-section); }
+.itemUnread { background: rgba(61, 90, 254, 0.05); }
+.itemUnread:hover { background: rgba(61, 90, 254, 0.09); }
+.unreadDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-blue);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.itemBody { flex: 1; min-width: 0; }
+.itemTitleLine {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.actorName { font-weight: 800; }
+.itemText {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.itemTime { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-top: 3px; }
+
+.emptyPanel {
+  padding: 36px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.footerLink {
+  display: block;
+  padding: 11px;
+  text-align: center;
+  border-top: 1px solid var(--bg-section);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brand-blue);
+  text-decoration: none;
+}
+.footerLink:hover { background: var(--bg-section); }

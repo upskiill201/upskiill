@@ -878,3 +878,14 @@
   }
 }
 
+
+/* Real course thumbnails (fill the existing tile shapes) */
+.featuredThumbImg {
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.courseThumbImg {
+  object-fit: cover;
+  border-radius: 14px;
+}

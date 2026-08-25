@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { useGamification } from './GamificationContext';
-import type { LevelUpPayload } from '@/lib/levels';
+import { useCelebration } from './CelebrationContext';
 
 export type RewardCurrency = 'COINS' | 'XP' | 'HEARTS' | 'STREAK';
 
@@ -30,8 +30,6 @@ export interface FlyingParticle {
   endY: number;
   delayMs: number;
   durationMs: number;
-  scatterX: number;
-  scatterY: number;
   targetPillId: string;
   amountPerParticle: number;
   particleIndexInSet: number;
@@ -58,7 +56,6 @@ export interface LevelUpCelebration {
   oldLevel: number;
   newLevel: number;
   bonusCoins?: number;
-  isMilestone?: boolean;
 }
 
 export interface ClaimModalOptions {
@@ -68,6 +65,7 @@ export interface ClaimModalOptions {
   originElement?: HTMLElement | null;
   onClaim?: () => Promise<void> | void;
   onComplete?: () => void;
+  /** Legacy flag — the Celebration Engine never double-persists, so this is a no-op kept for call-site compatibility. */
   skipBackendPersist?: boolean;
   primaryActionText?: string;
   secondaryActionText?: string;
@@ -77,16 +75,22 @@ export interface ClaimModalOptions {
 interface RewardAnimationContextValue {
   triggerRewardAnimation: (options: TriggerRewardOptions) => void;
   openClaimModal: (options: ClaimModalOptions) => void;
+  /** No-op — the old claim modal is replaced by full-page Celebration scenes. */
   closeClaimModal: () => void;
-  claimModalData: ClaimModalOptions | null;
   particles: FlyingParticle[];
   shockwaves: ShockwaveRing[];
   floatingTexts: FloatingText[];
-  removeParticle: (id: string, targetPillId: string, amount: number, isFinal: boolean, particleIndex: number, endX: number, endY: number, currency: RewardCurrency) => void;
-  levelUpData: LevelUpCelebration | null;
-  dismissLevelUp: () => void;
-  celebrateLevelUp: (payload: LevelUpPayload) => void;
-  registerTarget: (currency: RewardCurrency, element: HTMLElement) => () => void;
+  removeParticle: (
+    id: string,
+    targetPillId: string,
+    amount: number,
+    isFinal: boolean,
+    particleIndex: number,
+    endX: number,
+    endY: number,
+    currency: RewardCurrency
+  ) => void;
+  registerTarget: (currency: RewardCurrency, element: HTMLElement) => void;
 }
 
 const RewardAnimationContext = createContext<RewardAnimationContextValue | null>(null);
@@ -114,84 +118,46 @@ const CURRENCY_COLORS: Record<RewardCurrency, string> = {
 
 export function RewardAnimationProvider({ children }: { children: React.ReactNode }) {
   const { userLevel, refresh } = useGamification();
+  const { celebrate } = useCelebration();
   const [particles, setParticles] = useState<FlyingParticle[]>([]);
   const [shockwaves, setShockwaves] = useState<ShockwaveRing[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
-  const [levelUpData, setLevelUpData] = useState<LevelUpCelebration | null>(null);
-  const [claimModalData, setClaimModalData] = useState<ClaimModalOptions | null>(null);
 
-  // Target element registry
   const targetMapRef = useRef<Map<string, HTMLElement>>(new Map());
 
-  // ── Level-up celebration state ────────────────────────────────────────────
-  // Dedupe: each target level is celebrated at most once per session, and a
-  // short suppression window prevents the refresh-diff safety net from
-  // double-firing right after an explicit payload-driven celebration.
-  const celebratedTargetsRef = useRef<Set<number>>(new Set());
-  const suppressUntilRef = useRef<number>(0);
-
-  const celebrateLevelUp = useCallback((payload: LevelUpPayload) => {
-    if (!payload || typeof payload.to !== 'number') return;
-    if (celebratedTargetsRef.current.has(payload.to)) return;
-    if (Date.now() < suppressUntilRef.current) return;
-
-    celebratedTargetsRef.current.add(payload.to);
-    suppressUntilRef.current = Date.now() + 15000;
-    setLevelUpData({
-      oldLevel: payload.from,
-      newLevel: payload.to,
-      bonusCoins: payload.bonusCoins,
-      isMilestone: payload.isMilestone,
-    });
-  }, []);
-
-  const dismissLevelUp = useCallback(() => {
-    setLevelUpData(null);
-  }, []);
-
-  // Refresh-diff safety net: catches level crossings that reach the client
-  // outside an explicit response payload (e.g. async achievement XP granted
-  // in the lesson.completed listener AFTER the HTTP response was sent).
-  // The FIRST observed value never fires — this prevents a false celebration
-  // from the one-time curve-change jump on first load after deployment.
-  const lastSeenLevelRef = useRef<number | null>(null);
-  useEffect(() => {
-    if (typeof userLevel !== 'number') return;
-    const prev = lastSeenLevelRef.current;
-    lastSeenLevelRef.current = userLevel;
-    if (prev === null || userLevel <= prev) return;
-    celebrateLevelUp({ from: prev, to: userLevel });
-  }, [userLevel, celebrateLevelUp]);
-
-  // Returns an unregister fn so stale/detached nodes can't hijack later flights.
   const registerTarget = useCallback((currency: RewardCurrency, element: HTMLElement) => {
     const pillKey = CURRENCY_PILL_KEYS[currency];
-    if (!pillKey) return () => {};
     targetMapRef.current.set(pillKey, element);
-    return () => {
-      if (targetMapRef.current.get(pillKey) === element) {
-        targetMapRef.current.delete(pillKey);
-      }
-    };
   }, []);
 
-  /** Resolves a pill target, ignoring detached DOM nodes. */
-  const resolvePillTarget = useCallback((pillKey: string): HTMLElement | null => {
-    const cached = targetMapRef.current.get(pillKey);
-    if (cached) {
-      if (cached.isConnected) return cached;
-      targetMapRef.current.delete(pillKey);
-    }
-    if (typeof document === 'undefined') return null;
-    return document.querySelector(`[data-stat-pill="${pillKey}"]`) as HTMLElement | null;
-  }, []);
-
-  const openClaimModal = useCallback((options: ClaimModalOptions) => {
-    setClaimModalData(options);
-  }, []);
+  /**
+   * Legacy claim modal → Celebration Engine adapter.
+   * Every openClaimModal call site now plays a full-page CLAIM scene:
+   * the scene executes `onClaim` (the real API call) on entry — server-first,
+   * then choreographs Tey's grab → toss → balance deposit.
+   */
+  const openClaimModal = useCallback(
+    (options: ClaimModalOptions) => {
+      const rewards = options.rewards.map((r) => ({ currency: r.currency, amount: r.amount }));
+      const targetBalances =
+        options.targetBalance !== undefined && rewards[0]
+          ? { [rewards[0].currency]: options.targetBalance }
+          : undefined;
+      celebrate({
+        kind: 'CLAIM',
+        title: options.title,
+        subtitle: options.subtitle,
+        rewards,
+        claim: options.onClaim,
+        onComplete: options.onComplete,
+        targetBalances,
+      });
+    },
+    [celebrate]
+  );
 
   const closeClaimModal = useCallback(() => {
-    setClaimModalData(null);
+    // No-op: scenes advance via their own CONTINUE button.
   }, []);
 
   const removeParticle = useCallback(
@@ -205,9 +171,6 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
       endY: number,
       currency: RewardCurrency
     ) => {
-      setParticles((prev) => prev.filter((p) => p.id !== id));
-
-      // Dispatch global event for live counter ticking in UI
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
           new CustomEvent('rewardrun:particle-land', {
@@ -221,55 +184,49 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         );
       }
 
-      // Feature 4: Live Counter Floating Delta Text — shows the actual chunk
-      // value this particle carried so counters sum exactly to the reward.
-      const textId = `ft-${Date.now()}-${Math.random()}`;
+      const textId = `ft-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
       const color = CURRENCY_COLORS[currency] || '#0172FD';
-      setFloatingTexts((prev) => [...prev, { id: textId, text: `+${Math.max(1, _amount)}`, x: endX, y: endY - 15, color }]);
+
+      setFloatingTexts((prev) => [
+        ...prev,
+        { id: textId, text: '+1', x: endX, y: endY - 15, color },
+      ]);
 
       setTimeout(() => {
         setFloatingTexts((prev) => prev.filter((ft) => ft.id !== textId));
-      }, 450);
+      }, 400);
 
-      // Feature 5: Destination Stat Pill Aura Sweep & Impact Bounce
-      const pillElem = resolvePillTarget(targetPillId);
+      const pillElem =
+        targetMapRef.current.get(targetPillId) ||
+        (typeof document !== 'undefined'
+          ? (document.querySelector(`[data-stat-pill="${targetPillId}"]`) as HTMLElement)
+          : null);
 
       if (pillElem) {
-        if (isFinal) {
-          pillElem.animate(
-            [
-              { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
-              { transform: 'scale(1.35)', filter: `drop-shadow(0 0 25px ${color})` },
-              { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
-            ],
-            { duration: 280, easing: 'ease-out' }
-          );
-        } else {
-          pillElem.animate(
-            [
-              { transform: 'scale(1)' },
-              { transform: 'scale(1.22)' },
-              { transform: 'scale(1)' },
-            ],
-            { duration: 140, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' }
-          );
-        }
+        pillElem.animate(
+          [
+            { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
+            { transform: 'scale(1.28)', filter: `drop-shadow(0 0 16px ${color})` },
+            { transform: 'scale(0.96)', filter: `drop-shadow(0 0 8px ${color})` },
+            { transform: 'scale(1)', filter: `drop-shadow(0 0 0px ${color})` },
+          ],
+          { duration: 220, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }
+        );
       }
 
       if (isFinal) {
         void refresh();
       }
     },
-    [refresh, resolvePillTarget]
+    [refresh]
   );
 
   const triggerRewardAnimation = useCallback(
     (options: TriggerRewardOptions) => {
       const { originElement, originRect, rewards, onComplete } = options;
 
-      // Determine launch origin
-      let startX = window.innerWidth / 2;
-      let startY = window.innerHeight / 2;
+      let startX = typeof window !== 'undefined' ? window.innerWidth / 2 : 200;
+      let startY = typeof window !== 'undefined' ? window.innerHeight / 2 : 300;
 
       if (originElement) {
         const rect = originElement.getBoundingClientRect();
@@ -280,47 +237,42 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         startY = originRect.y + (originRect.height ?? 0) / 2;
       }
 
-      // Check prefers-reduced-motion once per trigger
-      const prefersReducedMotion =
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Origin Shockwave Flash — skipped entirely under reduced motion
+      // Origin Shockwave Flash
       const primaryCurrency = rewards[0]?.currency || 'COINS';
-      if (!prefersReducedMotion) {
-        const shockColor = CURRENCY_COLORS[primaryCurrency] || '#0172FD';
-        const shockId = `shock-${Date.now()}`;
+      const shockColor = CURRENCY_COLORS[primaryCurrency] || '#0172FD';
+      const shockId = `shock-${Date.now()}`;
 
-        setShockwaves((prev) => [
-          ...prev,
-          { id: `${shockId}-flash`, x: startX, y: startY, color: shockColor, type: 'flash' },
-          { id: `${shockId}-ring`, x: startX, y: startY, color: shockColor, type: 'ring' },
-        ]);
+      setShockwaves((prev) => [
+        ...prev,
+        { id: `${shockId}-flash`, x: startX, y: startY, color: shockColor, type: 'flash' },
+        { id: `${shockId}-ring`, x: startX, y: startY, color: shockColor, type: 'ring' },
+      ]);
 
-        setTimeout(() => {
-          setShockwaves((prev) => prev.filter((sw) => !sw.id.startsWith(shockId)));
-        }, 500);
-      }
+      setTimeout(() => {
+        setShockwaves((prev) => prev.filter((sw) => !sw.id.startsWith(shockId)));
+      }, 500);
 
       const newParticles: FlyingParticle[] = [];
       let maxTotalDuration = 0;
+
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       let currentWaveStartTime = 0;
 
       rewards.forEach((reward) => {
         if (reward.amount <= 0) return;
 
-        // Unmapped currency guard: a raw reward kind without a registered
-        // icon/pill (e.g. STREAK_FREEZE cast into RewardCurrency) must not
-        // spawn broken particles flying to [data-stat-pill="undefined"].
         const pillKey = CURRENCY_PILL_KEYS[reward.currency];
-        const iconSrc = CURRENCY_ICONS[reward.currency];
-        if (!pillKey || !iconSrc) return;
+        const targetElem =
+          targetMapRef.current.get(pillKey) ||
+          (typeof document !== 'undefined'
+            ? (document.querySelector(`[data-stat-pill="${pillKey}"]`) as HTMLElement)
+            : null);
 
-        const targetElem = resolvePillTarget(pillKey);
-
-        let endX = startX;
-        let endY = startY - 100;
+        let endX = typeof window !== 'undefined' ? window.innerWidth - 70 : 320;
+        let endY = 44;
 
         if (targetElem) {
           const tRect = targetElem.getBoundingClientRect();
@@ -328,65 +280,42 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
           endY = tRect.top + tRect.height / 2;
         }
 
-        // Streak: pulse target directly
-        if (reward.currency === 'STREAK') {
-          if (targetElem) {
-            targetElem.animate(
-              [
-                { transform: 'scale(1)', filter: 'drop-shadow(0 0 0px #FF9600)' },
-                { transform: 'scale(1.35)', filter: 'drop-shadow(0 0 14px #FF9600)' },
-                { transform: 'scale(1)', filter: 'drop-shadow(0 0 0px #FF9600)' },
-              ],
-              { duration: 400, easing: 'ease-out' }
-            );
-          }
-          return;
-        }
+        const particleCount =
+          reward.currency === 'HEARTS' || reward.currency === 'STREAK'
+            ? Math.max(1, Math.min(3, reward.amount))
+            : reward.amount <= 8
+            ? Math.max(1, reward.amount)
+            : Math.min(14, 6 + Math.floor(reward.amount / 10));
 
-        // Dynamic particle count: matching amount for 1-10, capped at 12 for 10+
-        const particleCount = reward.currency === 'HEARTS'
-          ? Math.max(1, reward.amount)
-          : reward.amount <= 10
-          ? Math.max(1, reward.amount)
-          : Math.min(12, reward.amount);
-
-        // Exact chunk distribution: chunks sum to exactly `amount` (no
-        // remainder lost by rounding), so live counters always land on the
-        // confirmed delta.
-        const baseChunk = Math.floor(reward.amount / particleCount);
-        const leftover = reward.amount - baseChunk * particleCount;
-
-        const staggerStep = 60; // Snappy 60ms stagger between icons
+        const amountPerParticle = Math.max(1, Math.round(reward.amount / particleCount));
+        const staggerStep = 35; // Snappy stagger for the streaming launch
 
         for (let i = 0; i < particleCount; i++) {
           const particleId = `particle-${Date.now()}-${reward.currency}-${i}-${Math.random().toString(36).substr(2, 4)}`;
-          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-          const radius = 35 + (i % 3) * 15 + Math.random() * 15;
-          const burstX = Math.cos(angle) * radius;
-          const burstY = Math.sin(angle) * radius - 15;
+          
+          // Authentic 3D stacked pile layout offsets
+          const row = Math.floor(i / 3);
+          const col = (i % 3) - 1;
+          const pileOffsetX = col * 26 + (Math.random() - 0.5) * 12;
+          const pileOffsetY = -row * 20 - 15 + (Math.random() - 0.5) * 10;
 
           const delayMs = currentWaveStartTime + i * staggerStep;
-          const durationMs = prefersReducedMotion ? 100 : 650; // Snappy 650ms flight
+          // 880ms total animation: 380ms pile pop-up & settle + 500ms continuous stream to target
+          const durationMs = prefersReducedMotion ? 150 : 880;
           const isFinalParticle = i === particleCount - 1;
-          const amountPerParticle = baseChunk + (i < leftover ? 1 : 0);
-
-          const scatterX = (Math.random() - 0.5) * 30;
-          const scatterY = (Math.random() - 0.5) * 20;
 
           newParticles.push({
             id: particleId,
             currency: reward.currency,
-            iconSrc,
+            iconSrc: CURRENCY_ICONS[reward.currency],
             startX,
             startY,
-            burstX,
-            burstY,
+            burstX: pileOffsetX,
+            burstY: pileOffsetY,
             endX,
             endY,
             delayMs,
             durationMs,
-            scatterX,
-            scatterY,
             targetPillId: pillKey,
             amountPerParticle,
             particleIndexInSet: i,
@@ -396,21 +325,22 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
           maxTotalDuration = Math.max(maxTotalDuration, delayMs + durationMs);
         }
 
-        currentWaveStartTime += particleCount * staggerStep + 250;
+        currentWaveStartTime += particleCount * staggerStep + 160;
       });
 
       if (newParticles.length > 0) {
         setParticles((prev) => [...prev, ...newParticles]);
+
+        setTimeout(() => {
+          setParticles([]);
+        }, maxTotalDuration + 300);
       }
 
       if (onComplete) {
-        // Floor of 450ms guarantees onComplete still fires after streak-only
-        // or empty queues (pulse takes ~400ms) instead of firing at ~100ms.
-        const completionDelay = newParticles.length > 0 ? maxTotalDuration + 100 : 450;
-        setTimeout(onComplete, completionDelay);
+        setTimeout(onComplete, maxTotalDuration + 80);
       }
     },
-    [resolvePillTarget]
+    [userLevel]
   );
 
   return (
@@ -419,14 +349,10 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         triggerRewardAnimation,
         openClaimModal,
         closeClaimModal,
-        claimModalData,
         particles,
         shockwaves,
         floatingTexts,
         removeParticle,
-        levelUpData,
-        dismissLevelUp,
-        celebrateLevelUp,
         registerTarget,
       }}
     >

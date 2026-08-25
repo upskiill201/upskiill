@@ -1,47 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
-const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
-const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
-
-// Ensure AWS credentials are present
-const hasAwsCredentials = !!(AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY && CLOUDFRONT_URL);
-
-let s3Client: S3Client | null = null;
-if (hasAwsCredentials) {
-  s3Client = new S3Client({
-    region: AWS_REGION,
-    credentials: {
-      accessKeyId: AWS_ACCESS_KEY_ID!,
-      secretAccessKey: AWS_SECRET_ACCESS_KEY!,
-    },
-  });
-}
-
-const ALLOWED_CONTENT_TYPES = [
-  // Videos
-  'video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm', 'video/avi', 'video/mpeg',
-  // Audio
-  'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/x-m4a', 'audio/m4a',
-  // Resources
-  'application/pdf', 'application/zip', 'application/x-zip-compressed', 
-  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'text/plain', 'text/csv'
-];
-
-const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
-const MAX_AUDIO_SIZE = 500 * 1024 * 1024; // 500MB
-const MAX_RESOURCE_SIZE = 100 * 1024 * 1024; // 100MB
+import {
+  getS3Client,
+  validateUploadMeta,
+  verifyLessonOwnership,
+  buildObjectKey,
+  cloudFrontUrlFor,
+} from '@/lib/uploadS3Server';
 
 export async function POST(req: NextRequest) {
   try {
-    if (!hasAwsCredentials || !s3Client) {
+    const s3Client = getS3Client();
+    if (!s3Client) {
       console.error('AWS S3/CloudFront integration is not fully configured on the server-side env.');
       return NextResponse.json(
         { error: 'AWS S3 integration is not configured on the server.' },
@@ -51,52 +22,33 @@ export async function POST(req: NextRequest) {
 
     const { filename, contentType, lessonId, size } = await req.json();
 
-    if (!filename || !contentType || !lessonId) {
+    if (!lessonId) {
       return NextResponse.json(
-        { error: 'Missing required parameters: filename, contentType, and lessonId are required.' },
+        { error: 'Missing required parameter: lessonId.' },
         { status: 400 }
       );
     }
 
-    if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
-      return NextResponse.json(
-        { error: `File type ${contentType} is not allowed. Only standard video, audio, and document files are supported.` },
-        { status: 400 }
-      );
+    // ─── AUTHENTICATION + OWNERSHIP ────────────────────────────────────────
+    // Forward the caller's session cookie to the backend's lesson endpoint.
+    // It only answers 200 when the requester is signed in AND owns the course
+    // this lesson belongs to. Without this, anyone on the internet could mint
+    // upload URLs into our S3 bucket under any lesson key.
+    const ownership = await verifyLessonOwnership(req.headers.get('cookie') || '', lessonId);
+    if (!ownership.ok) {
+      return NextResponse.json({ error: ownership.error }, { status: ownership.status });
     }
 
-    // Size check if provided
-    if (size) {
-      const isVideo = contentType.startsWith('video/');
-      const isAudio = contentType.startsWith('audio/');
-      const maxSize = isVideo ? MAX_VIDEO_SIZE : (isAudio ? MAX_AUDIO_SIZE : MAX_RESOURCE_SIZE);
-      
-      if (size > maxSize) {
-        let sizeLimitStr = '100MB';
-        if (isVideo) sizeLimitStr = '2GB';
-        if (isAudio) sizeLimitStr = '500MB';
-        
-        return NextResponse.json(
-          { error: `File is too large. Max size is ${sizeLimitStr}.` },
-          { status: 400 }
-        );
-      }
+    const validation = validateUploadMeta({ filename, contentType, size });
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: validation.status });
     }
 
-    // Sanitize the filename to prevent spaces/special character issues in S3
-    const ext = filename.split('.').pop() || '';
-    const nameWithoutExt = filename.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9-_]/g, '_');
-    const sanitizedFilename = `${nameWithoutExt}_${Date.now()}.${ext}`;
+    // Sanitized S3 Object Key
+    const s3Key = buildObjectKey(filename!, contentType!, lessonId);
 
-    // S3 Object Key
-    const isVideo = contentType.startsWith('video/');
-    const isAudio = contentType.startsWith('audio/');
-    const subFolder = isVideo ? 'videos' : (isAudio ? 'audio' : 'resources');
-    const s3Key = `lessons/${lessonId}/${subFolder}/${sanitizedFilename}`;
-
-    // Generate PutObject command and presigned URL
     const command = new PutObjectCommand({
-      Bucket: AWS_S3_BUCKET,
+      Bucket: process.env.AWS_S3_BUCKET,
       Key: s3Key,
       ContentType: contentType,
     });
@@ -104,13 +56,9 @@ export async function POST(req: NextRequest) {
     // Signed URL expires in 10 minutes (600 seconds)
     const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
 
-    // CloudFront CDN URL for secure, fast student playback
-    const cleanCloudFrontBase = CLOUDFRONT_URL!.endsWith('/') ? CLOUDFRONT_URL!.slice(0, -1) : CLOUDFRONT_URL;
-    const cloudFrontUrl = `${cleanCloudFrontBase}/${s3Key}`;
-
     return NextResponse.json({
       uploadUrl,
-      cloudFrontUrl,
+      cloudFrontUrl: cloudFrontUrlFor(s3Key),
       key: s3Key
     });
   } catch (err: any) {

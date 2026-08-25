@@ -66,7 +66,7 @@ export default function Footer() {
           <ul>
             <li><Link href="/about">About us</Link></li>
             <li><Link href="/careers">Careers</Link></li>
-            <li><Link href="/community">Community Forums</Link></li>
+            <li><Link href="/dashboard/feed">Community Feed</Link></li>
             <li><Link href="/blog">Blog & News</Link></li>
             <li><Link href="/investors">Investors</Link></li>
           </ul>

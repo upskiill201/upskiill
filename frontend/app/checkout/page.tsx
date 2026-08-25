@@ -10,6 +10,7 @@ import {
 import { useCart } from '../../context/CartContext';
 import Button from '../../components/ui/Button';
 import { playHaptic } from '@/lib/haptics';
+import { formatXaf, USD_TO_XAF_RATE } from '@/lib/currency';
 import styles from './CheckoutPage.module.css';
 
 // Stripe
@@ -290,7 +291,7 @@ export default function CheckoutPage() {
               <p className={styles.panelNote}>
                 Pay via Mobile Money. You will receive a USSD prompt on your phone to confirm.
                 <br />
-                <strong>Amount: {(totalPrice * 600).toLocaleString()} FCFA</strong> (Rate: 1 USD = 600 XAF)
+                <strong>Amount: {formatXaf(totalPrice)}</strong> (Rate: 1 USD = {USD_TO_XAF_RATE} XAF)
               </p>
 
               <div className={styles.formGroup}>
@@ -345,7 +346,7 @@ export default function CheckoutPage() {
               >
                 {momoProcessing
                   ? <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Waiting for confirmation...</>
-                  : `Pay ${(totalPrice * 600).toLocaleString()} FCFA via ${momoProvider}`}
+                  : `Pay ${formatXaf(totalPrice)} via ${momoProvider}`}
               </Button>
 
               <p className={styles.momoHint}>

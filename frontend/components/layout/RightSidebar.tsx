@@ -9,8 +9,8 @@ import { useComingSoon } from '@/app/dashboard/layout';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
-import FriendsActivityCard from '@/components/dashboard/v2/FriendsActivityCard';
 import WeeklyLuckySpinCard from '@/components/dashboard/v2/WeeklyLuckySpinCard';
+import MonthlyQuestWidget from '@/components/quests/MonthlyQuestWidget';
 import styles from './RightSidebar.module.css';
 
 export interface RightSidebarProps {
@@ -32,8 +32,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     isEligibleForReward,
     nextRewardClaimInMs,
     claimDailyReward,
+    refresh,
   } = useGamification();
-  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
+  const { openClaimModal } = useRewardAnimation();
 
   const [countdownStr, setCountdownStr] = useState('');
 
@@ -73,17 +74,27 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     playHaptic('success');
     const isDay7 = dailyRewardCyclePosition === 7;
 
+    // Full-page Celebration scene — onClaim (the real daily-reward API, which
+    // throws on failure) runs server-first inside the scene.
     openClaimModal({
-      title: isDay7 ? '+50 GEMS' : '+20 COINS',
+      title: isDay7 ? '+30 COINS  +50 XP' : '+20 COINS  +10 XP',
       subtitle: isDay7 ? 'Day 7 Mystery Chest Unlocked!' : `Day ${dailyRewardCyclePosition} Daily Reward Claimed!`,
+      // Mirrors the backend grant: 20 coins + 10 XP (30 + 50 on day 7)
       rewards: isDay7
         ? [
-            { currency: 'XP', amount: 50 },
             { currency: 'COINS', amount: 30 },
+            { currency: 'XP', amount: 50 },
           ]
-        : [{ currency: 'COINS', amount: 20 }],
+        : [
+            { currency: 'COINS', amount: 20 },
+            { currency: 'XP', amount: 10 },
+          ],
+      skipBackendPersist: true,
       onClaim: async () => {
         await claimDailyReward();
+      },
+      onComplete: () => {
+        void refresh();
       },
     });
   };
@@ -148,6 +159,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
   return (
     <div className={styles.rightColumn}>
+      {/* LEARNING STATS (First card in sidebar) */}
+      <LearningStatsCard />
+
       {/* SECTION PROGRESS CARD (Only shown if section prop is provided) */}
       {hasSection && (
         <div className={styles.courseProgressCard}>
@@ -243,104 +257,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </div>
       )}
 
-      {/* DAILY QUESTS CARD (section view) */}
+      {/* MONTHLY QUEST CARD (section view — live widget) */}
       {hasSection && (
-        <div className={styles.questsCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className={styles.cardHeaderWithLink}>
-            <h4 className={styles.cardSectionTitle}>Daily Quests</h4>
-          </div>
-
-          {/* Quest 1: Complete 1 Lesson */}
-          {(() => {
-            const isFinished = sectionCompletedCount >= 1;
-            const isClaimed = completedQuests.includes('daily-lesson');
-            return (
-              <div className={styles.questItem} style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
-                <div className={styles.questIconWrapper}>
-                  <Target size={18} className={styles.questLightningIcon} />
-                </div>
-                <div className={styles.questContent} style={{ width: '100%' }}>
-                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Complete 1 Lesson</span>
-                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
-                      {Math.min(sectionCompletedCount, 1)} / 1
-                    </span>
-                  </div>
-                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
-                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#58cc02', width: `${isFinished ? 100 : 0}%` }} />
-                  </div>
-                  {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02', display: 'flex', alignItems: 'center', gap: '4px' }}>Claimed! <Check size={14} /></span>
-                  ) : isFinished ? (
-                    <button
-                      onClick={() => {
-                        playHaptic('medium');
-                        openClaimModal({
-                          title: '+20 GEMS',
-                          subtitle: 'Daily Quest: Complete 1 Lesson Completed!',
-                          rewards: [{ currency: 'XP', amount: 20 }],
-                          onClaim: async () => {
-                            await claimQuest('daily-lesson');
-                          },
-                        });
-                      }}
-                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                    >
-                      CLAIM +20 XP
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Quest 2: Earn 10 XP */}
-          {(() => {
-            const isFinished = sectionXpEarned >= 10;
-            const isClaimed = completedQuests.includes('daily-consistent');
-            return (
-              <div className={styles.questItem}>
-                <div className={styles.questIconWrapper}>
-                  <Image src="/Icons/gem.png" alt="XP" width={18} height={18} />
-                </div>
-                <div className={styles.questContent} style={{ width: '100%' }}>
-                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Earn 10 XP Today</span>
-                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
-                      {Math.min(sectionXpEarned, 10)} / 10
-                    </span>
-                  </div>
-                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
-                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#0172FD', width: `${Math.min((sectionXpEarned / 10) * 100, 100)}%` }} />
-                  </div>
-                  {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD', display: 'flex', alignItems: 'center', gap: '4px' }}>Claimed! <Check size={14} /></span>
-                  ) : isFinished ? (
-                    <button
-                      onClick={() => {
-                        playHaptic('medium');
-                        openClaimModal({
-                          title: '+10 GEMS',
-                          subtitle: 'Daily Quest: Earn 10 XP Completed!',
-                          rewards: [{ currency: 'XP', amount: 10 }],
-                          onClaim: async () => {
-                            await claimQuest('daily-consistent');
-                          },
-                        });
-                      }}
-                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                    >
-                      CLAIM +10 XP
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
+        <div className={styles.questsCard} style={{ background: 'none', border: 'none' }}>
+          <MonthlyQuestWidget />
         </div>
       )}
 
@@ -604,34 +524,11 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       </div>
       )}
 
-      {/* DAILY QUESTS CARD (default) */}
+      {/* MONTHLY QUEST CARD (default — live widget) */}
       {!hasSection && (
-      <div className={styles.questsCard}>
-        <div className={styles.cardHeaderWithLink}>
-          <h4 className={styles.cardSectionTitle}>DAILY QUESTS</h4>
-          <button
-            onClick={() => triggerComingSoon('All Quests')}
-            className={styles.cardViewAllBtn}
-          >
-            View All
-          </button>
+        <div className={styles.questsCard} style={{ background: 'none', border: 'none' }}>
+          <MonthlyQuestWidget />
         </div>
-
-        <div className={styles.questItem}>
-          <div className={styles.questIconWrapper}>
-            <Image src="/Icons/gem.png" alt="XP" width={18} height={18} />
-          </div>
-          <div className={styles.questContent}>
-            <div className={styles.questInfoRow}>
-              <span className={styles.questTitle}>Earn 10 XP</span>
-              <span className={styles.questProgressText}>10/10</span>
-            </div>
-            <div className={styles.questProgressBar}>
-              <div className={styles.questProgressFill} style={{ width: '100%' }} />
-            </div>
-          </div>
-        </div>
-      </div>
       )}
 
       {/* UNLOCK LEADERBOARDS CARD (default) */}
@@ -657,31 +554,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       </div>
       )}
 
-      {/* DAILY REWARD CARD (default) */}
-      {!hasSection && (
-      <div className={styles.rewardCard}>
-        <span className={styles.rewardHeader}>DAILY REWARD</span>
-        <div className={styles.treasureBoxWrapper}>
-          <Image
-            src="/Tressure box.png"
-            alt="Treasure Box"
-            width={120}
-            height={100}
-            className={styles.treasureBoxImage}
-          />
-        </div>
-        <button
-          onClick={handleClaimReward}
-          className={styles.button3dWhiteReward}
-        >
-          Claim Reward
-        </button>
-      </div>
-      )}
-
-      {/* NEW V2 RIGHT SIDEBAR CARDS */}
-      <LearningStatsCard />
-      <FriendsActivityCard />
+      {/* LUCKY SPIN CARD */}
       <WeeklyLuckySpinCard />
     </div>
   );

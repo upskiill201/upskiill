@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
     '/blog/[slug]': ['./app/blog/_fonts/**'],
   },
   images: {
+    // First-party SVG icon assets (e.g. /Icons/snowflake.svg for the
+    // streak-freeze celebration currency) must be servable through next/image.
+    // All SVGs under /public are repo-authored — no user-uploaded SVGs.
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -55,20 +59,20 @@ const nextConfig: NextConfig = {
       // beforeFiles: run before filesystem check — nothing here
       beforeFiles: [],
 
-      // afterFiles: run AFTER filesystem is checked.
-      // Next.js will serve any existing app/api/* route handlers (like /api/upload/presign)
-      // BEFORE reaching these rewrites, so local API routes are always safe.
-      afterFiles: [
+      // afterFiles: run AFTER static filesystem check but BEFORE dynamic
+      // routes. Must stay empty: an `/api/:path*` catch-all here would
+      // shadow every dynamic app/api/**/[param] route handler.
+      afterFiles: [],
+
+      // fallback: run after ALL filesystem routes (static AND dynamic).
+      // Anything that wasn't handled locally proxies through to NestJS,
+      // e.g. legacy /api/social/* paths with no local route handler.
+      fallback: [
         {
-          // Proxy all /api/* calls to NestJS backend EXCEPT our local Next.js API routes
-          // (Next.js serves /api/upload/* from the filesystem first — these rewrites never fire for them)
+          // Proxy remaining /api/* calls to the NestJS backend.
           source: '/api/:path*',
           destination: `${backendUrl}/:path*`,
         },
-      ],
-
-      // fallback: run after dynamic routes
-      fallback: [
         {
           source: "/ingest/static/:path*",
           destination: "https://us-assets.i.posthog.com/static/:path*",
@@ -83,18 +87,6 @@ const nextConfig: NextConfig = {
         },
       ],
     };
-  },
-  async headers() {
-    return [
-      {
-        source: '/assets/sounds/:path*',
-        headers: [
-          { key: 'Content-Type', value: 'audio/mpeg' },
-          { key: 'Content-Disposition', value: 'inline' },
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
-    ];
   },
 };
 

@@ -6,21 +6,27 @@ import { Sparkles, Zap, Flame, Heart, Award } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardItem } from '@/context/RewardAnimationContext';
 import { useHerald } from '@/context/HeraldContext';
+import { useCelebration } from '@/context/CelebrationContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './RewardRunTestWidget.module.css';
 
 export default function RewardRunTestWidget() {
   const { refresh } = useGamification();
   const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
-  const { openMissionsModal, openStreakModal, openChestModal, openSpinModal } = useHerald();
+  const { openStreakModal, openSpinModal } = useHerald();
+  const { celebrate } = useCelebration();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Dev-only test bench — never ship the fake-reward triggers to real users
+  // (it posts to /api/gamification/test-reward against the live backend).
+  if (process.env.NEXT_PUBLIC_ENVIRONMENT !== 'development') return null;
 
   const handleOpenDuolingoClaim = (currency: 'COINS' | 'XP' | 'HEARTS', amount: number) => {
     playHaptic('medium');
     openClaimModal({
-      title: `+${amount} ${currency === 'XP' ? 'GEMS' : currency}`,
-      subtitle: 'Duolingo-Style Reward Claim',
+      title: `+${amount} ${currency === 'XP' ? 'XP' : currency}`,
+      subtitle: 'Celebration Engine Reward Claim',
       rewards: [{ currency, amount }],
       onClaim: async () => {
         const payload = currency === 'COINS' ? { coins: amount } : currency === 'XP' ? { xp: amount } : { hearts: amount };
@@ -319,10 +325,38 @@ export default function RewardRunTestWidget() {
             <span>Multi-Reward Flow</span>
           </button>
 
-          {/* Duolingo Missions Modal */}
+          {/* Daily Missions — QUEST → CLAIM chain (same as the mission card) */}
           <button
             type="button"
-            onClick={() => { playHaptic('medium'); openMissionsModal(); }}
+            onClick={() => {
+              playHaptic('medium');
+              celebrate([
+                {
+                  kind: 'QUEST',
+                  headline: 'Mission complete!',
+                  subhead: 'Daily Mission: "Complete 1 lesson"',
+                  ctaText: 'CLAIM',
+                  rows: [
+                    {
+                      id: 'm1',
+                      label: 'Complete 1 lesson',
+                      current: 1,
+                      target: 1,
+                      highlight: true,
+                      reward: { currency: 'XP', amount: 20 },
+                    },
+                    { id: 'm2', label: 'Earn 20 XP', current: 10, target: 20, reward: { currency: 'COINS', amount: 10 } },
+                    { id: 'm3', label: 'Stay on your streak', current: 1, target: 1, reward: { currency: 'COINS', amount: 5 } },
+                  ],
+                },
+                {
+                  kind: 'CLAIM',
+                  title: '+20 XP',
+                  subtitle: 'Daily Mission: "Complete 1 lesson" Completed!',
+                  rewards: [{ currency: 'XP', amount: 20 }],
+                },
+              ]);
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -365,10 +399,10 @@ export default function RewardRunTestWidget() {
             <span>Streak Screen</span>
           </button>
 
-          {/* Duolingo Mystery Chest */}
+          {/* Celebration Engine Chest Scene (real server-first open) */}
           <button
             type="button"
-            onClick={() => { playHaptic('medium'); openChestModal(); }}
+            onClick={() => { playHaptic('medium'); celebrate({ kind: 'CHEST' }); }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -389,6 +423,164 @@ export default function RewardRunTestWidget() {
           </button>
         </div>
       </div>
+
+      {/* CELEBRATION ENGINE SCENE BENCH */}
+      <div style={{ marginTop: 20, paddingTop: 16, borderTop: '2px dashed #E2E8F0', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 900, color: '#7C3AED', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            🎉 Celebration Engine Scenes
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 8px', borderRadius: 6 }}>
+            FULL-PAGE
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
+          {/* Streak EXTENDED */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('medium');
+              celebrate({
+                kind: 'STREAK',
+                mode: 'EXTENDED',
+                days: 5,
+                previousDays: 4,
+                weekDays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, idx) => ({
+                  label,
+                  completed: idx <= 4,
+                  isToday: idx === 4,
+                })),
+                speech: '5 days in a row! Come back tomorrow to keep the fire alive.',
+              });
+            }}
+            style={sceneBtnStyle('#FFF7ED', '#FED7AA', '#EA580C')}
+          >
+            <Flame size={16} />
+            <span>Streak Extended</span>
+          </button>
+
+          {/* Streak SAVED */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('medium');
+              celebrate({ kind: 'STREAK', mode: 'SAVED', days: 5 });
+            }}
+            style={sceneBtnStyle('#F0F9FF', '#BAE6FD', '#0369A1')}
+          >
+            <Heart size={16} />
+            <span>Streak Saved</span>
+          </button>
+
+          {/* Streak LOST */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('medium');
+              celebrate({
+                kind: 'STREAK',
+                mode: 'LOST',
+                days: 0,
+                lostCount: 5,
+                speech: 'You missed a day and the streak reset — but your progress is safe.',
+              });
+            }}
+            style={sceneBtnStyle('#FEF2F2', '#FECACA', '#B91C1C')}
+          >
+            <Flame size={16} />
+            <span>Streak Lost</span>
+          </button>
+
+          {/* Level Up */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('teyroCelebration');
+              celebrate({ kind: 'LEVEL_UP', oldLevel: 4, newLevel: 5, bonusCoins: 100 });
+            }}
+            style={sceneBtnStyle('#EFF6FF', '#BFDBFE', '#1D4ED8')}
+          >
+            <Award size={16} />
+            <span>Level Up</span>
+          </button>
+
+          {/* Quest */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('medium');
+              celebrate({
+                kind: 'QUEST',
+                headline: '+1 Quest Point!',
+                subhead: 'Weekly goal progress',
+                rows: [
+                  { id: 'q1', label: 'Earn 50 XP', current: 50, target: 50, highlight: true },
+                  { id: 'q2', label: 'Complete 2 lessons', current: 1, target: 2 },
+                ],
+              });
+            }}
+            style={sceneBtnStyle('#FEFCE8', '#FDE047', '#A16207')}
+          >
+            <Sparkles size={16} />
+            <span>Quest Progress</span>
+          </button>
+
+          {/* Chained queue: claim → streak → quest */}
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('teyroCelebration');
+              celebrate([
+                {
+                  kind: 'CLAIM',
+                  title: 'Lesson complete!',
+                  rewards: [
+                    { currency: 'XP', amount: 25 },
+                    { currency: 'COINS', amount: 10 },
+                  ],
+                  claim: async () => {
+                    await fetch('/api/gamification/test-reward', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({ xp: 25, coins: 10 }),
+                    }).catch(() => {});
+                    if (refresh) await refresh();
+                  },
+                },
+                { kind: 'STREAK', mode: 'EXTENDED', days: 6, previousDays: 5 },
+                {
+                  kind: 'QUEST',
+                  headline: '+2 Quest Points!',
+                  rows: [{ id: 'q1', label: 'Daily lessons', current: 2, target: 2, highlight: true }],
+                },
+              ]);
+            }}
+            style={sceneBtnStyle('#F5F3FF', '#DDD6FE', '#6D28D9')}
+          >
+            <Zap size={16} />
+            <span>Full Chain Queue</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
+}
+
+function sceneBtnStyle(bg: string, border: string, color: string): React.CSSProperties {
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: '10px 12px',
+    backgroundColor: bg,
+    border: `2px solid ${border}`,
+    borderRadius: 12,
+    color,
+    fontWeight: 800,
+    fontSize: 13,
+    cursor: 'pointer',
+  };
 }

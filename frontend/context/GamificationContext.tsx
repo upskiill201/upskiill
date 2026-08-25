@@ -5,14 +5,9 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
-import {
-  levelFromXp,
-  widthForLevel,
-  xpToNextLevel,
-  xpWithinLevel,
-} from '@/lib/levels';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -35,7 +30,16 @@ export interface GamificationState {
   dailyRewardCyclePosition: number;
   isEligibleForReward: boolean;
   nextRewardClaimInMs: number;
+  userLevel?: number;
+  xpInCurrentLevel?: number;
   isLoading: boolean;
+  /**
+   * True only after /gamification/me answered successfully for this session.
+   * Guards reward auto-triggers (e.g. the daily-reward scene) from firing for
+   * logged-out visitors — DEFAULT_STATE marks isEligibleForReward=true, which
+   * would otherwise prompt anonymous users to claim.
+   */
+  profileLoaded: boolean;
 }
 
 interface GamificationContextValue extends GamificationState {
@@ -51,8 +55,6 @@ interface GamificationContextValue extends GamificationState {
   dismissStreakModal: () => void;
   userLevel: number;
   xpInCurrentLevel: number;
-  xpToNextLevel: number;
-  currentLevelWidth: number;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -79,12 +81,15 @@ const DEFAULT_STATE: GamificationState = {
   isEligibleForReward: true,
   nextRewardClaimInMs: 0,
   isLoading: true,
+  profileLoaded: false,
 };
 
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GamificationState>(DEFAULT_STATE);
+  // Last server-reported userLevel — level-up detection across refreshes
+  const prevServerLevelRef = useRef<number | null>(null);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -104,12 +109,45 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       });
 
       if (!res.ok) {
-        setState((prev) => ({ ...prev, isLoading: false }));
+        setState((prev) => ({ ...prev, isLoading: false, profileLoaded: false }));
         return;
       }
 
       const data = await res.json();
       const currentCoins = data.coins ?? data.gems ?? 50;
+
+      // ── Level-up detection: the backend sends userLevel on /gamification/me
+      // but fires no level-up event, so we compare across refreshes and let
+      // the Celebration Engine pick it up via `teyro:level-up`.
+      const serverLevel = typeof data.userLevel === 'number' ? data.userLevel : null;
+      if (
+        serverLevel !== null &&
+        prevServerLevelRef.current !== null &&
+        serverLevel > prevServerLevelRef.current
+      ) {
+        window.dispatchEvent(
+          new CustomEvent('teyro:level-up', {
+            detail: { oldLevel: prevServerLevelRef.current, newLevel: serverLevel },
+          })
+        );
+      }
+      if (serverLevel !== null) prevServerLevelRef.current = serverLevel;
+
+      // ── Streak saved/lost surfaces through the Celebration Engine too
+      // (session-level repeat suppression happens via scene dedupeKey).
+      const serverStreakStatus = data.streakStatus ?? 'NORMAL';
+      if (serverStreakStatus === 'SAVED' || serverStreakStatus === 'RESET') {
+        window.dispatchEvent(
+          new CustomEvent('teyro:streak-status', {
+            detail: {
+              mode: serverStreakStatus === 'SAVED' ? 'SAVED' : 'LOST',
+              days: data.streakDays ?? 0,
+              lostCount: data.lostStreakCount ?? 0,
+            },
+          })
+        );
+      }
+
       setState({
         xp: data.xp ?? 30,
         gems: currentCoins,
@@ -129,10 +167,13 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
         isEligibleForReward: data.isEligibleForReward ?? true,
         nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
+        userLevel: data.userLevel,
+        xpInCurrentLevel: data.xpInCurrentLevel,
         isLoading: false,
+        profileLoaded: true,
       });
     } catch {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isLoading: false, profileLoaded: false }));
     }
   }, []);
 
@@ -245,29 +286,33 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const claimDailyReward = useCallback(async () => {
-    try {
-      const tzOffset = new Date().getTimezoneOffset();
-      const res = await fetch('/api/gamification/claim-daily-reward', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ timezoneOffset: tzOffset }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setState((prev) => ({
-          ...prev,
-          xp: data.xp ?? prev.xp,
-          lastRewardClaimedAt: data.lastRewardClaimedAt ?? prev.lastRewardClaimedAt,
-          dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? prev.dailyRewardCyclePosition,
-          isEligibleForReward: data.isEligibleForReward ?? false,
-          nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
-          streakFreezeBank: data.streakFreezeBank ?? prev.streakFreezeBank,
-        }));
-      }
-    } catch (e) {
-      console.error('Failed to claim daily reward:', e);
+    const tzOffset = new Date().getTimezoneOffset();
+    const res = await fetch('/api/gamification/claim-daily-reward', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ timezoneOffset: tzOffset }),
+    });
+    if (!res.ok) {
+      // Throw so server-first flows (Celebration scenes) surface the failure
+      // instead of celebrating a reward that was never persisted.
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.message || 'Could not claim your daily reward.');
     }
+    const data = await res.json();
+    setState((prev) => ({
+      ...prev,
+      xp: data.xp ?? prev.xp,
+      coins: data.coins ?? prev.coins,
+      gems: data.coins ?? prev.gems,
+      userLevel: data.userLevel ?? prev.userLevel,
+      xpInCurrentLevel: data.xpInCurrentLevel ?? prev.xpInCurrentLevel,
+      lastRewardClaimedAt: data.lastRewardClaimedAt ?? prev.lastRewardClaimedAt,
+      dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? prev.dailyRewardCyclePosition,
+      isEligibleForReward: data.isEligibleForReward ?? false,
+      nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
+      streakFreezeBank: data.streakFreezeBank ?? prev.streakFreezeBank,
+    }));
   }, []);
 
   const awardTestReward = useCallback((delta: { coins?: number; xp?: number; lives?: number; streakDays?: number }) => {
@@ -316,15 +361,21 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Level logic — always derived locally from xp via the shared curve
-  // (lib/levels.ts mirrors backend/src/common/levels.ts bit-for-bit). Local
-  // derivation keeps level values correct even in optimistic-update windows
-  // (applyLessonReward / claimQuest) before the next server refresh.
-  const totalXp = state.xp || 0;
-  const userLevel = levelFromXp(totalXp);
-  const xpInCurrentLevel = xpWithinLevel(totalXp);
-  const xpToNextLevelValue = xpToNextLevel(totalXp);
-  const currentLevelWidth = widthForLevel(userLevel);
+  // level logic: exponential curve matching backend
+  let userLevel = state.userLevel || 1;
+  if (!state.userLevel) {
+    const totalXp = state.xp || 0;
+    while (true) {
+      const nextReq = 50 * userLevel * (userLevel + 1);
+      if (totalXp >= nextReq) {
+        userLevel++;
+      } else {
+        break;
+      }
+    }
+  }
+  const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
+  const xpInCurrentLevel = state.xpInCurrentLevel ?? Math.max(0, (state.xp || 0) - currentLevelBaseXp);
 
   return (
     <GamificationContext.Provider
@@ -342,8 +393,6 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         dismissStreakModal,
         userLevel,
         xpInCurrentLevel,
-        xpToNextLevel: xpToNextLevelValue,
-        currentLevelWidth,
       }}
     >
       {children}

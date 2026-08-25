@@ -11,12 +11,11 @@ interface LevelUpIncomingBannerProps {
 }
 
 export default function LevelUpIncomingBanner({ onPlay }: LevelUpIncomingBannerProps) {
-  const { userLevel, xpInCurrentLevel, xpToNextLevel, currentLevelWidth } = useGamification();
+  const { userLevel, xp, xpInCurrentLevel } = useGamification();
 
-  // Level math comes straight from the shared curve (GamificationContext).
-  const targetXpForLevel = currentLevelWidth;
-  const currentLevelXp = Math.min(targetXpForLevel, xpInCurrentLevel);
-  const remainingXp = Math.max(0, xpToNextLevel);
+  const targetXpForLevel = 1000;
+  const currentLevelXp = Math.min(targetXpForLevel, (xp % targetXpForLevel) || 880);
+  const remainingXp = Math.max(0, targetXpForLevel - currentLevelXp);
   const progressPercent = Math.min(100, Math.round((currentLevelXp / targetXpForLevel) * 100));
 
   const handleAction = () => {

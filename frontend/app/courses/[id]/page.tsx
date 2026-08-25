@@ -4,27 +4,24 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   ArrowRight,
-  Award,
   BookOpen,
   Check,
   ChevronDown,
   ChevronUp,
   Clock,
   Globe,
+  Infinity as InfinityIcon,
   Layers,
   Lock,
   Play,
   ShieldCheck,
-  Sparkles,
   Star,
   Target,
-  Trophy,
   Users,
-  X,
   Zap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -33,23 +30,21 @@ import { StatsBar } from '@/components/ui/StatsBar';
 import GamificationIcon from '@/components/ui/GamificationIcon';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
+import EnrollmentWizard, { type EnrollResponse } from '@/components/course/EnrollmentWizard';
 import { playHaptic } from '@/lib/haptics';
 import { playWinSound } from '@/utils/audio';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import styles from './CourseDetail.module.css';
 
 /* ─── Spring Constants for Duolingo-grade feel ─── */
-const SPRING_BOUNCE = { type: 'spring', stiffness: 450, damping: 22 } as const;
 const SPRING_GENTLE = { type: 'spring', stiffness: 300, damping: 26 } as const;
 
 interface Lesson {
   id?: string;
   title: string;
   durationMinutes?: number;
-  duration?: string;
   lessonType?: string;
-  type?: string;
+  xpReward?: number;
 }
 
 interface CurriculumSection {
@@ -57,6 +52,65 @@ interface CurriculumSection {
   title: string;
   orderIndex?: number;
   lessons: Lesson[];
+}
+
+/** Creator info embedded in the course payload (real rows only). */
+interface CourseInstructor {
+  id?: string;
+  fullName?: string;
+  avatarUrl?: string | null;
+  profile?: {
+    username?: string | null;
+    headline?: string | null;
+    bio?: string | null;
+    about?: string | null;
+    primaryExpertise?: string | null;
+    avatarUrl?: string | null;
+  };
+  instructorProfile?: {
+    professionalHeadline?: string | null;
+    bio?: string | null;
+    avatarUrl?: string | null;
+    verificationStatus?: string | null;
+  };
+  /** Aggregate over the creator's PUBLISHED courses (backend-computed). */
+  stats?: {
+    coursesCount?: number;
+    studentsCount?: number;
+    reviewsCount?: number;
+    ratingAvg?: number | null;
+  };
+}
+
+/** Shape returned by GET /api/v1/courses/:idOrSlug. Every stat comes from
+ *  the server computed off real rows — the UI renders values or hides them. */
+interface CourseDetail {
+  id?: string;
+  slug?: string;
+  title?: string;
+  description?: string;
+  shortDescription?: string | null;
+  thumbnailUrl?: string | null;
+  price?: number;
+  originalPrice?: number | null;
+  category?: string;
+  level?: string;
+  language?: string;
+  /** JSON columns — arrays of strings when the creator wrote them. */
+  outcomes?: unknown;
+  realOutputs?: unknown;
+  skills?: unknown;
+  published?: boolean;
+  studentsCount?: number;
+  stats?: {
+    modulesCount?: number;
+    lessonsCount?: number;
+    durationMinutes?: number;
+    totalXp?: number;
+    ratingAvg?: number | null;
+    reviewsCount?: number;
+  };
+  instructor?: CourseInstructor;
 }
 
 export default function CourseDetailPage({
@@ -70,20 +124,34 @@ export default function CourseDetailPage({
   const searchParams = useSearchParams();
   const isPreviewMode = searchParams?.get('preview') === 'true';
 
-  const { awardTestReward } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { refresh } = useGamification();
 
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<CourseDetail | null>(null);
   const [sections, setSections] = useState<CurriculumSection[]>([]);
   const [openSectionIds, setOpenSectionIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [isEnrolling, setIsEnrolling] = useState(false);
 
-  // ─── 3-SCREEN CELEBRATION FULLSCREEN STATE ───
-  const [showCelebrationModal, setShowCelebrationModal] = useState(false);
-  const [celebrationStep, setCelebrationStep] = useState<1 | 2 | 3>(1);
-  const [rewardClaimed, setRewardClaimed] = useState(false);
+  // Session state for the enroll gate — resolved from the /api/auth/me call
+  // below. 'unknown' means the check hasn't landed yet.
+  const [authState, setAuthState] = useState<'unknown' | 'authed' | 'guest'>('unknown');
+
+  // ─── 4-STEP ENROLLMENT WIZARD STATE (lives in EnrollmentWizard) ───
+  const [showEnrollWizard, setShowEnrollWizard] = useState(false);
+
+  // Count a course detail-page view once per browser session. Anonymous
+  // aggregate only — powers the creator's "viewed → enrolled" funnel.
+  useEffect(() => {
+    if (!idOrSlug || isPreviewMode) return;
+    const key = `teyro_course_view_${idOrSlug}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch {
+      // storage unavailable (private mode) — still count this visit
+    }
+    fetch(`/api/courses/${encodeURIComponent(idOrSlug)}/view`, { method: 'POST' }).catch(() => {});
+  }, [idOrSlug, isPreviewMode]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,12 +184,13 @@ export default function CourseDetailPage({
             }
 
             const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+            setAuthState(meRes.ok ? 'authed' : 'guest');
             if (meRes.ok) {
               const enrollmentsRes = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
               if (enrollmentsRes.ok) {
-                const enrollments = await enrollmentsRes.json();
+                const enrollments = (await enrollmentsRes.json()) as { courseId: string }[];
                 const enrolled = enrollments.some(
-                  (e: any) => e.courseId === data.id || e.courseId === idOrSlug
+                  (e) => e.courseId === data.id || e.courseId === idOrSlug
                 );
                 setIsEnrolled(enrolled);
               }
@@ -146,58 +215,110 @@ export default function CourseDetailPage({
     );
   };
 
+  // ─── REAL-OR-HIDE STATS ────────────────────────────────────────────────
+  // Every number below comes from the server (`stats` / `instructor.stats`
+  // are computed from real rows by GET /courses/:id). When a value doesn't
+  // exist we HIDE the element instead of inventing one — no default 4.9★,
+  // no fake learner counts, no boilerplate copy.
   const allLessons = sections.flatMap((s) => s.lessons || []);
-  const totalLessonsCount = allLessons.length || course?.lessonsCount || 12;
-  const totalMinutes = allLessons.reduce((acc, l) => acc + (l.durationMinutes || 0), 0);
+  const serverStats = course?.stats;
+
+  const totalLessonsCount = serverStats?.lessonsCount ?? allLessons.length;
+  const totalMinutes =
+    serverStats?.durationMinutes ??
+    allLessons.reduce((acc, l) => acc + (l.durationMinutes || 0), 0);
   const formattedDuration =
     totalMinutes > 0
       ? `${Math.floor(totalMinutes / 60) > 0 ? `${Math.floor(totalMinutes / 60)}h ` : ''}${totalMinutes % 60}m`
-      : course?.duration || '3h 15m';
+      : null;
 
-  const totalXp = totalLessonsCount * 25 + 50;
-  const learnersCount = course?._count?.enrollments ?? course?.studentsCount ?? 1420;
+  // XP promise = creator-configured lesson rewards (+50 per unit mastery
+  // chest, matching the backend's real section-completion bonus). Hidden
+  // entirely when no lesson rewards have been configured yet.
+  const chestBonusXp = sections.length * 50;
+  const rawLessonXp = serverStats?.totalXp ?? 0;
+  const totalXp = rawLessonXp > 0 ? rawLessonXp + chestBonusXp : null;
 
-  // Real Creator Profile Data directly from course relation (No Mocked Data)
-  const instructor = course?.instructor || course?.creator || {};
+  const learnersCount = course?.studentsCount ?? 0;
+  const ratingAvg = serverStats?.ratingAvg ?? null;
+  const reviewsCount = serverStats?.reviewsCount ?? 0;
+  const isPaidCourse = Number(course?.price ?? 0) > 0;
+
+  // Global lesson order — mirrors the backend paywall rule: the first two
+  // PUBLISHED lessons of the whole course are free preview, everything else
+  // on a paid course is locked until enrollment.
+  const lessonGlobalIndexById = new Map<string, number>();
+  let globalLessonCursor = 0;
+  sections.forEach((sec) =>
+    (sec.lessons || []).forEach((les) => {
+      if (les.id) lessonGlobalIndexById.set(les.id, globalLessonCursor);
+      globalLessonCursor += 1;
+    }),
+  );
+
+  // Real Creator Profile Data directly from course relation (No Mocked Data).
+  // Headline/bio/username render only when the creator actually wrote them.
+  const instructor: CourseInstructor = course?.instructor ?? {};
   const instructorProfile = instructor.profile || {};
   const instructorDetail = instructor.instructorProfile || {};
+  const instructorStats = instructor.stats ?? {};
 
-  const instructorName =
-    instructorProfile.displayName ||
-    instructorDetail.displayName ||
-    instructor.fullName ||
-    instructor.name ||
-    'Course Creator';
+  const instructorName = instructor.fullName || 'Course Creator';
 
-  const instructorAvatar =
+  const instructorAvatar: string | null =
     instructorProfile.avatarUrl ||
     instructorDetail.avatarUrl ||
     instructor.avatarUrl ||
-    course?.instructorAvatar;
+    null;
 
-  const instructorUsername =
-    instructorProfile.username ||
-    instructor.username ||
-    instructor.id ||
-    'creator';
+  const instructorUsername: string | null = instructorProfile.username || null;
 
-  const instructorHeadline =
+  const instructorHeadline: string | null =
     instructorProfile.headline ||
     instructorDetail.professionalHeadline ||
     instructorProfile.primaryExpertise ||
-    'Verified Expert Instructor';
+    null;
 
-  const instructorBio =
+  const instructorBio: string | null =
     instructorProfile.bio ||
     instructorDetail.bio ||
     instructorProfile.about ||
-    `${instructorName} is an industry practitioner sharing practical knowledge on Teyro.`;
+    null;
 
-  const instructorRating = course?.rating || 4.9;
-  const instructorCoursesCount = instructor._count?.courses || instructor.coursesCount || 1;
-  const instructorStudentsCount = learnersCount;
+  const isVerifiedInstructor = instructorDetail.verificationStatus === 'VERIFIED';
 
-  // ─── 1. CLICK "START LEARNING FREE" (OPENS 3-STEP CELEBRATION TAKEOVER) ───
+  const instructorCoursesCount = instructorStats.coursesCount ?? 0;
+  const instructorStudentsCount = instructorStats.studentsCount ?? 0;
+  const instructorRatingAvg = instructorStats.ratingAvg ?? null;
+  const instructorReviewsCount = instructorStats.reviewsCount ?? 0;
+
+  // Honest outcomes: ONLY what the creator wrote (outcomes → realOutputs →
+  // skills). If none exist the whole "What You'll Achieve" block hides.
+  const toStringList = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? value.filter(
+          (v): v is string => typeof v === 'string' && v.trim().length > 0,
+        )
+      : [];
+  const outcomesList = toStringList(course?.outcomes);
+  const realOutputsList = toStringList(course?.realOutputs);
+  const skillsList = toStringList(course?.skills);
+  const dynamicOutcomes =
+    outcomesList.length > 0
+      ? outcomesList
+      : realOutputsList.length > 0
+        ? realOutputsList
+        : skillsList;
+
+  // The creation wizard seeds description as 'New Course Draft' — treat that
+  // seed (or empty) as "no description written yet".
+  const rawDescription: string = course?.description || '';
+  const hasRealDescription =
+    rawDescription.length > 0 && rawDescription !== 'New Course Draft';
+  const heroDescription: string | null =
+    course?.shortDescription || (hasRealDescription ? rawDescription : null);
+
+  // ─── ENROLL BUTTON → AUTH GATE → 4-SCREEN WIZARD ───
   const handleStartLearningFree = () => {
     playHaptic('medium');
     if (isPreviewMode) return;
@@ -207,7 +328,15 @@ export default function CourseDetailPage({
       return;
     }
 
-    // Trigger celebratory sound & confetti, then open 3-Step Takeover
+    // Require a session BEFORE the celebration starts — hitting a login wall
+    // at the final step would dump the user out of the moment. 'unknown'
+    // (check still in flight) opens anyway; enroll() has a 401 fallback.
+    if (authState === 'guest') {
+      router.push(`/login?redirect=/courses/${idOrSlug}`);
+      return;
+    }
+
+    // Celebratory entry into the wizard — nothing is enrolled yet.
     confetti({
       particleCount: 70,
       spread: 60,
@@ -215,78 +344,37 @@ export default function CourseDetailPage({
       colors: ['#0172FD', '#22C55E', '#F59E0B', '#EC4899', '#A855F7'],
     });
     playWinSound();
-    setCelebrationStep(1);
-    setShowCelebrationModal(true);
+    setShowEnrollWizard(true);
   };
 
-  // ─── 2. SCREEN 1: "LET'S GO!" ───
-  const handleStep1Continue = () => {
-    playHaptic('medium');
-    setCelebrationStep(2);
-  };
-
-  // ─── 3. SCREEN 2: "CLAIM REWARD" ───
-  const handleClaimWelcomeReward = (e: React.MouseEvent) => {
-    playHaptic('medium');
-    if (rewardClaimed) {
-      setCelebrationStep(3);
-      return;
-    }
-
-    playWinSound();
-    confetti({
-      particleCount: 50,
-      spread: 50,
-      origin: { y: 0.5 },
-      colors: ['#0172FD', '#22C55E', '#F59E0B'],
+  // The wizard's ONLY backend call — fired by screen 3's commit button.
+  const handleWizardEnroll = async (): Promise<EnrollResponse> => {
+    const res = await fetch(`/api/courses/${course?.id || idOrSlug}/enroll`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
     });
 
-    const targetRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    triggerRewardAnimation({
-      originRect: targetRect,
-      rewards: [
-        { currency: 'XP', amount: 25 },
-        { currency: 'COINS', amount: 10 },
-      ],
-    });
-
-    awardTestReward({ xp: 25, coins: 10 });
-    setRewardClaimed(true);
-  };
-
-  // ─── 4. SCREEN 3: LAST STEP ENROLLS & JUMPS DIRECTLY INTO /learn/[id] ───
-  const handleStep3StartLearning = async () => {
-    playHaptic('medium');
-    if (isPreviewMode) return;
-
-    setIsEnrolling(true);
-    try {
-      const res = await fetch(`/api/courses/${course?.id || idOrSlug}/enroll`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      if (res.status === 401) {
-        router.push(`/login?redirect=/courses/${idOrSlug}`);
-        return;
-      }
-
-      setIsEnrolled(true);
-      setShowCelebrationModal(false);
-      router.push(`/learn/${course?.id || idOrSlug}`);
-    } catch (err) {
-      console.error('Enrollment error:', err);
-      // Fallback transition
-      setIsEnrolled(true);
-      setShowCelebrationModal(false);
-      router.push(`/learn/${course?.id || idOrSlug}`);
-    } finally {
-      setIsEnrolling(false);
+    if (res.status === 401) {
+      // Stale session despite the upfront gate — recover to login.
+      router.push(`/login?redirect=/courses/${idOrSlug}`);
+      throw new Error('Session expired');
     }
+    if (!res.ok) {
+      throw new Error(`Enroll failed with status ${res.status}`);
+    }
+
+    const data: EnrollResponse = await res.json();
+    setIsEnrolled(true);
+    void refresh(); // sync StatsBar balances from the server grant
+    return data;
   };
 
+  // Only enrolled learners can launch lessons from this page. Guests who
+  // want to learn go through the big CTA → enrollment wizard instead —
+  // nothing here may deep-link an un-enrolled visitor into /learn.
   const handleLessonStart = (secIdx: number) => {
+    if (!isEnrolled) return;
     playHaptic('light');
     router.push(`/learn/${course?.id || idOrSlug}/section/${secIdx}`);
   };
@@ -325,28 +413,11 @@ export default function CourseDetailPage({
     );
   }
 
-  const courseTitle = course?.title || 'Master New Skills';
-  const courseDescription =
-    course?.description ||
-    course?.shortDescription ||
-    'Embark on an interactive learning adventure. Master practical concepts through hands-on practice, earn XP rewards, and level up!';
+  const courseTitle = course?.title || 'Untitled Course';
 
   const firstSection = sections[0];
   const firstLesson = firstSection?.lessons?.[0];
   const secondLesson = firstSection?.lessons?.[1];
-
-  // Dynamic outcomes / what you'll learn from actual course data
-  const dynamicOutcomes =
-    Array.isArray(course?.whatYouWillLearn) && course.whatYouWillLearn.length > 0
-      ? course.whatYouWillLearn
-      : Array.isArray(course?.skills) && course.skills.length > 0
-      ? course.skills
-      : [
-          'Master fundamental principles and practical workflows step-by-step',
-          'Build real-world projects and build portfolio-ready artifacts',
-          'Learn insider industry techniques and creator-verified best practices',
-          'Earn an official verified Teyro skill certificate upon completion',
-        ];
 
   return (
     <DashboardLayout isWide>
@@ -372,72 +443,97 @@ export default function CourseDetailPage({
               className={styles.blueFocusHeroCard}
             >
               <div className={styles.blueHeroTop}>
-                {/* Badges & Rewards */}
+                {/* Badges — only real course attributes; nothing invented */}
                 <div className={styles.pillRow}>
-                  <span className={styles.categoryPillLight}>{course?.category || 'Design & Tech'}</span>
-                  <span className={styles.levelPillLight}>{course?.level || 'Beginner Friendly'}</span>
-                  <span className={styles.xpPillGold}>
-                    <GamificationIcon type="gem" size={16} />
-                    +{totalXp} XP
-                  </span>
-                  <span className={styles.streakPillFire}>
-                    <GamificationIcon type="burn" size={16} />
-                    Daily Streak
-                  </span>
+                  {course?.category && course.category !== 'Uncategorized' && (
+                    <span className={styles.categoryPillLight}>{course.category}</span>
+                  )}
+                  {course?.level && (
+                    <span className={styles.levelPillLight}>{course.level}</span>
+                  )}
+                  {totalXp !== null && (
+                    <span className={styles.xpPillGold}>
+                      <GamificationIcon type="gem" size={16} />
+                      Earn up to +{totalXp} XP
+                    </span>
+                  )}
+                  {isPaidCourse ? (
+                    <span className={styles.pricePillAmber}>
+                      ${Number(course?.price ?? 0).toFixed(2)} · First 2 Lessons Free
+                    </span>
+                  ) : (
+                    <span className={styles.freeCoursePill}>Free Course</span>
+                  )}
                 </div>
 
                 {/* Title & Description */}
                 <h1 className={styles.blueFocusTitle}>{courseTitle}</h1>
-                <p className={styles.blueFocusDescription}>{courseDescription}</p>
+                {heroDescription && (
+                  <p className={styles.blueFocusDescription}>{heroDescription}</p>
+                )}
 
-                {/* Metrics Strip */}
+                {/* Metrics Strip — real stats only; missing data hides its item */}
                 <div className={styles.blueSpecsRow}>
-                  <div className={styles.blueSpecItem}>
-                    <BookOpen size={16} color="#93C5FD" />
-                    <span>{totalLessonsCount} Lessons</span>
-                  </div>
-                  <div className={styles.blueSpecItem}>
-                    <Layers size={16} color="#93C5FD" />
-                    <span>{sections.length || 3} Units</span>
-                  </div>
-                  <div className={styles.blueSpecItem}>
-                    <Clock size={16} color="#93C5FD" />
-                    <span>{formattedDuration}</span>
-                  </div>
-                  <div className={styles.blueSpecItem}>
-                    <Star size={16} fill="#FBBF24" color="#FBBF24" />
-                    <span>{instructorRating} ({(course?.reviewsCount || 240).toLocaleString()})</span>
-                  </div>
-                  <div className={styles.blueSpecItem}>
-                    <Users size={16} color="#93C5FD" />
-                    <span>{learnersCount.toLocaleString()} Explorers</span>
-                  </div>
+                  {totalLessonsCount > 0 && (
+                    <div className={styles.blueSpecItem}>
+                      <BookOpen size={16} color="#93C5FD" />
+                      <span>{totalLessonsCount} Lesson{totalLessonsCount === 1 ? '' : 's'}</span>
+                    </div>
+                  )}
+                  {sections.length > 0 && (
+                    <div className={styles.blueSpecItem}>
+                      <Layers size={16} color="#93C5FD" />
+                      <span>{sections.length} Unit{sections.length === 1 ? '' : 's'}</span>
+                    </div>
+                  )}
+                  {formattedDuration && (
+                    <div className={styles.blueSpecItem}>
+                      <Clock size={16} color="#93C5FD" />
+                      <span>{formattedDuration}</span>
+                    </div>
+                  )}
+                  {ratingAvg !== null && reviewsCount > 0 && (
+                    <div className={styles.blueSpecItem}>
+                      <Star size={16} fill="#FBBF24" color="#FBBF24" />
+                      <span>{ratingAvg} ({reviewsCount.toLocaleString()})</span>
+                    </div>
+                  )}
+                  {learnersCount > 0 && (
+                    <div className={styles.blueSpecItem}>
+                      <Users size={16} color="#93C5FD" />
+                      <span>{learnersCount.toLocaleString()} Learner{learnersCount === 1 ? '' : 's'}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Big Primary Action: START LEARNING FREE */}
+                {/* Big Primary Action — every course starts free (paid ones
+                    via the first-2-lessons preview); opens the wizard */}
                 <div className={styles.blueActionArea}>
                   <button
                     type="button"
                     onClick={handleStartLearningFree}
-                    disabled={isEnrolling}
                     className={styles.duoActionBtnGreen}
                   >
-                    {isEnrolling ? (
-                      <span className={styles.btnContent}>
-                        <div className={styles.btnSpinner} /> STARTING QUEST...
-                      </span>
-                    ) : isEnrolled ? (
+                    {isEnrolled ? (
                       <span className={styles.btnContent}>
                         <Play size={20} fill="currentColor" /> CONTINUE LEARNING <ArrowRight size={20} />
                       </span>
+                    ) : isPaidCourse ? (
+                      <span className={styles.btnContent}>
+                        <Zap size={20} fill="currentColor" /> START LEARNING FOR FREE <ArrowRight size={20} />
+                      </span>
                     ) : (
                       <span className={styles.btnContent}>
-                        <Zap size={20} fill="currentColor" /> START LEARNING FREE <ArrowRight size={20} />
+                        <Zap size={20} fill="currentColor" /> ENROLL FOR FREE <ArrowRight size={20} />
                       </span>
                     )}
                   </button>
                   <div className={styles.blueActionSub}>
-                    {isEnrolled ? '⚡ Pick up right where you left off' : '🚀 Instant free access · Jump straight into Lesson 1'}
+                    {isEnrolled
+                      ? 'Pick up right where you left off'
+                      : isPaidCourse
+                        ? 'First 2 lessons free · unlock the rest anytime'
+                        : 'Full access instantly · Jump straight into Lesson 1'}
                   </div>
                 </div>
               </div>
@@ -468,7 +564,9 @@ export default function CourseDetailPage({
               </div>
             </motion.div>
 
-            {/* 2. WHAT YOU'LL ACHIEVE / SKILLS (COMES BEFORE SECTIONS) */}
+            {/* 2. WHAT YOU'LL ACHIEVE — hidden entirely when the creator
+                hasn't written any outcomes/skills (no boilerplate filler) */}
+            {dynamicOutcomes.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -482,10 +580,12 @@ export default function CourseDetailPage({
                     Core competencies and practical outcomes you will gain in this course.
                   </p>
                 </div>
-                <div className={styles.xpBonusBadge}>
-                  <GamificationIcon type="gem" size={16} />
-                  <span>+{totalXp} Course XP</span>
-                </div>
+                {totalXp !== null && (
+                  <div className={styles.xpBonusBadge}>
+                    <GamificationIcon type="gem" size={16} />
+                    <span>Up to +{totalXp} Course XP</span>
+                  </div>
+                )}
               </div>
 
               <div className={styles.achievementsGrid}>
@@ -499,6 +599,7 @@ export default function CourseDetailPage({
                 ))}
               </div>
             </motion.div>
+            )}
 
             {/* 3. COURSE JOURNEY / SECTIONS ROADMAP */}
             <div className={styles.roadmapBlock}>
@@ -510,7 +611,7 @@ export default function CourseDetailPage({
                   </p>
                 </div>
                 <span className={styles.unitsCountBadge}>
-                  <Layers size={14} /> {sections.length || 3} Units · {totalLessonsCount} Lessons
+                  <Layers size={14} /> {sections.length} Unit{sections.length === 1 ? '' : 's'} · {totalLessonsCount} Lesson{totalLessonsCount === 1 ? '' : 's'}
                 </span>
               </div>
 
@@ -532,7 +633,7 @@ export default function CourseDetailPage({
                           onClick={() => toggleSection(section.id || String(secIdx))}
                           className={styles.unitToggleBtn}
                         >
-                          <span className={styles.unitLessonsCount}>{section.lessons?.length || 3} Lessons</span>
+                          <span className={styles.unitLessonsCount}>{section.lessons?.length ?? 0} Lessons</span>
                           {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         </button>
                       </div>
@@ -540,40 +641,80 @@ export default function CourseDetailPage({
                       {/* Unit Lessons Path */}
                       {isOpen && (
                         <div className={styles.unitPath}>
-                          {section.lessons?.map((lesson, lIdx) => (
+                          {section.lessons?.map((lesson, lIdx) => {
+                            const globalIdx = lesson.id
+                              ? lessonGlobalIndexById.get(lesson.id) ?? 0
+                              : 0;
+                            // Guests get a static curriculum preview: paid
+                            // lessons beyond the first two show locked, the
+                            // first two carry a real "Free preview" tag.
+                            const isLockedForGuest =
+                              !isEnrolled && isPaidCourse && globalIdx >= 2;
+                            const isFreePreviewLesson =
+                              !isEnrolled && isPaidCourse && globalIdx < 2;
+                            const canLaunch = isEnrolled;
+
+                            return (
                             <div
                               key={lesson.id || lIdx}
-                              onClick={() => handleLessonStart(secIdx)}
-                              className={styles.pathNodeRow}
+                              onClick={canLaunch ? () => handleLessonStart(secIdx) : undefined}
+                              className={`${styles.pathNodeRow} ${canLaunch ? '' : styles.pathNodeRowStatic}`}
+                              aria-disabled={!canLaunch}
                             >
                               <div className={styles.nodeLeft}>
-                                <div className={styles.nodeCircle}>
-                                  <Play size={15} fill="#0172FD" color="#0172FD" />
+                                <div
+                                  className={`${styles.nodeCircle} ${isLockedForGuest ? styles.nodeCircleLocked : ''}`}
+                                >
+                                  {isLockedForGuest ? (
+                                    <Lock size={14} color="#64748B" />
+                                  ) : (
+                                    <Play size={15} fill="#0172FD" color="#0172FD" />
+                                  )}
                                 </div>
                                 <div className={styles.nodeText}>
                                   <div className={styles.nodeTitle}>{lesson.title}</div>
                                   <div className={styles.nodeMeta}>
-                                    {lesson.durationMinutes ? `${lesson.durationMinutes} min` : '5 min'} · {lesson.lessonType || 'Interactive Lesson'}
+                                    {[
+                                      lesson.durationMinutes ? `${lesson.durationMinutes} min` : null,
+                                      lesson.lessonType
+                                        ? lesson.lessonType.charAt(0).toUpperCase() +
+                                          lesson.lessonType.slice(1)
+                                        : null,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' · ')}
                                   </div>
                                 </div>
                               </div>
 
                               <div className={styles.nodeRight}>
-                                <span className={styles.nodeRewardBadge}>
-                                  <GamificationIcon type="gem" size={13} />
-                                  +25 XP
-                                </span>
-                                <Button
-                                  variant="secondary"
-                                  size="sm"
-                                  onClick={() => handleLessonStart(secIdx)}
-                                  className={styles.nodeStartBtn}
-                                >
-                                  Start <ArrowRight size={13} />
-                                </Button>
+                                {isFreePreviewLesson && (
+                                  <span className={styles.freePreviewTag}>Free preview</span>
+                                )}
+                                {typeof lesson.xpReward === 'number' && lesson.xpReward > 0 && (
+                                  <span className={styles.nodeRewardBadge}>
+                                    <GamificationIcon type="gem" size={13} />
+                                    +{lesson.xpReward} XP
+                                  </span>
+                                )}
+                                {canLaunch ? (
+                                  <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => handleLessonStart(secIdx)}
+                                    className={styles.nodeStartBtn}
+                                  >
+                                    Start <ArrowRight size={13} />
+                                  </Button>
+                                ) : isLockedForGuest ? (
+                                  <span className={styles.nodeLockedLabel}>
+                                    <Lock size={12} /> Locked
+                                  </span>
+                                ) : null}
                               </div>
                             </div>
-                          ))}
+                            );
+                          })}
 
                           {/* Unit Mastery Chest */}
                           <div className={styles.chestNodeRow}>
@@ -629,51 +770,65 @@ export default function CourseDetailPage({
 
               <div className={styles.sideCardBody}>
                 <h3 className={styles.sideCourseTitle}>{courseTitle}</h3>
-                <p className={styles.sideCourseDesc}>
-                  {course?.shortDescription || courseDescription.substring(0, 110)}...
-                </p>
+                {heroDescription && (
+                  <p className={styles.sideCourseDesc}>
+                    {heroDescription.length > 110
+                      ? `${heroDescription.substring(0, 110)}…`
+                      : heroDescription}
+                  </p>
+                )}
 
-                {/* Course Details List */}
+                {/* Course Details List — only rows backed by real data */}
                 <div className={styles.specsList}>
+                  {totalLessonsCount > 0 && (
+                    <div className={styles.specRowItem}>
+                      <div className={styles.specIconWrap}><BookOpen size={16} color="#0172FD" /></div>
+                      <div className={styles.specTextCol}>
+                        <span className={styles.specLabel}>Total Lessons</span>
+                        <span className={styles.specValue}>
+                          {totalLessonsCount} interactive lesson{totalLessonsCount === 1 ? '' : 's'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {formattedDuration && (
+                    <div className={styles.specRowItem}>
+                      <div className={styles.specIconWrap}><Clock size={16} color="#0172FD" /></div>
+                      <div className={styles.specTextCol}>
+                        <span className={styles.specLabel}>Duration</span>
+                        <span className={styles.specValue}>{formattedDuration}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {course?.level && (
+                    <div className={styles.specRowItem}>
+                      <div className={styles.specIconWrap}><Target size={16} color="#0172FD" /></div>
+                      <div className={styles.specTextCol}>
+                        <span className={styles.specLabel}>Skill Level</span>
+                        <span className={styles.specValue}>{course.level}</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className={styles.specRowItem}>
-                    <div className={styles.specIconWrap}><BookOpen size={16} color="#0172FD" /></div>
+                    <div className={styles.specIconWrap}><InfinityIcon size={16} color="#22C55E" /></div>
                     <div className={styles.specTextCol}>
-                      <span className={styles.specLabel}>Total Lessons</span>
-                      <span className={styles.specValue}>{totalLessonsCount} interactive lessons</span>
+                      <span className={styles.specLabel}>Schedule</span>
+                      <span className={styles.specValue}>Self-paced · Learn anytime</span>
                     </div>
                   </div>
 
-                  <div className={styles.specRowItem}>
-                    <div className={styles.specIconWrap}><Clock size={16} color="#0172FD" /></div>
-                    <div className={styles.specTextCol}>
-                      <span className={styles.specLabel}>Duration</span>
-                      <span className={styles.specValue}>{formattedDuration}</span>
+                  {!!course?.language && (
+                    <div className={styles.specRowItem}>
+                      <div className={styles.specIconWrap}><Globe size={16} color="#0172FD" /></div>
+                      <div className={styles.specTextCol}>
+                        <span className={styles.specLabel}>Language & Access</span>
+                        <span className={styles.specValue}>{course.language} · 100% online</span>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className={styles.specRowItem}>
-                    <div className={styles.specIconWrap}><Target size={16} color="#0172FD" /></div>
-                    <div className={styles.specTextCol}>
-                      <span className={styles.specLabel}>Skill Level</span>
-                      <span className={styles.specValue}>{course?.level || 'Beginner Friendly'}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.specRowItem}>
-                    <div className={styles.specIconWrap}><Award size={16} color="#22C55E" /></div>
-                    <div className={styles.specTextCol}>
-                      <span className={styles.specLabel}>Certificate</span>
-                      <span className={styles.specValue}>Verified Teyro Credential</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.specRowItem}>
-                    <div className={styles.specIconWrap}><Globe size={16} color="#0172FD" /></div>
-                    <div className={styles.specTextCol}>
-                      <span className={styles.specLabel}>Language & Access</span>
-                      <span className={styles.specValue}>English · 100% Online</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <button
@@ -681,7 +836,11 @@ export default function CourseDetailPage({
                   onClick={handleStartLearningFree}
                   className={styles.sideCtaButton}
                 >
-                  {isEnrolled ? 'CONTINUE LEARNING' : 'START LEARNING FREE'}
+                  {isEnrolled
+                    ? 'CONTINUE LEARNING'
+                    : isPaidCourse
+                      ? 'START LEARNING FOR FREE'
+                      : 'ENROLL FOR FREE'}
                 </button>
               </div>
             </div>
@@ -690,304 +849,88 @@ export default function CourseDetailPage({
             <div className={styles.creatorProfileCard}>
               <div className={styles.creatorCardHeader}>
                 <Avatar
-                  src={instructorAvatar}
+                  src={instructorAvatar ?? undefined}
                   name={instructorName}
                   size="lg"
                 />
                 <div className={styles.creatorInfoBlock}>
                   <div className={styles.creatorTitleRow}>
                     <h4 className={styles.creatorCardName}>{instructorName}</h4>
-                    <ShieldCheck size={16} color="#0172FD" />
+                    {isVerifiedInstructor && (
+                      <ShieldCheck size={16} color="#0172FD" aria-label="Verified creator" />
+                    )}
                   </div>
-                  <div className={styles.creatorRoleBadge}>{instructorHeadline}</div>
-                  <div className={styles.creatorHandle}>@{instructorUsername}</div>
+                  {instructorHeadline && (
+                    <div className={styles.creatorRoleBadge}>{instructorHeadline}</div>
+                  )}
+                  {instructorUsername && (
+                    <div className={styles.creatorHandle}>@{instructorUsername}</div>
+                  )}
                 </div>
               </div>
 
-              <p className={styles.creatorBioText}>{instructorBio}</p>
+              {instructorBio && <p className={styles.creatorBioText}>{instructorBio}</p>}
 
-              {/* Creator Stats */}
-              <div className={styles.creatorStatsGrid}>
-                <div className={styles.creatorStatBox}>
-                  <span className={styles.creatorStatVal}>{instructorStudentsCount.toLocaleString()}</span>
-                  <span className={styles.creatorStatLabel}>Students</span>
+              {/* Creator Stats — real track-record numbers only */}
+              {(instructorStudentsCount > 0 || instructorCoursesCount > 0 || (instructorRatingAvg !== null && instructorReviewsCount > 0)) && (
+                <div className={styles.creatorStatsGrid}>
+                  {instructorStudentsCount > 0 && (
+                    <div className={styles.creatorStatBox}>
+                      <span className={styles.creatorStatVal}>{instructorStudentsCount.toLocaleString()}</span>
+                      <span className={styles.creatorStatLabel}>Students</span>
+                    </div>
+                  )}
+                  {instructorCoursesCount > 0 && (
+                    <div className={styles.creatorStatBox}>
+                      <span className={styles.creatorStatVal}>{instructorCoursesCount}</span>
+                      <span className={styles.creatorStatLabel}>Courses</span>
+                    </div>
+                  )}
+                  {instructorRatingAvg !== null && instructorReviewsCount > 0 && (
+                    <div className={styles.creatorStatBox}>
+                      <span className={styles.creatorStatVal}>
+                        <Star size={13} fill="#F59E0B" color="#F59E0B" style={{ display: 'inline', marginRight: 2 }} />
+                        {instructorRatingAvg}
+                      </span>
+                      <span className={styles.creatorStatLabel}>Rating</span>
+                    </div>
+                  )}
                 </div>
-                <div className={styles.creatorStatBox}>
-                  <span className={styles.creatorStatVal}>{instructorCoursesCount}</span>
-                  <span className={styles.creatorStatLabel}>Courses</span>
-                </div>
-                <div className={styles.creatorStatBox}>
-                  <span className={styles.creatorStatVal}>
-                    <Star size={13} fill="#F59E0B" color="#F59E0B" style={{ display: 'inline', marginRight: 2 }} />
-                    {instructorRating}
-                  </span>
-                  <span className={styles.creatorStatLabel}>Rating</span>
-                </div>
-              </div>
+              )}
 
-              {/* Link to Creator Profile */}
-              <Link
-                href={`/creator-profile/${instructorUsername}`}
-                className={styles.viewCreatorProfileBtn}
-              >
-                <span>View Creator Profile</span>
-                <ArrowRight size={16} />
-              </Link>
+              {/* Link to Creator Profile (only when the creator has one) */}
+              {instructorUsername && (
+                <Link
+                  href={`/creator-profile/${instructorUsername}`}
+                  className={styles.viewCreatorProfileBtn}
+                >
+                  <span>View Creator Profile</span>
+                  <ArrowRight size={16} />
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* ─── FULL-SCREEN DUOLINGO CELEBRATION TAKEOVER (DESKTOP + MOBILE) ─── */}
+      {/* ─── 4-STEP DUOLINGO ENROLLMENT WIZARD (screens 1-2 preview, 3 enrolls, 4 hands off) ─── */}
       <AnimatePresence>
-        {showCelebrationModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.fullScreenTakeover}
-          >
-            {/* Top Step Progress Bar & Close Button */}
-            <div className={styles.takeoverHeader}>
-              <div className={styles.stepProgressTrack}>
-                <div
-                  className={styles.stepProgressIndicator}
-                  style={{ width: `${(celebrationStep / 3) * 100}%` }}
-                >
-                  <div className={styles.progressShine} />
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  playHaptic('light');
-                  setShowCelebrationModal(false);
-                }}
-                aria-label="Close celebration"
-                className={styles.takeoverCloseBtn}
-              >
-                <X size={20} strokeWidth={2.5} />
-              </button>
-            </div>
-
-            <div className={styles.takeoverBody}>
-              {/* ─── SCREEN 1: YOU'RE IN! ─── */}
-              {celebrationStep === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -30 }}
-                  transition={SPRING_BOUNCE}
-                  className={styles.takeoverStepCard}
-                >
-                  <div className={styles.takeoverMascotWrap}>
-                    <Image
-                      src="/dashboard tey.png"
-                      alt="Tey Mascot"
-                      width={240}
-                      height={240}
-                      priority
-                      className={styles.mascotCelebrateBig}
-                    />
-                  </div>
-
-                  <h1 className={styles.takeoverTitleClean}>YOU&apos;RE IN!</h1>
-                  <p className={styles.takeoverSubtitle}>
-                    You&apos;ve unlocked your learning quest in
-                    <br />
-                    <span className={styles.highlightCourseName}>{courseTitle}</span>
-                  </p>
-
-                  {/* Course Visual Pop Card */}
-                  {course?.thumbnailUrl ? (
-                    <div className={styles.takeoverThumbCard}>
-                      <Image
-                        src={course.thumbnailUrl}
-                        alt={courseTitle}
-                        fill
-                        className={styles.takeoverThumbImg}
-                        priority
-                      />
-                      <div className={styles.thumbCardOverlay}>
-                        <Sparkles size={16} color="#0172FD" />
-                        <span>Ready to Learn</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={styles.fallbackThumbBig}>
-                      <BookOpen size={44} color="#0172FD" />
-                      <span>{courseTitle}</span>
-                    </div>
-                  )}
-
-                  <div className={styles.takeoverBottomArea}>
-                    <button
-                      type="button"
-                      onClick={handleStep1Continue}
-                      className={styles.takeoverDuoBtn}
-                    >
-                      LET&apos;S GO! →
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ─── SCREEN 2: CLAIM YOUR WELCOME REWARD ─── */}
-              {celebrationStep === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -30 }}
-                  transition={SPRING_BOUNCE}
-                  className={styles.takeoverStepCard}
-                >
-                  <div className={styles.takeoverMascotWrap}>
-                    <Image
-                      src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
-                      alt="Tey Mascot"
-                      width={230}
-                      height={230}
-                      priority
-                      className={styles.mascotRewardBig}
-                    />
-                  </div>
-
-                  <h1 className={styles.takeoverTitleClean}>Welcome Reward</h1>
-                  <p className={styles.takeoverSubtitle}>
-                    A little something to kick off your learning adventure!
-                  </p>
-
-                  {/* 3 Teyro Clean Stat Chips */}
-                  <div className={styles.duoScoreCardsRow}>
-                    <div className={styles.duoScoreCardBlue}>
-                      <div className={styles.scoreCardHeaderBlue}>TOTAL XP</div>
-                      <div className={styles.scoreCardValueBlue}>
-                        <GamificationIcon type="gem" size={22} /> +25 XP
-                      </div>
-                    </div>
-
-                    <div className={styles.duoScoreCardYellow}>
-                      <div className={styles.scoreCardHeaderYellow}>BONUS</div>
-                      <div className={styles.scoreCardValueYellow}>
-                        <GamificationIcon type="xp" size={22} /> +10 Coins
-                      </div>
-                    </div>
-
-                    <div className={styles.duoScoreCardRed}>
-                      <div className={styles.scoreCardHeaderRed}>ENERGY</div>
-                      <div className={styles.scoreCardValueRed}>
-                        <GamificationIcon type="heart" size={22} /> Full Lives
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.takeoverBottomArea}>
-                    <button
-                      type="button"
-                      onClick={handleClaimWelcomeReward}
-                      className={`${styles.takeoverDuoBtn} ${rewardClaimed ? styles.takeoverDuoBtnClaimed : ''}`}
-                    >
-                      {rewardClaimed ? (
-                        <span className={styles.btnContent}>
-                          <Check size={20} strokeWidth={3} /> CLAIMED! CONTINUE →
-                        </span>
-                      ) : (
-                        'CLAIM REWARD →'
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ─── SCREEN 3: YOUR JOURNEY STARTS HERE ─── */}
-              {celebrationStep === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -30 }}
-                  transition={SPRING_BOUNCE}
-                  className={styles.takeoverStepCard}
-                >
-                  <div className={styles.takeoverMascotWrapSmall}>
-                    <Image
-                      src="/User onbarding Assets/Tey_welcome.webp"
-                      alt="Tey Mascot"
-                      width={160}
-                      height={160}
-                      priority
-                      className={styles.mascotJourneySmall}
-                    />
-                  </div>
-
-                  <h1 className={styles.takeoverTitleClean}>Your Learning Journey Starts Here</h1>
-                  <p className={styles.takeoverSubtitle}>
-                    <span className={styles.highlightCourseName}>{courseTitle}</span>
-                  </p>
-
-                  {/* Clean Serpentine Mini Path */}
-                  <div className={styles.duoSerpentinePathBox}>
-                    {/* Active Lesson 1 Node */}
-                    <div className={styles.pathNodeRowActive}>
-                      <div className={styles.nodeIconGlow}>
-                        <Play size={18} fill="#FFFFFF" color="#FFFFFF" />
-                      </div>
-                      <div className={styles.nodeStartBubble}>START</div>
-                      <div className={styles.nodeInfoBlock}>
-                        <div className={styles.nodeInfoTitle}>{firstLesson?.title || 'Lesson 1: Getting Started'}</div>
-                        <div className={styles.nodeInfoSub}>First lesson unlocked & ready</div>
-                      </div>
-                    </div>
-
-                    <div className={styles.pathConnectorLine} />
-
-                    {/* Locked Lesson 2 Node */}
-                    <div className={styles.pathNodeRowLocked}>
-                      <div className={styles.nodeIconLocked}>
-                        <Lock size={15} color="#64748B" />
-                      </div>
-                      <div className={styles.nodeInfoBlock}>
-                        <div className={styles.nodeInfoTitleLocked}>{secondLesson?.title || 'Lesson 2: Deep Dive'}</div>
-                        <div className={styles.nodeInfoSubLocked}>Next milestone in Section 1</div>
-                      </div>
-                    </div>
-
-                    <div className={styles.pathConnectorLine} />
-
-                    {/* Section 1 Mastery Chest */}
-                    <div className={styles.pathChestRow}>
-                      <div className={styles.chestGraphicWrap}>
-                        <Image
-                          src="/Tressure box.png"
-                          alt="Chest"
-                          width={40}
-                          height={40}
-                          className={styles.chestGraphicImg}
-                        />
-                      </div>
-                      <div className={styles.nodeInfoBlock}>
-                        <div className={styles.chestTitleText}>Section 1 Mastery Chest</div>
-                        <div className={styles.chestRewardText}>+50 XP Completion Bonus</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.takeoverBottomArea}>
-                    <button
-                      type="button"
-                      onClick={handleStep3StartLearning}
-                      className={styles.takeoverDuoBtnGreen}
-                    >
-                      START LEARNING →
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
+        {showEnrollWizard && (
+          <EnrollmentWizard
+            courseTitle={courseTitle}
+            thumbnailUrl={course?.thumbnailUrl ?? null}
+            isPaid={isPaidCourse}
+            firstLessonTitle={firstLesson?.title}
+            secondLessonTitle={secondLesson?.title}
+            stats={{
+              totalLessons: totalLessonsCount,
+              totalXp: totalXp ?? 0,
+              totalMinutes,
+            }}
+            enroll={handleWizardEnroll}
+            onClose={() => setShowEnrollWizard(false)}
+            onFinish={() => router.push(`/learn/${course?.id || idOrSlug}`)}
+          />
         )}
       </AnimatePresence>
     </DashboardLayout>

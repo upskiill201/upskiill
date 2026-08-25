@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { X, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { playHaptic } from '@/lib/haptics';
-import { useComingSoon } from './layout';
+import { useComingSoon, useMobileMenu } from './layout';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatsBar } from '@/components/ui/StatsBar';
@@ -15,16 +15,20 @@ import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBa
 import CurrentQuestCard from '@/components/dashboard/v2/CurrentQuestCard';
 import JourneyPathMap from '@/components/dashboard/v2/JourneyPathMap';
 import TodaysMissionsCard from '@/components/dashboard/v2/TodaysMissionsCard';
+import MonthlyQuestCard from '@/components/dashboard/v2/MonthlyQuestCard';
 import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
+import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
 import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBanner';
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
 import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
+import NotificationBell from '@/components/community/NotificationBell';
 import styles from './Page.module.css';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
+  const { openMobileMenu } = useMobileMenu();
   const { streakDays, xp: xpPoints, lives: livesCount, coins, userLevel } = useGamification();
   const [userName, setUserName] = useState<string | null>(null);
   const [enrollments, setEnrollments] = useState<any[]>([]);
@@ -108,15 +112,34 @@ export default function DashboardPage() {
       
       {/* TOP GAME HUD ROW */}
       <div className={styles.topHeaderRow}>
+        {/* MOBILE HUD CLUSTER: inline menu trigger + stat pills (Duolingo-style headerless home) */}
+        <div className={styles.hudTopCluster}>
+          <button
+            type="button"
+            className={styles.mobileMenuBtn}
+            onClick={() => { playHaptic('light'); openMobileMenu(); }}
+            aria-label="Open menu"
+          >
+            <Menu size={24} strokeWidth={2.5} />
+          </button>
+
+          {/* Bell sits OUTSIDE the drawer menu so notifications are always
+              reachable on the headerless home (panel opens rightward, away
+              from the left screen edge). */}
+          <div className={styles.hudBell}>
+            <NotificationBell panelAlign="left" />
+          </div>
+
+          {/* FLAT DUOLINGO-STYLE GAME HUD STAT PILLS */}
+          <StatsBar className={styles.hudStats} />
+        </div>
+
         <div className={styles.welcomeBanner}>
           <h2 className={styles.welcomeTitle}>
             Welcome back, {userName ? `${userName}!` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
           </h2>
           <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
         </div>
-
-        {/* BORDERED GAME HUD STAT PILLS */}
-        <StatsBar />
       </div>
 
       {/* TWO-COLUMN GRID CONTAINER (Desktop / Mobile) */}
@@ -136,23 +159,31 @@ export default function DashboardPage() {
 
           {/* 3. YOUR JOURNEY PATH MAP */}
           <JourneyPathMap
+            currentEnrollment={currentEnrollment}
             currentLessonIndex={currentMissionNum}
             totalLessons={25}
+            onNodeClick={handleContinueLearning}
           />
 
-          {/* 4. 2-COLUMN GAME GRID: DAILY QUESTS + MYSTERY CHEST */}
+          {/* 4. TODAY'S MISSIONS */}
+          <TodaysMissionsCard />
+
+          {/* 5. MONTHLY QUEST */}
+          <MonthlyQuestCard />
+
+          {/* 6. 2-COLUMN GAME GRID: MYSTERY CHEST + WEEKLY PROGRESS */}
           <div className={styles.gameCardsGrid}>
-            <TodaysMissionsCard />
             <MysteryChestCard />
+            <WeeklyProgressCard />
           </div>
 
-          {/* 5. LEVEL UP INCOMING! BANNER */}
+          {/* 7. LEVEL UP INCOMING! BANNER */}
           <LevelUpIncomingBanner onPlay={handleContinueLearning} />
 
-          {/* 6. CONTINUE LEARNING CAROUSEL */}
+          {/* 8. CONTINUE LEARNING CAROUSEL */}
           <ContinueLearningCarousel enrollments={enrollments} />
 
-          {/* 7. DEV TEST BENCH (Collapsible) */}
+          {/* 9. DEV TEST BENCH (Collapsible) */}
           <RewardRunTestWidget />
 
         </div>

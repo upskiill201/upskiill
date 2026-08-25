@@ -1,0 +1,113 @@
+/* Shared bits for the Course Community & Feed surfaces.
+ * Tokens come from docs/08-color-system.md — never raw hex here. */
+
+/* ── Duolingo skin primitives ───────────────────────────────────────────
+ * 3D bottom-shadow surfaces & buttons: the card "sits" on its shadow;
+   pressing translates down onto it. Hover floats the card off the shadow. */
+.surface3d {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
+}
+.floatOnHover {
+  transition: transform 150ms ease;
+}
+.floatOnHover:hover {
+  transform: translateY(-2px);
+}
+.press3d {
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+.press3d:active:not(:disabled) {
+  transform: translateY(3px);
+}
+
+/* Tey mascot sticker — the asset ships with a baked background, so it lives
+   in a contained dark tile that reads as an intentional sticker chip. */
+.teyTile {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto;
+  border-radius: 24px;
+  background: var(--bg-dark-mid);
+  overflow: hidden;
+  box-shadow: 0 4px 0 var(--border);
+}
+
+.mentionChip {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(61, 90, 254, 0.08);
+  color: var(--brand-blue, #3d5afe);
+  font-weight: 600;
+  font-size: inherit;
+}
+
+/* Post-type badge colors (soft tinted backgrounds + strong text) */
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.badgeQuestion { background: #e0f2fe; color: #0369a1; }
+.badgeTip      { background: #fef9c3; color: #a16207; }
+.badgeWin      { background: #dcfce7; color: #15803d; }
+.badgeResource { background: #ede9fe; color: #6d28d9; }
+.badgeDiscussion { background: #f1f5f9; color: var(--text-secondary, #64748b); }
+.badgePoll     { background: #fce7f3; color: #be185d; }
+.badgeGeneral  { background: #f1f5f9; color: var(--text-secondary, #64748b); }
+.badgeAnnouncement { background: var(--brand-blue, #3d5afe); color: #fff; }
+.badgeChallenge { background: #ffedd5; color: #c2410c; }
+
+/* Skeleton rows for loading states */
+.skeletonLine {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--bg-section) 25%, #eceff5 50%, var(--bg-section) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.skeletonLineShort { width: 40%; }
+.skeletonLineLong { width: 90%; }
+.skeletonAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--bg-section) 25%, #eceff5 50%, var(--bg-section) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeletonLine, .skeletonAvatar {
+    animation: none;
+    background: var(--bg-section);
+  }
+}
+
+/* Error banner shared by panels */
+.errorBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  text-align: center;
+}

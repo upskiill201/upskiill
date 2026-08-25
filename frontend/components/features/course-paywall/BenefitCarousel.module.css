@@ -1,0 +1,154 @@
+/* BenefitCarousel — swipeable "Why Teyro works" cards */
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* ── Dot buttons ───────────────────────────────────────────────────── */
+.dotsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--border-strong, #cbd5e1);
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.dot:hover {
+  background: var(--text-muted, #94a3b8);
+}
+
+.dot:focus-visible {
+  outline: 2px solid rgba(61, 90, 254, 0.5);
+  outline-offset: 2px;
+}
+
+.dotActive {
+  width: 20px;
+  background: var(--brand-blue, #3d5afe);
+}
+
+/* ── Snap track ────────────────────────────────────────────────────── */
+.track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* Bleed to the panel edges so cards peek past the content gutter */
+  margin: 0 -4px;
+  padding: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── Benefit card ──────────────────────────────────────────────────── */
+.card {
+  flex: 0 0 min(240px, 82%);
+  scroll-snap-align: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: #ffffff;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+}
+
+.iconCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #94a3b8);
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 15.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary, #1f2a44);
+}
+
+.highlightsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.highlightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-secondary, #64748b);
+}
+
+.checkIcon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--success-green, #22c55e);
+}
+
+.takeaway {
+  margin: auto 0 0; /* pin to card bottom for equal-height rhythm */
+  padding-top: 8px;
+  border-top: 1px dashed var(--border, #e2e8f0);
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--brand-blue, #3d5afe);
+}

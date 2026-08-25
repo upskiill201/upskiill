@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useCallback, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import {
   X, Check, ChevronRight, GripVertical, Plus,
   Upload, Edit2, BookOpen, PenTool, LayoutTemplate,
-  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp, Clock, Tag, Unlock, Film
+  ShieldCheck, HelpCircle, CheckCircle, Menu, ChevronDown, ChevronUp, Clock, Tag, Unlock, Film,
+  Layers, FileText, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Input from '@/components/ui/Input';
@@ -297,9 +299,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
     }
   }, [courseId, isNew]);
 
-  // Refresh curriculum when entering Step 4
+  // Refresh curriculum when entering Step 3 or Step 4
   useEffect(() => {
-    if (activeStep === 4) {
+    if (activeStep === 3 || activeStep === 4) {
       refreshCurriculum();
     }
   }, [activeStep, refreshCurriculum]);
@@ -340,24 +342,31 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   }, [courseId, isNew]);
 
   // Handle preview lesson change
+  const previewLessonIdRef = useRef(previewLessonId);
   const handlePreviewLessonChange = async (selectedId: string) => {
+    // Read the CURRENT previous selection from the ref — the state closure can
+    // be stale when two selections happen in quick succession, which used to
+    // leave several lessons flagged as free-preview at once.
+    const previousId = previewLessonIdRef.current;
     setPreviewLessonId(selectedId);
-    
+    previewLessonIdRef.current = selectedId;
+
     // Optimistically update backend (mark selected as true, previous as false)
     try {
-      if (previewLessonId) {
-        await fetch(`/api/courses/lessons/${previewLessonId}`, {
+      if (previousId && previousId !== selectedId) {
+        await fetch(`/api/courses/lessons/${previousId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isFreePreview: false })
         });
       }
       if (selectedId) {
-        await fetch(`/api/courses/lessons/${selectedId}`, {
+        const res = await fetch(`/api/courses/lessons/${selectedId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isFreePreview: true })
         });
+        if (!res.ok) throw new Error(String(res.status));
       }
     } catch (err) {
       console.error('Failed to update preview lesson', err);
@@ -365,14 +374,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   };
 
   const handleClearPreview = async () => {
-    if (!previewLessonId) return;
+    if (!previewLessonIdRef.current) return;
     try {
-      await fetch(`/api/courses/lessons/${previewLessonId}`, {
+      const res = await fetch(`/api/courses/lessons/${previewLessonIdRef.current}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFreePreview: false })
       });
-      setPreviewLessonId('');
+      if (res.ok) {
+        setPreviewLessonId('');
+        previewLessonIdRef.current = '';
+      }
     } catch (err) {
       console.error('Failed to clear preview lesson', err);
     }
@@ -407,23 +419,35 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
         savedId = created.id;
 
         // Patch with full data
-        await fetch(`/api/courses/${savedId}`, {
+        const patchRes = await fetch(`/api/courses/${savedId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(data),
         });
+        if (!patchRes.ok) {
+          console.error('Failed to save course draft', patchRes.status);
+          setSaveStatus('error');
+          setSaving(false);
+          return;
+        }
 
         // Redirect to the permanent URL
         router.replace(`/creator/builder/${savedId}`);
       } else {
         // Subsequent saves: just patch
-        await fetch(`/api/courses/${courseId}`, {
+        const patchRes = await fetch(`/api/courses/${courseId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(data),
         });
+        if (!patchRes.ok) {
+          console.error('Failed to save course draft', patchRes.status);
+          setSaveStatus('error');
+          setTimeout(() => setSaveStatus('idle'), 3000);
+          return;
+        }
       }
 
       setSaveStatus('saved');
@@ -697,6 +721,89 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             sections={rawSections}
             onNavigateStep={(stepNum) => setActiveStep(stepNum)}
           />
+        )}
+
+        {/* ═══ STEP 3: LESSON BUILDER LAUNCHER ═══
+            Previously this step rendered nothing — a blank dead end. It now
+            lists every lesson with its publish state and links into the
+            full-screen Lesson Builder. */}
+        {activeStep === 3 && !isNew && (
+          <div style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '60px' }}>
+            <div className={styles.pageHeader} style={{ marginBottom: '20px' }}>
+              <div>
+                <h1 className={styles.pageTitle}>Lesson Builder</h1>
+                <p className={styles.pageSubtitle}>
+                  Open each lesson to build its Learn · Apply · Reflect · Deepen phases, then publish it. Every lesson must be published before the course can go live.
+                </p>
+              </div>
+              <Button variant="outline" leftIcon={<Layers size={15} />} size="sm" onClick={() => setActiveStep(2)}>
+                Manage Curriculum
+              </Button>
+            </div>
+
+            {rawSections.length === 0 ? (
+              <div style={{ padding: '48px 32px', textAlign: 'center', background: '#FFFFFF', borderRadius: '16px', border: '1px dashed #CBD5E1' }}>
+                <BookOpen size={36} style={{ color: '#94A3B8', margin: '0 auto 12px' }} />
+                <p style={{ margin: '0 0 6px', fontWeight: 700, color: '#334155', fontSize: '15px' }}>No lessons to build yet</p>
+                <p style={{ margin: '0 0 20px', fontSize: '13px', color: '#64748B' }}>Create a module and add lessons in Step 2 first.</p>
+                <Button variant="primary" size="sm" onClick={() => setActiveStep(2)}>Go to Step 2 — Build Curriculum</Button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {rawSections.map((section, sIdx) => {
+                  const lessons = (section as any).lessons || [];
+                  return (
+                    <div key={section.id} style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.05)', overflow: 'hidden' }}>
+                      <div style={{ padding: '14px 20px', background: '#F8FAFC', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '13px', color: '#0172FD', background: '#EFF6FF', padding: '2px 8px', borderRadius: '6px' }}>
+                          Module {sIdx + 1}
+                        </span>
+                        <span style={{ fontWeight: 700, fontSize: '14px', color: '#0F172A' }}>{section.title}</span>
+                        <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#64748B' }}>{lessons.length} lesson{lessons.length !== 1 ? 's' : ''}</span>
+                      </div>
+                      {lessons.length === 0 ? (
+                        <div style={{ padding: '14px 20px', fontSize: '13px', color: '#EF4444', fontStyle: 'italic' }}>
+                          Empty module — add lessons in Step 2.
+                        </div>
+                      ) : (
+                        lessons.map((lesson: any) => {
+                          const published = lesson.status === 'published';
+                          return (
+                            <div key={lesson.id} style={{ padding: '12px 20px', borderTop: '1px solid #F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                <FileText size={15} style={{ color: published ? '#10B981' : '#94A3B8', flexShrink: 0 }} />
+                                <span style={{ fontSize: '14px', color: '#334155', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {lesson.title}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                                <span style={{
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  padding: '3px 10px',
+                                  borderRadius: '100px',
+                                  background: published ? '#ECFDF5' : '#FEF3C7',
+                                  color: published ? '#059669' : '#B45309',
+                                }}>
+                                  {published ? 'Published ✓' : 'Draft'}
+                                </span>
+                                <Link
+                                  href={`/creator/courses/${courseId}/lesson-builder/${lesson.id}`}
+                                  style={{ background: '#0172FD', color: '#FFFFFF', padding: '7px 14px', borderRadius: '10px', fontSize: '12.5px', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                  {published ? 'Edit Lesson' : 'Build Lesson'} <ArrowRight size={13} />
+                                </Link>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
 
         {/* ═══ STEP 2: CURRICULUM ═══ */}

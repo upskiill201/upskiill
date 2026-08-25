@@ -12,6 +12,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Throttle } from '@nestjs/throttler';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
@@ -24,7 +25,10 @@ export class ProfileController {
   /**
    * GET /profile/creator/:identifier
    * Public endpoint to view a creator's public profile, stats, and courses.
+   * Heavier than a typical read (courses + reviews aggregation), so it gets a
+   * tighter rate limit than the global default on top of the ThrottlerGuard.
    */
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Get('creator/:identifier')
   async getCreatorProfile(@Param('identifier') identifier: string, @Req() req: any) {
     // Optional viewer id from token if attached
@@ -36,6 +40,7 @@ export class ProfileController {
    * GET /profile/public/:identifier
    * Alias for public profile lookup.
    */
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Get('public/:identifier')
   async getPublicProfile(@Param('identifier') identifier: string, @Req() req: any) {
     const viewerId = req.user?.id;
@@ -54,7 +59,8 @@ export class ProfileController {
 
   /**
    * GET /profile/me
-   * Returns the authenticated creator's full profile (User + Profile join).
+   * Returns the authenticated user's full profile (User + Profile + student
+   * stats). Powers both the student profile page and creator settings.
    */
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
@@ -74,8 +80,11 @@ export class ProfileController {
 
   /**
    * PATCH /profile/me
-   * Updates any profile field. Handles both User.fullName and Profile fields.
+   * Updates any profile field. Handles both User.fullName and Profile fields,
+   * plus student settings (dailyGoalXp). Autosave cadence from the settings
+   * page is bounded by a tighter rate limit than the global default.
    */
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @UseGuards(AuthGuard('jwt'))
   @Patch('me')
   updateMyProfile(@GetUser() user: User, @Body() dto: UpdateProfileDto) {

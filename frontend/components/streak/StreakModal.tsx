@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { X, ChevronLeft, ChevronRight, Lock, UserPlus } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Lock, Crown, Shield, UserPlus } from 'lucide-react';
 import { useStreakModal } from '@/context/StreakContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './StreakModal.module.css';
@@ -243,7 +243,11 @@ export default function StreakModal() {
                               }`}
                             >
                               <span className={styles.dayNumText}>{dayObj.dayNumber}</span>
-                              {dayObj.isCompleted && (
+                              {dayObj.isFreezeUsed ? (
+                                <div className={styles.streakFlameOverlay}>
+                                  <Shield size={13} className="text-[#38BDF8]" />
+                                </div>
+                              ) : dayObj.isCompleted ? (
                                 <div className={styles.streakFlameOverlay}>
                                   <Image
                                     src="/Icons/burn.png"
@@ -253,7 +257,7 @@ export default function StreakModal() {
                                     style={{ objectFit: 'contain' }}
                                   />
                                 </div>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         ))}
@@ -272,7 +276,7 @@ export default function StreakModal() {
                     >
                       <div className={styles.societyLockWrap}>
                         {streakSocietyUnlocked ? (
-                          <span className={styles.societyUnlockedIcon}>👑</span>
+                          <Crown size={22} className="text-[#EAB308]" />
                         ) : (
                           <Lock size={22} color="#94A3B8" />
                         )}

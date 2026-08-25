@@ -7,7 +7,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { applyLevelUpsInTx, LevelUpPayload } from '../common/levels';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 
 export type ObjectiveType = 'LESSON_COUNT' | 'XP_EARNED' | 'STREAK_ACTIVE';
 export type RewardType = 'XP' | 'COINS' | 'GEMS';
@@ -16,7 +17,10 @@ export type RewardType = 'XP' | 'COINS' | 'GEMS';
 export class MissionsService {
   private readonly logger = new Logger(MissionsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * Format Date to YYYY-MM-DD string considering user's timezone offset (in minutes)
@@ -275,8 +279,14 @@ export class MissionsService {
 
         let updatedProgress = mission.currentProgress;
 
-        if (mission.objectiveType === 'STREAK_ACTIVE' && profile && profile.streakDays > 0) {
-          updatedProgress = Math.max(updatedProgress, 1);
+        if (mission.objectiveType === 'STREAK_ACTIVE') {
+          const streakDate = profile?.lastStreakEarnedAt
+            ? this.getLocalDayString(profile.lastStreakEarnedAt, timezoneOffsetMinutes)
+            : null;
+          const practicedToday = (todayActivity?.lessonsCompleted ?? 0) > 0 || streakDate === todayStr;
+          if (practicedToday && profile && profile.streakDays > 0) {
+            updatedProgress = Math.max(updatedProgress, 1);
+          }
         }
 
         if (mission.objectiveType === 'LESSON_COUNT') {
@@ -352,8 +362,8 @@ export class MissionsService {
   /**
    * Atomic Reward Claiming Transaction with Idempotency Key
    */
-  async claimMissionReward(userId: string, missionId: string) {
-    return this.prisma.$transaction(async (tx) => {
+  async claimMissionReward(userId: string, missionId: string, timezoneOffsetMinutes = 0) {
+    const result = await this.prisma.$transaction(async (tx) => {
       const mission = await tx.userDailyMission.findUnique({
         where: { id: missionId },
         include: { dailyMissionSet: true },
@@ -381,10 +391,11 @@ export class MissionsService {
         });
       }
 
-      // Check expiry: check if resetAt has passed (or missionDate is before current date)
+      // Check expiry: check if resetAt has passed with timezone awareness
       const now = new Date();
+      const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
       const isResetAtExpired = mission.dailyMissionSet?.resetAt && now > mission.dailyMissionSet.resetAt;
-      const isDateExpired = mission.missionDate && mission.missionDate < this.getLocalDayString(now, 0);
+      const isDateExpired = mission.missionDate && mission.missionDate < todayStr;
 
       if (isResetAtExpired || (!mission.dailyMissionSet?.resetAt && isDateExpired)) {
         await tx.userDailyMission.update({
@@ -436,18 +447,11 @@ export class MissionsService {
       let updatedProfile;
       const displayReward = mission.rewardType === 'GEMS' ? 'COINS' : mission.rewardType;
 
-      const profileBefore = await tx.studentProfile.findUnique({ where: { userId } });
-      let levelUp: LevelUpPayload | null = null;
-
       if (displayReward === 'XP') {
         updatedProfile = await tx.studentProfile.update({
           where: { userId },
           data: { xp: { increment: mission.rewardAmount } },
         });
-        // Detect a level crossing inside the same transaction and grant the bonus.
-        if (profileBefore) {
-          levelUp = await applyLevelUpsInTx(tx, userId, profileBefore.xp, updatedProfile.xp);
-        }
       } else if (displayReward === 'COINS') {
         updatedProfile = await tx.studentProfile.update({
           where: { userId },
@@ -488,14 +492,23 @@ export class MissionsService {
           gems: updatedProfile?.gems ?? 0,
         },
         allMissionsClaimed,
-        levelUp,
       };
     });
+
+    // Credit the weekly league standings (async, non-blocking).
+    if (result.claimedReward.type === 'XP') {
+      this.eventEmitter.emit(
+        'xp.awarded',
+        new XpAwardedEvent(userId, result.claimedReward.amount, 'MISSION'),
+      );
+    }
+
+    return result;
   }
 
   /**
    * Event/Piggyback hook: Incremental Mission Progress Update
-   * Advances active missions for today and returns updated missions list
+   * Advances active missions for today only
    */
   async updateMissionProgress(
     userId: string,
@@ -506,9 +519,11 @@ export class MissionsService {
     const now = new Date();
     const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
 
+    // Filter strictly by today's date so past missions are never corrupted
     const activeMissions = await this.prisma.userDailyMission.findMany({
       where: {
         userId,
+        missionDate: todayStr,
         objectiveType,
         isClaimed: false,
         status: { notIn: ['CLAIMED', 'EXPIRED'] },

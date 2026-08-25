@@ -283,6 +283,15 @@
   margin-top: 0.25rem;
 }
 
+.bioLine {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0.35rem 0 0 0;
+  max-width: 520px;
+}
+
 .identityRightMeta {
   display: flex;
   align-items: center;
@@ -423,6 +432,25 @@
   height: 22px;
   object-fit: contain;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.statNumSkeleton {
+  display: inline-block;
+  width: 44px;
+  height: 1rem;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
 }
 
 .statValueGroup {
@@ -515,168 +543,376 @@
   text-decoration: underline;
 }
 
-/* ── 5. ACHIEVEMENTS SECTION ── */
-.achievementsList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+/* ── 5. ACHIEVEMENTS SECTION — milestone collection grid ── */
+
+.achvUnlockedPill {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #0F172A;
+  background-color: #FEF3C7;
+  border: 1.5px solid #FDE68A;
+  border-radius: 9999px;
+  padding: 0.22rem 0.75rem;
+  white-space: nowrap;
 }
 
-.achievementItem {
+/* Collection grid — one tile per achievement tier */
+.achvGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 0.75rem;
+}
+
+.achvTile {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.55rem;
+  padding: 1.15rem 0.75rem 0.95rem;
   background-color: #FFFFFF;
   border: 1.5px solid #E2E8F0;
   border-radius: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  overflow: hidden;
 }
 
-.badgeLevelBox {
-  width: 54px;
-  height: 54px;
-  border-radius: 0.85rem;
+.achvTile:hover {
+  transform: translateY(-3px);
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.09);
+}
+
+.achvTile:active {
+  transform: translateY(-1px);
+}
+
+.achvTileLocked {
+  background-color: #F8FAFC;
+  border-style: dashed;
+  border-color: #E2E8F0;
+  cursor: pointer;
+}
+
+.achvTileLocked:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+/* Medallion — candy-depth circle, brand-colored when unlocked */
+.achvMedal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   position: relative;
-  color: #FFFFFF;
+  flex-shrink: 0;
+  /* Candy medallion highlight — Duolingo badge depth */
+  box-shadow: inset 0 3px 0 0 rgba(255, 255, 255, 0.28), inset 0 -4px 0 0 rgba(0, 0, 0, 0.18), 0 2px 6px rgba(15, 23, 42, 0.12);
 }
 
-.badgeLevelTag {
-  font-size: 0.52rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  background-color: rgba(0, 0, 0, 0.25);
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.3rem;
+.achvMedalLocked {
+  background-color: #E2E8F0;
+  box-shadow: inset 0 3px 0 0 rgba(255, 255, 255, 0.5), inset 0 -4px 0 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Tiny lock pin on locked medallions */
+.achvLockPin {
   position: absolute;
-  bottom: 3px;
-}
-
-.badgeDetails {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.badgeHeaderRow {
+  right: -3px;
+  bottom: -3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  color: #64748B;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
 }
 
-.badgeTitle {
-  font-size: 0.98rem;
+/* NEW ribbon for unlocks the student hasn't viewed yet */
+.achvNewChip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #7C3A00;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
+  border-radius: 9999px;
+  padding: 0.14rem 0.45rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 0 0 #D99B00;
+}
+
+.achvTileName {
+  font-size: 0.86rem;
   font-weight: 800;
   color: #0F172A;
-  margin: 0;
+  line-height: 1.25;
 }
 
-.badgeProgressNum {
-  font-size: 0.85rem;
+.achvTileNameLocked {
+  color: #94A3B8;
+}
+
+.achvTileDate {
+  font-size: 0.7rem;
   font-weight: 700;
+  color: #94A3B8;
+}
+
+.achvTileProgress {
+  font-size: 0.72rem;
+  font-weight: 800;
   color: #64748B;
 }
 
-.barTrack {
+/* Thin progress bar under locked-tile captions */
+.achvMiniTrack {
+  width: 100%;
+  height: 7px;
+  background-color: #E2E8F0;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+}
+
+.achvMiniFill {
+  height: 100%;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.6);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Achievement load-error + empty states ── */
+.achievementError {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.9rem 1rem;
+  background-color: #FFF7ED;
+  border: 1.5px solid #FED7AA;
+  color: #C2410C;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 0.85rem;
+}
+
+.retryBtn {
+  margin-left: auto;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 2px 0 0 #0050B3;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.retryBtn:hover { background-color: #0060D9; }
+.retryBtn:active { transform: translateY(2px); box-shadow: 0 0 0 0 #0050B3; }
+
+/* ── Achievement detail modal (tap a tile) ── */
+.achvDetailHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.achvDetailMedal {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: inset 0 4px 0 0 rgba(255, 255, 255, 0.28), inset 0 -5px 0 0 rgba(0, 0, 0, 0.18), 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.achvDetailName {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0.25rem 0 0;
+}
+
+.achvDetailCategory {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+.achvDetailDesc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748B;
+  margin: 0;
+  max-width: 34ch;
+}
+
+/* Status strip under the hero — unlocked date or live progress */
+.achvStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  padding: 0.42rem 1rem;
+}
+
+.achvStatusUnlocked {
+  color: #15803D;
+  background-color: #F0FDF4;
+  border: 1.5px solid #BBF7D0;
+}
+
+.achvProgressBlock {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.achvTrack {
   width: 100%;
   height: 14px;
   background-color: #E2E8F0;
   border-radius: 9999px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
-  position: relative;
   overflow: hidden;
   border: 1px solid #CBD5E1;
-  margin: 0.25rem 0;
 }
 
-.barFill {
+.achvFill {
   height: 100%;
   background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
   border-radius: 9999px;
   box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 2px 0 0 #D99B00;
-  position: relative;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.badgeSub {
-  font-size: 0.82rem;
-  font-weight: 600;
+.achvProgressCaption {
+  font-size: 0.78rem;
+  font-weight: 800;
   color: #64748B;
-  margin: 0;
 }
 
-/* ── Claim Achievement Button (3D Gold Pill) ── */
-.claimBtn {
-  font-size: 0.68rem;
+/* Badge-family ladder — the tiers of this medal, in order */
+.achvLadderLabel {
+  font-size: 0.7rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
-  color: #7C3A00;
-  background: linear-gradient(180deg, #FFD700 0%, #FFB700 100%);
-  border: none;
-  border-radius: 9999px;
-  padding: 0.3rem 0.75rem;
-  cursor: pointer;
-  box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 2px 0 0 #D99B00;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  margin: 1.1rem 0 0.5rem;
 }
 
-.claimBtn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: inset 0 1.5px 0.5px rgba(255, 255, 255, 0.6), 0 3px 0 0 #D99B00;
+.achvLadder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.claimBtn:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.4), 0 1px 0 0 #D99B00;
-}
-
-.claimBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ── XP Claim Toast ── */
-.claimToast {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #FFFFFF;
-  border: 1.5px solid #BBF7D0;
-  border-radius: 9999px;
-  padding: 0.6rem 1.25rem;
+.achvLadderRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #0F172A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  z-index: 9999;
-  animation: toastSlideUp 0.3s ease;
+  gap: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.7rem;
+  background-color: #F8FAFC;
+  border: 1.5px solid transparent;
 }
 
-@keyframes toastSlideUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+.achvLadderRowUnlocked {
+  background-color: #F0FDF4;
+  border-color: #BBF7D0;
 }
 
-.viewAllLink {
-  font-size: 0.85rem;
+.achvLadderRowNext {
+  background-color: #FEFCE8;
+  border-color: #FDE68A;
+}
+
+.achvLadderDot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #FFFFFF;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+.achvLadderDotLocked {
+  background-color: #E2E8F0;
+  color: #94A3B8;
+  box-shadow: none;
+}
+
+.achvLadderMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.achvLadderName {
+  font-size: 0.8rem;
   font-weight: 800;
-  color: #0172FD;
-  cursor: pointer;
+  color: #0F172A;
 }
 
-.viewAllLink:hover {
-  text-decoration: underline;
+.achvLadderDesc {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748B;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.achvLadderState {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #94A3B8;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.achvLadderStateUnlocked {
+  color: #16A34A;
 }
 
 /* ── RIGHT SIDEBAR ── */
@@ -1100,6 +1336,17 @@
   .badgeSub {
     font-size: 0.76rem;
   }
+
+  /* Claim pill shortens on small phones so the row stays one line */
+  .claimBtn {
+    font-size: 0.6rem;
+    padding: 0.26rem 0.55rem;
+  }
+
+  .tierPips span {
+    width: 12px;
+    height: 12px;
+  }
 }
 
 /* ── 2. Compact Mobile (<= 480px) ── */
@@ -1321,6 +1568,21 @@
     height: 9px;
   }
 
+  /* Tier ladder rows wrap instead of truncating on ultra-narrow screens */
+  .tierRow {
+    gap: 0.45rem;
+    padding: 0.4rem 0.45rem;
+  }
+
+  .tierRowDesc {
+    white-space: normal;
+  }
+
+  .tierPips span {
+    width: 11px;
+    height: 11px;
+  }
+
   .claimBtn {
     font-size: 0.58rem;
     padding: 0.2rem 0.5rem;
@@ -1352,6 +1614,675 @@
   }
   .pageContainer {
     padding-bottom: 1.5rem;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   SETTINGS & EDIT-PROFILE SYSTEM (Duolingo-style forms, toggles, modals)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Settings chip on identity card ── */
+.settingsChip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #475569;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 9999px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 2px 0 0 #E2E8F0;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.settingsChip:hover {
+  color: #0172FD;
+  border-color: #BFDBFE;
+}
+
+.settingsChip:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 0.5px 0 0 #E2E8F0;
+}
+
+.identityRightMeta {
+  align-items: center;
+}
+
+/* ── Form primitives (shared by Edit Profile & Delete confirmation) ── */
+.formLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #475569;
+  margin-bottom: 0.45rem;
+}
+
+.charCounter {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94A3B8;
+}
+
+.formInput,
+.formTextarea,
+.formSelect {
+  width: 100%;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0F172A;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.formTextarea {
+  resize: none;
+  line-height: 1.45;
+}
+
+.formInput:focus,
+.formTextarea:focus,
+.formSelect:focus {
+  border-color: #0172FD;
+  box-shadow: 0 0 0 3px rgba(1, 114, 253, 0.12);
+}
+
+.inputSuccess {
+  border-color: #22C55E !important;
+}
+
+.inputError {
+  border-color: #EF4444 !important;
+}
+
+/* Availability hint under the username field */
+.hintAvailable,
+.hintTaken,
+.hintNeutral {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: 0.4rem 0 0 0;
+}
+
+.hintAvailable { color: #16A34A; }
+.hintTaken { color: #EF4444; }
+.hintNeutral { color: #64748B; }
+
+/* ── Daily goal picker (Casual / Regular / Serious / Intense) ── */
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.goalCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.7rem 0.3rem;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.goalCard:hover {
+  border-color: #BFDBFE;
+}
+
+.goalCard:active {
+  transform: scale(0.97);
+}
+
+.goalCardSelected {
+  border-color: #0172FD;
+  background-color: #F0F7FF;
+  box-shadow: inset 0 -3px 0 0 rgba(1, 114, 253, 0.18);
+}
+
+.goalValue {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0172FD;
+  line-height: 1;
+}
+
+.goalUnit {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #64748B;
+}
+
+.goalLabel {
+  margin-top: 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #0F172A;
+  background-color: #F1F5F9;
+  border-radius: 9999px;
+  padding: 0.12rem 0.45rem;
+}
+
+.goalCardSelected .goalLabel {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.goalTagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94A3B8;
+  text-align: center;
+  margin: 0.5rem 0 0 0;
+}
+
+/* ── Save button (chunky 3D, matching .btn3dBlue language) ── */
+.btnSave3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  background-color: #22C55E;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #15803D;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btnSave3d:hover:not(:disabled) {
+  background-color: #1EB356;
+}
+
+.btnSave3d:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #15803D;
+}
+
+.btnSave3d:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnSaveSaved {
+  background-color: #16A34A;
+}
+
+/* Inline error banner inside modals */
+.saveErrorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #FEF2F2;
+  border: 1.5px solid #FECACA;
+  color: #B91C1C;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+}
+
+.saveErrorBanner svg {
+  flex-shrink: 0;
+}
+
+/* ── Settings modal layout ── */
+.settingsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settingsSectionLabel {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  margin: 0.75rem 0 0.25rem 0.25rem;
+}
+
+.settingsSectionLabelDanger {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #EF4444;
+  margin: 0.75rem 0 0.25rem 0.25rem;
+}
+
+.settingsGroup {
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.dangerGroup {
+  border-color: #FECACA;
+}
+
+.settingsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #F1F5F9;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  color: inherit;
+}
+
+.settingsRow:last-child {
+  border-bottom: none;
+}
+
+.settingsRow:hover {
+  background-color: #F8FAFC;
+}
+
+.settingsRowIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.settingsRowText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.settingsRowTitle {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.settingsRowSub {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #94A3B8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowActionLink {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #0172FD;
+}
+
+.dangerText {
+  color: #EF4444;
+}
+
+/* iOS-style toggle switch */
+.toggleSwitch {
+  position: relative;
+  width: 46px;
+  height: 27px;
+  border-radius: 9999px;
+  background-color: #CBD5E1;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+  padding: 0;
+}
+
+.toggleSwitch.toggleOn {
+  background-color: #22C55E;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  box-shadow: 0 1.5px 4px rgba(15, 23, 42, 0.25);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggleOn .toggleKnob {
+  transform: translateX(19px);
+}
+
+/* ── Delete account confirmation ── */
+.deleteWarningBanner {
+  display: flex;
+  gap: 0.75rem;
+  background-color: #FEF2F2;
+  border: 1.5px solid #FECACA;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  color: #B91C1C;
+  margin-bottom: 1.1rem;
+}
+
+.deleteWarningBanner svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.deleteWarningBanner strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+}
+
+.deleteWarningBanner p {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0;
+  color: #DC2626;
+}
+
+.deleteInput {
+  text-align: center;
+  letter-spacing: 0.2em;
+  font-weight: 900;
+}
+
+.btnDelete3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+  background-color: #EF4444;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #B91C1C;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btnDelete3d:hover:not(:disabled) {
+  background-color: #DC2626;
+}
+
+.btnDelete3d:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #B91C1C;
+}
+
+.btnDelete3d:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Person rows (sidebar following/followers lists) ── */
+.personList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.personRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  transition: background-color 0.15s ease;
+}
+
+.personRow:hover {
+  background-color: #F8FAFC;
+}
+
+.personInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.personName {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personSub {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #FF9600;
+  margin: 0;
+}
+
+.viewAllPeopleLink {
+  margin-top: 0.35rem;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  color: #0172FD;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+}
+
+.viewAllPeopleLink:hover {
+  text-decoration: underline;
+}
+
+/* Skeleton loading rows */
+.skeletonCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+  flex-shrink: 0;
+}
+
+.skeletonLine {
+  height: 10px;
+  border-radius: 9999px;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonCircle,
+  .skeletonLine,
+  .statNumSkeleton {
+    animation: none;
+    background-color: #E2E8F0;
+  }
+
+  .toggleKnob,
+  .goalCard,
+  .btnSave3d,
+  .btnDelete3d {
+    transition: none;
+  }
+
+  .achievementItem,
+  .achievementItem:hover {
+    transform: none;
+    transition: none;
+  }
+
+  .tierPipUnclaimed {
+    animation: none;
+  }
+
+  .barFillComplete::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ── Empty state (classmates modal) ── */
+.emptyStateBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 1rem 0 0.5rem 0;
+}
+
+.emptyStateGraphic {
+  width: 170px;
+  height: 120px;
+  position: relative;
+}
+
+.emptyStateTitle {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0;
+}
+
+.emptyStateText {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #64748B;
+  max-width: 260px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.btn3dBlueEmptyState {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border-radius: 12px;
+  padding: 0.65rem 1.4rem;
+  text-decoration: none;
+  box-shadow: 0 4px 0 0 #0050B3;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn3dBlueEmptyState:hover {
+  background-color: #0060D9;
+}
+
+.btn3dBlueEmptyState:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 0 #0050B3;
+}
+
+/* ── Invite card actions row (share + copy) ── */
+.inviteActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.copyLinkBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.copyLinkBtn:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* ── Mobile tweaks for new settings components ── */
+@media (max-width: 480px) {
+  .goalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .settingsChip span {
+    display: none; /* icon-only chip on narrow phones */
+  }
+
+  .settingsChip {
+    padding: 0.45rem 0.6rem;
   }
 }
 

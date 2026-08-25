@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles, Trophy } from 'lucide-react';
 import { useHerald, HeraldNotification } from '@/context/HeraldContext';
-import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
+import { useRewardAnimation, type RewardCurrency } from '@/context/RewardAnimationContext';
+import { useGamification } from '@/context/GamificationContext';
+import { useCelebration, isCelebrationActive } from '@/context/CelebrationContext';
+import { toCelebrationCurrency } from '@/components/celebration/currency';
 import { playHaptic } from '@/lib/haptics';
 import styles from './HeraldOverlay.module.css';
 
@@ -34,6 +37,13 @@ const SPIN_TITLES = [
   "Spin the wheel of fortune! 🌀",
 ];
 
+const ACHIEVEMENT_TITLES = [
+  "Achievement unlocked!",
+  "New badge earned!",
+  "Look at that shine!",
+  "You earned a badge!",
+];
+
 const WEEKLY_TITLES = [
   "Weekly Goal Mastered! 🏆",
   "On Fire This Week! 🔥",
@@ -44,11 +54,13 @@ function getMascotTitle(notification: HeraldNotification): string {
   const pool =
     notification.type === 'MISSION'
       ? MISSION_TITLES
-      : notification.type === 'CHEST'
-        ? CHEST_TITLES
-        : notification.type === 'SPIN'
-          ? SPIN_TITLES
-          : WEEKLY_TITLES;
+      : notification.type === 'ACHIEVEMENT'
+        ? ACHIEVEMENT_TITLES
+        : notification.type === 'CHEST'
+          ? CHEST_TITLES
+          : notification.type === 'SPIN'
+            ? SPIN_TITLES
+            : WEEKLY_TITLES;
 
   const hash = notification.id
     .split('')
@@ -59,6 +71,7 @@ function getMascotTitle(notification: HeraldNotification): string {
 function getRewardIcon(rewardType?: string): string {
   if (rewardType === 'XP') return '/Icons/gem.png';
   if (rewardType === 'COINS') return '/Icons/Coin.png';
+  if (rewardType === 'FREEZE') return '/Icons/snowflake.svg';
   return '/Icons/gem.png';
 }
 
@@ -73,7 +86,10 @@ interface HeraldBannerProps {
 
 function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
   const { setActiveOverlay } = useHerald();
-  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
+  const { openClaimModal } = useRewardAnimation();
+  const { celebrate } = useCelebration();
+  const { refresh } = useGamification();
+  const router = useRouter();
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const claimButtonRef = useRef<HTMLButtonElement>(null);
@@ -100,7 +116,7 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
   };
   const handleMouseLeave = () => startTimer();
 
-  // ── Fullscreen RewardRun claim (MISSION / WEEKLY_PROGRESS / CHEST) ──────────
+  // ── Fullscreen RewardRun claim (MISSION) ─────────────────────────────────
 
   const handleClaim = () => {
     if (claiming || claimed) return;
@@ -108,64 +124,104 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
     if (timerRef.current) clearTimeout(timerRef.current);
     onDismiss();
 
-    const rewardCurrency: RewardCurrency = notification.rewardType === 'COINS' ? 'COINS' : 'XP';
-    const amount = notification.rewardAmount || (notification.type === 'WEEKLY_PROGRESS' ? 50 : 20);
+    // No claim API target (shouldn't happen for MISSION notifications) —
+    // never open a payout scene that would celebrate a reward it can't persist.
+    if (!notification.missionId) return;
 
+    const claimedCurrency = toCelebrationCurrency(notification.rewardType);
+    // Missions only ever pay XP/COINS — narrow defensively for the legacy
+    // claim-modal adapter, whose RewardCurrency has no FREEZE variant.
+    const rewardCurrency: RewardCurrency =
+      claimedCurrency === 'XP' || claimedCurrency === 'COINS' ? claimedCurrency : 'XP';
+    const amount = notification.rewardAmount || 20;
+
+    // Full-page Celebration Engine claim scene — executes the mission-claim
+    // API server-first, then choreographs the payout. Errors propagate so a
+    // failed claim shows the error state instead of celebrating nothing.
     openClaimModal({
-      title: `+${amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
+      title: `+${amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'XP'}`,
       subtitle: notification.title || 'Reward Ready to Claim!',
       rewards: [{ currency: rewardCurrency, amount }],
-      skipBackendPersist: true,
       onClaim: async () => {
-        if (notification.type === 'WEEKLY_PROGRESS') return;
-        if (!notification.missionId) return;
-        try {
-          await fetch(`/api/v2/missions/${notification.missionId}/claim`, {
+        const res = await fetch(
+          `/api/v2/missions/${notification.missionId}/claim?timezoneOffset=${new Date().getTimezoneOffset()}`,
+          {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-          });
-          window.dispatchEvent(new CustomEvent('mission:refresh'));
-        } catch (err) {
-          console.error('Failed to claim mission via banner:', err);
+          }
+        );
+        if (!res.ok) {
+          const body: { message?: string } = await res.json().catch(() => ({}));
+          throw new Error(body?.message || 'Could not claim this mission.');
         }
+        window.dispatchEvent(new CustomEvent('mission:refresh'));
+        // Sync header balances — the dashboard-card claim path does the same.
+        await refresh();
       },
     });
   };
 
-  // ── Launch reveal overlay (CHEST / SPIN / MISSIONS / STREAK) ──────────────
+  // ── Launch reveal overlay / celebration scene ─────────────────────────────
 
   const handleLaunchReveal = () => {
     playHaptic('medium');
     if (timerRef.current) clearTimeout(timerRef.current);
     onDismiss();
-    if (notification.type === 'MISSION') {
-      setActiveOverlay('MISSIONS');
-    } else if (notification.type === 'CHEST') {
-      openClaimModal({
-        title: '+50 GEMS',
-        subtitle: 'Mystery Chest Unlocked!',
-        rewards: [
-          { currency: 'XP', amount: 50 },
-          { currency: 'COINS', amount: 30 },
-        ],
-      });
+    if (notification.type === 'CHEST') {
+      // Real chest reveal — the scene fetches today's chest, opens it
+      // server-first, and choreographs the physical reward drop.
+      celebrate({ kind: 'CHEST' });
     } else if (notification.type === 'SPIN') {
       setActiveOverlay('SPIN');
-    } else if (notification.type === 'WEEKLY_PROGRESS') {
-      setActiveOverlay('MISSIONS');
+    } else if (notification.type === 'ACHIEVEMENT') {
+      // Collect moment — the full-page AchievementScene claims the tier
+      // server-first, then reveals the badge with its payout.
+      launchAchievementScene(notification);
     }
   };
 
+  /** AchievementScene launcher — the badge payload arrives on the notification.
+   *  Achievements are their own reward: nothing is claimed, the scene celebrates
+   *  the unlock (marking it seen) and deep-links to the collection. */
+  const launchAchievementScene = (n: HeraldNotification) => {
+    if (!n.achievement) return;
+    const a = n.achievement;
+    celebrate({
+      kind: 'ACHIEVEMENT',
+      badgeId: a.badgeId,
+      badgeTitle: a.tierName,
+      tier: a.tier,
+      maxTier: a.maxTier,
+      tierDescription: a.description,
+      badgeBg: a.badgeBg,
+      ctaText: 'VIEW ACHIEVEMENT',
+      onComplete: () => {
+        // "View Achievement" → the collection on the profile, where the new
+        // medal now permanently lives.
+        router.push('/dashboard/profile#achievements');
+      },
+    });
+  };
+
   const handleBannerClick = (e: React.MouseEvent) => {
-    // If user clicks the banner background rather than specific buttons, open full modal
+    // Buttons handle themselves; a tap anywhere else on a MISSION / ACHIEVEMENT
+    // banner runs its primary action (claim / collect), other types just
+    // dismiss — unlocks are always claimable later from the dashboard.
     if ((e.target as HTMLElement).closest('button')) return;
-    handleLaunchReveal();
+    if (notification.type === 'MISSION') {
+      handleClaim();
+    } else if (notification.type === 'ACHIEVEMENT') {
+      handleLaunchReveal();
+    } else {
+      onDismiss();
+    }
   };
 
   const mascotTitle = getMascotTitle(notification);
-  const isActionableInline =
-    notification.type === 'MISSION' || notification.type === 'WEEKLY_PROGRESS';
+  // Only missions have a real claim API — the weekly banner is purely
+  // celebratory (its XP was never persisted, so it must not fake a claim).
+  const isActionableInline = notification.type === 'MISSION';
 
   return (
     <div
@@ -194,7 +250,9 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
               ? '🎁'
               : notification.type === 'SPIN'
                 ? '🎡'
-                : '🏆'}
+                : notification.type === 'ACHIEVEMENT'
+                  ? <Trophy size={12} color="#FBBF24" strokeWidth={2.6} />
+                  : '🏆'}
         </span>
       </div>
 
@@ -237,10 +295,20 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
           <button
             id={`herald-open-${notification.id}`}
             type="button"
-            onClick={handleLaunchReveal}
+            onClick={
+              notification.type === 'WEEKLY_PROGRESS'
+                ? onDismiss
+                : handleLaunchReveal
+            }
             className={styles.openBtn3D}
           >
-            {notification.type === 'SPIN' ? 'SPIN NOW 🎡' : 'OPEN CHEST 📦'}
+            {notification.type === 'SPIN'
+              ? 'SPIN NOW 🎡'
+              : notification.type === 'CHEST'
+                ? 'OPEN CHEST 📦'
+                : notification.type === 'ACHIEVEMENT'
+                  ? "LET'S GO"
+                  : "LET'S GO 🚀"}
           </button>
         )}
 
@@ -272,12 +340,19 @@ export default function HeraldOverlay() {
   const pathname = usePathname();
   const { activeNotification, dismissActive } = useHerald();
   const [mounted, setMounted] = useState(false);
+  // Banners hold off while a full-page celebration scene is playing —
+  // the queued banner surfaces the moment the scene closes.
+  const [celebrationActive, setCelebrationActive] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const sync = () => setCelebrationActive(isCelebrationActive());
+    sync();
+    window.addEventListener('celebration:visibility', sync);
+    return () => window.removeEventListener('celebration:visibility', sync);
   }, []);
 
-  if (!mounted || pathname?.startsWith('/creator')) return null;
+  if (!mounted || pathname?.startsWith('/creator') || celebrationActive) return null;
 
   return createPortal(
     <AnimatePresence mode="wait">

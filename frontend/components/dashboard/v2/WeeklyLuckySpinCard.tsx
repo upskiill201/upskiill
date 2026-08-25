@@ -6,8 +6,11 @@ import gsap from 'gsap';
 import { CustomEase } from 'gsap/dist/CustomEase';
 import styles from './WeeklyLuckySpin.module.css';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
+import { useCelebration } from '@/context/CelebrationContext';
+import type { CelebrationScene } from '@/context/CelebrationContext';
+import { currencyDisplayName, toCelebrationCurrency } from '@/components/celebration/currency';
 import { useHerald } from '@/context/HeraldContext';
+import { playHaptic } from '@/lib/haptics';
 import { playTickSound, playWinSound } from '@/utils/audio';
 
 // Register CustomEase
@@ -28,7 +31,7 @@ const DEFAULT_WHEEL_CONFIG = [
 
 export default function WeeklyLuckySpinCard() {
   const { refresh } = useGamification();
-  const { triggerRewardAnimation } = useRewardAnimation();
+  const { celebrate } = useCelebration();
   const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [showModal, setShowModal] = useState(false);
   const [spinState, setSpinState] = useState<'LOADING' | 'AVAILABLE' | 'SPUN'>('AVAILABLE');
@@ -57,7 +60,7 @@ export default function WeeklyLuckySpinCard() {
         if (data && data.status) {
           setSpinState(data.status);
           if (data.status === 'SPUN') {
-            setPrizeMessage(`🎉 YOU WON ${data.rewardSnapshotAmount} ${data.rewardSnapshotType}!`);
+            setPrizeMessage(`🎉 YOU WON ${data.rewardSnapshotAmount} ${currencyDisplayName(data.rewardSnapshotType)}!`);
           }
           // Herald signal: weekly spin is available
           if (data.status === 'AVAILABLE') {
@@ -184,13 +187,27 @@ export default function WeeklyLuckySpinCard() {
                onComplete: async () => {
                  setIsSpinning(false);
                  setSpinState('SPUN');
-                 setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${rewardSnapshotType}!`);
-                 const mappedCurrency = rewardSnapshotType === 'GEMS' ? 'COINS' : (rewardSnapshotType as RewardCurrency);
-                 triggerRewardAnimation({
-                   originElement: wheelRef.current,
-                   rewards: [{ currency: mappedCurrency, amount: rewardSnapshotAmount }],
-                 });
-                 if (refresh) await refresh();
+                 const prizeName = currencyDisplayName(rewardSnapshotType);
+                 setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${prizeName}!`);
+                 playWinSound();
+                 playHaptic('success');
+                 // The spin was persisted server-first (POST /spin/spin) — the
+                 // full-page CLAIM scene now choreographs the payout reveal.
+                 const scene: CelebrationScene = {
+                   kind: 'CLAIM',
+                   title: `+${rewardSnapshotAmount} ${prizeName}`,
+                   subtitle: 'Lucky Spin winnings!',
+                   rewards: [
+                     {
+                       currency: toCelebrationCurrency(rewardSnapshotType),
+                       amount: rewardSnapshotAmount,
+                     },
+                   ],
+                   onComplete: () => void refresh(),
+                 };
+                 celebrate(scene);
+                 // Let the spin card on home screen know to update
+                 window.dispatchEvent(new Event('focus'));
                }
           });
         }

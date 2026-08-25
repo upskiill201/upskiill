@@ -2,15 +2,14 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import confetti from 'canvas-confetti';
-import { gsap } from 'gsap';
-import { Clock, BookOpen, Sparkles, Check, ArrowRight } from 'lucide-react';
+import { Clock, BookOpen, Check, ArrowRight } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation, RewardCurrency } from '@/context/RewardAnimationContext';
-import { GamificationIcon } from '@/components/ui/GamificationIcon';
 import { usePathname } from 'next/navigation';
+import { GamificationIcon } from '@/components/ui/GamificationIcon';
 import { playHaptic } from '@/lib/haptics';
 import { useHerald } from '@/context/HeraldContext';
+import { useCelebration } from '@/context/CelebrationContext';
+import { toCelebrationCurrency, type CelebrationCurrency } from '@/components/celebration/currency';
 import styles from './TodaysMissionsCard.module.css';
 
 interface MissionReward {
@@ -69,7 +68,7 @@ const getFallbackMissions = (): MissionItem[] => [
 
 export default function TodaysMissionsCard() {
   const { refresh } = useGamification();
-  const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
+  const { celebrate } = useCelebration();
   const pathname = usePathname();
   const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
 
@@ -81,9 +80,6 @@ export default function TodaysMissionsCard() {
 
   const [missions, setMissions] = useState<MissionItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [claimingId, setClaimingId] = useState<string | null>(null);
-  const [shakingId, setShakingId] = useState<string | null>(null);
-  const [activeParticle, setActiveParticle] = useState<{ id: string; text: string } | null>(null);
   const [resetTimer, setResetTimer] = useState('12h 45m');
   const [isWarningReset, setIsWarningReset] = useState(false);
   const [showCelebrationBanner, setShowCelebrationBanner] = useState(false);
@@ -151,6 +147,12 @@ export default function TodaysMissionsCard() {
     const handleMissionUpdate = (e: any) => {
       const updatedList = e.detail;
       if (updatedList && Array.isArray(updatedList)) {
+        // Same local-day bucket HeraldContext.checkClaimables uses, so both
+        // producers dedupe against one session key (no double banners).
+        const now = new Date();
+        const localDay = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+          now.getDate()
+        ).padStart(2, '0')}`;
         setMissions(prev => {
           const next = prev.map(m => {
             const update = updatedList.find((u: any) => u.userMissionId === m.id);
@@ -159,7 +161,7 @@ export default function TodaysMissionsCard() {
 
               // Herald signal: mission just became claimable
               if (isDone && !m.isCompleted && !m.isClaimed) {
-                const transitionKey = `${m.id}-${Math.floor(Date.now() / 60000)}`;
+                const transitionKey = `mission-${m.id}-${localDay}`;
                 const rewardType = m.reward.type === 'GEMS' ? 'COINS' : m.reward.type as 'XP' | 'COINS';
                 enqueueHeraldNotification({
                   id: `herald-mission-${m.id}-${Date.now()}`,
@@ -202,140 +204,62 @@ export default function TodaysMissionsCard() {
     };
   }, [fetchMissions, pathname]);
 
-  // GSAP Flying Coin / XP particle animation to top nav balance pill
-  const animateRewardFlight = (cardElement: HTMLElement | null, rewardType: string) => {
-    if (typeof window === 'undefined') return;
-
-    const targetId = rewardType === 'XP' ? 'stat-pill-gem' : 'stat-pill-coin';
-    const targetElem = document.getElementById(targetId);
-
-    const particle = document.createElement('img');
-    particle.src = rewardType === 'XP' ? '/Icons/gem.png' : '/Icons/Coin.png';
-    particle.style.position = 'fixed';
-    particle.style.width = '32px';
-    particle.style.height = '32px';
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '9999';
-
-    // Starting position from button/card
-    const startRect = cardElement ? cardElement.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 32, height: 32 };
-    const startX = startRect.left + startRect.width / 2 - 16;
-    const startY = startRect.top + 10;
-
-    particle.style.left = `${startX}px`;
-    particle.style.top = `${startY}px`;
-    document.body.appendChild(particle);
-
-    // Target position top navbar
-    const endRect = targetElem ? targetElem.getBoundingClientRect() : { left: window.innerWidth - 120, top: 20 };
-    const endX = endRect.left + 10;
-    const endY = endRect.top + 10;
-
-    // Curved bezier flight timeline using GSAP
-    gsap.timeline({
-      onComplete: () => {
-        if (particle.parentNode) {
-          particle.parentNode.removeChild(particle);
-        }
-        // Scale bump on top nav balance pill target upon arrival
-        if (targetElem) {
-          gsap.timeline()
-            .to(targetElem, { scale: 1.25, duration: 0.15, ease: 'power2.out' })
-            .to(targetElem, { scale: 1, duration: 0.25, ease: 'bounce.out' });
-        }
-      },
-    })
-      .to(particle, {
-        duration: 0.75,
-        x: endX - startX,
-        y: endY - startY,
-        scale: 1.2,
-        rotation: 360,
-        ease: 'power2.inOut',
-      })
-      .to(particle, { opacity: 0, duration: 0.15 }, '-=0.15');
-  };
-
-  // Trigger All 3 Missions Claimed Celebration
-  const triggerCelebration = () => {
-    setShowCelebrationBanner(true);
-    playHaptic('success');
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 },
-    });
-  };
-
-  // Claim Mission Reward Handler (Launches Fullscreen RewardRun System)
-  const handleClaim = async (missionItem: MissionItem, e: React.MouseEvent<HTMLButtonElement>) => {
+  // Claim Mission Reward Handler — full-page Celebration Engine sequence:
+  // QUEST scene (mission rows + shine on the completed one) → CLAIM scene
+  // (server-first claim, then Tey's toss-into-balance choreography).
+  const handleClaim = (missionItem: MissionItem) => {
     playHaptic('medium');
-    const rewardCurrency = missionItem.reward.type === 'GEMS' ? 'COINS' : (missionItem.reward.type as RewardCurrency);
-
-    openClaimModal({
-      title: `+${missionItem.reward.amount} ${rewardCurrency === 'COINS' ? 'COINS' : 'GEMS'}`,
-      subtitle: `Daily Mission: "${missionItem.title}" Completed!`,
-      rewards: [{ currency: rewardCurrency, amount: missionItem.reward.amount }],
-      skipBackendPersist: true,
-      onClaim: async () => {
-        if (missionItem.id.startsWith('m')) {
-          await fetchMissions();
-          return;
-        }
-
-        try {
-          const endpoint = `/api/v2/missions/${missionItem.id}/claim`;
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-          });
-
-          const data = res.headers.get('content-type')?.includes('application/json')
-            ? await res.json()
-            : {};
-
-          if (res.ok && data.success) {
-            setMissions((prev) => {
-              const updated = prev.map((m) =>
-                m.id === missionItem.id
-                  ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
-                  : m
-              );
-
-              const allClaimed = updated.every((m) => m.isClaimed || m.status === 'CLAIMED');
-              if (allClaimed || data.allMissionsClaimed) {
-                setTimeout(() => {
-                  triggerCelebration();
-                }, 600);
-              }
-
-              return updated;
-            });
-
-            // Refresh global balance context in navbar
-            if (refresh) {
-              await refresh();
-            }
-          } else if (res.status === 409 || data.error === 'ALREADY_CLAIMED') {
-            setMissions((prev) =>
-              prev.map((m) =>
-                m.id === missionItem.id
-                  ? { ...m, isClaimed: true, isCompleted: true, status: 'CLAIMED' as const }
-                  : m
-              )
-            );
-          } else {
-            setShakingId(missionItem.id);
-            setTimeout(() => setShakingId(null), 500);
-          }
-        } catch (err) {
-          console.error('Error claiming mission reward:', err);
-          setShakingId(missionItem.id);
-          setTimeout(() => setShakingId(null), 500);
-        }
+    const currency = toCelebrationCurrency(missionItem.reward.type);
+    celebrate([
+      {
+        kind: 'QUEST',
+        headline: 'Mission complete!',
+        subhead: `Daily Mission: "${missionItem.title}"`,
+        ctaText: 'CLAIM',
+        rows: missions.map((m) => ({
+          id: m.id,
+          label: m.title,
+          current: m.id === missionItem.id ? m.targetValue : m.currentProgress,
+          target: m.targetValue,
+          highlight: m.id === missionItem.id,
+          reward: { currency: toCelebrationCurrency(m.reward.type), amount: m.reward.amount },
+        })),
       },
-    });
+      {
+        kind: 'CLAIM',
+        title: `+${missionItem.reward.amount} ${currency}`,
+        subtitle: `Daily Mission: "${missionItem.title}" Completed!`,
+        rewards: [{ currency, amount: missionItem.reward.amount }],
+        claim: async () => {
+          // Let failures propagate — the scene degrades to an error state
+          // instead of celebrating a reward that was never persisted.
+          const res = await fetch(
+            `/api/v2/missions/${missionItem.id}/claim?timezoneOffset=${new Date().getTimezoneOffset()}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+            }
+          );
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body?.message || 'Could not claim this mission.');
+          }
+          const data: {
+            userBalances?: { xp?: number; coins?: number };
+          } = await res.json().catch(() => ({}));
+          window.dispatchEvent(new CustomEvent('mission:refresh'));
+          await refresh();
+          // Exact post-claim balances drive the count-up — the backend also
+          // pays a +15 coin bonus when this was the last unclaimed mission.
+          const balances: Partial<Record<CelebrationCurrency, number>> = {};
+          if (typeof data?.userBalances?.xp === 'number') balances.XP = data.userBalances.xp;
+          if (typeof data?.userBalances?.coins === 'number') balances.COINS = data.userBalances.coins;
+          return balances;
+        },
+        onComplete: () => void fetchMissions(),
+      },
+    ]);
   };
 
   /**
@@ -372,7 +296,7 @@ export default function TodaysMissionsCard() {
     <div ref={containerRef} className={styles.sectionWrapper}>
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.sectionTitle}>DAILY QUESTS</h2>
+          <h2 className={styles.sectionTitle}>DAILY MISSIONS</h2>
         </div>
         <div className={`${styles.resetTimer} ${isWarningReset ? styles.resetTimerWarning : ''}`}>
           <Clock size={15} />
@@ -407,8 +331,6 @@ export default function TodaysMissionsCard() {
           missions.map((m) => {
             const pct = Math.min(100, Math.round((m.currentProgress / m.targetValue) * 100));
             const { icon, iconClass } = getMissionIcon(m.objectiveType, m.title);
-            const isClaiming = claimingId === m.id;
-            const isShaking = shakingId === m.id;
             const isClaimed = m.isClaimed || m.status === 'CLAIMED';
             const isCompleted = m.isCompleted || m.status === 'COMPLETED' || m.currentProgress >= m.targetValue;
             const isReadyToClaim = isCompleted && !isClaimed;
@@ -424,11 +346,6 @@ export default function TodaysMissionsCard() {
                   isClaimed ? styles.missionCardClaimed : '',
                 ].join(' ')}
               >
-                {/* Floating Reward Particle */}
-                {activeParticle?.id === m.id && (
-                  <div className={styles.particlePopup}>{activeParticle.text}</div>
-                )}
-
                 <div className={`${styles.iconWrap} ${iconClass}`}>{icon}</div>
 
                 <div className={styles.missionContent}>
@@ -467,11 +384,10 @@ export default function TodaysMissionsCard() {
                   ) : isCompleted ? (
                     <button
                       type="button"
-                      onClick={(e) => handleClaim(m, e)}
-                      disabled={isClaiming}
-                      className={`${styles.claimBtn3D} ${isShaking ? styles.claimBtnShake : ''}`}
+                      onClick={() => handleClaim(m)}
+                      className={`${styles.claimBtn3D}`}
                     >
-                      {isClaiming ? 'Claiming...' : 'CLAIM'}
+                      CLAIM
                     </button>
                   ) : (
                     <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8' }}>

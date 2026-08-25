@@ -156,7 +156,8 @@
   width: 100%;
 }
 
-/* CUSTOM EXPLORE CARD WRAPPER */
+/* CUSTOM EXPLORE CARD WRAPPER — the WHOLE card is one big link to the
+   course page (role="link" + keyboard handler live on the JSX side) */
 .exploreCardWrapper {
   background: white;
   border: 1px solid #E2E8F0;
@@ -167,11 +168,17 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 12px rgba(7, 18, 51, 0.04);
   position: relative;
+  cursor: pointer;
 }
 
 .exploreCardWrapper:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 24px rgba(7, 18, 51, 0.08);
+}
+
+.exploreCardWrapper:focus-visible {
+  outline: 3px solid rgba(1, 114, 253, 0.45);
+  outline-offset: 2px;
 }
 
 .thumbnailContainer {
@@ -310,42 +317,62 @@
 .priceFree {
   font-size: 18px;
   font-weight: 900;
-  color: #22C55E;
+  color: #16A34A;
 }
 
+.priceRow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.originalPrice {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-decoration: line-through;
+}
+
+/* Duolingo-style chunky CTA — solid base that "presses down" on click */
 .enrollBtn {
-  background: #0172FD;
+  background: #22C55E;
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
+  border-radius: 12px;
+  padding: 10px 16px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.2), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 3px 0 #15803D, 0 6px 14px rgba(34, 197, 94, 0.25);
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   font-family: var(--font-jakarta), sans-serif;
 }
 
-.enrollBtn:hover {
-  background: #0062DC;
-  transform: translateY(-1px);
+.enrollBtn:hover:not(:disabled) {
+  filter: brightness(1.06);
 }
 
-.enrollBtn:active {
-  transform: translateY(1px);
-  box-shadow: none;
+.enrollBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #15803D;
+}
+
+.enrollBtn:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 
 .continueBtn {
   background: #F4F8FF;
   color: #0172FD;
-  border: 1.5px solid #0172FD;
-  border-radius: 10px;
-  padding: 10px 18px;
+  border: 1.5px solid #BFDBFE;
+  box-shadow: 0 3px 0 #DBEAFE;
+  border-radius: 12px;
+  padding: 10px 16px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -353,12 +380,20 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   font-family: var(--font-jakarta), sans-serif;
 }
 
 .continueBtn:hover {
   background: #0172FD;
+  border-color: #0172FD;
   color: white;
+  box-shadow: 0 3px 0 #0056C6;
+}
+
+.continueBtn:active {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 
 /* EMPTY / SKELETON STATES */
@@ -453,4 +488,41 @@
   .courseGrid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ─── Branded thumbnail fallback (no stock photos) ─── */
+.thumbFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
+  color: #0172fd;
+  font-weight: 800;
+  text-align: center;
+  padding: 16px;
+}
+
+/* ─── Thumbnail price tag (FREE / $X) — real pricing data, top-right ─── */
+.priceTagBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(7, 18, 51, 0.85);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(7, 18, 51, 0.25);
+}
+
+.priceTagFree {
+  background: #22C55E;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
 }

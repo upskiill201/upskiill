@@ -1,12 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import * as crypto from 'crypto';
+
+const DEFAULT_CHEST_POOLS = [
+  { id: 'pool-coins-common', rewardType: 'COINS', amountMin: 15, amountMax: 30, rarityTier: 'common', weight: 40, active: true },
+  { id: 'pool-xp-common', rewardType: 'XP', amountMin: 20, amountMax: 40, rarityTier: 'common', weight: 35, active: true },
+  { id: 'pool-coins-rare', rewardType: 'COINS', amountMin: 50, amountMax: 100, rarityTier: 'rare', weight: 15, active: true },
+  { id: 'pool-freeze', rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 5, active: true },
+  { id: 'pool-hearts', rewardType: 'HEARTS', amountMin: 1, amountMax: 2, rarityTier: 'common', weight: 5, active: true },
+];
 
 @Injectable()
 export class ChestService {
   private readonly logger = new Logger(ChestService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   private getChestDay(timezoneOffsetMinutes: number = 0): string {
     const localTime = new Date(new Date().getTime() - timezoneOffsetMinutes * 60000);
@@ -24,8 +37,8 @@ export class ChestService {
         userId_chestDay: {
           userId,
           chestDay,
-        }
-      }
+        },
+      },
     });
 
     if (!chest) {
@@ -34,9 +47,8 @@ export class ChestService {
           userId,
           chestDay,
           status: 'LOCKED',
-        }
+        },
       });
-      // Optionally emit analytics event: 'chest_generated'
     }
 
     return chest;
@@ -50,8 +62,8 @@ export class ChestService {
         userId_chestDay: {
           userId,
           chestDay,
-        }
-      }
+        },
+      },
     });
 
     if (!chest) {
@@ -61,7 +73,7 @@ export class ChestService {
           chestDay,
           status: 'READY_TO_OPEN',
           unlockedAt: new Date(),
-        }
+        },
       });
       return chest;
     }
@@ -72,19 +84,16 @@ export class ChestService {
         data: {
           status: 'READY_TO_OPEN',
           unlockedAt: new Date(),
-        }
+        },
       });
-      // Optionally emit analytics event: 'chest_unlocked'
     }
 
     return chest;
   }
 
   async openChest(userId: string, chestId: string, timezoneOffsetMinutes: number = 0) {
-    const chestDay = this.getChestDay(timezoneOffsetMinutes);
-    
-    return await this.prisma.$transaction(async (tx) => {
-      // Row lock and validation
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 1. Fetch chest with lock validation
       const chest = await tx.dailyChest.findUnique({ where: { id: chestId } });
       
       if (!chest || chest.userId !== userId) {
@@ -94,92 +103,94 @@ export class ChestService {
       if (chest.status !== 'READY_TO_OPEN') {
         throw new Error('CHEST_NOT_OPENABLE');
       }
-      
-      if (chest.chestDay !== chestDay) {
-        throw new Error('CHEST_EXPIRED');
+
+      // 2. Fetch reward pools with built-in default fallback
+      let pools: any[] = [];
+      try {
+        pools = await tx.chestRewardPool.findMany({ where: { active: true } });
+      } catch (err) {
+        this.logger.warn(`Failed reading chest_reward_pool table, using fallback pools: ${err}`);
       }
 
-      // Weighted Roll
-      const pools = await tx.chestRewardPool.findMany({ where: { active: true } });
-      if (pools.length === 0) {
-        throw new Error('POOL_MISCONFIGURED');
+      if (!pools || pools.length === 0) {
+        pools = DEFAULT_CHEST_POOLS;
       }
 
-      const totalWeight = pools.reduce((acc, pool) => acc + pool.weight, 0);
-      if (totalWeight <= 0) {
-        throw new Error('POOL_MISCONFIGURED');
-      }
-
-      const roll = crypto.randomInt(0, totalWeight);
+      const totalWeight = pools.reduce((acc, pool) => acc + (pool.weight || 1), 0);
+      const roll = crypto.randomInt(0, Math.max(1, totalWeight));
       
       let currentWeight = 0;
       let selectedPool = pools[0];
       for (const pool of pools) {
-        currentWeight += pool.weight;
+        currentWeight += (pool.weight || 1);
         if (roll < currentWeight) {
           selectedPool = pool;
           break;
         }
       }
 
-      // Amount calculation
+      // 3. Amount calculation
       let finalAmount = 1;
-      let min = selectedPool.amountMin || 1;
-      let max = selectedPool.amountMax || 1;
+      const min = selectedPool.amountMin || 1;
+      const max = selectedPool.amountMax || 1;
       if (max > min) {
-        finalAmount = crypto.randomInt(min, max + 1); // +1 because max is exclusive in randomInt
+        finalAmount = crypto.randomInt(min, max + 1);
       } else {
         finalAmount = min;
       }
 
-      let rewardType = selectedPool.rewardType;
+      let rewardType = selectedPool.rewardType || 'COINS';
       
-      // Fallback substitutions
+      // 4. Full hearts overflow substitution (+15 Coins) & Freeze overflow (+25 Coins)
       const studentProfile = await tx.studentProfile.findUnique({ where: { userId } });
       if (studentProfile) {
         if (rewardType === 'HEARTS' && studentProfile.lives >= studentProfile.maxLives) {
-          rewardType = 'COINS'; // Substitute
-          finalAmount = 15; // Provide equivalent coin value
-          // Log substitution for analytics
+          rewardType = 'COINS';
+          finalAmount = 15;
+        } else if (rewardType === 'STREAK_FREEZE' && studentProfile.streakFreezeBank >= 2) {
+          rewardType = 'COINS';
+          finalAmount = 25;
         }
       }
 
-      // Apply Reward
-      if (rewardType === 'COINS' || rewardType === 'GEMS' || rewardType === 'HEARTS') {
+      // 5. Apply reward atomically
+      if (rewardType === 'COINS' || rewardType === 'GEMS') {
+        await tx.studentProfile.update({
+          where: { userId },
+          data: { coins: { increment: finalAmount } },
+        });
+      } else if (rewardType === 'XP') {
+        await tx.studentProfile.update({
+          where: { userId },
+          data: { xp: { increment: finalAmount } },
+        });
+      } else if (rewardType === 'HEARTS') {
         if (studentProfile) {
-          const updateData: any = {};
-          if (rewardType === 'COINS' || rewardType === 'GEMS') {
-            updateData.coins = studentProfile.coins + finalAmount;
-          }
-          if (rewardType === 'HEARTS') updateData.lives = Math.min(studentProfile.maxLives, studentProfile.lives + finalAmount);
-          
+          const newLives = Math.min(studentProfile.maxLives, studentProfile.lives + finalAmount);
           await tx.studentProfile.update({
             where: { userId },
-            data: updateData
+            data: { lives: newLives },
           });
         }
       } else if (rewardType === 'STREAK_FREEZE') {
-        if (studentProfile) {
-          await tx.studentProfile.update({
-            where: { userId },
-            data: { streakFreezeBank: { increment: finalAmount } }
-          });
-        }
+        await tx.studentProfile.update({
+          where: { userId },
+          data: { streakFreezeBank: { increment: finalAmount } },
+        });
         await tx.userInventory.upsert({
           where: { userId_itemType: { userId, itemType: 'FREEZE' } },
           update: { quantity: { increment: finalAmount } },
-          create: { userId, itemType: 'FREEZE', quantity: finalAmount }
+          create: { userId, itemType: 'FREEZE', quantity: finalAmount },
         });
       } else if (rewardType === 'XP_BOOST') {
-        // Extend activeUntil
         const existingBoost = await tx.userInventory.findUnique({
-          where: { userId_itemType: { userId, itemType: 'BOOST' } }
+          where: { userId_itemType: { userId, itemType: 'BOOST' } },
         });
         
         let newActiveUntil = new Date();
         newActiveUntil.setHours(newActiveUntil.getHours() + 24 * finalAmount);
         
-        if (existingBoost && existingBoost.activeUntil && existingBoost.activeUntil > new Date()) {
+        if (existingBoost?.activeUntil && existingBoost.activeUntil > new Date()) {
           newActiveUntil = new Date(existingBoost.activeUntil);
           newActiveUntil.setHours(newActiveUntil.getHours() + 24 * finalAmount);
         }
@@ -187,35 +198,59 @@ export class ChestService {
         await tx.userInventory.upsert({
           where: { userId_itemType: { userId, itemType: 'BOOST' } },
           update: { quantity: { increment: finalAmount }, activeUntil: newActiveUntil },
-          create: { userId, itemType: 'BOOST', quantity: finalAmount, activeUntil: newActiveUntil }
+          create: { userId, itemType: 'BOOST', quantity: finalAmount, activeUntil: newActiveUntil },
         });
       }
 
-      // We should also record idempotency. 
-      // We can create a RewardLog or similar, but the daily_chests table status update serves as the lock/idempotency.
+      // 6. Update chest state to OPENED
       const updatedChestCount = await tx.dailyChest.updateMany({
         where: { id: chestId, status: 'READY_TO_OPEN' },
         data: {
           status: 'OPENED',
           openedAt: new Date(),
-          rewardPoolId: selectedPool.id,
+          rewardPoolId: selectedPool.id.startsWith('pool-') ? null : selectedPool.id,
           rewardSnapshotType: rewardType,
           rewardSnapshotAmount: finalAmount,
-        }
+        },
       });
 
       if (updatedChestCount.count === 0) {
         throw new Error('CHEST_NOT_OPENABLE');
       }
 
+      // 7. Record idempotent reward transaction
+      const idempotencyKey = `chest_claim:${chestId}`;
+      await tx.rewardTransaction.upsert({
+        where: { idempotencyKey },
+        update: {},
+        create: {
+          userId,
+          currency: rewardType === 'GEMS' ? 'COINS' : rewardType,
+          amount: finalAmount,
+          sourceType: 'MYSTERY_CHEST',
+          sourceId: chestId,
+          idempotencyKey,
+        },
+      });
+
       const updatedChest = await tx.dailyChest.findUnique({ where: { id: chestId } });
 
       return {
         rewardType,
         rewardAmount: finalAmount,
-        rarityTier: selectedPool.rarityTier,
+        rarityTier: selectedPool.rarityTier || 'common',
         chest: updatedChest,
       };
     });
+
+    // Credit the weekly league standings (async, non-blocking).
+    if (result.rewardType === 'XP') {
+      this.eventEmitter.emit(
+        'xp.awarded',
+        new XpAwardedEvent(userId, result.rewardAmount, 'CHEST'),
+      );
+    }
+
+    return result;
   }
 }

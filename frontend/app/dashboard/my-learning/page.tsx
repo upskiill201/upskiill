@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowRight, BookOpen, X } from 'lucide-react';
+import { ArrowRight, BookOpen, X, MessagesSquare } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
@@ -110,7 +110,7 @@ export default function MyLearningPage() {
                       </div>
 
                       {/* 3D Action Button */}
-                      <button 
+                      <button
                         onClick={() => handleContinueLearning(course.id)}
                         className={styles.button3dPrimary}
                       >
@@ -118,6 +118,15 @@ export default function MyLearningPage() {
                         <span className={styles.buttonIconCircle}>
                           <ArrowRight size={16} />
                         </span>
+                      </button>
+
+                      {/* Course community — per-course discussion space */}
+                      <button
+                        onClick={() => { playHaptic('light'); router.push(`/dashboard/community/${course.id}`); }}
+                        className={styles.communityLinkBtn}
+                      >
+                        <MessagesSquare size={14} />
+                        Course community
                       </button>
                     </div>
 

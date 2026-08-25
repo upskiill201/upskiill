@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MissionsService } from './missions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { BadRequestException, ConflictException, GoneException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('MissionsService (Today Mission Spec Test Suite)', () => {
   let service: MissionsService;
@@ -66,6 +67,7 @@ describe('MissionsService (Today Mission Spec Test Suite)', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MissionsService,
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
         {
           provide: PrismaService,
           useValue: {
@@ -78,6 +80,7 @@ describe('MissionsService (Today Mission Spec Test Suite)', () => {
             dailyMissionSet: {
               findUnique: jest.fn().mockResolvedValue(null),
               create: jest.fn().mockResolvedValue({ id: 'set-1', missions: [] }),
+              upsert: jest.fn().mockResolvedValue({ id: 'set-1', missions: [] }),
             },
             userDailyMission: {
               findMany: jest.fn().mockResolvedValue([]),
@@ -118,7 +121,7 @@ describe('MissionsService (Today Mission Spec Test Suite)', () => {
       expect(result).toHaveProperty('date');
       expect(result).toHaveProperty('resetAt');
       expect(result).toHaveProperty('missions');
-      expect(prisma.dailyMissionSet.create).toHaveBeenCalled();
+      expect(prisma.dailyMissionSet.upsert).toHaveBeenCalled();
     });
 
     it('excludes templates used in the last 2 days (Anti-Repeat rule)', async () => {

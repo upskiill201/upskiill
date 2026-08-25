@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ProgressService } from './progress.service';
+import { parseTimezoneOffset } from '../common/utils/parse-timezone-offset';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('v2/progress')
@@ -13,13 +14,16 @@ export class ProgressController {
     @Query('timezoneOffset') timezoneOffset?: string,
   ) {
     const userId = req.user?.id || req.user?.userId || req.user?.sub;
-    const offset = timezoneOffset ? parseInt(timezoneOffset, 10) : 0;
-    return this.progressService.getWeeklyProgress(userId, offset);
+    return this.progressService.getWeeklyProgress(userId, parseTimezoneOffset(timezoneOffset));
   }
 
   @Get('stats-summary')
-  async getStatsSummary(@Req() req: any) {
+  async getStatsSummary(
+    @Req() req: any,
+    @Query('filter') filter?: 'week' | 'month' | 'all',
+    @Query('timezoneOffset') timezoneOffset?: string,
+  ) {
     const userId = req.user?.id || req.user?.userId || req.user?.sub;
-    return this.progressService.getStatsSummary(userId);
+    return this.progressService.getStatsSummary(userId, filter || 'week', parseTimezoneOffset(timezoneOffset));
   }
 }

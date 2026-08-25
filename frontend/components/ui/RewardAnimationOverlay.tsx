@@ -1,15 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRewardAnimation, FlyingParticle } from '@/context/RewardAnimationContext';
-import { emitAudioEvent, playAscendingPopSound } from '@/lib/audio/audioEvents';
+import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { playHaptic } from '@/lib/haptics';
-import RewardRunClaimModal from './RewardRunClaimModal';
 
+/**
+ * Continuous Temple Run-Style Flying Particle with Realistic Pile Pop & Delay.
+ * 1. Pops up into a glorious 3D physical pile at the origin.
+ * 2. Lingers in the settled pile for ~300ms so the user admires the reward mound.
+ * 3. Launches in an accelerated continuous stream straight into the target stat pill.
+ */
 function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
   const { removeParticle } = useRewardAnimation();
+  const hasTriggeredRef = useRef(false);
 
   const originX = particle.startX - 18;
   const originY = particle.startY - 18;
@@ -19,16 +25,46 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
   const targetX = particle.endX - 18;
   const targetY = particle.endY - 18;
 
-  // Parabolic arc waypoint: climbs above direct line to create natural game trajectory
-  const midX = (pileX + targetX) / 2 + (Math.random() - 0.5) * 20;
-  const midY = Math.min(pileY, targetY) - 50 - Math.random() * 20;
+  // High-arc crest above pile & destination
+  const arcCrestY = Math.min(pileY, targetY) - 45 - Math.random() * 25;
+  const arcCrestX = (pileX + targetX) / 2 + (Math.random() - 0.5) * 30;
 
   const trailColor =
     particle.currency === 'COINS'
       ? '#FACC15'
       : particle.currency === 'XP'
       ? '#38BDF8'
-      : '#F87171';
+      : particle.currency === 'HEARTS'
+      ? '#F87171'
+      : '#FB923C';
+
+  const glowShadow =
+    particle.currency === 'COINS'
+      ? 'drop-shadow(0 4px 14px rgba(234,179,8,0.8))'
+      : particle.currency === 'XP'
+      ? 'drop-shadow(0 4px 14px rgba(1,114,253,0.7))'
+      : particle.currency === 'HEARTS'
+      ? 'drop-shadow(0 4px 14px rgba(239,68,68,0.75))'
+      : 'drop-shadow(0 4px 14px rgba(249,115,22,0.75))';
+
+  const handleComplete = () => {
+    if (hasTriggeredRef.current) return;
+    hasTriggeredRef.current = true;
+
+    playAscendingPopSound(particle.particleIndexInSet);
+    playHaptic('soft', false);
+
+    removeParticle(
+      particle.id,
+      particle.targetPillId,
+      particle.amountPerParticle,
+      particle.isFinalParticle,
+      particle.particleIndexInSet,
+      particle.endX,
+      particle.endY,
+      particle.currency
+    );
+  };
 
   return (
     <motion.div
@@ -38,38 +74,25 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
         y: originY,
         scale: 0.2,
         opacity: 0,
-        rotate: 0,
+        rotateY: 0,
+        rotateZ: 0,
       }}
       animate={{
-        x: [originX, pileX, midX, targetX],
-        y: [originY, pileY, midY, targetY],
-        scale: [0.2, 1.45, 1.15, 0.85],
-        opacity: [0, 1, 1, 1],
-        rotate: particle.currency === 'COINS' ? [0, 90, 240, 360] : [0, -15, 15, 0],
+        // Phase 1 (0->0.18): Pop up into pile | Phase 2 (0.18->0.42): Linger in pile | Phase 3 (0.42->1): Launch to target
+        x: [originX, pileX, pileX, arcCrestX, targetX],
+        y: [originY, pileY, pileY, arcCrestY, targetY],
+        scale: [0.2, 1.45, 1.25, 1.05, 0.8],
+        opacity: [0, 1, 1, 1, 1],
+        rotateY: particle.currency === 'COINS' ? [0, 90, 90, 450, 720] : [0, 0, 0, 0, 0],
+        rotateZ: particle.currency === 'COINS' ? [0, -12, -12, 15, 0] : [0, -8, -8, 8, 0],
       }}
       transition={{
         duration: particle.durationMs / 1000,
         delay: particle.delayMs / 1000,
-        times: [0, 0.2, 0.65, 1],
-        ease: ['easeOut', 'easeInOut', 'easeIn'],
+        times: [0, 0.18, 0.42, 0.72, 1],
+        ease: ['easeOut', 'easeInOut', 'easeInOut', [0.47, 0, 0.745, 0.715]],
       }}
-      onAnimationComplete={() => {
-        // Feature 1: Ascending musical pitch feedback
-        playAscendingPopSound(particle.particleIndexInSet);
-        void emitAudioEvent('BUTTON_SECONDARY_CLICK');
-        playHaptic('soft', false);
-
-        removeParticle(
-          particle.id,
-          particle.targetPillId,
-          particle.amountPerParticle,
-          particle.isFinalParticle,
-          particle.particleIndexInSet,
-          particle.endX,
-          particle.endY,
-          particle.currency
-        );
-      }}
+      onAnimationComplete={handleComplete}
       style={{
         position: 'fixed',
         top: 0,
@@ -78,26 +101,31 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
         height: 36,
         pointerEvents: 'none',
         zIndex: 100050,
-        filter:
-          particle.currency === 'COINS'
-            ? 'drop-shadow(0 4px 12px rgba(234,179,8,0.6))'
-            : 'drop-shadow(0 4px 12px rgba(1,114,253,0.5))',
+        filter: glowShadow,
+        willChange: 'transform',
       }}
     >
-      {/* Feature 2: Sparkling Stardust Flight Trail */}
+      {/* Sparkling Stardust Flight Trail */}
       <motion.div
-        animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.2, 0.2] }}
-        transition={{ repeat: Infinity, duration: 0.35 }}
+        animate={{
+          opacity: [0, 0.9, 0],
+          scale: [0.4, 1.2, 0.1],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 0.25,
+          ease: 'easeOut',
+        }}
         style={{
           position: 'absolute',
-          bottom: -4,
+          bottom: -2,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: 8,
-          height: 8,
+          width: 9,
+          height: 9,
           borderRadius: '50%',
           backgroundColor: trailColor,
-          boxShadow: `0 0 10px ${trailColor}`,
+          boxShadow: `0 0 12px ${trailColor}, 0 0 4px #FFFFFF`,
         }}
       />
 
@@ -114,13 +142,10 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
 }
 
 export default function RewardAnimationOverlay() {
-  const { particles, shockwaves, floatingTexts, levelUpData, dismissLevelUp } = useRewardAnimation();
+  const { particles, shockwaves, floatingTexts } = useRewardAnimation();
 
   return (
     <>
-      <RewardRunClaimModal />
-
-      {/* Top Portal Overlay for Flying Icons & Shockwaves */}
       <div
         id="reward-animation-portal"
         style={{
@@ -130,7 +155,6 @@ export default function RewardAnimationOverlay() {
           zIndex: 100050,
         }}
       >
-        {/* Feature 3: Origin Explosion Radial Flash & Shockwave Rings */}
         <AnimatePresence>
           {shockwaves.map((sw) => (
             <motion.div
@@ -142,11 +166,11 @@ export default function RewardAnimationOverlay() {
                 opacity: 1,
               }}
               animate={{
-                scale: sw.type === 'flash' ? [0.2, 2.2, 0] : [0.1, 3.6],
-                opacity: [1, 0.9, 0],
+                scale: sw.type === 'flash' ? [0.2, 2.4, 0] : [0.1, 3.8],
+                opacity: [1, 0.85, 0],
               }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
               style={{
                 position: 'fixed',
                 top: 0,
@@ -158,35 +182,34 @@ export default function RewardAnimationOverlay() {
                 zIndex: 100049,
                 background:
                   sw.type === 'flash'
-                    ? `radial-gradient(circle, ${sw.color} 0%, rgba(255,255,255,0.9) 40%, transparent 75%)`
+                    ? `radial-gradient(circle, ${sw.color} 0%, rgba(255,255,255,0.95) 35%, transparent 75%)`
                     : 'transparent',
-                border: sw.type === 'ring' ? `5px solid ${sw.color}` : 'none',
+                border: sw.type === 'ring' ? `4px solid ${sw.color}` : 'none',
                 boxShadow:
                   sw.type === 'ring'
-                    ? `0 0 30px ${sw.color}, inset 0 0 20px ${sw.color}`
-                    : `0 0 45px ${sw.color}`,
+                    ? `0 0 35px ${sw.color}, inset 0 0 20px ${sw.color}`
+                    : `0 0 50px ${sw.color}`,
               }}
             />
           ))}
         </AnimatePresence>
 
-        {/* Feature 4: Live Counter Floating Delta Text (+1 🪙) */}
         <AnimatePresence>
           {floatingTexts.map((ft) => (
             <motion.div
               key={ft.id}
-              initial={{ x: ft.x - 12, y: ft.y, opacity: 0, scale: 0.6 }}
-              animate={{ y: ft.y - 25, opacity: 1, scale: 1.2 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
+              initial={{ x: ft.x - 14, y: ft.y, opacity: 0, scale: 0.5 }}
+              animate={{ y: ft.y - 28, opacity: [0, 1, 1, 0], scale: [0.5, 1.3, 1.1, 0.8] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
               style={{
                 position: 'fixed',
                 top: 0,
                 left: 0,
                 color: ft.color,
-                fontSize: 16,
+                fontSize: 17,
                 fontWeight: 900,
-                textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                 fontFamily: 'var(--font-jakarta), sans-serif',
                 pointerEvents: 'none',
                 zIndex: 100052,
@@ -203,82 +226,6 @@ export default function RewardAnimationOverlay() {
           ))}
         </AnimatePresence>
       </div>
-
-      {/* Duolingo-Style RewardRun Claim Modal */}
-      <RewardRunClaimModal />
-
-      {/* Full-Screen Level Up Celebration Modal */}
-      <AnimatePresence>
-        {levelUpData && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 100000,
-              backgroundColor: 'rgba(15, 23, 42, 0.85)',
-              backdropFilter: 'blur(8px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 24,
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.6, y: 40 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 350, damping: 20 }}
-              style={{
-                backgroundColor: '#ffffff',
-                borderRadius: 24,
-                padding: '36px 32px',
-                maxWidth: 420,
-                width: '100%',
-                textAlign: 'center',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
-                border: '3px solid #0172FD',
-              }}
-            >
-              <div style={{ fontSize: 56, marginBottom: 8 }}>👑</div>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 900,
-                  color: '#0172FD',
-                  margin: '0 0 8px 0',
-                  fontFamily: 'var(--font-jakarta), sans-serif',
-                }}
-              >
-                LEVEL UP!
-              </h2>
-              <p style={{ color: '#64748B', fontSize: 16, margin: '0 0 24px 0', fontWeight: 600 }}>
-                You reached <strong style={{ color: '#0F172A' }}>Level {levelUpData.newLevel}</strong>! Keep crushing your learning goals!
-              </p>
-
-              <button
-                onClick={dismissLevelUp}
-                style={{
-                  backgroundColor: '#0172FD',
-                  color: '#ffffff',
-                  fontWeight: 800,
-                  fontSize: 16,
-                  padding: '14px 28px',
-                  borderRadius: 14,
-                  border: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  boxShadow: '0 4px 14px rgba(1, 114, 253, 0.4)',
-                }}
-              >
-                CONTINUE LEARNING 🎉
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

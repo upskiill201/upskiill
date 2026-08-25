@@ -2,10 +2,23 @@
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { playHaptic } from '@/lib/haptics';
+
+const headlineContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const wordVariant: Variants = {
+  hidden: { y: 20, opacity: 0, scale: 0.9 },
+  show: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 400, damping: 25 } },
+};
+const accentVariant: Variants = {
+  hidden: { y: 20, opacity: 0, scale: 0.75 },
+  show: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 20 } },
+};
 
 interface Step8ContentProps {
   onNext: () => void;
@@ -27,40 +40,9 @@ export default function Step8Content({ onNext }: Step8ContentProps) {
 
   return (
     <div className="w-full h-full flex flex-col justify-between px-4 md:px-0 pb-2 md:pb-0 pt-1">
-      <div className="flex-1 flex flex-col md:flex-row items-center justify-between w-full min-h-0 relative gap-3 md:gap-8">
-        {/* Text Container */}
-        <div className="w-full flex-1 md:w-[50%] flex flex-col justify-center items-center md:items-start text-center md:text-left z-20">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="text-[clamp(1.75rem,8vw,2.2rem)] md:text-[3.5rem] lg:text-[4rem] leading-[1.05] font-[900] tracking-tight text-[#071233] w-full"
-            style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
-          >
-            <span>Let&apos;s try a</span>
-            <br />
-            <span>
-              quick{' '}
-              <span className="text-[#0172FD]" style={{ textShadow: accentShadow }}>
-                challenge!
-              </span>
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ y: 12, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.2 }}
-            className="text-[clamp(0.95rem,3.5vw,1.1rem)] md:text-xl font-semibold text-slate-500 mt-2 md:mt-4 mb-4 md:mb-6 max-w-[340px] md:max-w-[450px]"
-            style={{ fontFamily: 'var(--font-jakarta)', textShadow: subheadShadow }}
-          >
-            <span className="md:hidden">A short challenge is the best way to learn by doing.</span>
-            <span className="hidden md:inline">Experience the Teyro way of learning.</span>
-          </motion.p>
-        </div>
-
-        {/* Mascot */}
-        <div className="w-full md:w-[50%] flex-1 md:h-full flex items-center justify-center relative z-10 pointer-events-none md:ml-auto min-h-[220px]">
+      <div className="flex-1 flex flex-col md:flex-row items-center justify-between w-full min-h-0 relative gap-2 md:gap-8">
+        {/* ── MASCOT (top on mobile — flexes to absorb leftover space, like the concept) ── */}
+        <div className="w-full flex-1 min-h-0 md:w-[50%] md:h-full md:flex-1 flex items-center justify-center relative z-10 pointer-events-none md:ml-auto order-1 md:order-2">
           <div ref={mascotRef} className="relative w-full max-w-[340px] md:max-w-[500px] aspect-square scale-[1.05] md:scale-[1.25]">
             <MascotBackground />
             <motion.div
@@ -90,19 +72,60 @@ export default function Step8Content({ onNext }: Step8ContentProps) {
             </motion.div>
           </div>
         </div>
+
+        {/* ── TEXT (anchored under the mascot on mobile, left pane on desktop) ── */}
+        <div className="w-full shrink-0 md:w-[50%] md:flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left z-20 order-2 md:order-1">
+          <motion.h1
+            variants={headlineContainer}
+            initial="hidden"
+            animate="show"
+            className="text-[clamp(2.1rem,11vw,3.25rem)] md:text-[3.5rem] lg:text-[4rem] leading-[1.05] md:leading-[1.1] font-[900] tracking-tight text-[#071233] w-full mb-2 md:mb-4"
+            style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
+          >
+            <div className="whitespace-nowrap inline-block md:block">
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>Let&apos;s</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>try</motion.span>
+              <motion.span variants={wordVariant} style={{ display: 'inline-block' }}>a</motion.span>
+            </div>{' '}
+            <div className="whitespace-nowrap inline-block md:block md:-mt-1">
+              <motion.span variants={wordVariant} style={{ display: 'inline-block', marginRight: '0.22em' }}>quick</motion.span>
+              <motion.span variants={accentVariant} className="text-[#0172FD]" style={{ display: 'inline-block', textShadow: accentShadow }}>
+                challenge!
+              </motion.span>
+            </div>
+          </motion.h1>
+
+          <motion.p
+            initial={{ y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.3 }}
+            className="text-[clamp(1rem,4.8vw,1.2rem)] md:text-xl font-medium text-slate-500 leading-snug max-w-[340px] md:max-w-[450px]"
+            style={{ fontFamily: 'var(--font-jakarta)', textShadow: subheadShadow }}
+          >
+            <span className="md:hidden">
+              A short challenge is the best
+              <br />
+              way to learn by doing.
+            </span>
+            <span className="hidden md:inline">Experience the Teyro way of learning.</span>
+          </motion.p>
+        </div>
       </div>
 
       {/* ── CTA ── */}
-      <div className="w-full z-30 pt-2 shrink-0">
+      <div className="w-full z-30 pt-3 shrink-0">
         <motion.button
-          whileHover={{ scale: 1.03 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
           onClick={handleStart}
-          className="w-full md:max-w-[420px] h-[52px] md:h-[60px] bg-[#0172FD] border-b-4 border-[#0050B3] text-white rounded-[1.2rem] font-[900] text-base md:text-lg tracking-wider hover:bg-[#0060D9] active:border-b-0 active:translate-y-1 transition-all cursor-pointer flex items-center justify-center gap-2 mx-auto shadow-[0_4px_15px_rgba(1,114,253,0.25)]"
-          style={{ fontFamily: 'var(--font-jakarta)' }}
+          className="w-full md:max-w-[420px] h-14 md:h-[60px] bg-[#0172FD] text-white rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg tracking-wide cursor-pointer flex items-center justify-center gap-2 mx-auto"
+          style={{
+            fontFamily: 'var(--font-jakarta)',
+            boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)',
+          }}
         >
           <span>Start Challenge</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-5 h-5 stroke-[3]" />
         </motion.button>
       </div>
     </div>
