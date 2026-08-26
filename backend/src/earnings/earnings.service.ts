@@ -260,19 +260,81 @@ export class EarningsService {
     };
   }
 
-  private async findOriginalSale(
+  /** Match original SALE/RENEWAL rows either by exact reference or by its
+   *  composite form `reference:courseId` (multi-course payment intents).
+   *  A single charge can hold MANY ledger rows — mintEnrollment writes one
+   *  per course, potentially across several creators — so a refund or
+   *  dispute must reach every one of them, not just the newest. */
+  private async findAllOriginalSales(
     providerRefs: string[],
     client?: Prisma.TransactionClient,
-  ) {
+  ): Promise<
+    {
+      id: string;
+      creatorId: string;
+      courseId: string | null;
+      studentId: string | null;
+      orderId: string | null;
+      netMinor: number;
+      creatorAmountMinor: number;
+      creatorSharePct: number;
+      nativeCurrency: string | null;
+    }[]
+  > {
     const db = client ?? this.prisma;
-    return db.earningsTransaction.findFirst({
+    return db.earningsTransaction.findMany({
       where: {
         provider: 'STRIPE',
         type: { in: ['SALE', 'RENEWAL'] as EarningsEntryType[] },
         ...(providerRefs.length ? this.originalSaleWhere(providerRefs) : {}),
       },
-      orderBy: { occurredAt: 'desc' },
+      orderBy: { occurredAt: 'asc' },
     });
+  }
+
+  /** Spread `amountMinor` across the matched sale rows proportionally to
+   *  each row's net credit (largest-remainder), capped at the total credited
+   *  — a reversal can never take out more than the sales put in. Returns
+   *  {id, netMinor} pairs; rows allocated nothing are dropped. */
+  private allocateReversal(
+    sales: { id: string; netMinor: number }[],
+    amountMinor: number,
+  ): { id: string; netMinor: number }[] {
+    const totalNet = sales.reduce((sum, s) => sum + s.netMinor, 0);
+    const cap = Math.max(0, Math.min(Math.round(amountMinor), totalNet));
+    if (cap === 0 || totalNet <= 0) return [];
+
+    const alloc = sales.map((s) => ({
+      id: s.id,
+      netMinor: Math.floor((cap * s.netMinor) / totalNet),
+    }));
+    // Largest-remainder pass hands out the rounding dust (< #rows minor)
+    // to the rows with the biggest fractional share, so allocations sum
+    // to exactly `cap`.
+    const byFraction = alloc
+      .map((a, i) => ({ i, frac: (cap * sales[i].netMinor) % totalNet }))
+      .sort((x, y) => y.frac - x.frac);
+    let dust = cap - alloc.reduce((sum, a) => sum + a.netMinor, 0);
+    for (let k = 0; dust > 0 && k < byFraction.length; k++, dust--) {
+      alloc[byFraction[k].i].netMinor += 1;
+    }
+    return alloc.filter((a) => a.netMinor > 0);
+  }
+
+  /** Per-row reversal debits using the ORIGINAL's snapshotted split, clamped
+   *  at what that row actually credited the creator. */
+  private reversalDebitsFor(
+    allocNetMinor: number,
+    original: { creatorSharePct: number; creatorAmountMinor: number },
+  ): { creatorDebit: number; teyroDebit: number } {
+    const creatorDebit = Math.max(
+      0,
+      Math.min(
+        Math.round((allocNetMinor * original.creatorSharePct) / 100),
+        original.creatorAmountMinor,
+      ),
+    );
+    return { creatorDebit, teyroDebit: allocNetMinor - creatorDebit };
   }
 
   /** System-level (webhook lifecycle) audit entries, no ledger movement. */
@@ -286,10 +348,10 @@ export class EarningsService {
   }
 
   /**
-   * Match a refunded charge back to its original SALE/RENEWAL and append a
-   * proportional negative REFUND entry using the ORIGINAL's snapshotted pct.
-   * Debits are capped at what the original credited — the ledger can never
-   * go below zero per transaction.
+   * Match a refunded charge back to its original SALE/RENEWAL rows — ALL of
+   * them for multi-course charges — and append proportional negative REFUND
+   * entries using each ORIGINAL's snapshotted pct. Debits are capped at what
+   * each row credited — the ledger can never go below zero per transaction.
    */
   async recordStripeRefund(input: {
     chargeProviderRefs: string[]; // candidate references for the original sale
@@ -297,9 +359,9 @@ export class EarningsService {
     refundGrossMinor: number;
     reason: string;
   }): Promise<{ matched: boolean }> {
-    const original = await this.findOriginalSale(input.chargeProviderRefs);
+    const originals = await this.findAllOriginalSales(input.chargeProviderRefs);
 
-    if (!original) {
+    if (!originals.length) {
       await this.audit({
         action: 'WEBHOOK_REFUND_UNMATCHED',
         entityType: 'EarningsTransaction',
@@ -309,42 +371,56 @@ export class EarningsService {
       return { matched: false };
     }
 
-    // Clamp the refund to what the original sale actually produced so the
-    // reversal can never exceed the credit: creator + teyro debits always
-    // equal the refunded net exactly.
-    const refundNetMinor = Math.min(input.refundGrossMinor, original.netMinor);
-    const creatorDebit = Math.max(
-      0,
-      Math.min(Math.round((refundNetMinor * original.creatorSharePct) / 100), original.creatorAmountMinor),
-    );
-    const teyroDebit = refundNetMinor - creatorDebit;
+    // Clamp the refund to what the sales actually produced so the reversal
+    // can never exceed the credits, then spread it across every course row.
+    const allocations = this.allocateReversal(originals, input.refundGrossMinor);
+    const byId = new Map(originals.map((o) => [o.id, o]));
+    let creatorDebitTotal = 0;
+    let teyroDebitTotal = 0;
 
     try {
-      await this.prisma.earningsTransaction.create({
-        data: {
-          publicId: generatePublicId('ET'),
-          creatorId: original.creatorId,
-          courseId: original.courseId,
-          studentId: original.studentId,
-          orderId: original.orderId,
-          type: 'REFUND',
-          // Gross records the factual refunded amount even in the pathological
-          // over-refund case; net stays consistent with the debits below.
-          grossMinor: -Math.round(input.refundGrossMinor),
-          discountMinor: 0,
-          feeMinor: 0,
-          netMinor: -refundNetMinor,
-          currency: 'USD',
-          nativeCurrency: original.nativeCurrency,
-          nativeAmountMinor: null,
-          creatorSharePct: original.creatorSharePct,
-          creatorAmountMinor: -creatorDebit,
-          teyroAmountMinor: -teyroDebit,
-          provider: 'STRIPE',
-          providerReference: input.refundProviderReference,
-          relatedTransactionId: original.id,
-          reason: input.reason,
-        },
+      await this.prisma.$transaction(async (tx) => {
+        for (const alloc of allocations) {
+          const original = byId.get(alloc.id)!;
+          const { creatorDebit, teyroDebit } = this.reversalDebitsFor(
+            alloc.netMinor,
+            original,
+          );
+          creatorDebitTotal += creatorDebit;
+          teyroDebitTotal += teyroDebit;
+          await tx.earningsTransaction.create({
+            data: {
+              publicId: generatePublicId('ET'),
+              creatorId: original.creatorId,
+              courseId: original.courseId,
+              studentId: original.studentId,
+              orderId: original.orderId,
+              type: 'REFUND',
+              // Per-row gross/net stay consistent with the debits; any gap
+              // between the requested and reversed amount (over-refund or
+              // rounding cap) is preserved in metadata + audit meta.
+              grossMinor: -alloc.netMinor,
+              discountMinor: 0,
+              feeMinor: 0,
+              netMinor: -alloc.netMinor,
+              currency: 'USD',
+              nativeCurrency: original.nativeCurrency,
+              nativeAmountMinor: null,
+              creatorSharePct: original.creatorSharePct,
+              creatorAmountMinor: -creatorDebit,
+              teyroAmountMinor: -teyroDebit,
+              provider: 'STRIPE',
+              // Per-row suffix keeps one refund's fan-out unique under the
+              // dedupe constraint AND makes replays collide deterministically.
+              providerReference: `${input.refundProviderReference}:${original.id}`,
+              relatedTransactionId: original.id,
+              reason: input.reason,
+              metadata: {
+                requestedRefundGrossMinor: input.refundGrossMinor,
+              },
+            },
+          });
+        }
       });
     } catch (e) {
       if (
@@ -359,26 +435,29 @@ export class EarningsService {
     await this.audit({
       action: 'WEBHOOK_REFUND',
       entityType: 'EarningsTransaction',
-      entityId: original.id,
+      entityId: originals[0].id,
       meta: {
         refundReference: input.refundProviderReference,
-        creatorDebitMinor: creatorDebit,
-        teyroDebitMinor: teyroDebit,
+        reversedRows: allocations.length,
+        requestedGrossMinor: input.refundGrossMinor,
+        creatorDebitMinor: creatorDebitTotal,
+        teyroDebitMinor: teyroDebitTotal,
         reason: input.reason,
       },
     });
     return { matched: true };
   }
 
-  /** Dispute opened: full negative entry capped at the original's credits. */
+  /** Dispute opened: full negative entries across ALL matched rows, capped
+   *  at what each row credited. */
   async recordDisputeOpened(input: {
     chargeProviderRefs: string[];
     disputeProviderReference: string; // dp_<id>
     disputeGrossMinor: number;
     reason: string;
   }): Promise<{ matched: boolean }> {
-    const original = await this.findOriginalSale(input.chargeProviderRefs);
-    if (!original) {
+    const originals = await this.findAllOriginalSales(input.chargeProviderRefs);
+    if (!originals.length) {
       await this.audit({
         action: 'WEBHOOK_CHARGEBACK_UNMATCHED',
         entityType: 'EarningsTransaction',
@@ -388,34 +467,46 @@ export class EarningsService {
       return { matched: false };
     }
 
-    // Same clamping rule as refunds: reversal never exceeds the credit.
-    const disputeNetMinor = Math.min(input.disputeGrossMinor, original.netMinor);
-    const creatorDebit = Math.max(
-      0,
-      Math.min(Math.round((disputeNetMinor * original.creatorSharePct) / 100), original.creatorAmountMinor),
-    );
-    const teyroDebit = disputeNetMinor - creatorDebit;
+    // Same clamping + allocation rule as refunds.
+    const allocations = this.allocateReversal(originals, input.disputeGrossMinor);
+    const byId = new Map(originals.map((o) => [o.id, o]));
+    let creatorDebitTotal = 0;
+    let teyroDebitTotal = 0;
 
     try {
-      await this.prisma.earningsTransaction.create({
-        data: {
-          publicId: generatePublicId('ET'),
-          creatorId: original.creatorId,
-          courseId: original.courseId,
-          studentId: original.studentId,
-          orderId: original.orderId,
-          type: 'CHARGEBACK',
-          grossMinor: -input.disputeGrossMinor,
-          netMinor: -disputeNetMinor,
-          currency: 'USD',
-          creatorSharePct: original.creatorSharePct,
-          creatorAmountMinor: -creatorDebit,
-          teyroAmountMinor: -teyroDebit,
-          provider: 'STRIPE',
-          providerReference: input.disputeProviderReference,
-          relatedTransactionId: original.id,
-          reason: input.reason,
-        },
+      await this.prisma.$transaction(async (tx) => {
+        for (const alloc of allocations) {
+          const original = byId.get(alloc.id)!;
+          const { creatorDebit, teyroDebit } = this.reversalDebitsFor(
+            alloc.netMinor,
+            original,
+          );
+          creatorDebitTotal += creatorDebit;
+          teyroDebitTotal += teyroDebit;
+          await tx.earningsTransaction.create({
+            data: {
+              publicId: generatePublicId('ET'),
+              creatorId: original.creatorId,
+              courseId: original.courseId,
+              studentId: original.studentId,
+              orderId: original.orderId,
+              type: 'CHARGEBACK',
+              grossMinor: -alloc.netMinor,
+              netMinor: -alloc.netMinor,
+              currency: 'USD',
+              creatorSharePct: original.creatorSharePct,
+              creatorAmountMinor: -creatorDebit,
+              teyroAmountMinor: -teyroDebit,
+              provider: 'STRIPE',
+              providerReference: `${input.disputeProviderReference}:${original.id}`,
+              relatedTransactionId: original.id,
+              reason: input.reason,
+              metadata: {
+                requestedDisputeGrossMinor: input.disputeGrossMinor,
+              },
+            },
+          });
+        }
       });
     } catch (e) {
       if (
@@ -430,48 +521,78 @@ export class EarningsService {
     await this.audit({
       action: 'WEBHOOK_CHARGEBACK',
       entityType: 'EarningsTransaction',
-      entityId: original.id,
-      meta: { disputeReference: input.disputeProviderReference, reason: input.reason },
+      entityId: originals[0].id,
+      meta: {
+        disputeReference: input.disputeProviderReference,
+        reversedRows: allocations.length,
+        requestedGrossMinor: input.disputeGrossMinor,
+        creatorDebitMinor: creatorDebitTotal,
+        teyroDebitMinor: teyroDebitTotal,
+        reason: input.reason,
+      },
     });
     return { matched: true };
   }
 
-  /** Dispute closed in the creator's favor: restore what was debited. */
+  /** Dispute closed in the creator's favor: restore what was debited —
+   *  every CHARGEBACK row the dispute produced, not just one. */
   async recordDisputeWon(disputeProviderReference: string): Promise<void> {
-    const chargeback = await this.prisma.earningsTransaction.findFirst({
+    // Legacy disputes (single-course era) carry a bare dp_ reference; current
+    // ones carry per-row `dp_:<saleId>` suffixes. Match both shapes.
+    const chargebacks = await this.prisma.earningsTransaction.findMany({
       where: {
         provider: 'STRIPE',
         type: 'CHARGEBACK',
-        providerReference: disputeProviderReference,
+        OR: [
+          { providerReference: disputeProviderReference },
+          { providerReference: { startsWith: `${disputeProviderReference}:` } },
+        ],
       },
     });
-    if (!chargeback) return; // nothing was ever debited
+    if (!chargebacks.length) return; // nothing was ever debited
 
-    await this.prisma.earningsTransaction.create({
-      data: {
-        publicId: generatePublicId('ET'),
-        creatorId: chargeback.creatorId,
-        courseId: chargeback.courseId,
-        studentId: chargeback.studentId,
-        orderId: chargeback.orderId,
-        type: 'REVERSAL',
-        grossMinor: -chargeback.grossMinor,
-        netMinor: -chargeback.netMinor,
-        currency: 'USD',
-        creatorSharePct: chargeback.creatorSharePct,
-        creatorAmountMinor: -chargeback.creatorAmountMinor,
-        teyroAmountMinor: -chargeback.teyroAmountMinor,
-        provider: 'STRIPE',
-        providerReference: `${disputeProviderReference}:won`,
-        relatedTransactionId: chargeback.id,
-        reason: 'Dispute closed in creator favor',
-      },
-    });
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        for (const chargeback of chargebacks) {
+          await tx.earningsTransaction.create({
+            data: {
+              publicId: generatePublicId('ET'),
+              creatorId: chargeback.creatorId,
+              courseId: chargeback.courseId,
+              studentId: chargeback.studentId,
+              orderId: chargeback.orderId,
+              type: 'REVERSAL',
+              grossMinor: -chargeback.grossMinor,
+              netMinor: -chargeback.netMinor,
+              currency: 'USD',
+              creatorSharePct: chargeback.creatorSharePct,
+              creatorAmountMinor: -chargeback.creatorAmountMinor,
+              teyroAmountMinor: -chargeback.teyroAmountMinor,
+              provider: 'STRIPE',
+              providerReference: `${disputeProviderReference}:won:${chargeback.id}`,
+              relatedTransactionId: chargeback.id,
+              reason: 'Dispute closed in creator favor',
+            },
+          });
+        }
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        return; // replayed webhook — already restored
+      }
+      throw e;
+    }
     await this.audit({
       action: 'WEBHOOK_DISPUTE_WON',
       entityType: 'EarningsTransaction',
-      entityId: chargeback.id,
-      meta: { disputeReference: disputeProviderReference },
+      entityId: chargebacks[0].id,
+      meta: {
+        disputeReference: disputeProviderReference,
+        restoredRows: chargebacks.length,
+      },
     });
   }
 
@@ -962,31 +1083,41 @@ export class EarningsService {
     });
   }
 
-  /** Creator cancels their own still-open request. */
+  /** Creator cancels their own still-open request.
+   *  Guarded conditional write under the same user lock the admin payout
+   *  state machine takes — an unconditional overwrite here let a cancel land
+   *  AFTER an approval and free funds that were already on their way out. */
   async cancelOwnPayout(userId: string, payoutId: string) {
-    const payout = await this.prisma.creatorPayout.findFirst({
-      where: { id: payoutId, userId },
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+      const cancelled = await tx.creatorPayout.updateMany({
+        where: {
+          id: payoutId,
+          userId,
+          status: { in: ['REQUESTED', 'UNDER_REVIEW'] as PayoutStatus[] },
+        },
+        data: {
+          status: 'CANCELLED',
+          closedAt: new Date(),
+          cancelReason: 'Cancelled by creator',
+        },
+      });
+      if (cancelled.count === 0) {
+        const payout = await tx.creatorPayout.findFirst({
+          where: { id: payoutId, userId },
+        });
+        if (!payout) throw new NotFoundException('Payout not found');
+        throw new ConflictException('This payout can no longer be cancelled');
+      }
+      await this.auditTx(tx, {
+        actorType: 'CREATOR',
+        actorId: userId,
+        action: 'PAYOUT_CANCELLED_BY_CREATOR',
+        entityType: 'CreatorPayout',
+        entityId: payoutId,
+      });
+      return tx.creatorPayout.findUniqueOrThrow({ where: { id: payoutId } });
     });
-    if (!payout) throw new NotFoundException('Payout not found');
-    if (payout.status !== 'REQUESTED' && payout.status !== 'UNDER_REVIEW') {
-      throw new ConflictException('This payout can no longer be cancelled');
-    }
-    const updated = await this.prisma.creatorPayout.update({
-      where: { id: payoutId },
-      data: {
-        status: 'CANCELLED',
-        closedAt: new Date(),
-        cancelReason: 'Cancelled by creator',
-      },
-    });
-    await this.audit({
-      actorType: 'CREATOR',
-      actorId: userId,
-      action: 'PAYOUT_CANCELLED_BY_CREATOR',
-      entityType: 'CreatorPayout',
-      entityId: payoutId,
-    });
-    return updated;
   }
 
   async listMyPayouts(userId: string) {
@@ -1072,7 +1203,19 @@ export class EarningsService {
 
     const updated = await this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${payout.userId} FOR UPDATE`;
-      return tx.creatorPayout.update({ where: { id: payoutId }, data });
+      // Conditional on the status we validated against — a concurrent admin
+      // action or creator cancel between the read above and this write must
+      // fail loudly instead of blindly overwriting (double-payout guard).
+      const moved = await tx.creatorPayout.updateMany({
+        where: { id: payoutId, status: payout.status },
+        data,
+      });
+      if (moved.count === 0) {
+        throw new ConflictException(
+          'Payout changed concurrently — reload and retry',
+        );
+      }
+      return tx.creatorPayout.findUniqueOrThrow({ where: { id: payoutId } });
     });
 
     await this.audit({
@@ -1143,9 +1286,18 @@ export class EarningsService {
     userId: string,
     opts: { type?: string; courseId?: string; from?: Date; to?: Date },
   ): Promise<{ csv: string; filename: string }> {
-    const listing = await this.listTransactions(userId, { ...opts, page: 1, pageSize: 5000 });
+    // listTransactions caps pageSize at 100, so asking for 5000 used to be
+    // silently clamped and exports stopped at 100 rows. Iterate real pages
+    // until the full result set is covered.
+    const pageSize = 100;
+    const firstPage = await this.listTransactions(userId, { ...opts, page: 1, pageSize });
+    const items = [...firstPage.items];
+    for (let page = 2; page <= Math.ceil(firstPage.total / pageSize); page++) {
+      const next = await this.listTransactions(userId, { ...opts, page, pageSize });
+      items.push(...next.items);
+    }
     const rows: string[][] = [EarningsService.TX_CSV_HEADER];
-    for (const t of listing.items) {
+    for (const t of items) {
       rows.push([
         t.publicId,
         new Date(t.occurredAt).toISOString(),
