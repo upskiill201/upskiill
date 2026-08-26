@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { ProfileService } from '../profile/profile.service';
 import { EmailService } from '../email/email.service';
 import { firebaseAdmin } from './firebase-admin';
@@ -25,6 +26,7 @@ describe('AuthService', () => {
   let prisma: PrismaService;
   let jwt: JwtService;
   let emailService: EmailService;
+  let profileService: ProfileService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -79,6 +81,7 @@ describe('AuthService', () => {
     prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
     emailService = module.get<EmailService>(EmailService);
+    profileService = module.get<ProfileService>(ProfileService);
   });
 
   afterEach(() => {
@@ -128,6 +131,9 @@ describe('AuthService', () => {
       // Verification email goes out; no JWT until the account is verified
       expect(emailService.sendVerificationEmail).toHaveBeenCalled();
       expect(jwt.signAsync).not.toHaveBeenCalled();
+      // The email builds its magic link from the RAW code — no stored hash
+      // may be passed (that double-hash made link verification impossible)
+      expect((emailService.sendVerificationEmail as jest.Mock).mock.calls[0]).toHaveLength(4);
       expect(result).toEqual({
         message: 'Check your email to verify your account',
         userId: '1',
@@ -150,6 +156,25 @@ describe('AuthService', () => {
         where: { id: 'draft-123' },
         data: { userId: mockUser.id },
       });
+    });
+
+    it('should hydrate the creator profile from onboarding answers on INSTRUCTOR signup', async () => {
+      const instructorDto = { ...dto, role: 'INSTRUCTOR', draftId: 'draft-1' };
+      const onboarding = {
+        step7: { biggestChallenge: ['not_enough_time'] },
+        step3: { categories: ['Marketing'] },
+      };
+      const mockUser = { id: '2', ...instructorDto, password: 'hashedPassword', role: 'INSTRUCTOR' };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
+
+      await service.signup({ ...instructorDto, onboarding });
+
+      // The array-shaped step7 used to throw inside hydration and get
+      // swallowed — every answer was lost. It must reach the profile service.
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith('2', onboarding);
     });
 
     it('should successfully sign up a new INSTRUCTOR user and require email verification', async () => {
@@ -580,6 +605,112 @@ describe('AuthService', () => {
           hasCreatorAccess: false,
         }),
       });
+    });
+
+    it('should hydrate the creator profile from onboarding answers for a new INSTRUCTOR', async () => {
+      const decodedToken = { email: 'creator@example.com', name: 'New Creator', email_verified: true };
+      const mockUser = {
+        id: '1',
+        email: decodedToken.email,
+        fullName: decodedToken.name,
+        role: 'INSTRUCTOR',
+        hasStudentAccess: false,
+        hasCreatorAccess: true,
+      };
+      const onboarding = { step7: { biggestChallenge: ['time', 'editing'] }, step3: { categories: ['Design'] } };
+
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (prisma.user.findUnique as jest.Mock)
+        .mockResolvedValueOnce(null) // existing-user probe
+        .mockResolvedValue(mockUser); // signToken access-flag lookup
+      (bcrypt.genSalt as jest.Mock).mockResolvedValue('salt');
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
+
+      await service.firebaseSignIn(idToken, 'INSTRUCTOR', undefined, onboarding);
+
+      // The Google path used to silently drop this payload — it must hydrate
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith('1', onboarding);
+    });
+
+    it('should NOT re-hydrate onboarding answers over an existing creator profile', async () => {
+      const decodedToken = { email: 'creator@example.com', name: 'Existing Creator', email_verified: true };
+      const mockUser = {
+        id: '1',
+        email: decodedToken.email,
+        fullName: decodedToken.name,
+        role: 'INSTRUCTOR',
+        hasStudentAccess: false,
+        hasCreatorAccess: true,
+      };
+      const onboarding = { step3: { categories: ['Stale answers'] } };
+
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (prisma.user.findUnique as jest.Mock)
+        .mockResolvedValueOnce(mockUser) // already a creator before this call
+        .mockResolvedValue(mockUser);
+
+      await service.firebaseSignIn(idToken, 'INSTRUCTOR', undefined, onboarding);
+
+      // Stale localStorage answers must never clobber settings-page edits
+      expect(profileService.hydrateFromOnboarding).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('should verify with the RAW code from the magic link — single hash, matching the stored value', async () => {
+      const code = '123456';
+      const storedHash = require('crypto').createHash('sha256').update(code).digest('hex');
+      const mockUser = {
+        id: '1',
+        email: 'verify@example.com',
+        fullName: 'Verify User',
+        role: 'STUDENT',
+        verifyToken: storedHash,
+        tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+        profile: null,
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.user.update as jest.Mock).mockResolvedValue({ ...mockUser, isVerified: true, verifyToken: null });
+
+      const result = await service.verifyEmail(code);
+
+      // Lookup hashes the incoming token exactly ONCE
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { verifyToken: storedHash },
+        include: { profile: true },
+      });
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: { isVerified: true, verifyToken: null, tokenExpiry: null },
+      });
+      expect(emailService.sendWelcomeEmail).toHaveBeenCalled();
+      expect(result.access_token).toBe('mocked-jwt-token');
+    });
+
+    it('should reject an expired verification token', async () => {
+      const mockUser = {
+        id: '1',
+        email: 'expired@example.com',
+        fullName: 'Expired User',
+        role: 'STUDENT',
+        verifyToken: 'some-hash',
+        tokenExpiry: new Date(Date.now() - 60 * 1000),
+        profile: null,
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+      await expect(service.verifyEmail('123456')).rejects.toThrow(ForbiddenException);
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should reject an unknown token without leaking whether the account exists', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.verifyEmail('000000')).rejects.toThrow(ForbiddenException);
+      expect(prisma.user.update).not.toHaveBeenCalled();
     });
   });
 

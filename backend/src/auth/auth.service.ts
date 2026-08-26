@@ -218,8 +218,10 @@ export class AuthService {
       }
     }
 
-    // Send verification email
-    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role, verifyToken);
+    // Send verification email — the magic link is built from the RAW code so
+    // verifyEmail()'s single sha256 matches the stored hash (sending the
+    // stored hash made the link double-hash and never verify).
+    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role);
 
     return { 
       message: 'Check your email to verify your account', 
@@ -513,7 +515,7 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role, hashedToken);
+    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role);
     return { message: 'Verification email resent' };
   }
 
@@ -521,6 +523,7 @@ export class AuthService {
     idToken: string,
     requestedRole: string,
     draftId?: string,
+    onboarding?: Record<string, unknown>,
   ) {
     try {
       // 1. Verify token with Firebase Admin
@@ -549,6 +552,12 @@ export class AuthService {
       let user = await this.prisma.user.findUnique({
         where: { email },
       });
+
+      // Hydration only fires when onboarding JUST completed for a creator
+      // account that didn't have one before — never re-hydrate an existing
+      // creator's profile (their settings-page edits would be clobbered by
+      // stale localStorage answers).
+      const hadCreatorAccess = user?.hasCreatorAccess ?? false;
 
       if (!user) {
         // Create user with generic password since they use social login
@@ -610,6 +619,17 @@ export class AuthService {
           });
         } catch (err) {
           console.warn(`Could not link draft ${draftId} to user ${user.id}:`, err);
+        }
+      }
+
+      // Hydrate the creator profile from onboarding answers — mirrors the
+      // email signup path. Non-fatal: the profile can be completed later
+      // from the settings page.
+      if (onboarding && isInstructor && !hadCreatorAccess) {
+        try {
+          await this.profileService.hydrateFromOnboarding(user.id, onboarding);
+        } catch (err) {
+          console.warn(`Profile hydration failed for user ${user.id}:`, err);
         }
       }
 

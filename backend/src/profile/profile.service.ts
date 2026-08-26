@@ -20,11 +20,11 @@ interface OnboardingPayload {
   step4?: { audienceSize?: string };
   step5?: { platforms?: string[] };
   step6?: { existingContent?: string[] };
-  step7?: { biggestChallenge?: string };
+  step7?: { biggestChallenge?: string[] | string };
   step8?: { teachingStyle?: string };
   step9?: { weeklyHours?: string };
-  step12?: { launchGoal?: string };
-  step13?: { bio?: string };
+  step12?: { courseFormat?: string; launchGoal?: string };
+  step13?: { communityOption?: string; bio?: string };
 }
 
 /**
@@ -289,15 +289,26 @@ export class ProfileService {
    * Called automatically by AuthService after a successful creator signup.
    */
   async hydrateFromOnboarding(userId: string, data: OnboardingPayload) {
+    // Step 7 is a multi-select: the live shell sends string[], but very old
+    // stored payloads may hold a bare string — normalize to an array.
+    const rawChallenge = data.step7?.biggestChallenge;
+    const biggestChallenge = Array.isArray(rawChallenge)
+      ? rawChallenge
+      : rawChallenge
+        ? [rawChallenge]
+        : null;
+
     const profileData = {
       niche: data.step3?.categories?.[0] ?? null,
       subCategories: data.step3?.categories ?? [],
       audienceSize: data.step4?.audienceSize ?? null,
       platforms: data.step5?.platforms ?? [],
-      biggestChallenge: data.step7?.biggestChallenge ?? null,
+      biggestChallenge,
       teachingStyle: data.step8?.teachingStyle ?? null,
       weeklyHours: data.step9?.weeklyHours ?? null,
-      launchGoal: data.step12?.launchGoal ?? null,
+      // The current flow's step 12 asks what to build/launch first and saves
+      // it under `courseFormat`; older drafts used `launchGoal`.
+      launchGoal: data.step12?.courseFormat ?? data.step12?.launchGoal ?? null,
       bio: data.step13?.bio ?? null,
     };
 

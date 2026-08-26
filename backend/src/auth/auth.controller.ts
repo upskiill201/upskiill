@@ -37,6 +37,7 @@ export class FirebaseLoginDto {
   draftId?: string;
 
   // Full onboarding answers — attached by Step 15 Google OAuth flow
+  @IsObject()
   @IsOptional()
   onboarding?: Record<string, unknown>;
 }
@@ -51,27 +52,44 @@ export class AuthController {
 
   @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 per 15 mins
   @Post('signup')
-  async signup(@Body() dto: SignupDto) {
-    // We don't set cookie here anymore, user must verify email first
+  async signup(
+    @Body() dto: SignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.signup(dto);
+    // Unverified signups return no token (verification is still required).
+    // The existing-account LINK branch does complete with a live session —
+    // set the cookie so the creator isn't bounced to a login wall right
+    // after activating their profile.
+    const accessToken = (result as { access_token?: string }).access_token;
+    if (accessToken) {
+      this.setCookie(res, accessToken);
+    }
     return result;
   }
 
   @Get('verify-email')
-  async verifyEmail(
-    @Query('token') token: string,
+  verifyEmailRedirect(@Query('token') token: string, @Res() res: Response) {
+    // Legacy emails pointed straight at the API origin, where any session
+    // cookie would be set for the wrong domain and verification double-hashed
+    // the token. Real verification now happens app-side: this page exchanges
+    // the token via the proxied /api route so the cookie lands first-party.
+    const appUrl = process.env.APP_URL || 'https://teyro.app';
+    return res.redirect(
+      `${appUrl}/verify-email${token ? `?token=${encodeURIComponent(token)}` : ''}`,
+    );
+  }
+
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins — the token has the same 10^6 space as codes
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-link')
+  async verifyLink(
+    @Body('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const appUrl = process.env.APP_URL || 'https://teyro.app';
-    try {
-      const result = await this.authService.verifyEmail(token);
-      this.setCookie(res, result.access_token);
-      // Redirect to frontend creator studio Step 16
-      return res.redirect(`${appUrl}/creator/onboarding/16`);
-    } catch (error) {
-      // Redirect to a frontend failure page
-      return res.redirect(`${appUrl}/creator/verify-failed`);
-    }
+    const result = await this.authService.verifyEmail(token);
+    this.setCookie(res, result.access_token);
+    return result;
   }
 
   @Post('verify-code')
@@ -113,6 +131,7 @@ export class AuthController {
       dto.idToken,
       dto.role || 'STUDENT',
       dto.draftId,
+      dto.onboarding,
     );
     this.setCookie(res, result.access_token);
     return result;

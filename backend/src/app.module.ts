@@ -9,7 +9,6 @@ import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
-import { CreatorOnboardingModule } from './creator-onboarding/creator-onboarding.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserOnboardingModule } from './user-onboarding/user-onboarding.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
@@ -46,7 +45,6 @@ import { LeagueModule } from './league/league.module';
     LessonModule,
     OrdersModule,
     PaymentModule,
-    CreatorOnboardingModule,
     ProfileModule,
     UserOnboardingModule,
     WhatsappModule,

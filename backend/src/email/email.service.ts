@@ -11,13 +11,16 @@ export class EmailService {
     this.resend = new Resend(apiKey);
   }
 
-  async sendVerificationEmail(email: string, code: string, fullName?: string, role?: string, verifyToken?: string) {
+  async sendVerificationEmail(email: string, code: string, fullName?: string, role?: string) {
     const appUrl = process.env.APP_URL || 'https://teyro.app';
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
     const name = fullName ? fullName.split(' ')[0] : 'there';
     const teyImageUrl = `${appUrl}/User%20onbarding%20Assets/Tey_welcome.PNG`;
     const isCreator = role === 'INSTRUCTOR' || role?.toLowerCase() === 'creator';
-    const magicLink = verifyToken ? `${backendUrl}/auth/verify-email?token=${verifyToken}` : null;
+    // The link must land on the APP origin — the /verify-email page exchanges
+    // the token via the proxied /api route so the session cookie is
+    // first-party. The token IS the 6-digit code (its sha256 is what's stored,
+    // so the backend hashes it exactly once when verifying).
+    const magicLink = `${appUrl}/verify-email?token=${encodeURIComponent(code)}`;
 
     const subject = isCreator 
       ? `Hey ${name}! Confirm your Teyro Creator Account 👀` 
@@ -43,7 +46,6 @@ export class EmailService {
             ${headline}
           </p>
 
-          ${magicLink ? `
           <div style="text-align: center; margin: 28px 0;">
             <a href="${magicLink}" style="display: inline-block; background-color: #0172FD; color: #ffffff; font-weight: 800; font-size: 16px; text-decoration: none; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(1, 114, 253, 0.25);">
               ${isCreator ? 'Verify Creator Account →' : 'Verify Account & Start Learning →'}
@@ -52,11 +54,6 @@ export class EmailService {
           <p style="font-size: 14px; color: #64748b; text-align: center; margin-bottom: 12px;">
             Or enter this 6-digit verification code on the verification screen:
           </p>
-          ` : `
-          <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
-            Enter this 6-digit code on the verification screen:
-          </p>
-          `}
 
           <div style="text-align: center; margin: 20px 0;">
             <span style="display: inline-block; background-color: #f1f5f9; border: 2px dashed #0172FD; color: #0172FD; font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 6px; padding: 12px 28px; border-radius: 12px;">

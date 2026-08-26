@@ -25,7 +25,7 @@ import Step15Content from './steps/Step15Content';
 import Step16Content from './steps/Step16Content';
 import DuolingoButton3D from './DuolingoButton3D';
 
-import { getOnboardingData, saveOnboardingStep, saveDraftId, clearOnboardingData } from '@/lib/onboarding';
+import { getOnboardingData, saveOnboardingStep, clearOnboardingData } from '@/lib/onboarding';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 
 interface CreatorOnboardingShellProps {
@@ -187,17 +187,6 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
       saveOnboardingStep(1, { started: true });
       posthog.capture('onboarding_started', { step: 1 });
       goToStep(2);
-
-      // Async background sync
-      try {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/creator-onboarding`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        }).then(res => res.ok ? res.json() : null).then(data => {
-          if (data?.id) saveDraftId(data.id);
-        }).catch(() => {});
-      } catch {}
     } else if (currentStep === 2) {
       if (!step2Type) return;
       saveOnboardingStep(2, { creatorType: step2Type });

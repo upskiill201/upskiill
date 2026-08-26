@@ -162,7 +162,7 @@ model Profile {
   audienceSize     String? // Step 4: audience scale
   platforms        Json? // Step 5: current platforms
   weeklyHours      String? // Step 9: available time per week
-  biggestChallenge String? // Step 7: primary pain point
+  biggestChallenge Json?   // Step 7: selected pain points (multi-select array from onboarding)
   teachingStyle    String? // Step 8: content/teaching approach
   launchGoal       String? // Step 12: first course launch goal
 
