@@ -128,10 +128,43 @@ function emptySummary(): Record<LearnerSegment, number> {
 
 @Injectable()
 export class StudentsService {
+  /**
+   * buildRosterBase() loads the creator's whole dataset (courses, lessons,
+   * enrollments, ALL progress rows, daily activity, events). The Students
+   * surface fires overview + roster + attention + insights in one page load —
+   * without a cache that's 4-6 identical full rebuilds per visit. A short TTL
+   * promise-cache collapses them into one; staleness ≤ 60s is fine for
+   * analytics. The promise itself is cached so concurrent requests dedupe,
+   * and rejections evict so a failed build never sticks.
+   */
+  private static ROSTER_TTL_MS = 60_000;
+  private static ROSTER_CACHE_MAX_CREATORS = 200;
+  private rosterCache = new Map<string, { ctx: Promise<RosterContext>; expiresAt: number }>();
+
   constructor(
     private prisma: PrismaService,
     private analytics: AnalyticsService,
   ) {}
+
+  private getRosterContext(creatorId: string): Promise<RosterContext> {
+    const now = Date.now();
+    const hit = this.rosterCache.get(creatorId);
+    if (hit && hit.expiresAt > now) return hit.ctx;
+
+    const ctx = this.buildRosterBase(creatorId);
+    ctx.catch(() => {
+      const entry = this.rosterCache.get(creatorId);
+      // Only evict OUR promise — a newer concurrent build may have replaced it.
+      if (entry?.ctx === ctx) this.rosterCache.delete(creatorId);
+    });
+    if (this.rosterCache.size >= StudentsService.ROSTER_CACHE_MAX_CREATORS) {
+      // Map preserves insertion order — drop the oldest entry.
+      const oldest = this.rosterCache.keys().next().value;
+      if (oldest !== undefined) this.rosterCache.delete(oldest);
+    }
+    this.rosterCache.set(creatorId, { ctx, expiresAt: now + StudentsService.ROSTER_TTL_MS });
+    return ctx;
+  }
 
   /* ─── shared pipeline ────────────────────────────────────────────────── */
 
@@ -407,7 +440,7 @@ export class StudentsService {
   /* ─── endpoints ──────────────────────────────────────────────────────── */
 
   async getOverview(creatorId: string): Promise<StudentsOverviewPayload> {
-    const ctx = await this.buildRosterBase(creatorId);
+    const ctx = await this.getRosterContext(creatorId);
     if (ctx.isEmpty) {
       return {
         isEmpty: true,
@@ -528,7 +561,7 @@ export class StudentsService {
       sort?: string;
     },
   ): Promise<StudentsRosterPayload> {
-    const ctx = await this.buildRosterBase(creatorId);
+    const ctx = await this.getRosterContext(creatorId);
     const allRows = [...ctx.aggs.values()].map((agg) => this.toRosterRow(ctx, agg));
 
     const summary = emptySummary();
@@ -596,7 +629,7 @@ export class StudentsService {
   }
 
   async getNeedsAttention(creatorId: string): Promise<NeedsAttentionPayload> {
-    const ctx = await this.buildRosterBase(creatorId);
+    const ctx = await this.getRosterContext(creatorId);
     const groups: Record<string, AttentionItem[]> = {
       GONE_QUIET: [],
       STUCK_LESSON: [],
@@ -663,7 +696,7 @@ export class StudentsService {
   }
 
   async getInsights(creatorId: string): Promise<StudentsInsightsPayload> {
-    const ctx = await this.buildRosterBase(creatorId);
+    const ctx = await this.getRosterContext(creatorId);
     if (ctx.isEmpty) return { insights: [] };
 
     const rows = [...ctx.aggs.values()].map((agg) => this.toRosterRow(ctx, agg));
@@ -805,7 +838,7 @@ export class StudentsService {
   /* ─── per-student detail ─────────────────────────────────────────────── */
 
   async getStudentDetail(creatorId: string, studentId: string): Promise<StudentDetailPayload> {
-    const ctx = await this.buildRosterBase(creatorId);
+    const ctx = await this.getRosterContext(creatorId);
     const agg = ctx.aggs.get(studentId);
     if (!agg) {
       throw new NotFoundException('This student is not enrolled in any of your published courses.');

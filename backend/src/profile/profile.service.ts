@@ -347,37 +347,29 @@ export class ProfileService {
     });
 
     // Flexible slug matching if not found by exact match ("Ada Lovelace" →
-    // "adalovelace"). BOUNDED + EXACT: the previous implementation also did
-    // bidirectional substring matching, which let "/creator-profile/ma"
-    // resolve to "Maria Johnson" — an unintended profile becomes one guess
-    // away. We fetch slim candidates only, require full equality, then load
-    // that single creator fully.
+    // "adalovelace"). BOUNDED + EXACT: bidirectional substring matching used
+    // to let "/creator-profile/ma" resolve to "Maria Johnson". The slug
+    // computation happens IN Postgres now — the old version shipped up to
+    // 2000 candidate rows into JS per miss AND silently missed every creator
+    // beyond that newest-2000 cap.
     if (!user) {
-      const candidates = await this.prisma.user.findMany({
-        select: {
-          id: true,
-          fullName: true,
-          profile: { select: { username: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 2000,
-      });
-
       const cleanSearch = identifier.replace(/[^a-z0-9]/g, '');
-      const match = candidates.find((u) => {
-        const slugName = u.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const slugHandle = (u.profile?.username || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        return (
-          cleanSearch.length > 0 &&
-          (slugName === cleanSearch || slugHandle === cleanSearch)
-        );
-      });
-
-      if (match) {
-        user = await this.prisma.user.findFirst({
-          where: { id: match.id },
-          include: creatorInclude(viewerUserId),
-        });
+      if (cleanSearch.length > 0) {
+        const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+          SELECT u.id FROM "User" u
+          LEFT JOIN "Profile" p ON p."userId" = u.id
+          WHERE LOWER(REGEXP_REPLACE(u."fullName", '[^a-z0-9]', '', 'g')) = ${cleanSearch}
+             OR LOWER(REGEXP_REPLACE(COALESCE(p."username", ''), '[^a-z0-9]', '', 'g')) = ${cleanSearch}
+          ORDER BY u."createdAt" DESC
+          LIMIT 1
+        `;
+        const matchId = rows[0]?.id;
+        if (matchId) {
+          user = await this.prisma.user.findFirst({
+            where: { id: matchId },
+            include: creatorInclude(viewerUserId),
+          });
+        }
       }
     }
 

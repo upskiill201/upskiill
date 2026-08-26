@@ -63,6 +63,8 @@ describe('ProfileService (student settings)', () => {
       userFollow: {
         count: jest.fn().mockResolvedValue(3),
       },
+      // Slug fallback lookup in getPublicCreatorProfile (raw SQL)
+      $queryRaw: jest.fn().mockResolvedValue([]),
       $transaction: jest.fn((cb: (t: unknown) => Promise<unknown>) => cb(tx)),
       __tx: tx,
     };
