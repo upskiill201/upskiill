@@ -65,8 +65,8 @@ const DEFAULT_STATE: GamificationState = {
   xp: 30, // Seeded default matching onboarding/psychological grant
   gems: 50, // Starter grant aligned to coins
   coins: 50, // 50 Coins starter grant
-  streakDays: 3, // Starter 3-day streak matching onboarding grant
-  longestStreak: 3,
+  streakDays: 0, // Server truth for new users is zero — no fake starter streak
+  longestStreak: 0,
   lives: 5,
   maxLives: 5,
   livesRefillAt: null,
