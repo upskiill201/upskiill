@@ -23,20 +23,20 @@ export default function OnboardingRecoveryBanner() {
   const [resumeStep, setResumeStep] = useState(2);
   const [stepName, setStepName] = useState('');
 
-  // Step number → human-readable name map
+  // Step number → human-readable name map (matches the CURRENT 16-step flow)
   const STEP_NAMES: Record<number, string> = {
     2: 'your creator type',
-    3: 'your teaching categories',
+    3: 'your teaching category',
     4: 'your audience size',
     5: 'your platforms',
     6: 'your existing content',
-    7: 'your biggest challenge',
+    7: 'your biggest challenges',
     8: 'your teaching style',
-    9: 'your available time',
-    10: 'your pricing strategy',
-    11: 'your course format',
-    12: 'your launch goal',
-    13: 'your creator bio',
+    9: 'the creator playbook',
+    10: 'the studio tour',
+    11: 'how courses work',
+    12: 'what you want to build first',
+    13: 'your community preference',
     14: 'the final review',
   };
 

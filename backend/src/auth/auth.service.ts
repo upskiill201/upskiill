@@ -503,6 +503,15 @@ export class AuthService {
     if (!user) throw new ForbiddenException('User not found');
     if (user.isVerified) throw new ForbiddenException('User is already verified');
 
+    // Anti-spam cooldown: every signup attempt against an unverified account
+    // funnels here, so rapid retries used to fire an email each time until the
+    // IP throttle kicked in. tokenExpiry is mintTime + 10 min — if less than a
+    // minute has passed since minting, the previous email is still fresh.
+    const mintedAtMs = user.tokenExpiry ? user.tokenExpiry.getTime() - 10 * 60 * 1000 : 0;
+    if (user.verifyToken && Date.now() - mintedAtMs < 60_000) {
+      return { message: 'A verification email was just sent — check your inbox.', recentlySent: true };
+    }
+
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins

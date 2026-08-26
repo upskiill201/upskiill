@@ -122,6 +122,7 @@ export class EarningsController {
       type: 'BANK' | 'MOBILE_MONEY';
       holderName: string;
       accountNumber: string;
+      routingOrExtra?: string;
       institutionName?: string;
       country?: string;
       receivingCurrency?: string;

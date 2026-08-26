@@ -17,6 +17,7 @@ interface Step15ContentProps {
   };
   onChange: (field: string, value: string) => void;
   authError?: string;
+  showLoginLink?: boolean;
   onGoogleSuccess?: (name: string, email: string) => void;
   onSubmit?: () => void;
 }
@@ -25,6 +26,7 @@ export default function Step15Content({
   formData,
   onChange,
   authError,
+  showLoginLink,
   onGoogleSuccess,
   onSubmit,
 }: Step15ContentProps) {
@@ -35,6 +37,7 @@ export default function Step15Content({
   const displayError = authError || localError;
 
   const handleGoogleSignup = async () => {
+    if (isGoogleLoading) return; // double-click guard — two clicks used to run two auth flows
     try {
       setLocalError('');
       setIsGoogleLoading(true);
@@ -154,6 +157,15 @@ export default function Step15Content({
             <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[13px] font-semibold">
               {displayError}
             </div>
+          )}
+
+          {showLoginLink && (
+            <a
+              href="/creator/login"
+              className="mb-4 flex items-center justify-center gap-1 p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-[13px] font-bold hover:bg-blue-100 transition-colors"
+            >
+              This email already has a Teyro account — log in instead
+            </a>
           )}
 
           <div className="flex flex-col gap-3" onKeyDown={handleKeyDown}>

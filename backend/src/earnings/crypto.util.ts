@@ -4,10 +4,12 @@ import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:
  * Payout-method encryption at rest. AES-256-GCM with a per-write random IV.
  * Storage format: "v1:<keyVersion>:<ivB64>:<tagB64>:<cipherB64>"
  *
- * The key comes from EARNINGS_ENC_KEY (32-byte base64/hex/raw). Anything
- * else is stretched with scrypt so a weak value degrades to slow, not
- * broken. keyVersion enables future rotation: rows remember which version
- * encrypted them.
+ * Key rotation contract: the CURRENT version's key always lives in
+ * EARNINGS_ENC_KEY (so the production fail-fast keeps guarding it). When
+ * rotating, move the retired key to EARNINGS_ENC_KEY_V<n> BEFORE bumping
+ * CURRENT_KEY_VERSION — rows remember which version encrypted them and
+ * resolve exactly that key, refusing loudly rather than silently failing
+ * AES-GCM auth on every legacy row.
  */
 
 export interface EncryptedPayload {
@@ -15,7 +17,9 @@ export interface EncryptedPayload {
   keyVersion: number;
 }
 
-const CURRENT_KEY_VERSION = 1;
+export const CURRENT_KEY_VERSION = 1;
+
+const DEV_FALLBACK_KEY = 'teyro-dev-only-earnings-key-do-not-use-in-production';
 
 function resolveKey(keyVersion = CURRENT_KEY_VERSION): Buffer {
   // Defence-in-depth: main.ts refuses to boot production without this key,
@@ -24,7 +28,14 @@ function resolveKey(keyVersion = CURRENT_KEY_VERSION): Buffer {
     throw new Error('EARNINGS_ENC_KEY must be set when NODE_ENV=production');
   }
   const source =
-    process.env.EARNINGS_ENC_KEY || 'teyro-dev-only-earnings-key-do-not-use-in-production';
+    keyVersion === CURRENT_KEY_VERSION
+      ? process.env.EARNINGS_ENC_KEY || DEV_FALLBACK_KEY
+      : process.env[`EARNINGS_ENC_KEY_V${keyVersion}`] || '';
+  if (!source) {
+    throw new Error(
+      `No key configured for earnings key version ${keyVersion} — set EARNINGS_ENC_KEY_V${keyVersion}`,
+    );
+  }
   // Fast path: already 32 bytes of entropy (base64 or hex of 32 raw bytes).
   const asB64 = Buffer.from(source, 'base64');
   if (asB64.length === 32) return asB64;
@@ -32,7 +43,6 @@ function resolveKey(keyVersion = CURRENT_KEY_VERSION): Buffer {
   if (asHex.length === 32) return asHex;
   if (Buffer.byteLength(source, 'utf8') === 32) return Buffer.from(source, 'utf8');
   // Stretch anything else deterministically.
-  void keyVersion; // reserved for multi-version keys
   return scryptSync(source, 'teyro-earnings-v1', 32);
 }
 

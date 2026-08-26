@@ -192,7 +192,9 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
     }
   };
 
-  /** Persist a resource's details/replace-file change via the update endpoint. */
+  /** Persist a resource's details/replace-file change via the update endpoint.
+   *  Payload must stay identical to DeepenTab's editor — they used to diverge
+   *  and a file replaced here kept its stale sizeBytes forever. */
   const persistResourceUpdate = (resource: ResourceItem) => {
     return fetch(`/api/lesson/${lessonId}/resources/${resource.id}`, {
       method: 'PATCH',
@@ -201,6 +203,7 @@ export function LearningResources({ resources, onChange, lessonId }: Props) {
         title: resource.title,
         type: resource.type,
         storageUrl: resource.url,
+        sizeBytes: parseSizeToBytes(resource.size),
         estimatedReadMin: parseInt(resource.time || '') || 0,
         description: resource.description,
         category: resource.category,

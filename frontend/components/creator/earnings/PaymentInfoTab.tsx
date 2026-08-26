@@ -36,6 +36,7 @@ export function PaymentInfoTab() {
 
   const [holderName, setHolderName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  const [routingOrExtra, setRoutingOrExtra] = useState('');
   const [institutionName, setInstitutionName] = useState('');
   const [country, setCountry] = useState('');
 
@@ -71,6 +72,7 @@ export function PaymentInfoTab() {
           type: mode,
           holderName,
           accountNumber,
+          routingOrExtra: mode === 'BANK' ? routingOrExtra : undefined,
           institutionName,
           country,
           receivingCurrency: 'USD',
@@ -80,7 +82,9 @@ export function PaymentInfoTab() {
       if (!res.ok) {
         throw new Error(Array.isArray(data?.message) ? data.message.join('. ') : data?.message ?? `Save failed (${res.status})`);
       }
-      setSuccess('Payout details saved and verified. You can request payouts now.');
+      // Honest lifecycle: saved ≠ verified — the payouts team confirms
+      // details when a transfer is reviewed.
+      setSuccess('Payout details saved. Our payouts team confirms them when your transfer is reviewed.');
       setAccountNumber('');
       setEditing(false);
       await load();
@@ -100,6 +104,11 @@ export function PaymentInfoTab() {
         Bank or mobile-money account for payouts. Full account numbers are
         encrypted at rest and only used by Teyro&apos;s payout team — they are
         never shown again in full.
+      </p>
+      <p className={styles.sectionSub}>
+        Earnings are tracked in <strong>USD</strong>. Transfers to your bank
+        or mobile money are converted to your local currency at the rate applied
+        when the payout is sent.
       </p>
 
       {method && !editing && (
@@ -154,6 +163,12 @@ export function PaymentInfoTab() {
               <span className={styles.fieldLabel}>{mode === 'BANK' ? 'Account number' : 'Mobile-money number'}</span>
               <input className={styles.fieldInput} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} placeholder={mode === 'BANK' ? 'e.g. 0001234567' : 'e.g. +237 6XX XXX XXX'} />
             </label>
+            {mode === 'BANK' && (
+              <label className={styles.fieldGroup}>
+                <span className={styles.fieldLabel}>SWIFT / BIC or routing number (optional)</span>
+                <input className={styles.fieldInput} value={routingOrExtra} onChange={(e) => setRoutingOrExtra(e.target.value)} placeholder="e.g. ABCDEFGH or 021000021" />
+              </label>
+            )}
             <label className={styles.fieldGroup}>
               <span className={styles.fieldLabel}>{mode === 'BANK' ? 'Bank name' : 'Operator (MTN, Orange…)'}</span>
               <input className={styles.fieldInput} value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} placeholder={mode === 'BANK' ? 'e.g. Ecobank' : 'e.g. MTN'} />

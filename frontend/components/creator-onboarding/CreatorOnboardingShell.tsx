@@ -41,6 +41,10 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  // Set when signup 409s because a verified account already owns the email —
+  // the form only creates accounts, so without this link that creator was
+  // stuck with no way in.
+  const [showLoginLink, setShowLoginLink] = useState(false);
 
   // Step Data State (Optimistic In-Memory)
   const [step2Type, setStep2Type] = useState<string | null>(null);
@@ -172,6 +176,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
 
   const handleStep15Change = (field: string, value: string) => {
     setAuthError('');
+    setShowLoginLink(false);
     setStep15Data((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -249,6 +254,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
       posthog.capture('onboarding_step_completed', { step: 14 });
       goToStep(15);
     } else if (currentStep === 15) {
+      if (isLoading) return; // double-fire guard — rapid Enters used to re-POST signup
       if (!step15Data.fullName.trim() || !step15Data.email.trim() || !step15Data.password) {
         setAuthError('Please fill in all fields to create your account.');
         return;
@@ -286,6 +292,10 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
             return;
           }
           const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
+          // A verified account already owns this email — offer the way in.
+          setShowLoginLink(
+            res.status === 409 && data.code === 'EMAIL_ALREADY_EXISTS' && data.isVerified === true
+          );
           throw new Error(errMsg || 'Account creation failed');
         }
 
@@ -530,6 +540,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
                 formData={step15Data}
                 onChange={handleStep15Change}
                 authError={authError}
+                showLoginLink={showLoginLink}
                 onGoogleSuccess={handleGoogleSuccess}
                 onSubmit={handleNext}
               />

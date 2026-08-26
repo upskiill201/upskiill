@@ -54,7 +54,7 @@ import {
   SortableContext, verticalListSortingStrategy, arrayMove
 } from '@dnd-kit/sortable';
 import {
-  ConfirmModal, SortableModule, LESSON_TYPES,
+  ConfirmModal, SortableModule, PICKER_LESSON_TYPES,
   LessonType, Lesson, Section
 } from './CurriculumBuilder';
 import Skeleton from '@/components/ui/Skeleton';
@@ -99,10 +99,15 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
 
   // ─── FETCH ───
   const [fetchError, setFetchError] = useState<string | null>(null);
+  // Generation guard: optimistic deletes/adds race any in-flight refetch,
+  // whose older server snapshot used to resurrect just-deleted rows.
+  const curriculumFetchGen = React.useRef(0);
   const fetchCurriculum = useCallback(async () => {
+    const gen = ++curriculumFetchGen.current;
     try {
       const ts = new Date().getTime(); // Cache busting
       const res = await fetch(`/api/courses/${courseId}/curriculum?t=${ts}`, { credentials: 'include', cache: 'no-store' });
+      if (gen !== curriculumFetchGen.current) return; // a newer action superseded this response
       if (res.ok) {
         const data = await res.json();
         const sorted = (data as Section[]).sort((a, b) => a.orderIndex - b.orderIndex);
@@ -118,7 +123,9 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       }
     } catch (e) {
       console.error(e);
-      setFetchError('A network error occurred while loading your curriculum.');
+      if (gen === curriculumFetchGen.current) {
+        setFetchError('A network error occurred while loading your curriculum.');
+      }
     } finally { setLoading(false); }
   }, [courseId]);
 
@@ -854,7 +861,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
             <div className={styles.modalField}>
               <label className={styles.modalLabel}>Lesson Type</label>
               <div className={styles.lessonTypePicker}>
-                {LESSON_TYPES.map(t => (
+                {PICKER_LESSON_TYPES.map(t => (
                   <motion.button key={t.key} type="button"
                     whileTap={{ scale: 0.95 }}
                     className={`${styles.lessonTypeCard} ${lessonForm.lessonType === t.key ? styles.lessonTypeCardActive : ''}`}

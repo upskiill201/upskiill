@@ -64,6 +64,7 @@ function VerifyPendingContent() {
 
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (verifying) return; // Enter-spam guard
     if (code.trim().length !== 6) {
       setVerifyError('Please enter a 6-digit code');
       return;

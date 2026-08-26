@@ -912,15 +912,27 @@ export class EarningsService {
       type: 'BANK' | 'MOBILE_MONEY';
       holderName: string;
       accountNumber: string;
+      routingOrExtra?: string; // BANK: SWIFT/BIC or ABA routing number
       institutionName?: string; // bank name or mobile-money operator
       country?: string;
       receivingCurrency?: string;
     },
   ) {
     if (!dto.holderName?.trim()) throw new BadRequestException('Account holder name is required');
-    const acct = dto.accountNumber?.replace(/\s+/g, '') ?? '';
-    if (acct.length < 6) {
-      throw new BadRequestException('Enter a valid account number or mobile-money number');
+    const acct = dto.accountNumber?.replace(/[\s-]+/g, '') ?? '';
+    // Honest per-type validation instead of a bare length check.
+    if (dto.type === 'BANK') {
+      if (!/^[A-Za-z0-9]{6,34}$/.test(acct)) {
+        throw new BadRequestException(
+          'Enter a valid bank account number (6–34 letters/digits, no spaces)',
+        );
+      }
+    } else if (!/^\+?\d{7,15}$/.test(acct)) {
+      throw new BadRequestException('Enter a valid mobile-money number (7–15 digits)');
+    }
+    const routing = dto.routingOrExtra?.trim() ?? '';
+    if (routing && !/^[A-Za-z0-9][A-Za-z0-9 -]{3,31}$/.test(routing)) {
+      throw new BadRequestException('Enter a valid SWIFT/BIC or routing number');
     }
     if (dto.type === 'BANK' && !dto.institutionName?.trim()) {
       throw new BadRequestException('Bank name is required for bank transfers');
@@ -932,7 +944,7 @@ export class EarningsService {
     const { encryptedData, keyVersion } = encryptJson({
       accountNumber: acct,
       institutionName: dto.institutionName?.trim(),
-      routingOrExtra: null,
+      routingOrExtra: routing || null,
     });
 
     const data = {
@@ -947,11 +959,14 @@ export class EarningsService {
       bankName: dto.type === 'BANK' ? dto.institutionName!.trim() : null,
       country: dto.country?.trim() || null,
       receivingCurrency: dto.receivingCurrency?.trim() || 'USD',
-      // v1 verification: complete, well-formed details count as verified.
-      // Manual-payout admins re-check details before paying out.
-      isVerified: true,
-      verifiedAt: new Date(),
-      eligibilityNote: null as string | null,
+      // Honest lifecycle: a freshly saved method is NOT verified — nothing
+      // was checked yet beyond shape. Details are confirmed by the payouts
+      // team when the first transfer is manually reviewed, so requesting a
+      // payout must NOT hard-block on this flag (the admin review + balance
+      // reservation are the actual controls).
+      isVerified: false,
+      verifiedAt: null,
+      eligibilityNote: 'Details received. Our payouts team confirms them when your transfer is reviewed.',
       isActive: true,
     };
 
@@ -1051,9 +1066,12 @@ export class EarningsService {
       }
 
       const method = await tx.creatorPayoutMethod.findUnique({ where: { userId } });
-      if (!method || !method.isActive || !method.isVerified) {
+      // isVerified is intentionally NOT required: methods are confirmed by
+      // the payouts team during manual review of THIS request — the flag only
+      // tracks whether that confirmation already happened.
+      if (!method || !method.isActive) {
         throw new BadRequestException(
-          'Add and verify a payout method before requesting a payout',
+          'Add an active payout method before requesting a payout',
         );
       }
 

@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
+  ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones,
   UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
   Target, Award, Info, WifiOff, AlertCircle, AlertTriangle
 } from 'lucide-react';
@@ -201,6 +202,55 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
   // Guard in-app link navigation while there is unsaved or in-flight work.
   useLinkNavigationGuard(!loading && (isDirty || saving));
+
+  // ─── Browser back/forward guard (history sentinel) ───
+  // App-router popstate navigations can't be cancelled, so while there is
+  // unsaved/in-flight work a duplicate same-URL entry sits above the real
+  // one: the first Back press pops only the sentinel (no navigation) and we
+  // ask; leaving takes an explicit second Back. One silent press used to
+  // discard every unsaved edit.
+  const historyGuardRef = useRef({ armed: false, consuming: false });
+
+  useEffect(() => {
+    const guard = historyGuardRef.current;
+    const shouldArm = !loading && (isDirty || saving);
+
+    if (shouldArm && !guard.armed) {
+      window.history.pushState({ teyroLessonGuard: true }, '');
+      guard.armed = true;
+    } else if (!shouldArm && guard.armed) {
+      // Saved/clean again — consume our own sentinel entry so Back isn't a
+      // dead first press. The popstate handler recognizes this via `consuming`.
+      guard.consuming = true;
+      window.history.back();
+    }
+
+    const onPopState = () => {
+      if (guard.consuming) {
+        guard.consuming = false;
+        guard.armed = false;
+        return;
+      }
+      if (!guard.armed) return;
+
+      const leave = window.confirm(
+        'Leave without saving?\n\nYour unsaved changes will be lost.'
+      );
+      if (leave) {
+        // The pop above consumed the sentinel — go back for real.
+        guard.armed = false;
+        window.history.back();
+      } else {
+        // Stay: rebuild the sentinel we just popped.
+        window.history.pushState({ teyroLessonGuard: true }, '');
+        guard.armed = true;
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [loading, isDirty, saving]);
+
   const debouncedLesson = useDebounce(lesson, 1000);
   const debouncedMcqActivity = useDebounce(mcqActivity, 1000);
   const debouncedReflectActivity = useDebounce(reflectActivity, 1000);
@@ -215,6 +265,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
    * prevents the phantom "save on open" that used to fire on every page load.
    */
   const snapshotRef = useRef('');
+  // lessonType as it exists on the server — saves only send lessonType when
+  // the creator explicitly changes it in this session (see applyLoadedLesson).
+  const loadedLessonTypeRef = useRef('video');
   const lastSavedSnapshotRef = useRef<string | null>(null);
   /** Set when freshly loaded server state should become the new "saved"
    *  baseline (discard-and-reload) — consumed once by the dirty effect. */
@@ -267,7 +320,12 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     setLesson(d);
     if (d.section?.course?.title) setCourseTitle(d.section.course.title);
     if (d.section?.title) setSectionTitle(d.section.title);
-    if (d.lessonType) setContentType(d.lessonType);
+    // Legacy rows may hold types this editor can't author (quiz, link, …).
+    // Edit them as video but remember the stored value so saves only rewrite
+    // lessonType when the creator explicitly picks a different type here.
+    const loadedType = d.lessonType || 'video';
+    loadedLessonTypeRef.current = loadedType;
+    setContentType(['video', 'text', 'audio'].includes(loadedType) ? loadedType : 'video');
 
     if (d.resources) {
       // DB rows use storageUrl/sizeBytes/estimatedReadMin — map them onto
@@ -365,7 +423,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       const metadataResult = await syncMetadata({
         title: debouncedLesson.title,
         shortDescription: debouncedLesson.shortDescription,
-        lessonType: contentType,
+        ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
         // Measured media length from the latest upload (undefined → omitted)
         ...(typeof debouncedLesson.durationMinutes === 'number' && {
           durationMinutes: debouncedLesson.durationMinutes,
@@ -438,7 +496,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       // Metadata
       title: currentLesson?.title || '',
       shortDescription: currentLesson?.shortDescription || '',
-      lessonType: contentType,
+      ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
       durationMinutes: currentLesson?.durationMinutes,
       // Phase blocks
       learnBlocks: [
@@ -658,11 +716,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const progressPct = Math.round((completedStepsCount / 4) * 100);
   const isLearnComplete = hasTitle && hasContent;
 
+  // Types the product can author end-to-end today. 'interactive' was removed:
+  // the backend allowlist coerced it to 'video' on save, silently rewriting
+  // what the creator picked.
   const CONTENT_TYPES = [
     { id: 'video',       label: 'Video',            icon: <Play size={16} fill="currentColor" /> },
     { id: 'text',        label: 'Text',             icon: <FileText size={16} /> },
     { id: 'audio',       label: 'Audio',            icon: <Headphones size={16} /> },
-    { id: 'interactive', label: 'Interactive Demo', icon: <MonitorPlay size={16} /> },
   ];
 
   const FLOW_STEPS = [
@@ -924,7 +984,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                         {contentType === 'video' && 'Video Lesson'}
                         {contentType === 'text' && 'Article / Reading'}
                         {contentType === 'audio' && 'Audio Podcast'}
-                        {contentType === 'interactive' && 'Interactive Demo'}
                       </span>
                     </div>
                   </div>
@@ -1069,12 +1128,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   )}
                   
                   {/* INTERACTIVE DEMO TYPE */}
-                  {contentType === 'interactive' && (
-                    <div style={{ padding: '40px 0', textAlign: 'center', color: '#94A3B8' }}>
-                      <MonitorPlay size={32} style={{ marginBottom: 12, opacity: .4 }} />
-                      <p style={{ fontSize: 14 }}>Interactive Demo builder coming soon.</p>
-                    </div>
-                  )}
 
                 </div>
 

@@ -68,6 +68,14 @@ function getLessonTypeConfig(type: LessonType) {
   return LESSON_TYPES.find(t => t.key === type) ?? LESSON_TYPES[0];
 }
 
+// Types the product can author end-to-end today. The full LESSON_TYPES list
+// stays for badge rendering of legacy rows; the create/edit picker only
+// offers what actually has an authoring path — anything else was a dead-end
+// lesson the builder couldn't populate.
+const PICKER_LESSON_TYPES = LESSON_TYPES.filter(t =>
+  ['video', 'text', 'audio'].includes(t.key)
+);
+
 const badgeClassMap: Record<LessonType, string> = {
   video: 'badgeVideo', text: 'badgeText', quiz: 'badgeQuiz',
   assignment: 'badgeAssignment', project: 'badgeProject',
@@ -314,5 +322,5 @@ function InactiveStepModal({ stepLabel, onClose }: { stepLabel: string; onClose:
 }
 
 // ─── EXPORTS ────────────────────────────────────────────────
-export { ConfirmModal, InactiveStepModal, SortableModule, SortableLesson, getLessonTypeConfig, LESSON_TYPES, badgeClassMap };
+export { ConfirmModal, InactiveStepModal, SortableModule, SortableLesson, getLessonTypeConfig, LESSON_TYPES, PICKER_LESSON_TYPES, badgeClassMap };
 export type { LessonType, Lesson, Section, Props };
