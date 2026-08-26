@@ -21,6 +21,12 @@ interface SceneShellProps {
     disabled?: boolean;
   } | null;
   /**
+   * Quiet text action stacked under the primary CTA (e.g. "BACK TO COURSE"
+   * under "START SECTION"). Never replaces the primary — scenes that only
+   * need one button leave this off.
+   */
+  secondaryCta?: { text: string; onClick: () => void };
+  /**
    * Skip hatch rendered while the bottom CTA is hidden (server-first request
    * in flight, choreography playing). Rewards are persisted server-first, so
    * skipping only skips animation — no scene may ever trap the learner, and
@@ -31,7 +37,7 @@ interface SceneShellProps {
   cornerBalance?: { currency: CelebrationCurrency; value: number } | null;
 }
 
-export default function SceneShell({ children, cta, onSkip, cornerBalance }: SceneShellProps) {
+export default function SceneShell({ children, cta, secondaryCta, onSkip, cornerBalance }: SceneShellProps) {
   const ctaClass =
     cta?.variant === 'green'
       ? styles.ctaGreen
@@ -76,6 +82,15 @@ export default function SceneShell({ children, cta, onSkip, cornerBalance }: Sce
           >
             {cta.text}
           </button>
+          {secondaryCta && !cta.disabled && (
+            <button
+              type="button"
+              className={styles.secondaryCta}
+              onClick={secondaryCta.onClick}
+            >
+              {secondaryCta.text}
+            </button>
+          )}
         </div>
       )}
     </div>

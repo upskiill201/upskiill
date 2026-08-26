@@ -13,12 +13,16 @@ import { PrismaService } from '../prisma/prisma.service';
 // Every tier is one collectible achievement tile on the profile grid.
 
 export type BadgeId =
+  | 'novice'
   | 'wildfire'
   | 'sage'
   | 'champion'
   | 'sharpshooter'
   | 'explorer'
   | 'marathon';
+
+/** Onboarding step where the Novice badge moment lives (step 13 of 15). */
+const NOVICE_BADGE_STEP = 13;
 
 export interface BadgeTier {
   level: number;
@@ -39,6 +43,15 @@ export interface BadgeDef {
 }
 
 export const BADGE_REGISTRY: BadgeDef[] = [
+  {
+    id: 'novice',
+    title: 'Novice',
+    category: 'Milestone',
+    badgeBg: '#0172FD',
+    tiers: [
+      { level: 1, target: 1, name: 'Novice', description: 'Complete onboarding and start your journey' },
+    ],
+  },
   {
     id: 'wildfire',
     title: 'Wildfire',
@@ -137,6 +150,7 @@ export class AchievementsService {
 
   /**
    * Computes the live value of every badge metric from real data:
+   * - novice:        onboarding progress (1 once step 13 is reached / onboarding completed)
    * - wildfire:     current day streak (StudentProfile)
    * - sage:         lifetime XP (StudentProfile)
    * - champion:     distinct lessons completed across all enrollments
@@ -145,11 +159,14 @@ export class AchievementsService {
    * - marathon:     distinct calendar days with recorded study activity
    */
   private async loadMetrics(userId: string) {
-    const profile = await this.prisma.studentProfile.upsert({
-      where: { userId },
-      create: { userId },
-      update: {},
-    });
+    const [profile, onboardingSession] = await Promise.all([
+      this.prisma.studentProfile.upsert({
+        where: { userId },
+        create: { userId },
+        update: {},
+      }),
+      this.prisma.onboardingSession.findUnique({ where: { userId } }),
+    ]);
 
     const [enrollments, firstTryCorrect, daysStudied] = await Promise.all([
       this.prisma.enrollment.findMany({
@@ -169,7 +186,13 @@ export class AchievementsService {
       }
     }
 
+    // Novice: earned by reaching the step-13 badge moment (or finishing onboarding).
+    const onboardingStep = onboardingSession?.currentStep ?? 0;
+    const novice =
+      onboardingSession?.onboardingComplete || onboardingStep >= NOVICE_BADGE_STEP ? 1 : 0;
+
     return {
+      novice,
       wildfire: profile.streakDays || 0,
       sage: profile.xp || 0,
       champion: completedLessonSet.size,
@@ -354,6 +377,45 @@ export class AchievementsService {
 
   async getUserAchievements(userId: string) {
     return this.getAchievements(userId);
+  }
+
+  // ─── Onboarding Novice claim ────────────────────────────────────────────────
+
+  /**
+   * The step-13 onboarding moment. The metric gate decides everything — the
+   * badge only unlocks once the onboarding session shows the user actually
+   * reached the badge step (or finished onboarding), so a crafted request
+   * from step 1 earns nothing. The claim then marks the tier seen immediately
+   * (this step IS the viewing moment — it stops Herald double-surfacing the
+   * unlock) and returns the payload the celebration scene renders.
+   * Idempotent: claiming twice returns the same unlock.
+   */
+  async claimOnboardingBadge(userId: string) {
+    await this.checkAndAwardAchievements(userId);
+
+    const row = await this.prisma.userAchievement.findUnique({
+      where: {
+        userId_achievementId_tier: { userId, achievementId: 'novice', tier: 1 },
+      },
+    });
+    if (!row) {
+      throw new BadRequestException('Novice badge has not been earned yet.');
+    }
+
+    await this.markAchievementSeen(userId, 'novice', 1);
+
+    const badge = BADGE_MAP.get('novice')!;
+    const tier = badge.tiers[0];
+    return {
+      badgeId: badge.id,
+      badgeTitle: badge.title,
+      tier: tier.level,
+      maxTier: badge.tiers.length,
+      tierName: tier.name,
+      description: tier.description,
+      badgeBg: badge.badgeBg,
+      unlockedAt: row.unlockedAt.toISOString(),
+    };
   }
 
   // ─── Seen tracking ──────────────────────────────────────────────────────────

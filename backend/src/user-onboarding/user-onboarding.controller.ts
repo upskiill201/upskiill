@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Put,
+  Post,
   Body,
   UseGuards,
   HttpCode,
@@ -47,5 +48,16 @@ export class UserOnboardingController {
   ) {
     const session = await this.service.upsertSession(userId, body);
     return session;
+  }
+
+  /**
+   * POST /user-onboarding/challenge-complete
+   * Claims the one-time Step 9 shape-challenge reward (25 XP + 25 coins).
+   * Idempotent — repeat calls return alreadyClaimed with zero deltas.
+   */
+  @Post('challenge-complete')
+  @HttpCode(HttpStatus.OK)
+  async claimChallengeReward(@GetUser('id') userId: string) {
+    return this.service.claimChallengeReward(userId);
   }
 }

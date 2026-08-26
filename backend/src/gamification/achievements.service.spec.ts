@@ -11,10 +11,12 @@ describe('AchievementsService', () => {
     enrollment: { findMany: jest.fn() },
     userStepAttempt: { count: jest.fn() },
     userDailyActivity: { count: jest.fn() },
+    onboardingSession: { findUnique: jest.fn() },
     userAchievement: {
       findMany: jest.fn(),
       createMany: jest.fn(),
       updateMany: jest.fn(),
+      findUnique: jest.fn(),
     },
   };
 
@@ -30,6 +32,7 @@ describe('AchievementsService', () => {
       coins: 0,
       streakFreezeBank: 0,
     });
+    prisma.onboardingSession.findUnique.mockResolvedValue(null);
     prisma.enrollment.findMany.mockResolvedValue([]);
     prisma.userStepAttempt.count.mockResolvedValue(0);
     prisma.userDailyActivity.count.mockResolvedValue(0);
@@ -281,6 +284,60 @@ describe('AchievementsService', () => {
       await expect(
         service.markAchievementSeen('user-1', 'nope', 1)
       ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.userAchievement.updateMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('claimOnboardingBadge', () => {
+    const noviceRow = {
+      achievementId: 'novice',
+      tier: 1,
+      unlockedAt: new Date('2026-08-25T10:00:00Z'),
+      seenAt: null,
+    };
+
+    it('returns the Novice unlock and marks it seen for a user who reached step 13', async () => {
+      // checkAndAward: onboarding session at the badge step → metric = 1
+      prisma.onboardingSession.findUnique.mockResolvedValue({ currentStep: 13, onboardingComplete: false });
+      // First findMany (existing unlocks) → empty; post-create read → the row exists.
+      prisma.userAchievement.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValue([{ achievementId: 'novice', tier: 1 }]);
+      prisma.userAchievement.createMany.mockResolvedValue({ count: 1 });
+      // The claim lookup itself
+      prisma.userAchievement.findUnique.mockResolvedValue(noviceRow);
+      prisma.userAchievement.updateMany.mockResolvedValue({ count: 1 });
+
+      const result = await service.claimOnboardingBadge('user-1');
+
+      expect(result).toMatchObject({
+        badgeId: 'novice',
+        badgeTitle: 'Novice',
+        tier: 1,
+        maxTier: 1,
+        tierName: 'Novice',
+        badgeBg: '#0172FD',
+      });
+      expect(prisma.userAchievement.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: 'user-1', achievementId: 'novice', tier: 1, seenAt: null },
+        })
+      );
+      // The achievement itself is the reward — no currency fields.
+      expect(result).not.toHaveProperty('rewardType');
+      expect(result).not.toHaveProperty('rewardVal');
+    });
+
+    it('rejects the claim when the user has not earned the badge', async () => {
+      // Session at step 5 → novice metric stays 0 → no unlock row is created.
+      prisma.onboardingSession.findUnique.mockResolvedValue({ currentStep: 5, onboardingComplete: false });
+      prisma.userAchievement.findMany.mockResolvedValue([]);
+      prisma.userAchievement.findUnique.mockResolvedValue(null);
+
+      await expect(service.claimOnboardingBadge('user-1')).rejects.toBeInstanceOf(
+        BadRequestException
+      );
+      // Nothing was marked seen — there was nothing to see.
       expect(prisma.userAchievement.updateMany).not.toHaveBeenCalled();
     });
   });

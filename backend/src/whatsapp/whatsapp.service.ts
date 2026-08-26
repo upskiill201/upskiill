@@ -1,4 +1,13 @@
-import { Injectable, Logger, BadRequestException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  ServiceUnavailableException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import makeWASocket, {
   DisconnectReason,
@@ -8,34 +17,42 @@ import makeWASocket, {
   initAuthCreds,
   proto,
 } from '@whiskeysockets/baileys';
+import * as crypto from 'crypto';
 import * as qrcodeTerminal from 'qrcode-terminal';
 import * as QRCode from 'qrcode';
+import { normalisePhone, maskPhone } from './phone.util';
 
-// ─── OTP Store Entry ─────────────────────────────────────────────────────────
-interface OtpEntry {
-  code: string;
-  expiresAt: number; // Unix ms timestamp
-}
+// ─── OTP policy constants ────────────────────────────────────────────────────
+const OTP_TTL_MS = 10 * 60 * 1000; // code validity
+const MAX_OTP_ATTEMPTS = 5; // wrong guesses before the code is destroyed
+const RESEND_COOLDOWN_MS = 60 * 1000; // min gap between sends per phone
+const SEND_WINDOW_MS = 60 * 60 * 1000; // hourly abuse window
+const MAX_SENDS_PER_WINDOW = 5; // per phone per window
+const SEND_TIMEOUT_MS = 20_000; // give up on a stuck WhatsApp send
 
 @Injectable()
 export class WhatsappService implements OnModuleInit {
   private readonly logger = new Logger(WhatsappService.name);
-
-  /** In-memory OTP store with TTL. */
-  private otpStore = new Map<string, OtpEntry>();
 
   /** Baileys WASocket instance */
   private sock: WASocket | null = null;
   private isConnected = false;
   private qrCodeStr: string | null = null;
   private keepAliveInterval: NodeJS.Timeout | null = null;
+  private reconnectTimer: NodeJS.Timeout | null = null;
+  private initAttempts = 0;
 
   constructor(private prisma: PrismaService) {}
 
+  private get isEnabled(): boolean {
+    return process.env.ENABLE_WHATSAPP === 'true';
+  }
+
   async onModuleInit() {
-    const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
-    if (!isEnabled) {
-      this.logger.warn('[WhatsApp] Baileys service is DISABLED (set ENABLE_WHATSAPP=true in env to activate). Dev Mode active.');
+    if (!this.isEnabled) {
+      this.logger.warn(
+        '[WhatsApp] Baileys service is DISABLED (set ENABLE_WHATSAPP=true in env to activate). Dev Mode active.',
+      );
       return;
     }
     await this.initBaileys();
@@ -50,22 +67,29 @@ export class WhatsappService implements OnModuleInit {
   private startKeepAlivePinger() {
     if (this.keepAliveInterval) return;
 
-    this.keepAliveInterval = setInterval(async () => {
-      const backendUrl =
-        process.env.RENDER_EXTERNAL_URL ||
-        process.env.BACKEND_URL ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        'https://upskiill-backend.onrender.com';
-      const targetUrl = `${backendUrl.replace(/\/$/, '')}/health`;
-      try {
-        const res = await fetch(targetUrl);
-        if (res.ok) {
-          this.logger.log(`[WhatsApp Keep-Alive] Self-pinged ${targetUrl} (200 OK) — Render 15-min inactivity sleep timer reset ✅`);
+    this.keepAliveInterval = setInterval(
+      async () => {
+        const backendUrl =
+          process.env.RENDER_EXTERNAL_URL ||
+          process.env.BACKEND_URL ||
+          process.env.NEXT_PUBLIC_API_URL ||
+          'https://upskiill-backend.onrender.com';
+        const targetUrl = `${backendUrl.replace(/\/$/, '')}/health`;
+        try {
+          const res = await fetch(targetUrl);
+          if (res.ok) {
+            this.logger.log(
+              `[WhatsApp Keep-Alive] Self-pinged ${targetUrl} (200 OK) — Render 15-min inactivity sleep timer reset ✅`,
+            );
+          }
+        } catch (err: any) {
+          this.logger.warn(
+            `[WhatsApp Keep-Alive] Self-ping to ${targetUrl} failed: ${err?.message}`,
+          );
         }
-      } catch (err: any) {
-        this.logger.warn(`[WhatsApp Keep-Alive] Self-ping to ${targetUrl} failed: ${err?.message}`);
-      }
-    }, 4 * 60 * 1000);
+      },
+      4 * 60 * 1000,
+    );
   }
 
   /**
@@ -82,13 +106,17 @@ export class WhatsappService implements OnModuleInit {
           update: { value: JSON.stringify(data, BufferJSON.replacer) },
         });
       } catch (err: any) {
-        this.logger.error(`[WhatsApp DB Auth] Write failed for key ${key}: ${err?.message}`);
+        this.logger.error(
+          `[WhatsApp DB Auth] Write failed for key ${key}: ${err?.message}`,
+        );
       }
     };
 
     const readData = async (key: string) => {
       try {
-        const res = await this.prisma.whatsappAuthStore.findUnique({ where: { key } });
+        const res = await this.prisma.whatsappAuthStore.findUnique({
+          where: { key },
+        });
         if (res?.value) {
           return JSON.parse(res.value, BufferJSON.reviver);
         }
@@ -148,13 +176,17 @@ export class WhatsappService implements OnModuleInit {
       await this.prisma.whatsappAuthStore.deleteMany({});
       this.logger.log('[WhatsApp DB Auth] Auth store purged from PostgreSQL.');
     } catch (err: any) {
-      this.logger.error(`[WhatsApp DB Auth] Failed to clear auth store: ${err?.message}`);
+      this.logger.error(
+        `[WhatsApp DB Auth] Failed to clear auth store: ${err?.message}`,
+      );
     }
   }
 
   /** Manual session reset to clear stale auth keys & trigger fresh QR scan */
   async resetConnection() {
-    this.logger.warn('[WhatsApp Baileys] Manual session reset requested. Purging auth store...');
+    this.logger.warn(
+      '[WhatsApp Baileys] Manual session reset requested. Purging auth store...',
+    );
     this.isConnected = false;
     this.qrCodeStr = null;
 
@@ -166,25 +198,47 @@ export class WhatsappService implements OnModuleInit {
     }
 
     await this.clearAuthState();
-    setTimeout(() => this.initBaileys(), 1000);
+    this.scheduleReconnect(1000);
 
     return {
       success: true,
-      message: 'WhatsApp session reset. Please visit /whatsapp/qr-page to scan fresh QR code.',
+      message:
+        'WhatsApp session reset. Please visit /whatsapp/qr-page to scan fresh QR code.',
     };
+  }
+
+  /** Single-flight reconnect scheduling — never stacks overlapping timers. */
+  private scheduleReconnect(delayMs: number) {
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      void this.initBaileys();
+    }, delayMs);
   }
 
   /** Initialises the Baileys WhatsApp Web socket using database-backed auth */
   private async initBaileys() {
-    if (process.env.ENABLE_WHATSAPP !== 'true') return;
+    if (!this.isEnabled) return;
     try {
       const { state, saveCreds } = await this.usePrismaAuthState();
-      const { version } = await fetchLatestBaileysVersion();
 
-      this.logger.log(`[WhatsApp Baileys] Initialising client v${version.join('.')} (DB-backed Auth)...`);
+      // Version fetch needs outbound network — fall back to Baileys' baked-in
+      // default rather than dying at boot when it blips.
+      let version: [number, number, number] | undefined;
+      try {
+        version = (await fetchLatestBaileysVersion()).version;
+      } catch {
+        this.logger.warn(
+          '[WhatsApp Baileys] fetchLatestBaileysVersion failed — using bundled default version.',
+        );
+      }
 
-      this.sock = makeWASocket({
-        version,
+      this.logger.log(
+        `[WhatsApp Baileys] Initialising client v${version?.join('.') ?? 'default'} (DB-backed Auth)...`,
+      );
+
+      const sock = makeWASocket({
+        ...(version ? { version } : {}),
         auth: state,
         printQRInTerminal: false,
         syncFullHistory: false,
@@ -194,21 +248,35 @@ export class WhatsappService implements OnModuleInit {
         keepAliveIntervalMs: 15000,
         retryRequestDelayMs: 2500,
       });
+      this.sock = sock;
+      this.initAttempts = 0;
 
-      this.sock.ev.on('creds.update', saveCreds);
+      sock.ev.on('creds.update', saveCreds);
 
-      this.sock.ev.on('connection.update', async (update) => {
+      sock.ev.on('connection.update', async (update) => {
+        // Stale-socket guard: a replaced socket's late events must not
+        // schedule competing reconnects against the live one.
+        if (this.sock !== sock) return;
+
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
           this.qrCodeStr = qr;
-          this.logger.log('====================================================');
-          this.logger.log('  📱 SCAN QR CODE TO CONNECT TEY WHATSAPP CLIENT   ');
-          this.logger.log('====================================================');
+          this.logger.log(
+            '====================================================',
+          );
+          this.logger.log(
+            '  📱 SCAN QR CODE TO CONNECT TEY WHATSAPP CLIENT   ',
+          );
+          this.logger.log(
+            '====================================================',
+          );
           qrcodeTerminal.generate(qr, { small: true }, (terminalQr) => {
             console.log(terminalQr);
           });
-          this.logger.log('Or visit: https://upskiill-backend.onrender.com/whatsapp/qr-page to scan on web!');
+          this.logger.log(
+            'Or visit: https://upskiill-backend.onrender.com/whatsapp/qr-page to scan on web!',
+          );
         }
 
         if (connection === 'close') {
@@ -221,24 +289,40 @@ export class WhatsappService implements OnModuleInit {
           );
 
           if (isLoggedOut) {
-            this.logger.error('[WhatsApp Baileys] Device logged out. Clearing auth store for fresh QR scan...');
+            this.logger.error(
+              '[WhatsApp Baileys] Device logged out. Clearing auth store for fresh QR scan...',
+            );
             await this.clearAuthState();
-            setTimeout(() => this.initBaileys(), 2000);
+            this.scheduleReconnect(2000);
           } else {
-            const delay = statusCode === DisconnectReason.restartRequired ? 1000 : 3000;
+            const delay =
+              statusCode === DisconnectReason.restartRequired ? 1000 : 3000;
             this.logger.log(`[WhatsApp Baileys] Reconnecting in ${delay}ms...`);
-            setTimeout(() => this.initBaileys(), delay);
+            this.scheduleReconnect(delay);
           }
         } else if (connection === 'open') {
           this.isConnected = true;
           this.qrCodeStr = null;
-          this.logger.log('====================================================');
-          this.logger.log('  ✅ TEY WHATSAPP CLIENT CONNECTED SUCCESSFULLY!      ');
-          this.logger.log('====================================================');
+          this.logger.log(
+            '====================================================',
+          );
+          this.logger.log(
+            '  ✅ TEY WHATSAPP CLIENT CONNECTED SUCCESSFULLY!      ',
+          );
+          this.logger.log(
+            '====================================================',
+          );
         }
       });
     } catch (err: any) {
-      this.logger.error(`[WhatsApp Baileys] Failed to initialise socket: ${err?.message}`);
+      // Boot failures (network blips, DB hiccups) must self-heal — previously
+      // a single throw left WhatsApp dead until the next redeploy.
+      this.initAttempts += 1;
+      const delay = Math.min(30_000, 1000 * 2 ** this.initAttempts);
+      this.logger.error(
+        `[WhatsApp Baileys] Failed to initialise socket (attempt ${this.initAttempts}): ${err?.message} — retrying in ${delay}ms`,
+      );
+      this.scheduleReconnect(delay);
     }
   }
 
@@ -246,6 +330,7 @@ export class WhatsappService implements OnModuleInit {
 
   getStatus() {
     return {
+      enabled: this.isEnabled,
       isConnected: this.isConnected,
       hasQrCode: !!this.qrCodeStr,
       qrCodeStr: this.qrCodeStr,
@@ -306,7 +391,10 @@ export class WhatsappService implements OnModuleInit {
     }
 
     // Convert QR string to Data URL image
-    const dataUrl = await QRCode.toDataURL(this.qrCodeStr, { width: 300, margin: 2 });
+    const dataUrl = await QRCode.toDataURL(this.qrCodeStr, {
+      width: 300,
+      margin: 2,
+    });
 
     return `
       <!DOCTYPE html>
@@ -350,94 +438,248 @@ export class WhatsappService implements OnModuleInit {
 
   // ─── Send OTP ──────────────────────────────────────────────────────────────
 
-  async sendOtp(rawPhone: string) {
-    if (!rawPhone) {
-      throw new BadRequestException('Phone number is required.');
-    }
-
-    const phone = this.normalisePhone(rawPhone);
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Store with 10-minute TTL
-    this.otpStore.set(phone, {
-      code,
-      expiresAt: Date.now() + 10 * 60 * 1000,
-    });
-
-    const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
-
-    if (isEnabled && this.sock && this.isConnected) {
-      const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
-      const message = this.buildOtpMessage(code);
-      try {
-        await this.sock.sendMessage(jid, { text: message });
-        this.logger.log(`[WhatsApp Baileys] OTP sent to ${phone} (${jid}) ✅`);
-      } catch (err: any) {
-        this.logger.error(`[WhatsApp Baileys] Failed to send message to ${phone}: ${err?.message}`);
-      }
-    } else {
-      this.logger.warn(
-        `[WhatsApp Dev Mode] Service disabled or disconnected. OTP for ${phone} is: 🔑 ${code} 🔑`,
+  /**
+   * Generates, stores (hashed) and delivers an OTP for the given phone.
+   *
+   * `userId` is null for pre-signup onboarding users (account is created at
+   * Step 12). The raw code is NEVER returned to the client or embedded in API
+   * messages in production. In local Dev Mode (ENABLE_WHATSAPP disabled) it is
+   * logged, and additionally returned only when EXPOSE_DEV_OTP=true so local
+   * flows can complete verification without reading server logs.
+   */
+  async sendOtp(userId: string | null, rawPhone: string) {
+    const phone = normalisePhone(rawPhone);
+    if (!phone) {
+      throw new BadRequestException(
+        "That doesn't look like a valid WhatsApp number. Double-check the country code and digits.",
       );
     }
 
+    // A number already bound to another verified account cannot be claimed.
+    await this.assertNumberAvailable(phone, userId);
+
+    // ── Per-phone rate limits (server-side source of truth) ──
+    const now = new Date();
+    const existing = await this.prisma.whatsappOtp.findUnique({
+      where: { phone },
+    });
+
+    let sentCount = 1;
+    let windowStartedAt = now;
+    if (existing) {
+      const sinceLastSend = now.getTime() - existing.lastSentAt.getTime();
+      if (sinceLastSend < RESEND_COOLDOWN_MS) {
+        const waitSeconds = Math.ceil(
+          (RESEND_COOLDOWN_MS - sinceLastSend) / 1000,
+        );
+        throw new HttpException(
+          `Please wait ${waitSeconds}s before requesting another code.`,
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+
+      const windowExpired =
+        now.getTime() - existing.windowStartedAt.getTime() >= SEND_WINDOW_MS;
+      sentCount = windowExpired ? 0 : existing.sentCount;
+      if (sentCount >= MAX_SENDS_PER_WINDOW) {
+        throw new HttpException(
+          'Too many codes requested for this number today. Please try again later.',
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      sentCount += 1;
+      windowStartedAt = windowExpired ? now : existing.windowStartedAt;
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = hashOtp(code, phone);
+    const expiresAt = new Date(now.getTime() + OTP_TTL_MS);
+
+    await this.prisma.whatsappOtp.upsert({
+      where: { phone },
+      create: {
+        phone,
+        codeHash,
+        expiresAt,
+        attempts: 0,
+        sentCount,
+        windowStartedAt,
+        lastSentAt: now,
+      },
+      update: {
+        codeHash,
+        expiresAt,
+        attempts: 0,
+        sentCount,
+        windowStartedAt,
+        lastSentAt: now,
+      },
+    });
+
+    // ── Delivery ──
+    if (this.isEnabled && this.sock && this.isConnected) {
+      const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
+      const message = this.buildOtpMessage(code);
+      try {
+        await this.withTimeout(
+          this.sock.sendMessage(jid, { text: message }),
+          SEND_TIMEOUT_MS,
+          'sendMessage',
+        );
+        this.logger.log(
+          `[WhatsApp Baileys] OTP sent to ${maskPhone(phone)} ✅`,
+        );
+      } catch (err: any) {
+        // Never lie about delivery — the code stays valid in the DB so the
+        // user can retry the send once the socket recovers.
+        this.logger.error(
+          `[WhatsApp Baileys] Failed to send message to ${maskPhone(phone)}: ${err?.message}`,
+        );
+        throw new ServiceUnavailableException(
+          "We couldn't reach WhatsApp just now. Please tap Resend in a minute.",
+        );
+      }
+    } else if (this.isEnabled) {
+      // Enabled but disconnected — previously this path leaked the code in the
+      // API response, which was a full verification bypass.
+      this.logger.error(
+        `[WhatsApp Baileys] Socket offline — OTP for ${maskPhone(phone)} generated but NOT delivered.`,
+      );
+      throw new ServiceUnavailableException(
+        "Tey's WhatsApp link is offline right now. Please try again in a few minutes.",
+      );
+    } else {
+      // Dev Mode — service intentionally disabled.
+      this.logger.warn(
+        `[WhatsApp Dev Mode] OTP for ${maskPhone(phone)} is: 🔑 ${code} 🔑`,
+      );
+    }
+
+    const exposeDevOtp =
+      !this.isEnabled && process.env.EXPOSE_DEV_OTP === 'true';
     return {
       success: true,
-      message: isEnabled && this.isConnected
+      message: this.isEnabled
         ? 'OTP sent to your WhatsApp number!'
-        : `OTP generated (Dev Mode). Use code ${code} to verify.`,
-      code: process.env.NODE_ENV !== 'production' ? code : undefined,
+        : 'OTP generated (Dev Mode — delivery disabled).',
+      ...(exposeDevOtp ? { devCode: code } : {}),
     };
   }
 
   // ─── Verify OTP ────────────────────────────────────────────────────────────
 
-  async verifyOtp(rawPhone: string, code: string, userId: string) {
-    if (!rawPhone || !code) {
+  async verifyOtp(rawPhone: string, rawCode: string, userId: string | null) {
+    if (!rawPhone || !rawCode) {
       throw new BadRequestException('Phone number and OTP code are required.');
     }
 
-    const phone = this.normalisePhone(rawPhone);
-    const entry = this.otpStore.get(phone);
+    const phone = normalisePhone(rawPhone);
+    if (!phone) {
+      throw new BadRequestException(
+        "That doesn't look like a valid WhatsApp number.",
+      );
+    }
+
+    const entry = await this.prisma.whatsappOtp.findUnique({
+      where: { phone },
+    });
 
     if (!entry) {
-      throw new BadRequestException('No OTP found for this number. Please request a new one.');
+      throw new BadRequestException(
+        'No active code found for this number. Please request a new one.',
+      );
     }
 
-    if (Date.now() > entry.expiresAt) {
-      this.otpStore.delete(phone);
-      throw new BadRequestException('OTP has expired. Please request a new one.');
+    if (new Date() > entry.expiresAt) {
+      await this.prisma.whatsappOtp
+        .delete({ where: { phone } })
+        .catch(() => undefined);
+      throw new BadRequestException(
+        'Your code has expired. Please request a new one.',
+      );
     }
 
-    if (entry.code !== code) {
-      throw new BadRequestException('Incorrect OTP code. Please try again.');
+    if (entry.attempts >= MAX_OTP_ATTEMPTS) {
+      await this.prisma.whatsappOtp
+        .delete({ where: { phone } })
+        .catch(() => undefined);
+      throw new BadRequestException(
+        'Too many incorrect attempts. Please request a new code.',
+      );
     }
 
-    // OTP matched
-    this.otpStore.delete(phone);
-    this.logger.log(`[WhatsApp Baileys] OTP verified for ${phone} ✅`);
+    if (hashOtp(rawCode, phone) !== entry.codeHash) {
+      const attempts = entry.attempts + 1;
+      if (attempts >= MAX_OTP_ATTEMPTS) {
+        await this.prisma.whatsappOtp
+          .delete({ where: { phone } })
+          .catch(() => undefined);
+        this.logger.warn(
+          `[WhatsApp] OTP locked after ${MAX_OTP_ATTEMPTS} failed attempts for ${maskPhone(phone)}`,
+        );
+        throw new BadRequestException(
+          'Too many incorrect attempts. Please request a new code.',
+        );
+      }
+      await this.prisma.whatsappOtp.update({
+        where: { phone },
+        data: { attempts },
+      });
+      const remaining = MAX_OTP_ATTEMPTS - attempts;
+      throw new BadRequestException(
+        `Incorrect code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
+      );
+    }
+
+    // ── OTP matched ──
+    // Re-check uniqueness at the last possible moment (another account may
+    // have claimed this number while the code sat in the inbox).
+    await this.assertNumberAvailable(phone, userId);
+    this.logger.log(
+      `[WhatsApp Baileys] OTP verified for ${maskPhone(phone)} ✅`,
+    );
+
+    if (!userId) {
+      // Pre-signup journey (onboarding Step 6 runs before Google sign-in at
+      // Step 12): keep a server-side proof of verification so the number can
+      // be bound to the account when onboarding answers sync post-signup.
+      await this.prisma.whatsappOtp.update({
+        where: { phone },
+        data: { verifiedAt: new Date() },
+      });
+      this.logger.log(
+        `[WhatsApp] Pre-auth verification recorded for ${maskPhone(phone)} — will bind after signup.`,
+      );
+      return {
+        success: true,
+        message: 'WhatsApp number verified successfully.',
+        phone,
+      };
+    }
+
+    await this.prisma.whatsappOtp
+      .delete({ where: { phone } })
+      .catch(() => undefined);
 
     // Persist verified number to User record
-    if (userId) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          whatsappPhone: phone,
-          whatsappVerified: true,
-        },
-      });
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        whatsappPhone: phone,
+        whatsappVerified: true,
+      },
+    });
 
-      const session = await this.prisma.onboardingSession.findUnique({
+    const session = await this.prisma.onboardingSession.findUnique({
+      where: { userId },
+    });
+    if (session) {
+      const answers = (session.answers as Record<string, any>) || {};
+      answers.whatsappNumber = phone;
+      await this.prisma.onboardingSession.update({
         where: { userId },
+        data: { answers },
       });
-      if (session) {
-        const answers = (session.answers as Record<string, any>) || {};
-        answers.whatsappNumber = phone;
-        await this.prisma.onboardingSession.update({
-          where: { userId },
-          data: { answers },
-        });
-      }
     }
 
     return {
@@ -449,33 +691,38 @@ export class WhatsappService implements OnModuleInit {
 
   // ─── Private Helpers ────────────────────────────────────────────────────────
 
-  /**
-   * Smart Phone Normalisation.
-   * Handles local 9-digit numbers (e.g. 671405008 -> +237671405008), zero-prefixed,
-   * 12-digit 237-prefixed, and international numbers starting with '+'.
-   */
-  private normalisePhone(raw: string): string {
-    let clean = raw.replace(/[^\d+]/g, '');
-
-    if (clean.startsWith('+')) {
-      return clean;
+  /** Rejects numbers already bound (verified) to a DIFFERENT account. */
+  private async assertNumberAvailable(phone: string, userId: string | null) {
+    const holder = await this.prisma.user.findFirst({
+      where: {
+        whatsappPhone: phone,
+        whatsappVerified: true,
+        ...(userId ? { id: { not: userId } } : {}),
+      },
+      select: { id: true },
+    });
+    if (holder) {
+      throw new ConflictException(
+        'This WhatsApp number is already linked to another Teyro account.',
+      );
     }
+  }
 
-    if (clean.startsWith('0')) {
-      clean = clean.substring(1);
-    }
-
-    // Default to Cameroon (+237) for 9-digit numbers starting with 6 or 2
-    if (clean.length === 9 && (clean.startsWith('6') || clean.startsWith('2'))) {
-      return `+237${clean}`;
-    }
-
-    // Handle 12-digit numbers starting with 237
-    if (clean.length === 12 && clean.startsWith('237')) {
-      return `+${clean}`;
-    }
-
-    return `+${clean}`;
+  /** Rejects a promise that hangs longer than `ms` (stuck Baileys sends). */
+  private withTimeout<T>(
+    promise: Promise<T>,
+    ms: number,
+    label: string,
+  ): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`${label} timed out after ${ms}ms`)),
+          ms,
+        ),
+      ),
+    ]);
   }
 
   private buildOtpMessage(code: string, expiryMinutes = 10): string {
@@ -488,4 +735,9 @@ export class WhatsappService implements OnModuleInit {
       `@teyro.app #${code}`
     );
   }
+}
+
+/** SHA-256 of the code bound to its phone — raw codes are never stored. */
+function hashOtp(code: string, phone: string): string {
+  return crypto.createHash('sha256').update(`${code}:${phone}`).digest('hex');
 }

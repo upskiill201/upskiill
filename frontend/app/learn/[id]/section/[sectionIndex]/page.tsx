@@ -726,6 +726,73 @@ function SectionViewContent({
             });
           }
 
+          // ── Section milestone: this lesson was the LAST published lesson of
+          // its section. The server computed the whole summary (progress
+          // before/after, next-section preview), so every number below is
+          // truth, never a client-side guess.
+          const sc = data.sectionCompletion;
+          if (sc) {
+            const next = sc.nextSection;
+            scenes.push({
+              kind: 'SECTION_COMPLETE',
+              courseTitle: sc.course.title,
+              sectionTitle: sc.section.title,
+              sectionIndexLabel: `SECTION ${sc.section.index + 1}`,
+              sectionProgress: {
+                lessonsCompleted: sc.section.lessonsCompleted,
+                lessonsTotal: sc.section.lessonsTotal,
+                ...(sc.section.activitiesTotal > 0 && {
+                  activitiesCompleted: sc.section.activitiesCompleted,
+                  activitiesTotal: sc.section.activitiesTotal,
+                }),
+              },
+              results: {
+                xpEarned: typeof data.xpEarned === 'number' ? data.xpEarned : 0,
+                bonusXp: sc.rewards.bonusXp,
+                coinsEarned: typeof data.coinsEarned === 'number' ? data.coinsEarned : 0,
+                streakDays: data.newStreakDays ?? streakDays,
+              },
+              dedupeKey: `section-complete-${sc.section.id}-${activeLesson.id}`,
+            });
+            scenes.push({
+              kind: 'COURSE_PROGRESS',
+              courseTitle: sc.course.title,
+              from: sc.course.progressBefore,
+              to: sc.course.progressAfter,
+              sectionsCompleted: sc.course.sectionsCompleted,
+              sectionsTotal: sc.course.sectionsTotal,
+              lessonsCompleted: sc.course.lessonsCompleted,
+              lessonsTotal: sc.course.lessonsTotal,
+            });
+
+            if (sc.isFinalSection || !next) {
+              scenes.push({
+                kind: 'COURSE_COMPLETE',
+                courseTitle: sc.course.title,
+                sectionsCompleted: sc.course.sectionsCompleted,
+                sectionsTotal: sc.course.sectionsTotal,
+                lessonsCompleted: sc.course.lessonsCompleted,
+                lessonsTotal: sc.course.lessonsTotal,
+                xpTotal: typeof data.newXp === 'number' ? data.newXp : 0,
+                streakDays: data.newStreakDays ?? streakDays,
+                onContinue: () => router.push(`/learn/${params.id}`),
+              });
+            } else {
+              scenes.push({
+                kind: 'SECTION_UNLOCKED',
+                sectionIndexLabel: `SECTION ${next.index + 1}`,
+                sectionTitle: next.title,
+                description: next.description,
+                lessonCount: next.lessonCount,
+                estimatedMinutes: next.estimatedMinutes,
+                onStartSection: () =>
+                  router.push(`/learn/${params.id}/section/${next.index}`),
+                onBackToCourse: () => router.push(`/learn/${params.id}`),
+                dedupeKey: `section-unlock-${sc.section.id}`,
+              });
+            }
+          }
+
           // Returning to the map is owned by the LAST scene's completion.
           const last = scenes[scenes.length - 1] as Extract<CelebrationScene, { onComplete?: () => void }>;
           last.onComplete = returnToMapAfterLesson;

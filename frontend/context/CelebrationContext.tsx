@@ -127,6 +127,67 @@ export type CelebrationScene =
       weekStart: string;
       onComplete?: () => void;
       dedupeKey?: string;
+    }
+  | {
+      kind: 'SECTION_COMPLETE';
+      courseTitle: string;
+      sectionTitle: string;
+      /** e.g. "SECTION 2" — 1-based display label. */
+      sectionIndexLabel: string;
+      sectionProgress: {
+        lessonsCompleted: number;
+        lessonsTotal: number;
+        activitiesCompleted?: number;
+        activitiesTotal?: number;
+      };
+      results: {
+        xpEarned: number;
+        bonusXp: number;
+        coinsEarned: number;
+        streakDays: number;
+      };
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'COURSE_PROGRESS';
+      courseTitle: string;
+      /** Course-wide completion % immediately before vs after the section. */
+      from: number;
+      to: number;
+      sectionsCompleted: number;
+      sectionsTotal: number;
+      lessonsCompleted: number;
+      lessonsTotal: number;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'SECTION_UNLOCKED';
+      sectionIndexLabel: string;
+      sectionTitle: string;
+      description?: string | null;
+      lessonCount: number;
+      estimatedMinutes: number;
+      onStartSection: () => void;
+      onBackToCourse: () => void;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'COURSE_COMPLETE';
+      courseTitle: string;
+      sectionsCompleted: number;
+      sectionsTotal: number;
+      lessonsCompleted: number;
+      lessonsTotal: number;
+      /** Learner's lifetime XP balance at the moment of completion. */
+      xpTotal: number;
+      streakDays: number;
+      /** Primary CTA — usually back to the course overview. */
+      onContinue: () => void;
+      onComplete?: () => void;
+      dedupeKey?: string;
     };
 
 interface CelebrationContextValue {

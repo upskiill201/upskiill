@@ -11,7 +11,7 @@ async function bootstrap() {
   console.log(`Sending OTP to phone number: ${testPhone}`);
 
   try {
-    const res = await whatsappService.sendOtp(testPhone);
+    const res = await whatsappService.sendOtp(null, testPhone);
     console.log(`Result:`, JSON.stringify(res, null, 2));
   } catch (err) {
     console.error(`Error sending WhatsApp OTP:`, err);

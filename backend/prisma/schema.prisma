@@ -619,9 +619,13 @@ model GemTransaction {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      String   // 'EARN' | 'SPEND'
   amount    Int
-  source    String   // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ADMIN'
+  source    String   // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ONBOARDING_CHALLENGE' | 'ADMIN'
   createdAt DateTime @default(now())
 
+  // NOTE: a PARTIAL unique index (userId WHERE source = 'ONBOARDING_CHALLENGE')
+  // enforces the one-time onboarding challenge reward. Prisma can't model
+  // partial indexes — it lives only in migration
+  // 20260825120000_add_onboarding_challenge_reward_guard.
   @@index([userId])
   @@map("gem_transactions")
 }
@@ -645,6 +649,31 @@ model WhatsappAuthStore {
   updatedAt DateTime @updatedAt
 
   @@map("whatsapp_auth_store")
+}
+
+// One-time WhatsApp verification codes (onboarding Step 6 + profile settings).
+// Keyed by normalised E.164 phone — one pending code per number.
+// `codeHash` is SHA-256(code + phone); raw codes are never persisted.
+//
+// Anonymous journeys: onboarding users verify BEFORE signing up (Google sign-in
+// happens at Step 12). A successful anonymous verify stamps `verifiedAt` instead
+// of deleting the row; when the user later syncs onboarding answers while
+// authenticated, user-onboarding.service claims the row (`claimedBy`) and binds
+// the number to the account.
+model WhatsappOtp {
+  phone           String    @id // E.164, e.g. +237671405008
+  codeHash        String
+  expiresAt       DateTime // 10-minute TTL from send
+  attempts        Int       @default(0) // wrong guesses; locked & deleted at MAX_OTP_ATTEMPTS
+  sentCount       Int       @default(0) // sends within the current hourly window
+  windowStartedAt DateTime  @default(now()) // start of the current hourly send window
+  lastSentAt      DateTime  @default(now()) // enforces the resend cooldown
+  verifiedAt      DateTime? // set when verified pre-auth (row kept for account binding)
+  claimedBy       String? // userId that bound this number, once known
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("whatsapp_otps")
 }
 
 model UserFollow {
