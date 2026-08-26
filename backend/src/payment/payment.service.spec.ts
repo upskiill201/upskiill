@@ -187,6 +187,15 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
     service = module.get<PaymentService>(PaymentService);
   });
 
+  // Hermetic env control: Prisma's runtime loads backend/.env into
+  // process.env when one exists, so a locally-configured MESOMB_WEBHOOK_SECRET
+  // would otherwise leak into the "unconfigured → 503" assertions below.
+  // Tests must establish their own preconditions, not inherit the machine's.
+  beforeEach(() => {
+    delete process.env.MESOMB_APP_KEY;
+    delete process.env.MESOMB_WEBHOOK_SECRET;
+  });
+
   afterEach(() => {
     delete process.env.MESOMB_APP_KEY;
     delete process.env.MESOMB_WEBHOOK_SECRET;

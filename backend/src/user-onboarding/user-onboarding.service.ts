@@ -165,56 +165,71 @@ export class UserOnboardingService {
    * gem_transactions (userId WHERE source = 'ONBOARDING_CHALLENGE',
    * migration 20260825120000) — concurrent double-fires pay out exactly
    * once. The reward is fixed; client-reported performance is never trusted.
+   *
+   * Runs inside the caller's transaction so settlement can commit the claim
+   * stamp and the payout atomically (a crash between the two previously left
+   * claims settled-but-unpaid with no retry path).
    */
+  private async payoutWithinTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+  ): Promise<{
+    newlyGranted: boolean;
+    balances: { xp: number; coins: number; streakDays: number };
+  }> {
+    // Ensure the profile exists — a missing StudentProfile must never fail
+    // the claim (same posture as lesson completion).
+    await tx.studentProfile.upsert({
+      where: { userId },
+      create: { userId }, // Prisma applies schema defaults (30 XP, 50 coins, …)
+      update: {},
+    });
+
+    let newlyGranted = false;
+    try {
+      await tx.gemTransaction.create({
+        data: {
+          userId,
+          type: 'EARN',
+          amount: ONBOARDING_CHALLENGE_COINS,
+          source: 'ONBOARDING_CHALLENGE',
+        },
+      });
+      newlyGranted = true;
+    } catch (err: unknown) {
+      if (
+        !(
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2002'
+        )
+      ) {
+        throw err;
+      }
+      // Unique index fired → already claimed (possibly on another device).
+    }
+
+    const balances = await tx.studentProfile.update({
+      where: { userId },
+      data: newlyGranted
+        ? {
+            xp: { increment: ONBOARDING_CHALLENGE_XP },
+            coins: { increment: ONBOARDING_CHALLENGE_COINS },
+          }
+        : {},
+      select: { xp: true, coins: true, streakDays: true },
+    });
+
+    return { newlyGranted, balances };
+  }
+
+  /** Dedicated-transaction variant for callers that don't hold one open. */
   private async payoutChallengeRewardOnce(userId: string): Promise<{
     newlyGranted: boolean;
     balances: { xp: number; coins: number; streakDays: number };
   }> {
-    const result = await this.prisma.$transaction(async (tx) => {
-      // Ensure the profile exists — a missing StudentProfile must never fail
-      // the claim (same posture as lesson completion).
-      await tx.studentProfile.upsert({
-        where: { userId },
-        create: { userId }, // Prisma applies schema defaults (30 XP, 50 coins, …)
-        update: {},
-      });
-
-      let newlyGranted = false;
-      try {
-        await tx.gemTransaction.create({
-          data: {
-            userId,
-            type: 'EARN',
-            amount: ONBOARDING_CHALLENGE_COINS,
-            source: 'ONBOARDING_CHALLENGE',
-          },
-        });
-        newlyGranted = true;
-      } catch (err: unknown) {
-        if (
-          !(
-            err instanceof Prisma.PrismaClientKnownRequestError &&
-            err.code === 'P2002'
-          )
-        ) {
-          throw err;
-        }
-        // Unique index fired → already claimed (possibly on another device).
-      }
-
-      const balances = await tx.studentProfile.update({
-        where: { userId },
-        data: newlyGranted
-          ? {
-              xp: { increment: ONBOARDING_CHALLENGE_XP },
-              coins: { increment: ONBOARDING_CHALLENGE_COINS },
-            }
-          : {},
-        select: { xp: true, coins: true, streakDays: true },
-      });
-
-      return { newlyGranted, balances };
-    });
+    const result = await this.prisma.$transaction((tx) =>
+      this.payoutWithinTx(tx, userId),
+    );
 
     if (result.newlyGranted) {
       // Keeps the weekly league in sync like every other XP source.
@@ -311,6 +326,11 @@ export class UserOnboardingService {
    *  2. answers['6'] verified phone backed by a fresh whatsapp_otps row and
    *     an unexpired claim recorded for that phone.
    *
+   * The stamp and the payout commit in the SAME transaction: a dropped
+   * connection can no longer leave a claim stamped-settled but unpaid —
+   * either both happen or neither does, so a later session sync simply
+   * retries an unsettled claim (self-healing).
+   *
    * Double-payout-proof in every direction: the token settles exactly once
    * (UNIQUE settledByUserId via conditional updateMany), the ledger pays at
    * most once per user (partial unique index), and repeat calls no-op.
@@ -324,22 +344,37 @@ export class UserOnboardingService {
       const rawToken =
         typeof step9?.claimToken === 'string' ? step9.claimToken : '';
       if (rawToken) {
-        const claimed = await this.prisma.onboardingChallengeClaim.updateMany({
-          where: {
-            tokenHash: this.hashClaimToken(rawToken),
-            settledByUserId: null,
-            expiresAt: { gt: new Date() },
+        const outcome = await this.prisma.$transaction(
+          async (tx): Promise<{ settled: boolean; newlyGranted: boolean }> => {
+            const claimed = await tx.onboardingChallengeClaim.updateMany({
+              where: {
+                tokenHash: this.hashClaimToken(rawToken),
+                settledByUserId: null,
+                expiresAt: { gt: new Date() },
+              },
+              data: { settledByUserId: userId, settledAt: new Date() },
+            });
+            if (claimed.count !== 1) {
+              // Token missing/expired/already settled → fall through to phone proof.
+              return { settled: false, newlyGranted: false };
+            }
+            const payout = await this.payoutWithinTx(tx, userId);
+            return { settled: true, newlyGranted: payout.newlyGranted };
           },
-          data: { settledByUserId: userId, settledAt: new Date() },
-        });
-        if (claimed.count === 1) {
-          await this.payoutChallengeRewardOnce(userId);
+        );
+        if (outcome.settled) {
+          if (outcome.newlyGranted) {
+            // Keeps the weekly league in sync like every other XP source.
+            this.eventEmitter.emit(
+              'xp.awarded',
+              new XpAwardedEvent(userId, ONBOARDING_CHALLENGE_XP, 'ONBOARDING'),
+            );
+          }
           this.logger.log(
             '[Onboarding] Settled deferred challenge reward (claim token).',
           );
           return;
         }
-        // Token missing/expired/already settled → fall through to phone proof.
       }
 
       const step6 = answers?.['6'];
@@ -348,18 +383,31 @@ export class UserOnboardingService {
       const phone = normalisePhone(String(rawPhone));
       if (!phone) return;
 
-      const pending = await this.prisma.onboardingChallengeClaim.findFirst({
-        where: { phone, settledByUserId: null, expiresAt: { gt: new Date() } },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (!pending) return;
+      const phoneOutcome = await this.prisma.$transaction(
+        async (tx): Promise<{ settled: boolean; newlyGranted: boolean }> => {
+          const pending = await tx.onboardingChallengeClaim.findFirst({
+            where: { phone, settledByUserId: null, expiresAt: { gt: new Date() } },
+            orderBy: { createdAt: 'desc' },
+          });
+          if (!pending) return { settled: false, newlyGranted: false };
 
-      const claimed = await this.prisma.onboardingChallengeClaim.updateMany({
-        where: { tokenHash: pending.tokenHash, settledByUserId: null },
-        data: { settledByUserId: userId, settledAt: new Date() },
-      });
-      if (claimed.count === 1) {
-        await this.payoutChallengeRewardOnce(userId);
+          const claimed = await tx.onboardingChallengeClaim.updateMany({
+            where: { tokenHash: pending.tokenHash, settledByUserId: null },
+            data: { settledByUserId: userId, settledAt: new Date() },
+          });
+          if (claimed.count !== 1) return { settled: false, newlyGranted: false };
+
+          const payout = await this.payoutWithinTx(tx, userId);
+          return { settled: true, newlyGranted: payout.newlyGranted };
+        },
+      );
+      if (phoneOutcome.settled) {
+        if (phoneOutcome.newlyGranted) {
+          this.eventEmitter.emit(
+            'xp.awarded',
+            new XpAwardedEvent(userId, ONBOARDING_CHALLENGE_XP, 'ONBOARDING'),
+          );
+        }
         this.logger.log(
           `[Onboarding] Settled deferred challenge reward (verified phone ${maskPhone(phone)}).`,
         );
