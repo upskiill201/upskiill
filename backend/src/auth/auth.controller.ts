@@ -16,6 +16,8 @@ import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { VerifyCodeDto } from './dto/verify-code.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -92,19 +94,18 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('verify-code')
   async verifyCode(
-    @Body('email') email: string,
-    @Body('code') code: string,
+    @Body() dto: VerifyCodeDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.verifyCode(email, code);
+    const result = await this.authService.verifyCode(dto.email, dto.code);
     this.setCookie(res, result.access_token);
     return result;
   }
 
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('resend-verification')
-  async resendVerification(@Body('email') email: string) {
-    return this.authService.resendVerification(email);
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerification(dto.email);
   }
 
   @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
