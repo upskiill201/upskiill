@@ -488,4 +488,123 @@ describe('CourseService', () => {
       expect(result.xpEarned).toBe(0);
     });
   });
+
+  describe('markLessonComplete — streak freeze parity (B8)', () => {
+    const userId = 'learner-1';
+    const courseId = 'course-1';
+    const DAY_MS = 86_400_000;
+    const daysAgo = (n: number) => new Date(Date.now() - n * DAY_MS);
+
+    const lessons = [
+      { id: 'lesson-1', sectionId: 'sec-1' },
+      { id: 'lesson-2', sectionId: 'sec-1' },
+    ];
+
+    /** Same touch-points as the section-completion harness, but with a
+     *  parameterised streak profile so gap/bank matrices are controllable. */
+    const setupFreezeMocks = (opts: {
+      streakDays: number;
+      lastStreakEarnedAt: Date | null;
+      streakFreezeBank: number;
+    }) => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        id: courseId,
+        title: 'Entrepreneurship 101',
+        slug: 'entrepreneurship-101',
+        price: 0,
+        published: true,
+        instructorId: 'creator-1',
+        sections: [],
+        reviews: [],
+        _count: { enrollments: 1 },
+      });
+      mockPrismaService.course.count.mockResolvedValue(1);
+      mockPrismaService.enrollment.count.mockResolvedValue(1);
+      mockPrismaService.review.aggregate.mockResolvedValue({ _avg: { rating: 4.5 }, _count: 0 });
+      mockPrismaService.lesson.findFirst.mockResolvedValue({
+        id: 'lesson-2',
+        xpReward: 20,
+        isFreePreview: false,
+      });
+      // Reset before chaining: the repeat-completion test above returns
+      // BEFORE its transaction, leaving an unconsumed mockResolvedValueOnce
+      // on this mock — and jest.clearAllMocks() does not flush Once queues.
+      mockPrismaService.enrollment.findUnique.mockReset();
+      mockPrismaService.enrollment.findUnique
+        .mockResolvedValueOnce({ id: 'enr-1', completedLessons: [] }) // pre-tx read
+        .mockResolvedValueOnce({ completedLessons: [] }); // fresh in-tx read
+      mockPrismaService.studentProfile.upsert.mockResolvedValue({
+        userId,
+        xp: 100,
+        coins: 40,
+        streakDays: opts.streakDays,
+        longestStreak: Math.max(3, opts.streakDays),
+        lastStreakEarnedAt: opts.lastStreakEarnedAt,
+        streakFreezeBank: opts.streakFreezeBank,
+      });
+      mockPrismaService.lesson.findMany.mockResolvedValue(lessons);
+      mockPrismaService.lesson.findUnique.mockResolvedValue({ sectionId: 'sec-1' });
+      mockPrismaService.enrollment.update.mockResolvedValue({ id: 'enr-1' });
+      mockPrismaService.studentProfile.update.mockResolvedValue({});
+      mockPrismaService.gemTransaction.create.mockResolvedValue({});
+      mockPrismaService.section.findMany.mockResolvedValue([]);
+    };
+
+    /** The profile patch of the most recent studentProfile.update call. */
+    const lastUpdateData = (): Record<string, unknown> =>
+      mockPrismaService.studentProfile.update.mock.calls.at(-1)?.[0]?.data ?? {};
+
+    it('a single missed day consumes exactly one freeze and preserves the streak', async () => {
+      setupFreezeMocks({ streakDays: 6, lastStreakEarnedAt: daysAgo(2), streakFreezeBank: 1 });
+
+      await service.markLessonComplete(userId, courseId, 'lesson-2');
+
+      const data = lastUpdateData();
+      expect(data.streakDays).toBe(7); // preserved + today's extension
+      expect(data.streakFreezeBank).toEqual({ decrement: 1 });
+    });
+
+    it('a multi-day gap burns one freeze per missed day when fully covered', async () => {
+      // Last completion 4 days ago → 3 missed days, bank covers all three.
+      setupFreezeMocks({ streakDays: 6, lastStreakEarnedAt: daysAgo(4), streakFreezeBank: 3 });
+
+      await service.markLessonComplete(userId, courseId, 'lesson-2');
+
+      const data = lastUpdateData();
+      expect(data.streakDays).toBe(7);
+      expect(data.streakFreezeBank).toEqual({ decrement: 3 });
+    });
+
+    it('a partial bank is never burned — the streak resets instead', async () => {
+      // Needs 3 freezes, bank holds 2: old behaviour would burn 1 pointlessly
+      // AND preserve an unearned streak.
+      setupFreezeMocks({ streakDays: 6, lastStreakEarnedAt: daysAgo(4), streakFreezeBank: 2 });
+
+      await service.markLessonComplete(userId, courseId, 'lesson-2');
+
+      const data = lastUpdateData();
+      expect(data.streakDays).toBe(1);
+      expect(data.streakFreezeBank).toBeUndefined(); // bank untouched
+    });
+
+    it('an empty bank resets the streak without touching anything', async () => {
+      setupFreezeMocks({ streakDays: 6, lastStreakEarnedAt: daysAgo(2), streakFreezeBank: 0 });
+
+      await service.markLessonComplete(userId, courseId, 'lesson-2');
+
+      const data = lastUpdateData();
+      expect(data.streakDays).toBe(1);
+      expect(data.streakFreezeBank).toBeUndefined();
+    });
+
+    it('a consecutive-day completion extends the streak without consuming freezes', async () => {
+      setupFreezeMocks({ streakDays: 6, lastStreakEarnedAt: daysAgo(1), streakFreezeBank: 2 });
+
+      await service.markLessonComplete(userId, courseId, 'lesson-2');
+
+      const data = lastUpdateData();
+      expect(data.streakDays).toBe(7);
+      expect(data.streakFreezeBank).toBeUndefined();
+    });
+  });
 });

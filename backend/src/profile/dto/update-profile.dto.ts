@@ -22,6 +22,12 @@ const EMAIL_PATTERN = /^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /* ── nested shapes ──────────────────────────────────────────────────────── */
 
 export class SkillInput {
+  /** Client-side list key — accepted (and ignored) so strict whitelist mode
+   *  doesn't 400 on the settings payload. */
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   @MaxLength(60)
   name!: string;
@@ -32,6 +38,11 @@ export class SkillInput {
 }
 
 export class ExperienceInput {
+  /** Client-side list key — see SkillInput.id. */
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   @MaxLength(100)
   company!: string;
@@ -61,6 +72,11 @@ export class ExperienceInput {
 }
 
 export class EducationInput {
+  /** Client-side list key — see SkillInput.id. */
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   @MaxLength(120)
   institution!: string;
@@ -91,6 +107,11 @@ export class EducationInput {
 }
 
 export class CertificationInput {
+  /** Client-side list key — see SkillInput.id. */
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   @MaxLength(120)
   name!: string;

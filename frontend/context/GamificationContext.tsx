@@ -361,21 +361,11 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // level logic: exponential curve matching backend
-  let userLevel = state.userLevel || 1;
-  if (!state.userLevel) {
-    const totalXp = state.xp || 0;
-    while (true) {
-      const nextReq = 50 * userLevel * (userLevel + 1);
-      if (totalXp >= nextReq) {
-        userLevel++;
-      } else {
-        break;
-      }
-    }
-  }
-  const currentLevelBaseXp = 50 * (userLevel - 1) * userLevel;
-  const xpInCurrentLevel = state.xpInCurrentLevel ?? Math.max(0, (state.xp || 0) - currentLevelBaseXp);
+  // One level curve: the server's (flat 100 XP per level, see
+  // claimChallengeReward / /gamification/me). Until the first fetch lands we
+  // fall back to level 1 with modulo progress — no diverging client formula.
+  const userLevel = state.userLevel || 1;
+  const xpInCurrentLevel = state.xpInCurrentLevel ?? ((state.xp || 0) % 100);
 
   return (
     <GamificationContext.Provider

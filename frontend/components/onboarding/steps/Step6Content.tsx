@@ -47,6 +47,12 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [countdown, setCountdown] = useState(0);
+  /**
+   * Dev convenience: the backend echoes the OTP only when EXPOSE_DEV_OTP is
+   * enabled (local/dev builds). Rendered as a chip so testers don't need a
+   * second phone; production never receives the field.
+   */
+  const [devCode, setDevCode] = useState<string | null>(null);
 
   const canSubmit = !!phoneNumber.trim() && phoneNumber.length >= 5;
 
@@ -85,6 +91,9 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
       });
 
       if (res.ok) {
+        // Dev-mode only (EXPOSE_DEV_OTP) — undefined in every real environment.
+        const data = await res.json().catch(() => ({}));
+        setDevCode(typeof data?.devCode === 'string' ? data.devCode : null);
         setOtp(['', '', '', '', '', '']);
         setCountdown(RESEND_COOLDOWN_SECONDS);
         setStage('sent');
@@ -309,6 +318,24 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
               <p className="text-xs md:text-sm font-medium text-slate-400 mb-3 text-center">
                 Enter the 6-digit code sent to your WhatsApp:
               </p>
+
+              {/* Dev builds only — backend echoes the OTP when EXPOSE_DEV_OTP is set */}
+              {devCode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const digits = devCode.replace(/\D/g, '').slice(0, 6).split('');
+                    const filled = ['', '', '', '', '', ''].map((_, i) => digits[i] ?? '');
+                    setOtp(filled);
+                    otpRefs.current[5]?.focus();
+                  }}
+                  className="mb-3 flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-[10px] md:text-xs font-bold text-amber-700 tracking-wide hover:bg-amber-100 cursor-pointer"
+                  title="Tap to autofill (dev mode only)"
+                >
+                  <Lock className="w-3 h-3" />
+                  DEV CODE: {devCode}
+                </button>
+              )}
 
               <div className="flex gap-2 w-full justify-between mb-4">
                 {otp.map((digit, i) => (

@@ -63,6 +63,7 @@ describe('WhatsappService', () => {
       findUnique: jest.Mock;
       upsert: jest.Mock;
       update: jest.Mock;
+      updateMany: jest.Mock;
       delete: jest.Mock;
     };
     user: { findFirst: jest.Mock; findUnique: jest.Mock; update: jest.Mock };
@@ -93,6 +94,7 @@ describe('WhatsappService', () => {
         findUnique: jest.fn(),
         upsert: jest.fn().mockResolvedValue({}),
         update: jest.fn().mockResolvedValue({}),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         delete: jest.fn().mockResolvedValue({}),
       },
       user: {
@@ -278,6 +280,11 @@ describe('WhatsappService', () => {
       await expect(
         service.verifyOtp(PHONE, '000000', 'user-1'),
       ).rejects.toThrow(/too many incorrect attempts/i);
+      // The cap is enforced atomically via a conditional increment
+      expect(prisma.whatsappOtp.updateMany).toHaveBeenCalledWith({
+        where: { phone: PHONE, attempts: { lt: 5 } },
+        data: { attempts: { increment: 1 } },
+      });
       expect(prisma.whatsappOtp.delete).toHaveBeenCalledWith({
         where: { phone: PHONE },
       });
@@ -292,9 +299,10 @@ describe('WhatsappService', () => {
       await expect(
         service.verifyOtp(PHONE, '000000', 'user-1'),
       ).rejects.toThrow(/3 attempts remaining/);
-      expect(prisma.whatsappOtp.update).toHaveBeenCalledWith({
-        where: { phone: PHONE },
-        data: { attempts: 2 },
+      // Atomic conditional increment — concurrent guesses can never share a slot
+      expect(prisma.whatsappOtp.updateMany).toHaveBeenCalledWith({
+        where: { phone: PHONE, attempts: { lt: 5 } },
+        data: { attempts: { increment: 1 } },
       });
       expect(prisma.whatsappOtp.delete).not.toHaveBeenCalled();
     });

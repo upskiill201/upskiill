@@ -767,7 +767,8 @@ export class CourseService {
         const todayStr = getLocalDayStr(now);
         const lastStreakDate = profile.lastStreakEarnedAt;
         let shouldUpdateStreakEarnedDate = false;
-        let consumeStreakFreeze = false;
+        /** How many banked freezes this completion burns (0 = none). */
+        let freezesToConsume = 0;
 
         if (!lastStreakDate) {
           newStreak = Math.max(1, profile.streakDays || 1);
@@ -785,10 +786,15 @@ export class CourseService {
             newStreak = (profile.streakDays || 0) + 1;
             shouldUpdateStreakEarnedDate = true;
           } else {
-            if (profile.streakFreezeBank > 0) {
+            // Duolingo parity (B8): every missed day costs one streak freeze,
+            // and the streak only survives when the bank covers the WHOLE gap
+            // (this branch implies diffDays >= 2, so at least one day was
+            // missed). A partial bank is never burned pointlessly.
+            const missedDays = diffDays - 1;
+            if (profile.streakFreezeBank >= missedDays) {
               newStreak = (profile.streakDays || 0) + 1;
               shouldUpdateStreakEarnedDate = true;
-              consumeStreakFreeze = true;
+              freezesToConsume = missedDays;
             } else {
               newStreak = 1;
               shouldUpdateStreakEarnedDate = true;
@@ -816,7 +822,9 @@ export class CourseService {
               lastActiveAt: now,
               lastLessonCompletedAt: now,
               ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
-              ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
+              ...(freezesToConsume > 0
+                ? { streakFreezeBank: { decrement: freezesToConsume } }
+                : {}),
             },
           }),
         ]);

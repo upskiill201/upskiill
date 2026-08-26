@@ -491,7 +491,8 @@ export class WhatsappService implements OnModuleInit {
       windowStartedAt = windowExpired ? now : existing.windowStartedAt;
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // CSPRNG — Math.random is predictable, fatal for a 6-digit code space.
+    const code = crypto.randomInt(100_000, 1_000_000).toString();
     const codeHash = hashOtp(code, phone);
     const expiresAt = new Date(now.getTime() + OTP_TTL_MS);
 
@@ -609,8 +610,16 @@ export class WhatsappService implements OnModuleInit {
     }
 
     if (hashOtp(rawCode, phone) !== entry.codeHash) {
+      // Atomic conditional increment (B9): the old read-then-write let two
+      // concurrent guesses share one attempt slot. The where-clause makes
+      // every miss claim its own slot and refuses once the cap is reached.
+      const bumped = await this.prisma.whatsappOtp.updateMany({
+        where: { phone, attempts: { lt: MAX_OTP_ATTEMPTS } },
+        data: { attempts: { increment: 1 } },
+      });
       const attempts = entry.attempts + 1;
-      if (attempts >= MAX_OTP_ATTEMPTS) {
+
+      if (bumped.count === 0 || attempts >= MAX_OTP_ATTEMPTS) {
         await this.prisma.whatsappOtp
           .delete({ where: { phone } })
           .catch(() => undefined);
@@ -621,10 +630,6 @@ export class WhatsappService implements OnModuleInit {
           'Too many incorrect attempts. Please request a new code.',
         );
       }
-      await this.prisma.whatsappOtp.update({
-        where: { phone },
-        data: { attempts },
-      });
       const remaining = MAX_OTP_ATTEMPTS - attempts;
       throw new BadRequestException(
         `Incorrect code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,

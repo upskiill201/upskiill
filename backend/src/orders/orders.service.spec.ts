@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from './orders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { BadRequestException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -38,6 +39,11 @@ describe('OrdersService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        // OrdersService emits league/xp events on checkout (6876d21)
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
         },
       ],
     }).compile();
