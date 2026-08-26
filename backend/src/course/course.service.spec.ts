@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MissionsService } from '../missions/missions.service';
@@ -25,6 +26,10 @@ const mockPrismaService = {
   },
   section: {
     findMany: jest.fn(),
+  },
+  lesson: {
+    findUnique: jest.fn(),
+    update: jest.fn(),
   },
   // Interactive transactions run against this same mock object
   // ($transaction(fn) → fn(mockPrismaService)).
@@ -160,6 +165,85 @@ describe('CourseService', () => {
       expect(generatedId).toMatch(/^\d{7}$/);
       expect(Number(generatedId)).toBeGreaterThanOrEqual(1000000);
       expect(Number(generatedId)).toBeLessThanOrEqual(9999999);
+    });
+  });
+
+  describe('updateLesson', () => {
+    const ownerId = 'creator-1';
+    const ownedLesson = {
+      id: 'lesson-1',
+      lessonType: 'video',
+      section: {
+        course: { instructorId: ownerId },
+      },
+    };
+
+    it('should persist only allowlisted fields and bump the optimistic-lock version', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(ownedLesson);
+      mockPrismaService.lesson.update.mockResolvedValue({ id: 'lesson-1' });
+
+      await service.updateLesson(ownerId, 'lesson-1', {
+        title: '  New Title  ',
+        description: 'desc',
+        shortDescription: 'short',
+        durationMinutes: 12,
+        isFreePreview: true,
+        contentBlocks: { learn: [] },
+        // Mass-assignment attempt: these must never reach Prisma
+        status: 'published',
+        xpReward: 9999,
+      } as any);
+
+      expect(mockPrismaService.lesson.update).toHaveBeenCalledTimes(1);
+      const updateArgs = mockPrismaService.lesson.update.mock.calls[0][0];
+      expect(updateArgs.where).toEqual({ id: 'lesson-1' });
+      expect(updateArgs.data).toEqual({
+        title: 'New Title',
+        description: 'desc',
+        shortDescription: 'short',
+        durationMinutes: 12,
+        isFreePreview: true,
+        contentBlocks: { learn: [] },
+        version: { increment: 1 },
+      });
+      expect(updateArgs.data).not.toHaveProperty('status');
+      expect(updateArgs.data).not.toHaveProperty('xpReward');
+    });
+
+    it('should reject a creator who does not own the parent course', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(ownedLesson);
+
+      await expect(
+        service.updateLesson('someone-else', 'lesson-1', { title: 'Hijack' }),
+      ).rejects.toThrow(ForbiddenException);
+      expect(mockPrismaService.lesson.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFound when the lesson does not exist', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateLesson(ownerId, 'missing', { title: 'X' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should fall back to the existing lessonType when an unsupported type is sent', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(ownedLesson);
+      mockPrismaService.lesson.update.mockResolvedValue({ id: 'lesson-1' });
+
+      await service.updateLesson(ownerId, 'lesson-1', { lessonType: 'hologram' });
+
+      const updateArgs = mockPrismaService.lesson.update.mock.calls[0][0];
+      expect(updateArgs.data.lessonType).toBe('video');
+    });
+
+    it('should reject titles longer than 100 characters before any write', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(ownedLesson);
+
+      await expect(
+        service.updateLesson(ownerId, 'lesson-1', { title: 'x'.repeat(101) }),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.lesson.update).not.toHaveBeenCalled();
     });
   });
 

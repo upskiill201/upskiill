@@ -1679,7 +1679,10 @@ export class CourseService {
       throw new BadRequestException('Lesson title must be 100 characters or less');
     }
 
-    const { contentBlocks, title, lessonType, ...restFields } = data;
+    // Explicit field allowlist: client-supplied keys are copied one by one so
+    // extra payload fields can never reach Prisma. Spreading unvalidated body
+    // fields previously allowed status/version/xpReward tampering on this route.
+    const { contentBlocks, title, lessonType } = data;
     return await this.prisma.lesson.update({
       where: { id: lessonId },
       data: {
@@ -1691,8 +1694,14 @@ export class CourseService {
             ? lessonType
             : lesson.lessonType,
         }),
-        ...restFields,
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.shortDescription !== undefined && { shortDescription: data.shortDescription }),
+        ...(data.durationMinutes !== undefined && { durationMinutes: data.durationMinutes }),
+        ...(data.isFreePreview !== undefined && { isFreePreview: data.isFreePreview }),
         ...(contentBlocks !== undefined ? { contentBlocks } : {}),
+        // Every content write bumps the optimistic-lock version, matching
+        // lesson.service.ts semantics.
+        version: { increment: 1 },
       },
     });
   }
