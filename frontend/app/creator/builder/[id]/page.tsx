@@ -391,7 +391,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   };
 
   // ─── SAVE ───
-  const saveDraft = useCallback(async () => {
+  // Returns true ONLY on success so navigation can depend on the save having
+  // actually happened (failed saves used to still advanced the wizard).
+  const saveDraft = useCallback(async (): Promise<boolean> => {
     setSaving(true);
     setSaveStatus('saving');
     try {
@@ -413,7 +415,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           console.error('Failed to create course', res.status, errBody);
           setSaveStatus('error');
           setSaving(false);
-          return;
+          return false;
         }
         const created = await res.json();
         savedId = created.id;
@@ -429,10 +431,11 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           console.error('Failed to save course draft', patchRes.status);
           setSaveStatus('error');
           setSaving(false);
-          return;
+          return false;
         }
 
-        // Redirect to the permanent URL
+        // Redirect to the permanent URL (same route → component stays
+        // mounted, local step state survives)
         router.replace(`/creator/builder/${savedId}`);
       } else {
         // Subsequent saves: just patch
@@ -446,15 +449,17 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           console.error('Failed to save course draft', patchRes.status);
           setSaveStatus('error');
           setTimeout(() => setSaveStatus('idle'), 3000);
-          return;
+          return false;
         }
       }
 
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
+      return true;
     } catch (err) {
       console.error('Save failed', err);
       setSaveStatus('error');
+      return false;
     } finally {
       setSaving(false);
     }
@@ -1464,15 +1469,32 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             {activeStep === 1 ? (
               <>
                 <Button variant="outline" onClick={() => router.push('/creator/courses')}>Cancel</Button>
-                <Button variant="primary" onClick={async () => { await saveDraft(); if (!isNew) setActiveStep(2); }} loading={saving}>
+                <Button
+                  variant="primary"
+                  onClick={async () => {
+                    // Advance only when the save actually succeeded — a new
+                    // course used to stay stranded on step 1 after creation,
+                    // and failures used to advance anyway.
+                    const ok = await saveDraft();
+                    if (ok) setActiveStep(2);
+                  }}
+                  loading={saving}
+                >
                   Save &amp; Continue →
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="outline" onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
-                <Button variant="outline" onClick={saveDraft} loading={saving}>Save draft</Button>
-                <Button variant="primary" onClick={async () => { await saveDraft(); if (activeStep < 4) setActiveStep(activeStep + 1); }} loading={saving}>
+                <Button variant="outline" onClick={() => void saveDraft()} loading={saving}>Save draft</Button>
+                <Button
+                  variant="primary"
+                  onClick={async () => {
+                    const ok = await saveDraft();
+                    if (ok && activeStep < 4) setActiveStep(activeStep + 1);
+                  }}
+                  loading={saving}
+                >
                   Save &amp; Continue →
                 </Button>
               </>

@@ -407,14 +407,19 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
     published?: boolean;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
+      setLoading(true);
+      setLoadError(false);
       try {
         const res = await fetch(`/api/courses/${courseId}/draft`, {
           credentials: 'include',
         });
-        if (res.ok) {
+        if (!cancelled && res.ok) {
           const data = await res.json();
           // DB stores objectives as `outcomes`; fall back for older payloads.
           const objectives = Array.isArray(data.outcomes)
@@ -430,17 +435,47 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
             price: typeof data.price === 'number' ? data.price : 0,
             published: !!data.published,
           });
+        } else if (!cancelled) {
+          setLoadError(true);
         }
       } catch (err) {
         console.error('Failed to load course', err);
+        if (!cancelled) setLoadError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
-  }, [courseId]);
+    return () => { cancelled = true; };
+  }, [courseId, reloadTick]);
 
   const renderPanel = () => {
+    if (loadError) {
+      // A failed load used to leave this page on a permanent skeleton.
+      return (
+        <div className={styles.panel}>
+          <h2 style={{ marginBottom: 8 }}>We couldn&apos;t load this course</h2>
+          <p style={{ color: '#64748b', marginBottom: 16 }}>
+            Check your connection and try again. Your saved work is safe.
+          </p>
+          <button
+            type="button"
+            onClick={() => setReloadTick(t => t + 1)}
+            style={{
+              background: 'var(--brand-blue, #0172FD)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 10,
+              padding: '10px 20px',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
     if (loading || !course) {
       return (
         <div className={styles.panel}>

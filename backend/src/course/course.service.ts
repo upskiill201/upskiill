@@ -1048,6 +1048,16 @@ export class CourseService {
           include: {
             lessons: {
               orderBy: { orderIndex: 'asc' },
+              // Steps (with contents) and resources must ride along — the
+              // old copy dropped them, so duplicated lessons silently lost
+              // their 4-phase content and downloads.
+              include: {
+                steps: {
+                  orderBy: { orderIndex: 'asc' },
+                  include: { contents: { orderBy: { orderIndex: 'asc' } } },
+                },
+                resources: true,
+              },
             },
           },
         },
@@ -1091,12 +1101,45 @@ export class CourseService {
               create: section.lessons.map((lesson) => ({
                 title: lesson.title,
                 description: lesson.description,
+                shortDescription: lesson.shortDescription,
                 durationMinutes: lesson.durationMinutes,
                 isFreePreview: lesson.isFreePreview,
+                estimatedDurationSeconds: lesson.estimatedDurationSeconds,
                 lessonType: lesson.lessonType,
                 orderIndex: lesson.orderIndex,
                 contentBlocks: (lesson.contentBlocks as any) ?? {},
                 stepCompletion: (lesson.stepCompletion as any) ?? {},
+                xpReward: lesson.xpReward,
+                resources: {
+                  create: lesson.resources.map((r) => ({
+                    type: r.type,
+                    title: r.title,
+                    storageUrl: r.storageUrl,
+                    sizeBytes: r.sizeBytes,
+                    originalName: r.originalName,
+                    estimatedReadMin: r.estimatedReadMin,
+                    displayOrder: r.displayOrder,
+                    description: r.description,
+                    category: r.category,
+                  })),
+                },
+                steps: {
+                  create: lesson.steps.map((step) => ({
+                    stepType: step.stepType,
+                    title: step.title,
+                    orderIndex: step.orderIndex,
+                    isRequired: step.isRequired,
+                    unlockCondition: (step.unlockCondition as any) ?? undefined,
+                    contents: {
+                      create: step.contents.map((c) => ({
+                        contentType: c.contentType,
+                        content: c.content as any,
+                        orderIndex: c.orderIndex,
+                        isInteractive: c.isInteractive,
+                      })),
+                    },
+                  })),
+                },
               })),
             },
           })),

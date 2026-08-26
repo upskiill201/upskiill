@@ -80,6 +80,9 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [lessonForm, setLessonForm] = useState({ title: '', lessonType: 'video' as LessonType });
   const lessonModalJustOpened = React.useRef(false);
+  // Guards submitModule/submitLesson against double-fires — two rapid Enter
+  // presses used to POST twice and create duplicate modules/lessons.
+  const submitLockRef = React.useRef(false);
 
   // Confirm Modal
   const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void } | null>(null);
@@ -156,6 +159,8 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       setModuleError('Module title is required.');
       return;
     }
+    if (submitLockRef.current) return;
+    submitLockRef.current = true;
     setModuleError(null);
     setSubmitting(true);
     onSaveStatus('saving');
@@ -216,6 +221,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       setModuleError('Network error. Please check your connection and try again.');
       onSaveStatus('error');
     } finally {
+      submitLockRef.current = false;
       setSubmitting(false);
     }
   };
@@ -297,6 +303,8 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       setLessonError('Lesson title is required.');
       return;
     }
+    if (submitLockRef.current) return;
+    submitLockRef.current = true;
     setLessonError(null);
     setSubmitting(true);
     onSaveStatus('saving');
@@ -364,6 +372,7 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
       setLessonError('Network error. Please check your connection and try again.');
       onSaveStatus('error');
     } finally {
+      submitLockRef.current = false;
       setSubmitting(false);
     }
   };

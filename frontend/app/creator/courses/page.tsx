@@ -124,6 +124,7 @@ export default function CreatorCoursesPage() {
     e.stopPropagation();
     setOpenDropdownId(null);
     setActionLoading(true);
+    const verb = course.published ? 'unpublish' : 'publish';
 
     try {
       const endpoint = course.published ? `/api/courses/${course.id}/unpublish` : `/api/courses/${course.id}/publish`;
@@ -134,10 +135,15 @@ export default function CreatorCoursesPage() {
       if (res.ok) {
         await fetchCourses();
       } else {
-        alert(`Failed to ${course.published ? 'unpublish' : 'publish'} course.`);
+        // Surface WHY it failed — publish rejections carry actionable reasons
+        // (missing thumbnail, no lessons, …). A generic alert swallowed them.
+        const errData = await res.json().catch(() => null);
+        const msg = Array.isArray(errData?.message) ? errData.message[0] : errData?.message;
+        alert(msg || `Failed to ${verb} course.`);
       }
     } catch (err) {
       console.error('Error updating course status:', err);
+      alert(`A network error occurred while trying to ${verb} the course.`);
     } finally {
       setActionLoading(false);
     }
