@@ -5,6 +5,22 @@ import cookieParser from 'cookie-parser';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
+  // ─── PRODUCTION SECRET GUARD ────────────────────────────────────────────────
+  // Fail fast rather than boot with committed dev fallbacks guarding real user
+  // sessions (JWT_SECRET) or creator payout data at rest (EARNINGS_ENC_KEY).
+  const isProduction =
+    process.env.NODE_ENV === 'production' || process.env.ENVIRONMENT === 'production';
+  if (isProduction) {
+    const requiredSecrets = ['JWT_SECRET', 'EARNINGS_ENC_KEY'] as const;
+    const missing = requiredSecrets.filter((key) => !process.env[key]);
+    if (missing.length > 0) {
+      throw new Error(
+        `[Bootstrap] Missing required production secrets: ${missing.join(', ')}. ` +
+          'Refusing to start with insecure defaults.',
+      );
+    }
+  }
+
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(cookieParser());

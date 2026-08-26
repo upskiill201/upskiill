@@ -18,6 +18,11 @@ export interface EncryptedPayload {
 const CURRENT_KEY_VERSION = 1;
 
 function resolveKey(keyVersion = CURRENT_KEY_VERSION): Buffer {
+  // Defence-in-depth: main.ts refuses to boot production without this key,
+  // but the crypto layer also refuses to run on the dev key if it ever gets there.
+  if (!process.env.EARNINGS_ENC_KEY && process.env.NODE_ENV === 'production') {
+    throw new Error('EARNINGS_ENC_KEY must be set when NODE_ENV=production');
+  }
   const source =
     process.env.EARNINGS_ENC_KEY || 'teyro-dev-only-earnings-key-do-not-use-in-production';
   // Fast path: already 32 bytes of entropy (base64 or hex of 32 raw bytes).
