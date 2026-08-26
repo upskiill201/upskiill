@@ -56,6 +56,9 @@ model User {
   accountLockedUntil   DateTime?
   deletedAt            DateTime?
 
+  // Failed verify-code submissions; at >= 5 the pending code is voided (B1)
+  verifyAttempts       Int           @default(0)
+
   gemTransactions    GemTransaction[]
   shopTransactions   ShopTransaction[]
   userAchievements   UserAchievement[]
@@ -674,6 +677,25 @@ model WhatsappOtp {
   updatedAt       DateTime  @updatedAt
 
   @@map("whatsapp_otps")
+}
+
+// One-time Step 9 onboarding challenge reward, claimed BEFORE sign-up.
+// The client celebrates immediately; the payout settles when the account
+// appears (signup paths + authenticated session syncs). `tokenHash` is the
+// SHA-256 of an opaque token shown once to the browser — the raw value is
+// never stored. `settledByUserId` being UNIQUE means one settled claim per
+// account AND one settling account per claim; per-user once-only payout is
+// additionally enforced by the gem_transactions partial unique index
+// (migration 20260825120000).
+model OnboardingChallengeClaim {
+  tokenHash       String    @id
+  phone           String? // E.164 fallback reconciliation key when WhatsApp verified pre-signup
+  expiresAt       DateTime // 30-day settlement window from issue
+  settledByUserId String?   @unique
+  settledAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@map("onboarding_challenge_claims")
 }
 
 model UserFollow {

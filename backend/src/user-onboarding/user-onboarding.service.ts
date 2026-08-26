@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { createHash, randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { normalisePhone, maskPhone } from '../whatsapp/phone.util';
@@ -8,6 +9,9 @@ import { normalisePhone, maskPhone } from '../whatsapp/phone.util';
 /** One-time reward paid by the onboarding Step 9 shape challenge. */
 export const ONBOARDING_CHALLENGE_XP = 25;
 export const ONBOARDING_CHALLENGE_COINS = 25;
+
+/** How long a pre-signup claim token stays redeemable after Step 9. */
+export const ONBOARDING_CLAIM_TTL_DAYS = 30;
 
 @Injectable()
 export class UserOnboardingService {
@@ -70,14 +74,25 @@ export class UserOnboardingService {
       },
     });
 
-    // The WhatsApp step runs BEFORE sign-up, so its success lives only in the
-    // client's answers until now. Bind it server-side if a verified OTP record
-    // backs the claim (never trust client "verified" flags alone).
-    if (payload.answers) {
-      await this.reconcileWhatsappVerification(userId, payload.answers);
-    }
+    // Steps 6 and 9 run BEFORE sign-up, so their successes live only in the
+    // client's answers until an authenticated sync lands. Reconcile both:
+    // bind the WhatsApp number if a verified OTP record backs it, and settle
+    // the deferred challenge reward if a valid claim proof is present.
+    // Both are best-effort and never fail the sync.
+    await this.applyPreSignupAnswers(userId, payload.answers);
 
     return session;
+  }
+
+  /**
+   * Run BOTH pre-signup reconciliations (WhatsApp binding + deferred
+   * challenge reward settlement) against an account that just appeared.
+   * Called from every authenticated session sync and from the signup paths.
+   */
+  async applyPreSignupAnswers(userId: string, answers: any): Promise<void> {
+    if (!answers) return;
+    await this.reconcileWhatsappVerification(userId, answers);
+    await this.settlePendingChallengeReward(userId, answers);
   }
 
   /**
@@ -136,15 +151,25 @@ export class UserOnboardingService {
   }
 
   /**
-   * Claim the one-time Step 9 onboarding challenge reward (25 XP + 25 coins).
-   *
-   * Idempotency is enforced by a PARTIAL unique index on gem_transactions
-   * (userId WHERE source = 'ONBOARDING_CHALLENGE', see migration
-   * 20260825120000): the ledger insert itself fails with P2002 on a duplicate
-   * claim, so even concurrent double-fires pay out exactly once. The reward is
-   * fixed — client-reported game performance is never trusted.
+   * SHA-256 of a raw claim token. The raw token exists only in the client's
+   * onboarding answers — storage keeps hashes so a DB leak can't redeem them.
    */
-  async claimChallengeReward(userId: string) {
+  private hashClaimToken(raw: string): string {
+    return createHash('sha256').update(raw).digest('hex');
+  }
+
+  /**
+   * Ledger-level payout shared by EVERY entry path: the authenticated
+   * challenge-complete endpoint, signup reconciliation, and session-sync
+   * settlement. Idempotency comes from the partial unique index on
+   * gem_transactions (userId WHERE source = 'ONBOARDING_CHALLENGE',
+   * migration 20260825120000) — concurrent double-fires pay out exactly
+   * once. The reward is fixed; client-reported performance is never trusted.
+   */
+  private async payoutChallengeRewardOnce(userId: string): Promise<{
+    newlyGranted: boolean;
+    balances: { xp: number; coins: number; streakDays: number };
+  }> {
     const result = await this.prisma.$transaction(async (tx) => {
       // Ensure the profile exists — a missing StudentProfile must never fail
       // the claim (same posture as lesson completion).
@@ -199,6 +224,16 @@ export class UserOnboardingService {
       );
     }
 
+    return result;
+  }
+
+  /**
+   * Claim the one-time Step 9 onboarding challenge reward (25 XP + 25 coins)
+   * for an AUTHENTICATED user — logged-in learners playing (or replaying) the
+   * challenge pay out immediately.
+   */
+  async claimChallengeReward(userId: string) {
+    const result = await this.payoutChallengeRewardOnce(userId);
     const { xp, coins, streakDays } = result.balances;
 
     return {
@@ -211,5 +246,128 @@ export class UserOnboardingService {
       xpInCurrentLevel: xp % 100,
       xpTargetForCurrentLevel: 100,
     };
+  }
+
+  /**
+   * Pre-signup claim (Step 9 runs before account creation). Records intent
+   * server-side and returns a single-use claim token the browser persists in
+   * its onboarding answers and presents at signup. The celebration plays NOW;
+   * the payout settles when an account appears carrying this token (or a
+   * proven-fresh verified phone as fallback).
+   *
+   * Abuse posture: completing the challenge is inherently client-side, so the
+   * bar here equals the authenticated endpoint's — "showed up at Step 9" —
+   * but each token pays once per ACCOUNT CREATION at most (single-use token +
+   * per-user ledger guard), and the endpoint is IP-throttled.
+   */
+  async issueAnonymousClaim(whatsappNumber?: string): Promise<{
+    status: 'PENDING_SIGNUP';
+    claimToken: string;
+    xpEarned: number;
+    coinsEarned: number;
+  }> {
+    const rawToken = randomBytes(32).toString('hex');
+    const ttlMs = ONBOARDING_CLAIM_TTL_DAYS * 24 * 60 * 60 * 1000;
+    const expiresAt = new Date(Date.now() + ttlMs);
+
+    // Optional secondary settlement key: only a server-proven, fresh,
+    // unclaimed WhatsApp verification qualifies.
+    let phone: string | null = null;
+    if (whatsappNumber) {
+      const normalised = normalisePhone(String(whatsappNumber));
+      if (normalised) {
+        const otp = await this.prisma.whatsappOtp.findUnique({
+          where: { phone: normalised },
+        });
+        if (
+          otp?.verifiedAt &&
+          Date.now() - otp.verifiedAt.getTime() <= ttlMs &&
+          !otp.claimedBy
+        ) {
+          phone = normalised;
+        }
+      }
+    }
+
+    await this.prisma.onboardingChallengeClaim.create({
+      data: { tokenHash: this.hashClaimToken(rawToken), phone, expiresAt },
+    });
+
+    return {
+      status: 'PENDING_SIGNUP',
+      claimToken: rawToken,
+      xpEarned: ONBOARDING_CHALLENGE_XP,
+      coinsEarned: ONBOARDING_CHALLENGE_COINS,
+    };
+  }
+
+  /**
+   * Pay the deferred pre-signup challenge reward once the account exists.
+   * Called from every authenticated session sync AND from the signup paths.
+   *
+   * Proof precedence:
+   *  1. answers['9'].claimToken — atomic single-use win on settledByUserId
+   *     against an unexpired claim row;
+   *  2. answers['6'] verified phone backed by a fresh whatsapp_otps row and
+   *     an unexpired claim recorded for that phone.
+   *
+   * Double-payout-proof in every direction: the token settles exactly once
+   * (UNIQUE settledByUserId via conditional updateMany), the ledger pays at
+   * most once per user (partial unique index), and repeat calls no-op.
+   * Best-effort — must never fail the flow that called it.
+   */
+  async settlePendingChallengeReward(userId: string, answers: any): Promise<void> {
+    try {
+      const step9 = answers?.['9'];
+      if (step9?.completed !== true) return;
+
+      const rawToken =
+        typeof step9?.claimToken === 'string' ? step9.claimToken : '';
+      if (rawToken) {
+        const claimed = await this.prisma.onboardingChallengeClaim.updateMany({
+          where: {
+            tokenHash: this.hashClaimToken(rawToken),
+            settledByUserId: null,
+            expiresAt: { gt: new Date() },
+          },
+          data: { settledByUserId: userId, settledAt: new Date() },
+        });
+        if (claimed.count === 1) {
+          await this.payoutChallengeRewardOnce(userId);
+          this.logger.log(
+            '[Onboarding] Settled deferred challenge reward (claim token).',
+          );
+          return;
+        }
+        // Token missing/expired/already settled → fall through to phone proof.
+      }
+
+      const step6 = answers?.['6'];
+      const rawPhone = step6?.whatsappNumber;
+      if (!rawPhone || step6?.verified !== true) return;
+      const phone = normalisePhone(String(rawPhone));
+      if (!phone) return;
+
+      const pending = await this.prisma.onboardingChallengeClaim.findFirst({
+        where: { phone, settledByUserId: null, expiresAt: { gt: new Date() } },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (!pending) return;
+
+      const claimed = await this.prisma.onboardingChallengeClaim.updateMany({
+        where: { tokenHash: pending.tokenHash, settledByUserId: null },
+        data: { settledByUserId: userId, settledAt: new Date() },
+      });
+      if (claimed.count === 1) {
+        await this.payoutChallengeRewardOnce(userId);
+        this.logger.log(
+          `[Onboarding] Settled deferred challenge reward (verified phone ${maskPhone(phone)}).`,
+        );
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `[Onboarding] Challenge reward settlement skipped: ${err?.message}`,
+      );
+    }
   }
 }

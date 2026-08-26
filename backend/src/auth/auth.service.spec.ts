@@ -6,7 +6,11 @@ import { ConflictException, ForbiddenException, UnauthorizedException } from '@n
 import * as bcrypt from 'bcrypt';
 import { ProfileService } from '../profile/profile.service';
 import { EmailService } from '../email/email.service';
+import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { firebaseAdmin } from './firebase-admin';
+
+// signToken hard-fails when JWT_SECRET is unset (A2) — give every test a value.
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
 
 jest.mock('bcrypt');
 jest.mock('./firebase-admin', () => ({
@@ -32,10 +36,14 @@ describe('AuthService', () => {
           useValue: {
             user: {
               findUnique: jest.fn(),
+              findFirst: jest.fn(),
               create: jest.fn(),
               update: jest.fn(),
             },
             enrollment: {
+              findMany: jest.fn(),
+            },
+            section: {
               findMany: jest.fn(),
             },
             creatorOnboardingDraft: {
@@ -67,6 +75,12 @@ describe('AuthService', () => {
             sendVerificationEmail: jest.fn(),
             sendWelcomeEmail: jest.fn(),
             sendPasswordResetEmail: jest.fn(),
+          },
+        },
+        {
+          provide: UserOnboardingService,
+          useValue: {
+            applyPreSignupAnswers: jest.fn(),
           },
         },
       ],
@@ -357,6 +371,102 @@ describe('AuthService', () => {
     });
   });
 
+  describe('verifyCode', () => {
+    const code = '123456';
+    const codeHash = require('crypto')
+      .createHash('sha256')
+      .update(code)
+      .digest('hex');
+    const pendingUser = {
+      id: '1',
+      email: 'pending@example.com',
+      fullName: 'Pending User',
+      role: 'STUDENT',
+      isVerified: false,
+      verifyToken: codeHash,
+      tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+      verifyAttempts: 0,
+      profile: null,
+    };
+
+    it('verifies a matching code, resets the attempt counter and signs in', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(pendingUser);
+      (prisma.user.update as jest.Mock).mockResolvedValue(pendingUser);
+
+      const result = await service.verifyCode(pendingUser.email, code);
+
+      // Lookup is by email alone — token comparison happens in constant time
+      expect(prisma.user.findFirst).toHaveBeenCalledWith({
+        where: { email: pendingUser.email },
+        include: { profile: true },
+      });
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: pendingUser.id },
+        data: {
+          isVerified: true,
+          verifyToken: null,
+          tokenExpiry: null,
+          verifyAttempts: 0,
+        },
+      });
+      expect(result.access_token).toBe('mocked-jwt-token');
+    });
+
+    it('counts an atomic miss against the guess cap', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(pendingUser);
+
+      await expect(
+        service.verifyCode(pendingUser.email, '000000'),
+      ).rejects.toThrow('Invalid verification code');
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: pendingUser.id },
+        data: { verifyAttempts: { increment: 1 } },
+      });
+    });
+
+    it('voids the pending code after 5 failed attempts', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        ...pendingUser,
+        verifyAttempts: 5,
+      });
+
+      await expect(service.verifyCode(pendingUser.email, code)).rejects.toThrow(
+        'Too many incorrect attempts. Please request a new code.',
+      );
+
+      // Even the CORRECT code is refused — the token is voided
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: pendingUser.id },
+        data: { verifyToken: null, tokenExpiry: null, verifyAttempts: 0 },
+      });
+    });
+
+    it('does not touch the database for unknown emails', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.verifyCode('ghost@example.com', code)).rejects.toThrow(
+        'Invalid verification code',
+      );
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('clears expired codes instead of verifying them', async () => {
+      (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+        ...pendingUser,
+        tokenExpiry: new Date(Date.now() - 1000),
+      });
+
+      await expect(service.verifyCode(pendingUser.email, code)).rejects.toThrow(
+        'Verification code expired',
+      );
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: pendingUser.id },
+        data: { verifyToken: null, tokenExpiry: null, verifyAttempts: 0 },
+      });
+    });
+  });
+
   describe('firebaseSignIn', () => {
     const idToken = 'valid_firebase_token';
 
@@ -404,7 +514,7 @@ describe('AuthService', () => {
     });
 
     it('should log in an existing user without creating a new row', async () => {
-      const decodedToken = { email: 'existing@example.com' };
+      const decodedToken = { email: 'existing@example.com', picture: 'avatar.png' };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -432,7 +542,7 @@ describe('AuthService', () => {
     });
 
     it('should upgrade existing user to INSTRUCTOR with a creator profile row if requested', async () => {
-      const decodedToken = { email: 'existing@example.com' };
+      const decodedToken = { email: 'existing@example.com', picture: 'avatar.png' };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -484,7 +594,7 @@ describe('AuthService', () => {
     });
 
     it('should successfully link creatorOnboardingDraft to user if draftId is provided', async () => {
-      const decodedToken = { email: 'existing@example.com' };
+      const decodedToken = { email: 'existing@example.com', picture: 'avatar.png' };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -544,11 +654,21 @@ describe('AuthService', () => {
   });
 
   describe('getMyEnrollments', () => {
-    it('should return a list of enrollments for a user', async () => {
+    it('returns enrollments with real per-course lesson totals in one grouped query', async () => {
       const userId = '1';
-      const mockEnrollments = [{ id: '1', courseId: '100', userId }];
+      const mockEnrollments = [
+        { id: '1', courseId: '100', userId, course: { id: '100', title: 'Course A' } },
+        { id: '2', courseId: '200', userId, course: { id: '200', title: 'Course B' } },
+      ];
+      // Two sections in course 100 (3 lessons), one in course 200 (4 lessons)
+      const mockSections = [
+        { courseId: '100', _count: { lessons: 2 } },
+        { courseId: '100', _count: { lessons: 1 } },
+        { courseId: '200', _count: { lessons: 4 } },
+      ];
 
       (prisma.enrollment.findMany as jest.Mock).mockResolvedValue(mockEnrollments);
+      (prisma.section.findMany as jest.Mock).mockResolvedValue(mockSections);
 
       const result = await service.getMyEnrollments(userId);
 
@@ -557,7 +677,30 @@ describe('AuthService', () => {
         include: { course: true },
         orderBy: { id: 'desc' },
       });
-      expect(result).toEqual(mockEnrollments);
+      // ONE grouped query for all enrolled courses — no N+1
+      expect(prisma.section.findMany).toHaveBeenCalledWith({
+        where: { courseId: { in: ['100', '200'] } },
+        select: { courseId: true, _count: { select: { lessons: true } } },
+      });
+      expect(result).toEqual([
+        {
+          ...mockEnrollments[0],
+          course: { ...mockEnrollments[0].course, totalLessons: 3 },
+        },
+        {
+          ...mockEnrollments[1],
+          course: { ...mockEnrollments[1].course, totalLessons: 4 },
+        },
+      ]);
+    });
+
+    it('short-circuits without a section query when there are no enrollments', async () => {
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.getMyEnrollments('1');
+
+      expect(result).toEqual([]);
+      expect(prisma.section.findMany).not.toHaveBeenCalled();
     });
   });
 });

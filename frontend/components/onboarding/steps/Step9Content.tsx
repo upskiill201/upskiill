@@ -58,7 +58,7 @@ interface Step9ContentProps {
 }
 
 export default function Step9Content({ onNext }: Step9ContentProps) {
-  const { currentAnswer, saveAnswer } = useOnboardingSession({ currentStep: 9, disableGuard: true });
+  const { answers, currentAnswer, saveAnswer } = useOnboardingSession({ currentStep: 9, disableGuard: true });
   const { getRandomMessage } = useMessagePool();
   const mascotBounceControls = useAnimation();
   const { celebrate } = useCelebration();
@@ -84,6 +84,19 @@ export default function Step9Content({ onNext }: Step9ContentProps) {
 
   /** Guards the victory celebration against double-queueing. */
   const celebrationQueuedRef = useRef(false);
+  /**
+   * Claim token for pre-signup learners: the reward is recorded server-side
+   * now and settles when the account is created, so every later save of the
+   * step-9 answer must keep carrying it (saveStepAnswer replaces, not merges).
+   */
+  const claimTokenRef = useRef<string | null>(null);
+
+  /** Step-9 answer payload — claimToken included whenever one was issued. */
+  const buildStepAnswer = () => ({
+    skipped: false,
+    completed: true,
+    ...(claimTokenRef.current ? { claimToken: claimTokenRef.current } : {}),
+  });
 
   const [isShaking, setIsShaking] = useState<Record<ShapeId, boolean>>({
     cube: false,
@@ -126,7 +139,7 @@ export default function Step9Content({ onNext }: Step9ContentProps) {
   const handleContinue = () => {
     if (!finished) return;
     playHaptic('medium');
-    saveAnswer({ skipped: false, completed: true });
+    saveAnswer(buildStepAnswer());
     onNext();
   };
 
@@ -172,17 +185,42 @@ export default function Step9Content({ onNext }: Step9ContentProps) {
           { currency: 'COINS', amount: CHALLENGE_COINS },
         ],
         claim: async () => {
+          // Step 9 runs BEFORE signup, so the learner may not have an account
+          // yet — the optional-auth endpoint pays immediately for returning
+          // users and issues a single-use pending claim for fresh ones.
+          const step6 = answers['6'] as
+            | { whatsappNumber?: string; verified?: boolean }
+            | undefined;
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/user-onboarding/challenge-complete`,
+            `${process.env.NEXT_PUBLIC_API_URL}/user-onboarding/challenge-complete/anonymous`,
             {
               method: 'POST',
-              credentials: 'include', // httpOnly JWT cookie
+              credentials: 'include', // httpOnly JWT cookie when one exists
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(
+                step6?.verified && step6.whatsappNumber
+                  ? { whatsappNumber: step6.whatsappNumber }
+                  : {}
+              ),
             }
           );
           if (!res.ok) {
             throw new Error('Could not save your reward. Check your connection and try again.');
           }
           const data = await res.json();
+
+          if (data.status === 'PENDING_SIGNUP') {
+            // Celebrate now, pay at signup: persist the token inside the
+            // step-9 answer so every signup path settles it. No account
+            // balances exist yet — skip the gamification sync entirely.
+            claimTokenRef.current = data.claimToken;
+            saveAnswer(buildStepAnswer());
+            return {
+              XP: data.xpEarned,
+              COINS: data.coinsEarned,
+              pendingCaption: 'Saved! Credited the moment you create your account.',
+            };
+          }
 
           // Instant global balance sync from server-confirmed totals…
           gamification.applyLessonReward(
@@ -202,7 +240,7 @@ export default function Step9Content({ onNext }: Step9ContentProps) {
           }),
         dedupeKey: 'onboarding-challenge-step9',
         onComplete: () => {
-          saveAnswer({ skipped: false, completed: true });
+          saveAnswer(buildStepAnswer());
           onNext();
         },
       });

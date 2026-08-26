@@ -15,6 +15,15 @@ import { Role } from '@prisma/client';
 import * as crypto from 'crypto';
 import { ProfileService } from '../profile/profile.service';
 import { EmailService } from '../email/email.service';
+import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
+import { getJwtSecret } from './jwt-secret.util';
+
+// Precomputed once at boot — lets credential-miss paths burn the same bcrypt
+// cost as a real check so response latency cannot probe for accounts.
+const DUMMY_BCRYPT_HASH = bcrypt.hashSync('teyro-timing-equalizer', 12);
+
+// Failed verify-code submissions allowed before the pending code is voided.
+const MAX_VERIFY_ATTEMPTS = 5;
 
 @Injectable()
 export class AuthService {
@@ -23,6 +32,7 @@ export class AuthService {
     private jwt: JwtService,
     private profileService: ProfileService,
     private emailService: EmailService,
+    private userOnboarding: UserOnboardingService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -34,19 +44,30 @@ export class AuthService {
     const requestedRole = dto.role || 'STUDENT';
 
     if (existing) {
-      const pwMatches = await bcrypt.compare(dto.password, existing.password);
+      // The bcrypt comparison runs ONLY on the two linking paths that act on
+      // its result. Running it unconditionally let response timing separate
+      // "account exists" from "no account" on paths that throw anyway (B9).
+      const wantsInstructorUpgrade =
+        requestedRole === 'INSTRUCTOR' &&
+        (!existing.hasCreatorAccess || existing.role !== 'INSTRUCTOR');
+      const wantsStudentLink = requestedRole === 'STUDENT' && !existing.hasStudentAccess;
 
-      if (requestedRole === 'INSTRUCTOR' && (!existing.hasCreatorAccess || existing.role !== 'INSTRUCTOR')) {
+      if (wantsInstructorUpgrade || wantsStudentLink) {
+        const pwMatches = await bcrypt.compare(dto.password, existing.password);
         if (!pwMatches) {
           throw new ConflictException({
             statusCode: 409,
             code: 'EMAIL_ALREADY_EXISTS',
-            message: 'An account with this email already exists. Enter your password to activate your Creator profile.',
+            message: wantsInstructorUpgrade
+              ? 'An account with this email already exists. Enter your password to activate your Creator profile.'
+              : 'An account with this email already exists. Enter your password to activate your Student profile.',
             canLink: true,
             isVerified: existing.isVerified,
           });
         }
+      }
 
+      if (wantsInstructorUpgrade) {
         // Upgrade account to INSTRUCTOR, set creator access flag
         existing = await this.prisma.user.update({
           where: { id: existing.id },
@@ -101,17 +122,7 @@ export class AuthService {
         }
       }
 
-      if (requestedRole === 'STUDENT' && !existing.hasStudentAccess) {
-        if (!pwMatches) {
-          throw new ConflictException({
-            statusCode: 409,
-            code: 'EMAIL_ALREADY_EXISTS',
-            message: 'An account with this email already exists. Enter your password to activate your Student profile.',
-            canLink: true,
-            isVerified: existing.isVerified,
-          });
-        }
-
+      if (wantsStudentLink) {
         // Enable student access on existing user
         existing = await this.prisma.user.update({
           where: { id: existing.id },
@@ -125,6 +136,17 @@ export class AuthService {
           create: { userId: existing.id },
           update: {},
         });
+
+        // The learner may have completed pre-signup steps (WhatsApp
+        // verification, Step 9 challenge) before linking the account —
+        // settle any pending proofs now. Best-effort, non-fatal.
+        if (dto.onboarding) {
+          try {
+            await this.userOnboarding.applyPreSignupAnswers(existing.id, dto.onboarding);
+          } catch (err) {
+            console.warn(`Pre-signup answer reconciliation failed for linked user ${existing.id}:`, err);
+          }
+        }
 
         const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
 
@@ -168,7 +190,8 @@ export class AuthService {
 
     const hash = await bcrypt.hash(dto.password, 12);
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // CSPRNG — Math.random is predictable, fatal for a 6-digit code space.
+    const code = crypto.randomInt(100_000, 1_000_000).toString();
     const verifyToken = crypto.createHash('sha256').update(code).digest('hex');
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
@@ -212,6 +235,18 @@ export class AuthService {
       } catch (err) {
         console.warn(`Profile hydration failed for user ${user.id}:`, err);
         // Non-fatal — profile can be completed later from the settings page
+      }
+    }
+
+    // Students carry pre-signup proofs inside their onboarding answers:
+    // WhatsApp verification (Step 6) and the deferred challenge reward
+    // (Step 9). Settle both now that the account exists. Best-effort,
+    // non-fatal — must never block the verification email below.
+    if (dto.onboarding) {
+      try {
+        await this.userOnboarding.applyPreSignupAnswers(user.id, dto.onboarding);
+      } catch (err) {
+        console.warn(`Pre-signup answer reconciliation failed for user ${user.id}:`, err);
       }
     }
 
@@ -336,6 +371,9 @@ export class AuthService {
     });
 
     if (!user) {
+      // Burn one bcrypt round so login latency can't reveal whether the
+      // email exists.
+      await this.dummyPasswordCompare(dto.password);
       throw new ForbiddenException('Incorrect credentials');
     }
 
@@ -453,24 +491,55 @@ export class AuthService {
 
     await this.emailService.sendWelcomeEmail(user.email, onboardingMock);
 
-    return this.signToken(user.id, user.email, user.fullName, user.role);
+    // `role` lets the controller route the post-verification redirect:
+    // students land back in their flow (/dashboard), creators in studio.
+    return { ...await this.signToken(user.id, user.email, user.fullName, user.role), role: user.role };
   }
 
   async verifyCode(email: string, code: string) {
     const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
+
+    // Look up by email alone — never filter on the token here, so every miss
+    // flows through the same compare-and-count path (no existence oracle).
     const user = await this.prisma.user.findFirst({
-      where: { 
-        email,
-        verifyToken: hashedToken,
-      },
+      where: { email },
       include: { profile: true }
     });
 
     if (!user) {
+      // No such account: burn comparable CPU so timing can't confirm it.
+      await bcrypt.compare(code, DUMMY_BCRYPT_HASH);
+      throw new ForbiddenException('Invalid verification code');
+    }
+
+    // Guess cap: five misses void the pending code; the learner must resend.
+    if (user.verifyAttempts >= MAX_VERIFY_ATTEMPTS) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { verifyToken: null, tokenExpiry: null, verifyAttempts: 0 },
+      });
+      throw new ForbiddenException(
+        'Too many incorrect attempts. Please request a new code.',
+      );
+    }
+
+    const stored = user.verifyToken;
+    if (!stored || !this.timingSafeDigestEquals(stored, hashedToken)) {
+      if (stored) {
+        // Atomic so concurrent guesses all count toward the cap.
+        await this.prisma.user.update({
+          where: { id: user.id },
+          data: { verifyAttempts: { increment: 1 } },
+        });
+      }
       throw new ForbiddenException('Invalid verification code');
     }
 
     if (user.tokenExpiry && new Date() > user.tokenExpiry) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { verifyToken: null, tokenExpiry: null, verifyAttempts: 0 },
+      });
       throw new ForbiddenException('Verification code expired');
     }
 
@@ -480,6 +549,7 @@ export class AuthService {
         isVerified: true,
         verifyToken: null,
         tokenExpiry: null,
+        verifyAttempts: 0,
       },
     });
 
@@ -493,12 +563,33 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.fullName, user.role);
   }
 
+  /**
+   * Constant-time digest equality for fixed-width sha256 hex strings.
+   * Falls back to a dummy digest when either side is missing/malformed so a
+   * cleared or corrupt token still costs the same comparison as a real one.
+   */
+  private timingSafeDigestEquals(expectedHex: string, actualHex: string): boolean {
+    const dummy = '0'.repeat(64);
+    const expected = /^[0-9a-f]{64}$/.test(expectedHex) ? expectedHex : dummy;
+    const actual = /^[0-9a-f]{64}$/.test(actualHex) ? actualHex : dummy;
+    return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(actual, 'hex'));
+  }
+
+  /**
+   * Burns one bcrypt comparison without touching any real credential —
+   * equalizes login latency between existing and nonexistent accounts.
+   */
+  private async dummyPasswordCompare(password: string): Promise<void> {
+    await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
+  }
+
   async resendVerification(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new ForbiddenException('User not found');
     if (user.isVerified) throw new ForbiddenException('User is already verified');
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // CSPRNG — same reasoning as signup (B9).
+    const code = crypto.randomInt(100_000, 1_000_000).toString();
     const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
@@ -518,6 +609,7 @@ export class AuthService {
     idToken: string,
     requestedRole: string,
     draftId?: string,
+    onboarding?: Record<string, unknown>,
   ) {
     try {
       // 1. Verify token with Firebase Admin
@@ -600,6 +692,17 @@ export class AuthService {
         }
       }
 
+      // Google sign-ins from the student onboarding flow carry pre-signup
+      // proofs in their answers (WhatsApp verification, deferred challenge
+      // reward). Settle both now. Best-effort, non-fatal.
+      if (onboarding) {
+        try {
+          await this.userOnboarding.applyPreSignupAnswers(user.id, onboarding);
+        } catch (err) {
+          console.warn(`Pre-signup answer reconciliation failed for user ${user.id}:`, err);
+        }
+      }
+
       const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
       return {
         ...await this.signToken(user.id, user.email, user.fullName, user.role),
@@ -630,7 +733,7 @@ export class AuthService {
       hasCreatorAccess: userRow?.hasCreatorAccess ?? false,
       hasStudentAccess: userRow?.hasStudentAccess ?? false,
     };
-    const secret = process.env.JWT_SECRET || 'super-secret-upskiill-key-2024';
+    const secret = getJwtSecret();
 
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '7d',
@@ -680,7 +783,7 @@ export class AuthService {
   }
 
   async getMyEnrollments(userId: string) {
-    return this.prisma.enrollment.findMany({
+    const enrollments = await this.prisma.enrollment.findMany({
       where: { userId },
       include: {
         course: true,
@@ -690,5 +793,31 @@ export class AuthService {
         id: 'desc',
       },
     });
+
+    if (enrollments.length === 0) return [];
+
+    // Real per-course lesson totals in ONE grouped query (no N+1) — the
+    // My Learning page renders "LESSON x / total" from this instead of a
+    // hardcoded 25.
+    const courseIds = enrollments.map((e) => e.courseId);
+    const sections = await this.prisma.section.findMany({
+      where: { courseId: { in: courseIds } },
+      select: { courseId: true, _count: { select: { lessons: true } } },
+    });
+    const lessonsByCourse = new Map<string, number>();
+    for (const s of sections) {
+      lessonsByCourse.set(
+        s.courseId,
+        (lessonsByCourse.get(s.courseId) ?? 0) + s._count.lessons,
+      );
+    }
+
+    return enrollments.map((enrollment) => ({
+      ...enrollment,
+      course: {
+        ...enrollment.course,
+        totalLessons: lessonsByCourse.get(enrollment.courseId) ?? 0,
+      },
+    }));
   }
 }
