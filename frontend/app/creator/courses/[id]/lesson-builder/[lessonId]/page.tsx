@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
   UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
-  Target, Award, Info, WifiOff, AlertCircle
+  Target, Award, Info, WifiOff, AlertCircle, AlertTriangle
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
+import { useLinkNavigationGuard } from '@/hooks/useLinkNavigationGuard';
 import { Toast } from '@/components/ui/Toast';
 
 import dynamic from 'next/dynamic';
@@ -138,6 +139,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+  /** True when a save was rejected with 409 — the lesson changed elsewhere.
+   *  Blocks navigation-adjacent lies until the creator picks a side. */
+  const [conflict, setConflict] = useState(false);
+  const [resolvingConflict, setResolvingConflict] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [lesson, setLesson] = useState<any>(null);
@@ -192,7 +197,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     learningPathSuggestions: [],
   });
 
-  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion } = useSyncQueue(lessonId as string, lesson?.version || 1);
+  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion, resyncVersion, clearLocalBackups } = useSyncQueue(lessonId as string, lesson?.version || 1);
+
+  // Guard in-app link navigation while there is unsaved or in-flight work.
+  useLinkNavigationGuard(!loading && (isDirty || saving));
   const debouncedLesson = useDebounce(lesson, 1000);
   const debouncedMcqActivity = useDebounce(mcqActivity, 1000);
   const debouncedReflectActivity = useDebounce(reflectActivity, 1000);
@@ -208,6 +216,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
    */
   const snapshotRef = useRef('');
   const lastSavedSnapshotRef = useRef<string | null>(null);
+  /** Set when freshly loaded server state should become the new "saved"
+   *  baseline (discard-and-reload) — consumed once by the dirty effect. */
+  const pendingBaselineRef = useRef(false);
 
   const buildSaveSnapshot = () => JSON.stringify([
     lesson?.title,
@@ -232,6 +243,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   // Track dirty state when the live state diverges from the last-saved snapshot
   useEffect(() => {
     if (loading) return;
+    if (pendingBaselineRef.current) {
+      // Fresh server state just replaced everything — adopt it as the new
+      // saved baseline instead of mistaking it for user changes.
+      pendingBaselineRef.current = false;
+      lastSavedSnapshotRef.current = buildSaveSnapshot();
+      return;
+    }
     if (lastSavedSnapshotRef.current === null) {
       // First pass after load — remember exactly what came from the server so
       // we never mistake loaded data for user changes.
@@ -242,6 +260,71 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       setDirty();
     }
   }, [lesson, mcqActivity, reflectActivity, deepenConfig, resources, contentType, whatYouWillLearn, setDirty]);
+
+  /** Map a server lesson payload onto the builder's state slices. Shared by
+   *  the initial load and the conflict banner's "discard & reload" action. */
+  const applyLoadedLesson = useCallback((d: any) => {
+    setLesson(d);
+    if (d.section?.course?.title) setCourseTitle(d.section.course.title);
+    if (d.section?.title) setSectionTitle(d.section.title);
+    if (d.lessonType) setContentType(d.lessonType);
+
+    if (d.resources) {
+      // DB rows use storageUrl/sizeBytes/estimatedReadMin — map them onto
+      // the builder's ResourceItem shape so reloads keep size/time metadata.
+      setResources((d.resources as any[]).map(r => ({
+        id: r.id,
+        title: r.title,
+        type: r.type,
+        url: r.storageUrl || '',
+        size: typeof r.sizeBytes === 'number' && r.sizeBytes > 0 ? `${(r.sizeBytes / (1024 * 1024)).toFixed(1)} MB` : undefined,
+        time: r.estimatedReadMin > 0 ? `${r.estimatedReadMin} min read` : undefined,
+        estimatedReadMin: r.estimatedReadMin ?? 0,
+        description: r.description,
+        category: r.category,
+      })));
+    }
+    if (d.contentBlocks) {
+      let parsedBlocks = d.contentBlocks;
+      if (typeof parsedBlocks === 'string') {
+        try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+      }
+      d.contentBlocks = parsedBlocks; // Ensure other parts of the app use the parsed object
+
+      if (parsedBlocks?.learn) {
+        const learnBlocks = parsedBlocks.learn;
+        setLesson((l: any) => ({
+          ...l,
+          learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
+          learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
+          learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
+        }));
+        const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn')?.value;
+        setWhatYouWillLearn(Array.isArray(wylBlock) ? wylBlock : []);
+      }
+      if (parsedBlocks?.apply) {
+        const applyBlocks = parsedBlocks.apply;
+        const mcqBlock = Array.isArray(applyBlocks)
+          ? applyBlocks.find((b: any) => b.type === 'mcqActivity')?.value
+          : applyBlocks?.mcqActivity;
+        if (mcqBlock) setMcqActivity(mcqBlock);
+      }
+      if (parsedBlocks?.reflect) {
+        const reflectBlocks = parsedBlocks.reflect;
+        const reflectBlock = Array.isArray(reflectBlocks)
+          ? reflectBlocks.find((b: any) => b.type === 'reflectActivity')?.value
+          : reflectBlocks?.reflectActivity;
+        if (reflectBlock) setReflectActivity(reflectBlock);
+      }
+      if (parsedBlocks?.deepen) {
+        const deepenBlocks = parsedBlocks.deepen;
+        const deepenBlock = Array.isArray(deepenBlocks)
+          ? deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value
+          : deepenBlocks?.deepenActivity;
+        if (deepenBlock) setDeepenConfig(deepenBlock);
+      }
+    }
+  }, []);
 
   /* fetch */
   useEffect(() => {
@@ -255,66 +338,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           return;
         }
         const d = await res.json();
-        setLesson(d);
-        if (d.section?.course?.title) setCourseTitle(d.section.course.title);
-        if (d.section?.title) setSectionTitle(d.section.title);
-        if (d.lessonType) setContentType(d.lessonType);
-
-        if (d.resources) {
-          // DB rows use storageUrl/sizeBytes/estimatedReadMin — map them onto
-          // the builder's ResourceItem shape so reloads keep size/time metadata.
-          setResources((d.resources as any[]).map(r => ({
-            id: r.id,
-            title: r.title,
-            type: r.type,
-            url: r.storageUrl || '',
-            size: typeof r.sizeBytes === 'number' && r.sizeBytes > 0 ? `${(r.sizeBytes / (1024 * 1024)).toFixed(1)} MB` : undefined,
-            time: r.estimatedReadMin > 0 ? `${r.estimatedReadMin} min read` : undefined,
-            estimatedReadMin: r.estimatedReadMin ?? 0,
-            description: r.description,
-            category: r.category,
-          })));
-        }
-        if (d.contentBlocks) {
-          let parsedBlocks = d.contentBlocks;
-          if (typeof parsedBlocks === 'string') {
-            try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
-          }
-          d.contentBlocks = parsedBlocks; // Ensure other parts of the app use the parsed object
-
-          if (parsedBlocks?.learn) {
-            const learnBlocks = parsedBlocks.learn;
-            setLesson((l: any) => ({
-              ...l,
-              learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
-              learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
-              learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
-            }));
-            const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn')?.value;
-            setWhatYouWillLearn(Array.isArray(wylBlock) ? wylBlock : []);
-          }
-          if (parsedBlocks?.apply) {
-            const applyBlocks = parsedBlocks.apply;
-            const mcqBlock = Array.isArray(applyBlocks)
-              ? applyBlocks.find((b: any) => b.type === 'mcqActivity')?.value
-              : applyBlocks?.mcqActivity;
-            if (mcqBlock) setMcqActivity(mcqBlock);
-          }
-          if (parsedBlocks?.reflect) {
-            const reflectBlocks = parsedBlocks.reflect;
-            const reflectBlock = Array.isArray(reflectBlocks)
-              ? reflectBlocks.find((b: any) => b.type === 'reflectActivity')?.value
-              : reflectBlocks?.reflectActivity;
-            if (reflectBlock) setReflectActivity(reflectBlock);
-          }
-          if (parsedBlocks?.deepen) {
-            const deepenBlocks = parsedBlocks.deepen;
-            const deepenBlock = Array.isArray(deepenBlocks)
-              ? deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value
-              : deepenBlocks?.deepenActivity;
-            if (deepenBlock) setDeepenConfig(deepenBlock);
-          }
-        }
+        applyLoadedLesson(d);
       } catch (e) {
         console.error(e);
         setLoadError('A network error occurred while loading this lesson. Check your connection and try again.');
@@ -322,6 +346,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
   /* Autosave */
@@ -381,6 +406,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
       if (metadataResult.ok && learnResult.ok && applyResult.ok && reflectResult.ok && deepenResult.ok) {
         markLocallySaved(savedSnapshot);
+      }
+      // A 409 anywhere means the lesson changed underneath us — surface the
+      // conflict banner instead of pretending the autosave succeeded.
+      if ([metadataResult, learnResult, applyResult, reflectResult, deepenResult].some(r => r.conflict)) {
+        setConflict(true);
       }
     };
 
@@ -447,16 +477,14 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
       if (!res.ok) {
         if (res.status === 409) {
-          // Another session saved first — pull the latest version so the next
-          // save succeeds, and surface what happened instead of failing silently.
-          try {
-            const latest = await fetch(`/api/lesson/${lessonId}`);
-            if (latest.ok) {
-              adoptServerVersion((await latest.json())?.version);
-            }
-          } catch { /* ignore refetch errors */ }
+          // Another session saved first. Surface the conflict and stop — the
+          // old flow adopted the server version here, which cleared isDirty
+          // and showed "Saved" while NOTHING had been written, silently
+          // disarming the close-guard and interval autosave.
+          setConflict(true);
+        } else {
+          setSyncError('Your changes could not be saved because the lesson was modified elsewhere. Review your content and save again.');
         }
-        setSyncError('Your changes could not be saved because the lesson was modified elsewhere. Review your content and save again.');
         return { ok: false };
       }
 
@@ -475,10 +503,61 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  /** Save, then navigate ONLY when the save actually succeeded — a failed
+   *  "Save & Exit" must leave the creator on the page with their edits. */
   const handleSave = async (redirect?: string) => {
     const result = await forceManualSave();
-    if (redirect) router.push(redirect);
+    if (result.ok && redirect) router.push(redirect);
     return result;
+  };
+
+  /**
+   * Conflict banner actions. The creator decides which version wins:
+   *  - Keep mine: adopt the server's latest counter, then explicitly save my
+   *    content over it (user-sanctioned last-write-wins).
+   *  - Discard mine: drop local edits + queued backups and reload the server
+   *    version as the new baseline.
+   */
+  const resolveConflictKeepMine = async () => {
+    if (resolvingConflict) return;
+    setResolvingConflict(true);
+    try {
+      await resyncVersion();
+      const result = await forceManualSave();
+      if (result.ok) {
+        // Stale granular backups must never replay through the offline queue.
+        clearLocalBackups();
+        setConflict(false);
+      } else {
+        setSyncError('Still could not save your changes. Copy your content somewhere safe, then try again or reload.');
+      }
+    } finally {
+      setResolvingConflict(false);
+    }
+  };
+
+  const resolveConflictDiscardMine = async () => {
+    if (!window.confirm('Discard ALL unsaved changes in this tab and load the last saved version? This cannot be undone.')) return;
+    clearLocalBackups();
+    setConflict(false);
+    setLoading(true);
+    pendingBaselineRef.current = true;
+    try {
+      const res = await fetch(`/api/lesson/${lessonId}`);
+      if (!res.ok) {
+        setLoadError(res.status === 404
+          ? 'This lesson could not be found. It may have been deleted.'
+          : `Could not reload this lesson (error ${res.status}). Please try again.`);
+        return;
+      }
+      const d = await res.json();
+      applyLoadedLesson(d);
+      adoptServerVersion(d?.version);
+    } catch {
+      setSyncError('A network error occurred while reloading. Your tab still holds the discarded state — refresh to get the saved version.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePublish = async (_options: any) => {
@@ -496,18 +575,17 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => null);
-        const msg = errorData?.errors?.join(' · ')
-          || errorData?.message
-          || (res.status === 409
-            ? 'This lesson was just changed in another tab or session. Reload it, review your changes and publish again.'
-            : 'Failed to publish. Please check all required sections.');
-        setPublishError(msg);
         if (res.status === 409) {
-          try {
-            const latest = await fetch(`/api/lesson/${lessonId}`);
-            if (latest.ok) adoptServerVersion((await latest.json())?.version);
-          } catch { /* ignore */ }
+          // Same conflict discipline as manual save: never silently adopt the
+          // server version here — that used to clear isDirty and show "Saved"
+          // while nothing had been written. Surface the banner instead.
+          setConflict(true);
+          setPublishError('This lesson was just changed in another tab or session. Resolve the conflict above, then publish again.');
+        } else {
+          const errorData = await res.json().catch(() => null);
+          setPublishError(errorData?.errors?.join(' · ')
+            || errorData?.message
+            || 'Failed to publish. Please check all required sections.');
         }
         return;
       }
@@ -683,6 +761,31 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           <Toast message="Changes saved successfully" type="success" duration={2500} onClose={() => setSaveSuccess(false)} />
         </div>
       )}
+      {conflict && (
+        <div className={styles.conflictBanner} role="alert">
+          <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+          <div className={styles.conflictText}>
+            <strong>This lesson changed elsewhere.</strong>{' '}
+            Another tab or session saved a newer version while you were editing. Keep your version or load theirs.
+          </div>
+          <div className={styles.conflictActions}>
+            <button
+              className={styles.conflictBtnGhost}
+              onClick={resolveConflictDiscardMine}
+              disabled={resolvingConflict}
+            >
+              Load saved version
+            </button>
+            <button
+              className={styles.conflictBtnPrimary}
+              onClick={resolveConflictKeepMine}
+              disabled={resolvingConflict}
+            >
+              {resolvingConflict ? 'Saving…' : 'Keep my changes'}
+            </button>
+          </div>
+        </div>
+      )}
       {syncError && (
         <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, maxWidth: 380 }}>
           <Toast message={syncError} type="error" duration={10000} onClose={() => setSyncError(null)} />
@@ -736,10 +839,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             </p>
           </div>
           <div className={styles.headerActions}>
-            <div className={`${styles.autoSaved} ${syncStatus === 'saving' ? styles.saving : syncStatus === 'offline' ? styles.offline : syncStatus === 'error' ? styles.error : ''}`}>
+            <div className={`${styles.autoSaved} ${syncStatus === 'saving' ? styles.saving : syncStatus === 'offline' ? styles.offline : (syncStatus === 'error' || syncStatus === 'conflict') ? styles.error : ''}`}>
               {syncStatus === 'saving' && <span className={styles.pulse}>Saving...</span>}
               {syncStatus === 'offline' && <span>Offline - Queued locally</span>}
               {syncStatus === 'error' && <span>Error saving</span>}
+              {syncStatus === 'conflict' && <span>Not saved - changed elsewhere</span>}
               {syncStatus === 'saved' && (
                 <>
                   <Check size={13} /> {lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-saved'}
@@ -1285,7 +1389,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         <div className={styles.footerRight}>
           <div className={styles.saveStatusWrapper}>
             {syncStatus === 'offline' && <span className={styles.statusError}><WifiOff size={12}/> Offline</span>}
-            {syncStatus === 'error' && <span className={styles.statusError}><AlertCircle size={12}/> Save failed</span>}
+            {(syncStatus === 'error' || syncStatus === 'conflict') && <span className={styles.statusError}><AlertCircle size={12}/> Save failed</span>}
             {syncStatus === 'saving' && <span className={styles.statusSaving}>Saving...</span>}
             {syncStatus === 'saved' && isDirty && <span className={styles.statusDirty}><span className={styles.amberDot} /> Unsaved changes</span>}
             {syncStatus === 'saved' && !isDirty && lastSavedAt && <span className={styles.statusSaved}><Check size={12}/> Saved</span>}
@@ -1319,8 +1423,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               className={styles.btnNextStep}
               disabled={(!isLearnComplete && currentTab === 'learn') || saving}
               onClick={async () => {
-                // Always save current live state before navigating
-                await forceManualSave();
+                // Always save current live state before navigating — but
+                // advance ONLY when it actually saved, never strand the
+                // creator on a later phase with unsaved edits behind them.
+                const result = await forceManualSave();
+                if (!result.ok) return;
                 if (currentTab === 'learn') setCurrentTab('apply');
                 else if (currentTab === 'apply') setCurrentTab('reflect');
                 else if (currentTab === 'reflect') setCurrentTab('deepen');
