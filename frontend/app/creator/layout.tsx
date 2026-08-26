@@ -252,7 +252,6 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                 <div className={styles.headerControls}>
                   <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
                     <FaBell size={15} />
-                    <span className={styles.notifBadge}>3</span>
                   </button>
 
                   {/* Profile Wrapper - using a div to handle outside click */}

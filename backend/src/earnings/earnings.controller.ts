@@ -13,16 +13,21 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorator/roles.decorator';
+import { RolesGuard } from '../auth/guard/roles.guard';
 import { EarningsService } from './earnings.service';
 
 /**
  * Creator-facing earnings API. Every route requires a session and every
  * query is scoped to req.user.id — a creator can only ever see their own
  * money. Payout-method details are returned MASKED ONLY; decryption exists
- * exclusively on the audited admin path.
+ * exclusively on the audited admin path. INSTRUCTOR/ADMIN-only: students
+ * have no business touching payout endpoints.
  */
 @Controller('earnings')
-@UseGuards(AuthGuard('jwt'))
+@Roles(Role.INSTRUCTOR, Role.ADMIN)
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class EarningsController {
   constructor(private readonly earnings: EarningsService) {}
 

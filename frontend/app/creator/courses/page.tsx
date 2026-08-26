@@ -327,7 +327,9 @@ export default function CreatorCoursesPage() {
             const readiness = course.readinessPercentage ?? (isDraft ? 60 : 100);
             const totalLessons = course.totalLessons ?? 0;
             const learners = course.studentsCount ?? course._count?.enrollments ?? 0;
-            const rating = course.rating || 5.0;
+            // Real data only — a course with no reviews shows no rating rather
+            // than an invented 5.0.
+            const rating = course.rating;
 
             return (
               <div key={course.id} className={styles.courseCard}>
@@ -401,10 +403,12 @@ export default function CreatorCoursesPage() {
                         <FaBookOpen size={14} color="#10B981" />
                         <span>{totalLessons} lessons</span>
                       </div>
-                      <div className={styles.metricItem}>
-                        <FaStar size={14} color="#F59E0B" />
-                        <span>{rating.toFixed(1)}</span>
-                      </div>
+                      {typeof rating === 'number' && rating > 0 && (
+                        <div className={styles.metricItem}>
+                          <FaStar size={14} color="#F59E0B" />
+                          <span>{rating.toFixed(1)}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

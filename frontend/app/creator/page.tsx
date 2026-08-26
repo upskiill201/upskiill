@@ -74,7 +74,7 @@ export default function CreatorDashboard() {
 
   const publishedCount = courses.filter(c => c.published).length;
   const draftCount = courses.filter(c => !c.published).length;
-  const totalEnrollments = courses.reduce((acc, c) => acc + (c._count?.enrolments || 0), 0);
+  const totalEnrollments = courses.reduce((acc, c) => acc + (c._count?.enrollments || 0), 0);
 
   if (loading) {
     return (
@@ -310,7 +310,7 @@ export default function CreatorDashboard() {
                             </span>
                           )}
                           <span>•</span>
-                          <span>{course._count?.enrolments || 0} Students enrolled</span>
+                          <span>{course._count?.enrollments || 0} Students enrolled</span>
                         </div>
                       </div>
                     </div>

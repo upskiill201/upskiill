@@ -65,7 +65,7 @@ export class AuthController {
     if (accessToken) {
       this.setCookie(res, accessToken);
     }
-    return result;
+    return this.withoutToken(result);
   }
 
   @Get('verify-email')
@@ -89,7 +89,7 @@ export class AuthController {
   ) {
     const result = await this.authService.verifyEmail(token);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @Post('verify-code')
@@ -100,7 +100,7 @@ export class AuthController {
   ) {
     const result = await this.authService.verifyCode(email, code);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
@@ -118,7 +118,7 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -134,7 +134,7 @@ export class AuthController {
       dto.onboarding,
     );
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -161,7 +161,7 @@ export class AuthController {
   ) {
     const result = await this.authService.switchRole(user.id, role);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   private setCookie(res: Response, token: string) {
@@ -172,6 +172,16 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/',
     });
+  }
+
+  /**
+   * The httpOnly cookie is the ONLY session transport. Raw JWTs used to ride
+   * along in JSON bodies too — readable by any extension/proxy/log — while the
+   * frontend exclusively uses cookies. Strip before responding.
+   */
+  private withoutToken<T extends { access_token?: string }>(result: T): Omit<T, 'access_token'> {
+    const { access_token, ...safe } = result;
+    return safe;
   }
 
   /**

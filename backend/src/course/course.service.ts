@@ -77,8 +77,13 @@ export class CourseService {
             : {},
           category ? { category: { equals: category, mode: 'insensitive' } } : {},
           level ? { level: { equals: level, mode: 'insensitive' } } : {},
-          minPrice !== undefined ? { price: { gte: Number(minPrice) } } : {},
-          maxPrice !== undefined ? { price: { lte: Number(maxPrice) } } : {},
+          // Garbage like minPrice=abc becomes NaN → Prisma 500s. Ignore it.
+          Number.isFinite(Number(minPrice))
+            ? { price: { gte: Number(minPrice) } }
+            : {},
+          Number.isFinite(Number(maxPrice))
+            ? { price: { lte: Number(maxPrice) } }
+            : {},
         ],
       },
       select: {
@@ -332,8 +337,11 @@ export class CourseService {
 
   async getCoursePricingPlans(idOrSlug: string) {
     const course = await this.prisma.course.findFirst({
+      // Public pricing endpoint — drafts never leak their title/price here
+      // (same rule as the public profile include).
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+        published: true,
       },
       select: { id: true, title: true, price: true, published: true },
     });
@@ -1186,6 +1194,15 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
     if (course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
+    }
+
+    // Prices must be real, non-negative numbers — negative/garbage values used
+    // to flow straight into the ledger math downstream.
+    for (const field of ['price', 'originalPrice'] as const) {
+      const value = data[field];
+      if (value !== undefined && (!Number.isFinite(value) || value < 0)) {
+        throw new BadRequestException(`${field} must be a non-negative number`);
+      }
     }
 
     return await this.prisma.course.update({

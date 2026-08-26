@@ -306,7 +306,8 @@ function LearnCourseContent({ course, completedLessons }: LearnCourseContentProp
                   <motion.div className={styles.popoverStatsRow} variants={popoverSectionVariants}>
                     <div className={styles.popoverStatChip}>
                       <Star size={13} strokeWidth={2.5} fill="#F59E0B" color="#F59E0B" />
-                      <span>{course.rating || 4.9}</span>
+                      {/* Real data only — no reviews yet reads "New", never an invented 4.9 */}
+                      <span>{course.rating ? course.rating : 'New'}</span>
                       <span className={styles.popoverStatSub}>({(course.reviewsCount || 0).toLocaleString()})</span>
                     </div>
                     <div className={styles.popoverStatChip}>

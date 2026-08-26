@@ -404,6 +404,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
     requirements: string[];
     targetAudience: string[];
     price?: number;
+    published?: boolean;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -427,6 +428,7 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
             requirements: Array.isArray(data.requirements) ? data.requirements : [],
             targetAudience: Array.isArray(data.targetAudience) ? data.targetAudience : [],
             price: typeof data.price === 'number' ? data.price : 0,
+            published: !!data.published,
           });
         }
       } catch (err) {
@@ -500,8 +502,9 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           </Link>
           <span className={styles.topBarDivider}>|</span>
           <span className={styles.courseTitle}>{course?.title || 'Loading...'}</span>
-          <span className={styles.draftBadge}>DRAFT</span>
-          <span className={styles.videoInfo}>0min of video content uploaded</span>
+          {course && (
+            <span className={styles.draftBadge}>{course.published ? 'PUBLISHED' : 'DRAFT'}</span>
+          )}
         </div>
         <div className={styles.topBarRight}>
           <Button variant="secondary" onClick={() => document.getElementById('global-save-btn')?.click()}>
