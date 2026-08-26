@@ -19,13 +19,15 @@ import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsIn } from 'class-validator';
 
 export class FirebaseLoginDto {
   @IsString()
   @IsNotEmpty()
   idToken: string;
 
+  // ADMIN is never a client-selectable role — validation rejects it with 400
+  @IsIn(['STUDENT', 'INSTRUCTOR'])
   @IsString()
   @IsOptional()
   role?: string;

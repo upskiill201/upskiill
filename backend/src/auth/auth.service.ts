@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import {
   ForbiddenException,
+  HttpException,
   Injectable,
   UnauthorizedException,
   ConflictException,
@@ -31,7 +32,9 @@ export class AuthService {
       include: { studentProfile: true },
     });
 
-    const requestedRole = dto.role || 'STUDENT';
+    // Security: self-service signups may only ever create STUDENT or INSTRUCTOR
+    // accounts — ADMIN is never a client-selectable role.
+    const requestedRole = dto.role === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
 
     if (existing) {
       const pwMatches = await bcrypt.compare(dto.password, existing.password);
@@ -529,8 +532,18 @@ export class AuthService {
         throw new UnauthorizedException('No email found in Firebase token');
       }
 
-      const isInstructor = requestedRole === 'INSTRUCTOR';
-      const isStudent = requestedRole === 'STUDENT';
+      // Security: account linking below matches users by email claim, so an
+      // unverified provider email could take over an existing password account.
+      if (decodedToken.email_verified !== true) {
+        throw new UnauthorizedException(
+          'Your email address is not verified with your sign-in provider. Verify it and try again.',
+        );
+      }
+
+      // Security: ADMIN is not a self-service role — clamp to STUDENT/INSTRUCTOR.
+      const safeRole = requestedRole === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
+      const isInstructor = safeRole === Role.INSTRUCTOR;
+      const isStudent = !isInstructor;
 
       // 2. Find or create user
       let user = await this.prisma.user.findUnique({
@@ -548,7 +561,7 @@ export class AuthService {
             email,
             password: hash,
             fullName: name,
-            role: requestedRole as Role,
+            role: safeRole,
             hasStudentAccess: isStudent,
             hasCreatorAccess: isInstructor,
             profile: {
@@ -606,6 +619,11 @@ export class AuthService {
         hasBothRoles,
       };
     } catch (error: any) {
+      // Business-rule rejections (unverified email, missing email claim) must
+      // reach the client intact — only wrap genuine token-verification failures.
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new UnauthorizedException(
         'Invalid Firebase Token: ' + error.message,
       );
@@ -630,7 +648,9 @@ export class AuthService {
       hasCreatorAccess: userRow?.hasCreatorAccess ?? false,
       hasStudentAccess: userRow?.hasStudentAccess ?? false,
     };
-    const secret = process.env.JWT_SECRET || 'super-secret-upskiill-key-2024';
+    // No hardcoded fallback: main.ts refuses to boot production without
+    // JWT_SECRET, and local dev supplies it via .env.
+    const secret = process.env.JWT_SECRET as string;
 
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '7d',
@@ -662,7 +682,14 @@ export class AuthService {
       throw new ForbiddenException('Insufficient access');
     }
 
-    const roleEnum = targetRole.toUpperCase();
+    const roleEnum = typeof targetRole === 'string' ? targetRole.toUpperCase() : '';
+
+    // Security: role switching is only ever STUDENT <-> INSTRUCTOR between
+    // profiles the account already owns. Anything else — most importantly
+    // ADMIN — is never a valid self-service target.
+    if (roleEnum !== Role.INSTRUCTOR && roleEnum !== Role.STUDENT) {
+      throw new ForbiddenException('Invalid role target');
+    }
     if (roleEnum === 'INSTRUCTOR' && !user.hasCreatorAccess) {
       throw new ForbiddenException('No creator profile found for this account');
     }

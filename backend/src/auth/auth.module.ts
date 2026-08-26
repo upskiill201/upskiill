@@ -12,7 +12,8 @@ import { EmailModule } from '../email/email.module';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'super-secret-upskiill-key-2024',
+      // Supplied via .env locally; production boot fails fast without it (main.ts)
+      secret: process.env.JWT_SECRET as string,
       signOptions: { expiresIn: '7d' },
     }),
     ProfileModule,
