@@ -96,6 +96,8 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
   const [claimError, setClaimError] = useState<string | null>(null);
   /** Post-claim balances returned by the claim itself (wins over scene.targetBalances). */
   const [resolvedBalances, setResolvedBalances] = useState<Partial<Record<CelebrationCurrency, number>> | null>(null);
+  /** Caption revealed when the claim reports a deferred (settle-at-signup) payout. */
+  const [deferredCaption, setDeferredCaption] = useState<string | null>(null);
   const [stepIdx, setStepIdx] = useState(-1); // -1 = intro hold before first grab
   const [depositedCount, setDepositedCount] = useState(0);
   const [flight, setFlight] = useState<{ currency: CelebrationCurrency; key: number } | null>(null);
@@ -125,8 +127,13 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
         if (cancelled) return;
         // Exact post-claim balances from the API response (covers server-side
         // extras like the all-missions-claimed coin bonus) before confirming,
-        // so startBalances is correct before the first deposit lands.
-        if (balances) setResolvedBalances(balances);
+        // so startBalances is correct before the first deposit lands. A
+        // deferred payout instead carries a pendingCaption — surface it.
+        if (balances) {
+          const { pendingCaption: caption, ...targets } = balances;
+          if (caption) setDeferredCaption(caption);
+          if (Object.keys(targets).length > 0) setResolvedBalances(targets);
+        }
         setClaimState('confirmed');
       })
       .catch((e: unknown) => {
@@ -352,6 +359,12 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
               <BalanceRow key={c} currency={c} value={shownBalance(c)} />
             ))}
           </div>
+
+          {/* Deferred payout — recorded now, credited at signup; never imply
+              an account balance that doesn't exist yet */}
+          {(scene.pendingCaption ?? deferredCaption) && claimState === 'confirmed' && (
+            <p className={styles.subhead}>{scene.pendingCaption ?? deferredCaption}</p>
+          )}
 
           {(fillPercent !== null || scene.progressCaption) && scene.levelProgress && (
             <div className={styles.progressWrap}>

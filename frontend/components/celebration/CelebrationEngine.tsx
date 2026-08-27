@@ -19,6 +19,10 @@ import LevelUpScene from './scenes/LevelUpScene';
 import QuestScene from './scenes/QuestScene';
 import AchievementScene from './scenes/AchievementScene';
 import LeagueScene from './scenes/LeagueScene';
+import SectionCompleteScene from './scenes/SectionCompleteScene';
+import CourseProgressScene from './scenes/CourseProgressScene';
+import SectionUnlockedScene from './scenes/SectionUnlockedScene';
+import CourseCompleteScene from './scenes/CourseCompleteScene';
 
 let sceneCounter = 0;
 
@@ -72,6 +76,14 @@ export default function CelebrationEngine() {
         return <AchievementScene scene={scene} onAdvance={advance} />;
       case 'LEAGUE':
         return <LeagueScene scene={scene} onAdvance={advance} />;
+      case 'SECTION_COMPLETE':
+        return <SectionCompleteScene scene={scene} onAdvance={advance} />;
+      case 'COURSE_PROGRESS':
+        return <CourseProgressScene scene={scene} onAdvance={advance} />;
+      case 'SECTION_UNLOCKED':
+        return <SectionUnlockedScene scene={scene} onAdvance={advance} />;
+      case 'COURSE_COMPLETE':
+        return <CourseCompleteScene scene={scene} onAdvance={advance} />;
       default:
         return null;
     }

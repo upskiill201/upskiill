@@ -12,8 +12,15 @@
 
 import type { CelebrationCurrency } from '@/context/CelebrationContext';
 
-/** Exact post-claim balances a claim may resolve with, for the count-up. */
-export type SceneClaimBalances = Partial<Record<CelebrationCurrency, number>>;
+/**
+ * Exact post-claim balances a claim may resolve with, for the count-up.
+ * A claim may also resolve with `pendingCaption` when the payout was recorded
+ * server-side but settles at signup (pre-signup learners) — scenes show that
+ * caption instead of implying an account balance already exists.
+ */
+export type SceneClaimBalances = Partial<Record<CelebrationCurrency, number>> & {
+  pendingCaption?: string;
+};
 
 type ClaimableScene = { claim?: () => Promise<SceneClaimBalances | void> | SceneClaimBalances | void };
 

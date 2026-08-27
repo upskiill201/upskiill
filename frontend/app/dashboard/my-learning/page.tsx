@@ -104,7 +104,8 @@ export default function MyLearningPage() {
                         <div className={styles.progressLabels}>
                           <span className={styles.progressPct}>{enrollment.progress}% COMPLETE</span>
                           <span className={styles.progressUnit}>
-                            LESSON {Math.round((enrollment.progress / 100) * 25) || 1} / 25
+                            LESSON {Math.max(1, Math.round((enrollment.progress / 100) * (course.totalLessons || 0))) || 1}
+                            {' '}/ {course.totalLessons || '—'}
                           </span>
                         </div>
                       </div>

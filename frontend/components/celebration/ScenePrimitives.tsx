@@ -24,14 +24,17 @@ export function CountUpNumber({
   value,
   duration = 0.5,
   className,
+  from,
 }: {
   value: number;
   duration?: number;
   className?: string;
+  /** Mount-time origin for a one-shot count-up (e.g. 40 → 55). */
+  from?: number;
 }) {
   const reducedMotion = useReducedMotion();
-  const [display, setDisplay] = useState(value);
-  const prevRef = useRef(value);
+  const [display, setDisplay] = useState(from ?? value);
+  const prevRef = useRef(from ?? value);
 
   useEffect(() => {
     const from = prevRef.current;
@@ -360,6 +363,58 @@ export function BalanceRow({
         priority
       />
       <CountUpNumber value={value} className={styles.balanceValue} duration={0.35} />
+    </div>
+  );
+}
+
+// ─── AnimatedProgressBar (milestone fills) ───────────────────────────────────
+
+/**
+ * Progress beat for the section/course milestone scenes: the fill sweeps
+ * from `from`% to `to`%, then a single shine crosses the finished track.
+ * Under reduced motion it renders straight at the end value, no animation.
+ */
+export function AnimatedProgressBar({
+  from,
+  to,
+  delay = 0,
+  tone = 'green',
+}: {
+  from: number;
+  to: number;
+  /** Seconds to wait before the sweep starts (choreography sequencing). */
+  delay?: number;
+  tone?: 'green' | 'blue' | 'gold';
+}) {
+  const reducedMotion = useReducedMotion();
+  const toneClass =
+    tone === 'blue'
+      ? styles.barFillBlue
+      : tone === 'gold'
+        ? styles.barFillGold
+        : styles.barFillGreen;
+
+  return (
+    <div
+      className={styles.barTrack}
+      role="progressbar"
+      aria-valuenow={Math.round(to)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
+      <motion.div
+        className={`${styles.barFill} ${toneClass}`}
+        initial={reducedMotion ? false : { width: `${from}%` }}
+        animate={{ width: `${to}%` }}
+        transition={{ delay, duration: 1.05, ease: [0.34, 1.25, 0.64, 1] }}
+      >
+        {!reducedMotion && (
+          <span
+            className={styles.barShine}
+            style={{ animationDelay: `${delay + 1.0}s` }}
+          />
+        )}
+      </motion.div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   UseGuards,
   Res,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,11 +16,13 @@ import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { VerifyCodeDto } from './dto/verify-code.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-import { IsString, IsOptional, IsNotEmpty, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsIn, MinLength, IsObject } from 'class-validator';
 
 export class FirebaseLoginDto {
   @IsString()
@@ -40,6 +43,17 @@ export class FirebaseLoginDto {
   @IsObject()
   @IsOptional()
   onboarding?: Record<string, unknown>;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  // Matches the signup password rule.
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  newPassword: string;
 }
 
 @UseGuards(ThrottlerGuard)
@@ -87,26 +101,31 @@ export class AuthController {
     @Body('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    // JSON contract: the app-origin /verify-email page POSTs here through the
+    // proxied route so the session cookie lands first-party, then routes by
+    // the returned role itself (INSTRUCTOR → creator onboarding, else
+    // dashboard). A server-side 302 to appUrl would set nothing useful.
     const result = await this.authService.verifyEmail(token);
     this.setCookie(res, result.access_token);
     return this.withoutToken(result);
   }
 
+  /** Codes are 6 digits with a 10-minute TTL — cap guesses hard per IP. */
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('verify-code')
   async verifyCode(
-    @Body('email') email: string,
-    @Body('code') code: string,
+    @Body() dto: VerifyCodeDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.verifyCode(email, code);
+    const result = await this.authService.verifyCode(dto.email, dto.code);
     this.setCookie(res, result.access_token);
     return this.withoutToken(result);
   }
 
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('resend-verification')
-  async resendVerification(@Body('email') email: string) {
-    return this.authService.resendVerification(email);
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerification(dto.email);
   }
 
   @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
@@ -175,13 +194,12 @@ export class AuthController {
   }
 
   /**
-   * The httpOnly cookie is the ONLY session transport. Raw JWTs used to ride
-   * along in JSON bodies too — readable by any extension/proxy/log — while the
-   * frontend exclusively uses cookies. Strip before responding.
+   * Strips access_token from response payload so it only travels in the
+   * httpOnly cookie.
    */
-  private withoutToken<T extends { access_token?: string }>(result: T): Omit<T, 'access_token'> {
-    const { access_token, ...safe } = result;
-    return safe;
+  private withoutToken<T extends object>(result: T): Omit<T, 'access_token'> {
+    const { access_token, ...safe } = result as Record<string, any>;
+    return safe as Omit<T, 'access_token'>;
   }
 
   /**
@@ -209,12 +227,6 @@ export class AuthController {
     return this.authService.getMyEnrollments(user.id);
   }
 
-  /**
-   * GET /auth/check-email?email=...
-   * Real-time email duplicate check for the Step 15 signup form.
-   * Called on email field blur — returns { exists: boolean }.
-   */
-
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('forgot-password')
   async forgotPassword(
@@ -233,15 +245,20 @@ export class AuthController {
     return this.authService.validateResetToken(token);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
   @Post('reset-password')
-  async resetPassword(@Body() body: any) {
-    const { token, newPassword } = body;
-    if (!token || !newPassword) {
-      throw new Error('Token and new password are required');
-    }
-    return this.authService.resetPassword(token, newPassword);
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
+  /**
+   * GET /auth/check-email?email=...
+   * Real-time email duplicate check for the Step 15 signup form.
+   * Called on email field blur — returns { exists: boolean }.
+   */
+  // Loose cap: it's a keystroke-level helper, but also an unauthenticated
+  // existence oracle, so it must not be freely scriptable.
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // 20 per minute
   @Get('check-email')
   async checkEmail(@Query('email') email: string) {
     if (!email) return { exists: false };

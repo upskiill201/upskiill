@@ -117,17 +117,17 @@ const STEP_CONFIG: Record<number, StepMeta> = {
   13: {
     mobile: '/User onbarding Assets/Step-13_img.webp',
     desktop: '/User onbarding Assets/Step-13_img.webp',
-    mobileMascotHeight: '42dvh',
+    fullBleed: true,
   },
   14: {
     mobile: '/User onbarding Assets/Step_14_image_mobile.webp',
     desktop: '/User onbarding Assets/Step_14_image_desktop.webp',
-    mobileMascotHeight: '40dvh',
+    fullBleed: true,
   },
   15: {
     mobile: '/User onbarding Assets/step_15_image_mobile.webp',
     desktop: '/User onbarding Assets/step_15_image_desktop.webp',
-    mobileMascotHeight: '42dvh',
+    fullBleed: true,
   },
 };
 

@@ -7,10 +7,11 @@
  * no emojis, no per-component one-off icon switches.
  */
 
-import { Brain, Compass, Flame, Medal, Target, Trophy } from 'lucide-react';
+import { Brain, Compass, Flame, Medal, Star, Target, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type BadgeId =
+  | 'novice'
   | 'wildfire'
   | 'sage'
   | 'champion'
@@ -20,6 +21,7 @@ export type BadgeId =
 
 /** Glyph that best represents what each badge celebrates. */
 const BADGE_GLYPHS: Record<BadgeId, LucideIcon> = {
+  novice: Star, // the first badge — onboarding milestone
   wildfire: Flame, // streak
   sage: Brain, // XP / wisdom
   champion: Trophy, // lessons conquered
@@ -30,6 +32,7 @@ const BADGE_GLYPHS: Record<BadgeId, LucideIcon> = {
 
 /** Unit used in progress captions like "5 / 7 days". */
 export const BADGE_UNITS: Record<BadgeId, string> = {
+  novice: 'milestone',
   wildfire: 'days',
   sage: 'XP',
   champion: 'lessons',

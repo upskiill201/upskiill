@@ -25,6 +25,52 @@ const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 
 export const WELCOME_BONUS_XP = 25;
 export const WELCOME_BONUS_COINS = 10;
 
+/** Bonus XP paid once when a learner completes every published lesson in a
+ *  section. Already included in xpEarned — surfaced separately so the
+ *  celebration UI can show "…including a +50 section bonus" honestly. */
+export const SECTION_BONUS_XP = 50;
+
+/**
+ * Server-computed summary attached to complete-lesson responses when the
+ * finished lesson was the last published lesson of its section. Drives the
+ * Section Complete / Course Complete celebration — the frontend renders these
+ * numbers verbatim and never invents progress of its own.
+ */
+export interface SectionCompletionSummary {
+  /** True when no later section with published lessons exists (course done). */
+  isFinalSection: boolean;
+  section: {
+    id: string;
+    /** Index into the catalog `sections` array (same order the student pages URL-index). */
+    index: number;
+    title: string;
+    lessonsCompleted: number;
+    lessonsTotal: number;
+    /** Content blocks across learn/apply/reflect/deepen for this section. */
+    activitiesCompleted: number;
+    activitiesTotal: number;
+  };
+  course: {
+    title: string;
+    /** Course-wide completion % immediately before vs after this lesson. */
+    progressBefore: number;
+    progressAfter: number;
+    sectionsCompleted: number;
+    sectionsTotal: number;
+    lessonsCompleted: number;
+    lessonsTotal: number;
+  };
+  rewards: { bonusXp: number };
+  /** Next student-visible section, or null when the course is complete. */
+  nextSection: null | {
+    index: number;
+    title: string;
+    description: string | null;
+    lessonCount: number;
+    estimatedMinutes: number;
+  };
+}
+
 @Injectable()
 export class CourseService {
   constructor(
@@ -707,7 +753,7 @@ export class CourseService {
         // Honour the creator-configured reward (fallback 10) — previously a
         // flat 10 was paid no matter what the lesson promised.
         const baseLessonXp = Math.max(1, Math.min(500, lesson.xpReward ?? 10));
-        const xpEarned = baseLessonXp + (sectionCompleted ? 50 : 0);
+        const xpEarned = baseLessonXp + (sectionCompleted ? SECTION_BONUS_XP : 0);
 
         // Compute course progress percentage against published lessons only
         const totalPublished = siblingLessons.length || 1;
@@ -729,7 +775,8 @@ export class CourseService {
         const todayStr = getLocalDayStr(now);
         const lastStreakDate = profile.lastStreakEarnedAt;
         let shouldUpdateStreakEarnedDate = false;
-        let consumeStreakFreeze = false;
+        /** How many banked freezes this completion burns (0 = none). */
+        let freezesToConsume = 0;
 
         if (!lastStreakDate) {
           newStreak = Math.max(1, profile.streakDays || 1);
@@ -747,10 +794,15 @@ export class CourseService {
             newStreak = (profile.streakDays || 0) + 1;
             shouldUpdateStreakEarnedDate = true;
           } else {
-            if (profile.streakFreezeBank > 0) {
+            // Duolingo parity (B8): every missed day costs one streak freeze,
+            // and the streak only survives when the bank covers the WHOLE gap
+            // (this branch implies diffDays >= 2, so at least one day was
+            // missed). A partial bank is never burned pointlessly.
+            const missedDays = diffDays - 1;
+            if (profile.streakFreezeBank >= missedDays) {
               newStreak = (profile.streakDays || 0) + 1;
               shouldUpdateStreakEarnedDate = true;
-              consumeStreakFreeze = true;
+              freezesToConsume = missedDays;
             } else {
               newStreak = 1;
               shouldUpdateStreakEarnedDate = true;
@@ -778,7 +830,9 @@ export class CourseService {
               lastActiveAt: now,
               lastLessonCompletedAt: now,
               ...(shouldUpdateStreakEarnedDate ? { lastStreakEarnedAt: now } : {}),
-              ...(consumeStreakFreeze ? { streakFreezeBank: { decrement: 1 } } : {}),
+              ...(freezesToConsume > 0
+                ? { streakFreezeBank: { decrement: freezesToConsume } }
+                : {}),
             },
           }),
         ]);
@@ -796,12 +850,15 @@ export class CourseService {
           alreadyCompleted: false as const,
           completed,
           sectionCompleted,
+          // Needed by the celebration payload builder after the tx commits.
+          sectionId: lessonSectionId,
           xpEarned,
           newXpTotal: updatedProfile.xp,
           newStreakDaysTotal: updatedProfile.streakDays,
           newCoinsTotal: updatedProfile.coins,
           isFirstStreakOfDay,
           progressPct: progress,
+          publishedTotal: siblingLessons.length,
         };
       });
 
@@ -913,6 +970,19 @@ export class CourseService {
         })
         .catch(() => {});
 
+      // Celebration payload — only for the real "last lesson of a section"
+      // moment. Built after the tx so it can read the settled course state.
+      const sectionCompletion =
+        txResult.sectionCompleted && txResult.sectionId
+          ? await this.buildSectionCompletionPayload(
+              course.title,
+              course.id,
+              txResult.sectionId,
+              txResult.completed,
+              txResult.publishedTotal,
+            )
+          : undefined;
+
       return {
         success: true,
         isNewCompletion: true,
@@ -924,6 +994,7 @@ export class CourseService {
         newCoins: txResult.newCoinsTotal,
         sectionCompleted: txResult.sectionCompleted,
         isFirstStreakOfDay: txResult.isFirstStreakOfDay,
+        ...(sectionCompletion ? { sectionCompletion } : {}),
       };
     }
 
@@ -945,6 +1016,113 @@ export class CourseService {
       newCoins: profile.coins,
       sectionCompleted: false,
       isFirstStreakOfDay: false,
+    };
+  }
+
+  /**
+   * Builds the celebration payload for a just-completed section. Runs once
+   * after the completion transaction commits, only when sectionCompleted is
+   * true. Indexes are positions in the ordered catalog `sections` array (the
+   * same order the student-facing pages URL-index), while totals only count
+   * sections that actually have published lessons — mirroring how the
+   * frontend derives progress from the catalog.
+   */
+  private async buildSectionCompletionPayload(
+    courseTitle: string,
+    courseId: string,
+    completedSectionId: string,
+    completedLessonIds: string[],
+    totalPublishedLessons: number,
+  ): Promise<SectionCompletionSummary | null> {
+    const sections = await this.prisma.section.findMany({
+      where: { courseId },
+      orderBy: [{ orderIndex: 'asc' }, { createdAt: 'asc' }],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        goal: true,
+        lessons: {
+          where: { status: 'published' },
+          orderBy: { orderIndex: 'asc' },
+          select: { id: true, durationMinutes: true, contentBlocks: true },
+        },
+      },
+    });
+
+    const completedRawIndex = sections.findIndex((s) => s.id === completedSectionId);
+    if (completedRawIndex === -1) return null;
+    const completedSection = sections[completedRawIndex];
+    const completed = new Set(completedLessonIds);
+
+    /** Activities = content blocks across the four phases of a lesson. */
+    const countActivities = (blocks: unknown): number => {
+      if (!blocks || typeof blocks !== 'object') return 0;
+      const record = blocks as Record<string, unknown>;
+      return ['learn', 'apply', 'reflect', 'deepen'].reduce((sum, phase) => {
+        const arr = record[phase];
+        return sum + (Array.isArray(arr) ? arr.length : 0);
+      }, 0);
+    };
+
+    let sectionsCompleted = 0;
+    let lessonsCompletedTotal = 0;
+    let lessonsTotalVisible = 0;
+    for (const s of sections) {
+      if (s.lessons.length === 0) continue;
+      lessonsTotalVisible += s.lessons.length;
+      const done = s.lessons.filter((l) => completed.has(l.id)).length;
+      lessonsCompletedTotal += done;
+      if (done === s.lessons.length) sectionsCompleted += 1;
+    }
+
+    const safePublishedTotal = Math.max(1, totalPublishedLessons);
+    const progressAfter = Math.min(100, Math.round((completedLessonIds.length / safePublishedTotal) * 100));
+    const progressBefore = Math.min(
+      100,
+      Math.round((Math.max(0, completedLessonIds.length - 1) / safePublishedTotal) * 100),
+    );
+
+    const nextCandidate = sections.slice(completedRawIndex + 1).find((s) => s.lessons.length > 0);
+
+    return {
+      isFinalSection: !nextCandidate,
+      section: {
+        id: completedSection.id,
+        index: completedRawIndex,
+        title: completedSection.title,
+        lessonsCompleted: completedSection.lessons.filter((l) => completed.has(l.id)).length,
+        lessonsTotal: completedSection.lessons.length,
+        activitiesCompleted: completedSection.lessons
+          .filter((l) => completed.has(l.id))
+          .reduce((acc, l) => acc + countActivities(l.contentBlocks), 0),
+        activitiesTotal: completedSection.lessons.reduce(
+          (acc, l) => acc + countActivities(l.contentBlocks),
+          0,
+        ),
+      },
+      course: {
+        title: courseTitle,
+        progressBefore,
+        progressAfter,
+        sectionsCompleted,
+        sectionsTotal: sections.filter((s) => s.lessons.length > 0).length,
+        lessonsCompleted: lessonsCompletedTotal,
+        lessonsTotal: lessonsTotalVisible,
+      },
+      rewards: { bonusXp: SECTION_BONUS_XP },
+      nextSection: nextCandidate
+        ? {
+            index: sections.indexOf(nextCandidate),
+            title: nextCandidate.title,
+            description: nextCandidate.description ?? nextCandidate.goal ?? null,
+            lessonCount: nextCandidate.lessons.length,
+            estimatedMinutes: nextCandidate.lessons.reduce(
+              (acc, l) => acc + (l.durationMinutes ?? 0),
+              0,
+            ),
+          }
+        : null,
     };
   }
 

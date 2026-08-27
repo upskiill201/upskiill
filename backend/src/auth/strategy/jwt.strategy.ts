@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service';
+import { getJwtSecret } from '../jwt-secret.util';
 import { Request } from 'express';
 
 @Injectable()
@@ -15,8 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      // Supplied via .env locally; production boot fails fast without it (main.ts)
-      secretOrKey: process.env.JWT_SECRET as string,
+      // Throws at boot when JWT_SECRET is unset — no fallback secret.
+      secretOrKey: getJwtSecret(),
     });
   }
 

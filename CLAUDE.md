@@ -64,7 +64,8 @@ Phases are stored as independent JSON arrays (`learnBlocks`, `applyBlocks`, `ref
 
 ## 5. API & Backend Standards
 
-- **Versioning:** All routes must be versioned: `/api/v1/...`.
+- **Versioning:** All NEW routes must be versioned: `/api/v1/...`.
+  - ⚠️ **Conscious deviation (2026-08-26):** the live API currently serves an *unversioned* root (`/auth/...`, `/courses/...`, `/user-onboarding/...`) — only some modules sit under `/api`. Flipping everything to `/api/v1` in one move is unsafe this pass: externally-configured WhatsApp/Stripe webhook URLs and Render's `/health` check depend on current paths, and the Next.js fallback rewrite strips `/api`. Migration is tracked as a follow-up; until then, new modules should match the existing layout rather than invent a second convention.
 - **Granular Lesson Saves:** Never PUT entire lessons. Use granular endpoints:
   - `PATCH /api/v1/lessons/:id/metadata`
   - `PATCH /api/v1/lessons/:id/phases/:phase`
@@ -79,7 +80,7 @@ Phases are stored as independent JSON arrays (`learnBlocks`, `applyBlocks`, `ref
 
 ## 6. Authentication & Roles
 
-- **Lifecycle:** Firebase Auth (Client) → Send ID token to `POST /api/v1/auth/session` → Backend verifies & sets 7-day `httpOnly` JWT cookie (`auth_token`). Subsequent requests use cookie.
+- **Lifecycle:** Firebase Auth (Client) → Send ID token to `POST /api/v1/auth/session` → Backend verifies & sets 7-day `httpOnly` JWT cookie (`access_token`). Subsequent requests use cookie. *(Cookie name corrected 2026-08-26 — it was documented as `auth_token` but every controller reads/writes `access_token`.)*
 - **Roles:** `STUDENT`, `INSTRUCTOR`, `ADMIN` guarded at the NestJS Controller level.
 
 ---

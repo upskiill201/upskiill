@@ -49,13 +49,19 @@ export type CelebrationScene =
       rewards: CelebrationReward[];
       /** Server-first claim executed when the deposit beat begins. Omit when the reward was already persisted.
        * May resolve with exact post-claim balances (e.g. from the claim API response) so the count-up
-       * includes server-side extras like the all-missions-claimed coin bonus. */
-      claim?: () => Promise<Partial<Record<CelebrationCurrency, number>> | void> | void;
+       * includes server-side extras like the all-missions-claimed coin bonus — or with a `pendingCaption`
+       * when the payout was recorded but settles at signup. */
+      claim?: () =>
+        | Promise<(Partial<Record<CelebrationCurrency, number>> & { pendingCaption?: string }) | void>
+        | void;
       /** Exact post-claim balances for the count-up (falls back to live gamification state). */
       targetBalances?: Partial<Record<CelebrationCurrency, number>>;
       /** XP progress shown under the balance row: [current, target] for the current level. */
       levelProgress?: { current: number; target: number; level: number };
       progressCaption?: string;
+      /** Shown under the balance row instead of an account total — used when the
+       * payout is recorded now but settles at signup (pre-signup learners). */
+      pendingCaption?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -125,6 +131,67 @@ export type CelebrationScene =
       rank?: number | null;
       totalXp: number;
       weekStart: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'SECTION_COMPLETE';
+      courseTitle: string;
+      sectionTitle: string;
+      /** e.g. "SECTION 2" — 1-based display label. */
+      sectionIndexLabel: string;
+      sectionProgress: {
+        lessonsCompleted: number;
+        lessonsTotal: number;
+        activitiesCompleted?: number;
+        activitiesTotal?: number;
+      };
+      results: {
+        xpEarned: number;
+        bonusXp: number;
+        coinsEarned: number;
+        streakDays: number;
+      };
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'COURSE_PROGRESS';
+      courseTitle: string;
+      /** Course-wide completion % immediately before vs after the section. */
+      from: number;
+      to: number;
+      sectionsCompleted: number;
+      sectionsTotal: number;
+      lessonsCompleted: number;
+      lessonsTotal: number;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'SECTION_UNLOCKED';
+      sectionIndexLabel: string;
+      sectionTitle: string;
+      description?: string | null;
+      lessonCount: number;
+      estimatedMinutes: number;
+      onStartSection: () => void;
+      onBackToCourse: () => void;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      kind: 'COURSE_COMPLETE';
+      courseTitle: string;
+      sectionsCompleted: number;
+      sectionsTotal: number;
+      lessonsCompleted: number;
+      lessonsTotal: number;
+      /** Learner's lifetime XP balance at the moment of completion. */
+      xpTotal: number;
+      streakDays: number;
+      /** Primary CTA — usually back to the course overview. */
+      onContinue: () => void;
       onComplete?: () => void;
       dedupeKey?: string;
     };

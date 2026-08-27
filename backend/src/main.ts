@@ -63,10 +63,16 @@ async function bootstrap() {
 
   // ─── VALIDATION PIPE ───────────────────────────────────────────────────────
   // Strips unknown properties, throws on unexpected fields, auto-transforms types.
+  // whitelist/forbidNonWhitelisted only affect class-validator DTOs — plain
+  // `@Body('prop')` extractions and webhook raw bodies are untouched. All
+  // student-journey payloads were swept against their DTOs before enabling
+  // this (signup/login/firebase/reset/challenge-complete/checkout/OTP/
+  // profile/community/lesson-builder); nested list entries carry client-side
+  // `id`s, which the profile DTO now accepts explicitly.
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: false,
-      forbidNonWhitelisted: false,
+      whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, Lock, CheckCircle2, XCircle } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -9,6 +9,9 @@ import 'react-international-phone/style.css';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { playHaptic } from '@/lib/haptics';
 import { playWinSound } from '@/utils/audio';
+
+// Must match RESEND_COOLDOWN_MS on the backend — the server enforces the real limit.
+const RESEND_COOLDOWN_SECONDS = 60;
 
 const headlineContainer: Variants = {
   hidden: {},
@@ -23,19 +26,33 @@ const accentVariant: Variants = {
   show: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 500, damping: 20 } },
 };
 
+interface SavedStep6Answer {
+  whatsappNumber?: string;
+  verified?: boolean;
+}
+
 interface Step6ContentProps {
   onNext: () => void;
 }
 
 export default function Step6Content({ onNext }: Step6ContentProps) {
-  const { saveAnswer } = useOnboardingSession({ currentStep: 6, disableGuard: true });
+  const { saveAnswer, currentAnswer } = useOnboardingSession({ currentStep: 6, disableGuard: true });
 
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otpStatus, setOtpStatus] = useState<'idle' | 'sent' | 'verified' | 'error'>('idle');
+  const [stage, setStage] = useState<'idle' | 'sent' | 'verified'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [isSending, setIsSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [countdown, setCountdown] = useState(0);
+  /**
+   * Dev convenience: the backend echoes the OTP only when EXPOSE_DEV_OTP is
+   * enabled (local/dev builds). Rendered as a chip so testers don't need a
+   * second phone; production never receives the field.
+   */
+  const [devCode, setDevCode] = useState<string | null>(null);
 
   const canSubmit = !!phoneNumber.trim() && phoneNumber.length >= 5;
 
@@ -46,39 +63,58 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
     }
   }, [countdown]);
 
+  // ── Hydration: a previously verified number skips straight to done ──
+  useEffect(() => {
+    const saved = currentAnswer as SavedStep6Answer | null;
+    if (saved?.verified && saved.whatsappNumber) {
+      setPhoneNumber(saved.whatsappNumber);
+      setStage('verified');
+    }
+  }, [currentAnswer]);
+
+  const failWith = useCallback((message: string) => {
+    playHaptic('error');
+    setErrorMessage(message);
+    setShowError(true);
+  }, []);
+
   const handleGetStarted = async () => {
-    if (!phoneNumber || phoneNumber.length < 5) return;
+    if (!phoneNumber || phoneNumber.length < 5 || isSending) return;
     playHaptic('medium');
-
-    setOtpStatus('sent');
-    setCountdown(30);
-    setOtp(['', '', '', '', '', '']);
-
+    setIsSending(true);
     try {
-      const res = await fetch('/api/whatsapp/send-otp', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (!res.ok) {
+      if (res.ok) {
+        // Dev-mode only (EXPOSE_DEV_OTP) — undefined in every real environment.
+        const data = await res.json().catch(() => ({}));
+        setDevCode(typeof data?.devCode === 'string' ? data.devCode : null);
+        setOtp(['', '', '', '', '', '']);
+        setCountdown(RESEND_COOLDOWN_SECONDS);
+        setStage('sent');
+      } else {
         const errData = await res.json().catch(() => ({}));
-        const errMsg = errData?.message || 'Failed to send OTP code. Please check your number and try again.';
-        playHaptic('error');
-        setErrorMessage(errMsg);
-        setOtpStatus('error');
+        failWith(
+          errData?.message ||
+            'Failed to send the code. Please check your number and try again.',
+        );
       }
     } catch (e) {
       console.warn('[WhatsApp] send-otp request failed:', e);
-      playHaptic('error');
-      setErrorMessage('Could not connect to send OTP. Please check your internet connection.');
-      setOtpStatus('error');
+      failWith('Could not connect to send your code. Please check your internet connection.');
+    } finally {
+      setIsSending(false);
     }
   };
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) {
+      // Paste (or autofill) across boxes
       const pasted = value.replace(/\D/g, '').slice(0, 6).split('');
       const newOtp = [...otp];
       pasted.forEach((char, i) => {
@@ -87,6 +123,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
       setOtp(newOtp);
       const focusIndex = Math.min(index + pasted.length, 5);
       otpRefs.current[focusIndex]?.focus();
+      if (newOtp.join('').length === 6) void handleVerify(newOtp.join(''));
       return;
     }
 
@@ -97,6 +134,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
     if (value && index < 5) {
       otpRefs.current[index + 1]?.focus();
     }
+    if (newOtp.join('').length === 6) void handleVerify(newOtp.join(''));
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -105,21 +143,16 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
     }
   };
 
-  const handleVerify = async () => {
-    const fullOtp = otp.join('');
+  const handleVerify = async (codeOverride?: string) => {
+    if (isVerifying) return;
+    const fullOtp = codeOverride ?? otp.join('');
     if (fullOtp.length !== 6) return;
 
     playHaptic('medium');
-
-    if (fullOtp === '123456') {
-      setOtpStatus('verified');
-      playWinSound();
-      saveAnswer({ whatsappNumber: phoneNumber.replace(/\D/g, '') });
-      return;
-    }
+    setIsVerifying(true);
 
     try {
-      const res = await fetch('/api/whatsapp/verify-otp', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -129,29 +162,34 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
-          setOtpStatus('verified');
           playWinSound();
-          saveAnswer({ whatsappNumber: data.phone ?? phoneNumber });
+          // Persist E.164 exactly as the server normalised it + verified flag,
+          // so revisiting this step hydrates straight to the done state.
+          saveAnswer({ whatsappNumber: data.phone ?? phoneNumber, verified: true });
+          setStage('verified');
           return;
         }
       }
 
       const errData = await res.json().catch(() => ({}));
-      const errMsg = errData?.message ?? "Tey checked his notes — that code doesn't match! Double check WhatsApp and try again.";
-      playHaptic('error');
-      setErrorMessage(errMsg);
-      setOtpStatus('error');
+      const errMsg =
+        errData?.message ??
+        "Tey checked his notes — that code doesn't match! Double check WhatsApp and try again.";
+      failWith(errMsg);
+      // A wrong code shouldn't wipe what they typed unless the code was consumed.
+      setOtp(['', '', '', '', '', '']);
+      otpRefs.current[0]?.focus();
     } catch (e) {
       console.warn('[WhatsApp] verify-otp request failed:', e);
-      playHaptic('error');
-      setErrorMessage('Could not connect to verify your code. Please check your internet and try again!');
-      setOtpStatus('error');
+      failWith('Could not connect to verify your code. Please check your internet and try again!');
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   const handleSkip = () => {
     playHaptic('light');
-    saveAnswer({ whatsappNumber: '' });
+    saveAnswer({ whatsappNumber: '', skipped: true });
     onNext();
   };
 
@@ -162,16 +200,18 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
 
   return (
     <div className="w-full h-full flex flex-col pt-2 px-5 md:px-0 pb-0">
-      {/* ── SKIP CONTROL ── */}
-      <div className="w-full flex justify-end shrink-0 mb-1">
-        <button
-          onClick={handleSkip}
-          className="text-[0.68rem] font-extrabold tracking-[0.14em] uppercase text-slate-400 hover:text-slate-600 px-2 py-1 active:scale-95 transition-all cursor-pointer"
-          style={{ fontFamily: 'var(--font-jakarta)' }}
-        >
-          Skip
-        </button>
-      </div>
+      {/* ── SKIP CONTROL (hidden once verified) ── */}
+      {stage !== 'verified' && (
+        <div className="w-full flex justify-end shrink-0 mb-1">
+          <button
+            onClick={handleSkip}
+            className="text-[0.68rem] font-extrabold tracking-[0.14em] uppercase text-slate-400 hover:text-slate-600 px-2 py-1 active:scale-95 transition-all cursor-pointer"
+            style={{ fontFamily: 'var(--font-jakarta)' }}
+          >
+            Skip
+          </button>
+        </div>
+      )}
 
       {/* ── HEADLINE ── */}
       <div className="w-full shrink-0 mb-2 md:mb-4 text-center md:text-left">
@@ -204,10 +244,10 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
         </motion.p>
       </div>
 
-      {/* ── FORM (compact — no flex filler, matches concept spacing) ── */}
+      {/* ── FORM ── */}
       <div className="w-full shrink-0 z-20 max-w-[450px] mx-auto md:mx-auto mt-4 md:mt-6">
         <AnimatePresence mode="wait">
-          {otpStatus === 'idle' && (
+          {stage === 'idle' && (
             <motion.div
               key="phone-input"
               initial={{ opacity: 0, x: -20 }}
@@ -248,27 +288,27 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
               </div>
 
               <motion.button
-                whileHover={canSubmit ? { scale: 1.02 } : {}}
-                whileTap={canSubmit ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
+                whileHover={canSubmit && !isSending ? { scale: 1.02 } : {}}
+                whileTap={canSubmit && !isSending ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
                 onClick={handleGetStarted}
-                disabled={!canSubmit}
+                disabled={!canSubmit || isSending}
                 className={`relative w-full h-14 md:h-14 flex items-center justify-center gap-2 rounded-[1.75rem] font-bold text-lg transition-all ${
-                  canSubmit ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
+                  canSubmit && !isSending ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                 }`}
                 style={
-                  canSubmit
+                  canSubmit && !isSending
                     ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }
                     : { boxShadow: '0 0 10px rgba(255,255,255,0.8)' }
                 }
               >
                 <FaWhatsapp className="w-5 h-5" />
-                <span>Get Started on WhatsApp</span>
-                <ArrowRight className={`w-5 h-5 stroke-[3] ${!canSubmit && 'opacity-50'}`} />
+                <span>{isSending ? 'Sending…' : 'Get Started on WhatsApp'}</span>
+                {!isSending && <ArrowRight className={`w-5 h-5 stroke-[3] ${!canSubmit && 'opacity-50'}`} />}
               </motion.button>
             </motion.div>
           )}
 
-          {(otpStatus === 'sent' || otpStatus === 'verified' || otpStatus === 'error') && (
+          {stage === 'sent' && (
             <motion.div
               key="otp-input"
               initial={{ opacity: 0, x: 20 }}
@@ -278,6 +318,24 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
               <p className="text-xs md:text-sm font-medium text-slate-400 mb-3 text-center">
                 Enter the 6-digit code sent to your WhatsApp:
               </p>
+
+              {/* Dev builds only — backend echoes the OTP when EXPOSE_DEV_OTP is set */}
+              {devCode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const digits = devCode.replace(/\D/g, '').slice(0, 6).split('');
+                    const filled = ['', '', '', '', '', ''].map((_, i) => digits[i] ?? '');
+                    setOtp(filled);
+                    otpRefs.current[5]?.focus();
+                  }}
+                  className="mb-3 flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-[10px] md:text-xs font-bold text-amber-700 tracking-wide hover:bg-amber-100 cursor-pointer"
+                  title="Tap to autofill (dev mode only)"
+                >
+                  <Lock className="w-3 h-3" />
+                  DEV CODE: {devCode}
+                </button>
+              )}
 
               <div className="flex gap-2 w-full justify-between mb-4">
                 {otp.map((digit, i) => (
@@ -293,35 +351,37 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                    disabled={isVerifying}
                     className={`w-10 h-12 md:w-12 md:h-14 border-2 text-center text-xl font-[900] rounded-xl transition-all duration-150 outline-none ${
-                      otpStatus === 'error'
-                        ? 'border-[#FF4B4B] bg-[#FFF0F0] text-[#FF4B4B]'
-                        : digit
-                          ? 'border-[#0172FD] bg-[#F0F7FF] text-[#0172FD]'
-                          : 'border-slate-300 bg-slate-50 text-slate-700 focus:border-[#0172FD]'
-                    }`}
+                      digit
+                        ? 'border-[#0172FD] bg-[#F0F7FF] text-[#0172FD]'
+                        : 'border-slate-300 bg-slate-50 text-slate-700 focus:border-[#0172FD]'
+                    } ${isVerifying ? 'opacity-60' : ''}`}
                   />
                 ))}
               </div>
 
               <div className="flex gap-2 w-full">
                 <button
-                  onClick={() => setOtpStatus('idle')}
+                  onClick={() => {
+                    setShowError(false);
+                    setStage('idle');
+                  }}
                   className="px-4 h-12 rounded-[1.25rem] bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 cursor-pointer"
                 >
                   Change
                 </button>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={handleVerify}
-                  disabled={otp.join('').length !== 6}
+                  whileHover={!isVerifying ? { scale: 1.02 } : {}}
+                  whileTap={!isVerifying ? { scale: 0.96 } : {}}
+                  onClick={() => handleVerify()}
+                  disabled={otp.join('').length !== 6 || isVerifying}
                   className={`flex-1 h-12 rounded-[1.25rem] font-bold text-base flex items-center justify-center gap-2 text-white ${
-                    otp.join('').length === 6 ? 'bg-[#0172FD] cursor-pointer' : 'bg-slate-300 cursor-not-allowed'
+                    otp.join('').length === 6 && !isVerifying ? 'bg-[#0172FD] cursor-pointer' : 'bg-slate-300 cursor-not-allowed'
                   }`}
                 >
-                  <span>Verify Code</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>{isVerifying ? 'Checking…' : 'Verify Code'}</span>
+                  {!isVerifying && <ArrowRight className="w-4 h-4" />}
                 </motion.button>
               </div>
 
@@ -330,7 +390,10 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
                 {countdown > 0 ? (
                   <span className="text-[#0172FD]">Resend in {countdown}s</span>
                 ) : (
-                  <span className="text-[#0172FD] cursor-pointer hover:underline" onClick={handleGetStarted}>
+                  <span
+                    className={`text-[#0172FD] hover:underline ${isSending ? 'opacity-50' : 'cursor-pointer'}`}
+                    onClick={() => !isSending && handleGetStarted()}
+                  >
                     Resend now
                   </span>
                 )}
@@ -338,6 +401,32 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {stage === 'verified' && (
+          <motion.div
+            key="verified-summary"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full flex flex-col items-center gap-4"
+          >
+            <div className="w-full flex items-center gap-3 rounded-[1.25rem] bg-white border-2 border-[#0172FD]/30 px-4 py-3 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-[#0172FD] shrink-0" />
+              <div>
+                <p className="text-[#071233] font-extrabold text-sm">WhatsApp connected</p>
+                <p className="text-slate-400 font-medium text-xs">{phoneNumber}</p>
+              </div>
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.94 }}
+              onClick={onNext}
+              className="relative w-full h-14 flex items-center justify-center gap-2 rounded-[1.75rem] bg-[#0172FD] text-white font-bold text-lg cursor-pointer"
+              style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+            >
+              <span>Continue</span>
+              <ArrowRight className="w-5 h-5 stroke-[3]" />
+            </motion.button>
+          </motion.div>
+        )}
       </div>
 
       {/* ── SECURITY FOOTER NOTE ── */}
@@ -346,36 +435,9 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
         <span>By continuing, you agree to receive WhatsApp messages from Teyro.</span>
       </div>
 
-      {/* ── SUCCESS DRAWER ── */}
-      <AnimatePresence>
-        {otpStatus === 'verified' && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 250, damping: 26 }}
-            className="absolute bottom-0 left-0 right-0 bg-[#E6F0FF] border-t-2 border-[#0172FD]/20 z-50 p-4 md:p-6 flex items-center justify-between shadow-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#0172FD] flex items-center justify-center text-white shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <span className="text-[#004FBA] font-extrabold text-sm md:text-base">WhatsApp verified successfully!</span>
-            </div>
-            <motion.button
-              whileTap={{ scale: 0.94 }}
-              onClick={onNext}
-              className="px-6 py-2.5 bg-[#0172FD] text-white rounded-xl font-bold text-sm cursor-pointer shadow-md"
-            >
-              CONTINUE
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ── ERROR DRAWER ── */}
       <AnimatePresence>
-        {otpStatus === 'error' && (
+        {showError && errorMessage && (
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -383,7 +445,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
             transition={{ type: 'spring', stiffness: 250, damping: 26 }}
             className="absolute bottom-0 left-0 right-0 bg-[#FFF0F0] border-t-2 border-[#FF4B4B]/30 z-50 p-4 md:p-6 flex items-center justify-between shadow-lg"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               <div className="w-8 h-8 rounded-full bg-[#FF4B4B] flex items-center justify-center text-white shrink-0">
                 <XCircle className="w-5 h-5" />
               </div>
@@ -391,13 +453,10 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
             </div>
             <motion.button
               whileTap={{ scale: 0.94 }}
-              onClick={() => {
-                setOtpStatus('sent');
-                setOtp(['', '', '', '', '', '']);
-              }}
-              className="px-4 py-2 bg-[#FF4B4B] text-white rounded-xl font-bold text-xs cursor-pointer"
+              onClick={() => setShowError(false)}
+              className="px-4 py-2 bg-[#FF4B4B] text-white rounded-xl font-bold text-xs cursor-pointer shrink-0"
             >
-              TRY AGAIN
+              OK
             </motion.button>
           </motion.div>
         )}

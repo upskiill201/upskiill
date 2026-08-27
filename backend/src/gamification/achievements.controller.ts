@@ -30,6 +30,21 @@ export class AchievementsController {
   }
 
   /**
+   * POST /api/gamification/achievements/claim-onboarding-badge
+   * The step-13 onboarding moment: unlocks the Novice badge if the user's
+   * onboarding session shows they reached the badge step, marks it seen (this
+   * step is the viewing moment) and returns the scene payload. Idempotent —
+   * re-claiming returns the same unlock; a user who hasn't earned it gets 400.
+   */
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post("achievements/claim-onboarding-badge")
+  async claimOnboardingBadge(@Req() req: any) {
+    return this.achievementsService.claimOnboardingBadge(
+      req.user.id as string,
+    );
+  }
+
+  /**
    * POST /api/gamification/achievements/mark-seen
    * Records that the student viewed an unlock (celebration scene or profile
    * collection) so Herald stops surfacing it. Idempotent, credits nothing —

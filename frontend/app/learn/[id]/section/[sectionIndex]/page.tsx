@@ -18,8 +18,9 @@ import confetti from 'canvas-confetti';
 import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation } from '@/context/RewardAnimationContext';
+import { CURRENCY_ICONS } from '@/components/celebration/currency';
 import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
+import DOMPurify from 'dompurify';
 import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
@@ -30,6 +31,18 @@ const cleanHtml = (rawStr: string) => {
   cleaned = cleaned.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   return cleaned;
 };
+
+/**
+ * Sanitiser for anything rendered through dangerouslySetInnerHTML.
+ *
+ * NOTE: cleanHtml above must NEVER feed innerHTML — its order of operations
+ * (strip tags, THEN decode entities) resurrects live tags out of encoded
+ * ones (`&lt;img onerror&gt;` becomes a real element), which is precisely
+ * the injection vector this closes. cleanHtml stays for plain-text-only
+ * contexts such as parsePoint and React text children.
+ */
+const sanitizeHtml = (raw: string | null | undefined): string =>
+  DOMPurify.sanitize(raw ?? '', { USE_PROFILES: { html: true } });
 
 const parsePoint = (pointStr: string, index: number) => {
   const clean = cleanHtml(pointStr);
@@ -126,6 +139,10 @@ interface SectionSidebarProps {
   progressPercent: number;
   xpPoints: number;
   triggerComingSoon: (title: string) => void;
+  /** True once this browser already played the chest scene — no replay. */
+  chestClaimed: boolean;
+  /** Opens the section chest: replays the server-computed SECTION_COMPLETE payload. */
+  onOpenChest: () => void;
 }
 
 function SectionSidebar({
@@ -134,21 +151,15 @@ function SectionSidebar({
   progressPercent,
   xpPoints,
   triggerComingSoon,
+  chestClaimed,
+  onOpenChest,
 }: SectionSidebarProps) {
-  const { openClaimModal } = useRewardAnimation();
   const isCompleted = progressPercent === 100;
   const xpEarned = completedCount * 20;
 
   const handleClaim = () => {
     playHaptic('medium');
-    openClaimModal({
-      title: '+100 XP',
-      subtitle: 'Section Mystery Chest Unlocked! 🎉',
-      rewards: [
-        { currency: 'XP', amount: 100 },
-        { currency: 'COINS', amount: 50 },
-      ],
-    });
+    onOpenChest();
   };
 
   return (
@@ -205,7 +216,7 @@ function SectionSidebar({
             
             <div className={styles.progressStatItem}>
               <span className={styles.progressStatVal}>
-                💎 <strong>{xpEarned} XP</strong>
+                <Image src="/Icons/gem.png" alt="" width={14} height={14} /> <strong>{xpEarned} XP</strong>
               </span>
               <span className={styles.progressStatLabel}>Earned</span>
             </div>
@@ -272,12 +283,12 @@ function SectionSidebar({
             </span>
           </div>
 
-          <button 
-            disabled={!isCompleted}
+          <button
+            disabled={!isCompleted || chestClaimed}
             onClick={handleClaim}
-            className={isCompleted ? styles.button3dPrimaryFull : styles.button3dDisabledFull}
+            className={isCompleted && !chestClaimed ? styles.button3dPrimaryFull : styles.button3dDisabledFull}
           >
-            Claim Reward
+            {chestClaimed ? 'Chest Claimed!' : 'Claim Reward'}
           </button>
         </div>
 
@@ -726,6 +737,103 @@ function SectionViewContent({
             });
           }
 
+          // ── Section milestone: this lesson was the LAST published lesson of
+          // its section. The server computed the whole summary (progress
+          // before/after, next-section preview), so every number below is
+          // truth, never a client-side guess.
+          const sc = data.sectionCompletion;
+          if (sc) {
+            // Persist the server-computed summary so the section chest can
+            // replay the REAL numbers later (the +100/+50 modal was fiction —
+            // the bonus XP was already paid at this very completion).
+            try {
+              localStorage.setItem(
+                `teyro_section_chest_${sc.section.id}`,
+                JSON.stringify({
+                  courseTitle: sc.course.title,
+                  sectionTitle: sc.section.title,
+                  sectionIndexLabel: `SECTION ${sc.section.index + 1}`,
+                  sectionProgress: {
+                    lessonsCompleted: sc.section.lessonsCompleted,
+                    lessonsTotal: sc.section.lessonsTotal,
+                    ...(sc.section.activitiesTotal > 0 && {
+                      activitiesCompleted: sc.section.activitiesCompleted,
+                      activitiesTotal: sc.section.activitiesTotal,
+                    }),
+                  },
+                  results: {
+                    xpEarned: typeof data.xpEarned === 'number' ? data.xpEarned : 0,
+                    bonusXp: sc.rewards.bonusXp,
+                    coinsEarned: typeof data.coinsEarned === 'number' ? data.coinsEarned : 0,
+                    streakDays: data.newStreakDays ?? streakDays,
+                  },
+                  savedAt: Date.now(),
+                })
+              );
+            } catch {
+              // Storage full/blocked — chest falls back to honest toast.
+            }
+            const next = sc.nextSection;
+            scenes.push({
+              kind: 'SECTION_COMPLETE',
+              courseTitle: sc.course.title,
+              sectionTitle: sc.section.title,
+              sectionIndexLabel: `SECTION ${sc.section.index + 1}`,
+              sectionProgress: {
+                lessonsCompleted: sc.section.lessonsCompleted,
+                lessonsTotal: sc.section.lessonsTotal,
+                ...(sc.section.activitiesTotal > 0 && {
+                  activitiesCompleted: sc.section.activitiesCompleted,
+                  activitiesTotal: sc.section.activitiesTotal,
+                }),
+              },
+              results: {
+                xpEarned: typeof data.xpEarned === 'number' ? data.xpEarned : 0,
+                bonusXp: sc.rewards.bonusXp,
+                coinsEarned: typeof data.coinsEarned === 'number' ? data.coinsEarned : 0,
+                streakDays: data.newStreakDays ?? streakDays,
+              },
+              dedupeKey: `section-complete-${sc.section.id}-${activeLesson.id}`,
+            });
+            scenes.push({
+              kind: 'COURSE_PROGRESS',
+              courseTitle: sc.course.title,
+              from: sc.course.progressBefore,
+              to: sc.course.progressAfter,
+              sectionsCompleted: sc.course.sectionsCompleted,
+              sectionsTotal: sc.course.sectionsTotal,
+              lessonsCompleted: sc.course.lessonsCompleted,
+              lessonsTotal: sc.course.lessonsTotal,
+            });
+
+            if (sc.isFinalSection || !next) {
+              scenes.push({
+                kind: 'COURSE_COMPLETE',
+                courseTitle: sc.course.title,
+                sectionsCompleted: sc.course.sectionsCompleted,
+                sectionsTotal: sc.course.sectionsTotal,
+                lessonsCompleted: sc.course.lessonsCompleted,
+                lessonsTotal: sc.course.lessonsTotal,
+                xpTotal: typeof data.newXp === 'number' ? data.newXp : 0,
+                streakDays: data.newStreakDays ?? streakDays,
+                onContinue: () => router.push(`/learn/${params.id}`),
+              });
+            } else {
+              scenes.push({
+                kind: 'SECTION_UNLOCKED',
+                sectionIndexLabel: `SECTION ${next.index + 1}`,
+                sectionTitle: next.title,
+                description: next.description,
+                lessonCount: next.lessonCount,
+                estimatedMinutes: next.estimatedMinutes,
+                onStartSection: () =>
+                  router.push(`/learn/${params.id}/section/${next.index}`),
+                onBackToCourse: () => router.push(`/learn/${params.id}`),
+                dedupeKey: `section-unlock-${sc.section.id}`,
+              });
+            }
+          }
+
           // Returning to the map is owned by the LAST scene's completion.
           const last = scenes[scenes.length - 1] as Extract<CelebrationScene, { onComplete?: () => void }>;
           last.onComplete = returnToMapAfterLesson;
@@ -1071,14 +1179,66 @@ function SectionViewContent({
         triggerComingSoon(`Lesson Player: ${item.title}`);
       }
     } else if (item.type === 'challenge') {
-      triggerComingSoon(`Starting Challenge: ${item.title}`);
-    } else if (item.type === 'chest') {
-      triggerComingSoon('Claiming Chest Rewards (50 XP!)');
+      triggerComingSoon('Challenges are coming soon!');
+    } else if (item.type === 'chest' || item.type === 'trophy') {
+      // Both chest nodes open the section chest — real server numbers only.
+      handleOpenChest();
     } else if (item.type === 'book') {
       setShowGuidebook(true);
     } else {
       triggerComingSoon('Completing section and issuing Certificate!');
     }
+  };
+
+  // ── Section chest: replay the SERVER-computed completion summary ──────────
+  // The bonus XP was already paid by completeLesson when the section finished;
+  // this chest replays that real payload instead of the old fictional
+  // +100/+50 modal. One playback per browser per section.
+  const [chestClaimed, setChestClaimed] = useState(false);
+  const chestSectionId = section?.id as string | undefined;
+  useEffect(() => {
+    if (!chestSectionId) return;
+    try {
+      if (localStorage.getItem(`teyro_section_chest_opened_${chestSectionId}`)) {
+        setChestClaimed(true);
+      }
+    } catch {
+      // Storage blocked — chest stays claimable; worst case it replays.
+    }
+  }, [chestSectionId]);
+
+  const handleOpenChest = () => {
+    let stash: Record<string, unknown> | null = null;
+    try {
+      const raw = chestSectionId
+        ? localStorage.getItem(`teyro_section_chest_${chestSectionId}`)
+        : null;
+      if (raw) {
+        const { savedAt, ...scenePayload } = JSON.parse(raw);
+        stash = scenePayload;
+      }
+    } catch {
+      // Corrupt entry → treat as missing.
+    }
+
+    if (!stash) {
+      // Completed before this feature (or another device) — no stored truth,
+      // so never invent numbers.
+      triggerComingSoon('This chest was credited when you completed the section');
+      return;
+    }
+
+    playHaptic('medium');
+    celebrate({
+      kind: 'SECTION_COMPLETE',
+      ...stash,
+    } as never);
+    try {
+      if (chestSectionId) {
+        localStorage.setItem(`teyro_section_chest_opened_${chestSectionId}`, '1');
+      }
+    } catch {}
+    setChestClaimed(true);
   };
 
   return (
@@ -1433,24 +1593,18 @@ function SectionViewContent({
                 {learnTextHtml && (
                   <div
                     className={styles.learnArticleBody}
-                    dangerouslySetInnerHTML={{ __html: learnTextHtml }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(learnTextHtml) }}
                   />
                 )}
 
                 {/* Resources Section */}
                 <div className={styles.resourcesSection}>
-                  <div className={styles.resourcesHeader}>
-                    <div className={styles.resourcesTitleBox}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#64748B"><path d="M4 6h16v12H4z" /></svg>
-                      <h4>Resources</h4>
-                    </div>
-                    {activeLesson?.resources && activeLesson.resources.length > 0 && (
-                      <button className={styles.downloadAllBtn}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m7-5l5 5 5-5m-5 5V3"/></svg>
-                        Download all
-                      </button>
-                    )}
+                  <div className={styles.resourcesTitleBox}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#64748B"><path d="M4 6h16v12H4z" /></svg>
+                    <h4>Resources</h4>
                   </div>
+                  {/* "Download all" button removed — it had no handler; per-resource
+                      downloads below are the real path */}
 
                   {activeLesson?.resources && activeLesson.resources.length > 0 ? (
                     <div className={styles.resourcesGrid}>
@@ -1674,7 +1828,7 @@ function SectionViewContent({
                         <span>Tey stored your notes from your first completion! Feel free to polish or update your thoughts below.</span>
                       </div>
                     )}
-                    <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: cleanHtml(reflectPrompt) }} />
+                    <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: sanitizeHtml(reflectPrompt) }} />
                   </div>
                   <Image src="/lesson Player/Hi there tey.png" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
                 </div>
@@ -1766,7 +1920,7 @@ function SectionViewContent({
                 <div className={styles.deepenHeader}>
                   <span className={styles.applyBadge}>DEEPEN</span>
                   <h2 className={styles.deepenTitle}>{deepenTitle}</h2>
-                  <div className={styles.deepenDescription} dangerouslySetInnerHTML={{ __html: cleanHtml(deepenDesc) }} />
+                  <div className={styles.deepenDescription} dangerouslySetInnerHTML={{ __html: sanitizeHtml(deepenDesc) }} />
                 </div>
 
                 {/* Serpentine Pathway Grid */}
@@ -2010,11 +2164,20 @@ function SectionViewContent({
                     isActive = item.lessonIndex === currentActiveLessonIndex;
                     isLocked = item.lessonIndex > currentActiveLessonIndex;
                   } else if (item.type === 'challenge') {
-                    // Challenge is unlocked if lesson before it is completed
-                    // Find matching index of lesson in lessons array
-                    const beforeLessonIdx = lessons.findIndex((l: any) => l.title === mapItems[idx - 1]?.title);
-                    isCompleted = beforeLessonIdx !== -1 && completedLessons.includes(lessons[beforeLessonIdx]?.id) && completedLessons.includes(lessons[beforeLessonIdx - 1]?.id);
-                    isActive = !isCompleted && beforeLessonIdx !== -1 && completedLessons.includes(lessons[beforeLessonIdx]?.id);
+                    // Challenge unlocks once the lesson pair before it is done.
+                    // mapItems always interleaves [lesson, lesson, challenge],
+                    // so the node directly above (idx-1) IS that second lesson
+                    // — matched by position and stable ids, never by title.
+                    const prev = mapItems[idx - 1];
+                    const prevLessonIdx = prev?.type === 'lesson' ? prev.lessonIndex : -1;
+                    isCompleted =
+                      prevLessonIdx >= 1 &&
+                      completedLessons.includes(lessons[prevLessonIdx]?.id) &&
+                      completedLessons.includes(lessons[prevLessonIdx - 1]?.id);
+                    isActive =
+                      !isCompleted &&
+                      prevLessonIdx >= 0 &&
+                      completedLessons.includes(lessons[prevLessonIdx]?.id);
                     isLocked = !isCompleted && !isActive;
                   } else if (item.type === 'trophy') {
                     isCompleted = progressPercent === 100;
@@ -2057,9 +2220,9 @@ function SectionViewContent({
                           >
                             <span>
                               {item.type === 'trophy'
-                                ? 'UNIT MASTERED! 👑'
+                                ? 'SECTION CHEST!'
                                 : item.type === 'challenge'
-                                ? 'BONUS CHEST 🎁'
+                                ? 'COMING SOON'
                                 : item.lessonIndex === 0 && completedInSection === 0
                                 ? 'START 🚀'
                                 : item.lessonIndex === totalLessons - 1
@@ -2149,7 +2312,7 @@ function SectionViewContent({
                               {`${item.lessonIndex + 1}. ${item.title}`}
                             </h4>
                             <span className={styles.bubbleXp} style={{ color: theme.main }}>
-                              XP +{item.xpReward} • 🪙 +5 Coins
+                              XP +{item.xpReward} • <Image src={CURRENCY_ICONS.COINS} alt="" width={12} height={12} /> +5 Coins
                             </span>
                           </div>
                         )}
@@ -2203,7 +2366,7 @@ function SectionViewContent({
                                         borderBottom: `4px solid ${theme.shadow}`,
                                       }}
                                     >
-                                      START +{item.xpReward || 10} XP • 🪙 +5 COINS
+                                      START +{item.xpReward || 10} XP • <Image src={CURRENCY_ICONS.COINS} alt="" width={12} height={12} /> +5 COINS
                                     </button>
                                   </>
                                 )
@@ -2215,13 +2378,17 @@ function SectionViewContent({
                                   
                                   <div className={styles.bubbleFooter}>
                                     <span className={styles.bubbleRewardLabel}>
-                                      {item.type === 'challenge' ? '💎 +30 XP' : 'Milestone'}
+                                      {item.type === 'challenge' ? (
+                                        <>
+                                          <Image src={CURRENCY_ICONS.XP} alt="" width={12} height={12} /> +30 XP
+                                        </>
+                                      ) : 'Milestone'}
                                     </span>
-                                    <button 
+                                    <button
                                       className={styles.bubbleStartBtn}
                                       onClick={() => handleStartAction(item)}
                                     >
-                                      {item.type === 'challenge' ? 'FIGHT' : 'OPEN'}
+                                      {item.type === 'challenge' ? 'COMING SOON' : 'OPEN'}
                                     </button>
                                   </div>
                                 </>
@@ -2267,6 +2434,8 @@ function SectionViewContent({
             progressPercent={progressPercent}
             xpPoints={xpPoints}
             triggerComingSoon={triggerComingSoon}
+            chestClaimed={chestClaimed}
+            onOpenChest={handleOpenChest}
           />
         </div>
       </div>

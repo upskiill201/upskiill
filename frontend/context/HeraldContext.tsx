@@ -111,6 +111,10 @@ const HeraldContext = createContext<HeraldContextValue | null>(null);
 export function HeraldProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isCreatorPortal = pathname?.startsWith('/creator');
+  // Onboarding owns its celebration moments (step 13 claims the Novice badge
+  // through the Celebration Engine) — Herald must stay silent there or its
+  // claimables sweep would surface the unlock before the user claims it.
+  const isOnboarding = pathname?.startsWith('/onboarding');
 
   const [queue, setQueue] = useState<HeraldNotification[]>([]);
   const [activeNotification, setActiveNotification] =
@@ -131,13 +135,16 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   const suppressedRef = useRef(false);
 
   // Clear any active banner or queue immediately when entering Creator Studio
+  // or onboarding, and keep Herald suppressed for the whole onboarding flow
+  // (route-based, so it self-clears once the user lands in the app).
   useEffect(() => {
-    if (isCreatorPortal) {
+    if (isCreatorPortal || isOnboarding) {
       setActiveNotification(null);
       setQueue([]);
       setActiveOverlay(null);
     }
-  }, [isCreatorPortal]);
+    suppressedRef.current = isOnboarding === true;
+  }, [isCreatorPortal, isOnboarding]);
 
   // ── Widget registry ──────────────────────────────────────────────────────
 

@@ -115,6 +115,7 @@ describe('computeBehavior', () => {
       date: dayKeyOf(i),
       lessonsCompleted: i % 2 === 0 ? 2 : 0,
       timeSpentSeconds: i % 2 === 0 ? 1800 : 0,
+      xpEarned: i % 2 === 0 ? 120 : 0,
     }));
     const b = computeBehavior({ daily, todayKey, memberSinceKey: dayKeyOf(40) });
     expect(b.lessonsPerWeek).toBe(7); // 14 lessons / 4 weeks
@@ -125,17 +126,17 @@ describe('computeBehavior', () => {
 
   it('a learner who joined mid-window is not punished on consistency', () => {
     const daily = [
-      { date: dayKeyOf(0), lessonsCompleted: 1, timeSpentSeconds: 600 },
-      { date: dayKeyOf(1), lessonsCompleted: 1, timeSpentSeconds: 600 },
+      { date: dayKeyOf(0), lessonsCompleted: 1, timeSpentSeconds: 600, xpEarned: 60 },
+      { date: dayKeyOf(1), lessonsCompleted: 1, timeSpentSeconds: 600, xpEarned: 60 },
     ];
     const b = computeBehavior({ daily, todayKey, memberSinceKey: dayKeyOf(1) });
     expect(b.consistencyPct).toBe(100); // active both days they existed
   });
 
   it('flags a DOWN pace when recent half collapses', () => {
-    const daily = [] as { date: string; lessonsCompleted: number; timeSpentSeconds: number }[];
-    for (let i = 14; i < 28; i++) daily.push({ date: dayKeyOf(i), lessonsCompleted: 4, timeSpentSeconds: 900 });
-    daily.push({ date: dayKeyOf(0), lessonsCompleted: 1, timeSpentSeconds: 300 });
+    const daily = [] as { date: string; lessonsCompleted: number; timeSpentSeconds: number; xpEarned: number }[];
+    for (let i = 14; i < 28; i++) daily.push({ date: dayKeyOf(i), lessonsCompleted: 4, timeSpentSeconds: 900, xpEarned: 200 });
+    daily.push({ date: dayKeyOf(0), lessonsCompleted: 1, timeSpentSeconds: 300, xpEarned: 50 });
     const b = computeBehavior({ daily, todayKey });
     expect(b.paceTrend).toBe('DOWN');
   });

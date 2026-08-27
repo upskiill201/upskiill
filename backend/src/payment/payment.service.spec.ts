@@ -166,6 +166,7 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
     });
 
   beforeEach(async () => {
+    delete process.env.MESOMB_WEBHOOK_SECRET;
     process.env.MESOMB_APP_KEY = 'test_mesomb_app_key';
     const prismaMock = {
       course: { findMany: jest.fn(), update: jest.fn() },

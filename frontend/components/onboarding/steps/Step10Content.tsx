@@ -81,17 +81,21 @@ export default function Step10Content({ onNext }: Step10ContentProps) {
             You completed the demo. Keep up the momentum!
           </p>
 
-          {/* XP Badge */}
+          {/* XP Badge — mirrors the real one-time reward the server granted
+              for the Step 9 shape challenge (25 XP + 25 coins) */}
           <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md border border-white/80 border-b-[4px] border-slate-200/60 rounded-[1.5rem] px-5 py-3 shadow-md w-full max-w-[280px]">
             <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#3A96FF] to-[#0172FD] flex items-center justify-center shadow-sm shrink-0">
               <Star className="w-5 h-5 text-white fill-white" />
             </div>
 
             <div className="flex flex-col items-start leading-tight">
-              <span className="text-slate-400 font-extrabold text-[10px] tracking-wider uppercase mb-0.5">You earned</span>
+              <span className="text-slate-400 font-extrabold text-[10px] tracking-wider uppercase mb-0.5">Shape challenge bonus</span>
               <div className="flex items-baseline gap-1.5" style={{ fontFamily: 'var(--font-jakarta)' }}>
-                <span className="text-[#0172FD] font-[900] text-2xl">+10</span>
+                <span className="text-[#0172FD] font-[900] text-2xl">+25</span>
                 <span className="text-[#071233] font-[900] text-lg">XP</span>
+                <span className="text-slate-300 font-black text-lg">·</span>
+                <span className="text-yellow-600 font-[900] text-lg">+25</span>
+                <span className="text-[#071233] font-[900] text-sm uppercase">coins</span>
               </div>
             </div>
           </div>
