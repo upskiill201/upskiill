@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Compass, Sparkles } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import styles from './CurrentQuestCard.module.css';
 
@@ -12,22 +13,81 @@ interface CurrentQuestCardProps {
 }
 
 export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQuestCardProps) {
+  const router = useRouter();
+
+  // ─── Empty state: never fabricate a course. A brand-new learner sees an
+  // honest invitation instead of a hardcoded placeholder enrollment.
+  if (!currentEnrollment?.course) {
+    return (
+      <div className={styles.card}>
+        <div className={styles.leftCol}>
+          <span className={styles.categoryTag}>GET STARTED</span>
+
+          <h2 className={styles.courseTitle}>No course in progress yet</h2>
+          <p className={styles.courseDesc}>
+            Pick your first course and this quest card becomes your journey —
+            progress, next lesson, all of it.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              playHaptic('medium');
+              router.push('/courses');
+            }}
+            className={styles.continueBtn}
+          >
+            <Compass size={17} strokeWidth={2.8} />
+            <span>Find your first course</span>
+          </button>
+        </div>
+
+        <div className={styles.rightCol}>
+          <div className={styles.speechBubble}>
+            <span className={styles.speechText}>
+              Your first lesson is one tap away!
+            </span>
+          </div>
+
+          <div className={styles.mascotStage}>
+            <span className={styles.sparkle1}>
+              <Sparkles size={18} className="text-[#BAE6FD]" />
+            </span>
+            <span className={styles.sparkle2}>
+              <Sparkles size={16} className="text-[#BAE6FD]" />
+            </span>
+            <span className={styles.sparkle3}>
+              <Sparkles size={14} className="text-[#BAE6FD]" />
+            </span>
+
+            <div className={styles.mascotImg}>
+              <Image
+                src="/dashboard tey.png"
+                alt="Tey Mascot Celebrating"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Course info
-  const course = currentEnrollment?.course;
+  const course = currentEnrollment.course;
   const category = (course?.category || 'DESIGN').toUpperCase();
   const level = (course?.level || 'BEGINNER').toUpperCase();
-  const courseTitle = course?.title || 'Figma UI/UX Essentials: Zero to Hero';
-  const shortDesc =
-    course?.shortDescription ||
-    course?.subtitle ||
-    'Master the complete design lifecycle in Figma — components, auto-layout, prototyping, and developer handoff.';
+  const courseTitle = course?.title || 'Untitled course';
+  const shortDesc = course?.shortDescription || course?.subtitle || '';
 
   // Progress metrics
   const completedLessons = Array.isArray(currentEnrollment?.completedLessons)
     ? currentEnrollment.completedLessons
     : [];
   const completedCount = completedLessons.length;
-  
+
   // Calculate total lessons from sections if available
   const sections = course?.sections || [];
   let allLessons: any[] = [];
@@ -37,12 +97,14 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
     }
   });
 
-  const totalLessons = allLessons.length > 0 ? allLessons.length : 25;
+  const totalLessons = allLessons.length;
   const currentLessonNum = Math.min(totalLessons, completedCount + 1);
   const progressPct =
     currentEnrollment?.progress !== undefined
       ? Math.round(currentEnrollment.progress)
-      : Math.round((completedCount / totalLessons) * 100) || 8;
+      : totalLessons > 0
+        ? Math.round((completedCount / totalLessons) * 100)
+        : 0;
 
   // Find the actual next lesson the student needs to learn
   const nextLesson = allLessons.find(
@@ -51,7 +113,7 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
 
   const speechBubbleText = nextLesson?.title
     ? `${nextLesson.title} will level up your skills!`
-    : 'Figma variants and auto-layout make designs 10x faster!';
+    : 'Every lesson moves your streak forward!';
 
   const handleAction = () => {
     playHaptic('medium');
@@ -80,9 +142,11 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
 
           <div className={styles.progressLabelsRow}>
             <span>{progressPct}% COMPLETE</span>
-            <span>
-              LESSON {currentLessonNum} / {totalLessons}
-            </span>
+            {totalLessons > 0 && (
+              <span>
+                LESSON {currentLessonNum} / {totalLessons}
+              </span>
+            )}
           </div>
         </div>
 
