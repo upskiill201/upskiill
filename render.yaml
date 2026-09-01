@@ -44,6 +44,8 @@ services:
         sync: false
       - key: MESOMB_SECRET_KEY
         sync: false
+      - key: EARNINGS_ENC_KEY
+        sync: false
 
   # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
   # New service created for production.
@@ -88,4 +90,6 @@ services:
       - key: MESOMB_ACCESS_KEY
         sync: false
       - key: MESOMB_SECRET_KEY
+        sync: false
+      - key: EARNINGS_ENC_KEY
         sync: false
