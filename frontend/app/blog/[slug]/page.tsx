@@ -21,8 +21,7 @@ import proseStyles from '../prose.module.css';
 import styles from './PostPage.module.css';
 
 export const revalidate = 3600;
-// Pure content blog: unknown slugs 404 immediately instead of rendering on demand.
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;

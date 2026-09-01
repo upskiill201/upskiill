@@ -19,7 +19,7 @@ draft: false                                    # true = hidden from production 
 cta:                                            # override the default signup CTA block
   # title: "Custom CTA headline"
   # text: "Custom CTA copy tied to this post's topic."
-  href: /signup                                 # default: /
+  href: /onboarding/0                           # onboarding route for new users
   label: Start learning free                    # button text (default: "Try Teyro free")
 faq:                                            # rendered as accordion + FAQPage schema (great for SEO/AI citations)
   - question: "Naturally phrased question people actually search?"
@@ -28,8 +28,11 @@ faq:                                            # rendered as accordion + FAQPag
 
 Write the post body below in Markdown/MDX. Rules of thumb:
 
-- First paragraph: hook + promise, no heading above it (the page renders the H1).
-- Use real `##` H2s and `###` H3s — Google and AI answer engines parse these for extractable structure. Posts over ~800 words automatically get a table of contents built from them.
-- Do not use curly braces or raw `<` in prose (MDX treats them as code).
-- Link internally: every post should point at Teyro (homepage or signup) plus 1-2 other relevant posts, e.g. [other post](/blog/spaced-repetition-how-to-study-smarter).
-- End with a short wrap-up section ("The Bottom Line") before the CTA block renders.
+- **Target Word Count:** 1,500 to 2,500+ words per comprehensive post for maximum topical authority and search ranking.
+- **First 150 Words (Opening Hook + Teyro Promotion):** Immediately address the search query, introduce the primary keyword, and contextually mention [Teyro](/onboarding/0) as the bite-sized gamified solution to build the skill with 15 minutes of daily practice.
+- **Direct Answer Block:** Provide a 40–60 word snippet / table directly answering the search query for Google AI Overviews, Perplexity, and Featured Snippets.
+- **Use real `##` H2s and `###` H3s:** Google and AI answer engines parse these for extractable structure. Posts automatically get a table of contents built from them.
+- **Duolingo-Style Gamified Section:** Include a structured Level 1–3 Roadmap, XP checkpoints, and 15-minute daily habit routine.
+- **Internal Linking:** Every post must link to 2-4 related blog posts and to the app ([Teyro Onboarding](/onboarding/0) or relevant features).
+- **FAQ Section:** 3-5 structured Q&As matching People Also Ask (PAA) queries.
+- **Bottom CTA:** Wrap up with "The Bottom Line" before the onboarding CTA block.

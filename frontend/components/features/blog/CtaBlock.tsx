@@ -10,7 +10,7 @@ interface CtaBlockProps {
 const DEFAULTS = {
   title: 'Turn reading into actually learning',
   text: 'Teyro turns what you just read into bite-sized, gamified lessons — with spaced review, streaks and rewards that make knowledge stick.',
-  href: '/',
+  href: '/onboarding/0',
   label: 'Try Teyro free',
 };
 
