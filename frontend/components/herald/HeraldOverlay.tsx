@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { X, Sparkles, Trophy } from 'lucide-react';
 import { useHerald, HeraldNotification } from '@/context/HeraldContext';
+import { isStudentExperienceRoute } from '@/lib/herald-scope';
 import { useRewardAnimation, type RewardCurrency } from '@/context/RewardAnimationContext';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration, isCelebrationActive } from '@/context/CelebrationContext';
@@ -352,7 +353,7 @@ export default function HeraldOverlay() {
     return () => window.removeEventListener('celebration:visibility', sync);
   }, []);
 
-  if (!mounted || pathname?.startsWith('/creator') || celebrationActive) return null;
+  if (!mounted || !isStudentExperienceRoute(pathname) || celebrationActive) return null;
 
   return createPortal(
     <AnimatePresence mode="wait">

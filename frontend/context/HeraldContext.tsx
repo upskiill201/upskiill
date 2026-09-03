@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { usePathname } from 'next/navigation';
+import { isStudentExperienceRoute } from '@/lib/herald-scope';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ const HeraldContext = createContext<HeraldContextValue | null>(null);
 
 export function HeraldProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isCreatorPortal = pathname?.startsWith('/creator');
+  const isStudentExperience = isStudentExperienceRoute(pathname);
   // Onboarding owns its celebration moments (step 13 claims the Novice badge
   // through the Celebration Engine) — Herald must stay silent there or its
   // claimables sweep would surface the unlock before the user claims it.
@@ -134,17 +135,18 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   /** When true, Herald produces no banners */
   const suppressedRef = useRef(false);
 
-  // Clear any active banner or queue immediately when entering Creator Studio
-  // or onboarding, and keep Herald suppressed for the whole onboarding flow
+  // Clear any active banner or queue immediately when leaving the Student
+  // experience (Creator Studio, blog, other public pages) or entering
+  // onboarding, and keep Herald suppressed for the whole onboarding flow
   // (route-based, so it self-clears once the user lands in the app).
   useEffect(() => {
-    if (isCreatorPortal || isOnboarding) {
+    if (!isStudentExperience || isOnboarding) {
       setActiveNotification(null);
       setQueue([]);
       setActiveOverlay(null);
     }
     suppressedRef.current = isOnboarding === true;
-  }, [isCreatorPortal, isOnboarding]);
+  }, [isStudentExperience, isOnboarding]);
 
   // ── Widget registry ──────────────────────────────────────────────────────
 
@@ -164,8 +166,8 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
 
   const enqueueHeraldNotification = useCallback(
     (notification: HeraldNotification) => {
-      // Hard-stop: never show student notifications in Creator Studio
-      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/creator')) return;
+      // Hard-stop: only show student notifications inside the Student experience
+      if (typeof window !== 'undefined' && !isStudentExperienceRoute(window.location.pathname)) return;
 
       // Hard-stop: already surfaced this exact transition this session
       if (surfacedRef.current.has(notification.transitionKey)) return;
@@ -205,8 +207,8 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   // ── Automated Claimable Checker ─────────────────────────────────────────
 
   const checkClaimables = useCallback(async () => {
-    // Hard-stop: never check or trigger student gamification in Creator Studio
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/creator')) return;
+    // Hard-stop: only check/trigger student gamification inside the Student experience
+    if (typeof window !== 'undefined' && !isStudentExperienceRoute(window.location.pathname)) return;
     if (suppressedRef.current) return;
 
     try {

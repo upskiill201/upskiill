@@ -15,7 +15,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { ArrowRight, Check, Loader2, Medal, RotateCcw } from 'lucide-react';
-import { useOnboardingSession } from '@/hooks/useOnboardingSession';
+import { useOnboardingSession, syncToBackend } from '@/hooks/useOnboardingSession';
 import { useCelebration } from '@/context/CelebrationContext';
 import { claimOnboardingBadge, fetchNoviceBadgeStatus } from '@/lib/achievements';
 import { playHaptic } from '@/lib/haptics';
@@ -40,7 +40,7 @@ interface Step13ContentProps {
 }
 
 export default function Step13Content({ onNext }: Step13ContentProps) {
-  useOnboardingSession({ currentStep: 13, disableGuard: true });
+  const { completedSteps, answers } = useOnboardingSession({ currentStep: 13, disableGuard: true });
   const { celebrate } = useCelebration();
   const [idle, setIdle] = useState(false);
   const [claimState, setClaimState] = useState<ClaimState>('checking');
@@ -68,6 +68,13 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
     if (claimState === 'claiming' || claimState === 'claimed' || claimState === 'checking') return;
     setClaimState('claiming');
     playHaptic('medium');
+
+    // The step-12→13 advance syncs currentStep to the backend without
+    // awaiting it (kept non-blocking so navigation feels instant). The claim
+    // below is gated server-side on that session showing step 13 reached, so
+    // on a slow connection the claim can race ahead of that write and fail
+    // with a false "not earned yet". Re-sync (idempotent) and await it first.
+    await syncToBackend({ currentStep: 13, completedSteps, answers });
 
     const result = await claimOnboardingBadge();
     if (!result.ok || !result.unlock) {

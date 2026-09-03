@@ -48,7 +48,7 @@ async function fetchSessionFromBackend(): Promise<{
   }
 }
 
-async function syncToBackend(payload: {
+export async function syncToBackend(payload: {
   currentStep: number;
   completedSteps: number[];
   answers: OnboardingAnswers;
