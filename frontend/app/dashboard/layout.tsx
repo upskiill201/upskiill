@@ -118,7 +118,15 @@ export default function DashboardLayout({
           // Use window.location.href (hard navigation) to break any localStorage-based infinite redirect
           // loops that router.push() cannot escape.
           if (!data.hasStudentAccess && !data.studentProfile) {
-            window.location.href = '/creator';
+            if (!data.hasCreatorAccess) {
+              // Neither role confirmed yet — onboarding never finished.
+              // Sending this account to /creator would just bounce back
+              // here forever, since creator/layout.tsx redirects
+              // non-creators back to /dashboard.
+              window.location.href = '/onboarding/0';
+            } else {
+              window.location.href = '/creator';
+            }
             return;
           }
         } else if (res.status === 401) {

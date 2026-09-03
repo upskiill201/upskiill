@@ -118,7 +118,15 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           // Pure students with no creator access should not be in the Creator Studio.
           // Use window.location.href (hard navigation) to prevent any router-level loop.
           if (!data.hasCreatorAccess) {
-            window.location.href = '/dashboard';
+            if (!data.hasStudentAccess) {
+              // Neither role confirmed yet — onboarding never finished.
+              // Sending this account to /dashboard would just bounce back
+              // here forever, since dashboard/layout.tsx redirects
+              // non-students back to /creator.
+              window.location.href = '/onboarding/0';
+            } else {
+              window.location.href = '/dashboard';
+            }
             return;
           }
         } else if (res.status === 401) {
