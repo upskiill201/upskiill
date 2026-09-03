@@ -11,6 +11,7 @@ It is an AI-powered gamified learning platform that makes mastering real-world s
 
 - **Core Pedagogy (Data-level Moat):** 4-phase lesson structure: **Learn → Apply → Reflect → Deepen**.
 - **Solo Operator Rule:** Keep all architecture lightweight and maintainable by one person. Avoid enterprise/multi-team DevOps bloat.
+- **Full Vision & Mission:** See [`docs/00-vision-and-mission.md`](docs/00-vision-and-mission.md) — the Teyro Vision School summary (why Teyro exists, the two-sided learner/creator model, monetization, culture, and long-term vision). Read it for context beyond code-level decisions.
 - **Live URLs:**
   - Production Frontend: https://teyro.app (Vercel)
   - Production Backend: https://upskiill-backend.onrender.com (Render)
