@@ -64,6 +64,38 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
     setIdle(false);
   };
 
+  // ── Drag-to-slide ────────────────────────────────────────────────────────
+  // Pointer events unify mouse/touch/pen, so a single handler set covers
+  // both desktop dragging and mobile swiping across the track.
+  const isDraggingRef = useRef(false);
+
+  const indexFromClientX = (clientX: number) => {
+    const track = trackRef.current;
+    if (!track) return 0;
+    const rect = track.getBoundingClientRect();
+    const ratio = rect.width === 0 ? 0 : Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    return Math.round(ratio * (LEVELS.length - 1));
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    handleSelect(indexFromClientX(e.clientX));
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    const idx = indexFromClientX(e.clientX);
+    if (idx !== selectedIndex) handleSelect(idx);
+  };
+
+  const stopDragging = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
   const handleNext = () => {
     if (selectedIndex === null) return;
     playHaptic('medium');
@@ -138,18 +170,18 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
 
           {/* Track — full gradient at all times, like the concept */}
           <div
-            className="relative w-full h-3.5 md:h-4 rounded-full"
-            style={{ background: 'linear-gradient(90deg, #0172FD 0%, #6452F8 100%)' }}
+            className="relative w-full h-3.5 md:h-4 rounded-full select-none"
+            style={{ background: 'linear-gradient(90deg, #0172FD 0%, #6452F8 100%)', touchAction: 'none' }}
             ref={trackRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={stopDragging}
+            onPointerCancel={stopDragging}
           >
-            {/* Clickable Hitboxes */}
+            {/* Tap targets — click-to-jump still works alongside drag-to-slide */}
             <div className="absolute inset-0 flex justify-between">
               {LEVELS.map((_, i) => (
-                <div
-                  key={i}
-                  className="flex-1 h-12 -mt-4 cursor-pointer z-10"
-                  onClick={() => handleSelect(i)}
-                />
+                <div key={i} className="flex-1 h-12 -mt-4 cursor-pointer z-10" />
               ))}
             </div>
 
