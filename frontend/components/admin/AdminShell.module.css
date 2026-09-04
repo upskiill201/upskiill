@@ -1,0 +1,136 @@
+/* Tey command center shell.
+   Teyro tokens only — no hardcoded hex. 8px spacing grid, 12px card radius,
+   10px control radius, per frontend/CLAUDE.md. */
+
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--bg-section);
+}
+
+.sidebar {
+  background: var(--bg-nav);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.brandMark {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--gradient-brand);
+  display: grid;
+  place-items: center;
+  color: var(--text-on-blue);
+  flex-shrink: 0;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brandTitle {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.brandSub {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.navLink:hover {
+  background: var(--bg-section);
+  color: var(--text-primary);
+}
+
+.navLinkActive {
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.main {
+  padding: 32px 40px 64px;
+  max-width: 1280px;
+  width: 100%;
+}
+
+/* Sidebar collapses to a horizontal strip — an operator checking the queue on
+   a phone should still be able to move between sections. */
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .nav {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .brandSub,
+  .footer {
+    display: none;
+  }
+
+  .main {
+    padding: 24px 16px 48px;
+  }
+}

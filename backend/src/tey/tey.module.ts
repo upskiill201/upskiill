@@ -8,6 +8,8 @@ import { TeyActivityService } from './activity/tey-activity.service';
 import { TeyListener } from './listeners/tey.listener';
 import { LearnerStateService } from './state/learner-state.service';
 import { TeyTimezoneService } from './state/timezone.service';
+import { TeyAdminController } from './admin/tey-admin.controller';
+import { TeyAdminService } from './admin/tey-admin.service';
 import { TeyDecisionService } from './decision/tey-decision.service';
 import { InAppChannel } from './delivery/channels/inapp.channel';
 import { PushChannel } from './delivery/channels/push.channel';
@@ -45,6 +47,7 @@ import { TeyController } from './tey.controller';
     TeyActivityController,
     TeySchedulerController,
     PushController,
+    TeyAdminController,
   ],
   providers: [
     TeyActivityService,
@@ -60,6 +63,7 @@ import { TeyController } from './tey.controller';
     PushChannel,
     InAppChannel,
     WhatsAppChannel,
+    TeyAdminService,
     TeyListener,
   ],
   exports: [

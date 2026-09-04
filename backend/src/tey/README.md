@@ -21,7 +21,7 @@ with `AI = language / reasoning / personalization`, never `AI = source of truth`
 | 1 | Activity events + learner state | **shipped** |
 | 2 | Decision engine + scheduler | **shipped (dry-run)** |
 | 3 | Web push + deep links | **shipped** |
-| 4 | Admin dashboard | planned |
+| 4 | Admin dashboard | **shipped** |
 | 5 | AI provider abstraction | planned |
 | 6 | WhatsApp | future |
 | 7 | Rive mascot states | future |
@@ -285,3 +285,38 @@ lesson silently discarded.
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | `npx web-push generate-vapid-keys`. The private key never leaves the server. |
 | `VAPID_SUBJECT` | `mailto:` contact for push services. |
 | `NEXT_PUBLIC_ENABLE_SW` | Frontend. `true` registers the service worker in dev, so push is testable without deploying. |
+
+---
+
+## Admin
+
+`/admin` — Tey's command center. Overview, rules, deliveries, queue, health.
+
+Backed by `/tey/admin/*`, guarded by **class-level** `@Roles(Role.ADMIN)`. That
+placement is load-bearing: `RolesGuard` returns `true` when no `@Roles`
+metadata is present, so a controller that forgets the decorator is open to every
+logged-in student. `tey-admin.controller.spec.ts` asserts the decorator exists
+and that STUDENT/INSTRUCTOR are refused.
+
+Auth is defence in depth — `proxy.ts` cookie wall, then a server-side role check
+in `app/admin/layout.tsx`, then the guard. Only the guard is authoritative; the
+first two exist so an unauthorized visitor gets a redirect rather than a page of
+failed requests.
+
+**`POST /tey/admin/test-push` sends only to the calling admin.** The recipient
+comes from the session and there is deliberately no parameter to override it —
+a "send to any user" endpoint behind an admin login is the most direct route
+from admin panel to accidental spam cannon, and an operator can always test on
+their own account. A spec asserts the handler takes no body.
+
+Two things the dashboard deliberately surfaces:
+
+* **Dry-run is shown as a banner**, not buried in config. It is the first
+  answer to "why did nobody get a notification?", and every delivery number on
+  the page looks broken until you know it.
+* **Suppression reasons are a first-class panel.** Knowing 120 nudges were held
+  back only helps if you can see which policy did it — quiet hours reads very
+  differently from no-subscription.
+
+Open rates are hidden below 10 sends rather than printing a confident 0% or
+100% off three deliveries.
