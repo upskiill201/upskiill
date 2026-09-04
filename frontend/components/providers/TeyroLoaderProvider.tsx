@@ -5,8 +5,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import TeyroBrandedLoader, { MascotPose } from '../ui/TeyroBrandedLoader';
 
 const BACKGROUND_RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
-const GUARD_300MS = 300; // Do not show loader if background load completes in < 300ms
-const DEFAULT_MIN_HOLD_MS = 1400; // Default minimum time loader stays visible once shown (1.4s)
+const GUARD_300MS = 200; // Do not show loader if background load completes in < 200ms
+const DEFAULT_MIN_HOLD_MS = 250; // Default minimum time loader stays visible once shown (anti-flash guard only)
 
 interface TeyroLoaderContextType {
   /** Trigger Pattern A branded loader with 300ms guard */
@@ -138,22 +138,7 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
     }, remainingHold);
   }, []);
 
-  // 1. Cold Start & First Mount
-  const isFirstMount = useRef(true);
-
-  useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      // Show fullScreen loader on cold start
-      showLoaderImmediate("Learning one small skill today is better than planning to learn everything tomorrow.", true);
-      const coldStartTimer = setTimeout(() => {
-        hideLoader();
-      }, 1000);
-      return () => clearTimeout(coldStartTimer);
-    }
-  }, [showLoaderImmediate, hideLoader]);
-
-  // 2. Background Session Resume Threshold (> 30 min)
+  // Background Session Resume Threshold (> 30 min)
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -178,10 +163,17 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [showLoaderImmediate, hideLoader]);
 
+  // A route change always clears whatever custom hold a previous page set
+  // (e.g. dashboard's old 15s hold) so it can never leak onto the next page.
+  const handleRouteChange = useCallback(() => {
+    customHoldMsRef.current = DEFAULT_MIN_HOLD_MS;
+    hideLoader();
+  }, [hideLoader]);
+
   return (
     <TeyroLoaderContext.Provider value={{ showLoader, showLoaderImmediate, hideLoader, isLoading: isVisible }}>
       <Suspense fallback={null}>
-        <RouteChangeWatcher onRouteChange={hideLoader} />
+        <RouteChangeWatcher onRouteChange={handleRouteChange} />
       </Suspense>
       {children}
       <TeyroBrandedLoader

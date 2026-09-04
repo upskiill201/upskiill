@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+import { mutate } from 'swr';
 import { Clock, BookOpen, Check, ArrowRight } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { usePathname } from 'next/navigation';
@@ -10,6 +11,7 @@ import { playHaptic } from '@/lib/haptics';
 import { useHerald } from '@/context/HeraldContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { toCelebrationCurrency, type CelebrationCurrency } from '@/components/celebration/currency';
+import { fetcher } from '@/lib/swr';
 import styles from './TodaysMissionsCard.module.css';
 
 interface MissionReward {
@@ -113,21 +115,18 @@ export default function TodaysMissionsCard() {
       const offset = new Date().getTimezoneOffset();
       const endpoint = `/api/v2/missions/today?timezoneOffset=${offset}`;
 
-      const res = await fetch(endpoint, {
-        credentials: 'include',
-        cache: 'no-store', // Fix: prevent Next.js from returning stale cached missions
-      });
+      // Routed through SWR's global mutate (not a bare fetch) so this shares
+      // its request + cache with HeraldContext's claimables sweep, which
+      // polls the same endpoint — the two no longer double the network call.
+      const data = await mutate<{ missions: MissionItem[] }>(endpoint, fetcher(endpoint));
 
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data.missions) && data.missions.length > 0) {
-          setMissions(data.missions);
+      if (data && Array.isArray(data.missions) && data.missions.length > 0) {
+        setMissions(data.missions);
 
-          // Check if all missions are already claimed
-          const allClaimed = data.missions.every((m: MissionItem) => m.isClaimed || m.status === 'CLAIMED');
-          setShowCelebrationBanner(allClaimed);
-          return;
-        }
+        // Check if all missions are already claimed
+        const allClaimed = data.missions.every((m: MissionItem) => m.isClaimed || m.status === 'CLAIMED');
+        setShowCelebrationBanner(allClaimed);
+        return;
       }
       setMissions(getFallbackMissions());
     } catch (err) {

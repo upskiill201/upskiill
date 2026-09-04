@@ -8,8 +8,10 @@
  * coins or streak freezes.
  */
 
+import { mutate } from 'swr';
 import type { CelebrationScene, QuestRow } from '@/context/CelebrationContext';
 import type { CelebrationCurrency } from '@/components/celebration/currency';
+import { fetcher } from '@/lib/swr';
 
 // ─── Types (mirror the backend payload) ─────────────────────────────────────
 
@@ -79,22 +81,28 @@ function tzParam(): string {
 
 // ─── API ────────────────────────────────────────────────────────────────────
 
+// Both routed through SWR's global mutate (not a bare fetch) — the dashboard
+// card and the sidebar widget each run their own `useMonthlyQuest()` hook
+// instance and used to fire this fetch twice per mount; sharing the same
+// cache key lets SWR's request dedupe collapse them into one call.
 export async function fetchCurrentQuest(): Promise<MonthlyQuest> {
-  const res = await fetch(`/api/v2/monthly-quest/current?${tzParam()}`, {
-    credentials: 'include',
-    cache: 'no-store',
-  });
-  if (!res.ok) throw new Error(`Failed to load quest (${res.status})`);
-  return res.json();
+  const endpoint = `/api/v2/monthly-quest/current?${tzParam()}`;
+  try {
+    return await mutate<MonthlyQuest>(endpoint, fetcher(endpoint)) as MonthlyQuest;
+  } catch (err) {
+    const status = (err as { status?: number })?.status;
+    throw new Error(`Failed to load quest${status ? ` (${status})` : ''}`);
+  }
 }
 
 export async function fetchQuestHistory(): Promise<QuestHistoryEntry[]> {
-  const res = await fetch(`/api/v2/monthly-quest/history?${tzParam()}`, {
-    credentials: 'include',
-    cache: 'no-store',
-  });
-  if (!res.ok) throw new Error(`Failed to load quest history (${res.status})`);
-  return res.json();
+  const endpoint = `/api/v2/monthly-quest/history?${tzParam()}`;
+  try {
+    return await mutate<QuestHistoryEntry[]>(endpoint, fetcher(endpoint)) as QuestHistoryEntry[];
+  } catch (err) {
+    const status = (err as { status?: number })?.status;
+    throw new Error(`Failed to load quest history${status ? ` (${status})` : ''}`);
+  }
 }
 
 /**

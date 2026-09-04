@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import useSWR from 'swr';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
@@ -8,41 +9,32 @@ import { useGamification } from '@/context/GamificationContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { useHerald } from '@/context/HeraldContext';
 import { playHaptic } from '@/lib/haptics';
+import { fetcher } from '@/lib/swr';
 import styles from './MysteryChestCard.module.css';
+
+interface ChestToday {
+  status: string;
+  id?: string;
+}
 
 export default function MysteryChestCard() {
   const { refresh } = useGamification();
   const { celebrate } = useCelebration();
   const { registerNativeWidget, unregisterNativeWidget } = useHerald();
 
-  const [chestState, setChestState] = useState<{ status: string; chestId?: string }>({ status: 'LOCKED' });
+  // Shared '/api/chest/today' key — HeraldContext polls the same endpoint
+  // for its claimables sweep, so this dedupes into one request instead of two.
+  const { data, mutate: refetchChest } = useSWR<ChestToday>('/api/chest/today', fetcher);
+  const [localOverride, setLocalOverride] = useState<{ status: string; chestId?: string } | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   const chestRef = useRef<HTMLDivElement>(null);
+
+  const chestState = localOverride ?? { status: data?.status ?? 'LOCKED', chestId: data?.id };
 
   useEffect(() => {
     registerNativeWidget('mystery-chest');
     return () => unregisterNativeWidget('mystery-chest');
   }, [registerNativeWidget, unregisterNativeWidget]);
-
-  const fetchChestStatus = async () => {
-    try {
-      const tzOffset = new Date().getTimezoneOffset();
-      const res = await fetch(`/api/chest/today`, {
-        credentials: 'include',
-        headers: { 'x-timezone-offset': tzOffset.toString() },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setChestState({ status: data.status, chestId: data.id });
-      }
-    } catch (e) {
-      console.error('Failed to fetch chest status', e);
-    }
-  };
-
-  useEffect(() => {
-    fetchChestStatus();
-  }, []);
 
   // Full-page Celebration Engine reveal — the scene opens the chest
   // server-first and choreographs shake → beam → reward pile.
@@ -54,9 +46,10 @@ export default function MysteryChestCard() {
       kind: 'CHEST',
       chestId: chestState.chestId,
       onComplete: () => {
-        setChestState({ status: 'OPENED' });
+        setLocalOverride({ status: 'OPENED' });
         setIsRevealing(false);
         void refresh();
+        void refetchChest();
       },
     });
   };

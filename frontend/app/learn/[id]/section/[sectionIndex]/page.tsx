@@ -2534,18 +2534,21 @@ export default function SectionViewPage() {
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await fetch(`/api/courses/${params.id}`, { headers: { 'Cache-Control': 'no-cache' } });
+        // course + progress used to be strictly serial (progress only
+        // started after course resolved); they don't depend on each other,
+        // so they now fire together like the parent /learn/[id] page does.
+        const [res, progRes] = await Promise.all([
+          fetch(`/api/courses/${params.id}`),
+          fetch(`/api/courses/${params.id}/progress`, { credentials: 'include' }),
+        ]);
+
         if (!res.ok) {
           setCourse(null);
-          return;
+        } else {
+          const data = await res.json();
+          setCourse(data);
         }
-        const data = await res.json();
-        setCourse(data);
 
-        const progRes = await fetch(`/api/courses/${params.id}/progress`, {
-          credentials: 'include',
-          headers: { 'Cache-Control': 'no-cache' },
-        });
         if (progRes.ok) {
           const pd = await progRes.json();
           setCompletedLessons(pd.completedLessons || []);

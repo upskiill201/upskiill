@@ -7,7 +7,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useGamification } from '@/context/GamificationContext';
 
 export interface StreakStats {
   currentStreak: number;
@@ -53,7 +52,6 @@ interface StreakContextValue {
 const StreakContext = createContext<StreakContextValue | null>(null);
 
 export function StreakProvider({ children }: { children: React.ReactNode }) {
-  const { streakDays } = useGamification();
   const [streakData, setStreakData] = useState<StreakStats | null>(null);
   const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -96,8 +94,13 @@ export function StreakProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Fetch once on mount only. `streakDays` used to be a dependency here,
+    // but it comes from GamificationContext and flips from its seeded
+    // default to the real server value shortly after mount — which made
+    // this effect (and its /api/streak/me call) fire twice per page load.
     fetchStreakData();
-  }, [fetchStreakData, streakDays]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchStreakData]);
 
   const openStreakModal = useCallback((tab?: 'PERSONAL' | 'FRIENDS') => {
     if (tab) setActiveTab(tab);

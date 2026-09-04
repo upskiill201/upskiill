@@ -174,7 +174,7 @@ export default function ExplorePage() {
 
   const handleContinueLearning = (courseId: string) => {
     playHaptic('medium');
-    showLoaderImmediate('Preparing interactive learning environment...', false, 12000, true, 'working');
+    showLoaderImmediate('Preparing interactive learning environment...', false, undefined, true, 'working');
     router.push(`/learn/${courseId}`);
   };
 

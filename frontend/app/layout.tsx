@@ -140,6 +140,7 @@ export const metadata: Metadata = {
 
 const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
 
+import { SWRProvider } from "../components/providers/SWRProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { IntercomProvider } from "../components/providers/IntercomProvider";
@@ -175,6 +176,7 @@ export default function RootLayout({
         <link rel="preload" href="/Loading Screens/Teyro_loading.webm" as="video" type="video/webm" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <SWRProvider>
         <PostHogProvider>
           <IntercomProvider>
             <CartProvider>
@@ -212,6 +214,7 @@ export default function RootLayout({
             </CartProvider>
           </IntercomProvider>
         </PostHogProvider>
+        </SWRProvider>
       </body>
     </html>
   );

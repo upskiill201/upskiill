@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+import { mutate } from 'swr';
 import { ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { playHaptic } from '@/lib/haptics';
 import { useHerald } from '@/context/HeraldContext';
 import { useGamification } from '@/context/GamificationContext';
+import { fetcher } from '@/lib/swr';
 import styles from './WeeklyProgressCard.module.css';
 
 interface DailyBlock {
@@ -82,6 +84,14 @@ export default function WeeklyProgressCard() {
   const { registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [data, setData] = useState<WeeklyProgressData | null>(null);
   const [loading, setLoading] = useState(true);
+  // Read via ref (not a useCallback dep) — streakDays is only needed as a
+  // fallback value if the fetch fails, and it flips from its seeded default
+  // to the real server value shortly after mount. Depending on it directly
+  // used to retrigger this fetch a second time on every mount.
+  const streakDaysRef = useRef(streakDays);
+  useEffect(() => {
+    streakDaysRef.current = streakDays;
+  }, [streakDays]);
 
   // Register this widget as visible — Herald suppresses weekly progress floating banner when this card is on screen
   useEffect(() => {
@@ -92,25 +102,24 @@ export default function WeeklyProgressCard() {
   const fetchWeeklyProgress = useCallback(async () => {
     try {
       const offset = new Date().getTimezoneOffset();
-      const res = await fetch(`/api/v2/progress/weekly?timezoneOffset=${offset}`, {
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.dailyBlocks) {
-          setData(json);
-          return;
-        }
+      const endpoint = `/api/v2/progress/weekly?timezoneOffset=${offset}`;
+      // Routed through SWR's global mutate so this shares its request +
+      // cache with HeraldContext's claimables sweep, which polls the same
+      // endpoint — no longer two separate network calls per mount.
+      const json = await mutate<WeeklyProgressData>(endpoint, fetcher(endpoint));
+      if (json && json.dailyBlocks) {
+        setData(json);
+        return;
       }
-      // If res is not ok or json is invalid, use fallback
-      setData(getFallbackWeeklyData(streakDays));
+      // If json is missing/invalid, use fallback
+      setData(getFallbackWeeklyData(streakDaysRef.current));
     } catch (err) {
       console.error('WeeklyProgressCard fetch error:', err);
-      setData(getFallbackWeeklyData(streakDays));
+      setData(getFallbackWeeklyData(streakDaysRef.current));
     } finally {
       setLoading(false);
     }
-  }, [streakDays]);
+  }, []);
 
   useEffect(() => {
     fetchWeeklyProgress();

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import { AtSign, Bell, Heart, MessageCircle, Megaphone } from 'lucide-react';
 import {
@@ -8,10 +9,10 @@ import {
   getCommentLocation,
   getNotifications,
   getPost,
-  getUnreadCount,
   markNotificationsRead,
   timeAgo,
 } from '@/lib/communityApi';
+import { fetcher } from '@/lib/swr';
 import styles from './NotificationBell.module.css';
 
 const POLL_INTERVAL_MS = 60_000;
@@ -66,26 +67,31 @@ interface NotificationBellProps {
 export default function NotificationBell({ panelAlign = 'right' }: NotificationBellProps) {
   const router = useRouter();
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshUnread = useCallback(async () => {
-    try {
-      const { unreadCount } = await getUnreadCount();
-      setUnreadCount(unreadCount);
-    } catch {
-      // Silent — the bell must never nag about its own failures.
-    }
-  }, []);
-
-  useEffect(() => {
-    refreshUnread();
-    const timer = setInterval(refreshUnread, POLL_INTERVAL_MS);
-    return () => clearInterval(timer);
-  }, [refreshUnread]);
+  // Shared SWR key: the sidebar bell and the mobile HUD bell both mount this
+  // component simultaneously (one is only CSS-hidden, not unmounted) — SWR
+  // dedupes them into a single request + a single poll interval instead of
+  // each running its own setInterval against the same endpoint.
+  const { data, mutate: refreshUnread } = useSWR<{ unreadCount: number }>(
+    '/api/notifications/unread-count',
+    fetcher,
+    { refreshInterval: POLL_INTERVAL_MS }
+  );
+  const unreadCount = data?.unreadCount ?? 0;
+  const setUnreadCount = (updater: number | ((c: number) => number)) => {
+    refreshUnread(
+      (current) => {
+        const base = current?.unreadCount ?? 0;
+        const next = typeof updater === 'function' ? updater(base) : updater;
+        return { unreadCount: next };
+      },
+      { revalidate: false }
+    );
+  };
 
   // Close on outside click / Escape / navigation
   useEffect(() => {

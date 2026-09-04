@@ -64,33 +64,23 @@ import { buildUnlockHref } from '@/lib/return-to';
 interface LearnCourseContentProps {
   course: any;
   completedLessons: string[];
+  initialHasAccess: boolean;
 }
 
-function LearnCourseContent({ course, completedLessons }: LearnCourseContentProps) {
+function LearnCourseContent({ course, completedLessons, initialHasAccess }: LearnCourseContentProps) {
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
-  const [hasAccess, setHasAccess] = useState(false);
+  // Seeded from the parent's parallel fetch (Promise.all alongside course +
+  // progress) instead of its own useEffect — that used to only start once
+  // `loading` flipped false, turning this into a second serial round trip
+  // on top of the parent's.
+  const [hasAccess, setHasAccess] = useState(initialHasAccess);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isUnenrollModalOpen, setIsUnenrollModalOpen] = useState(false);
   const [unenrollLoading, setUnenrollLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      try {
-        const res = await fetch(`/api/courses/${params.id}/access`, { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          setHasAccess(data.hasAccess === true);
-        }
-      } catch {
-        // default to preview
-      }
-    };
-    checkAccess();
-  }, [params.id]);
 
   // Post-payment unlock watcher: returning from Stripe checkout with
   // ?payment=success — poll briefly until the webhook grants entitlement.
@@ -740,16 +730,18 @@ export default function LearnCoursePage() {
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
     const run = async () => {
       try {
-        const [courseRes, progRes] = await Promise.all([
-          fetch(`/api/courses/${params.id}`, { headers: { 'Cache-Control': 'no-cache' } }),
-          fetch(`/api/courses/${params.id}/progress`, {
-            credentials: 'include',
-            headers: { 'Cache-Control': 'no-cache' },
-          }),
+        // Access used to be fetched by the child only after this effect set
+        // loading=false — a strictly serial two-stage waterfall. It's now
+        // part of the same parallel batch.
+        const [courseRes, progRes, accessRes] = await Promise.all([
+          fetch(`/api/courses/${params.id}`),
+          fetch(`/api/courses/${params.id}/progress`, { credentials: 'include' }),
+          fetch(`/api/courses/${params.id}/access`, { credentials: 'include' }),
         ]);
 
         if (courseRes.ok) {
@@ -762,6 +754,11 @@ export default function LearnCoursePage() {
         if (progRes.ok) {
           const pd = await progRes.json();
           setCompletedLessons(pd.completedLessons || []);
+        }
+
+        if (accessRes.ok) {
+          const ad = await accessRes.json();
+          setHasAccess(ad.hasAccess === true);
         }
       } catch (e) {
         console.error('Failed to load course:', e);
@@ -797,6 +794,7 @@ export default function LearnCoursePage() {
       <LearnCourseContent
         course={course}
         completedLessons={completedLessons}
+        initialHasAccess={hasAccess}
       />
     </DashboardLayout>
   );

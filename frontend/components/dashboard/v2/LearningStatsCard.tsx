@@ -108,7 +108,7 @@ export default function LearningStatsCard() {
       const offset = new Date().getTimezoneOffset();
       const res = await fetch(
         `/api/v2/progress/stats-summary?filter=${filter}&timezoneOffset=${offset}`,
-        { credentials: 'include', cache: 'no-store', signal: controller.signal }
+        { credentials: 'include', signal: controller.signal }
       );
 
       if (!res.ok) {
@@ -471,7 +471,7 @@ const DetailedInsightsModal: React.FC<DetailedInsightsModalProps> = ({
         const offset = new Date().getTimezoneOffset();
         const res = await fetch(
           `/api/streak/calendar?month=${month}&timezoneOffset=${offset}`,
-          { credentials: 'include', cache: 'no-store' }
+          { credentials: 'include' }
         );
         if (!res.ok) throw new Error(`Calendar failed (${res.status})`);
         const data = await res.json();

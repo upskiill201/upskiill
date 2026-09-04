@@ -9,6 +9,8 @@ import React, {
   useState,
 } from 'react';
 import { usePathname } from 'next/navigation';
+import { mutate } from 'swr';
+import { fetcher } from '@/lib/swr';
 import { isStudentExperienceRoute } from '@/lib/herald-scope';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -211,147 +213,177 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined' && !isStudentExperienceRoute(window.location.pathname)) return;
     if (suppressedRef.current) return;
 
-    try {
-      const tzOffset = new Date().getTimezoneOffset();
+    const tzOffset = new Date().getTimezoneOffset();
+    const missionsKey = `/api/v2/missions/today?timezoneOffset=${tzOffset}`;
+    const chestKey = `/api/chest/today`;
+    const weeklyKey = `/api/v2/progress/weekly?timezoneOffset=${tzOffset}`;
+    const achievementsKey = `/api/gamification/achievements/unseen`;
 
-      // 1. Check Today's Missions
-      const missionRes = await fetch(
-        `/api/v2/missions/today?timezoneOffset=${tzOffset}`,
-        { credentials: 'include', cache: 'no-store' }
-      );
-      if (missionRes.ok) {
-        const data = await missionRes.json();
-        if (Array.isArray(data.missions)) {
-          data.missions.forEach((m: any) => {
-            const isCompleted =
-              m.isCompleted ||
-              m.status === 'COMPLETED' ||
-              m.currentProgress >= m.targetValue;
-            const isClaimed = m.isClaimed || m.status === 'CLAIMED';
+    // All four checks fire together instead of chained one-after-another —
+    // and routing them through SWR's global `mutate` (instead of a bare
+    // `fetch`) shares the request + cache with MysteryChestCard,
+    // TodaysMissionsCard and WeeklyProgressCard, which read the same
+    // endpoints via `useSWR`, so this sweep doesn't duplicate their calls.
+    const [missionsResult, chestResult, weeklyResult, achievementsResult] =
+      await Promise.allSettled([
+        mutate(missionsKey, fetcher(missionsKey)),
+        mutate(chestKey, fetcher(chestKey)),
+        mutate(weeklyKey, fetcher(weeklyKey)),
+        mutate(achievementsKey, fetcher(achievementsKey)),
+      ]);
 
-            if (isCompleted && !isClaimed) {
-              const transitionKey = `mission-${m.id}-${data.date || new Date().toISOString().split('T')[0]}`;
-              const rewardType =
-                m.reward?.type === 'GEMS'
-                  ? 'COINS'
-                  : (m.reward?.type as 'XP' | 'COINS') || 'XP';
-              const rewardAmount = m.reward?.amount || 20;
+    // 1. Check Today's Missions
+    if (missionsResult.status === 'fulfilled') {
+      const data = missionsResult.value as any;
+      if (Array.isArray(data?.missions)) {
+        data.missions.forEach((m: any) => {
+          const isCompleted =
+            m.isCompleted ||
+            m.status === 'COMPLETED' ||
+            m.currentProgress >= m.targetValue;
+          const isClaimed = m.isClaimed || m.status === 'CLAIMED';
 
-              enqueueHeraldNotification({
-                id: `herald-mission-${m.id}-${Date.now()}`,
-                type: 'MISSION',
-                entityId: m.id,
-                transitionKey,
-                title: m.title,
-                subtitle: `+${rewardAmount} ${rewardType}`,
-                rewardType,
-                rewardAmount,
-                missionId: m.id,
-              });
-            }
-          });
-        }
-      }
-
-      // 2. Check Daily Chest
-      const chestRes = await fetch(`/api/chest/today`, {
-        credentials: 'include',
-        headers: { 'x-timezone-offset': tzOffset.toString() },
-      });
-      if (chestRes.ok) {
-        const chestData = await chestRes.json();
-        if (chestData.status === 'READY_TO_OPEN' && chestData.id) {
-          const transitionKey = `chest-${chestData.id}-${chestData.chestDay || new Date().toISOString().split('T')[0]}`;
-          enqueueHeraldNotification({
-            id: `herald-chest-${chestData.id}-${Date.now()}`,
-            type: 'CHEST',
-            entityId: chestData.id,
-            transitionKey,
-            title: 'Mystery Chest',
-            subtitle: 'Your daily loot is ready to open!',
-            chestId: chestData.id,
-          });
-        }
-      }
-
-      // 3. Check Weekly Progress
-      const weeklyRes = await fetch(
-        `/api/v2/progress/weekly?timezoneOffset=${tzOffset}`,
-        { credentials: 'include', cache: 'no-store' }
-      );
-      if (weeklyRes.ok) {
-        const weeklyData = await weeklyRes.json();
-        if (weeklyData?.progress) {
-          const { daysLearned, totalDays, completionPercentage } =
-            weeklyData.progress;
-          if (daysLearned >= 5 || completionPercentage >= 100) {
-            const now = new Date();
-            const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay());
-            const transitionKey = `weekly-progress-${weekStart.toISOString().split('T')[0]}`;
+          if (isCompleted && !isClaimed) {
+            const transitionKey = `mission-${m.id}-${data.date || new Date().toISOString().split('T')[0]}`;
+            const rewardType =
+              m.reward?.type === 'GEMS'
+                ? 'COINS'
+                : (m.reward?.type as 'XP' | 'COINS') || 'XP';
+            const rewardAmount = m.reward?.amount || 20;
 
             enqueueHeraldNotification({
-              id: `herald-weekly-${Date.now()}`,
-              type: 'WEEKLY_PROGRESS',
-              entityId: 'weekly-progress',
+              id: `herald-mission-${m.id}-${Date.now()}`,
+              type: 'MISSION',
+              entityId: m.id,
               transitionKey,
-              title:
-                daysLearned >= 7
-                  ? 'Weekly Target Mastered! 🏆'
-                  : '5 Days Learning Streak! 🔥',
-              subtitle: `${daysLearned} of ${totalDays || 7} days completed this week!`,
-              rewardType: 'XP',
-              rewardAmount: 50,
+              title: m.title,
+              subtitle: `+${rewardAmount} ${rewardType}`,
+              rewardType,
+              rewardAmount,
+              missionId: m.id,
             });
           }
-        }
+        });
       }
-      // 4. Check unseen achievement unlocks — the achievement itself is the
-      // reward (no claim step), so each stays pending until the student views
-      // it; the transitionKey is stable per tier rather than time-bucketed.
-      const achRes = await fetch(`/api/gamification/achievements/unseen`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      if (achRes.ok) {
-        const achData = await achRes.json();
-        if (Array.isArray(achData.unseen)) {
-          // Cap per sweep so a fresh account crossing many tiers at once
-          // doesn't flood the banner queue — the rest surface after viewing.
-          achData.unseen.slice(0, 3).forEach((c: any) => {
-            enqueueHeraldNotification({
-              id: `herald-achievement-${c.badgeId}-${c.tier}-${Date.now()}`,
-              type: 'ACHIEVEMENT',
-              entityId: `${c.badgeId}_${c.tier}`,
-              transitionKey: `achievement-${c.badgeId}-${c.tier}`,
-              title: c.tierName || c.badgeTitle,
-              subtitle: c.description,
-              // Full payload so the banner can launch the AchievementScene
-              achievement: {
-                badgeId: c.badgeId,
-                badgeName: c.badgeTitle,
-                tierName: c.tierName,
-                tier: c.tier,
-                maxTier: c.maxTier,
-                description: c.description,
-                badgeBg: c.badgeBg,
-              },
-            });
+    }
+
+    // 2. Check Daily Chest
+    if (chestResult.status === 'fulfilled') {
+      const chestData = chestResult.value as any;
+      if (chestData?.status === 'READY_TO_OPEN' && chestData.id) {
+        const transitionKey = `chest-${chestData.id}-${chestData.chestDay || new Date().toISOString().split('T')[0]}`;
+        enqueueHeraldNotification({
+          id: `herald-chest-${chestData.id}-${Date.now()}`,
+          type: 'CHEST',
+          entityId: chestData.id,
+          transitionKey,
+          title: 'Mystery Chest',
+          subtitle: 'Your daily loot is ready to open!',
+          chestId: chestData.id,
+        });
+      }
+    }
+
+    // 3. Check Weekly Progress
+    if (weeklyResult.status === 'fulfilled') {
+      const weeklyData = weeklyResult.value as any;
+      if (weeklyData?.progress) {
+        const { daysLearned, totalDays, completionPercentage } =
+          weeklyData.progress;
+        if (daysLearned >= 5 || completionPercentage >= 100) {
+          const now = new Date();
+          const weekStart = new Date(now);
+          weekStart.setDate(now.getDate() - now.getDay());
+          const transitionKey = `weekly-progress-${weekStart.toISOString().split('T')[0]}`;
+
+          enqueueHeraldNotification({
+            id: `herald-weekly-${Date.now()}`,
+            type: 'WEEKLY_PROGRESS',
+            entityId: 'weekly-progress',
+            transitionKey,
+            title:
+              daysLearned >= 7
+                ? 'Weekly Target Mastered! 🏆'
+                : '5 Days Learning Streak! 🔥',
+            subtitle: `${daysLearned} of ${totalDays || 7} days completed this week!`,
+            rewardType: 'XP',
+            rewardAmount: 50,
           });
         }
       }
-    } catch (e) {
-      console.error('Herald checkClaimables failed:', e);
+    }
+
+    // 4. Check unseen achievement unlocks — the achievement itself is the
+    // reward (no claim step), so each stays pending until the student views
+    // it; the transitionKey is stable per tier rather than time-bucketed.
+    if (achievementsResult.status === 'fulfilled') {
+      const achData = achievementsResult.value as any;
+      if (Array.isArray(achData?.unseen)) {
+        // Cap per sweep so a fresh account crossing many tiers at once
+        // doesn't flood the banner queue — the rest surface after viewing.
+        achData.unseen.slice(0, 3).forEach((c: any) => {
+          enqueueHeraldNotification({
+            id: `herald-achievement-${c.badgeId}-${c.tier}-${Date.now()}`,
+            type: 'ACHIEVEMENT',
+            entityId: `${c.badgeId}_${c.tier}`,
+            transitionKey: `achievement-${c.badgeId}-${c.tier}`,
+            title: c.tierName || c.badgeTitle,
+            subtitle: c.description,
+            // Full payload so the banner can launch the AchievementScene
+            achievement: {
+              badgeId: c.badgeId,
+              badgeName: c.badgeTitle,
+              tierName: c.tierName,
+              tier: c.tier,
+              maxTier: c.maxTier,
+              description: c.description,
+              badgeBg: c.badgeBg,
+            },
+          });
+        });
+      }
+    }
+
+    if (
+      missionsResult.status === 'rejected' ||
+      chestResult.status === 'rejected' ||
+      weeklyResult.status === 'rejected' ||
+      achievementsResult.status === 'rejected'
+    ) {
+      console.error('Herald checkClaimables: one or more checks failed', {
+        missionsResult,
+        chestResult,
+        weeklyResult,
+        achievementsResult,
+      });
     }
   }, [enqueueHeraldNotification]);
 
-  // Global listeners: check claimables when focus/visibility/custom events fire
+  // Global listeners: check claimables when focus/visibility/custom events fire.
+  // `focus` and `visibilitychange` both fire on the same tab-switch, and the
+  // custom `*:refresh`/`*:updated` events can arrive in quick succession too
+  // — debounce to a single trailing checkClaimables() call, and skip it
+  // entirely if we already checked within the last 2s.
   useEffect(() => {
     checkClaimables();
 
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastRunAt = Date.now();
+    const DEBOUNCE_MS = 600;
+    const MIN_INTERVAL_MS = 2000;
+
     const handleRefresh = () => {
-      setTimeout(checkClaimables, 600);
-      setTimeout(checkClaimables, 1800);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        if (Date.now() - lastRunAt < MIN_INTERVAL_MS) return;
+        lastRunAt = Date.now();
+        checkClaimables();
+      }, DEBOUNCE_MS);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleRefresh();
     };
 
     window.addEventListener('mission:refresh', handleRefresh);
@@ -359,15 +391,16 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('lesson:completed', handleRefresh);
     window.addEventListener('achievement:refresh', handleRefresh);
     window.addEventListener('focus', handleRefresh);
-    document.addEventListener('visibilitychange', handleRefresh);
+    document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
       window.removeEventListener('mission:refresh', handleRefresh);
       window.removeEventListener('missions:updated', handleRefresh);
       window.removeEventListener('lesson:completed', handleRefresh);
       window.removeEventListener('achievement:refresh', handleRefresh);
       window.removeEventListener('focus', handleRefresh);
-      document.removeEventListener('visibilitychange', handleRefresh);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [checkClaimables]);
 

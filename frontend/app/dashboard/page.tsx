@@ -49,10 +49,12 @@ export default function DashboardPage() {
       }
     }
 
-    // 2. Trigger loader with 15s hold configuration and suppressed connection check popups
-    showLoader(undefined, false, 15000, true);
+    // 2. Trigger loader with suppressed connection check popups; loader hides
+    // itself the instant data resolves below (no artificial hold).
+    showLoader(undefined, false, undefined, true);
 
     // 3. Fetch all backend data (me & enrollments) in parallel
+    let cancelled = false;
     const loadAllDashboardData = async () => {
       try {
         await Promise.allSettled([
@@ -75,15 +77,17 @@ export default function DashboardPage() {
       } catch (err) {
         console.error('Failed loading dashboard data', err);
       } finally {
-        setLoadingEnrollments(false);
-        // Hold loading screen for 15 seconds after all elements are loaded
-        setTimeout(() => {
+        if (!cancelled) {
+          setLoadingEnrollments(false);
           hideLoader();
-        }, 15000);
+        }
       }
     };
 
     loadAllDashboardData();
+    return () => {
+      cancelled = true;
+    };
   }, [showLoader, hideLoader]);
 
   const handleContinueLearning = () => {
@@ -91,7 +95,7 @@ export default function DashboardPage() {
     showLoaderImmediate(
       "Tey is preparing your custom learning path...",
       false, // Preserves desktop sidebar (replaces middle column + right sidebar)!
-      15000, // 15 seconds display duration so user can comfortably read message
+      undefined, // No artificial hold — loader clears as soon as the next page's data resolves
       true,  // Suppress connection check unless actual error occurs
       'working'
     );
@@ -229,7 +233,11 @@ export default function DashboardPage() {
           </button>
         </div>
         <div className={styles.mobileSidebarBody}>
-          <RightSidebar />
+          {/* Mounted only while the drawer is open — this drawer sits in the
+              DOM at all times (for its slide-in transition), and mounting a
+              second live RightSidebar unconditionally used to double every
+              one of its network requests on every dashboard load. */}
+          {mobileSidebarOpen && <RightSidebar />}
         </div>
       </div>
       {mobileSidebarOpen && (

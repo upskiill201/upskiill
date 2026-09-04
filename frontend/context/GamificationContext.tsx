@@ -95,8 +95,11 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     try {
       const tzOffset = new Date().getTimezoneOffset();
 
-      // Refill lives based on elapsed time first
-      await fetch('/api/gamification/refill-lives', {
+      // Refill lives based on elapsed time — fired but not awaited. This
+      // used to block the entire XP/coins/hearts HUD behind a serial
+      // write-then-read; refill is idempotent and only matters for the NEXT
+      // read, so the initial paint no longer waits on it.
+      void fetch('/api/gamification/refill-lives', {
         method: 'POST',
         credentials: 'include',
       });
@@ -104,8 +107,6 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       // Get current gamification stats (passing local client timezone offset)
       const res = await fetch(`/api/gamification/me?timezoneOffset=${tzOffset}`, {
         credentials: 'include',
-        headers: { 'Cache-Control': 'no-cache' },
-        cache: 'no-store',
       });
 
       if (!res.ok) {
