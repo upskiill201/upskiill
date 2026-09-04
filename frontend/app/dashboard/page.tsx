@@ -21,6 +21,7 @@ import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
 import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBanner';
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
 import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
+import PwaPushNudgeCard from '@/components/dashboard/v2/PwaPushNudgeCard';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import NotificationBell from '@/components/community/NotificationBell';
 import styles from './Page.module.css';
@@ -152,7 +153,12 @@ export default function DashboardPage() {
         
         {/* MIDDLE COLUMN: GAME ACTION LOOP */}
         <div className={styles.middleColumn}>
-          
+
+          {/* iOS PWA install / push-permission nudge — only shows once the
+              learner has completed a lesson, so it never competes with the
+              onboarding flow's own Step 15 prompt for a brand-new signup. */}
+          <PwaPushNudgeCard />
+
           {/* 1. LEVEL PROGRESSION BANNER */}
           <LevelProgressionBanner />
 
