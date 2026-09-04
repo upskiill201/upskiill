@@ -210,8 +210,16 @@ export class AchievementsService {
    * The achievement itself IS the reward — unlocking only creates the
    * UserAchievement row; nothing is credited anywhere.
    */
-  async checkAndAwardAchievements(userId: string) {
-    const metrics = await this.loadMetrics(userId);
+  async checkAndAwardAchievements(
+    userId: string,
+    precomputedMetrics?: Awaited<
+      ReturnType<AchievementsService['loadMetrics']>
+    >,
+  ) {
+    // Callers that already have fresh metrics (getAchievements below) can
+    // pass them in and skip this — loadMetrics is 5 queries, and this used
+    // to run a second, redundant time on every achievements read.
+    const metrics = precomputedMetrics ?? (await this.loadMetrics(userId));
 
     const existing = await this.prisma.userAchievement.findMany({
       where: { userId },
@@ -267,16 +275,20 @@ export class AchievementsService {
    * lessons-completed / days-studied client-side or in a second endpoint.
    */
   async getAchievements(userId: string) {
-    // Lazy sync: unlocks are always up to date even if an event listener was missed.
-    await this.checkAndAwardAchievements(userId);
+    // Metrics computed once and reused for both the award-check and the
+    // response below — awarding a tier never changes xp/streak/enrollments/
+    // attempts/activity-days, so a second loadMetrics() call here was pure
+    // waste (this endpoint is hit on every dashboard load via the Herald
+    // claimables sweep).
+    const rawMetrics = await this.loadMetrics(userId);
 
-    const [rawMetrics, unlocks] = await Promise.all([
-      this.loadMetrics(userId),
-      this.prisma.userAchievement.findMany({
-        where: { userId },
-        select: { achievementId: true, tier: true, unlockedAt: true, seenAt: true },
-      }),
-    ]);
+    // Lazy sync: unlocks are always up to date even if an event listener was missed.
+    await this.checkAndAwardAchievements(userId, rawMetrics);
+
+    const unlocks = await this.prisma.userAchievement.findMany({
+      where: { userId },
+      select: { achievementId: true, tier: true, unlockedAt: true, seenAt: true },
+    });
     const unlockedMap = new Map(
       unlocks.map((u) => [`${u.achievementId}_${u.tier}`, u])
     );

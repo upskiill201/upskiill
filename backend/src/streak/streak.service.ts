@@ -136,12 +136,6 @@ export class StreakService {
     monthStr?: string,
     timezoneOffsetMinutes = 0
   ) {
-    const profile = await this.prisma.studentProfile.upsert({
-      where: { userId },
-      create: { userId },
-      update: {},
-    });
-
     const now = new Date();
     const todayStr = this.getLocalDateString(now, timezoneOffsetMinutes);
 
@@ -150,31 +144,41 @@ export class StreakService {
 
     const daysInMonth = new Date(year, month, 0).getDate();
 
-    // Query user_daily_activity records for this month
-    const activities = await this.prisma.userDailyActivity.findMany({
-      where: {
-        userId,
-        date: {
-          startsWith: targetMonth,
+    // None of these three depend on each other's results — `profile` is
+    // only needed further down (for currentStreak / lastStreakEarnedAt),
+    // and the two date-range queries only need targetMonth/daysInMonth,
+    // computed synchronously above. Previously three sequential round trips.
+    const [profile, activities, freezeLogs] = await Promise.all([
+      this.prisma.studentProfile.upsert({
+        where: { userId },
+        create: { userId },
+        update: {},
+      }),
+      // Query user_daily_activity records for this month
+      this.prisma.userDailyActivity.findMany({
+        where: {
+          userId,
+          date: {
+            startsWith: targetMonth,
+          },
         },
-      },
-    });
+      }),
+      // Query freeze transactions for this month
+      this.prisma.rewardTransaction.findMany({
+        where: {
+          userId,
+          currency: 'FREEZE',
+          sourceType: 'STREAK',
+          createdAt: {
+            gte: new Date(`${targetMonth}-01T00:00:00Z`),
+            lte: new Date(`${targetMonth}-${daysInMonth}T23:59:59Z`),
+          },
+        },
+      }),
+    ]);
 
     const activityMap = new Map<string, (typeof activities)[0]>();
     activities.forEach((act) => activityMap.set(act.date, act));
-
-    // Query freeze transactions for this month
-    const freezeLogs = await this.prisma.rewardTransaction.findMany({
-      where: {
-        userId,
-        currency: 'FREEZE',
-        sourceType: 'STREAK',
-        createdAt: {
-          gte: new Date(`${targetMonth}-01T00:00:00Z`),
-          lte: new Date(`${targetMonth}-${daysInMonth}T23:59:59Z`),
-        },
-      },
-    });
 
     const freezeDatesSet = new Set<string>();
     freezeLogs.forEach((log) => {

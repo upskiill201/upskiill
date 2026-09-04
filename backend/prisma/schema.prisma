@@ -225,6 +225,12 @@ model Course {
   posts                Post[]
   weeklyXpRows         CourseWeeklyXp[]
   views                CourseView[]
+
+  // Catalog reads (GET /courses) filter on `published` and sort by
+  // `createdAt` — previously a full table scan + sort on every catalog
+  // load. `instructorId` backs every "my courses" / ownership-check query.
+  @@index([published, createdAt])
+  @@index([instructorId])
 }
 
 /// Daily page-view aggregate for a course detail page. One row per
@@ -612,7 +618,11 @@ model StudentProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
+  // `userId` is already `@unique` above (which Postgres backs with its own
+  // index) — the old `@@index([userId])` here was a pure duplicate that
+  // only cost write throughput. `xp` backs the stats-summary percentile
+  // (`count(*) where xp > $mine`), previously a full-table scan per read.
+  @@index([xp])
   @@map("student_profiles")
 }
 
@@ -811,6 +821,8 @@ model UserCourseProgress {
 
   @@unique([userId, courseId])
   @@index([userId])
+  // Backs the "courses completed" count on the stats-summary endpoint.
+  @@index([userId, status])
   @@map("user_course_progress")
 }
 
@@ -834,8 +846,11 @@ model UserLessonProgress {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Backs the stats-summary aggregate, which filters by userId + a
+  // completedAt range (previously an unindexed range scan per request).
   @@unique([userId, lessonId])
   @@index([userId])
+  @@index([userId, completedAt])
   @@map("user_lesson_progress")
 }
 
@@ -880,6 +895,9 @@ model UserStepAttempt {
 
   @@index([stepId])
   @@index([userId])
+  // Backs the achievements "first-try-correct" count
+  // (achievements.service.ts loadMetrics).
+  @@index([userId, isCorrect, attemptNumber])
   @@map("user_step_attempts")
 }
 
@@ -1343,8 +1361,10 @@ model Notification {
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
 
-  @@index([userId])
-  @@index([isRead])
+  // Every real query filters userId + isRead together (never isRead alone —
+  // see notification.service.ts) and pages newest-first, so one composite
+  // replaces the previous two separate single-column indexes.
+  @@index([userId, isRead, createdAt])
   @@map("notifications")
 }
 
@@ -1420,7 +1440,11 @@ model RewardTransaction {
   idempotencyKey String   @unique
   createdAt      DateTime @default(now())
 
+  // streak.service.ts's calendar query filters userId + currency +
+  // sourceType + a createdAt range, previously covered only by [userId]
+  // (an unindexed scan across the rest of the filter).
   @@index([userId])
+  @@index([userId, currency, sourceType, createdAt])
   @@map("reward_transactions")
 }
 

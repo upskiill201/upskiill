@@ -80,15 +80,23 @@ export class ProgressService {
     const mondayStr = this.getMondayOfWeek(todayStr);
     const sundayStr = this.addDays(mondayStr, 6);
 
-    const records = await this.prisma.userDailyActivity.findMany({
-      where: {
-        userId,
-        date: {
-          gte: mondayStr,
-          lte: sundayStr,
+    // Independent of each other — batched instead of two sequential round
+    // trips (`profile` used to be fetched only after `records` resolved).
+    const [records, profile] = await Promise.all([
+      this.prisma.userDailyActivity.findMany({
+        where: {
+          userId,
+          date: {
+            gte: mondayStr,
+            lte: sundayStr,
+          },
         },
-      },
-    });
+      }),
+      this.prisma.studentProfile.findUnique({
+        where: { userId },
+        select: { streakDays: true },
+      }),
+    ]);
 
     const recordMap = new Map<string, { lessonsCompleted: number; xpEarned: number; timeSpentSeconds: number; streakExtended: boolean }>();
     for (const r of records) {
@@ -137,11 +145,6 @@ export class ProgressService {
     }
 
     const completionPercentage = Math.round((daysLearned / 7) * 100);
-
-    const profile = await this.prisma.studentProfile.findUnique({
-      where: { userId },
-      select: { streakDays: true },
-    });
 
     return {
       weekRange: {
@@ -276,16 +279,61 @@ export class ProgressService {
     const sundayStr = this.addDays(mondayStr, 6);
     const monthStartStr = todayStr.slice(0, 7) + '-01';
 
-    // 1. Fetch 7-day activity for the current week regardless of filter
-    const weekRecords = await this.prisma.userDailyActivity.findMany({
-      where: {
-        userId,
-        date: {
-          gte: mondayStr,
-          lte: sundayStr,
-        },
-      },
-    });
+    // Query filtered activities (moved up from step 2 — dateFilter has no
+    // dependency on the week-record query, so both fetches below can run
+    // together instead of one after the other).
+    let dateFilter: { gte?: string; lte?: string } | undefined;
+    if (filter === 'week') {
+      dateFilter = { gte: mondayStr, lte: sundayStr };
+    } else if (filter === 'month') {
+      dateFilter = { gte: monthStartStr, lte: todayStr };
+    }
+
+    // None of these six queries depend on each other's results — they used
+    // to run one after another (7 sequential round trips total including
+    // the percentile's second count below). Only the percentile's
+    // "how many students rank higher" count genuinely needs `profile` first,
+    // so it's the one query that still has to wait.
+    const [
+      weekRecords,
+      activities,
+      profile,
+      totalStudentsResult,
+      scoredLessonsResult,
+      coursesCompletedResult,
+    ] = await Promise.all([
+      this.prisma.userDailyActivity.findMany({
+        where: { userId, date: { gte: mondayStr, lte: sundayStr } },
+      }),
+      this.prisma.userDailyActivity.findMany({
+        where: { userId, ...(dateFilter ? { date: dateFilter } : {}) },
+      }),
+      this.prisma.studentProfile.findUnique({
+        where: { userId },
+        select: { xp: true, streakDays: true, longestStreak: true },
+      }),
+      this.prisma.studentProfile.count().catch(() => null),
+      this.prisma.userLessonProgress
+        .aggregate({
+          where: {
+            userId,
+            quizScore: { not: null },
+            ...(dateFilter
+              ? {
+                  completedAt: {
+                    gte: this.toUtcDate(dateFilter.gte),
+                    lte: this.toEndOfDayUtc(dateFilter.lte),
+                  },
+                }
+              : {}),
+          },
+          _avg: { quizScore: true },
+        })
+        .catch(() => null),
+      this.prisma.userCourseProgress
+        .count({ where: { userId, status: 'completed' } })
+        .catch(() => null),
+    ]);
 
     const weekRecordMap = new Map<string, { lessonsCompleted: number; xpEarned: number; timeSpentSeconds: number; streakExtended: boolean }>();
     for (const r of weekRecords) {
@@ -322,84 +370,43 @@ export class ProgressService {
       });
     }
 
-    // 2. Query filtered activities
-    let dateFilter: { gte?: string; lte?: string } | undefined;
-    if (filter === 'week') {
-      dateFilter = { gte: mondayStr, lte: sundayStr };
-    } else if (filter === 'month') {
-      dateFilter = { gte: monthStartStr, lte: todayStr };
-    }
-
-    const activities = await this.prisma.userDailyActivity.findMany({
-      where: { userId, ...(dateFilter ? { date: dateFilter } : {}) },
-    });
-
     const lessonsCompleted = activities.reduce((acc, a) => acc + (a.lessonsCompleted || 0), 0);
     const timeSpentSeconds = activities.reduce((acc, a) => acc + ((a as any).timeSpentSeconds || 0), 0);
     const xpFiltered = activities.reduce((acc, a) => acc + (a.xpEarned || 0), 0);
     const activeDays = activities.filter((a) => (a.lessonsCompleted || 0) > 0).length;
 
-    // 3. User profile data
-    const profile = await this.prisma.studentProfile.findUnique({
-      where: { userId },
-      select: { xp: true, streakDays: true, longestStreak: true },
-    });
-
     const lifetimeXp = profile?.xp ?? 0;
     const currentXp = filter === 'all' ? lifetimeXp : xpFiltered;
 
-    // 4. Dynamic Percentile Calculation based on all active users
+    // Dynamic Percentile Calculation based on all active users. Only this
+    // second count depends on `profile` (needs lifetimeXp) — the first
+    // count (totalStudentsResult) already ran above alongside everything else.
     let rankPercentile = 'Top 10%';
     try {
-      const totalStudents = await this.prisma.studentProfile.count();
-      if (totalStudents > 1) {
+      if (totalStudentsResult !== null && totalStudentsResult > 1) {
         const higherStudents = await this.prisma.studentProfile.count({
           where: { xp: { gt: lifetimeXp } },
         });
-        const pct = Math.max(1, Math.min(99, Math.round(((higherStudents + 1) / totalStudents) * 100)));
+        const pct = Math.max(1, Math.min(99, Math.round(((higherStudents + 1) / totalStudentsResult) * 100)));
         rankPercentile = `Top ${pct}%`;
+      } else if (totalStudentsResult === null) {
+        throw new Error('totalStudents count failed');
       }
     } catch {
       rankPercentile = lifetimeXp > 200 ? 'Top 10%' : lifetimeXp > 50 ? 'Top 25%' : 'Top 50%';
     }
 
-    // 5. Accuracy Rate — real Apply-phase quiz scores from completed lessons in
+    // Accuracy Rate — real Apply-phase quiz scores from completed lessons in
     // the selected window. null when the learner hasn't taken a scored quiz yet,
     // so the UI can show an honest "no data" state instead of a made-up number.
     let accuracyRate: number | null = null;
-    try {
-      const scoredLessons = await this.prisma.userLessonProgress.aggregate({
-        where: {
-          userId,
-          quizScore: { not: null },
-          ...(dateFilter
-            ? {
-                completedAt: {
-                  gte: this.toUtcDate(dateFilter.gte),
-                  lte: this.toEndOfDayUtc(dateFilter.lte),
-                },
-              }
-            : {}),
-        },
-        _avg: { quizScore: true },
-      });
-      const avg = scoredLessons._avg.quizScore;
-      if (avg !== null && avg !== undefined) {
-        accuracyRate = Math.round(avg);
-      }
-    } catch {
-      accuracyRate = null;
+    const avg = scoredLessonsResult?._avg?.quizScore;
+    if (avg !== null && avg !== undefined) {
+      accuracyRate = Math.round(avg);
     }
 
-    // 6. Courses fully completed (progress reached 100%)
-    let coursesCompleted = 0;
-    try {
-      coursesCompleted = await this.prisma.userCourseProgress.count({
-        where: { userId, status: 'completed' },
-      });
-    } catch {
-      coursesCompleted = 0;
-    }
+    // Courses fully completed (progress reached 100%)
+    const coursesCompleted = coursesCompletedResult ?? 0;
 
     return {
       filter,
