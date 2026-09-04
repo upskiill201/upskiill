@@ -29,6 +29,7 @@ import { StudentsModule } from './students/students.module';
 import { CommunityModule } from './community/community.module';
 import { NotificationModule } from './notification/notification.module';
 import { LeagueModule } from './league/league.module';
+import { TeyModule } from './tey/tey.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { LeagueModule } from './league/league.module';
     CommunityModule,
     NotificationModule,
     LeagueModule,
+    TeyModule,
   ],
   controllers: [AppController],
   providers: [

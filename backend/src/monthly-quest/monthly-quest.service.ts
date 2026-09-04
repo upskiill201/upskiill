@@ -8,6 +8,7 @@ import {
   requiredDaysFor,
   tierTargetDays,
 } from './monthly-quest.registry';
+import { qualifiesForDailyGoal } from '../common/daily-goal.util';
 
 interface GoalSnapshotEntry {
   date: string;
@@ -261,7 +262,7 @@ export class MonthlyQuestService {
     });
     const dailyGoalXp = profile?.dailyGoalXp ?? 20;
 
-    const qualifies = activity.xpEarned >= dailyGoalXp && activity.lessonsCompleted >= 1;
+    const qualifies = qualifiesForDailyGoal(activity, dailyGoalXp);
     const alreadyCounted = this.readSnapshot(row.goalSnapshot).some((e) => e.date === todayStr);
 
     if (!qualifies || alreadyCounted) {

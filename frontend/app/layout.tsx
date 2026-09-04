@@ -151,6 +151,7 @@ export const metadata: Metadata = {
 
 import { SWRProvider } from "../components/providers/SWRProvider";
 import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
+import { TeyActivityProvider } from "../components/providers/TeyActivityProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { GamificationProvider } from "../context/GamificationContext";
@@ -183,6 +184,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${baloo2.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ServiceWorkerRegistrar />
+        <TeyActivityProvider />
         <SWRProvider>
         <PostHogProvider>
           <CartProvider>

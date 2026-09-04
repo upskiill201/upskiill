@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
+import { LearningActivityRecordedEvent } from '../common/events/learning-activity-recorded.event';
 
 @Injectable()
 export class ProgressService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * Converts a Date to a local YYYY-MM-DD string using the user's timezone offset in minutes.
@@ -264,6 +269,21 @@ export class ProgressService {
         });
       }
     }
+
+    // Downstream consumers (Tey intelligence) subscribe HERE rather than to
+    // lesson.completed, so they are guaranteed to observe the activity rows
+    // written above instead of racing them.
+    this.eventEmitter.emit(
+      'learning.activity.recorded',
+      new LearningActivityRecordedEvent(
+        userId,
+        todayStr,
+        timezoneOffsetMinutes,
+        xpEarned,
+        isFirstLessonToday,
+        now,
+      ),
+    );
   }
 
   /** Weekly XP goal surfaced across the dashboard widgets. */

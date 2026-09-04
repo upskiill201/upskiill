@@ -59,6 +59,15 @@ model User {
   // Failed verify-code submissions; at >= 5 the pending code is voided (B1)
   verifyAttempts       Int           @default(0)
 
+  // Persisted timezone — captured opportunistically from the client (see
+  // TimezoneInterceptor). The Tey scheduler cannot ask a browser "what time is
+  // it for you?" at 8pm, so the learner's zone has to live in the database.
+  // IANA is primary because it survives DST; the offset is a fallback for
+  // clients that can't resolve a zone name, and mirrors the existing
+  // x-timezone-offset header (same sign convention as Date.getTimezoneOffset).
+  timezone              String?
+  timezoneOffsetMinutes Int?
+
   gemTransactions    GemTransaction[]
   shopTransactions   ShopTransaction[]
   userAchievements   UserAchievement[]
@@ -96,6 +105,8 @@ model User {
   pollVotes              PollVote[]
   courseWeeklyXp         CourseWeeklyXp[]
   leagueMembers          LeagueMember[]
+  teyActivityEvents      TeyActivityEvent[]
+  learnerState           LearnerState?
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -1675,3 +1686,95 @@ model EarningsAuditLog {
   @@map("earnings_audit_logs")
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tey Intelligence layer — activity events + learner state projection.
+//
+// Deliberately NOT reusing LearningEvent: that table is read by creator
+// analytics (analytics.service.ts, students.service.ts) and requires non-null
+// entityType/entityId, which app_opened / daily_goal_missed cannot supply.
+// Mixing client telemetry into it would bloat its [userId, createdAt] index
+// and risk semantic drift in creator dashboards.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TeyActivityEvent {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// See TEY_EVENT_TYPES in tey/contracts/tey-event.types.ts for the closed union.
+  eventType String
+  /// 'SERVER' | 'CLIENT' — server-observed events are authoritative.
+  source     String  @default("SERVER")
+  entityType String?
+  entityId   String?
+  props      Json?
+
+  /// Client-supplied, stable across retries. Unique WHERE NOT NULL (partial
+  /// index lives in SQL only — Prisma cannot express it).
+  idempotencyKey String?
+
+  /// When it actually happened. Clamped server-side to [receivedAt-7d, receivedAt]
+  /// so a skewed client clock can't pin a row to the top of the index forever.
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  /// YYYY-MM-DD in the learner's own zone at the time of the event.
+  localDate  String
+
+  @@index([userId, occurredAt(sort: Desc)])
+  @@index([eventType, occurredAt(sort: Desc)])
+  @@map("tey_activity_events")
+}
+
+/// A CACHE, not a source of truth. Every column here is reproducible from
+/// StudentProfile + UserDailyActivity + StreakService. It exists so the
+/// decision engine and scheduler can read one indexed row instead of running
+/// streak reconciliation for every due action.
+model LearnerState {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Mirrored from StreakService.getStreakStats() — NEVER recomputed here.
+  streakDays         Int       @default(0)
+  longestStreak      Int       @default(0)
+  lastStreakEarnedAt DateTime?
+  freezesAvailable   Int       @default(0)
+
+  // Today, in the learner's local calendar.
+  localDate          String?
+  todayXp            Int     @default(0)
+  todayLessons       Int     @default(0)
+  dailyGoalXp        Int     @default(20)
+  todayGoalCompleted Boolean @default(false)
+
+  // This week (Monday-anchored, matching UserWeeklyProgress).
+  weeklyLessons Int @default(0)
+  weeklyXp      Int @default(0)
+
+  // Derived states — closed unions in tey/contracts/tey-state.types.ts.
+  streakState      String @default("NO_STREAK")
+  engagementState  String @default("NEW")
+  courseState      String @default("NEW")
+  performanceState String @default("STABLE")
+
+  // Where to send them back to (resolved at projection time).
+  currentCourseId     String?
+  currentSectionIndex Int?
+  currentLessonId     String?
+  courseProgressPct   Int     @default(0)
+
+  // Habit model: EWMA of the local hour at which lessons get completed.
+  usualHourLocal   Int?
+  usualHourSamples Int  @default(0)
+
+  lastActivityAt DateTime?
+  /// Consecutive nudges sent without an open — drives tone escalation.
+  consecutiveIgnoredNudges Int @default(0)
+
+  computedAt DateTime @default(now())
+  revision   Int      @default(0)
+
+  @@index([engagementState, lastActivityAt])
+  @@index([streakState])
+  @@map("learner_state")
+}
