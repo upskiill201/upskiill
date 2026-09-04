@@ -16,31 +16,60 @@ interface JourneyPathMapProps {
 
 export default function JourneyPathMap({
   currentEnrollment,
-  currentLessonIndex = 1,
-  totalLessons = 25,
+  currentLessonIndex,
+  totalLessons: totalLessonsProp,
   onNodeClick,
 }: JourneyPathMapProps) {
   const router = useRouter();
   const { celebrate } = useCelebration();
   const [lockedTooltip, setLockedTooltip] = useState<number | null>(null);
 
-  // Compute actual completed lessons from enrollment
+  // Real per-course lesson count (auth.service.ts getMyEnrollments) — falls
+  // back to the caller's prop, then 25, only if the enrollment truly has none.
+  const totalLessons = currentEnrollment?.course?.totalLessons || totalLessonsProp || 25;
+
+  // Compute actual completed lessons from enrollment. `currentLessonIndex`
+  // (derived from the enrollment's real `progress` %) is the source of truth
+  // when passed — `completedLessons` alone under/over-counts whenever a
+  // student skips ahead or a lesson is re-opened, so it's only a fallback.
   const completedLessons = Array.isArray(currentEnrollment?.completedLessons)
     ? currentEnrollment.completedLessons
     : [];
   const completedCount = completedLessons.length;
-  const activeLessonNum = Math.min(totalLessons, completedCount + 1);
+  const activeLessonNum = Math.min(
+    totalLessons,
+    currentLessonIndex ?? completedCount + 1
+  );
+  // 100%-complete course: the clamp above pins activeLessonNum to the final
+  // lesson, which would otherwise render as "current" (You are here) on a
+  // lesson the student already finished.
+  const courseComplete = (currentEnrollment?.progress ?? 0) >= 100;
 
-  // Generate 7 display nodes centered around the user's current progress:
-  // (3 completed, 1 active "You are here", 2 locked, 1 milestone gift node)
+  // Generate 6 display nodes as a sliding window CENTERED on the user's real
+  // position (activeLessonNum), not a fixed lesson-1-through-6 range — a
+  // student on lesson 16/25 must see lessons ~14-19 (2 completed behind them,
+  // "you are here", then locked ahead), never a wall of 6 checkmarks because
+  // the window itself was hardcoded to 1-6 regardless of actual progress.
+  const windowSize = 6;
+  const windowStart = Math.max(
+    1,
+    Math.min(activeLessonNum - 2, totalLessons - windowSize + 1)
+  );
+  const lessonNodes = Array.from({ length: Math.min(windowSize, totalLessons) }, (_, i) => {
+    const num = windowStart + i;
+    const type =
+      num < activeLessonNum || (courseComplete && num === activeLessonNum)
+        ? 'completed'
+        : num === activeLessonNum
+          ? 'current'
+          : 'locked';
+    return { type, num, label: String(num) };
+  });
+  // Finish-line milestone — always the last slot, reachable once every
+  // lesson before it (i.e. the whole course) is done.
   const nodes = [
-    { type: activeLessonNum > 1 ? 'completed' : 'current', num: 1, label: '1' },
-    { type: activeLessonNum > 2 ? 'completed' : activeLessonNum === 2 ? 'current' : 'locked', num: 2, label: '2' },
-    { type: activeLessonNum > 3 ? 'completed' : activeLessonNum === 3 ? 'current' : 'locked', num: 3, label: '3' },
-    { type: activeLessonNum > 4 ? 'completed' : activeLessonNum === 4 ? 'current' : 'locked', num: 4, label: '4' },
-    { type: activeLessonNum > 5 ? 'completed' : activeLessonNum === 5 ? 'current' : 'locked', num: 5, label: '5' },
-    { type: activeLessonNum > 6 ? 'completed' : activeLessonNum === 6 ? 'current' : 'locked', num: 6, label: '6' },
-    { type: 'reward', num: 7, label: 'gift' },
+    ...lessonNodes,
+    { type: 'reward', num: totalLessons, label: 'gift' },
   ];
 
   const handleNodeClick = (node: (typeof nodes)[0]) => {
@@ -65,9 +94,13 @@ export default function JourneyPathMap({
       return;
     }
 
+    // No per-lesson deep link available here (this enrollment payload has no
+    // section/lesson breakdown) — route into the course root and let the
+    // learn page's own resume logic pick up wherever the student left off,
+    // instead of hardcoding section 1 (wrong for anyone past section 1).
     const courseId = currentEnrollment?.courseId || currentEnrollment?.course?.id;
     if (courseId) {
-      router.push(`/learn/${courseId}/section/1`);
+      router.push(`/learn/${courseId}`);
     }
   };
 
@@ -100,6 +133,8 @@ export default function JourneyPathMap({
                   <Check size={15} strokeWidth={3} />
                 ) : node.type === 'reward' ? (
                   <Gift size={16} className="text-[#9333EA]" />
+                ) : node.type === 'locked' ? (
+                  <Lock size={13} strokeWidth={2.5} />
                 ) : (
                   node.label
                 )}
@@ -109,7 +144,7 @@ export default function JourneyPathMap({
                 <span className={styles.hereTooltip}>You are here</span>
               )}
 
-              {lockedTooltip === node.num && (
+              {lockedTooltip === node.num && node.type === 'locked' && (
                 <span className={styles.hereTooltip} style={{ backgroundColor: '#EF4444', color: '#FFFFFF' }}>
                   Complete previous lessons to unlock
                 </span>

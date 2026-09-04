@@ -848,6 +848,7 @@ export class AuthService {
         id: true,
         courseId: true,
         progress: true,
+        completedLessons: true,
         course: {
           select: {
             id: true,
@@ -861,8 +862,11 @@ export class AuthService {
         },
       },
       orderBy: {
-        // Optional: sort by enrollment creation date instead
-        id: 'desc',
+        // Most recently STUDIED first (bumped by @updatedAt on every lesson
+        // completion), not most recently enrolled — otherwise enrolling in a
+        // second course instantly buries the one the student is actually
+        // partway through on the dashboard's "Your Journey" card.
+        updatedAt: 'desc',
       },
     });
 

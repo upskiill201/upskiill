@@ -28,8 +28,19 @@ export default function MysteryChestCard() {
   const [localOverride, setLocalOverride] = useState<{ status: string; chestId?: string } | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   const chestRef = useRef<HTMLDivElement>(null);
+  // SWR's localStorage-seeded cache (lib/swr.ts) can populate `data` with a
+  // stale chest status on the very first client render, before hydration —
+  // while the server always renders the LOCKED default. Gating on `mounted`
+  // keeps the first client render identical to SSR; real status swaps in a
+  // tick later, same as any client-only value.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // Mount flag defers client-only cache data past the first (SSR-matching) render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
-  const chestState = localOverride ?? { status: data?.status ?? 'LOCKED', chestId: data?.id };
+  const chestState = localOverride ?? { status: mounted ? data?.status ?? 'LOCKED' : 'LOCKED', chestId: mounted ? data?.id : undefined };
 
   useEffect(() => {
     registerNativeWidget('mystery-chest');

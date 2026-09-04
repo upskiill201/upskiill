@@ -9,10 +9,12 @@ import styles from './CurrentQuestCard.module.css';
 
 interface CurrentQuestCardProps {
   currentEnrollment?: any;
+  /** Real current lesson number, derived from `progress`% — see dashboard/page.tsx. */
+  currentLessonIndex?: number;
   onPlay?: () => void;
 }
 
-export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQuestCardProps) {
+export default function CurrentQuestCard({ currentEnrollment, currentLessonIndex, onPlay }: CurrentQuestCardProps) {
   const router = useRouter();
 
   // ─── Empty state: never fabricate a course. A brand-new learner sees an
@@ -88,7 +90,11 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
     : [];
   const completedCount = completedLessons.length;
 
-  // Calculate total lessons from sections if available
+  // `course.sections` is never present on this endpoint's payload (the
+  // enrollments query only selects flat course fields) — deriving lesson
+  // count from it always produced 0, silently hiding the "LESSON X / Y"
+  // label. `course.totalLessons` is the real per-course count the backend
+  // already computes in one grouped query (auth.service.ts getMyEnrollments).
   const sections = course?.sections || [];
   let allLessons: any[] = [];
   sections.forEach((sec: any) => {
@@ -97,8 +103,12 @@ export default function CurrentQuestCard({ currentEnrollment, onPlay }: CurrentQ
     }
   });
 
-  const totalLessons = allLessons.length;
-  const currentLessonNum = Math.min(totalLessons, completedCount + 1);
+  const totalLessons = allLessons.length || course?.totalLessons || 0;
+  // `currentLessonIndex` (from real `progress`%) is the source of truth —
+  // `completedLessons` alone is frequently empty/stale (e.g. progress can be
+  // 64% while the array has 0 entries), which showed "LESSON 1/25" for
+  // students who were actually most of the way through the course.
+  const currentLessonNum = Math.min(totalLessons, currentLessonIndex ?? completedCount + 1);
   const progressPct =
     currentEnrollment?.progress !== undefined
       ? Math.round(currentEnrollment.progress)

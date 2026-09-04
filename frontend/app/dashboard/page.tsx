@@ -107,8 +107,9 @@ export default function DashboardPage() {
   };
 
   const currentEnrollment = enrollments.length > 0 ? enrollments[0] : null;
+  const currentTotalLessons = currentEnrollment?.course?.totalLessons || 25;
   const currentMissionNum = currentEnrollment
-    ? Math.max(1, Math.round((currentEnrollment.progress / 100) * 25) || 12)
+    ? Math.max(1, Math.round((currentEnrollment.progress / 100) * currentTotalLessons) || 12)
     : 12;
 
   return (
@@ -158,6 +159,7 @@ export default function DashboardPage() {
           {/* 2. CURRENT QUEST HERO CARD */}
           <CurrentQuestCard
             currentEnrollment={currentEnrollment}
+            currentLessonIndex={currentMissionNum}
             onPlay={handleContinueLearning}
           />
 
@@ -165,7 +167,7 @@ export default function DashboardPage() {
           <JourneyPathMap
             currentEnrollment={currentEnrollment}
             currentLessonIndex={currentMissionNum}
-            totalLessons={25}
+            totalLessons={currentTotalLessons}
             onNodeClick={handleContinueLearning}
           />
 
