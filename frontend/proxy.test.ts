@@ -15,9 +15,14 @@ describe('proxy middleware', () => {
     jest.clearAllMocks();
   });
 
-  const createMockRequest = (pathname: string, tokenValue?: string): NextRequest => {
+  const createMockRequest = (
+    pathname: string,
+    tokenValue?: string,
+    search = '',
+  ): NextRequest => {
     return {
-      nextUrl: { pathname },
+      // Mirrors NextRequest: `search` is always a string, '' when empty.
+      nextUrl: { pathname, search },
       url: `http://localhost${pathname}`,
       cookies: {
         get: jest.fn().mockImplementation((name) => {
@@ -38,12 +43,38 @@ describe('proxy middleware', () => {
   };
 
   describe('Unauthenticated users', () => {
-    it('should redirect to /login when accessing /dashboard', () => {
+    it('should redirect to /login when accessing /dashboard, preserving the destination', () => {
+      // The `next` param is what makes push deep links survive an expired
+      // session: without it a learner tapping a streak reminder after their
+      // 7-day JWT lapsed lands on a generic dashboard, and the lesson Tey
+      // pointed them at is silently lost.
       const req = createMockRequest('/dashboard');
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/login', 'http://localhost/dashboard'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/login' });
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Fdashboard',
+      });
+    });
+
+    it('should wall /learn and carry the deep link through login', () => {
+      const req = createMockRequest('/learn/c1/section/2');
+      const res = proxy(req);
+
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Flearn%2Fc1%2Fsection%2F2',
+      });
+    });
+
+    it('should wall /admin', () => {
+      const req = createMockRequest('/admin');
+      const res = proxy(req);
+
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Fadmin',
+      });
     });
 
     it('should redirect to /creator/login when accessing /creator', () => {

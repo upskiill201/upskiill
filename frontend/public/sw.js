@@ -14,7 +14,7 @@
  *    connection still renders the last-seen shell instead of erroring.
  */
 
-const CACHE_VERSION = 'teyro-v1';
+const CACHE_VERSION = 'teyro-v2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -87,5 +87,67 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => caches.match(request).then((cached) => cached || caches.match('/dashboard')))
+  );
+});
+
+/* ───────────────────────────────────────────────────────────────────────────
+ * Tey push notifications.
+ *
+ * The payload carries both halves the engagement system needs: prose for the
+ * human, and structured data (reason, teyState, url, deliveryId) so nothing
+ * has to be inferred from message text. See backend/src/tey/README.md.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    // A malformed payload is not worth a blank notification.
+    return;
+  }
+  if (!data.title) return;
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body || '',
+      icon: '/Icons/icon-192.png',
+      badge: '/Icons/icon-192.png',
+      // Same reason replaces rather than stacks, so a retry cannot pile up
+      // three copies of the same nudge on the lock screen.
+      tag: data.tag || 'tey',
+      renotify: true,
+      data: {
+        url: data.url || '/dashboard',
+        deliveryId: data.deliveryId,
+        reason: data.reason,
+      },
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || '/dashboard';
+
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      // Prefer focusing an open tab and routing client-side — a full reload
+      // would throw away app state and make the deep link feel slow.
+      for (const client of clientList) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.focus();
+          client.postMessage({ type: 'TEY_NAVIGATE', url: target });
+          return;
+        }
+      }
+
+      await self.clients.openWindow(target);
+    })()
   );
 });

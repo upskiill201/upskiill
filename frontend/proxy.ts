@@ -31,13 +31,22 @@ export function proxy(request: NextRequest) {
     path.startsWith('/creator/verify-failed');
 
   const isDashboard = path.startsWith('/dashboard');
+  // Walled too: a push notification deep-links straight into /learn, and
+  // /admin is new privileged surface.
+  const isLearn = path.startsWith('/learn');
+  const isAdmin = path.startsWith('/admin');
   const isTestRoute = path.startsWith('/creator-onboarding-test');
   const isCreatorStudio = path.startsWith('/creator') && !isCreatorAuthPage && !isTestRoute;
 
   // 1. No token → enforce login walls on protected routes only
   if (!token) {
-    if (isDashboard) {
-      return NextResponse.redirect(new URL('/login', request.url));
+    if (isDashboard || isLearn || isAdmin) {
+      // Preserve the destination. Without this, a learner whose 7-day JWT has
+      // expired taps a streak reminder and lands on a generic login → dashboard,
+      // with the lesson they were sent to silently discarded.
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('next', path + (request.nextUrl.search ?? ''));
+      return NextResponse.redirect(loginUrl);
     }
     if (isCreatorStudio) {
       return NextResponse.redirect(new URL('/creator/login', request.url));

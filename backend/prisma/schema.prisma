@@ -109,6 +109,8 @@ model User {
   learnerState           LearnerState?
   teyScheduledActions    TeyScheduledAction[]
   teyDeliveries          TeyDelivery[]
+  pushSubscriptions      PushSubscription[]
+  teyNotificationPrefs   TeyNotificationPrefs?
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -1373,6 +1375,9 @@ model Notification {
   title      String?
   body       String?
   isRead     Boolean  @default(false)
+  /// Where tapping this notification should take the learner. Set by Tey;
+  /// null for community rows, which resolve their own destination client-side.
+  deepLink   String?
   createdAt  DateTime @default(now())
 
   // Every real query filters userId + isRead together (never isRead alone —
@@ -1860,4 +1865,62 @@ model TeyDelivery {
   @@index([userId, sentAt(sort: Desc)])
   @@index([ruleId, sentAt(sort: Desc)])
   @@map("tey_deliveries")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Push delivery — subscriptions and per-learner notification preferences.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PushSubscription {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The endpoint IS the identity of a browser-profile pair, so it is unique
+  /// GLOBALLY, not per user: a shared device re-subscribing under a second
+  /// account must move the row rather than deliver A's nudges to B.
+  endpoint String @unique
+  p256dh   String
+  auth     String
+
+  userAgent String?
+  /// 'ios-standalone' | 'android' | 'desktop' | 'other' — instrumented because
+  /// iOS only permits push from an installed PWA, and that reachability
+  /// ceiling has to be measured rather than assumed.
+  platform String?
+
+  isActive     Boolean   @default(true)
+  failureCount Int       @default(0)
+  lastUsedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, isActive])
+  @@map("push_subscriptions")
+}
+
+model TeyNotificationPrefs {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pushEnabled     Boolean @default(true)
+  whatsappEnabled Boolean @default(false)
+
+  // Per-category opt-outs, so a learner can keep streak saves and drop the rest.
+  streakReminders Boolean @default(true)
+  dailyReminders  Boolean @default(true)
+  milestones      Boolean @default(true)
+  reengagement    Boolean @default(true)
+
+  /// Minutes from LOCAL midnight. Defaults 21:30 -> 08:00, and the window
+  /// wraps midnight by design.
+  quietHoursStart Int @default(1290)
+  quietHoursEnd   Int @default(480)
+
+  maxPerDay Int @default(3)
+  /// Learner's own preferred reminder hour, overriding the inferred habit.
+  preferredHour Int?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("tey_notification_prefs")
 }

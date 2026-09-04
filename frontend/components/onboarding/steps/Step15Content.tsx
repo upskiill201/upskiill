@@ -5,6 +5,7 @@ import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { ArrowRight, Bell, Check, Flame, Share, SquarePlus, Target, Trophy } from 'lucide-react';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
+import { useTeyPush } from '@/hooks/useTeyPush';
 import { playHaptic } from '@/lib/haptics';
 import { ConfettiBurst } from '../ConfettiBurst';
 
@@ -90,6 +91,7 @@ function Benefit({ icon, label }: { icon: React.ReactNode; label: string }) {
 export default function Step15Content({ onNext }: Step15ContentProps) {
   useOnboardingSession({ currentStep: 15, disableGuard: true });
   const { platform, isStandalone, canPromptInstall, promptInstall } = usePwaInstall();
+  const { enable: enablePush } = useTeyPush();
 
   const [phase, setPhase] = useState<Phase>('install');
   const [iosStep, setIosStep] = useState(0);
@@ -112,15 +114,21 @@ export default function Step15Content({ onNext }: Step15ContentProps) {
 
   const handleEnableNotifications = useCallback(async () => {
     playHaptic('medium');
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      try {
-        await Notification.requestPermission();
-      } catch {
-        // Denied/blocked/unsupported — onboarding must still complete either way.
-      }
+    // Previously this asked for permission and threw the answer away, so the
+    // screen promised reminders that could never arrive. Now it registers a
+    // real push subscription with the backend.
+    //
+    // Must stay inside this user gesture: browsers ignore a permission request
+    // that is not, and Safari treats a programmatic one as a denial the learner
+    // can only undo through system settings.
+    try {
+      await enablePush();
+    } catch {
+      // Denied, blocked, or unsupported — onboarding still completes, and the
+      // learner can turn reminders on later from settings.
     }
     goCelebrate();
-  }, [goCelebrate]);
+  }, [enablePush, goCelebrate]);
 
   const handleFinish = () => {
     playHaptic('medium');

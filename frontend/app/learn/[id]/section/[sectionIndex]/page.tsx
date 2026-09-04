@@ -395,6 +395,44 @@ function SectionViewContent({
   const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
   const [activeLesson, setActiveLesson] = useState<any>(null);
   const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
+
+  // ── Tey deep link: /learn/[id]/section/[n]?lesson=<lessonId> ──────────────
+  // A push notification points at a specific unfinished lesson rather than the
+  // section, so tapping it opens exactly what Tey was talking about.
+  const teyDeepLinkAppliedRef = useRef(false);
+  useEffect(() => {
+    if (teyDeepLinkAppliedRef.current) return;
+    if (lessons.length === 0) return;
+
+    const requestedLessonId = new URLSearchParams(window.location.search).get('lesson');
+    if (!requestedLessonId) return;
+
+    // One-shot: never re-fire on a back-navigation into this page.
+    teyDeepLinkAppliedRef.current = true;
+
+    const idx = lessons.findIndex((l: any) => l.id === requestedLessonId);
+    // The security-relevant guard: a deep link must not become a way to skip
+    // lesson sequencing (or the paywall behind it). An unknown or not-yet-
+    // unlocked id falls through silently to the normal first-incomplete
+    // behaviour rather than erroring — the lesson may simply have been
+    // completed or unpublished since the notification was sent.
+    if (idx === -1 || idx > currentActiveLessonIndex) return;
+
+    setActiveLesson(lessons[idx]);
+    setLessonPhase('start');
+
+    // Strip the param so a refresh does not re-enter the lesson. Rewrite the
+    // CURRENT pathname rather than rebuilding it — this component does not have
+    // the section index unpacked, and reconstructing a route is a good way to
+    // introduce an off-by-one nobody notices until a learner is bounced.
+    const search = new URLSearchParams(window.location.search);
+    search.delete('lesson');
+    const query = search.toString();
+    router.replace(
+      `${window.location.pathname}${query ? `?${query}` : ''}`,
+      { scroll: false },
+    );
+  }, [lessons, currentActiveLessonIndex, router]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);

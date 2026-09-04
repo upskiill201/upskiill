@@ -58,6 +58,15 @@ services:
         value: "false"
       - key: TEY_SCHEDULER_SECRET
         sync: false   # shared secret for the external tick caller
+      # Web Push (VAPID). Generate with: npx web-push generate-vapid-keys
+      # The PRIVATE key never leaves the server; the public one is served to
+      # browsers at GET /tey/push/public-key.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:support@teyro.app
 
   # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
   # New service created for production.
@@ -117,3 +126,12 @@ services:
         value: "false"
       - key: TEY_SCHEDULER_SECRET
         sync: false   # shared secret for the external tick caller
+      # Web Push (VAPID). Generate with: npx web-push generate-vapid-keys
+      # The PRIVATE key never leaves the server; the public one is served to
+      # browsers at GET /tey/push/public-key.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:support@teyro.app

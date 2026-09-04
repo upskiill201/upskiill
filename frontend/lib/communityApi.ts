@@ -80,6 +80,12 @@ export interface AppNotification {
   isRead: boolean;
   createdAt: string;
   actor?: { id: string; fullName: string; avatarUrl: string | null } | null;
+  /**
+   * Where tapping this row should go. Set by Tey at send time (already
+   * validated against the learner's real progress); null for community rows,
+   * which resolve their destination client-side.
+   */
+  deepLink?: string | null;
 }
 
 async function jsonFetch<T>(url: string, init?: RequestInit): Promise<T> {

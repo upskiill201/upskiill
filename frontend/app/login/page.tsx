@@ -7,9 +7,20 @@ import { FaChartLine, FaCheck, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
 import { signInWithGoogle } from '@/lib/firebase';
+import { sanitizeNextPath } from '@/lib/return-to';
 import styles from './Login.module.css';
 
 export default function Login() {
+  // proxy.ts preserves the destination when it bounces a token-less request,
+  // so a push notification tapped with an expired session still lands on the
+  // lesson it pointed at. Sanitized against open redirects.
+  //
+  // Read from window at call time rather than via useSearchParams: this page is
+  // a client component at the route root, and the hook would force a Suspense
+  // boundary for static prerendering (see PostHogProvider for the same issue).
+  const resolveNext = () =>
+    sanitizeNextPath(new URLSearchParams(window.location.search).get('next'));
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +47,7 @@ export default function Login() {
       }
 
       // Cookie is set automatically by the backend (httpOnly, secure)
-      window.location.href = '/dashboard';
+      window.location.href = resolveNext();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -66,7 +77,7 @@ export default function Login() {
         throw new Error(data.message || 'Social login failed');
       }
 
-      window.location.href = '/dashboard';
+      window.location.href = resolveNext();
     } catch (err: unknown) {
       console.error(err);
       if (err instanceof Error) {

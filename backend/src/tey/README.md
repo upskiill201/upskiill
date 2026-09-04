@@ -20,18 +20,17 @@ with `AI = language / reasoning / personalization`, never `AI = source of truth`
 |---|---|---|
 | 1 | Activity events + learner state | **shipped** |
 | 2 | Decision engine + scheduler | **shipped (dry-run)** |
-| 3 | Web push + deep links | planned |
+| 3 | Web push + deep links | **shipped** |
 | 4 | Admin dashboard | planned |
 | 5 | AI provider abstraction | planned |
 | 6 | WhatsApp | future |
 | 7 | Rive mascot states | future |
 
-Phases 1–2 ship dark. The scheduler runs in **dry-run** by default: it claims
-due actions, revalidates them, and records what it *would* have sent to
+Delivery is **off by default**. With `TEY_DELIVERY_ENABLED` unset the scheduler
+claims due actions, revalidates them, and records what it *would* have sent to
 `tey_deliveries` — then sends nothing. A week of those rows answers "do the
 rules fire at sane times, at sane volumes, for the right people?" without a
-single learner being interrupted. Set `TEY_DELIVERY_ENABLED=true` only once a
-channel exists.
+single learner being interrupted. Turn it on for a staff allowlist first.
 
 ---
 
@@ -75,6 +74,7 @@ activity/      ingest: the single writer for tey_activity_events
 state/         timezone resolution, the projection, and the pure derivers
 decision/      pure rules + the engine that decides whether Tey should act
 scheduler/     the Postgres due queue, the claim, and the tick
+delivery/      policy gate, templates, deep links, and the channels
 listeners/     server-side capture from existing domain events
 ```
 
@@ -216,3 +216,72 @@ npx ts-node scripts/tey-e2e.ts   # against the database .env points at
 The e2e script proves the two properties the design rests on: an action whose
 reason no longer holds is SKIPPED rather than sent, and one whose reason still
 holds is processed.
+
+---
+
+## Delivery
+
+```
+TeyContext
+   → policy gate      (kill switch → prefs → quiet hours → cap → gap → cooldown → target)
+   → render           (TEMPLATE first, always)
+   → ledger row       (written first: its id is what the deep link embeds)
+   → in-app row       (unconditional)
+   → push             (best effort)
+```
+
+**In-app is unconditional and push is the second channel on the same message.**
+That ordering is what makes the feature degrade gracefully to exactly what
+ships today for a learner who never grants permission — or who is on iOS
+without an installed PWA.
+
+**Every policy denial writes a distinct `skipReason`** and a `SUPPRESSED` ledger
+row. Without those rows the admin dashboard could only report what was sent,
+and "we wanted to nudge 400 people tonight and suppressed 120, here is exactly
+why" is the more useful half of the picture.
+
+### Web Push, not FCM
+
+FCM's web channel *is* W3C Web Push with a Google endpoint in front — it adds
+no delivery capability on the web, but it does require the firebase JS SDK
+client-side plus a second service worker. This app has a hand-written `sw.js`
+deliberately chosen over next-pwa, and two service workers on one origin means
+scope conflicts and a second cache lifecycle. When a native Android app exists,
+FCM becomes correct — and slots in as another `TeyChannel` with nothing above
+it changing.
+
+### The iOS ceiling
+
+iOS exposes `PushManager` **only to a PWA installed to the Home Screen**
+(16.4+). In mobile Safari a permission button would prompt nothing and silently
+fail, so `useTeyPush` reports `needsInstall` and the UI offers installation
+instead. `push_subscriptions.platform` records this, so reachability by
+platform can be measured rather than assumed — and it is the strongest argument
+for bringing WhatsApp forward.
+
+### Deep links
+
+`/learn/{courseId}/section/{n}?lesson={lessonId}&tey={deliveryId}`
+
+The target is resolved and **validated at send time**, so a deleted or
+unpublished lesson has already degraded LESSON → COURSE → HOME before a
+notification exists. The lesson player is the second line of defence: an
+unknown `?lesson=` — or one past the learner's current unlock point — is
+ignored and falls through to normal behaviour. That index guard is
+security-relevant: a deep link must never become a way around lesson
+sequencing or the paywall.
+
+`proxy.ts` now preserves the destination through the login wall
+(`/login?next=…`, sanitized by `sanitizeNextPath`). Without it, a learner whose
+7-day JWT expired taps a reminder and lands on a generic dashboard with the
+lesson silently discarded.
+
+### Environment
+
+| Variable | Meaning |
+|---|---|
+| `TEY_DELIVERY_ENABLED` | `true` to actually send. Unset ⇒ dry-run. |
+| `TEY_PUSH_ENABLED` | `false` is the global kill switch, checked before anything else. |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | `npx web-push generate-vapid-keys`. The private key never leaves the server. |
+| `VAPID_SUBJECT` | `mailto:` contact for push services. |
+| `NEXT_PUBLIC_ENABLE_SW` | Frontend. `true` registers the service worker in dev, so push is testable without deploying. |

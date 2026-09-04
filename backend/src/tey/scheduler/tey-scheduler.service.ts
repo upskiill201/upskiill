@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import type { TeyContext } from '../contracts/tey-context.types';
 import { TeyDecisionService } from '../decision/tey-decision.service';
 import { LearnerStateService } from '../state/learner-state.service';
+import { TeyDeliveryService } from '../delivery/tey-delivery.service';
 import { resolveLocalNow } from '../state/local-time.util';
 import {
   TeyActionRepository,
@@ -53,6 +54,7 @@ export class TeySchedulerService {
     private readonly actions: TeyActionRepository,
     private readonly decision: TeyDecisionService,
     private readonly learnerState: LearnerStateService,
+    private readonly delivery: TeyDeliveryService,
   ) {}
 
   /**
@@ -178,10 +180,25 @@ export class TeySchedulerService {
       return { sent: false, skipReason: 'DRY_RUN' };
     }
 
-    // Delivery channels arrive in the next phase. Until then, reaching here
-    // means TEY_DELIVERY_ENABLED was set before anything could consume it.
-    await this.actions.markSkipped(action.id, 'NO_CHANNEL');
-    return { sent: false, skipReason: 'NO_CHANNEL' };
+    const outcome = await this.delivery.deliver(
+      action.userId,
+      check.context,
+      now,
+      action.id,
+    );
+
+    if (!outcome.sent) {
+      // Policy suppression is a normal outcome, not a failure: the nudge was
+      // correct, the moment was not. The ledger already recorded why.
+      await this.actions.markSkipped(action.id, outcome.skipReason ?? 'SUPPRESSED');
+      return { sent: false, skipReason: outcome.skipReason };
+    }
+
+    await this.actions.markSent(action.id);
+    // Counts against tone escalation until the learner actually opens it;
+    // markOpened resets this to zero.
+    await this.delivery.recordIgnoredNudge(action.userId);
+    return { sent: true };
   }
 
   /**

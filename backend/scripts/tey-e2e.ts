@@ -108,3 +108,19 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
+/*
+ * Manual push check (not run by main()):
+ *
+ *   1. Generate keys once:  npx web-push generate-vapid-keys
+ *      → VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY in backend/.env
+ *   2. Frontend: NEXT_PUBLIC_ENABLE_SW=true npm run dev
+ *   3. Sign in, complete onboarding step 15 (or the settings toggle) to grant
+ *      permission and register a subscription.
+ *   4. Backend: TEY_DELIVERY_ENABLED=true TEY_SCHEDULER_ENABLED=true npm run start:dev
+ *   5. Force an action due and drive the tick:
+ *        curl -X POST localhost:3001/tey/scheduler/tick \
+ *             -H "x-tey-scheduler-secret: $TEY_SCHEDULER_SECRET"
+ *   6. Confirm the notification arrives AND that tapping it lands on the
+ *      target lesson — not /dashboard. That last part is the whole feature.
+ */

@@ -5,6 +5,7 @@ import { LearnerStateService } from '../state/learner-state.service';
 import type { LearnerStateSnapshot } from '../contracts/tey-state.types';
 import { TeyActionRepository } from './tey-action.repository';
 import { TeySchedulerService } from './tey-scheduler.service';
+import { TeyDeliveryService } from '../delivery/tey-delivery.service';
 
 const learner = (
   over: Partial<LearnerStateSnapshot> = {},
@@ -56,6 +57,10 @@ describe('TeySchedulerService', () => {
   let service: TeySchedulerService;
   let actions: jest.Mocked<Partial<TeyActionRepository>>;
   let learnerState: { project: jest.Mock; get: jest.Mock };
+  let delivery: {
+    deliver: jest.Mock;
+    recordIgnoredNudge: jest.Mock;
+  };
   let prisma: any;
   const originalEnv = { ...process.env };
 
@@ -75,6 +80,11 @@ describe('TeySchedulerService', () => {
       get: jest.fn().mockResolvedValue(learner()),
     };
 
+    delivery = {
+      deliver: jest.fn().mockResolvedValue({ sent: true, deliveryId: 'd1' }),
+      recordIgnoredNudge: jest.fn().mockResolvedValue(undefined),
+    };
+
     prisma = {
       user: {
         findUnique: jest.fn().mockResolvedValue({
@@ -92,6 +102,7 @@ describe('TeySchedulerService', () => {
         { provide: PrismaService, useValue: prisma },
         { provide: TeyActionRepository, useValue: actions },
         { provide: LearnerStateService, useValue: learnerState },
+        { provide: TeyDeliveryService, useValue: delivery },
       ],
     }).compile();
 
@@ -206,6 +217,38 @@ describe('TeySchedulerService', () => {
       expect(actions.markFailed).toHaveBeenCalledWith('bad', 1, 'db blip');
       // The second action still ran.
       expect(prisma.teyDelivery.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('delivers, and counts the nudge as ignored until it is opened', async () => {
+      process.env.TEY_DELIVERY_ENABLED = 'true';
+      (actions.claimDue as jest.Mock).mockResolvedValue([dueAction()]);
+
+      const summary = await service.tick();
+
+      expect(delivery.deliver).toHaveBeenCalledWith(
+        'u1',
+        expect.objectContaining({ reason: 'STREAK_AT_RISK' }),
+        expect.anything(),
+        'a1',
+      );
+      expect(actions.markSent).toHaveBeenCalledWith('a1');
+      // Escalates tone until markOpened resets it.
+      expect(delivery.recordIgnoredNudge).toHaveBeenCalledWith('u1');
+      expect(summary.sent).toBe(1);
+    });
+
+    it('treats policy suppression as a skip, not a failure', async () => {
+      // The nudge was correct; the moment was not. Marking it failed would
+      // retry it and defeat the point of the quiet-hours/cap rules.
+      process.env.TEY_DELIVERY_ENABLED = 'true';
+      (actions.claimDue as jest.Mock).mockResolvedValue([dueAction()]);
+      delivery.deliver.mockResolvedValue({ sent: false, skipReason: 'QUIET_HOURS' });
+
+      const summary = await service.tick();
+
+      expect(actions.markSkipped).toHaveBeenCalledWith('a1', 'QUIET_HOURS');
+      expect(actions.markSent).not.toHaveBeenCalled();
+      expect(summary.skipReasons.QUIET_HOURS).toBe(1);
     });
 
     it('re-plans while it has fresh state in hand', async () => {

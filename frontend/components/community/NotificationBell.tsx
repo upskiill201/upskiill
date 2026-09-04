@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
-import { AtSign, Bell, Heart, MessageCircle, Megaphone } from 'lucide-react';
+import { AtSign, Bell, Flame, Heart, MessageCircle, Megaphone } from 'lucide-react';
 import {
   AppNotification,
   getCommentLocation,
@@ -26,10 +26,22 @@ const TYPE_PHRASES: Record<string, string> = {
   POST_LIKE: 'liked your post',
   COMMENT_LIKE: 'liked your comment',
   ANNOUNCEMENT: 'posted an announcement',
+  // Tey's own rows. Without an entry here the panel renders a blank line,
+  // because the fallback expects an actor-phrased sentence.
+  TEY_STREAK_AT_RISK: 'Your streak needs one lesson today',
+  TEY_STREAK_CRITICAL: 'Last chance to save your streak',
+  TEY_DAILY_GOAL_INCOMPLETE: "Today's goal is still open",
+  TEY_INACTIVE_RETURN: 'Your course is waiting for you',
+  TEY_MILESTONE: 'You hit a milestone',
+  TEY_STREAK_LOST: 'Your streak ended — ready to start again?',
+  TEY_PROGRESS_CELEBRATION: 'Nice progress this week',
+  TEY_COURSE_NEAR_COMPLETION: "You're nearly done with your course",
+  TEY_LESSON_ABANDONED: 'You left a lesson unfinished',
 };
 
 function TypeIcon({ type }: { type: string }) {
   const size = 14;
+  if (type.startsWith('TEY_')) return <Flame size={size} />;
   if (type === 'ANNOUNCEMENT') return <Megaphone size={size} />;
   if (type === 'MENTION') return <AtSign size={size} />;
   if (type === 'POST_LIKE' || type === 'COMMENT_LIKE') return <Heart size={size} />;
@@ -43,6 +55,11 @@ function TypeIcon({ type }: { type: string }) {
  * null when the target no longer exists or the viewer lost access.
  */
 async function resolveNotificationUrl(n: AppNotification): Promise<string | null> {
+  // Tey nudges carry their own validated destination (set at send time), so
+  // there is nothing to look up. Resolving one the community way would fetch a
+  // post id that is really a delivery id and fall through to the feed.
+  if (n.entityType === 'TEY_DELIVERY') return n.deepLink ?? '/dashboard';
+
   if (!n.entityId) return null;
   try {
     let postId = n.entityId;

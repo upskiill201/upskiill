@@ -152,6 +152,7 @@ export const metadata: Metadata = {
 import { SWRProvider } from "../components/providers/SWRProvider";
 import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
 import { TeyActivityProvider } from "../components/providers/TeyActivityProvider";
+import { TeyPushProvider } from "../components/providers/TeyPushProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { GamificationProvider } from "../context/GamificationContext";
@@ -185,6 +186,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ServiceWorkerRegistrar />
         <TeyActivityProvider />
+        <TeyPushProvider />
         <SWRProvider>
         <PostHogProvider>
           <CartProvider>
