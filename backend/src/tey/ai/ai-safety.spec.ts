@@ -314,10 +314,16 @@ describe('Tey personality prompt', () => {
   });
 
   it('always carries the behavioural prohibitions', () => {
+    // The line is streak vs. person: guilt-tripping about the STREAK is
+    // explicitly the character (Duolingo-owl energy), never prohibited.
+    // Attacking the learner's character, worth, or ability is what stays
+    // banned, however the request is phrased.
     const prompt = buildNudgeSystemPrompt(ctx);
-    for (const forbidden of ['shame', 'humiliate', 'threaten', 'guilt-trip']) {
-      expect(prompt).toContain(forbidden);
+    for (const stillBanned of ['humiliate', 'threaten', 'ashamed', 'lazy']) {
+      expect(prompt).toContain(stillBanned);
     }
+    expect(prompt).toContain('guilt-trip');
+    expect(prompt).toContain('fair game');
   });
 
   it('states the push length limits the validator enforces', () => {

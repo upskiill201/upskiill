@@ -157,12 +157,14 @@ describe('message templates', () => {
     expect(body).not.toContain('undefined');
   });
 
-  it('never shames, threatens, or insults the learner', () => {
-    // Tey is allowed to tease. It is not allowed to make someone feel bad
-    // about their own learning — that is the line the personality spec draws.
+  it('guilt-trips the streak, never the learner as a person', () => {
+    // Tey is a dramatic, guilt-tripping owl about the STREAK — "I'm not mad,
+    // I'm disappointed" is deliberately in the copy. What must never appear is
+    // an attack on the learner's character, intelligence, or worth. That line
+    // (streak vs. person) is the one the personality spec actually draws.
     const banned = [
-      'lazy', 'failure', 'failed you', 'disappointed', 'pathetic',
-      'stupid', 'useless', 'shame', 'you never', 'always quit',
+      'lazy', 'pathetic', 'stupid', 'useless', 'worthless', 'idiot',
+      'you never', 'always quit', 'bad at this', 'give up on you',
     ];
 
     const reasons: TeyContext['reason'][] = [

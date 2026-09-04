@@ -14,91 +14,123 @@ export interface RenderedMessage {
  *
  * Templates come FIRST, always (spec section 26): zero cost, no latency, no
  * hallucination risk, and completely predictable. The AI layer exists for
- * situations where personalization genuinely adds something — a conversation,
- * a nuanced case — not for "your streak is at risk", which says the same true
- * thing every time.
+ * situations where personalization genuinely adds something — not for "your
+ * streak is at risk", which says the same true thing every time.
  *
- * Tey's voice: playful, observant, encouraging, mischievous, slightly
- * passive-aggressive. Never insulting, shaming, threatening, or humiliating —
- * that boundary is not a style preference, it is the product's character, and
- * a learner who feels bullied by a mascot uninstalls the app.
+ * Tey's voice: a mischievous, dramatic owl-like companion — the Duolingo owl
+ * archetype. Short, simple, instantly readable on a lock screen. Guilt-tripping
+ * the STREAK or the UNFINISHED LESSON is the whole bit and is fully in bounds
+ * ("I'm just going to sit here"). Guilt-tripping the LEARNER as a person — their
+ * character, their worth, their intelligence — never is, and that line doesn't
+ * move. See tey-personality.ts for the same rule, spelled out for the AI path.
  *
  * Push constraints: titles stay under ~45 characters and bodies under ~120, or
- * Android and iOS truncate mid-sentence.
+ * Android and iOS truncate mid-sentence. `truncate()` below is a hard backstop.
  */
 
 type Variants = readonly ((f: TeyContext['facts']) => RenderedMessage)[];
 
 const streakAtRisk: Variants = [
   (f) => ({
-    title: `Your ${f.streakDays}-day streak is waiting 👀`,
-    body: 'One lesson keeps it alive. That is genuinely all it takes.',
+    title: `Your ${f.streakDays}-day streak is dying 💀`,
+    body: 'One lesson saves it. That is the whole ask.',
   }),
   (f) => ({
-    title: `${f.streakDays} days. Still counting?`,
-    body: 'A few minutes now and today is in the bag.',
+    title: `${f.streakDays} days. About to be zero.`,
+    body: 'Dramatic? Maybe. Accurate? Also yes.',
   }),
   (f) => ({
-    title: 'Tey is watching the clock 🕗',
-    body: `${f.streakDays} days of work, and the evening is going somewhere.`,
+    title: "I'm just going to sit here",
+    body: `Staring at your unfinished lesson. ${f.streakDays} days on the line.`,
+  }),
+  (f) => ({
+    title: `Don't let ${f.streakDays} days go to waste`,
+    body: 'One lesson. A few minutes. Future you says thanks.',
   }),
 ];
 
-/** Escalated tone — used only after repeated ignored nudges. Teasing, never mean. */
+/** Escalated tone — used only after repeated ignored nudges. Full guilt-trip
+ *  energy, aimed at the streak, never at the learner. */
 const streakAtRiskTeasing: Variants = [
   (f) => ({
-    title: 'Not that I am counting… 👀',
-    body: `Okay, I am. It is ${f.streakDays} days, and today is still empty.`,
+    title: 'Oh, we\'re ignoring me now?',
+    body: `Cool. Your ${f.streakDays}-day streak is still dying though.`,
   }),
   (f) => ({
-    title: `${f.streakDays} days, zero lessons today`,
-    body: 'No pressure. Just leaving this here. Again.',
+    title: "I'm not mad. I'm disappointed.",
+    body: `Ok, a little mad. ${f.streakDays} days, still no lesson today.`,
+  }),
+  () => ({
+    title: 'Still here. Still waiting.',
+    body: 'I have nowhere else to be, apparently. Just saying.',
+  }),
+  (f) => ({
+    title: `${f.streakDays} days, and I'm talking to a wall`,
+    body: "Fine. I'll just sit here. Sulking. It's fine.",
   }),
 ];
 
 const streakCritical: Variants = [
   (f) => ({
-    title: `Last call for your ${f.streakDays}-day streak`,
-    body: 'The day ends soon. One lesson and it survives.',
+    title: `🚨 ${f.streakDays} days. ${Math.max(1, Math.round(f.hoursUntilLocalMidnight))}h left. GO.`,
+    body: 'This is not a drill. One lesson, right now.',
   }),
   (f) => ({
-    title: 'This is the part where we panic 😬',
-    body: `${f.streakDays} days on the line and about ${Math.max(1, Math.round(f.hoursUntilLocalMidnight))}h left.`,
+    title: 'Your streak is about to flatline',
+    body: `${f.streakDays} days, about ${Math.max(1, Math.round(f.hoursUntilLocalMidnight))}h left. One lesson.`,
+  }),
+  (f) => ({
+    title: 'Last call. Seriously.',
+    body: `${f.streakDays}-day streak. Don't make me watch this happen.`,
   }),
 ];
 
 const dailyGoal: Variants = [
   (f) => ({
-    title: 'Fancy a quick lesson?',
+    title: 'Got a sec?',
     body: f.courseTitle
       ? `${f.courseTitle} is right where you left it.`
-      : 'Pick up where you left off — it will not take long.',
+      : 'Quick lesson? Barely takes any time.',
   }),
   (f) => ({
-    title: `${f.dailyGoalXp} XP away from today's goal`,
+    title: `${f.dailyGoalXp} XP left today`,
     body: 'One lesson usually covers it.',
+  }),
+  () => ({
+    title: 'Tiny nudge 👋',
+    body: "Today's goal is still open. No rush, just a reminder.",
   }),
 ];
 
 const inactiveReturn: Variants = [
   (f) => ({
-    title: 'Still here whenever you are 👋',
+    title: 'Well look who it is 👀',
+    body: f.courseTitle
+      ? `${f.courseTitle} missed you. So did I, honestly.`
+      : 'Good to see you again. No lecture, promise.',
+  }),
+  (f) => ({
+    title: 'Still here whenever you are',
     body: f.courseTitle
       ? `${f.courseTitle} is ${f.courseProgressPct}% done. No rush.`
-      : 'Your course is exactly where you left it. No rush.',
+      : 'Everything is exactly where you left it.',
   }),
   (f) => ({
     title: 'Long time no learn',
     body: f.courseTitle
-      ? `Want to pick ${f.courseTitle} back up? Even one lesson counts.`
-      : 'Want to pick things back up? Even one lesson counts.',
+      ? `Even one lesson in ${f.courseTitle} counts.`
+      : 'Even one lesson counts. Small steps.',
   }),
 ];
 
 const milestone: Variants = [
   (f) => ({
-    title: `${f.streakDays} days. Look at you 🎉`,
-    body: 'That is a real habit now. Genuinely well done.',
+    title: `${f.streakDays} days?! Okay, wow.`,
+    body: 'That is not luck. That is a habit now.',
+  }),
+  (f) => ({
+    title: 'Look at that streak 🔥',
+    body: `${f.streakDays} days. Genuinely impressive.`,
   }),
 ];
 
