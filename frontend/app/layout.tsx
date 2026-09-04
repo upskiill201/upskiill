@@ -138,21 +138,20 @@ export const metadata: Metadata = {
 };
 
 
-const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
-
 import { SWRProvider } from "../components/providers/SWRProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { IntercomProvider } from "../components/providers/IntercomProvider";
 import { GamificationProvider } from "../context/GamificationContext";
 import { RewardAnimationProvider } from "../context/RewardAnimationContext";
-import RewardAnimationOverlay from "../components/ui/RewardAnimationOverlay";
 import { HeraldProvider } from "../context/HeraldContext";
 import HeraldOverlay from "../components/herald/HeraldOverlay";
-import HeraldSpinReveal from "../components/herald/HeraldSpinReveal";
-import HeraldStreakReveal from "../components/herald/HeraldStreakReveal";
 import { StreakProvider } from "../context/StreakContext";
-import StreakModal from "../components/streak/StreakModal";
+import {
+  DeferredRewardAnimationOverlay,
+  DeferredHeraldReveals,
+  DeferredStreakModal,
+} from "../components/providers/DeferredOverlays";
 import { AudioProvider } from "../context/AudioContext";
 import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
 import { TeyroLoaderProvider } from "../components/providers/TeyroLoaderProvider";
@@ -171,10 +170,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${baloo2.variable} h-full antialiased`} suppressHydrationWarning>
-      <head>
-        <link rel="stylesheet" href={fontAwesomeLink} />
-        <link rel="preload" href="/Loading Screens/Teyro_loading.webm" as="video" type="video/webm" />
-      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <SWRProvider>
         <PostHogProvider>
@@ -187,7 +182,7 @@ export default function RootLayout({
                 <CelebrationProvider>
                   <GamificationProvider>
                     <RewardAnimationProvider>
-                      <RewardAnimationOverlay />
+                      <DeferredRewardAnimationOverlay />
                       <HeraldProvider>
                         <StreakProvider>
                           <CelebrationEngine />
@@ -195,9 +190,8 @@ export default function RootLayout({
                           <QuestProgressWatcher />
                           {/* Herald & Streak portals — router-independent, render into document.body */}
                           <HeraldOverlay />
-                          <HeraldSpinReveal />
-                          <HeraldStreakReveal />
-                          <StreakModal />
+                          <DeferredHeraldReveals />
+                          <DeferredStreakModal />
                           <TeyroLoaderProvider>
                             <HeaderWrapper />
                             <main className="flex-1" style={{ overflow: 'visible' }}>

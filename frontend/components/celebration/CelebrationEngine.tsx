@@ -9,20 +9,30 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCelebration, CelebrationScene } from '@/context/CelebrationContext';
-import ClaimScene from './scenes/ClaimScene';
-import StreakScene from './scenes/StreakScene';
-import ChestScene from './scenes/ChestScene';
-import LevelUpScene from './scenes/LevelUpScene';
-import QuestScene from './scenes/QuestScene';
-import AchievementScene from './scenes/AchievementScene';
-import LeagueScene from './scenes/LeagueScene';
-import SectionCompleteScene from './scenes/SectionCompleteScene';
-import CourseProgressScene from './scenes/CourseProgressScene';
-import SectionUnlockedScene from './scenes/SectionUnlockedScene';
-import CourseCompleteScene from './scenes/CourseCompleteScene';
+
+// Every scene (and the Framer Motion it pulls in) used to be a static import
+// here, which put all 11 in the shared/global chunk on every route —
+// including the marketing homepage, which never renders a celebration.
+// They're only ever needed once `activeScene` is set, so each loads on
+// demand instead. `ssr: false` is safe: this component only ever renders
+// client-side (it's mounted behind `mounted` state below, itself gated on
+// a useEffect), and each scene is a full-page portal overlay, never part of
+// the initial HTML.
+const ClaimScene = dynamic(() => import('./scenes/ClaimScene'), { ssr: false });
+const StreakScene = dynamic(() => import('./scenes/StreakScene'), { ssr: false });
+const ChestScene = dynamic(() => import('./scenes/ChestScene'), { ssr: false });
+const LevelUpScene = dynamic(() => import('./scenes/LevelUpScene'), { ssr: false });
+const QuestScene = dynamic(() => import('./scenes/QuestScene'), { ssr: false });
+const AchievementScene = dynamic(() => import('./scenes/AchievementScene'), { ssr: false });
+const LeagueScene = dynamic(() => import('./scenes/LeagueScene'), { ssr: false });
+const SectionCompleteScene = dynamic(() => import('./scenes/SectionCompleteScene'), { ssr: false });
+const CourseProgressScene = dynamic(() => import('./scenes/CourseProgressScene'), { ssr: false });
+const SectionUnlockedScene = dynamic(() => import('./scenes/SectionUnlockedScene'), { ssr: false });
+const CourseCompleteScene = dynamic(() => import('./scenes/CourseCompleteScene'), { ssr: false });
 
 let sceneCounter = 0;
 

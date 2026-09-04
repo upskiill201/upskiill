@@ -12,7 +12,21 @@ const nextConfig: NextConfig = {
     '/blog': ['./app/blog/_fonts/**'],
     '/blog/[slug]': ['./app/blog/_fonts/**'],
   },
+  // Tree-shakes per-icon imports from these packages instead of pulling the
+  // whole barrel file into every route's bundle. lucide-react (218 import
+  // sites) and react-icons/fa (26) are the two approved icon libraries
+  // (see frontend/CLAUDE.md); framer-motion ships on every route via the
+  // root layout's provider tree, so its submodule imports benefit too.
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'react-icons', 'framer-motion'],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
   images: {
+    // AVIF/WebP first — the browser picks whichever it supports; falls
+    // back to the original format for anything that supports neither.
+    formats: ['image/avif', 'image/webp'],
     // First-party SVG icon assets (e.g. /Icons/snowflake.svg for the
     // streak-freeze celebration currency) must be servable through next/image.
     // All SVGs under /public are repo-authored — no user-uploaded SVGs.
