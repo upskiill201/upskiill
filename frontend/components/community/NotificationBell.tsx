@@ -71,6 +71,15 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
   const [items, setItems] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // SWR's localStorage-seeded cache (lib/swr.ts) can populate `data` with a
+  // stale unread count on the very first client render, before hydration —
+  // while the server always renders with none. Gating the count-dependent
+  // markup behind `mounted` keeps the first client render identical to SSR;
+  // the real count then swaps in a tick later, same as any client-only value.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Shared SWR key: the sidebar bell and the mobile HUD bell both mount this
   // component simultaneously (one is only CSS-hidden, not unmounted) — SWR
@@ -81,7 +90,7 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
     fetcher,
     { refreshInterval: POLL_INTERVAL_MS }
   );
-  const unreadCount = data?.unreadCount ?? 0;
+  const unreadCount = mounted ? data?.unreadCount ?? 0 : 0;
   const setUnreadCount = (updater: number | ((c: number) => number)) => {
     refreshUnread(
       (current) => {

@@ -153,7 +153,6 @@ import { SWRProvider } from "../components/providers/SWRProvider";
 import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
-import { IntercomProvider } from "../components/providers/IntercomProvider";
 import { GamificationProvider } from "../context/GamificationContext";
 import { RewardAnimationProvider } from "../context/RewardAnimationContext";
 import { HeraldProvider } from "../context/HeraldContext";
@@ -186,40 +185,38 @@ export default function RootLayout({
         <ServiceWorkerRegistrar />
         <SWRProvider>
         <PostHogProvider>
-          <IntercomProvider>
-            <CartProvider>
-              <AudioProvider>
-                <BackgroundMusicManager />
-                {/* Celebration Engine sits high in the tree so any layer
-                    (RewardRun adapter, Herald, Gamification) can queue scenes */}
-                <CelebrationProvider>
-                  <GamificationProvider>
-                    <RewardAnimationProvider>
-                      <DeferredRewardAnimationOverlay />
-                      <HeraldProvider>
-                        <StreakProvider>
-                          <CelebrationEngine />
-                          <DailyRewardWatcher />
-                          <QuestProgressWatcher />
-                          {/* Herald & Streak portals — router-independent, render into document.body */}
-                          <HeraldOverlay />
-                          <DeferredHeraldReveals />
-                          <DeferredStreakModal />
-                          <TeyroLoaderProvider>
-                            <HeaderWrapper />
-                            <main className="flex-1" style={{ overflow: 'visible' }}>
-                              {children}
-                            </main>
-                            <FooterWrapper />
-                          </TeyroLoaderProvider>
-                        </StreakProvider>
-                      </HeraldProvider>
-                    </RewardAnimationProvider>
-                  </GamificationProvider>
-                </CelebrationProvider>
-              </AudioProvider>
-            </CartProvider>
-          </IntercomProvider>
+          <CartProvider>
+            <AudioProvider>
+              <BackgroundMusicManager />
+              {/* Celebration Engine sits high in the tree so any layer
+                  (RewardRun adapter, Herald, Gamification) can queue scenes */}
+              <CelebrationProvider>
+                <GamificationProvider>
+                  <RewardAnimationProvider>
+                    <DeferredRewardAnimationOverlay />
+                    <HeraldProvider>
+                      <StreakProvider>
+                        <CelebrationEngine />
+                        <DailyRewardWatcher />
+                        <QuestProgressWatcher />
+                        {/* Herald & Streak portals — router-independent, render into document.body */}
+                        <HeraldOverlay />
+                        <DeferredHeraldReveals />
+                        <DeferredStreakModal />
+                        <TeyroLoaderProvider>
+                          <HeaderWrapper />
+                          <main className="flex-1" style={{ overflow: 'visible' }}>
+                            {children}
+                          </main>
+                          <FooterWrapper />
+                        </TeyroLoaderProvider>
+                      </StreakProvider>
+                    </HeraldProvider>
+                  </RewardAnimationProvider>
+                </GamificationProvider>
+              </CelebrationProvider>
+            </AudioProvider>
+          </CartProvider>
         </PostHogProvider>
         </SWRProvider>
       </body>
