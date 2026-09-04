@@ -9,6 +9,11 @@ import { TeyListener } from './listeners/tey.listener';
 import { LearnerStateService } from './state/learner-state.service';
 import { TeyTimezoneService } from './state/timezone.service';
 import { TeyAdminController } from './admin/tey-admin.controller';
+import { TeyAiAdminController } from './admin/tey-ai-admin.controller';
+import { AiBudgetService } from './ai/ai-budget.service';
+import { AiConfigService } from './ai/ai-config.service';
+import { TeyAiService } from './ai/tey-ai.service';
+import { ToolRegistry } from './ai/tools/tool-registry';
 import { TeyAdminService } from './admin/tey-admin.service';
 import { TeyDecisionService } from './decision/tey-decision.service';
 import { InAppChannel } from './delivery/channels/inapp.channel';
@@ -48,6 +53,7 @@ import { TeyController } from './tey.controller';
     TeySchedulerController,
     PushController,
     TeyAdminController,
+    TeyAiAdminController,
   ],
   providers: [
     TeyActivityService,
@@ -64,6 +70,10 @@ import { TeyController } from './tey.controller';
     InAppChannel,
     WhatsAppChannel,
     TeyAdminService,
+    AiConfigService,
+    AiBudgetService,
+    TeyAiService,
+    ToolRegistry,
     TeyListener,
   ],
   exports: [
@@ -74,6 +84,8 @@ import { TeyController } from './tey.controller';
     TeySchedulerService,
     TeyDeliveryService,
     TeyPolicyService,
+    TeyAiService,
+    AiConfigService,
   ],
 })
 export class TeyModule {}

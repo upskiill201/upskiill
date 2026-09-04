@@ -22,7 +22,7 @@ with `AI = language / reasoning / personalization`, never `AI = source of truth`
 | 2 | Decision engine + scheduler | **shipped (dry-run)** |
 | 3 | Web push + deep links | **shipped** |
 | 4 | Admin dashboard | **shipped** |
-| 5 | AI provider abstraction | planned |
+| 5 | AI provider abstraction | **shipped (disarmed)** |
 | 6 | WhatsApp | future |
 | 7 | Rive mascot states | future |
 
@@ -320,3 +320,83 @@ Two things the dashboard deliberately surfaces:
 
 Open rates are hidden below 10 sends rather than printing a confident 0% or
 100% off three deliveries.
+
+---
+
+## AI
+
+**Off by default** (`TEY_AI_ENABLED` unset). Even switched on, most nudges never
+reach it.
+
+```
+render(ctx)
+  → is this reason AI-eligible?   no  → template
+  → budget check                  no  → template
+  → provider call                fail → template   (fallback provider first)
+  → schema validation            fail → template
+  → AI copy
+```
+
+The eligibility set is deliberately small — `INACTIVE_RETURN`,
+`COURSE_NEAR_COMPLETION`, `PROGRESS_CELEBRATION`. "Your streak is at risk" says
+the same true thing every evening; there is nothing for a model to add and
+every call is money Teyro does not have. `CRITICAL` never waits on a model at
+all: spending up to 8 seconds phrasing "your streak ends in two hours" is a bad
+trade.
+
+### Providers
+
+One interface, three adapters, all over global `fetch` — no vendor SDKs, so no
+lockfile churn and one place per provider where the wire format lives.
+
+| Adapter | Covers |
+|---|---|
+| `openai-compatible` | OpenAI, OpenRouter, Groq, NVIDIA, DeepSeek, Together, Ollama, LM Studio — the only thing that varies is `baseUrl` |
+| `anthropic` | Native Messages API. A separate adapter because the differences are real: system as a top-level field, content blocks, `x-api-key`, a required version header, and no JSON mode (emulated with a forced tool) |
+| `gemini` | Seeded default. Key as a query param, `systemInstruction`, `model` in place of `assistant`, and a JSON-Schema dialect that wants UPPERCASE types and rejects `additionalProperties` |
+
+Each normalizes usage into one `{ inputTokens, outputTokens }` shape. That
+normalization is where cost accounting either works or silently reports zero,
+so every adapter has a fixture test for it.
+
+### Keys
+
+Encrypted with the **same AES-256-GCM envelope as creator payout methods**
+(`earnings/crypto.util.ts`), so there is one crypto implementation to audit and
+one production fail-fast. `AiConfigService.toView` is the only way a provider
+row leaves the service, and it destructures the ciphertext away — a new
+endpoint cannot leak a key by forgetting to omit a field. A spec asserts no
+view ever serializes one.
+
+### Tools
+
+`userId` is **injected from the session and is never a model-supplied
+argument**. No tool schema contains a user-identifying field, so no prompt
+injection can reach another learner's data — a spec walks every schema to
+confirm it. Mutating tools are refused outright on the proactive path; only the
+conversational path (a later phase) may enable them. A failing tool returns its
+failure so the model can tell the learner the truth rather than inventing
+success.
+
+### Budgets
+
+Global daily USD, per-learner calls/day, and a proactive-message cap, all
+checked before the call and recorded after. Breach means a template, never a
+retry. Known limitation, deliberately accepted: the pre-flight check is
+read-then-write and can overshoot slightly under concurrency — this is a
+guardrail against a runaway loop, not a ledger, and the overshoot is fractions
+of a cent.
+
+### Environment
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TEY_AI_ENABLED` | off | Master switch. Off ⇒ templates only. |
+| `TEY_AI_DAILY_BUDGET_USD` | `2` | Global spend ceiling per UTC day. |
+| `TEY_AI_MAX_CALLS_PER_USER_DAY` | `20` | Per-learner call cap. |
+| `TEY_AI_MAX_PROACTIVE_DAY` | `200` | Nudge-generation cap across all learners. |
+
+Provider credentials are **not** env vars — they are configured at
+`/admin` and encrypted at rest. `scripts/seed-tey-ai.ts` seeds a Gemini
+provider from `GEMINI_API_KEY`, inactive, for an operator to enable after
+testing the connection.

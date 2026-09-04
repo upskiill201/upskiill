@@ -67,6 +67,16 @@ services:
         sync: false
       - key: VAPID_SUBJECT
         value: mailto:support@teyro.app
+      # AI layer. Off by default — providers are configured at /admin and their
+      # keys are encrypted at rest with EARNINGS_ENC_KEY, never in env.
+      - key: TEY_AI_ENABLED
+        value: "false"
+      - key: TEY_AI_DAILY_BUDGET_USD
+        value: "2"
+      - key: TEY_AI_MAX_CALLS_PER_USER_DAY
+        value: "20"
+      - key: TEY_AI_MAX_PROACTIVE_DAY
+        value: "200"
 
   # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
   # New service created for production.
@@ -135,3 +145,13 @@ services:
         sync: false
       - key: VAPID_SUBJECT
         value: mailto:support@teyro.app
+      # AI layer. Off by default — providers are configured at /admin and their
+      # keys are encrypted at rest with EARNINGS_ENC_KEY, never in env.
+      - key: TEY_AI_ENABLED
+        value: "false"
+      - key: TEY_AI_DAILY_BUDGET_USD
+        value: "2"
+      - key: TEY_AI_MAX_CALLS_PER_USER_DAY
+        value: "20"
+      - key: TEY_AI_MAX_PROACTIVE_DAY
+        value: "200"
