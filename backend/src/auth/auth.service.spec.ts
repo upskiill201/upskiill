@@ -931,7 +931,22 @@ describe('AuthService', () => {
 
       expect(prisma.enrollment.findMany).toHaveBeenCalledWith({
         where: { userId },
-        include: { course: true },
+        select: {
+          id: true,
+          courseId: true,
+          progress: true,
+          course: {
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              category: true,
+              level: true,
+              shortDescription: true,
+              subtitle: true,
+            },
+          },
+        },
         orderBy: { id: 'desc' },
       });
       // ONE grouped query for all enrolled courses — no N+1

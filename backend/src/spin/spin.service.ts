@@ -15,8 +15,17 @@ const DEFAULT_SEGMENTS = [
   { id: 'seg-7', segmentIndex: 7, rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 1, colorKey: '#EAB308', active: true },
 ];
 
+// Nothing in this codebase ever writes to spinWheelSegment — it's a static
+// reference table — so re-reading it from Postgres on every single
+// GET /v2/spin/wheel-config call was pure waste. A short TTL still lets a
+// manual DB edit (e.g. rebalancing rarity weights) take effect without a
+// redeploy, just not instantly.
+const WHEEL_CONFIG_CACHE_TTL_MS = 5 * 60 * 1000;
+
 @Injectable()
 export class SpinService {
+  private wheelConfigCache: { segments: unknown[]; expiresAt: number } | null = null;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
@@ -39,16 +48,22 @@ export class SpinService {
   }
 
   async getWheelConfig() {
+    if (this.wheelConfigCache && this.wheelConfigCache.expiresAt > Date.now()) {
+      return this.wheelConfigCache.segments;
+    }
+
     try {
       const segments = await this.prisma.spinWheelSegment.findMany({
         where: { active: true },
         orderBy: { segmentIndex: 'asc' },
       });
       if (segments && segments.length > 0) {
+        this.wheelConfigCache = { segments, expiresAt: Date.now() + WHEEL_CONFIG_CACHE_TTL_MS };
         return segments;
       }
     } catch {
-      // Return defaults if table is empty or error
+      // Return defaults if table is empty or error — not cached, so the
+      // next call retries against the DB instead of pinning the fallback.
     }
     return DEFAULT_SEGMENTS;
   }

@@ -48,9 +48,23 @@ export interface PendingLeagueResult {
   outcome: LeagueOutcome;
 }
 
+// `ensureSettled` is called from two different endpoints hit on the same
+// dashboard load (getMyLeaderboard + getPendingResult), which used to run
+// its full read-only reconnaissance (unsettled-cohort scan, inactivity
+// week-gap scan) twice back to back for the same user. This short debounce
+// only skips those READS when we already ran them a moment ago for this
+// user — it never touches settleCohort's actual mutation path, which stays
+// protected by its own optimistic-lock CAS (ACTIVE -> SETTLING) regardless,
+// so this cannot cause a double-settlement or a missed one: worst case, a
+// genuinely-due settlement is deferred by up to this TTL.
+const ENSURE_SETTLED_DEBOUNCE_MS = 10_000;
+
 @Injectable()
 export class LeagueService {
   private readonly logger = new Logger(LeagueService.name);
+  // Instance-scoped (not module-level) so each NestJS DI container — and
+  // each fresh `LeagueService` built in tests — starts with a clean cache.
+  private readonly ensureSettledCheckedAt = new Map<string, number>();
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -148,6 +162,11 @@ export class LeagueService {
    * Idempotent — safe to call on every read/award.
    */
   async ensureSettled(userId: string, at: Date = new Date()) {
+    const lastChecked = this.ensureSettledCheckedAt.get(userId);
+    if (lastChecked && Date.now() - lastChecked < ENSURE_SETTLED_DEBOUNCE_MS) {
+      return;
+    }
+
     const currentWeek = getUtcWeekStart(at);
 
     // 1. Settle the user's finished cohorts (CAS-guarded, so concurrent calls
@@ -167,7 +186,12 @@ export class LeagueService {
       orderBy: { weekStart: 'desc' },
       select: { weekStart: true },
     });
-    if (!latest) return; // never competed — nothing to demote from
+    if (!latest) {
+      // Never competed — nothing to demote from, but this IS a fully
+      // resolved check, so it's still safe to debounce.
+      this.ensureSettledCheckedAt.set(userId, Date.now());
+      return;
+    }
 
     for (let week = getNextWeekStart(latest.weekStart); week < currentWeek; week = getNextWeekStart(week)) {
       const existing = await this.prisma.leagueMember.findUnique({
@@ -176,6 +200,11 @@ export class LeagueService {
       });
       if (!existing) await this.demoteForInactivity(userId, week);
     }
+
+    // Only mark "checked" once every step above completed without throwing —
+    // a mid-way failure must NOT be debounced, so the very next read retries
+    // it in full instead of silently skipping for the debounce window.
+    this.ensureSettledCheckedAt.set(userId, Date.now());
   }
 
   /**

@@ -836,10 +836,29 @@ export class AuthService {
   }
 
   async getMyEnrollments(userId: string) {
+    // Trimmed from `include: { course: true }` (the entire Course row —
+    // curriculum Json, description @db.Text, skills/requirements/outcomes
+    // Json, etc.) to only the fields the three student-side consumers of
+    // this endpoint actually render (dashboard, my-learning, courses/[id]
+    // detail page, explore page — all grepped and confirmed). This endpoint
+    // is called from three different pages per session.
     const enrollments = await this.prisma.enrollment.findMany({
       where: { userId },
-      include: {
-        course: true,
+      select: {
+        id: true,
+        courseId: true,
+        progress: true,
+        course: {
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            category: true,
+            level: true,
+            shortDescription: true,
+            subtitle: true,
+          },
+        },
       },
       orderBy: {
         // Optional: sort by enrollment creation date instead

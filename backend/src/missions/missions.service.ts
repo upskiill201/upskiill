@@ -16,6 +16,11 @@ export type RewardType = 'XP' | 'COINS' | 'GEMS';
 @Injectable()
 export class MissionsService {
   private readonly logger = new Logger(MissionsService.name);
+  // Once we've confirmed the template pool is seeded, it stays seeded —
+  // nothing in this codebase deletes MissionTemplate rows at runtime — so
+  // there's no need to re-run the count() check on every single
+  // /missions/today request for the rest of this process's lifetime.
+  private templatesSeeded = false;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -43,8 +48,13 @@ export class MissionsService {
    * Ensures default mission templates pool exists in mission_templates table
    */
   private async ensureDefaultTemplates() {
+    if (this.templatesSeeded) return;
+
     const count = await this.prisma.missionTemplate.count();
-    if (count >= 6) return;
+    if (count >= 6) {
+      this.templatesSeeded = true;
+      return;
+    }
 
     this.logger.log('Seeding default mission templates pool...');
     const defaults = [
@@ -121,6 +131,8 @@ export class MissionsService {
         create: item,
       });
     }
+
+    this.templatesSeeded = true;
   }
 
   /**
@@ -269,10 +281,20 @@ export class MissionsService {
 
     // 3. Catch-up evaluation: check today's user activity & student profile
     if (missionSet && missionSet.missions.length > 0) {
-      const profile = await this.prisma.studentProfile.findUnique({ where: { userId } });
-      const todayActivity = await this.prisma.userDailyActivity.findUnique({
-        where: { userId_date: { userId, date: todayStr } },
-      });
+      // Independent reads — previously sequential.
+      const [profile, todayActivity] = await Promise.all([
+        this.prisma.studentProfile.findUnique({ where: { userId } }),
+        this.prisma.userDailyActivity.findUnique({
+          where: { userId_date: { userId, date: todayStr } },
+        }),
+      ]);
+
+      // Each mission's update touches a different row with different data,
+      // so they can't collapse into one query — but they don't depend on
+      // each other either, so the writes are collected here and fired
+      // together below instead of one sequential await per mission
+      // (previously up to 3 round trips in a row for a handful of rows).
+      const pendingUpdates: Array<Promise<unknown>> = [];
 
       for (const mission of missionSet.missions) {
         if (mission.isCompleted || mission.status === 'CLAIMED') continue;
@@ -315,15 +337,17 @@ export class MissionsService {
         if (updatedProgress !== mission.currentProgress || mission.isCompleted !== isDone) {
           const newStatus = isDone ? 'COMPLETED' : 'IN_PROGRESS';
 
-          await this.prisma.userDailyMission.update({
-            where: { id: mission.id },
-            data: {
-              currentProgress: updatedProgress,
-              isCompleted: isDone,
-              status: mission.isClaimed ? 'CLAIMED' : newStatus,
-              completedAt: isDone ? (mission.completedAt || now) : null,
-            },
-          });
+          pendingUpdates.push(
+            this.prisma.userDailyMission.update({
+              where: { id: mission.id },
+              data: {
+                currentProgress: updatedProgress,
+                isCompleted: isDone,
+                status: mission.isClaimed ? 'CLAIMED' : newStatus,
+                completedAt: isDone ? (mission.completedAt || now) : null,
+              },
+            }),
+          );
 
           mission.currentProgress = updatedProgress;
           mission.isCompleted = isDone;
@@ -331,6 +355,10 @@ export class MissionsService {
             mission.status = newStatus;
           }
         }
+      }
+
+      if (pendingUpdates.length > 0) {
+        await Promise.all(pendingUpdates);
       }
     }
 
@@ -530,42 +558,38 @@ export class MissionsService {
       },
     });
 
-    const updatedMissions: Array<{
-      userMissionId: string;
-      title: string;
-      progress: number;
-      target: number;
-      status: string;
-      justCompleted: boolean;
-    }> = [];
+    // Each mission is a different row with independent data — these used to
+    // update one after another; since none depend on each other's result,
+    // they now fire together (activeMissions is small, usually 0-2 rows).
+    const updatedMissions = await Promise.all(
+      activeMissions.map(async (mission) => {
+        const newProgress = Math.min(
+          mission.currentProgress + incrementAmount,
+          mission.targetValue,
+        );
+        const isDone = newProgress >= mission.targetValue;
+        const justCompleted = isDone && !mission.isCompleted;
 
-    for (const mission of activeMissions) {
-      const newProgress = Math.min(
-        mission.currentProgress + incrementAmount,
-        mission.targetValue,
-      );
-      const isDone = newProgress >= mission.targetValue;
-      const justCompleted = isDone && !mission.isCompleted;
+        await this.prisma.userDailyMission.update({
+          where: { id: mission.id },
+          data: {
+            currentProgress: newProgress,
+            isCompleted: isDone,
+            status: mission.isClaimed ? 'CLAIMED' : isDone ? 'COMPLETED' : 'IN_PROGRESS',
+            completedAt: isDone ? (mission.completedAt || now) : null,
+          },
+        });
 
-      await this.prisma.userDailyMission.update({
-        where: { id: mission.id },
-        data: {
-          currentProgress: newProgress,
-          isCompleted: isDone,
-          status: mission.isClaimed ? 'CLAIMED' : isDone ? 'COMPLETED' : 'IN_PROGRESS',
-          completedAt: isDone ? (mission.completedAt || now) : null,
-        },
-      });
-
-      updatedMissions.push({
-        userMissionId: mission.id,
-        title: mission.title,
-        progress: newProgress,
-        target: mission.targetValue,
-        status: isDone ? 'COMPLETED' : 'IN_PROGRESS',
-        justCompleted,
-      });
-    }
+        return {
+          userMissionId: mission.id,
+          title: mission.title,
+          progress: newProgress,
+          target: mission.targetValue,
+          status: isDone ? 'COMPLETED' : 'IN_PROGRESS',
+          justCompleted,
+        };
+      }),
+    );
 
     return updatedMissions;
   }
