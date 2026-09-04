@@ -452,26 +452,16 @@ export default function DashboardLayout({
 
         {/* MAIN CONTENT AREA */}
         <main className={`${styles.main} ${isSidebarCollapsed ? styles.expanded : ''}`}>
-          {/* MOBILE-ONLY STICKY HEADER — hidden on the student homescreen (Duolingo-style headerless home) */}
+          {/* MOBILE-ONLY STICKY HEADER — app chrome only, no repeated wordmark (hidden on the student homescreen, which is headerless Duolingo-style) */}
           {!hideMobileChrome && !isStudentHome && (
           <header className={styles.mobileHeader}>
-            <button 
-              className={styles.mobileToggle} 
+            <button
+              className={styles.mobileToggle}
               onClick={() => { void emitAudioEvent('DRAWER_TOGGLE'); setIsMobileMenuOpen(true); }}
               aria-label="Open Menu"
             >
               <Menu size={22} />
             </button>
-            <div className={styles.mobileLogoContainer}>
-              <Image
-                src="/teyro-logo-blue.png"
-                alt="Teyro"
-                width={85}
-                height={24}
-                priority
-                style={{ width: 'auto', height: 'auto' }}
-              />
-            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <NotificationBell />
               <Avatar src={userAvatar || undefined} name={userName || 'User'} size="sm" />

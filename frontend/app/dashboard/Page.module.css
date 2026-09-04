@@ -1023,7 +1023,7 @@
     align-items: center;
     gap: 8px;
     position: fixed;
-    bottom: 76px;
+    bottom: calc(76px + env(safe-area-inset-bottom));
     right: 16px;
     z-index: 998;
     background: #0172FD;
@@ -1344,7 +1344,7 @@
   }
 
   .mobileSidebarFab {
-    bottom: 72px;
+    bottom: calc(72px + env(safe-area-inset-bottom));
     right: 10px;
     padding: 7px 11px;
   }

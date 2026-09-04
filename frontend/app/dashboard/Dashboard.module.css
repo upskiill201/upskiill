@@ -407,13 +407,8 @@
     padding: 6px;
   }
 
-  .mobileLogoContainer {
-    display: flex;
-    align-items: center;
-  }
-
   .content {
-    padding: 16px 14px 84px !important;
+    padding: 16px 14px calc(84px + env(safe-area-inset-bottom)) !important;
   }
 
   .mobileBottomNav {

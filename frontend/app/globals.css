@@ -39,6 +39,11 @@
   --success-green:  #22C55E;
   --error-red:      #EF4444;
   --warning:        #F59E0B;
+
+  /* Safe-area inset, exposed as a plain px value so JS (e.g. positioning the
+     Intercom launcher above the mobile bottom nav) can read it via
+     getComputedStyle instead of duplicating device-notch guesswork. */
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 html {
