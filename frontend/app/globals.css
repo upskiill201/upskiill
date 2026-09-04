@@ -56,6 +56,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip; /* Fixes horizontal scroll without breaking position: sticky */
+  /* Stops iOS Safari's native rubber-band bounce from competing with the
+     student pages' own pull-to-refresh gesture (components/ui/PullToRefresh). */
+  overscroll-behavior-y: contain;
   width: 100%;
   max-width: 100%;
 }

@@ -23,6 +23,7 @@ import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import NotificationBell from '@/components/community/NotificationBell';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import LeagueResultWatcher from '@/components/leaderboard/LeagueResultWatcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
@@ -480,7 +481,7 @@ export default function DashboardLayout({
 
           {/* PAGE CONTENT */}
           <div className={`${styles.content} ${isWide ? styles.wideContent : ''} ${hideMobileChrome ? styles.immersiveContent : ''}`}>
-            {children}
+            <PullToRefresh>{children}</PullToRefresh>
           </div>
         </main>
 

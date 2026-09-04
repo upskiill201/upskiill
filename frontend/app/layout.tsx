@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, Baloo_2 } from "next/font/google";
 import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
@@ -22,6 +22,11 @@ const baloo2 = Baloo_2({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  themeColor: '#3D5AFE',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   // ── Base URL (required for Next.js to resolve relative OG/canonical URLs) ──
@@ -135,10 +140,17 @@ export const metadata: Metadata = {
     ],
     shortcut: '/favicon.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Teyro',
+  },
+  manifest: '/manifest.webmanifest',
 };
 
 
 import { SWRProvider } from "../components/providers/SWRProvider";
+import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
 import { IntercomProvider } from "../components/providers/IntercomProvider";
@@ -171,6 +183,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${baloo2.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <ServiceWorkerRegistrar />
         <SWRProvider>
         <PostHogProvider>
           <IntercomProvider>
