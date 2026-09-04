@@ -241,7 +241,10 @@ export class LearnerStateService {
   // -- internals ------------------------------------------------------------
 
   private nextUsualHour(
-    existing: { usualHourLocal: number | null; usualHourSamples: number } | null,
+    existing: {
+      usualHourLocal: number | null;
+      usualHourSamples: number;
+    } | null,
     today: { lessonsCompleted: number } | null,
     now: TeyLocalNow,
   ): { hour: number | null; samples: number } {

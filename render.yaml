@@ -46,6 +46,18 @@ services:
         sync: false
       - key: EARNINGS_ENC_KEY
         sync: false
+      # ── Tey intelligence layer ──────────────────────────────────────────
+      # The scheduler runs an in-process cron AND accepts an external tick
+      # (POST /tey/scheduler/tick), because a spun-down free-plan instance runs
+      # no cron at all. See backend/src/tey/README.md.
+      - key: TEY_SCHEDULER_ENABLED
+        value: "true"
+      # Dry-run: revalidate and record what WOULD be sent, then send nothing.
+      # Flip to "true" only once a delivery channel ships.
+      - key: TEY_DELIVERY_ENABLED
+        value: "false"
+      - key: TEY_SCHEDULER_SECRET
+        sync: false   # shared secret for the external tick caller
 
   # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
   # New service created for production.
@@ -93,3 +105,15 @@ services:
         sync: false
       - key: EARNINGS_ENC_KEY
         sync: false
+      # ── Tey intelligence layer ──────────────────────────────────────────
+      # The scheduler runs an in-process cron AND accepts an external tick
+      # (POST /tey/scheduler/tick), because a spun-down free-plan instance runs
+      # no cron at all. See backend/src/tey/README.md.
+      - key: TEY_SCHEDULER_ENABLED
+        value: "true"
+      # Dry-run: revalidate and record what WOULD be sent, then send nothing.
+      # Flip to "true" only once a delivery channel ships.
+      - key: TEY_DELIVERY_ENABLED
+        value: "false"
+      - key: TEY_SCHEDULER_SECRET
+        sync: false   # shared secret for the external tick caller

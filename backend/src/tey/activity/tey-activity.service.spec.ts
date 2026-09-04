@@ -8,7 +8,9 @@ import { MAX_EVENT_BACKDATE_MS } from '../contracts/tey-event.types';
 
 describe('TeyActivityService', () => {
   let service: TeyActivityService;
-  let prisma: { teyActivityEvent: { createMany: jest.Mock; findMany: jest.Mock } };
+  let prisma: {
+    teyActivityEvent: { createMany: jest.Mock; findMany: jest.Mock };
+  };
 
   beforeEach(async () => {
     prisma = {
@@ -216,7 +218,10 @@ describe('IngestEventsDto (the client/server security boundary)', () => {
 
   it('rejects a non-ISO timestamp', async () => {
     const errors = await validate(
-      plainToInstance(IngestEventDto, { ...validEvent, occurredAt: 'yesterday' }),
+      plainToInstance(IngestEventDto, {
+        ...validEvent,
+        occurredAt: 'yesterday',
+      }),
     );
     expect(errors.length).toBeGreaterThan(0);
   });

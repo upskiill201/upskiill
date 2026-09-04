@@ -38,9 +38,9 @@ describe('deriveStreakState', () => {
   });
 
   it('is AT_RISK once an hour past the usual study time', () => {
-    expect(deriveStreakState({ ...base, usualHourLocal: 19, now: at(20) })).toBe(
-      'STREAK_AT_RISK',
-    );
+    expect(
+      deriveStreakState({ ...base, usualHourLocal: 19, now: at(20) }),
+    ).toBe('STREAK_AT_RISK');
   });
 
   it('is AT_RISK by the evening default when there is no habit data yet', () => {
@@ -77,14 +77,46 @@ describe('deriveStreakState', () => {
 
 describe('deriveEngagementState', () => {
   it.each([
-    ['brand new learner', { daysSinceLastActivity: null, lifetimeLessons: 0, returnedToday: false }, 'NEW'],
-    ['active today', { daysSinceLastActivity: 0, lifetimeLessons: 20, returnedToday: false }, 'ACTIVE'],
-    ['one day off', { daysSinceLastActivity: 1, lifetimeLessons: 20, returnedToday: false }, 'INACTIVE_1_DAY'],
-    ['two days off', { daysSinceLastActivity: 2, lifetimeLessons: 20, returnedToday: false }, 'COOLING_DOWN'],
-    ['four days off', { daysSinceLastActivity: 4, lifetimeLessons: 20, returnedToday: false }, 'INACTIVE_3_DAYS'],
-    ['nine days off', { daysSinceLastActivity: 9, lifetimeLessons: 20, returnedToday: false }, 'INACTIVE_7_DAYS'],
-    ['a month off', { daysSinceLastActivity: 30, lifetimeLessons: 20, returnedToday: false }, 'DORMANT'],
-    ['came back', { daysSinceLastActivity: 0, lifetimeLessons: 20, returnedToday: true }, 'RETURNING'],
+    [
+      'brand new learner',
+      { daysSinceLastActivity: null, lifetimeLessons: 0, returnedToday: false },
+      'NEW',
+    ],
+    [
+      'active today',
+      { daysSinceLastActivity: 0, lifetimeLessons: 20, returnedToday: false },
+      'ACTIVE',
+    ],
+    [
+      'one day off',
+      { daysSinceLastActivity: 1, lifetimeLessons: 20, returnedToday: false },
+      'INACTIVE_1_DAY',
+    ],
+    [
+      'two days off',
+      { daysSinceLastActivity: 2, lifetimeLessons: 20, returnedToday: false },
+      'COOLING_DOWN',
+    ],
+    [
+      'four days off',
+      { daysSinceLastActivity: 4, lifetimeLessons: 20, returnedToday: false },
+      'INACTIVE_3_DAYS',
+    ],
+    [
+      'nine days off',
+      { daysSinceLastActivity: 9, lifetimeLessons: 20, returnedToday: false },
+      'INACTIVE_7_DAYS',
+    ],
+    [
+      'a month off',
+      { daysSinceLastActivity: 30, lifetimeLessons: 20, returnedToday: false },
+      'DORMANT',
+    ],
+    [
+      'came back',
+      { daysSinceLastActivity: 0, lifetimeLessons: 20, returnedToday: true },
+      'RETURNING',
+    ],
   ])('%s -> %s', (_label, input, expected) => {
     expect(deriveEngagementState(input)).toBe(expected);
   });
@@ -104,12 +136,36 @@ describe('deriveEngagementState', () => {
 
 describe('deriveCourseState', () => {
   it.each([
-    ['not enrolled', { hasCourse: false, progressPct: 0, daysSinceCourseActivity: null }, 'NEW'],
-    ['enrolled, untouched', { hasCourse: true, progressPct: 0, daysSinceCourseActivity: 1 }, 'NEW'],
-    ['midway', { hasCourse: true, progressPct: 40, daysSinceCourseActivity: 1 }, 'IN_PROGRESS'],
-    ['nearly done', { hasCourse: true, progressPct: 85, daysSinceCourseActivity: 1 }, 'NEAR_COMPLETION'],
-    ['finished', { hasCourse: true, progressPct: 100, daysSinceCourseActivity: 30 }, 'COMPLETED'],
-    ['left alone a week', { hasCourse: true, progressPct: 40, daysSinceCourseActivity: 9 }, 'ABANDONED'],
+    [
+      'not enrolled',
+      { hasCourse: false, progressPct: 0, daysSinceCourseActivity: null },
+      'NEW',
+    ],
+    [
+      'enrolled, untouched',
+      { hasCourse: true, progressPct: 0, daysSinceCourseActivity: 1 },
+      'NEW',
+    ],
+    [
+      'midway',
+      { hasCourse: true, progressPct: 40, daysSinceCourseActivity: 1 },
+      'IN_PROGRESS',
+    ],
+    [
+      'nearly done',
+      { hasCourse: true, progressPct: 85, daysSinceCourseActivity: 1 },
+      'NEAR_COMPLETION',
+    ],
+    [
+      'finished',
+      { hasCourse: true, progressPct: 100, daysSinceCourseActivity: 30 },
+      'COMPLETED',
+    ],
+    [
+      'left alone a week',
+      { hasCourse: true, progressPct: 40, daysSinceCourseActivity: 9 },
+      'ABANDONED',
+    ],
   ])('%s -> %s', (_label, input, expected) => {
     expect(deriveCourseState(input)).toBe(expected);
   });

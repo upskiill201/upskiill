@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -26,8 +32,18 @@ export interface MonthlyQuestEvaluateResult {
 const MONTH_KEY_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 @Injectable()
@@ -40,7 +56,9 @@ export class MonthlyQuestService {
    * Format Date to YYYY-MM-DD string considering user's timezone offset (minutes)
    */
   private getLocalDayString(date: Date, timezoneOffsetMinutes = 0): string {
-    const localTime = new Date(date.getTime() - timezoneOffsetMinutes * 60 * 1000);
+    const localTime = new Date(
+      date.getTime() - timezoneOffsetMinutes * 60 * 1000,
+    );
     return localTime.toISOString().split('T')[0];
   }
 
@@ -53,7 +71,9 @@ export class MonthlyQuestService {
   private monthEndsAt(monthKey: string, timezoneOffsetMinutes = 0): Date {
     const [year, month] = monthKey.split('-').map(Number);
     // Date.UTC(y, m, 1) is the first day of the NEXT month (month is 1-indexed here)
-    return new Date(Date.UTC(year, month, 1) + timezoneOffsetMinutes * 60 * 1000);
+    return new Date(
+      Date.UTC(year, month, 1) + timezoneOffsetMinutes * 60 * 1000,
+    );
   }
 
   private formatMonthLabel(monthKey: string): string {
@@ -66,13 +86,20 @@ export class MonthlyQuestService {
    * user arriving on the 25th isn't handed an impossible quest; clamped to
    * a floor of 4 so late joins still mean something.
    */
-  private resolveTargetDays(dailyGoalXp: number, monthKey: string, todayStr: string): number {
+  private resolveTargetDays(
+    dailyGoalXp: number,
+    monthKey: string,
+    todayStr: string,
+  ): number {
     const tierTarget = tierTargetDays(dailyGoalXp);
     const total = this.daysInMonth(monthKey);
     const dayOfMonth = parseInt(todayStr.slice(8, 10), 10);
     const daysLeft = Math.max(1, total - dayOfMonth + 1); // inclusive of today
     if (daysLeft >= total) return tierTarget;
-    return Math.min(tierTarget, Math.max(4, Math.ceil((daysLeft * tierTarget) / total)));
+    return Math.min(
+      tierTarget,
+      Math.max(4, Math.ceil((daysLeft * tierTarget) / total)),
+    );
   }
 
   private readSnapshot(value: unknown): GoalSnapshotEntry[] {
@@ -115,9 +142,13 @@ export class MonthlyQuestService {
       });
     } catch (err: any) {
       if (err?.code === 'P2002') {
-        this.logger.debug(`Concurrent UserMonthlyQuest creation handled for ${userId} ${monthKey}`);
+        this.logger.debug(
+          `Concurrent UserMonthlyQuest creation handled for ${userId} ${monthKey}`,
+        );
       } else {
-        this.logger.warn(`Failed creating UserMonthlyQuest ${userId} ${monthKey}: ${err?.message ?? err}`);
+        this.logger.warn(
+          `Failed creating UserMonthlyQuest ${userId} ${monthKey}: ${err?.message ?? err}`,
+        );
       }
       const row = await this.prisma.userMonthlyQuest.findUnique({
         where: { userId_monthKey: { userId, monthKey } },
@@ -155,7 +186,11 @@ export class MonthlyQuestService {
       select: { dailyGoalXp: true },
     });
 
-    return this.buildCurrentPayload(row, profile?.dailyGoalXp ?? 20, timezoneOffsetMinutes);
+    return this.buildCurrentPayload(
+      row,
+      profile?.dailyGoalXp ?? 20,
+      timezoneOffsetMinutes,
+    );
   }
 
   private buildCurrentPayload(
@@ -177,7 +212,10 @@ export class MonthlyQuestService {
     const countedDays = this.readSnapshot(row.goalSnapshot).map((e) => e.date);
     const claimedList = this.readClaimedList(row.milestonesClaimed);
     const total = this.daysInMonth(row.monthKey);
-    const dayOfMonth = parseInt(this.getLocalDayString(new Date(), timezoneOffsetMinutes).slice(8, 10), 10);
+    const dayOfMonth = parseInt(
+      this.getLocalDayString(new Date(), timezoneOffsetMinutes).slice(8, 10),
+      10,
+    );
 
     const finalDef = MONTHLY_QUEST_MILESTONES.find((m) => m.kind === 'FINAL')!;
 
@@ -191,7 +229,10 @@ export class MonthlyQuestService {
       goalDays: row.goalDays,
       daysInMonth: total,
       daysRemaining: Math.max(0, total - dayOfMonth + 1),
-      progressPct: Math.min(100, Math.round((row.goalDays / Math.max(1, row.targetDays)) * 100)),
+      progressPct: Math.min(
+        100,
+        Math.round((row.goalDays / Math.max(1, row.targetDays)) * 100),
+      ),
       countedDays,
       milestones: MONTHLY_QUEST_MILESTONES.map((def) => {
         const requiredDays = requiredDaysFor(def, row.targetDays);
@@ -215,15 +256,24 @@ export class MonthlyQuestService {
       finalReward:
         row.finalRewardType && row.finalRewardAmount != null
           ? {
-              type: row.finalRewardType === 'STREAK_FREEZE' ? ('FREEZE' as const) : ('COINS' as const),
+              type:
+                row.finalRewardType === 'STREAK_FREEZE'
+                  ? ('FREEZE' as const)
+                  : ('COINS' as const),
               amount: row.finalRewardAmount,
             }
           : {
-              type: finalDef.reward.type === 'STREAK_FREEZE' ? ('FREEZE' as const) : ('COINS' as const),
+              type:
+                finalDef.reward.type === 'STREAK_FREEZE'
+                  ? ('FREEZE' as const)
+                  : ('COINS' as const),
               amount: finalDef.reward.amount,
             },
       badgeId: row.badgeId,
-      endsAt: this.monthEndsAt(row.monthKey, timezoneOffsetMinutes).toISOString(),
+      endsAt: this.monthEndsAt(
+        row.monthKey,
+        timezoneOffsetMinutes,
+      ).toISOString(),
     };
   }
 
@@ -243,17 +293,23 @@ export class MonthlyQuestService {
     dateStr?: string,
     timezoneOffsetMinutes = 0,
   ): Promise<MonthlyQuestEvaluateResult> {
-    const todayStr = dateStr ?? this.getLocalDayString(new Date(), timezoneOffsetMinutes);
+    const todayStr =
+      dateStr ?? this.getLocalDayString(new Date(), timezoneOffsetMinutes);
     const monthKey = todayStr.slice(0, 7);
 
     const activity = await this.prisma.userDailyActivity.findUnique({
       where: { userId_date: { userId, date: todayStr } },
     });
 
-    let row = await this.ensureQuestRow(userId, monthKey, todayStr);
+    const row = await this.ensureQuestRow(userId, monthKey, todayStr);
 
     if (!activity) {
-      return { newlyCounted: false, goalDays: row.goalDays, targetDays: row.targetDays, questCompleted: false };
+      return {
+        newlyCounted: false,
+        goalDays: row.goalDays,
+        targetDays: row.targetDays,
+        questCompleted: false,
+      };
     }
 
     const profile = await this.prisma.studentProfile.findUnique({
@@ -263,10 +319,17 @@ export class MonthlyQuestService {
     const dailyGoalXp = profile?.dailyGoalXp ?? 20;
 
     const qualifies = qualifiesForDailyGoal(activity, dailyGoalXp);
-    const alreadyCounted = this.readSnapshot(row.goalSnapshot).some((e) => e.date === todayStr);
+    const alreadyCounted = this.readSnapshot(row.goalSnapshot).some(
+      (e) => e.date === todayStr,
+    );
 
     if (!qualifies || alreadyCounted) {
-      return { newlyCounted: false, goalDays: row.goalDays, targetDays: row.targetDays, questCompleted: false };
+      return {
+        newlyCounted: false,
+        goalDays: row.goalDays,
+        targetDays: row.targetDays,
+        questCompleted: false,
+      };
     }
 
     let appended = false;
@@ -293,7 +356,8 @@ export class MonthlyQuestService {
         data: {
           goalSnapshot: nextSnapshot as unknown as Prisma.InputJsonValue,
           goalDays: { increment: 1 },
-          ...(fresh.status === 'ACTIVE' && fresh.goalDays + 1 >= fresh.targetDays
+          ...(fresh.status === 'ACTIVE' &&
+          fresh.goalDays + 1 >= fresh.targetDays
             ? { status: 'COMPLETED' }
             : {}),
         },
@@ -303,7 +367,9 @@ export class MonthlyQuestService {
     const resultRow = updated ?? row;
 
     if (appended && resultRow.status === 'COMPLETED') {
-      this.logger.log(`[MonthlyQuest] ${userId} completed the ${monthKey} quest (${resultRow.goalDays}/${resultRow.targetDays})`);
+      this.logger.log(
+        `[MonthlyQuest] ${userId} completed the ${monthKey} quest (${resultRow.goalDays}/${resultRow.targetDays})`,
+      );
     }
 
     return {
@@ -345,7 +411,10 @@ export class MonthlyQuestService {
       }
       monthKey = monthParam;
     } else {
-      monthKey = this.getLocalDayString(new Date(), timezoneOffsetMinutes).slice(0, 7);
+      monthKey = this.getLocalDayString(
+        new Date(),
+        timezoneOffsetMinutes,
+      ).slice(0, 7);
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -380,9 +449,13 @@ export class MonthlyQuestService {
         await tx.rewardTransaction.create({
           data: {
             userId,
-            currency: def.reward.type === 'STREAK_FREEZE' ? 'STREAK_FREEZE' : 'COINS',
+            currency:
+              def.reward.type === 'STREAK_FREEZE' ? 'STREAK_FREEZE' : 'COINS',
             amount: def.reward.amount,
-            sourceType: def.kind === 'FINAL' ? 'MONTHLY_QUEST_FINAL' : 'MONTHLY_QUEST_MILESTONE',
+            sourceType:
+              def.kind === 'FINAL'
+                ? 'MONTHLY_QUEST_FINAL'
+                : 'MONTHLY_QUEST_MILESTONE',
             sourceId: row.id,
             idempotencyKey: `mq_claim:${row.id}:${def.id}`,
           },
@@ -417,7 +490,7 @@ export class MonthlyQuestService {
         });
       }
 
-      const nextClaimed = [...claimedList, def.id as MilestoneId];
+      const nextClaimed = [...claimedList, def.id];
       const updatedRow = await tx.userMonthlyQuest.update({
         where: { id: row.id },
         data: {
@@ -442,7 +515,10 @@ export class MonthlyQuestService {
         success: true,
         milestoneId: def.id,
         claimedReward: {
-          type: def.reward.type === 'STREAK_FREEZE' ? ('FREEZE' as const) : ('COINS' as const),
+          type:
+            def.reward.type === 'STREAK_FREEZE'
+              ? ('FREEZE' as const)
+              : ('COINS' as const),
           amount: def.reward.amount,
         },
         userBalances: {
@@ -465,7 +541,10 @@ export class MonthlyQuestService {
    * it renders from getCurrentQuest.
    */
   async getHistory(userId: string, timezoneOffsetMinutes = 0) {
-    const currentMonthKey = this.getLocalDayString(new Date(), timezoneOffsetMinutes).slice(0, 7);
+    const currentMonthKey = this.getLocalDayString(
+      new Date(),
+      timezoneOffsetMinutes,
+    ).slice(0, 7);
 
     const rows = await this.prisma.userMonthlyQuest.findMany({
       where: { userId, monthKey: { lt: currentMonthKey } },
@@ -484,7 +563,10 @@ export class MonthlyQuestService {
       finalReward:
         row.finalRewardType && row.finalRewardAmount != null
           ? {
-              type: row.finalRewardType === 'STREAK_FREEZE' ? ('FREEZE' as const) : ('COINS' as const),
+              type:
+                row.finalRewardType === 'STREAK_FREEZE'
+                  ? ('FREEZE' as const)
+                  : ('COINS' as const),
               amount: row.finalRewardAmount,
             }
           : null,

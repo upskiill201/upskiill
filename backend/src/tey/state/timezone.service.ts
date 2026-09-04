@@ -30,15 +30,23 @@ export class TeyTimezoneService {
    */
   async capture(
     userId: string,
-    reported: { timezone?: string | null; timezoneOffsetMinutes?: number | null },
-    current?: { timezone?: string | null; timezoneOffsetMinutes?: number | null },
+    reported: {
+      timezone?: string | null;
+      timezoneOffsetMinutes?: number | null;
+    },
+    current?: {
+      timezone?: string | null;
+      timezoneOffsetMinutes?: number | null;
+    },
   ): Promise<void> {
     if (!userId) return;
 
     const tz = isValidTimezone(reported.timezone) ? reported.timezone : null;
     const rawOffset = reported.timezoneOffsetMinutes;
     const offset =
-      rawOffset === null || rawOffset === undefined || Number.isNaN(Number(rawOffset))
+      rawOffset === null ||
+      rawOffset === undefined ||
+      Number.isNaN(Number(rawOffset))
         ? null
         : parseTimezoneOffset(Number(rawOffset));
 

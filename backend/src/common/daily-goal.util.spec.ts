@@ -14,24 +14,24 @@ describe('qualifiesForDailyGoal', () => {
   it('requires BOTH the XP target and at least one lesson', () => {
     // The lesson clause is easy to drop when reimplementing this rule. Without
     // it, XP from a chest or a spin would silently count as a study day.
-    expect(qualifiesForDailyGoal({ xpEarned: 100, lessonsCompleted: 0 }, 20)).toBe(
-      false,
-    );
-    expect(qualifiesForDailyGoal({ xpEarned: 10, lessonsCompleted: 3 }, 20)).toBe(
-      false,
-    );
-    expect(qualifiesForDailyGoal({ xpEarned: 20, lessonsCompleted: 1 }, 20)).toBe(
-      true,
-    );
+    expect(
+      qualifiesForDailyGoal({ xpEarned: 100, lessonsCompleted: 0 }, 20),
+    ).toBe(false);
+    expect(
+      qualifiesForDailyGoal({ xpEarned: 10, lessonsCompleted: 3 }, 20),
+    ).toBe(false);
+    expect(
+      qualifiesForDailyGoal({ xpEarned: 20, lessonsCompleted: 1 }, 20),
+    ).toBe(true);
   });
 
   it('treats the XP target as inclusive', () => {
-    expect(qualifiesForDailyGoal({ xpEarned: 50, lessonsCompleted: 1 }, 50)).toBe(
-      true,
-    );
-    expect(qualifiesForDailyGoal({ xpEarned: 49, lessonsCompleted: 1 }, 50)).toBe(
-      false,
-    );
+    expect(
+      qualifiesForDailyGoal({ xpEarned: 50, lessonsCompleted: 1 }, 50),
+    ).toBe(true);
+    expect(
+      qualifiesForDailyGoal({ xpEarned: 49, lessonsCompleted: 1 }, 50),
+    ).toBe(false);
   });
 
   it('is false when there is no activity row for the day', () => {

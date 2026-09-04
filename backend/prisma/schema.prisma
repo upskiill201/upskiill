@@ -107,6 +107,8 @@ model User {
   leagueMembers          LeagueMember[]
   teyActivityEvents      TeyActivityEvent[]
   learnerState           LearnerState?
+  teyScheduledActions    TeyScheduledAction[]
+  teyDeliveries          TeyDelivery[]
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -1777,4 +1779,85 @@ model LearnerState {
   @@index([engagementState, lastActivityAt])
   @@index([streakState])
   @@map("learner_state")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tey scheduler — the due queue and the delivery ledger.
+//
+// Postgres-native. No Redis, no BullMQ: the claim is a single
+// UPDATE ... FROM (SELECT ... FOR UPDATE SKIP LOCKED), which is safe across any
+// number of Render instances and needs no extra infrastructure.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TeyScheduledAction {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// TeyReason — see contracts/tey-context.types.ts.
+  ruleId   String
+  /// 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  priority String @default("MEDIUM")
+  /// 'PENDING' | 'CLAIMED' | 'SENT' | 'SKIPPED' | 'CANCELLED' | 'FAILED'
+  status   String @default("PENDING")
+
+  dueAt DateTime
+  /// Past this, drop rather than send late. A stale nudge is worse than none.
+  expiresAt DateTime?
+
+  /// One live instance of a rule per user per local day,
+  /// e.g. "STREAK_AT_RISK:<userId>:2026-09-05".
+  dedupeKey String @unique
+
+  /// Frozen TeyContext hint. ALWAYS revalidated against fresh state before send.
+  context Json?
+
+  attempts   Int       @default(0)
+  claimedAt  DateTime?
+  claimedBy  String?
+  lastError  String?
+  skipReason String?
+
+  deliveries TeyDelivery[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // NOTE: the hot due-queue index is PARTIAL (WHERE status = 'PENDING') and
+  // lives in SQL only — Prisma cannot express it. See the migration.
+  @@index([userId, status])
+  @@map("tey_scheduled_actions")
+}
+
+model TeyDelivery {
+  id       String              @id @default(uuid())
+  userId   String
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionId String?
+  action   TeyScheduledAction? @relation(fields: [actionId], references: [id], onDelete: SetNull)
+
+  /// 'PUSH' | 'INAPP' | 'WHATSAPP' | 'DRY_RUN'
+  channel  String
+  ruleId   String
+  priority String
+
+  title    String
+  body     String
+  deepLink String
+  /// The TeyContext actually used, kept for auditing and future analysis.
+  context  Json
+
+  /// 'TEMPLATE' | 'AI' — proves the template-first policy is holding.
+  generatedBy String @default("TEMPLATE")
+  /// 'SENT' | 'FAILED' | 'SUPPRESSED'
+  status      String @default("SENT")
+
+  sentAt      DateTime  @default(now())
+  openedAt    DateTime?
+  /// Set when the learner completed a lesson inside the attribution window.
+  convertedAt DateTime?
+
+  @@index([userId, sentAt(sort: Desc)])
+  @@index([ruleId, sentAt(sort: Desc)])
+  @@map("tey_deliveries")
 }

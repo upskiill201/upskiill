@@ -68,7 +68,11 @@ describe('LearnerStateService', () => {
   describe('streak delegation (guards against a fifth implementation)', () => {
     it('copies StreakService output verbatim rather than recomputing', async () => {
       streak.getStreakStats.mockResolvedValue(
-        streakStats({ currentStreak: 7, longestStreak: 41, freezesAvailable: 2 }),
+        streakStats({
+          currentStreak: 7,
+          longestStreak: 41,
+          freezesAvailable: 2,
+        }),
       );
 
       const s = await service.project('u1');
@@ -87,7 +91,11 @@ describe('LearnerStateService', () => {
 
     it('reflects a streak StreakService reset, without second-guessing it', async () => {
       streak.getStreakStats.mockResolvedValue(
-        streakStats({ currentStreak: 0, streakStatus: 'RESET', lastStreakDate: '2026-08-30' }),
+        streakStats({
+          currentStreak: 0,
+          streakStatus: 'RESET',
+          lastStreakDate: '2026-08-30',
+        }),
       );
       const s = await service.project('u1');
       expect(s.streakDays).toBe(0);
@@ -299,7 +307,9 @@ describe('LearnerStateService', () => {
 
   it('does not fail the caller when persisting the cache fails', async () => {
     prisma.learnerState.upsert.mockRejectedValue(new Error('db down'));
-    await expect(service.project('u1')).resolves.toMatchObject({ userId: 'u1' });
+    await expect(service.project('u1')).resolves.toMatchObject({
+      userId: 'u1',
+    });
   });
 });
 
@@ -362,6 +372,8 @@ describe('tey/ contains no independent streak arithmetic', () => {
     // An always-green guard is worse than no guard.
     const files = walk(path.join(__dirname, '..'));
     expect(files.length).toBeGreaterThan(5);
-    expect(files.some((f) => f.endsWith('learner-state.service.ts'))).toBe(true);
+    expect(files.some((f) => f.endsWith('learner-state.service.ts'))).toBe(
+      true,
+    );
   });
 });

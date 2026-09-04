@@ -18,17 +18,20 @@ with `AI = language / reasoning / personalization`, never `AI = source of truth`
 
 | Phase | What | State |
 |---|---|---|
-| 1 | Activity events + learner state | **shipped (this module)** |
-| 2 | Decision engine + scheduler | planned |
+| 1 | Activity events + learner state | **shipped** |
+| 2 | Decision engine + scheduler | **shipped (dry-run)** |
 | 3 | Web push + deep links | planned |
 | 4 | Admin dashboard | planned |
 | 5 | AI provider abstraction | planned |
 | 6 | WhatsApp | future |
 | 7 | Rive mascot states | future |
 
-Phase 1 ships dark. Nothing here is user-visible; it exists so the system starts
-accumulating timezone and activity data, which every later phase depends on and
-which takes real calendar time to fill.
+Phases 1–2 ship dark. The scheduler runs in **dry-run** by default: it claims
+due actions, revalidates them, and records what it *would* have sent to
+`tey_deliveries` — then sends nothing. A week of those rows answers "do the
+rules fire at sane times, at sane volumes, for the right people?" without a
+single learner being interrupted. Set `TEY_DELIVERY_ENABLED=true` only once a
+channel exists.
 
 ---
 
@@ -70,6 +73,8 @@ errors. Telemetry must never fail a lesson completion.
 contracts/     the shared vocabulary — event types, learner states, TeyContext
 activity/      ingest: the single writer for tey_activity_events
 state/         timezone resolution, the projection, and the pure derivers
+decision/      pure rules + the engine that decides whether Tey should act
+scheduler/     the Postgres due queue, the claim, and the tick
 listeners/     server-side capture from existing domain events
 ```
 
@@ -120,9 +125,10 @@ sends anything.
 
 | Route | Purpose |
 |---|---|
-| `GET /tey/me/state` | The learner's current state; re-projects when stale, which is how the system self-heals after a dropped event |
+| `GET /tey/me/state` | The learner's current state; re-projects when stale and re-plans, which is how the system self-heals after a dropped event |
 | `PATCH /tey/me/timezone` | Explicit zone capture on app boot |
 | `POST /tey/events` | Batched client telemetry (≤50, throttled 30/min) |
+| `POST /tey/scheduler/tick` | External tick, behind `x-tey-scheduler-secret`. Refuses when the secret is unset rather than running open. |
 
 Routes are mounted unversioned at root to match the live API's existing layout.
 
@@ -134,3 +140,79 @@ Routes are mounted unversioned at root to match the live API's existing layout.
 `visibilitychange` / `pagehide` (via `sendBeacon`), persisting the queue to
 `sessionStorage`. It stops after a 401 so a logged-out tab does not loop.
 `components/providers/TeyActivityProvider.tsx` mounts it on learner routes.
+
+---
+
+## The scheduler
+
+**It never scans learners.** The tick costs `O(rows WHERE status='PENDING' AND
+dueAt <= now())`, served by a partial index whose *size* is the pending count —
+not the user count. A learner with no queued action is invisible to it.
+
+Actions are created only by events, and `INACTIVE_RETURN` stops escalating after
+day 7, so a learner who goes dark holds at most one pending row and then leaves
+the queue entirely. There is no daily sweep anywhere in this module, by design.
+
+**Claiming** is one `UPDATE ... FROM (SELECT ... FOR UPDATE SKIP LOCKED)`. That
+clause is the whole multi-instance story: two Render instances ticking at the
+same moment each get a disjoint batch — no Redis, no leader election, no
+singleton assumption.
+
+**Every action is revalidated against freshly projected state before it sends.**
+Scheduled at 8pm, learner studies at 9pm, fires at 10pm → `SKIPPED`. This is
+also what makes the lossy in-process event chain safe: a dropped event costs
+freshness, never a wrong send.
+
+### Two triggers, on purpose
+
+An in-process `@Cron('30 * * * * *')` **and** `POST /tey/scheduler/tick` behind a
+shared secret. The backend runs on Render's free plan, which spins the service
+down when idle — and a sleeping instance runs no cron, so 20:30 reminders would
+simply never fire. An external caller both wakes the service and drives the
+tick. Both paths are idempotent because the claim serializes them.
+
+Long term this feature wants a paid instance; the endpoint makes it work in the
+meantime rather than pretending the constraint does not exist.
+
+---
+
+## Environment
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TEY_SCHEDULER_ENABLED` | on in production | Drive the queue. Off in dev so `start:dev` does not process real actions. |
+| `TEY_DELIVERY_ENABLED` | `false` | Actually send. While unset the scheduler is in dry-run. |
+| `TEY_SCHEDULER_SECRET` | unset | Shared secret for `POST /tey/scheduler/tick`. Unset ⇒ the endpoint refuses rather than running unauthenticated. |
+
+---
+
+## Rule interactions worth knowing
+
+`STREAK_AT_RISK` (≈20:30) and `STREAK_CRITICAL` (22:00) are **two stages of one
+evening**, not competitors — CRITICAL deliberately does not supersede AT_RISK,
+because doing so would mean the at-risk nudge never fired for a learner with no
+freeze, which is exactly the learner it exists for. Keeping the total volume
+sane is the policy layer's job, not the rule graph's.
+
+`STREAK_CRITICAL` stays silent when a freeze would cover the miss. Telling
+someone their streak is about to die while the product silently saves it is a
+lie, and the first time a learner notices, every future CRITICAL loses meaning.
+
+`INACTIVE_RETURN` never fires for a learner with a live streak, and
+`DAILY_GOAL_INCOMPLETE` never fires for one who has been away a day or more.
+Between them that leaves no gap and no overlap: the streak rules own engaged
+learners, the win-back ladder owns lapsed ones — and unlike the daily nudge, the
+ladder knows when to stop.
+
+---
+
+## Verifying
+
+```bash
+npm test -- tey/            # unit
+npx ts-node scripts/tey-e2e.ts   # against the database .env points at
+```
+
+The e2e script proves the two properties the design rests on: an action whose
+reason no longer holds is SKIPPED rather than sent, and one whose reason still
+holds is processed.

@@ -93,14 +93,17 @@ describe('local-time.util', () => {
       [undefined, false],
       ['A'.repeat(65), false],
     ])('%s -> %s', (input, expected) => {
-      expect(isValidTimezone(input as string | null | undefined)).toBe(expected);
+      expect(isValidTimezone(input)).toBe(expected);
     });
   });
 
   describe('localDateFor', () => {
     it('resolves an arbitrary instant in the learner zone', () => {
       expect(
-        localDateFor({ timezone: 'Africa/Lagos' }, new Date('2026-03-09T23:10:00Z')),
+        localDateFor(
+          { timezone: 'Africa/Lagos' },
+          new Date('2026-03-09T23:10:00Z'),
+        ),
       ).toBe('2026-03-10');
     });
   });

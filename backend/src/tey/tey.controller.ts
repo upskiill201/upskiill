@@ -12,6 +12,7 @@ import { Type } from 'class-transformer';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { LearnerStateService } from './state/learner-state.service';
 import { TeyTimezoneService } from './state/timezone.service';
+import { TeySchedulerService } from './scheduler/tey-scheduler.service';
 
 export class UpdateTimezoneDto {
   /** IANA zone from Intl.DateTimeFormat().resolvedOptions().timeZone. */
@@ -37,6 +38,7 @@ export class TeyController {
   constructor(
     private readonly learnerState: LearnerStateService,
     private readonly timezone: TeyTimezoneService,
+    private readonly scheduler: TeySchedulerService,
   ) {}
 
   /**
@@ -53,6 +55,13 @@ export class TeyController {
   @Header('Cache-Control', 'no-store')
   async myState(@GetUser() user: AuthedUser) {
     const state = await this.learnerState.get(user.id);
+
+    // Re-plan off the response path. This is the self-healing property that
+    // makes the lossy in-process event chain acceptable: if a restart dropped
+    // the listener that should have queued this learner's nudges, their next
+    // app open quietly puts them back on the schedule.
+    void this.scheduler.planFor(user.id, state).catch(() => undefined);
+
     return { state };
   }
 

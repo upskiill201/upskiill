@@ -44,7 +44,8 @@ export function deriveStreakState(i: StreakStateInput): StreakState {
   }
 
   const hoursLeft = hoursUntilLocalMidnight(i.now);
-  if (hoursLeft <= TEY_THRESHOLDS.streakCriticalHoursLeft) return 'STREAK_CRITICAL';
+  if (hoursLeft <= TEY_THRESHOLDS.streakCriticalHoursLeft)
+    return 'STREAK_CRITICAL';
 
   // At risk once their usual study window has passed (or, with no habit data
   // yet, once the evening threshold hits).
@@ -64,7 +65,9 @@ export interface EngagementStateInput {
   returnedToday: boolean;
 }
 
-export function deriveEngagementState(i: EngagementStateInput): EngagementState {
+export function deriveEngagementState(
+  i: EngagementStateInput,
+): EngagementState {
   if (i.lifetimeLessons === 0) return 'NEW';
   if (i.returnedToday) return 'RETURNING';
 
@@ -94,7 +97,8 @@ export function deriveCourseState(i: CourseStateInput): CourseState {
   ) {
     return 'ABANDONED';
   }
-  if (i.progressPct >= TEY_THRESHOLDS.nearCompletionPct) return 'NEAR_COMPLETION';
+  if (i.progressPct >= TEY_THRESHOLDS.nearCompletionPct)
+    return 'NEAR_COMPLETION';
   return 'IN_PROGRESS';
 }
 
@@ -126,9 +130,11 @@ export function updateUsualHour(
   const alpha = TEY_THRESHOLDS.usualHourAlpha;
   const toRad = (h: number) => (h / 24) * 2 * Math.PI;
   const x =
-    (1 - alpha) * Math.cos(toRad(previousHour)) + alpha * Math.cos(toRad(newHour));
+    (1 - alpha) * Math.cos(toRad(previousHour)) +
+    alpha * Math.cos(toRad(newHour));
   const y =
-    (1 - alpha) * Math.sin(toRad(previousHour)) + alpha * Math.sin(toRad(newHour));
+    (1 - alpha) * Math.sin(toRad(previousHour)) +
+    alpha * Math.sin(toRad(newHour));
 
   let hour = Math.round(((Math.atan2(y, x) / (2 * Math.PI)) * 24 + 24) % 24);
   if (hour === 24) hour = 0;

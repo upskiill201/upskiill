@@ -83,9 +83,16 @@ function fromIana(at: Date, timeZone: string): TeyLocalNow | null {
 
   // Recover the true offset (DST-correct) by diffing the wall clock we just
   // rendered against the instant it came from.
-  const asUtc = Date.UTC(Number(year), Number(month) - 1, Number(day), hour, minute);
+  const asUtc = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    hour,
+    minute,
+  );
   const offsetMinutes = -Math.round(
-    (asUtc - at.getTime() + at.getSeconds() * 1000 + at.getMilliseconds()) / 60000,
+    (asUtc - at.getTime() + at.getSeconds() * 1000 + at.getMilliseconds()) /
+      60000,
   );
 
   return {
@@ -126,7 +133,7 @@ export function resolveLocalNow(
   at: Date = new Date(),
 ): TeyLocalNow {
   if (isValidTimezone(user?.timezone)) {
-    const viaIana = fromIana(at, user!.timezone!);
+    const viaIana = fromIana(at, user.timezone);
     if (viaIana) return viaIana;
   }
 

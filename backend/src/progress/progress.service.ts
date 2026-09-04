@@ -14,7 +14,10 @@ export class ProgressService {
    * Converts a Date to a local YYYY-MM-DD string using the user's timezone offset in minutes.
    * Standard JS getTimezoneOffset() returns POSITIVE values for UTC- west of UTC, so we subtract offset ms.
    */
-  private getLocalDateString(date: Date, timezoneOffsetMinutes: number): string {
+  private getLocalDateString(
+    date: Date,
+    timezoneOffsetMinutes: number,
+  ): string {
     const localMs = date.getTime() - timezoneOffsetMinutes * 60 * 1000;
     return new Date(localMs).toISOString().split('T')[0];
   }
@@ -58,9 +61,19 @@ export class ProgressService {
    * Formats week range label e.g., "Jul 27 – Aug 2"
    */
   private formatWeekRange(mondayStr: string, sundayStr: string): string {
-    const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', timeZone: 'UTC' };
-    const start = new Date(mondayStr + 'T00:00:00Z').toLocaleDateString('en-US', opts);
-    const end = new Date(sundayStr + 'T00:00:00Z').toLocaleDateString('en-US', opts);
+    const opts: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+    };
+    const start = new Date(mondayStr + 'T00:00:00Z').toLocaleDateString(
+      'en-US',
+      opts,
+    );
+    const end = new Date(sundayStr + 'T00:00:00Z').toLocaleDateString(
+      'en-US',
+      opts,
+    );
     return `${start} – ${end}`;
   }
 
@@ -103,7 +116,15 @@ export class ProgressService {
       }),
     ]);
 
-    const recordMap = new Map<string, { lessonsCompleted: number; xpEarned: number; timeSpentSeconds: number; streakExtended: boolean }>();
+    const recordMap = new Map<
+      string,
+      {
+        lessonsCompleted: number;
+        xpEarned: number;
+        timeSpentSeconds: number;
+        streakExtended: boolean;
+      }
+    >();
     for (const r of records) {
       recordMap.set(r.date, {
         lessonsCompleted: r.lessonsCompleted,
@@ -185,7 +206,8 @@ export class ProgressService {
       where: { userId_date: { userId, date: todayStr } },
     });
 
-    const isFirstLessonToday = !existingActivity || existingActivity.lessonsCompleted === 0;
+    const isFirstLessonToday =
+      !existingActivity || existingActivity.lessonsCompleted === 0;
 
     if (existingActivity) {
       await this.prisma.userDailyActivity.update({
@@ -245,7 +267,10 @@ export class ProgressService {
       if (profile) {
         let newStreak = 1;
         if (profile.lastStreakEarnedAt) {
-          const lastStreakStr = this.getLocalDateString(new Date(profile.lastStreakEarnedAt), timezoneOffsetMinutes);
+          const lastStreakStr = this.getLocalDateString(
+            new Date(profile.lastStreakEarnedAt),
+            timezoneOffsetMinutes,
+          );
           const diff = this.getDaysDiff(todayStr, lastStreakStr);
           if (diff === 1) {
             newStreak = (profile.streakDays || 0) + 1;
@@ -292,7 +317,11 @@ export class ProgressService {
   /**
    * Returns aggregated learning stats summary for user dashboard filtered by week, month, or all-time.
    */
-  async getStatsSummary(userId: string, filter: 'week' | 'month' | 'all' = 'week', timezoneOffsetMinutes = 0) {
+  async getStatsSummary(
+    userId: string,
+    filter: 'week' | 'month' | 'all' = 'week',
+    timezoneOffsetMinutes = 0,
+  ) {
     const now = new Date();
     const todayStr = this.getLocalDateString(now, timezoneOffsetMinutes);
     const mondayStr = this.getMondayOfWeek(todayStr);
@@ -355,7 +384,15 @@ export class ProgressService {
         .catch(() => null),
     ]);
 
-    const weekRecordMap = new Map<string, { lessonsCompleted: number; xpEarned: number; timeSpentSeconds: number; streakExtended: boolean }>();
+    const weekRecordMap = new Map<
+      string,
+      {
+        lessonsCompleted: number;
+        xpEarned: number;
+        timeSpentSeconds: number;
+        streakExtended: boolean;
+      }
+    >();
     for (const r of weekRecords) {
       weekRecordMap.set(r.date, {
         lessonsCompleted: r.lessonsCompleted || 0,
@@ -385,15 +422,29 @@ export class ProgressService {
         date: dateStr,
         xp: dayXp,
         lessonsCompleted: record?.lessonsCompleted || 0,
-        hasStreak: Boolean(record?.streakExtended || (record?.lessonsCompleted && record.lessonsCompleted > 0)),
+        hasStreak: Boolean(
+          record?.streakExtended ||
+          (record?.lessonsCompleted && record.lessonsCompleted > 0),
+        ),
         isToday: dateStr === todayStr,
       });
     }
 
-    const lessonsCompleted = activities.reduce((acc, a) => acc + (a.lessonsCompleted || 0), 0);
-    const timeSpentSeconds = activities.reduce((acc, a) => acc + ((a as any).timeSpentSeconds || 0), 0);
-    const xpFiltered = activities.reduce((acc, a) => acc + (a.xpEarned || 0), 0);
-    const activeDays = activities.filter((a) => (a.lessonsCompleted || 0) > 0).length;
+    const lessonsCompleted = activities.reduce(
+      (acc, a) => acc + (a.lessonsCompleted || 0),
+      0,
+    );
+    const timeSpentSeconds = activities.reduce(
+      (acc, a) => acc + ((a as any).timeSpentSeconds || 0),
+      0,
+    );
+    const xpFiltered = activities.reduce(
+      (acc, a) => acc + (a.xpEarned || 0),
+      0,
+    );
+    const activeDays = activities.filter(
+      (a) => (a.lessonsCompleted || 0) > 0,
+    ).length;
 
     const lifetimeXp = profile?.xp ?? 0;
     const currentXp = filter === 'all' ? lifetimeXp : xpFiltered;
@@ -407,13 +458,20 @@ export class ProgressService {
         const higherStudents = await this.prisma.studentProfile.count({
           where: { xp: { gt: lifetimeXp } },
         });
-        const pct = Math.max(1, Math.min(99, Math.round(((higherStudents + 1) / totalStudentsResult) * 100)));
+        const pct = Math.max(
+          1,
+          Math.min(
+            99,
+            Math.round(((higherStudents + 1) / totalStudentsResult) * 100),
+          ),
+        );
         rankPercentile = `Top ${pct}%`;
       } else if (totalStudentsResult === null) {
         throw new Error('totalStudents count failed');
       }
     } catch {
-      rankPercentile = lifetimeXp > 200 ? 'Top 10%' : lifetimeXp > 50 ? 'Top 25%' : 'Top 50%';
+      rankPercentile =
+        lifetimeXp > 200 ? 'Top 10%' : lifetimeXp > 50 ? 'Top 25%' : 'Top 50%';
     }
 
     // Accuracy Rate — real Apply-phase quiz scores from completed lessons in
