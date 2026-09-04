@@ -11,6 +11,7 @@ import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { StepSkeleton } from '@/components/onboarding/StepSkeleton';
 import { signInWithGoogle } from '@/lib/firebase';
+import { extractErrorMessage } from '@/lib/apiError';
 
 export interface WelcomeAuthScreenProps {
   /** Where GET STARTED sends a brand-new learner. */
@@ -106,8 +107,7 @@ export default function WelcomeAuthScreen({
 
       const data = await res.json();
       if (!res.ok) {
-        const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
-        throw new Error(errMsg || 'Login failed');
+        throw new Error(extractErrorMessage(data, res.status));
       }
 
       playHaptic('medium');
@@ -144,7 +144,8 @@ export default function WelcomeAuthScreen({
         if (res.status === 429) {
           throw new Error('Too many requests. Please try again later.');
         }
-        throw new Error('Something went wrong. Please try again.');
+        const data = await res.json().catch(() => null);
+        throw new Error(extractErrorMessage(data, res.status));
       }
 
       playHaptic('medium');
@@ -174,7 +175,7 @@ export default function WelcomeAuthScreen({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || 'Social login failed');
+        throw new Error(extractErrorMessage(data, res.status));
       }
 
       playHaptic('medium');
