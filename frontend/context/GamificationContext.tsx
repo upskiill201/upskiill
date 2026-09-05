@@ -47,7 +47,8 @@ export interface GamificationState {
 
 interface GamificationContextValue extends GamificationState {
   refresh: () => Promise<void>;
-  loseLife: () => Promise<void>;
+  /** Resolves with whether a Perfect Lesson Protection charge absorbed the miss. */
+  loseLife: () => Promise<{ shieldAbsorbed: boolean }>;
   applyLessonReward: (newXp: number, newStreakDays: number, newCoins?: number) => void;
   awardTestReward: (delta: { coins?: number; xp?: number; lives?: number; streakDays?: number }) => void;
   claimQuest: (questId: string) => Promise<void>;
@@ -208,6 +209,11 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
           maxLives: data.maxLives ?? prev.maxLives,
           livesRefillAt: data.livesRefillAt ?? prev.livesRefillAt,
         }));
+        // The server may have spent a Perfect Lesson Protection charge instead
+        // of taking a heart. The optimistic decrement above is corrected by
+        // the state merge; this returns so the player can say what happened —
+        // a shield that saves you silently may as well not exist.
+        return { shieldAbsorbed: Boolean(data.shieldAbsorbed) };
       }
     } catch {
       setState((prev) => ({
@@ -215,6 +221,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         lives: Math.min(prev.lives + 1, prev.maxLives),
       }));
     }
+    return { shieldAbsorbed: false };
   }, []);
 
   const applyLessonReward = useCallback((newXp: number, newStreakDays: number, newCoins?: number) => {

@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare } from 'lucide-react';
+import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare, Shield } from 'lucide-react';
+import { fetchInventory, usePowerUp } from '@/lib/shop/api';
 import { playHaptic } from '@/lib/haptics';
 import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
 import Skeleton from '@/components/ui/Skeleton';
@@ -526,9 +527,33 @@ function SectionViewContent({
   // Quiz performance tracking — feeds creator analytics (attempts + accuracy)
   const applyWrongCountRef = useRef(0);
 
+  /** Set when a Perfect Lesson Protection charge ate a wrong answer. */
+  const [shieldAbsorbed, setShieldAbsorbed] = useState(false);
+  /** Lesson Retry charges held, fetched only when the learner runs dry. */
+  const [retryCharges, setRetryCharges] = useState<number | null>(null);
+  const [usingRetry, setUsingRetry] = useState(false);
+
   useEffect(() => {
     if (activeLesson) applyWrongCountRef.current = 0;
   }, [activeLesson]);
+
+  useEffect(() => {
+    if (!shieldAbsorbed) return;
+    const timer = setTimeout(() => setShieldAbsorbed(false), 2600);
+    return () => clearTimeout(timer);
+  }, [shieldAbsorbed]);
+
+  // Only ask what's in the locker at the moment it matters — running out of
+  // hearts — rather than on every lesson load.
+  useEffect(() => {
+    if (livesCount !== 0 || lessonPhase !== 'apply' || retryCharges !== null) return;
+    fetchInventory()
+      .then((inv) => {
+        const row = inv.items.find((i) => i.id === 'LESSON_RETRY');
+        setRetryCharges(row?.quantity ?? 0);
+      })
+      .catch(() => setRetryCharges(0));
+  }, [livesCount, lessonPhase, retryCharges]);
 
   const handleCheckAnswer = () => {
     if (selectedOptionIndex === null) return;
@@ -541,7 +566,13 @@ function SectionViewContent({
       playWinSound();
     } else if (!isReviewMode) {
       applyWrongCountRef.current += 1;
-      loseLife();
+      // A Perfect Lesson Protection charge may absorb this instead of costing
+      // a heart. The server decides (it holds the charge count); we only
+      // surface it, because a shield that saves you silently is a shield the
+      // learner never knows they got value from.
+      void loseLife().then((result) => {
+        if (result?.shieldAbsorbed) setShieldAbsorbed(true);
+      });
     }
   };
 
@@ -1328,6 +1359,33 @@ function SectionViewContent({
         </div>
       )}
 
+      {/* Perfect Lesson Protection absorbed a miss — say so, briefly. */}
+      {shieldAbsorbed && (
+        <div
+          role="status"
+          style={{
+            position: 'fixed',
+            top: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9000,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 20px',
+            borderRadius: 999,
+            background: '#059669',
+            color: '#FFFFFF',
+            fontSize: 14,
+            fontWeight: 800,
+            boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)',
+          }}
+        >
+          <Shield size={16} strokeWidth={2.8} />
+          Perfect Lesson Protection used — no heart lost
+        </div>
+      )}
+
       {/* Out-of-lives overlay — blocks Apply phase when lives are 0 */}
       {livesCount === 0 && lessonPhase === 'apply' && (
         <div className={styles.outOfLivesOverlay}>
@@ -1340,6 +1398,35 @@ function SectionViewContent({
             </p>
 
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              {/* Lesson Retry — only offered when they actually hold one, so
+                  this never advertises something they'd have to go buy first. */}
+              {(retryCharges ?? 0) > 0 && (
+                <button
+                  disabled={usingRetry}
+                  onClick={async () => {
+                    if (usingRetry) return;
+                    setUsingRetry(true);
+                    try {
+                      playHaptic('success');
+                      await usePowerUp('LESSON_RETRY');
+                      setRetryCharges((n) => Math.max(0, (n ?? 1) - 1));
+                      await refresh();
+                    } catch {
+                      // Falls through to the XP refill and the exit below —
+                      // never strand the learner on a failed power-up.
+                    } finally {
+                      setUsingRetry(false);
+                    }
+                  }}
+                  className={styles.outOfLivesBtn}
+                  style={{ width: '100%' }}
+                >
+                  {usingRetry
+                    ? 'USING…'
+                    : `USE LESSON RETRY (${retryCharges} LEFT)`}
+                </button>
+              )}
+
               <button
                 disabled={xpPoints < 100}
                 onClick={async () => {

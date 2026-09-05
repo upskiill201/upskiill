@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, RefreshCw, ShieldAlert, ShieldCheck, Trophy } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import LeagueBadge from '@/components/leaderboard/LeagueBadge';
 import Button from '@/components/ui/Button';
 import { playHaptic } from '@/lib/haptics';
@@ -199,7 +200,9 @@ export default function LeaderboardsPage() {
                         >
                           {row.rank}
                         </span>
-                        <Avatar src={row.avatarUrl ?? undefined} name={row.name} size="sm" />
+                        <CosmeticFrame userId={row.userId} thickness={2}>
+                          <Avatar src={row.avatarUrl ?? undefined} name={row.name} size="sm" />
+                        </CosmeticFrame>
                         <span className={styles.name}>{row.name}</span>
                         <span className={styles.xp}>
                           <strong>{row.weeklyXp.toLocaleString()}</strong> XP

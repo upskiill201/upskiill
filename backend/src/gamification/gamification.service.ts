@@ -2,12 +2,15 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
+import { ShopService } from '../shop/shop.service';
 
 @Injectable()
 export class GamificationService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    // Perfect Lesson Protection is spent from the life-loss path.
+    private shopService: ShopService,
   ) {}
 
   /**
@@ -130,6 +133,23 @@ export class GamificationService {
       update: {},
     });
 
+    // Perfect Lesson Protection spends itself, the way a streak freeze does.
+    // Asking the learner to remember they own a shield mid-question would
+    // make the item useless exactly when it matters — so if they hold a
+    // charge, it absorbs this wrong answer and no heart is lost.
+    const absorbed = await this.shopService.tryAbsorbWithShield(userId);
+    if (absorbed) {
+      const refilledOnly = this.computeRefill(profile);
+      const unchanged =
+        refilledOnly.lives === profile.lives
+          ? profile
+          : await this.prisma.studentProfile.update({
+              where: { userId },
+              data: { lives: refilledOnly.lives },
+            });
+      return { ...this.buildResponse(unchanged), shieldAbsorbed: true };
+    }
+
     const refilled = this.computeRefill(profile);
     const newLives = Math.max(0, refilled.lives - 1);
     const now = new Date();
@@ -142,7 +162,7 @@ export class GamificationService {
       },
     });
 
-    return this.buildResponse(updated);
+    return { ...this.buildResponse(updated), shieldAbsorbed: false };
   }
 
   /**

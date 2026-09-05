@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import styles from './Scene.module.css';
 import { CelebrationCurrency, CURRENCY_ICONS } from './currency';
+import CelebrationFxLayer from '../cosmetics/CelebrationFxLayer';
 
 interface SceneShellProps {
   children: ReactNode;
@@ -50,6 +51,12 @@ export default function SceneShell({ children, cta, secondaryCta, onSkip, corner
   return (
     <div className={styles.sceneBackdrop} role="dialog" aria-modal="true" aria-label="Celebration">
       <div className={styles.ambientGlow} aria-hidden />
+
+      {/* The learner's equipped Celebration Effect. Renders nothing when none
+          is equipped or under reduced motion, so every scene keeps its
+          current look by default. Mounted here rather than per scene so one
+          purchase applies to all of them. */}
+      <CelebrationFxLayer />
 
       {cornerBalance && (
         <div className={styles.cornerBalance} aria-live="polite">

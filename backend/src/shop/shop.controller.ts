@@ -50,6 +50,21 @@ export class ShopController {
     return this.shopService.getLoadout(req.user.id);
   }
 
+  /**
+   * Equipped cosmetics for many learners — the batched read community feeds
+   * and leaderboards use, so a column of avatars is one request, not one per
+   * row. Declared BEFORE `loadout/:userId` so "loadouts" is not swallowed by
+   * that route's param.
+   */
+  @Get('loadouts')
+  async getLoadouts(@Query('userIds') userIds?: string) {
+    const ids = (userIds ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+    return this.shopService.getLoadouts(ids);
+  }
+
   /** Another learner's equipped cosmetics — cosmetics are meant to be seen. */
   @Get('loadout/:userId')
   async getLoadoutFor(@Param('userId') userId: string) {
@@ -86,6 +101,16 @@ export class ShopController {
       throw new BadRequestException('Chest id is required.');
     }
     return this.shopService.openChest(req.user.id, itemId, dto.idempotencyKey);
+  }
+
+  /** Spend a held power-up (Lesson Retry) and apply its effect. */
+  @Post('use')
+  async usePowerUp(@Req() req: any, @Body() dto: PurchaseDto) {
+    const itemId = dto.itemId ?? dto.item;
+    if (!itemId) {
+      throw new BadRequestException('Item id is required.');
+    }
+    return this.shopService.usePowerUp(req.user.id, itemId);
   }
 
   @Post('equip')

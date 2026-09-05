@@ -70,6 +70,18 @@ export function fetchLoadout(userId?: string): Promise<Loadout> {
   return request<Loadout>(userId ? `/loadout/${userId}` : '/loadout');
 }
 
+/**
+ * Equipped cosmetics for many learners in one call — what a feed or
+ * leaderboard uses instead of one request per avatar. Returns slot → art
+ * token, keyed by user id.
+ */
+export function fetchLoadouts(
+  userIds: string[],
+): Promise<Record<string, Record<string, string | null>>> {
+  const query = encodeURIComponent(userIds.join(','));
+  return request<Record<string, Record<string, string | null>>>(`/loadouts?userIds=${query}`);
+}
+
 export function fetchPendingUnlocks(): Promise<PendingUnlock[]> {
   return request<PendingUnlock[]>('/unlocks/pending');
 }
@@ -105,6 +117,25 @@ export async function equipItem(itemId: string, equipped: boolean): Promise<Load
   const { invalidateLoadout } = await import('./useLoadout');
   invalidateLoadout();
   return result;
+}
+
+export interface UsePowerUpResult {
+  success: boolean;
+  itemId: string;
+  itemName: string;
+  message: string;
+  lives: number;
+  maxLives: number;
+  /** Charges left after this one was spent. */
+  remaining: number;
+}
+
+/** Spend a held power-up (Lesson Retry) and apply its effect. */
+export function usePowerUp(itemId: string): Promise<UsePowerUpResult> {
+  return request<UsePowerUpResult>('/use', {
+    method: 'POST',
+    body: JSON.stringify({ itemId }),
+  });
 }
 
 export function claimCollection(collectionId: string): Promise<CollectionClaimResult> {

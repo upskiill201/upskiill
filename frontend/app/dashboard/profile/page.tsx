@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
+import CosmeticBackdrop from '@/components/cosmetics/CosmeticBackdrop';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { StatsBar } from '@/components/ui/StatsBar';
@@ -748,6 +749,9 @@ export default function StudentProfilePage() {
           </div>
 
           {/* 2. USER IDENTITY PROFILE SECTION (No container box border, matches UI design) */}
+          {/* Wrapped in the equipped shop backdrop — renders as-is when the
+              learner owns none, so the layout is unchanged by default. */}
+          <CosmeticBackdrop>
           <div className={styles.identityCard}>
             <div className={styles.identityMainRow}>
               <div style={{ display: 'flex', gap: '1.25rem' }}>
@@ -830,6 +834,7 @@ export default function StudentProfilePage() {
               </span>
             </div>
           </div>
+          </CosmeticBackdrop>
 
           {/* 3. LINKEDIN SHOWCASE BANNER CARD */}
           <div className={styles.linkedinCard}>

@@ -9,6 +9,7 @@ import {
   MoreHorizontal, Trash2, Link2, BarChart3, Check,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import type { CommunityPost } from '@/lib/communityApi';
 import { timeAgo, togglePostLike } from '@/lib/communityApi';
 import { plainExcerpt } from '@/lib/communityRender';
@@ -178,7 +179,12 @@ function PostCard({
       )}
 
       <div className={styles.headerRow}>
-        <Avatar src={post.author.avatarUrl ?? undefined} name={post.author.fullName} size="md" />
+        {/* Author's equipped frame. Loadout reads across a feed are batched
+            into one request, so this stays one call no matter how many posts
+            are on screen. */}
+        <CosmeticFrame userId={post.author.id} thickness={3}>
+          <Avatar src={post.author.avatarUrl ?? undefined} name={post.author.fullName} size="md" />
+        </CosmeticFrame>
         <div className={styles.authorBlock}>
           <span className={styles.authorName}>{post.author.fullName}</span>
           <div className={styles.metaRow}>

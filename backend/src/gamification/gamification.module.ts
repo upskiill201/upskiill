@@ -9,9 +9,18 @@ import { MonthlyQuestModule } from '../monthly-quest/monthly-quest.module';
 import { ProgressModule } from '../progress/progress.module';
 import { ChestModule } from '../chest/chest.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ShopModule } from '../shop/shop.module';
 
 @Module({
-  imports: [MissionsModule, MonthlyQuestModule, ProgressModule, ChestModule, PrismaModule],
+  imports: [
+    MissionsModule,
+    MonthlyQuestModule,
+    ProgressModule,
+    ChestModule,
+    PrismaModule,
+    // Losing a life first checks for a Perfect Lesson Protection charge.
+    ShopModule,
+  ],
   controllers: [GamificationController, AchievementsController],
   providers: [GamificationService, AchievementsService, GamificationListener],
   exports: [GamificationService, AchievementsService],

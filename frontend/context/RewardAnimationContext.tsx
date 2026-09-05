@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { useGamification } from './GamificationContext';
 import { useCelebration } from './CelebrationContext';
+import { useLoadout } from '@/lib/shop/useLoadout';
+import { cosmeticArt } from '@/lib/shop/cosmetics';
 
 export type RewardCurrency = 'COINS' | 'XP' | 'HEARTS' | 'STREAK';
 
@@ -117,13 +119,31 @@ const CURRENCY_COLORS: Record<RewardCurrency, string> = {
 };
 
 export function RewardAnimationProvider({ children }: { children: React.ReactNode }) {
-  const { userLevel, refresh } = useGamification();
+  const { userLevel, refresh, profileLoaded } = useGamification();
   const { celebrate } = useCelebration();
   const [particles, setParticles] = useState<FlyingParticle[]>([]);
   const [shockwaves, setShockwaves] = useState<ShockwaveRing[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
 
   const targetMapRef = useRef<Map<string, HTMLElement>>(new Map());
+
+  // An equipped XP Effect recolours the XP reward flight — that flight IS the
+  // XP moment, so it is the only place the purchase could show up. Held in a
+  // ref because the animation callbacks below run outside React's render.
+  // Gated on a loaded profile: this provider mounts on every route, including
+  // the marketing pages, where an authenticated loadout read would only 401.
+  const { art: equippedArt } = useLoadout(undefined, { enabled: profileLoaded });
+  const xpTintRef = useRef<string | null>(null);
+  xpTintRef.current = equippedArt?.XP_FX
+    ? (cosmeticArt(equippedArt.XP_FX).gradient.match(/#[0-9a-fA-F]{3,8}/)?.[0] ?? null)
+    : null;
+
+  /** Reward colour, with the learner's XP Effect applied when they own one. */
+  const colorFor = useCallback(
+    (currency: RewardCurrency) =>
+      (currency === 'XP' && xpTintRef.current) || CURRENCY_COLORS[currency] || '#0172FD',
+    [],
+  );
 
   const registerTarget = useCallback((currency: RewardCurrency, element: HTMLElement) => {
     const pillKey = CURRENCY_PILL_KEYS[currency];
@@ -185,7 +205,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
       }
 
       const textId = `ft-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
-      const color = CURRENCY_COLORS[currency] || '#0172FD';
+      const color = colorFor(currency);
 
       setFloatingTexts((prev) => [
         ...prev,
@@ -218,7 +238,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         void refresh();
       }
     },
-    [refresh]
+    [refresh, colorFor]
   );
 
   const triggerRewardAnimation = useCallback(
@@ -239,7 +259,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
 
       // Origin Shockwave Flash
       const primaryCurrency = rewards[0]?.currency || 'COINS';
-      const shockColor = CURRENCY_COLORS[primaryCurrency] || '#0172FD';
+      const shockColor = colorFor(primaryCurrency);
       const shockId = `shock-${Date.now()}`;
 
       setShockwaves((prev) => [
@@ -340,7 +360,7 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
         setTimeout(onComplete, maxTotalDuration + 80);
       }
     },
-    [userLevel]
+    [userLevel, colorFor]
   );
 
   return (

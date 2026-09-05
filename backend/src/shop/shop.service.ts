@@ -49,6 +49,19 @@ const STREAK_REPAIR_WINDOW_DAYS = 2;
 /** Daily shop-visit reward, scaling with consecutive visits (index = streak-1). */
 const VISIT_REWARD_LADDER = [10, 15, 20, 25, 30, 40, 60];
 
+/**
+ * Interactive-transaction budget for shop writes.
+ *
+ * Prisma's default is 5s, which is not enough here: a purchase does a dozen
+ * sequential round trips inside one transaction (eligibility reads, the
+ * guarded debit, the effect write, two ledger rows), and the app talks to the
+ * database over a pooler. At 5s those spuriously abort under ordinary latency
+ * — the money is safe, since the whole transaction rolls back, but the
+ * learner sees a failed purchase for no reason. `maxWait` covers time spent
+ * queueing for a connection when the pool is busy.
+ */
+const TX_OPTIONS = { timeout: 20_000, maxWait: 10_000 } as const;
+
 export interface ShopItemView {
   id: string;
   name: string;
@@ -797,7 +810,7 @@ export class ShopService {
 
       const updated = await tx.studentProfile.findUnique({ where: { userId } });
       return { profile: updated!, effectResult };
-    });
+    }, TX_OPTIONS);
 
     return {
       success: true,
@@ -1199,7 +1212,7 @@ export class ShopService {
         gems: updated!.coins,
         streakFreezeBank: updated!.streakFreezeBank,
       };
-    });
+    }, TX_OPTIONS);
   }
 
   // ═══ Inventory & loadout ═══════════════════════════════════════════════════
@@ -1283,6 +1296,42 @@ export class ShopService {
     return { loadout, art };
   }
 
+  /**
+   * Equipped cosmetics for many learners at once.
+   *
+   * A community feed or a leaderboard is a column of avatars; asking per row
+   * would be one request each. This is the batched read those surfaces use.
+   * Capped so a caller cannot ask for the whole user table in one go.
+   */
+  async getLoadouts(userIds: string[]) {
+    const ids = [...new Set(userIds)].slice(0, 100);
+    if (ids.length === 0) return {};
+
+    const rows = await this.prisma.userShopItem.findMany({
+      where: { userId: { in: ids }, equipped: true, quantity: { gt: 0 } },
+      select: { userId: true, itemId: true },
+    });
+
+    const out: Record<string, Record<string, string | null>> = {};
+    for (const id of ids) {
+      out[id] = {
+        FRAME: null,
+        BACKGROUND: null,
+        CELEBRATION_FX: null,
+        XP_FX: null,
+      };
+    }
+    for (const row of rows) {
+      const def = getShopItem(row.itemId);
+      if (!def) continue;
+      const slot = cosmeticSlotFor(def.category);
+      // Art tokens, not item ids: the client renders from these directly and
+      // never needs a copy of the registry.
+      if (slot) out[row.userId][slot] = def.art;
+    }
+    return out;
+  }
+
   /** Equip or unequip a cosmetic. One item per slot — equipping swaps. */
   async equip(userId: string, itemId: string, equipped: boolean) {
     const item = getShopItem(itemId);
@@ -1316,7 +1365,7 @@ export class ShopService {
         where: { userId_itemId: { userId, itemId } },
         data: { equipped },
       });
-    });
+    }, TX_OPTIONS);
 
     return this.getLoadout(userId);
   }
@@ -1413,7 +1462,7 @@ export class ShopService {
         coins: profile!.coins,
         gems: profile!.coins,
       };
-    });
+    }, TX_OPTIONS);
   }
 
   // ═══ Daily visit reward ════════════════════════════════════════════════════
@@ -1474,7 +1523,7 @@ export class ShopService {
       });
       const profile = await tx.studentProfile.findUnique({ where: { userId } });
       return { rewarded: true, coins: profile!.coins };
-    });
+    }, TX_OPTIONS);
 
     if (!result.rewarded) {
       return {
@@ -1526,6 +1575,9 @@ export class ShopService {
   /**
    * Spend one charge of a consumable (lesson retry, perfect-run shield).
    * Returns false when the learner has none — callers must not assume success.
+   *
+   * The `quantity > 0` guard lives in the WHERE clause, so two concurrent
+   * calls cannot both spend the last charge.
    */
   async consumeCharge(userId: string, itemId: string): Promise<boolean> {
     const res = await this.prisma.userShopItem.updateMany({
@@ -1533,6 +1585,96 @@ export class ShopService {
       data: { quantity: { decrement: 1 } },
     });
     return res.count > 0;
+  }
+
+  /** How many charges of a consumable the learner is holding. */
+  async chargesHeld(userId: string, itemId: string): Promise<number> {
+    const row = await this.prisma.userShopItem.findUnique({
+      where: { userId_itemId: { userId, itemId } },
+      select: { quantity: true },
+    });
+    return row?.quantity ?? 0;
+  }
+
+  /**
+   * Absorb one wrong answer with a Perfect Lesson Protection charge.
+   * Called by the life-loss path, so the shield just works rather than asking
+   * the learner to remember they own it mid-question — the same way a streak
+   * freeze spends itself.
+   */
+  async tryAbsorbWithShield(userId: string): Promise<boolean> {
+    return this.consumeCharge(userId, 'PERFECT_SHIELD');
+  }
+
+  /**
+   * Spend a power-up the learner chose to use, and apply its effect.
+   *
+   * Only items whose effect is CHARGES are usable this way — anything else
+   * either applies at purchase (boosts, freezes) or is worn (cosmetics).
+   */
+  async usePowerUp(userId: string, itemId: string) {
+    const item = getShopItem(itemId);
+    if (!item || item.effect.kind !== 'CHARGES') {
+      throw new BadRequestException('That item cannot be used here.');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // Spend first, guarded — if this updates nothing the learner had none,
+      // and no effect is applied.
+      const spent = await tx.userShopItem.updateMany({
+        where: { userId, itemId, quantity: { gt: 0 } },
+        data: { quantity: { decrement: 1 } },
+      });
+      if (spent.count === 0) {
+        throw new BadRequestException(`You have no ${item.name} left.`);
+      }
+
+      const profile = await tx.studentProfile.findUnique({ where: { userId } });
+      if (!profile) throw new NotFoundException('Student profile not found.');
+
+      // Lesson Retry hands back the hearts the failed attempt cost, which is
+      // the whole promise on the card ("without losing the hearts you spent").
+      if (itemId === 'LESSON_RETRY') {
+        const updated = await tx.studentProfile.update({
+          where: { userId },
+          data: { lives: profile.maxLives, livesLastLostAt: null },
+        });
+        return {
+          success: true,
+          itemId,
+          itemName: item.name,
+          message: 'Lesson Retry used — hearts restored.',
+          lives: updated.lives,
+          maxLives: updated.maxLives,
+          remaining: Math.max(
+            0,
+            (await this.chargesInTx(tx, userId, itemId)) ?? 0,
+          ),
+        };
+      }
+
+      return {
+        success: true,
+        itemId,
+        itemName: item.name,
+        message: `${item.name} used.`,
+        lives: profile.lives,
+        maxLives: profile.maxLives,
+        remaining: (await this.chargesInTx(tx, userId, itemId)) ?? 0,
+      };
+    }, TX_OPTIONS);
+  }
+
+  private async chargesInTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    itemId: string,
+  ): Promise<number> {
+    const row = await tx.userShopItem.findUnique({
+      where: { userId_itemId: { userId, itemId } },
+      select: { quantity: true },
+    });
+    return row?.quantity ?? 0;
   }
 
   // ═══ Legacy compatibility ══════════════════════════════════════════════════
