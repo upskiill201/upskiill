@@ -1,7 +1,30 @@
 # Course Communities & Global Feed — Progress Tracker
 
-> Feature branch work on `staging`. Plan file: `~/.claude/plans/prancy-sparking-dongarra.md`
-> Last updated: 2026-08-24 (night) — double-post fixed, feed redesigned (Skool × Duolingo), mobile pass done; E2E + ship remain
+> Feature branch work on `feat/tey-foundation`.
+> Last updated: 2026-09-05 — Skool rebuild landed (layout, leaderboards, welcome engine, notifications)
+
+---
+
+## 🆕 2026-09-05 — Skool-standard rebuild
+
+Three commits on `feat/tey-foundation`:
+`31c4b05` layout + leaderboards + perf · `028405a` welcome engine + notifications · `c8c3f5e` tests + SQL smoke.
+
+**Layout.** The community is now two columns: post list plus a sticky right rail (About card — cover, description, members/posts/admins strip, facepile, your role — and a live 30-day leaderboard). Below 1024px the rail becomes a right-side drawer with scrim + Escape, same pattern as the dashboard sidebar. Tabs: Community / Classroom / Members / Leaderboards. `PostCard` was rebuilt as a real summary card (title, two clamped lines, square thumbnail, commenter facepile, "New comment 2h ago", tappable category filter in the meta line), and the feed now renders that same component instead of its own hand-rolled copy.
+
+**Leaderboards (new).** Community points score participation, not learning: post +3, comment +1, like received on a post +2, on a comment +1; self-likes never pay. Windowed by the action's own timestamp, so an old post liked today scores this week. Nine-rung level ladder with real per-rung member percentages. `backend/src/community/community-levels.ts` holds the thresholds.
+
+**Performance.** `GET /communities/course/:id/bootstrap` returns overview + first page of posts + rail board in ONE request, resolving the community once instead of three times (`listPosts` gained `skipAccessCheck`). `listPosts`' viewer-likes / viewer-votes / facepile queries went from three sequential awaits to one `Promise.all`. Notification destinations are resolved server-side at list time — the bell used to make two API calls between a tap and a page. Filter switches dim the list in place; `PostCard` is memoised.
+
+**Joining moved to lesson 2.** `enrollment.created` no longer seats anyone — one lesson in, a learner has nothing to say. `CommunityService.seatAfterSecondLesson` is called synchronously from `completeLesson` so the response can carry a `communityUnlock` payload. Access is unchanged: `assertMember` still seats anyone holding an enrollment the moment they open the community themselves.
+
+**Community Engine.** New `COMMUNITY_WELCOME` celebration scene — the only scene in the engine that is a flow rather than a single beat. Four beats: the room (real cover/faces/count) → "What brings you in?" (three choices, the room answers with a concrete next action) → a real post with a real pressable Like → three house rules + how points work. SAY HI opens the community with the composer expanded and calls `closeAll()` so queued section scenes can't replay over it.
+
+**Notifications.** Panel rebuilt (actor avatar + colour-coded type chip, Today/This week/Earlier grouping, All/Unread tabs, skeletons, bottom sheet on phones) plus a new `/dashboard/notifications` inbox rendering the identical row component.
+
+**Verification.** 40/40 backend Jest pass (13 new). `tsc --noEmit` and `next build` green. `backend/scripts/community-sql-smoke.ts` runs the real service methods against the live staging DB — all three leaderboard windows, the level distribution, the facepile, the empty-input guard and the widened feed query all parse and return real rows.
+
+**Still unexercised:** none of this has been walked in a browser. The E2E checklist below still stands, plus: rail drawer on a real phone, the four welcome beats end to end, and a leaderboard with enough real activity to rank more than three people.
 
 ---
 

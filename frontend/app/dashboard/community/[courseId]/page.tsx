@@ -98,11 +98,22 @@ function CommunityPageInner() {
   // board all arrive together. Every later change (a chip, a sort, a new page)
   // only refetches the post list.
   const bootstrapped = React.useRef(false);
+  // Declared above the bootstrap effect because that effect resets it when the
+  // learner moves to a different community.
+  const filterKey = `${sort}|${typeFilter}`;
+  const lastFilterKey = React.useRef(filterKey);
 
   React.useEffect(() => {
     let alive = true;
     bootstrapped.current = false;
     setState('loading');
+    // A fresh community starts on the default view. Without this reset, moving
+    // from one community to another kept the old chip highlighted while the
+    // bootstrap fetched unfiltered posts — the controls lying about the list.
+    setTypeFilter('');
+    setSort('new');
+    setTab('feed');
+    lastFilterKey.current = 'new|';
     getCommunityBootstrap(courseId, {
       sort: 'new',
       lessonId: lessonParam ?? undefined,
@@ -154,8 +165,6 @@ function CommunityPageInner() {
 
   // Refetch on filter/sort change only — the bootstrap already delivered the
   // default view, and refetching it immediately would double every page load.
-  const filterKey = `${sort}|${typeFilter}`;
-  const lastFilterKey = React.useRef(filterKey);
   React.useEffect(() => {
     if (!bootstrapped.current) return;
     if (lastFilterKey.current === filterKey) return;
