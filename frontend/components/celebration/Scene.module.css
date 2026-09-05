@@ -61,19 +61,54 @@
   transform: scale(0.92);
 }
 
+/*
+ * The scroll viewport. flex:1 1 auto + min-height:0 lets it shrink to
+ * whatever space is left once the pinned CTA below takes its share; the
+ * scene's actual content lives in .contentInner. This element must be the
+ * one that scrolls (not .sceneBackdrop) — a plain `overflow: visible` here
+ * combined with justify-content: center on oversized content would spill
+ * the excess equally above AND below this box without pushing .bottomAction
+ * down (overflow never affects sibling layout), so the headline could be
+ * clipped by the backdrop's overflow:hidden at the top while the tail end
+ * gets visually painted under the CTA at the bottom — the exact bug this
+ * replaced.
+ */
 .contentColumn {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   flex: 1 1 auto;
   width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.contentColumn::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * margin: auto 0 centers this vertically inside .contentColumn exactly like
+ * the old justify-content: center did — EXCEPT auto margins clamp to 0
+ * instead of going negative. So on a short scene it still looks centered;
+ * on a scene taller than the viewport it simply sits flush at the top
+ * (nothing pushed off-screen) and the rest becomes reachable by scrolling
+ * .contentColumn, rather than overlapping .bottomAction.
+ */
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   max-width: 560px;
+  margin: auto auto;
   text-align: center;
   gap: clamp(10px, 2vh, 18px);
-  min-height: 0;
+  padding-block: 4px;
 }
 
 .bottomAction {
@@ -262,28 +297,71 @@
   align-items: center;
 }
 
+/* Duolingo-style chunky 3D "fluid" bar: a carved groove track with a raised,
+   glossy fill that has its own bevel (dark base edge + bright top highlight)
+   plus a diagonal shimmer drifting through it, like liquid moving. */
 .progressTrack {
   position: relative;
   width: 100%;
-  height: 16px;
+  height: 22px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .progressFill {
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 2px auto 2px 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
-  box-shadow: 0 0 12px rgba(74, 222, 128, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   transition: width 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+  overflow: hidden;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 8px,
+    transparent 8px,
+    transparent 20px
+  );
+  background-size: 200% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
 }
 
 .progressFillBlue {
-  background: linear-gradient(90deg, #3d5afe 0%, #6c8cff 100%);
-  box-shadow: 0 0 12px rgba(108, 140, 255, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
+  box-shadow:
+    0 0 12px rgba(108, 140, 255, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@keyframes fluidDrift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -160px 0;
+  }
 }
 
 .progressCaption {
@@ -773,6 +851,12 @@
   .progressFill {
     transition: none;
   }
+
+  .progressFill::after,
+  .barFill::after {
+    animation: none;
+    display: none;
+  }
 }
 
 /* ─── 320px floor ────────────────────────────────────────────────────────── */
@@ -918,35 +1002,73 @@
 
 /* ─── AnimatedProgressBar (from → to fill) ──────────────────────────────────── */
 
+/* Duolingo-style chunky 3D "fluid" bar — see .progressTrack/.progressFill
+   above for the same treatment on the ClaimScene level bar. */
 .barTrack {
   position: relative;
   width: min(100%, 340px);
-  height: 18px;
+  height: 22px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .barFill {
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 2px auto 2px 2px;
   border-radius: 999px;
+  overflow: hidden;
+}
+
+.barFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 8px,
+    transparent 8px,
+    transparent 20px
+  );
+  background-size: 200% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
 }
 
 .barFillGreen {
-  background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
-  box-shadow: 0 0 12px rgba(74, 222, 128, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .barFillBlue {
-  background: linear-gradient(90deg, #3d5afe 0%, #6c8cff 100%);
-  box-shadow: 0 0 12px rgba(108, 140, 255, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
+  box-shadow:
+    0 0 12px rgba(108, 140, 255, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .barFillGold {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
+  box-shadow:
+    0 0 12px rgba(251, 191, 36, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 /* One shine crossing the track right after the fill lands */

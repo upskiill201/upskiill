@@ -70,7 +70,9 @@ export default function SceneShell({ children, cta, secondaryCta, onSkip, corner
         </button>
       )}
 
-      <div className={styles.contentColumn}>{children}</div>
+      <div className={styles.contentColumn}>
+        <div className={styles.contentInner}>{children}</div>
+      </div>
 
       {cta && (
         <div className={styles.bottomAction}>
