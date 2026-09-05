@@ -64,19 +64,25 @@
   display: none;
   align-items: center;
   gap: 7px;
-  padding: 8px 13px;
-  border: 1px solid var(--border);
+  padding: 9px 14px;
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
   flex-shrink: 0;
+  transition: transform 100ms ease, box-shadow 100ms ease, border-color 120ms ease;
 }
 .railTrigger:hover {
   border-color: var(--border-strong);
   color: var(--text-primary);
+}
+.railTrigger:active {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
@@ -166,32 +172,40 @@
 }
 .filterChip {
   flex-shrink: 0;
-  padding: 7px 15px;
-  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background 130ms ease, color 130ms ease, border-color 130ms ease;
+  transition: transform 100ms ease, box-shadow 100ms ease,
+    background 130ms ease, color 130ms ease, border-color 130ms ease;
 }
 .filterChip:hover {
   border-color: var(--border-strong);
 }
+.filterChip:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
 .filterChipActive {
   background: var(--text-primary);
   border-color: var(--text-primary);
+  box-shadow: 0 3px 0 #0b1220;
   color: var(--text-on-blue);
 }
 .sortSelect {
   flex-shrink: 0;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
+  padding: 9px 12px;
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
 }
@@ -211,8 +225,9 @@
   gap: 10px;
   flex-wrap: wrap;
   padding: 11px 15px;
-  border: 1px solid var(--border-indigo);
-  border-radius: 12px;
+  border: 2px solid var(--border-indigo);
+  border-radius: 14px;
+  box-shadow: 0 3px 0 var(--border-indigo);
   background: var(--light-blue-bg);
   font-size: 13.5px;
   font-weight: 600;
@@ -237,17 +252,23 @@
   align-self: center;
   margin-top: 6px;
   padding: 11px 26px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease, border-color 120ms ease;
 }
 .loadMoreBtn:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+.loadMoreBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 .loadMoreBtn:disabled {
   opacity: 0.6;
@@ -266,8 +287,9 @@
   align-items: center;
   gap: 12px;
   padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 4px 0 var(--border);
   background: var(--bg-card);
 }
 .memberInfo {
@@ -336,13 +358,18 @@
 .drawerClose {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   color: var(--text-secondary);
   cursor: pointer;
+}
+.drawerClose:active {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 .drawerRail {
   display: flex;
@@ -393,8 +420,20 @@
   .membersPanel {
     grid-template-columns: minmax(0, 1fr);
   }
-  /* 16px inputs — anything smaller makes iOS Safari zoom on focus. */
+
+  /* The sort control was eating nearly half the row and crushing the category
+     chips into a stub. Chips take the full width and scroll; sort drops onto
+     its own line beneath them. */
+  .controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chipRow {
+    flex: 1 0 100%;
+  }
   .sortSelect {
+    margin-left: auto;
+    /* 16px inputs — anything smaller makes iOS Safari zoom on focus. */
     font-size: 16px;
   }
 }

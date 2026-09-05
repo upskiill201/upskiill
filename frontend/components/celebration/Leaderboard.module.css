@@ -79,7 +79,9 @@
   max-width: 480px;
   margin: auto auto;
   text-align: center;
-  gap: clamp(12px, 2.2vh, 20px);
+  /* Tightened to match Scene.module.css's headroom trim for the bigger
+     shared mascot (.mascotWrap). */
+  gap: clamp(10px, 1.8vh, 16px);
   padding-block: 4px;
 }
 

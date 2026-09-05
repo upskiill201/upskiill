@@ -13,19 +13,31 @@
 /* Collapsed trigger — the "What did you learn today?" pill */
 .triggerBtn {
   flex: 1;
+  min-width: 0;
   border: 2px solid var(--border);
   background: var(--bg-section);
   border-radius: 999px;
+  box-shadow: 0 3px 0 var(--border);
   padding: 12px 18px;
   text-align: left;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease, transform 100ms ease;
+  /* One line, always — the pill grows in height otherwise and the composer
+     starts shouting over the posts it sits above. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 120ms ease, color 120ms ease,
+    transform 100ms ease, box-shadow 100ms ease;
 }
 .triggerBtn:hover { border-color: var(--brand-blue); color: var(--text-secondary); }
-.triggerBtn:active { transform: scale(0.99); }
+.triggerBtn:active { transform: translateY(3px); box-shadow: none; }
+
+/* Long label on desktop, short one on phones (see PostComposer.tsx). */
+.triggerShort { display: none; }
+.triggerLong { display: inline; }
 
 .openArea { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
 
@@ -249,12 +261,22 @@
 
 /* ── Mobile ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .wrap { padding: 14px; }
+  .wrap { padding: 12px; border-radius: 14px; }
   .footerRow { flex-wrap: wrap; }
   .typeChip { padding: 7px 12px; font-size: 12.5px; }
   /* 16px input text prevents iOS Safari's zoom-on-focus */
   .titleInput,
   .textarea { font-size: 16px; }
+
+  /* Tighter pill, shorter label — the long one wrapped to two lines here. */
+  .triggerBtn { padding: 11px 16px; font-size: 14px; }
+  .triggerLong { display: none; }
+  .triggerShort { display: inline; }
+}
+
+@media (max-width: 380px) {
+  .topRow { gap: 8px; }
+  .triggerBtn { padding: 10px 14px; font-size: 13.5px; }
 }
 
 .footerRow {

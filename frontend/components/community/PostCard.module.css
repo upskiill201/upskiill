@@ -9,21 +9,31 @@
  * category badges, which are defined once in community.module.css.
  */
 
+/* Duolingo 3D surface — the card sits on its own hard shadow, floats on
+   hover, and presses down onto the shadow on tap. This is Teyro's house
+   style (see .surface3d / .press3d in community.module.css); Skool's flat
+   hairline cards looked foreign next to every other surface in the app. */
 .card {
   position: relative;
   display: block;
   width: 100%;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
   padding: 16px 18px;
   text-align: left;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 .card:hover {
+  transform: translateY(-2px);
   border-color: var(--border-strong);
-  box-shadow: 0 2px 10px rgba(31, 42, 68, 0.06);
+  box-shadow: 0 6px 0 var(--border);
+}
+.card:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--border);
 }
 .card:focus-visible {
   outline: 2px solid var(--brand-blue);
@@ -40,6 +50,7 @@
   margin: -16px -18px 14px;
   padding: 9px 18px;
   border-radius: 12px 12px 0 0;
+  border-bottom: 2px solid #f2dcae;
   background: #fdf2d4;
   color: #92660a;
   font-size: 12.5px;
@@ -284,22 +295,30 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 8px;
-  margin-left: -8px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
+  padding: 6px 12px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  box-shadow: 0 2px 0 var(--border);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: color 120ms ease, background 120ms ease;
+  transition: transform 100ms ease, box-shadow 100ms ease,
+    color 120ms ease, border-color 120ms ease;
 }
 .statBtn:hover {
-  background: var(--bg-section);
+  border-color: var(--border-strong);
   color: var(--text-primary);
 }
+.statBtn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
 .statBtnLiked {
+  border-color: var(--brand-blue);
+  background: var(--light-blue-bg);
+  box-shadow: 0 2px 0 #c7d2fe;
   color: var(--brand-blue);
 }
 
@@ -334,8 +353,9 @@
   gap: 12px;
   padding: 18px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
 }
 .skeletonCol {
   display: flex;
@@ -350,7 +370,7 @@
 @media (max-width: 640px) {
   .card {
     padding: 14px;
-    border-radius: 12px;
+    border-radius: 14px;
   }
   .pinnedBar {
     margin: -14px -14px 12px;

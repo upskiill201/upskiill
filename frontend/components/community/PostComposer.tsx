@@ -8,6 +8,7 @@ import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import type { CommunityOverview } from '@/lib/communityApi';
 import { createPost, getMembers } from '@/lib/communityApi';
+import { getCachedUser } from '@/lib/user-cache';
 import shared from './community.module.css';
 import styles from './PostComposer.module.css';
 
@@ -68,6 +69,9 @@ async function uploadCommunityFile(
 
 export default function PostComposer({ community, lessonLink, defaultOpen = false, onPosted }: PostComposerProps) {
   const [open, setOpen] = React.useState(defaultOpen);
+  // The learner's own face on the composer, the way every social composer
+  // does it — a generic "You" initial made the row read as an empty gap.
+  const me = React.useMemo(() => getCachedUser(), []);
   const [postType, setPostType] = React.useState<string>('QUESTION');
   const [title, setTitle] = React.useState('');
   const [body, setBody] = React.useState('');
@@ -220,9 +224,19 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
     <div className={styles.wrap}>
       {!open ? (
         <div className={styles.topRow}>
-          <Avatar size="md" name="You" />
+          <Avatar
+            size="md"
+            src={me?.avatarUrl ?? undefined}
+            name={me?.fullName || 'You'}
+          />
           <button className={styles.triggerBtn} onClick={() => setOpen(true)}>
-            Share a question, win or tip with your community…
+            {/* Two labels, one shown per breakpoint. The long one wrapped onto
+                two lines on a phone, which doubled the pill's height and made
+                the composer the loudest thing on the screen. */}
+            <span className={styles.triggerLong}>
+              Share a question, win or tip with your community…
+            </span>
+            <span className={styles.triggerShort}>Write something…</span>
           </button>
         </div>
       ) : (

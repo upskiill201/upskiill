@@ -4,8 +4,9 @@
 
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
   overflow: hidden;
 }
 
@@ -116,9 +117,10 @@
   width: 100%;
   margin-top: 16px;
   padding: 11px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--bg-section);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13.5px;
   font-weight: 700;
   color: var(--text-secondary);
@@ -132,17 +134,22 @@
   margin-top: 10px;
   padding: 12px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--brand-blue);
+  box-shadow: 0 4px 0 var(--brand-blue-hover);
   color: var(--text-on-blue);
   font-size: 14px;
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
-  transition: background 130ms ease;
+  transition: transform 100ms ease, box-shadow 100ms ease, background 130ms ease;
 }
 .ctaBtn:hover {
   background: var(--brand-blue-hover);
+}
+.ctaBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
 }
 
 /* ── Leaderboard card ────────────────────────────────────────────────────── */

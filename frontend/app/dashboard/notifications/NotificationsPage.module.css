@@ -29,13 +29,19 @@
 }
 .markAllBtn {
   padding: 9px 16px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease, border-color 120ms ease;
+}
+.markAllBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 .markAllBtn:hover:not(:disabled) {
   border-color: var(--brand-blue);
@@ -53,17 +59,24 @@
 }
 .tab {
   padding: 8px 16px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
+  box-shadow: 0 3px 0 var(--border);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+.tab:active {
+  transform: translateY(3px);
+  box-shadow: none;
 }
 .tabActive {
   background: var(--text-primary);
   border-color: var(--text-primary);
+  box-shadow: 0 3px 0 #0b1220;
   color: var(--text-on-blue);
 }
 
@@ -71,8 +84,9 @@
    are borderless by design and would float without this. */
 .listCard {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--border);
   overflow: hidden;
 }
 .listCard > button + button {

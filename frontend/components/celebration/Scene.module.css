@@ -107,7 +107,10 @@
   max-width: 560px;
   margin: auto auto;
   text-align: center;
-  gap: clamp(10px, 2vh, 18px);
+  /* Tightened from clamp(10,2vh,18) to claim back headroom for the bigger
+     mascot below on the busiest scenes (ClaimScene stacks headline + stat
+     pills + mascot + balances + progress bar all at once). */
+  gap: clamp(8px, 1.6vh, 14px);
   padding-block: 4px;
 }
 
@@ -769,7 +772,7 @@
  */
 .mascotWrap {
   position: relative;
-  width: clamp(90px, min(30vw, 24vh), 170px);
+  width: clamp(120px, min(42vw, 34vh), 240px);
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   display: flex;
