@@ -224,6 +224,7 @@ export type CelebrationScene =
         title: string | null;
         excerpt: string;
         commentCount: number;
+        likeCount: number;
         authorName: string;
         authorAvatarUrl: string | null;
       } | null;

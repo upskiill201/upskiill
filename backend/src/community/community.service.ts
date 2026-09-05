@@ -49,6 +49,7 @@ export interface CommunityUnlockPayload {
     title: string | null;
     excerpt: string;
     commentCount: number;
+    likeCount: number;
     authorName: string;
     authorAvatarUrl: string | null;
   } | null;
@@ -492,6 +493,7 @@ export class CommunityService {
             contentText: true,
             postType: true,
             commentCount: true,
+            likeCount: true,
             user: { select: { fullName: true, avatarUrl: true } },
           },
         }),
@@ -522,6 +524,7 @@ export class CommunityService {
               title: sampleQuestion.title,
               excerpt: sampleQuestion.contentText.slice(0, 180),
               commentCount: sampleQuestion.commentCount,
+              likeCount: sampleQuestion.likeCount,
               authorName: sampleQuestion.user?.fullName ?? 'A learner',
               authorAvatarUrl: sampleQuestion.user?.avatarUrl ?? null,
             }

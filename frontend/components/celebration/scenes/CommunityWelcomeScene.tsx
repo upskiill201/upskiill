@@ -7,15 +7,18 @@
  * This is the only scene in the engine that is a short *flow* rather than a
  * single beat, and deliberately so: a community is the one reward that means
  * nothing until you understand what it's for. A passive "You've joined!"
- * splash gets dismissed and forgotten. So each beat asks for one small action
+ * splash gets dismissed and forgotten. So each beat invites one small action
  * — pick why you're here, like a real post from the room — and the room
- * answers. Four beats, none of them skippable-by-accident, all of them short.
+ * answers. Four beats, all of them short.
  *
- * Everything shown is real: the member count, the faces and the sample post
- * all come from the server payload that seated them.
+ * Everything here is real and nothing here pretends. The member count, the
+ * faces and the sample post all come from the server payload that seated the
+ * learner, and the like in beat 3 writes to that post for real. Only beat 2's
+ * choice gates its CTA; the like never does, because forcing it would mean
+ * every new member liked the same post on their way in.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   Users, LifeBuoy, Trophy, HandHeart, Check, ThumbsUp, MessageSquare,
@@ -26,6 +29,7 @@ import SceneShell from '../SceneShell';
 import { CountUpNumber } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import local from '../CommunityWelcome.module.css';
+import { togglePostLike } from '@/lib/communityApi';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { playScenePop, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
@@ -88,6 +92,37 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
   const [step, setStep] = useState(0);
   const [reason, setReason] = useState<Reason | null>(null);
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(scene.samplePost?.likeCount ?? 0);
+  const likeBusy = useRef(false);
+
+  /**
+   * The like in beat 3 is a REAL like on a REAL post — the learner is already
+   * a member by the time this scene plays, so it counts exactly as it would on
+   * the community page: the author is notified and earns their +2 points.
+   *
+   * Teaching the gesture with a button that quietly does nothing would be the
+   * one dishonest thing in the whole flow. Failures revert in silence rather
+   * than throwing an error dialog over a celebration.
+   */
+  const toggleRealLike = async (postId: string) => {
+    if (likeBusy.current) return;
+    likeBusy.current = true;
+    const next = !liked;
+    setLiked(next);
+    setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
+    playSparkle();
+    playHaptic('light');
+    try {
+      const res = await togglePostLike(postId, liked);
+      setLiked(res.liked);
+      setLikeCount(res.likeCount);
+    } catch {
+      setLiked(!next);
+      setLikeCount((c) => Math.max(0, c + (next ? -1 : 1)));
+    } finally {
+      likeBusy.current = false;
+    }
+  };
 
   useEffect(() => {
     playHaptic('teyroCelebration');
@@ -235,16 +270,19 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
     );
   }
 
-  // ── Beat 3: a real post, and a real like ───────────────────────────────
+  // ── Beat 3: a real post, and a like that actually lands ────────────────
   if (step === 2) {
     const post = scene.samplePost;
     return (
       <SceneShell
         cta={{
-          text: post ? (liked ? 'NICE — NEXT' : 'TRY THE LIKE') : 'GOT IT',
+          // Never gated on the like. Requiring it would mean every new member
+          // liked this same post on their way in — inflating its count, paying
+          // its author points nobody meant, and firing a notification each
+          // time. An invitation, not a toll.
+          text: liked ? 'NICE — NEXT' : 'CONTINUE',
           onClick: goNext,
           variant: 'blue',
-          disabled: Boolean(post) && !liked,
         }}
         onSkip={onAdvance}
       >
@@ -285,17 +323,10 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
                 type="button"
                 className={`${local.likeBtn} ${liked ? local.likeBtnOn : ''}`}
                 aria-pressed={liked}
-                onClick={() => {
-                  // Demonstration only — this scene never writes to the real
-                  // post. The learner practises the gesture; the community
-                  // page is where a like actually counts.
-                  setLiked((v) => !v);
-                  playSparkle();
-                  playHaptic('light');
-                }}
+                onClick={() => void toggleRealLike(post.id)}
               >
                 <ThumbsUp size={15} fill={liked ? 'currentColor' : 'none'} />
-                {liked ? 'Liked' : 'Like'}
+                {likeCount > 0 ? likeCount : 'Like'}
               </button>
               <span className={local.postStat}>
                 <MessageSquare size={15} /> {post.commentCount}
@@ -304,7 +335,9 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
           </motion.div>
         )}
 
-        {post && !liked && <p className={local.tapHint}>Tap Like to carry on ↑</p>}
+        {post && !liked && (
+          <p className={local.tapHint}>Go on, try it — this one is real.</p>
+        )}
       </SceneShell>
     );
   }
