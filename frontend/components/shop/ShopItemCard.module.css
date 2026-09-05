@@ -1,0 +1,328 @@
+/*
+ * Shop item card. Two shapes off one rule set: `tile` (grid, art on top) and
+ * `row` (list, art on the left). Rarity arrives as --rarity/--wash custom
+ * properties so a card never needs a per-rarity class.
+ */
+
+.card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--rarity);
+  box-shadow: 0 8px 24px rgba(31, 42, 68, 0.1);
+}
+
+/* Rarity reads as a top edge rather than a full border, so a wall of cards
+   stays calm and the Legendary still stands out. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: var(--rarity);
+  opacity: 0.9;
+}
+
+.tile {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.cardLocked {
+  background: var(--bg-section);
+}
+
+.cardPrestige {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(160deg, #fffbeb 0%, var(--bg-card) 55%);
+}
+
+/* ── Art ──────────────────────────────────────────────────────────────────── */
+
+.artSlot {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding-top: 4px;
+}
+
+.lockPin,
+.equippedPin {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--bg-card);
+  color: #ffffff;
+}
+
+.lockPin {
+  background: var(--text-muted);
+}
+
+.equippedPin {
+  background: var(--success-green);
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tile .body {
+  align-items: center;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tile .titleRow {
+  justify-content: center;
+}
+
+.name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.rarity {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rarity);
+}
+
+.desc,
+.reason {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.reason {
+  font-weight: 700;
+  color: var(--brand-blue);
+}
+
+/* ── Locked progress ──────────────────────────────────────────────────────── */
+
+.unlockBlock {
+  margin-top: 4px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.unlockTrack {
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.unlockFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--rarity);
+  transition: width 400ms ease;
+}
+
+.unlockLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ── Chips ────────────────────────────────────────────────────────────────── */
+
+.ownedChip,
+.activeChip {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.tile .ownedChip,
+.tile .activeChip {
+  align-self: center;
+}
+
+.ownedChip {
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+}
+
+.activeChip {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+/* ── Action ───────────────────────────────────────────────────────────────── */
+
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tile .action {
+  width: 100%;
+}
+
+.buyBtn,
+.buyBtnDisabled,
+.lockedBtn,
+.ownedBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    transform 100ms ease,
+    filter 150ms ease;
+}
+
+.tile .buyBtn,
+.tile .buyBtnDisabled,
+.tile .lockedBtn,
+.tile .ownedBtn {
+  width: 100%;
+}
+
+.buyBtn {
+  background: var(--brand-blue);
+  color: var(--text-on-blue);
+  box-shadow: 0 3px 0 0 var(--brand-blue-hover);
+}
+
+.buyBtn:hover {
+  filter: brightness(1.06);
+}
+
+.buyBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 var(--brand-blue-hover);
+}
+
+.buyBtnDisabled,
+.lockedBtn,
+.ownedBtn {
+  background: var(--bg-section);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: not-allowed;
+}
+
+.ownedBtn {
+  color: var(--brand-blue);
+  background: var(--light-blue-bg);
+  border-color: transparent;
+}
+
+.strikePrice {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.blockedNote {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 16ch;
+  line-height: 1.35;
+}
+
+.grantOnly {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .buyBtn,
+  .unlockFill {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .row {
+    flex-wrap: wrap;
+  }
+  .row .action {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .blockedNote {
+    max-width: none;
+  }
+}

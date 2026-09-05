@@ -175,6 +175,9 @@ import CelebrationEngine from "../components/celebration/CelebrationEngine";
 import DailyRewardWatcher from "../components/gamification/DailyRewardWatcher";
 // Surfaces Monthly Quest beats + claim deposits after lessons
 import QuestProgressWatcher from "../components/quests/QuestProgressWatcher";
+// Shop Engine — unlock announcements + purchase/chest/collection takeovers
+import { ShopEngineProvider } from "../context/ShopEngineContext";
+import ShopEngine from "../components/shop-engine/ShopEngine";
 
 export default function RootLayout({
   children,
@@ -200,20 +203,26 @@ export default function RootLayout({
                     <DeferredRewardAnimationOverlay />
                     <HeraldProvider>
                       <StreakProvider>
-                        <CelebrationEngine />
-                        <DailyRewardWatcher />
-                        <QuestProgressWatcher />
-                        {/* Herald & Streak portals — router-independent, render into document.body */}
-                        <HeraldOverlay />
-                        <DeferredHeraldReveals />
-                        <DeferredStreakModal />
-                        <TeyroLoaderProvider>
-                          <HeaderWrapper />
-                          <main className="flex-1" style={{ overflow: 'visible' }}>
-                            {children}
-                          </main>
-                          <FooterWrapper />
-                        </TeyroLoaderProvider>
+                        {/* Shop Engine nests inside the Celebration provider:
+                            it defers to an active celebration rather than
+                            stacking a second full-page takeover. */}
+                        <ShopEngineProvider>
+                          <CelebrationEngine />
+                          <ShopEngine />
+                          <DailyRewardWatcher />
+                          <QuestProgressWatcher />
+                          {/* Herald & Streak portals — router-independent, render into document.body */}
+                          <HeraldOverlay />
+                          <DeferredHeraldReveals />
+                          <DeferredStreakModal />
+                          <TeyroLoaderProvider>
+                            <HeaderWrapper />
+                            <main className="flex-1" style={{ overflow: 'visible' }}>
+                              {children}
+                            </main>
+                            <FooterWrapper />
+                          </TeyroLoaderProvider>
+                        </ShopEngineProvider>
                       </StreakProvider>
                     </HeraldProvider>
                   </RewardAnimationProvider>

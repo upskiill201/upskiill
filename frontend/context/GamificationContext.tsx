@@ -8,6 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
+// Window-event helper, not a hook — importing the Shop Engine's context here
+// would invert the provider order (ShopEngineProvider nests inside this one).
+import { requestShopUnlockCheck } from './ShopEngineContext';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -222,6 +225,12 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       coins: newCoins !== undefined ? newCoins : (prev.coins + 5),
       gems: newCoins !== undefined ? newCoins : (prev.gems + 5),
     }));
+
+    // A finished lesson is the single most likely moment for a shop item to
+    // unlock (lessons, XP, level and streak requirements all move here), so
+    // this is where the Shop Engine gets told to look. It defers behind any
+    // celebration already playing.
+    requestShopUnlockCheck();
   }, []);
 
   const claimQuest = useCallback(async (questId: string) => {
@@ -350,6 +359,10 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
       setState((prev) => ({
         ...prev,
+        // `coins` is what the HUD actually renders. It used to be left out
+        // here while only the legacy `gems` alias was updated, so the coin
+        // balance stayed stale after a purchase until the next full refresh.
+        coins: data.coins ?? data.gems ?? prev.coins,
         gems: data.gems ?? prev.gems,
         lives: data.lives ?? prev.lives,
         maxLives: data.maxLives ?? prev.maxLives,

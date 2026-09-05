@@ -34,6 +34,7 @@ import {
   Lock,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { StatsBar } from '@/components/ui/StatsBar';
@@ -752,13 +753,17 @@ export default function StudentProfilePage() {
               <div style={{ display: 'flex', gap: '1.25rem' }}>
                 {/* Avatar with star badge */}
                 <div className={styles.avatarWrapper}>
-                  {avatarUrl ? (
-                    <Avatar src={avatarUrl || undefined} name={displayName || 'User'} size="lg" />
-                  ) : (
-                    <div className={styles.avatarCircle}>
-                      {displayName ? displayName.charAt(0).toUpperCase() : <span className="inline-block w-6 h-6 bg-slate-200 animate-pulse rounded-full" />}
-                    </div>
-                  )}
+                  {/* Renders the equipped shop frame around the avatar, or
+                      the avatar untouched when nothing is equipped. */}
+                  <CosmeticFrame>
+                    {avatarUrl ? (
+                      <Avatar src={avatarUrl || undefined} name={displayName || 'User'} size="lg" />
+                    ) : (
+                      <div className={styles.avatarCircle}>
+                        {displayName ? displayName.charAt(0).toUpperCase() : <span className="inline-block w-6 h-6 bg-slate-200 animate-pulse rounded-full" />}
+                      </div>
+                    )}
+                  </CosmeticFrame>
                   <div className={styles.avatarStarBadge}>
                     <Star size={12} className="fill-[#FFD700] text-[#FFD700]" />
                   </div>

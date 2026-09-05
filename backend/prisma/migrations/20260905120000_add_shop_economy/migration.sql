@@ -52,7 +52,7 @@ CREATE INDEX "user_shop_items_userId_equipped_idx"
 
 ALTER TABLE "user_shop_items"
   ADD CONSTRAINT "user_shop_items_userId_fkey"
-  FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ── Unlock notifications ─────────────────────────────────────────────────────
 
@@ -77,7 +77,7 @@ CREATE INDEX "user_shop_unlocks_userId_seenAt_idx"
 
 ALTER TABLE "user_shop_unlocks"
   ADD CONSTRAINT "user_shop_unlocks_userId_fkey"
-  FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ── Per-learner shop meta ────────────────────────────────────────────────────
 
@@ -94,7 +94,7 @@ CREATE TABLE "user_shop_state" (
 
 ALTER TABLE "user_shop_state"
   ADD CONSTRAINT "user_shop_state_userId_fkey"
-  FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ── Purchase ledger: analytics + retry guard ─────────────────────────────────
 
