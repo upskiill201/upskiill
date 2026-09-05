@@ -16,27 +16,19 @@
   align-self: flex-start;
   padding: 7px 14px;
   border-radius: 999px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-card);
-  box-shadow: 0 3px 0 var(--border);
   font-size: 13px;
   font-weight: 800;
   color: var(--text-secondary);
   text-decoration: none;
-  transition: transform 100ms ease, box-shadow 100ms ease,
-    border-color 120ms ease, color 120ms ease;
+  transition: border-color 120ms ease, color 120ms ease;
 }
 .backLink:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
-.backLink:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--border);
-}
-
 .detailCard {
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
   padding: 20px;
 }
 
@@ -52,13 +44,13 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 999px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-card);
   font-size: 12.5px;
   font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease, transform 100ms ease;
+  transition: border-color 120ms ease, color 120ms ease;
 }
 .modBtn:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
 .modBtn:active { transform: scale(0.96); }
@@ -117,7 +109,7 @@
   align-items: center;
   gap: 8px;
   padding: 9px 13px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--bg-section);
   color: var(--brand-blue);

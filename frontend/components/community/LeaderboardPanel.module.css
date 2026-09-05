@@ -16,9 +16,8 @@
   gap: 28px;
   padding: 28px;
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
 }
 
 .identity {
@@ -157,9 +156,8 @@
 .board {
   padding: 18px 16px;
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
 }
 .boardTitle {
   margin: 0 0 4px;
@@ -232,9 +230,8 @@
 .scoring {
   padding: 18px 20px;
   background: var(--bg-section);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
 }
 .scoringTitle {
   margin: 0 0 10px;
@@ -255,10 +252,9 @@
   align-items: center;
   gap: 7px;
   padding: 7px 12px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bg-card);
-  box-shadow: 0 2px 0 var(--border);
   font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);

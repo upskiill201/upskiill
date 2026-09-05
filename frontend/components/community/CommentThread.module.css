@@ -68,7 +68,7 @@
   font-weight: 700;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, transform 100ms ease;
+  transition: background 120ms ease, color 120ms ease;
 }
 .actionBtn:hover { background: var(--bg-section); color: var(--text-primary); }
 .actionBtn:active { transform: scale(0.94); }
@@ -87,7 +87,7 @@
 .replyFormRow { display: flex; gap: 8px; margin-top: 6px; }
 .replyInput {
   flex: 1;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 13.5px;
@@ -110,7 +110,7 @@
   min-height: 44px;
   max-height: 160px;
   resize: vertical;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 14px;
@@ -133,23 +133,17 @@
 .loadMoreBtn {
   align-self: center;
   margin-top: 8px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-card);
-  box-shadow: 0 3px 0 var(--border);
   border-radius: 999px;
   padding: 8px 20px;
   font-size: 13px;
   font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: transform 100ms ease, box-shadow 100ms ease,
-    border-color 120ms ease, color 120ms ease;
+  transition: border-color 120ms ease, color 120ms ease;
 }
 .loadMoreBtn:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
-.loadMoreBtn:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--border);
-}
 .loadMoreBtn:disabled { opacity: 0.6; cursor: wait; }
 
 .deleted {
@@ -163,20 +157,15 @@
 .sendBtn3d {
   border: none;
   background: var(--brand-blue);
-  box-shadow: 0 3px 0 var(--brand-blue-hover);
   border-radius: 999px;
   padding: 9px 20px;
   font-size: 13px;
   font-weight: 800;
   color: var(--text-on-blue);
   cursor: pointer;
-  transition: transform 100ms ease, box-shadow 100ms ease, opacity 120ms ease;
+  transition: opacity 120ms ease;
 }
 .sendBtn3d:hover:not(:disabled) { background: var(--brand-blue-hover); }
-.sendBtn3d:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--brand-blue-hover);
-}
 .sendBtn3d:disabled { opacity: 0.6; cursor: wait; }
 
 /* ── Mobile — tighter thread indent, full-width reply inputs ──────────── */

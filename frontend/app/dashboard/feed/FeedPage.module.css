@@ -67,9 +67,8 @@
   gap: 6px;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-card);
-  box-shadow: 0 3px 0 var(--border);
   font-size: 13px;
   font-weight: 800;
   color: var(--text-secondary);
@@ -77,22 +76,12 @@
   transition: all 120ms ease;
 }
 .filterChip:hover { border-color: var(--border-strong); color: var(--text-primary); }
-.filterChip:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--border);
-}
 .filterActive {
   background: var(--brand-blue);
   color: #fff;
   border-color: var(--brand-blue);
-  box-shadow: 0 3px 0 var(--brand-blue-hover);
 }
 .filterActive:hover { color: #fff; border-color: var(--brand-blue); }
-.filterActive:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--brand-blue-hover);
-}
-
 /* ── Composer-first trigger card (Facebook pattern) ───────────────────── */
 .composerCard {
   display: flex;
@@ -101,16 +90,14 @@
   width: 100%;
   padding: 14px 16px;
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: transform 150ms ease, border-color 120ms ease;
+  transition: border-color 120ms ease;
 }
-.composerCard:hover { transform: translateY(-2px); border-color: var(--border-strong); }
-.composerCard:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--border); }
+.composerCard:hover { border-color: var(--border-strong); }
 .composerPlaceholder {
   flex: 1;
   font-size: 14px;
@@ -125,17 +112,10 @@
   padding: 8px 18px;
   border-radius: 999px;
   background: var(--brand-blue);
-  box-shadow: 0 3px 0 var(--brand-blue-hover);
   color: var(--text-on-blue);
   font-size: 13px;
   font-weight: 800;
-  transition: transform 100ms ease, box-shadow 100ms ease;
 }
-.composerCard:active .composerCta {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--brand-blue-hover);
-}
-
 .feedList { display: flex; flex-direction: column; gap: 16px; }
 
 /* One feed row = a reason label over the shared PostCard. The label used to
@@ -151,20 +131,17 @@
 
 .loadMoreBtn {
   align-self: center;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-card);
-  box-shadow: 0 3px 0 var(--border);
   border-radius: 999px;
   padding: 10px 26px;
   font-size: 13.5px;
   font-weight: 800;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: transform 100ms ease, box-shadow 100ms ease,
-    border-color 120ms ease, color 120ms ease;
+  transition: border-color 120ms ease, color 120ms ease;
 }
 .loadMoreBtn:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
-.loadMoreBtn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
 .loadMoreBtn:disabled { opacity: 0.6; cursor: wait; }
 
 /* Reason label above the card — why this post reached your feed. */
@@ -198,9 +175,8 @@
 }
 .railCard {
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
   padding: 14px;
 }
 .railTitle {
@@ -225,7 +201,7 @@
   border-radius: 12px;
   text-decoration: none;
   color: var(--text-primary);
-  transition: background 120ms ease, transform 120ms ease;
+  transition: background 120ms ease;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -307,13 +283,10 @@
   padding: 5px 11px;
   border-radius: 999px;
   background: var(--brand-blue);
-  box-shadow: 0 2px 0 var(--brand-blue-hover);
   color: var(--text-on-blue);
   font-size: 11px;
   font-weight: 800;
 }
-.railItem:hover .answerPill { transform: translateY(-1px); }
-
 .communitiesList { display: flex; flex-direction: column; gap: 2px; }
 
 /* ── Mobile (≤900px): rail folds under, strip appears ─────────────────── */
@@ -339,13 +312,11 @@
     flex-shrink: 0;
     padding: 6px 12px 6px 6px;
     border-radius: 999px;
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     background: var(--bg-card);
-    box-shadow: 0 2px 0 var(--border);
     text-decoration: none;
     max-width: 200px;
   }
-  .stripChip:active { transform: translateY(2px); box-shadow: 0 0 0 var(--border); }
   .stripThumb {
     width: 30px;
     height: 30px;

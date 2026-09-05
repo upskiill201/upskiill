@@ -1,27 +1,12 @@
 /* Shared bits for the Course Community & Feed surfaces.
  * Tokens come from docs/08-color-system.md — never raw hex here. */
 
-/* ── Duolingo skin primitives ───────────────────────────────────────────
- * 3D bottom-shadow surfaces & buttons: the card "sits" on its shadow;
-   pressing translates down onto it. Hover floats the card off the shadow. */
-.surface3d {
-  background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
-}
-.floatOnHover {
-  transition: transform 150ms ease;
-}
-.floatOnHover:hover {
-  transform: translateY(-2px);
-}
-.press3d {
-  transition: transform 100ms ease, box-shadow 100ms ease;
-}
-.press3d:active:not(:disabled) {
-  transform: translateY(3px);
-}
+/* The 3D bottom-shadow primitives (.surface3d / .press3d / .floatOnHover)
+ * lived here and are gone: the community and feed are deliberately FLAT —
+ * hairline borders, soft hover shadows, no hard shadow the card sits on.
+ * That skin still belongs on celebration scenes and the learning surfaces;
+ * on a dense list of posts it made every card shout. Nothing referenced these
+ * classes by the time they were removed. */
 
 /* Tey mascot sticker — the asset ships with a baked background, so it lives
    in a contained dark tile that reads as an intentional sticker chip. */
@@ -34,7 +19,6 @@
   border-radius: 24px;
   background: var(--bg-dark-mid);
   overflow: hidden;
-  box-shadow: 0 4px 0 var(--border);
 }
 
 .mentionChip {
