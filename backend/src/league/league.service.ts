@@ -32,6 +32,10 @@ export interface MyLeaderboard {
   league: LeagueTier;
   tournamentWins: number;
   joined: boolean;
+  /** Stable cohort identity for the week — lets a client tell "same cohort,
+   * fresh data" apart from "reassigned/new week" without re-deriving it from
+   * the standings list. Null until `joined`. */
+  cohortId: string | null;
   myRank: number | null;
   promotionCutoff: number | null;
   demotionStartRank: number | null;
@@ -46,6 +50,9 @@ export interface PendingLeagueResult {
   rank: number | null;
   totalXp: number;
   outcome: LeagueOutcome;
+  /** The settled cohort's final standings, for the celebration scene's
+   * animated rank-list beat before the tier-shield reveal. */
+  finalStandings: LeaderboardRow[];
 }
 
 // `ensureSettled` is called from two different endpoints hit on the same
@@ -318,6 +325,7 @@ export class LeagueService {
       league,
       tournamentWins: profile?.tournamentWins ?? 0,
       joined: false,
+      cohortId: null,
       myRank: null,
       promotionCutoff: null,
       demotionStartRank: null,
@@ -354,6 +362,7 @@ export class LeagueService {
     return {
       ...base,
       joined: true,
+      cohortId: membership.cohortId,
       myRank: standings.find((s) => s.isMe)?.rank ?? null,
       promotionCutoff: getPromotionZoneFor(league, total),
       demotionStartRank:
@@ -378,6 +387,34 @@ export class LeagueService {
     });
     if (!pending) return { result: null };
 
+    // Settled cohort-mates already carry their final `rank` from
+    // settleCohort — one extra read gives the celebration scene a real
+    // "where you finished" list to animate into place before the tier
+    // reveal, at no extra write cost. INACTIVE_DEMOTED rows have no
+    // cohortId (the user never joined that week) — `cohortId: null` would
+    // otherwise match every other unjoined member row in the table, so
+    // skip the query entirely rather than filtering on null.
+    const cohortMembers = pending.cohortId
+      ? await this.prisma.leagueMember.findMany({
+          where: { cohortId: pending.cohortId },
+          orderBy: { rank: 'asc' },
+          select: {
+            userId: true,
+            rank: true,
+            weeklyXp: true,
+            user: { select: { fullName: true, avatarUrl: true } },
+          },
+        })
+      : [];
+    const finalStandings: LeaderboardRow[] = cohortMembers.map((m) => ({
+      rank: m.rank ?? 0,
+      userId: m.userId,
+      name: m.user.fullName,
+      avatarUrl: m.user.avatarUrl,
+      weeklyXp: m.weeklyXp,
+      isMe: m.userId === userId,
+    }));
+
     return {
       result: {
         weekStart: pending.weekStart,
@@ -386,6 +423,7 @@ export class LeagueService {
         rank: pending.rank,
         totalXp: pending.weeklyXp,
         outcome: pending.outcome as LeagueOutcome,
+        finalStandings,
       },
     };
   }

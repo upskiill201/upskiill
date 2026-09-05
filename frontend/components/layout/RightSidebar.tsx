@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Lock, BookOpen, Target, Check } from 'lucide-react';
+import { Bot, Lock, BookOpen, Target, Check, Trophy, ChevronRight } from 'lucide-react';
+import { getLeagueMeta } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
 import { useComingSoon } from '@/app/dashboard/layout';
 import { useGamification } from '@/context/GamificationContext';
@@ -37,6 +38,37 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
   const { openClaimModal } = useRewardAnimation();
 
   const [countdownStr, setCountdownStr] = useState('');
+
+  // Real weekly-league standing for the sidebar card below — this used to be
+  // a static "Complete 2 more lessons to start competing!" placeholder that
+  // never reflected the real join rule (any XP joins you, not a lesson
+  // count) or the learner's actual rank. Best-effort: a failed/slow fetch
+  // just leaves the card in its loading skeleton, never blocks the sidebar.
+  const [leagueStanding, setLeagueStanding] = useState<{
+    joined: boolean;
+    league: string;
+    myRank: number | null;
+    cohortSize: number;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/leagues/me', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setLeagueStanding({
+          joined: Boolean(data.joined),
+          league: data.league ?? 'BRONZE',
+          myRank: data.myRank ?? null,
+          cohortSize: Array.isArray(data.standings) ? data.standings.length : (data.cohortSize ?? 0),
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (isEligibleForReward || !nextRewardClaimInMs) {
@@ -531,27 +563,41 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </div>
       )}
 
-      {/* UNLOCK LEADERBOARDS CARD (default) */}
+      {/* LEADERBOARD CARD (default) — real live standing, not a static
+          placeholder. Joining is actually gated on first XP of the week
+          from any source, not a fixed lesson count, so the not-yet-joined
+          state doesn't claim one either. */}
       {!hasSection && (
-      <div className={styles.leaderboardsCard}>
-        <div className={styles.lockIconOuter}>
-          <div className={styles.lockIconInner}>
-            <Lock size={18} className={styles.lockSvg} />
-          </div>
-        </div>
-        <h4 className={styles.leaderboardCardTitle}>UNLOCK LEADERBOARDS!</h4>
-        <p className={styles.leaderboardCardDesc}>
-          Complete 2 more lessons to start competing!
-        </p>
-        <div className={styles.leaderboardProgressContainer}>
-          <div className={styles.leaderboardProgressBar}>
-            <div className={styles.leaderboardProgressBar} style={{ backgroundColor: '#F1F5F9' }}>
-              <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
-            </div>
-          </div>
-          <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
-        </div>
-      </div>
+        <Link href="/dashboard/leaderboards" className={styles.leaderboardsCard} style={{ textDecoration: 'none' }}>
+          {leagueStanding?.joined ? (
+            <>
+              <div className={styles.lockIconOuter} style={{ backgroundColor: '#FFF7E0' }}>
+                <div className={styles.lockIconInner} style={{ backgroundColor: '#FFEDB8' }}>
+                  <Trophy size={18} color="#B98A00" />
+                </div>
+              </div>
+              <h4 className={styles.leaderboardCardTitle}>{getLeagueMeta(leagueStanding.league).name.toUpperCase()}</h4>
+              <p className={styles.leaderboardCardDesc}>
+                {leagueStanding.myRank
+                  ? `You're #${leagueStanding.myRank} of ${leagueStanding.cohortSize} this week`
+                  : 'Keep earning XP to climb this week'}
+              </p>
+              <span className={styles.leaderboardProgressText} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                View leaderboard <ChevronRight size={12} />
+              </span>
+            </>
+          ) : (
+            <>
+              <div className={styles.lockIconOuter}>
+                <div className={styles.lockIconInner}>
+                  <Lock size={18} className={styles.lockSvg} />
+                </div>
+              </div>
+              <h4 className={styles.leaderboardCardTitle}>JOIN THE LEADERBOARD</h4>
+              <p className={styles.leaderboardCardDesc}>Complete a lesson to enter this week&apos;s competition!</p>
+            </>
+          )}
+        </Link>
       )}
 
       {/* LUCKY SPIN CARD */}

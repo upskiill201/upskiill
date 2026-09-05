@@ -245,6 +245,33 @@ export function playLossMotif() {
   });
 }
 
+// ─── Leaderboard (mid-week rank moments — deliberately lighter than the
+// end-of-week league fanfares above, which stay reserved for a real
+// promotion/demotion) ─────────────────────────────────────────────────────
+
+/** Bright short sweep + flourish — passed a rival mid-week. */
+export function playRankUp() {
+  const bus = soundManager.getSynthBus();
+  if (!bus) return;
+  scheduleNoise(bus, { dur: 0.22, gain: 0.09, filterFrom: 500, filterTo: 2500, q: 1.6 });
+  scheduleTone(bus, { freq: 783.99, at: 0.08, dur: 0.16, type: 'triangle', gain: 0.13 });
+  scheduleTone(bus, { freq: 1174.66, at: 0.15, dur: 0.16, type: 'sine', gain: 0.1 });
+}
+
+/** Warm single confirming tone + soft sparkle — joined this week's board. */
+export function playRankJoin() {
+  const bus = soundManager.getSynthBus();
+  if (!bus) return;
+  scheduleTone(bus, { freq: PENTATONIC[2], dur: 0.16, type: 'sine', gain: 0.14 });
+  scheduleTone(bus, { freq: 1567.98, at: 0.09, dur: 0.16, type: 'sine', gain: 0.07, slideTo: 3135.96 });
+}
+
+/** Gentle downward sweep only, no minor motif — passed by a rival mid-week.
+ * A nudge to try again, not a punishment (that's what playLossMotif is for). */
+export function playRankDown() {
+  playWhoosh('down');
+}
+
 // ─── Level up ───────────────────────────────────────────────────────────────
 
 /** The big one — full fanfare for level-ups (rare moment, biggest treatment). */

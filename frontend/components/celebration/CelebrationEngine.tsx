@@ -33,6 +33,7 @@ const SectionCompleteScene = dynamic(() => import('./scenes/SectionCompleteScene
 const CourseProgressScene = dynamic(() => import('./scenes/CourseProgressScene'), { ssr: false });
 const SectionUnlockedScene = dynamic(() => import('./scenes/SectionUnlockedScene'), { ssr: false });
 const CourseCompleteScene = dynamic(() => import('./scenes/CourseCompleteScene'), { ssr: false });
+const LeaderboardScene = dynamic(() => import('./scenes/LeaderboardScene'), { ssr: false });
 
 let sceneCounter = 0;
 
@@ -94,6 +95,8 @@ export default function CelebrationEngine() {
         return <SectionUnlockedScene scene={scene} onAdvance={advance} />;
       case 'COURSE_COMPLETE':
         return <CourseCompleteScene scene={scene} onAdvance={advance} />;
+      case 'LEADERBOARD':
+        return <LeaderboardScene scene={scene} onAdvance={advance} />;
       default:
         return null;
     }

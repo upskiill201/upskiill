@@ -13,6 +13,15 @@ import { useRouter } from 'next/navigation';
 import { useCelebration } from '@/context/CelebrationContext';
 import type { LeagueTier } from '@/lib/leagues';
 
+interface PendingResultRow {
+  rank: number;
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  weeklyXp: number;
+  isMe: boolean;
+}
+
 interface PendingResult {
   weekStart: string;
   league: LeagueTier;
@@ -20,6 +29,7 @@ interface PendingResult {
   rank: number | null;
   totalXp: number;
   outcome: 'PROMOTED' | 'DEMOTED' | 'STAYED' | 'CHAMPION' | 'TOURNAMENT_EXIT' | 'INACTIVE_DEMOTED';
+  finalStandings: PendingResultRow[];
 }
 
 export default function LeagueResultWatcher() {
@@ -57,6 +67,13 @@ export default function LeagueResultWatcher() {
           rank: result.rank,
           totalXp: result.totalXp,
           weekStart: result.weekStart,
+          finalStandings: result.finalStandings.map((r) => ({
+            userId: r.userId,
+            name: r.name,
+            avatarUrl: r.avatarUrl,
+            rank: r.rank,
+            isMe: r.isMe,
+          })),
           dedupeKey: `league-result-${result.weekStart}`,
           onComplete: () => {
             void fetch('/api/leagues/me/ack-result', {

@@ -131,6 +131,10 @@ export type CelebrationScene =
       rank?: number | null;
       totalXp: number;
       weekStart: string;
+      /** The settled cohort's final standings, for the animated rank-list
+       * beat before the tier-shield reveal. Empty for inactivity demotions
+       * (never joined that week — nothing to show). */
+      finalStandings: RankRow[];
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -194,7 +198,35 @@ export type CelebrationScene =
       onContinue: () => void;
       onComplete?: () => void;
       dedupeKey?: string;
+    }
+  | {
+      kind: 'LEADERBOARD';
+      /** Mid-week rank moment — a real end-of-week promotion/demotion is
+       * still the 'LEAGUE' scene above, not this one. */
+      variant: 'JOINED' | 'PASSED_RIVAL' | 'PASSED_BY_RIVAL';
+      league: LeagueTier;
+      myRank: number;
+      /** Display window (rank ± a few) — never the whole cohort. Identical
+       * shape before/after; only `rank` differs. Empty for JOINED (nothing
+       * to animate past, just reveals the fresh cohort window). */
+      beforeStandings: RankRow[];
+      afterStandings: RankRow[];
+      /** The specific person passed / who passed the learner. Absent for JOINED. */
+      rivalName?: string;
+      rivalUserId?: string;
+      weekStart: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
     };
+
+/** One row in a leaderboard display window. */
+export interface RankRow {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  rank: number;
+  isMe: boolean;
+}
 
 interface CelebrationContextValue {
   /** Queue one or more scenes. They play one at a time, in order. */

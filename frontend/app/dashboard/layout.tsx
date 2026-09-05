@@ -25,6 +25,7 @@ import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import NotificationBell from '@/components/community/NotificationBell';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import LeagueResultWatcher from '@/components/leaderboard/LeagueResultWatcher';
+import LeaderboardRankWatcher from '@/components/leaderboard/LeaderboardRankWatcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
@@ -504,6 +505,11 @@ export default function DashboardLayout({
         {/* Weekly league settlement — promotion/demotion scene plays once per
             settled week (server seenAt flag + session dedupe) */}
         <LeagueResultWatcher />
+
+        {/* Mid-week leaderboard moments — joined / passed a rival / passed by
+            a rival, detected client-side off the same lesson-complete signal
+            quests/missions already use */}
+        <LeaderboardRankWatcher />
       </div>
       </MobileMenuContext.Provider>
     </ComingSoonContext.Provider>
