@@ -14,10 +14,12 @@ import {
   Star,
   Zap,
   Users,
+  Lock,
 } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
 import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 import styles from './Explore.module.css';
 
 interface Instructor {
@@ -324,7 +326,7 @@ export default function ExplorePage() {
                     <span
                       className={`${styles.priceTagBadge} ${isFree ? styles.priceTagFree : ''}`}
                     >
-                      {isFree ? 'FREE' : `$${Number(course.price).toFixed(0)}`}
+                      {isFree ? 'FREE' : (<><Lock size={11} /> Premium</>)}
                     </span>
                   )}
 
@@ -400,14 +402,7 @@ export default function ExplorePage() {
                       {isFree ? (
                         <span className={styles.priceFree}>Free</span>
                       ) : (
-                        <span className={styles.priceRow}>
-                          {course.originalPrice != null && course.originalPrice > course.price && (
-                            <span className={styles.originalPrice}>
-                              ${Number(course.originalPrice).toFixed(2)}
-                            </span>
-                          )}
-                          <span>${Number(course.price ?? 0).toFixed(2)}</span>
-                        </span>
+                        <Badge variant="purple" size="sm" icon={<Lock size={11} />}>Premium</Badge>
                       )}
                     </div>
 

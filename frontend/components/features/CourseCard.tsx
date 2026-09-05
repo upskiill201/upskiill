@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check } from 'lucide-react';
+import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check, Lock } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import { StarRating } from '../ui/StarRating';
@@ -188,17 +188,9 @@ export const CourseCard = ({
                   {isFree ? (
                     <span className={styles.priceFree}>Free</span>
                   ) : (
-                    <>
-                      <span className={styles.price}>${price.toFixed(2)}</span>
-                      {originalPrice && (
-                        <span className={styles.originalPrice}>${originalPrice.toFixed(2)}</span>
-                      )}
-                    </>
+                    <Badge variant="purple" size="sm" icon={<Lock size={11} />}>Premium</Badge>
                   )}
                 </div>
-                {discountPercentage && !isFree && (
-                  <span className={styles.discountBadge}>{discountPercentage}% OFF</span>
-                )}
                 {!isFree && (
                   <button 
                     className={`${styles.addToCartBtn} ${inCart ? styles.inCart : ''}`}

@@ -384,7 +384,7 @@ export default function CourseDetailPage({
       <DashboardLayout isWide>
         <div className={styles.loadingContainer}>
           <div className={styles.duoSpinner} />
-          <p className={styles.loadingText}>Unrolling your course quest...</p>
+          <p className={styles.loadingText}>Unrolling your quest...</p>
         </div>
       </DashboardLayout>
     );
@@ -459,7 +459,7 @@ export default function CourseDetailPage({
                   )}
                   {isPaidCourse ? (
                     <span className={styles.pricePillAmber}>
-                      ${Number(course?.price ?? 0).toFixed(2)} · First 2 Lessons Free
+                      <Lock size={12} /> Premium · First 2 Lessons Free
                     </span>
                   ) : (
                     <span className={styles.freeCoursePill}>Free Course</span>

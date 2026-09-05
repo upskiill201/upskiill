@@ -997,3 +997,40 @@
     gap: 12px;
   }
 }
+
+@media (max-width: 768px) {
+  .topHeaderRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 4px 0 8px;
+  }
+
+  .blueFocusHeroCard {
+    padding: 22px 20px;
+  }
+
+  .blueFocusTitle {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blueFocusHeroCard {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .blueFocusTitle {
+    font-size: 21px;
+  }
+
+  .blueFocusDescription {
+    font-size: 14px;
+  }
+
+  .blueSpecsRow {
+    gap: 10px;
+    padding: 10px 0;
+  }
+}
