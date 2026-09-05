@@ -167,26 +167,6 @@
 .loadMoreBtn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
 .loadMoreBtn:disabled { opacity: 0.6; cursor: wait; }
 
-/* ── Feed card — Skool-style with floating reason tab ─────────────────── */
-.feedCard {
-  position: relative;
-  display: block;
-  background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 4px 0 var(--border);
-  padding: 22px 16px 12px;
-  color: inherit;
-  cursor: pointer;
-  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
-}
-.feedCard:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-strong);
-  box-shadow: 0 6px 0 var(--border);
-}
-.feedCard:active { transform: translateY(1px); }
-
 /* Reason label above the card — why this post reached your feed. */
 .reasonTab {
   align-self: flex-start;
@@ -206,133 +186,6 @@
 .tabActive { background: #ffedd5; color: #c2410c; }
 .tabCourse { background: var(--light-blue-bg); color: var(--brand-blue); }
 .tabGeneral { background: var(--bg-section); color: var(--text-secondary); }
-
-.feedCardHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.feedCardAuthor { min-width: 0; flex: 1; }
-.feedCardName {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.feedCardMeta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-.streakFlame {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  color: #ff9600;
-  font-weight: 800;
-}
-.communityChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-  max-width: 180px;
-}
-.communityChipThumb { border-radius: 4px; flex-shrink: 0; }
-.communityChipName {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.feedCardBadge { flex-shrink: 0; }
-
-.feedCardTitle {
-  font-size: 16.5px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin: 0 0 4px;
-  line-height: 1.35;
-}
-
-.excerptBody {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 0;
-}
-
-.lessonChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 10px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: var(--light-blue-bg);
-  border: 1px dashed rgba(61, 90, 254, 0.4);
-  color: var(--brand-blue);
-  font-size: 11.5px;
-  font-weight: 700;
-  max-width: 100%;
-}
-.lessonChip { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-
-/* ── Action bar — Like · Comment · Open ───────────────────────────────── */
-.feedCardActions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid var(--bg-section);
-}
-.actionBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, transform 100ms ease;
-}
-.actionBtn:hover { background: var(--bg-section); color: var(--text-primary); }
-.actionBtn:active { transform: scale(0.96); }
-.actionBtnLiked { color: var(--brand-blue); }
-.actionBtnLiked:hover { color: var(--brand-blue-hover); background: var(--light-blue-bg); }
-.actionSpacer { flex: 1; }
-.openBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 14px;
-  border: none;
-  border-radius: 999px;
-  background: var(--bg-section);
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
-}
-.openBtn:hover { background: var(--light-blue-bg); color: var(--brand-blue); }
 
 /* ── Right rail — titled widget cards ─────────────────────────────────── */
 .rail {
@@ -530,11 +383,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-
-  /* Full-width tap targets on the action bar */
-  .feedCardActions { gap: 2px; }
-  .actionBtn { flex: 1; justify-content: center; padding: 9px 6px; }
-  .openBtn { flex: 0 0 auto; }
 }
 
 /* ── Tiny phones (≤360px) ─────────────────────────────────────────────── */
@@ -542,6 +390,4 @@
   .composerCard { padding: 12px; gap: 8px; }
   .composerCta { padding: 7px 12px; }
   .filterChip { padding: 7px 12px; font-size: 12.5px; }
-  .feedCard { padding: 20px 12px 10px; }
-  .communityChip { max-width: 120px; }
 }
