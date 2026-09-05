@@ -87,6 +87,9 @@ model User {
   weeklySpins        WeeklySpin[]
   learningEvents     LearningEvent[]
   userInventories    UserInventory[]
+  shopItems          UserShopItem[]
+  shopUnlocks        UserShopUnlock[]
+  shopState          UserShopState?
   dailyChests        DailyChest[]
   dailyActivities    UserDailyActivity[]
   monthlyQuests      UserMonthlyQuest[]
@@ -663,13 +666,98 @@ model ShopTransaction {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  item      String   // 'REFILL_HEARTS' | 'STREAK_FREEZE'
+  item      String   // Shop registry item id (see backend/src/shop/shop.registry.ts)
   quantity  Int      @default(1)
   cost      Int
   createdAt DateTime @default(now())
 
+  // Denormalised for spend analytics — which rarity/category bands actually
+  // sell. Nullable so pre-existing rows stay valid.
+  rarity   String?
+  category String?
+
+  // Retry guard. The client mints one key per purchase attempt; a replayed
+  // request hits this unique index instead of double-charging. Nullable so
+  // legacy rows (and the back-compat purchase path) remain valid.
+  idempotencyKey String? @unique
+
   @@index([userId])
   @@map("shop_transactions")
+}
+
+/// Everything a learner owns from the shop — consumable charges, timed boosts
+/// and cosmetics alike.
+///
+/// Deliberate exception: STREAK FREEZES are not stored here. Their canonical
+/// balance stays `StudentProfile.streakFreezeBank`, because the streak
+/// reconciliation in GamificationService/StreakService consumes that counter
+/// directly, and a second freeze balance would be a third source of truth for
+/// one number. Shop freeze purchases now mirror into `UserInventory` the same
+/// way the chest and monthly-quest grants already do, which closes the old
+/// split where a shop-bought freeze was invisible to that table.
+model UserShopItem {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Registry item id — not a foreign key, because the catalogue lives in code.
+  itemId String
+
+  /// Consumable charges / stack count. Cosmetics sit at 1.
+  quantity Int @default(0)
+
+  /// One equipped item per cosmetic slot — enforced in the service, since the
+  /// slot itself is a property of the registry item rather than a column.
+  equipped Boolean @default(false)
+
+  /// Timed boosts (XP/coin multipliers) expire; everything else is null.
+  expiresAt DateTime?
+
+  firstOwnedAt DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId, equipped])
+  @@map("user_shop_items")
+}
+
+/// Items whose learning requirement the learner has just met. Written the
+/// moment the requirement is satisfied and read by the Shop Engine, which
+/// surfaces each one as a full-page "unlocked" scene exactly once — `seenAt`
+/// is what stops it firing twice.
+model UserShopUnlock {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  itemId     String
+  unlockedAt DateTime  @default(now())
+  seenAt     DateTime?
+
+  @@unique([userId, itemId])
+  @@index([userId, seenAt])
+  @@map("user_shop_unlocks")
+}
+
+/// Per-learner shop meta: the daily-visit reward streak and which collection
+/// payouts have already been claimed.
+model UserShopState {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// YYYY-MM-DD (learner-local) of the last visit that paid a reward.
+  lastVisitDay    String?
+  /// Consecutive days visited — the visit bonus scales with it.
+  visitStreak     Int     @default(0)
+  /// Collection ids already paid out, e.g. ["SPACE"].
+  claimedCollections Json @default("[]")
+
+  /// Permanent freeze-capacity upgrades bought (Freeze Vault).
+  freezeCapacityBonus Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("user_shop_state")
 }
 
 model WhatsappAuthStore {

@@ -12,6 +12,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
 import { CommunityService } from '../community/community.service';
+import { ShopService } from '../shop/shop.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
@@ -30,6 +31,9 @@ export const WELCOME_BONUS_COINS = 10;
  *  section. Already included in xpEarned — surfaced separately so the
  *  celebration UI can show "…including a +50 section bonus" honestly. */
 export const SECTION_BONUS_XP = 50;
+
+/** Coins paid per completed lesson, before any purchased Coin Boost. */
+export const BASE_LESSON_COINS = 5;
 
 /**
  * Server-computed summary attached to complete-lesson responses when the
@@ -81,6 +85,7 @@ export class CourseService {
     private chestService: ChestService,
     private stripeProvider: StripeProvider,
     private communityService: CommunityService,
+    private shopService: ShopService,
   ) {}
 
   /**
@@ -709,6 +714,14 @@ export class CourseService {
     if (!currentCompleted.includes(lessonId)) {
       isNewCompletion = true;
 
+      // Shop boosts are read BEFORE the transaction opens: they are
+      // independent read-only state, and querying them on the main client
+      // from inside an interactive transaction would burn a second connection
+      // for the whole span. A boost that only *says* 2× and never pays is
+      // worse than no boost, so this multiplier is applied to the real award
+      // below rather than being cosmetic.
+      const boost = await this.shopService.getActiveMultipliers(userId);
+
       // All mutation below happens inside ONE transaction that re-reads the
       // enrollment, so two tabs completing different lessons can no longer
       // silently overwrite each other's completion.
@@ -755,7 +768,11 @@ export class CourseService {
         // Honour the creator-configured reward (fallback 10) — previously a
         // flat 10 was paid no matter what the lesson promised.
         const baseLessonXp = Math.max(1, Math.min(500, lesson.xpReward ?? 10));
-        const xpEarned = baseLessonXp + (sectionCompleted ? SECTION_BONUS_XP : 0);
+        const baseXpEarned =
+          baseLessonXp + (sectionCompleted ? SECTION_BONUS_XP : 0);
+        // A purchased XP Boost multiplies the whole award, section bonus
+        // included — the learner bought a window, not a per-lesson coupon.
+        const xpEarned = Math.round(baseXpEarned * boost.xp);
 
         // Compute course progress percentage against published lessons only
         const totalPublished = siblingLessons.length || 1;
@@ -813,7 +830,7 @@ export class CourseService {
         }
 
         const isFirstStreakOfDay = shouldUpdateStreakEarnedDate;
-        const coinReward = 5;
+        const coinReward = Math.round(BASE_LESSON_COINS * boost.coins);
         const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
         const updatedLongest = Math.max(currentLongest, newStreak);
 
