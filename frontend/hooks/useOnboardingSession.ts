@@ -53,17 +53,22 @@ export async function syncToBackend(payload: {
   completedSteps: number[];
   answers: OnboardingAnswers;
   onboardingComplete?: boolean;
-}): Promise<void> {
+}): Promise<boolean> {
   try {
-    await fetch(`${API_URL}/user-onboarding`, {
+    const res = await fetch(`${API_URL}/user-onboarding`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),
     });
+    return res.ok;
   } catch {
-    // Non-blocking — localStorage is the source of truth for now
+    // Non-blocking for normal step advances — localStorage is the source of
+    // truth for now. Callers that need the write CONFIRMED before doing
+    // something server-gated (e.g. claiming a badge) must check the
+    // returned boolean rather than just awaiting this.
     console.warn('[Teyro] Failed to sync onboarding session to backend');
+    return false;
   }
 }
 

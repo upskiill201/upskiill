@@ -73,8 +73,17 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
     // awaiting it (kept non-blocking so navigation feels instant). The claim
     // below is gated server-side on that session showing step 13 reached, so
     // on a slow connection the claim can race ahead of that write and fail
-    // with a false "not earned yet". Re-sync (idempotent) and await it first.
-    await syncToBackend({ currentStep: 13, completedSteps, answers });
+    // with a false "not earned yet". Re-sync (idempotent) and CONFIRM it
+    // landed before claiming — syncToBackend can fail silently (dropped
+    // packet, cold-starting backend, weak signal), and awaiting a call that
+    // doesn't report its own outcome is not actually a guarantee of
+    // anything. Retry a few times rather than firing the claim into a
+    // session we never confirmed reached step 13.
+    let synced = false;
+    for (let attempt = 0; attempt < 3 && !synced; attempt++) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 800 * attempt));
+      synced = await syncToBackend({ currentStep: 13, completedSteps, answers });
+    }
 
     const result = await claimOnboardingBadge();
     if (!result.ok || !result.unlock) {
