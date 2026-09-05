@@ -563,6 +563,34 @@ export class ShopService {
     const qualifying = SHOP_ITEMS.filter(
       (i) => i.unlock.type !== 'ALWAYS' && evaluateUnlock(i.unlock, m).unlocked,
     ).map((i) => i.id);
+
+    // ── First reconciliation: backfill silently ───────────────────────────
+    // Everything the learner ALREADY qualified for is recorded as seen. They
+    // earned a 30-day streak months ago; announcing it now as "new!" would be
+    // a lie, and a long-standing learner would meet a stack of full-page
+    // takeovers before reaching the app. Only what they cross from here on is
+    // worth interrupting them for.
+    const state = await this.prisma.userShopState.findUnique({
+      where: { userId },
+      select: { unlocksBackfilledAt: true },
+    });
+
+    if (!state?.unlocksBackfilledAt) {
+      const now = new Date();
+      if (qualifying.length > 0) {
+        await this.prisma.userShopUnlock.createMany({
+          data: qualifying.map((itemId) => ({ userId, itemId, seenAt: now })),
+          skipDuplicates: true,
+        });
+      }
+      await this.prisma.userShopState.upsert({
+        where: { userId },
+        update: { unlocksBackfilledAt: now },
+        create: { userId, unlocksBackfilledAt: now },
+      });
+      return [];
+    }
+
     if (qualifying.length === 0) return [];
 
     const existing = await this.prisma.userShopUnlock.findMany({
@@ -590,7 +618,11 @@ export class ShopService {
     const rows = await this.prisma.userShopUnlock.findMany({
       where: { userId, seenAt: null },
       orderBy: { unlockedAt: 'asc' },
-      take: 5,
+      // Hard cap on how many takeovers one moment can produce. Finishing a
+      // lesson can cross a lesson-count, an XP and a level threshold at once;
+      // three full-page scenes is already a lot, and anything beyond that
+      // waits for the next visit rather than becoming a queue to sit through.
+      take: 3,
     });
 
     const { profile, state, metrics } = await this.loadMetrics(userId);

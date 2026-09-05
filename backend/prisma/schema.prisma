@@ -755,6 +755,13 @@ model UserShopState {
   /// Permanent freeze-capacity upgrades bought (Freeze Vault).
   freezeCapacityBonus Int @default(0)
 
+  /// When this learner's unlock state was first reconciled. Everything they
+  /// already qualified for at that moment is recorded as *already seen*, so
+  /// the Shop Engine announces only what they unlock from then on. Without
+  /// this, an existing learner's first app load after release would queue a
+  /// full-page takeover for every requirement they cleared months ago.
+  unlocksBackfilledAt DateTime?
+
   updatedAt DateTime @updatedAt
 
   @@map("user_shop_state")
