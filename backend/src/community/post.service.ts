@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CommunityService } from './community.service';
 import { ContentLikedEvent, PostCreatedEvent } from './events/community.events';
@@ -51,9 +51,18 @@ export class PostService {
       sort?: 'new' | 'top' | 'unanswered';
       postType?: string;
       lessonId?: string;
+      /**
+       * Set only by callers that have ALREADY resolved the community and run
+       * the access check for this viewer (the bootstrap endpoint). Re-running
+       * assertMember there costs two extra sequential round trips for an
+       * answer we already have.
+       */
+      skipAccessCheck?: boolean;
     } = {},
   ) {
-    await this.communityService.assertMember(communityId, viewer.id, viewer.role);
+    if (!opts.skipAccessCheck) {
+      await this.communityService.assertMember(communityId, viewer.id, viewer.role);
+    }
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(50, Math.max(1, opts.pageSize ?? 20));
 
@@ -94,17 +103,23 @@ export class PostService {
       }),
     ]);
 
-    const viewerLikes = await this.resolveViewerLikes(
-      viewer.id,
-      posts.map((p) => p.id),
-    );
-    const viewerVotes = await this.resolveViewerVotes(viewer.id, posts.map((p) => p.id));
+    // These three were sequential awaits, which on a distant DB meant three
+    // extra full round trips stacked behind the list itself. They share no
+    // inputs beyond the post ids, so they go together.
+    const postIds = posts.map((p) => p.id);
+    const [viewerLikes, viewerVotes, discussion] = await Promise.all([
+      this.resolveViewerLikes(viewer.id, postIds),
+      this.resolveViewerVotes(viewer.id, postIds),
+      this.communityService.getPostDiscussion(postIds),
+    ]);
 
     return {
       total,
       page,
       pageSize,
-      posts: posts.map((p) => this.serializePost(p, viewerLikes, viewerVotes)),
+      posts: posts.map((p) =>
+        this.serializePost(p, viewerLikes, viewerVotes, discussion.get(p.id)),
+      ),
     };
   }
 
@@ -546,6 +561,10 @@ export class PostService {
     p: any,
     likedByMe?: Set<string>,
     myVotes?: Map<string, string>,
+    discussion?: {
+      lastCommentAt: Date | null;
+      commenters: { id: string; fullName: string; avatarUrl: string | null }[];
+    },
   ) {
     return {
       id: p.id,
@@ -585,6 +604,9 @@ export class PostService {
           : null,
       likedByMe: likedByMe ? likedByMe.has(p.id) : false,
       userId: p.userId,
+      /** Facepile + "new comment Xh ago" line. Absent on detail/create responses. */
+      commenters: discussion?.commenters ?? [],
+      lastCommentAt: discussion?.lastCommentAt ?? null,
     };
   }
 }

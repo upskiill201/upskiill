@@ -136,7 +136,17 @@
   box-shadow: 0 1px 0 var(--brand-blue-hover);
 }
 
-.feedList { display: flex; flex-direction: column; gap: 20px; }
+.feedList { display: flex; flex-direction: column; gap: 16px; }
+
+/* One feed row = a reason label over the shared PostCard. The label used to
+   be a tab floating half over the card border, which only worked because the
+   feed owned its own card; now that both surfaces share PostCard it sits
+   above the card instead of on it. */
+.feedRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .feedRefreshing { opacity: 0.5; pointer-events: none; transition: opacity 150ms ease; }
 
 .loadMoreBtn {
@@ -177,12 +187,9 @@
 }
 .feedCard:active { transform: translateY(1px); }
 
-/* Floating reason tab — sits half above the card's top edge */
+/* Reason label above the card — why this post reached your feed. */
 .reasonTab {
-  position: absolute;
-  top: 0;
-  left: 14px;
-  transform: translateY(-50%);
+  align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -192,7 +199,6 @@
   font-weight: 800;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  border: 2px solid var(--bg-card);
 }
 .tabAnnouncement { background: #fff3cd; color: #92400e; }
 .tabUnanswered { background: #fee2e2; color: #b91c1c; }

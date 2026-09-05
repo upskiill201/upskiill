@@ -5,12 +5,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-  Heart, MessageCircle, Eye, Pin, Lock, Flame, Paperclip, BookOpen, MoreHorizontal, Trash2, Link2,
+  ThumbsUp, MessageSquare, Pin, Lock, Flame, Paperclip, BookOpen,
+  MoreHorizontal, Trash2, Link2, BarChart3, Check,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import type { CommunityPost } from '@/lib/communityApi';
 import { timeAgo, togglePostLike } from '@/lib/communityApi';
-import { renderRichText } from '@/lib/communityRender';
+import { plainExcerpt } from '@/lib/communityRender';
 import shared from './community.module.css';
 import styles from './PostCard.module.css';
 
@@ -26,6 +27,26 @@ const TYPE_BADGE: Record<string, string> = {
   CHALLENGE: 'badgeChallenge',
 };
 
+/** Human category label — the word after "in" in the card's meta line. */
+const TYPE_LABEL: Record<string, string> = {
+  QUESTION: 'Questions',
+  TIP: 'Tips',
+  WIN: 'Wins',
+  RESOURCE: 'Resources',
+  DISCUSSION: 'Discussion',
+  POLL: 'Polls',
+  GENERAL: 'General',
+  ANNOUNCEMENT: 'Announcements',
+  CHALLENGE: 'Challenges',
+  PROGRESS: 'Progress',
+  MILESTONE: 'Milestones',
+  ACHIEVEMENT: 'Achievements',
+};
+
+export function categoryLabel(postType: string): string {
+  return TYPE_LABEL[postType] ?? postType.charAt(0) + postType.slice(1).toLowerCase();
+}
+
 export function PostTypeBadge({ postType }: { postType: string }) {
   return (
     <span className={`${shared.typeBadge} ${shared[TYPE_BADGE[postType] ?? 'badgeGeneral']}`}>
@@ -36,32 +57,33 @@ export function PostTypeBadge({ postType }: { postType: string }) {
 
 interface PostCardProps {
   post: CommunityPost;
-  /** Origin chip (community name + link) when rendered in the global feed */
+  /** Origin chip (community name + link) when rendered in the global feed. */
   origin?: { name: string; courseId: string | null; courseThumbnailUrl?: string | null };
-  /** Deep-link target; defaults to the community post page */
+  /** Deep-link target; defaults to the community post page. */
   detailHref?: string;
   isModerator?: boolean;
   currentUserId?: string;
   onDeleted?: (postId: string) => void;
-  clampBody?: boolean;
+  /** Tapping the category in the meta line filters the list to it. */
+  onCategoryClick?: (postType: string) => void;
 }
 
-export default function PostCard({
+function PostCard({
   post,
   origin,
   detailHref,
   isModerator = false,
   currentUserId,
   onDeleted,
-  clampBody = true,
+  onCategoryClick,
 }: PostCardProps) {
   const router = useRouter();
   const [liked, setLiked] = React.useState(post.likedByMe);
   const [likeCount, setLikeCount] = React.useState(post.likeCount);
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const [busy, setBusy] = React.useState(false);
-  const [burst, setBurst] = React.useState(0);
   const [copied, setCopied] = React.useState(false);
+  const [burst, setBurst] = React.useState(0);
+  const busy = React.useRef(false);
 
   const href =
     detailHref ??
@@ -69,31 +91,45 @@ export default function PostCard({
       ? `/dashboard/community/${origin.courseId}/p/${post.id}`
       : `/dashboard/community/course/p/${post.id}`);
 
+  // Server truth can arrive after an optimistic flip (another tab, a refetch),
+  // so the card follows the prop rather than freezing on first mount.
+  React.useEffect(() => {
+    setLiked(post.likedByMe);
+    setLikeCount(post.likeCount);
+  }, [post.likedByMe, post.likeCount]);
+
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const close = () => setMenuOpen(false);
+    window.addEventListener('click', close);
+    return () => window.removeEventListener('click', close);
+  }, [menuOpen]);
+
   const handleLike = async () => {
-    if (busy) return;
-    setBusy(true);
-    // Optimistic flip — the API returns the authoritative count.
+    if (busy.current) return;
+    busy.current = true;
     const nextLiked = !liked;
     setLiked(nextLiked);
-    setLikeCount((c) => c + (nextLiked ? 1 : -1));
-    if (nextLiked) setBurst((b) => b + 1); // celebratory pop on like
+    setLikeCount((c) => Math.max(0, c + (nextLiked ? 1 : -1)));
+    if (nextLiked) setBurst((b) => b + 1);
     try {
       const res = await togglePostLike(post.id, liked);
       setLiked(res.liked);
       setLikeCount(res.likeCount);
     } catch {
-      setLiked(liked); // revert on failure
-      setLikeCount((c) => c + (nextLiked ? -1 : 1));
+      setLiked(liked);
+      setLikeCount((c) => Math.max(0, c + (nextLiked ? -1 : 1)));
     } finally {
-      setBusy(false);
+      busy.current = false;
     }
   };
 
   const handleCopyLink = async () => {
+    setMenuOpen(false);
     try {
       await navigator.clipboard.writeText(`${window.location.origin}${href}`);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      setTimeout(() => setCopied(false), 1600);
     } catch {
       /* clipboard unavailable — silently ignore */
     }
@@ -108,58 +144,69 @@ export default function PostCard({
       await deletePost(post.id);
       onDeleted(post.id);
     } catch {
-      alert('Could not delete the post. Please try again.');
+      window.alert('Could not delete the post. Please try again.');
     }
   };
 
+  const excerpt = plainExcerpt(post.contentText);
+  const heroImage = post.images?.[0] ?? null;
+  const commenters = post.commenters ?? [];
+  const canModerate = isModerator || post.userId === currentUserId;
+
   return (
     <motion.article
-      className={`${styles.card} ${post.isPinned ? styles.pinned : ''}`}
-      initial={{ opacity: 0, y: 8 }}
+      className={styles.card}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18 }}
+      transition={{ duration: 0.16 }}
       onClick={() => router.push(href)}
       role="link"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && router.push(href)}
-      style={{ cursor: 'pointer' }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          router.push(href);
+        }
+      }}
     >
+      {post.isPinned && (
+        <div className={styles.pinnedBar}>
+          <span>
+            <Pin size={14} /> Pinned
+          </span>
+        </div>
+      )}
+
       <div className={styles.headerRow}>
         <Avatar src={post.author.avatarUrl ?? undefined} name={post.author.fullName} size="md" />
         <div className={styles.authorBlock}>
           <span className={styles.authorName}>{post.author.fullName}</span>
           <div className={styles.metaRow}>
-            <span className={`${shared.typeBadge} ${shared[TYPE_BADGE[post.postType] ?? 'badgeGeneral']}`}>
-              {post.postType.toLowerCase()}
-            </span>
+            <span>{timeAgo(post.createdAt)}</span>
+            <span>in</span>
+            {onCategoryClick ? (
+              <button
+                className={styles.categoryLink}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCategoryClick(post.postType);
+                }}
+              >
+                {categoryLabel(post.postType)}
+              </button>
+            ) : (
+              <span className={styles.categoryLink}>{categoryLabel(post.postType)}</span>
+            )}
             {post.author.streakDays > 0 && (
               <span className={styles.streak}>
                 <Flame size={12} /> {post.author.streakDays}
               </span>
             )}
-            <span className={styles.dot} />
-            <span className={styles.streak}>{timeAgo(post.createdAt)}</span>
-            {post.editedAt && (
-              <>
-                <span className={styles.dot} />
-                <span className={styles.streak}>edited</span>
-              </>
-            )}
-            {post.isPinned && (
-              <>
-                <span className={styles.dot} />
-                <span className={`${styles.streak}`} style={{ color: 'var(--brand-blue)', fontWeight: 700 }}>
-                  <Pin size={12} /> Pinned
-                </span>
-              </>
-            )}
+            {post.editedAt && <span>· edited</span>}
             {post.isLocked && (
-              <>
-                <span className={styles.dot} />
-                <span className={styles.streak}>
-                  <Lock size={12} /> Locked
-                </span>
-              </>
+              <span className={styles.lockTag}>
+                · <Lock size={12} /> Locked
+              </span>
             )}
           </div>
         </div>
@@ -167,101 +214,97 @@ export default function PostCard({
         {origin && (
           <span className={styles.originChip} onClick={(e) => e.stopPropagation()}>
             {origin.courseThumbnailUrl && (
-              <Image src={origin.courseThumbnailUrl} alt="" width={16} height={16} style={{ borderRadius: 4 }} />
+              <Image
+                src={origin.courseThumbnailUrl}
+                alt=""
+                width={20}
+                height={20}
+                className={styles.originThumb}
+              />
             )}
             {origin.name}
           </span>
         )}
 
-        <span className={styles.spacer} />
+        <div className={styles.menuWrap} onClick={(e) => e.stopPropagation()}>
+          <button
+            className={styles.iconBtn}
+            aria-label="Post options"
+            aria-expanded={menuOpen}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen((o) => !o);
+            }}
+          >
+            <MoreHorizontal size={17} />
+          </button>
+          {menuOpen && (
+            <div className={styles.menu} role="menu">
+              <button className={styles.menuItem} onClick={handleCopyLink} role="menuitem">
+                {copied ? <Check size={15} /> : <Link2 size={15} />}
+                {copied ? 'Link copied' : 'Copy link'}
+              </button>
+              {canModerate && onDeleted && (
+                <button
+                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                  onClick={handleDelete}
+                  role="menuitem"
+                >
+                  <Trash2 size={15} /> Delete post
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
-        {(isModerator || post.userId === currentUserId) && (
-          <div className={styles.menuWrap} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.actionBtn}
-              aria-label="Post options"
-              onClick={() => setMenuOpen((o) => !o)}
-            >
-              <MoreHorizontal size={16} />
-            </button>
-            {menuOpen && (
-              <div className={styles.menu}>
-                {post.userId === currentUserId && onDeleted && (
-                  <button className={`${styles.menuItem} ${styles.menuItemDanger}`} onClick={handleDelete}>
-                    <Trash2 size={14} /> Delete post
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+      <div className={styles.bodyRow}>
+        <div className={styles.bodyText}>
+          {post.title && <h3 className={styles.title}>{post.title}</h3>}
+          {excerpt && (
+            <p className={`${styles.excerpt} ${post.title ? '' : styles.excerptLead}`}>{excerpt}</p>
+          )}
+
+          {post.lesson && (
+            <span className={styles.lessonTag}>
+              <BookOpen size={13} /> {post.lesson.title}
+            </span>
+          )}
+
+          {(post.poll || post.attachments.length > 0 || (post.images?.length ?? 0) > 1) && (
+            <div className={styles.inlineHints}>
+              {post.poll && (
+                <span className={styles.hint}>
+                  <BarChart3 size={13} /> Poll · {post.poll.options.length} options
+                </span>
+              )}
+              {post.attachments.length > 0 && (
+                <span className={styles.hint}>
+                  <Paperclip size={13} /> {post.attachments.length} attachment
+                  {post.attachments.length > 1 ? 's' : ''}
+                </span>
+              )}
+              {(post.images?.length ?? 0) > 1 && (
+                <span className={styles.hint}>+{post.images.length - 1} more images</span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {heroImage && (
+          /* eslint-disable-next-line @next/next/no-img-element -- learner
+             uploads are arbitrary S3/CloudFront keys, not a fixed remote
+             allowlist next/image can be configured against. */
+          <img className={styles.thumb} src={heroImage} alt="" loading="lazy" />
         )}
       </div>
 
-      {post.title && <h3 className={styles.title}>{post.title}</h3>}
-
-      <div className={`${styles.body} ${clampBody ? '' : styles.bodyFull}`}>
-        {renderRichText(post.contentText)}
-      </div>
-
-      {post.lesson && (
-        <span className={styles.lessonTag}>
-          <BookOpen size={13} /> Lesson: {post.lesson.title}
-        </span>
-      )}
-
-      {post.images.length > 0 && (
-        <div className={styles.imageGrid}>
-          {post.images.slice(0, 4).map((src) => (
-            <img key={src} src={src} alt="" loading="lazy" />
-          ))}
-        </div>
-      )}
-
-      {post.attachments.length > 0 && (
-        <div className={styles.attachments}>
-          {post.attachments.map((a) => (
-            <a
-              key={a.id}
-              href={a.url}
-              target="_blank"
-              rel="noreferrer"
-              className={styles.attachmentLink}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Paperclip size={14} /> {a.filename}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {/* Engagement stats line */}
-      {(likeCount > 0 || post.commentCount > 0 || typeof post.viewCount === 'number') && (
-        <div className={styles.statsRow}>
-          {likeCount > 0 && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <Heart size={12} fill="currentColor" /> {likeCount}
-            </span>
-          )}
-          {post.commentCount > 0 && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <MessageCircle size={12} /> {post.commentCount}
-            </span>
-          )}
-          <span className={styles.spacer} />
-          {typeof post.viewCount === 'number' && (
-            <span className={styles.views}>
-              <Eye size={12} /> {post.viewCount}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Action bar — Like · Comment · Copy link, split from stats by a hairline */}
       <div className={styles.footerRow} onClick={(e) => e.stopPropagation()}>
         <button
-          className={`${styles.actionBtn} ${liked ? styles.actionBtnLiked : ''}`}
+          className={`${styles.statBtn} ${liked ? styles.statBtnLiked : ''}`}
           onClick={handleLike}
           aria-pressed={liked}
+          aria-label={liked ? 'Unlike this post' : 'Like this post'}
         >
           <motion.span
             key={burst}
@@ -270,20 +313,45 @@ export default function PostCard({
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 600, damping: 15 }}
           >
-            <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
+            <ThumbsUp size={16} fill={liked ? 'currentColor' : 'none'} />
           </motion.span>
-          Like
+          {likeCount}
         </button>
-        <button className={styles.actionBtn} onClick={() => router.push(`${href}#comments`)}>
-          <MessageCircle size={16} /> Comment
+
+        <button
+          className={styles.statBtn}
+          onClick={() => router.push(`${href}#comments`)}
+          aria-label="Open comments"
+        >
+          <MessageSquare size={16} />
+          {post.commentCount}
         </button>
-        <button className={styles.actionBtn} onClick={handleCopyLink}>
-          <Link2 size={16} /> {copied ? 'Copied!' : 'Copy link'}
-        </button>
+
+        {commenters.length > 0 ? (
+          <div className={styles.facepile}>
+            {commenters.slice(0, 5).map((c) => (
+              <Avatar key={c.id} src={c.avatarUrl ?? undefined} name={c.fullName} size="xs" />
+            ))}
+          </div>
+        ) : (
+          <span className={styles.footerSpacer} />
+        )}
+
+        {post.lastCommentAt && (
+          <span className={styles.newComment}>New comment {timeAgo(post.lastCommentAt)}</span>
+        )}
       </div>
     </motion.article>
   );
 }
+
+/**
+ * Feed and community pages re-render on every filter tap, like, and poll vote.
+ * Cards are pure functions of their post, so memoising them keeps a 20-card
+ * list from re-rendering 20 motion subtrees when one unrelated bit of page
+ * state changes.
+ */
+export default React.memo(PostCard);
 
 /** Loading placeholder matching the card shape. */
 export function PostCardSkeleton() {
@@ -292,7 +360,7 @@ export function PostCardSkeleton() {
       <div className={shared.skeletonAvatar} />
       <div className={styles.skeletonCol}>
         <div className={`${shared.skeletonLine} ${shared.skeletonLineShort}`} />
-        <div className={`${shared.skeletonLine} ${shared.skeletonLineLong}`} />
+        <div className={`${shared.skeletonLine} ${shared.skeletonLineLong}`} style={{ height: 16 }} />
         <div className={`${shared.skeletonLine} ${shared.skeletonLineLong}`} style={{ width: '70%' }} />
       </div>
     </div>

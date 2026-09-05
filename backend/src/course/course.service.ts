@@ -11,6 +11,7 @@ import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
+import { CommunityService } from '../community/community.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
@@ -79,6 +80,7 @@ export class CourseService {
     private missionsService: MissionsService,
     private chestService: ChestService,
     private stripeProvider: StripeProvider,
+    private communityService: CommunityService,
   ) {}
 
   /**
@@ -970,18 +972,27 @@ export class CourseService {
         })
         .catch(() => {});
 
-      // Celebration payload — only for the real "last lesson of a section"
-      // moment. Built after the tx so it can read the settled course state.
-      const sectionCompletion =
+      // Celebration payloads — both read settled post-transaction state, and
+      // neither depends on the other, so they are built together rather than
+      // stacking two waits onto the completion response.
+      const [sectionCompletion, communityUnlock] = await Promise.all([
         txResult.sectionCompleted && txResult.sectionId
-          ? await this.buildSectionCompletionPayload(
+          ? this.buildSectionCompletionPayload(
               course.title,
               course.id,
               txResult.sectionId,
               txResult.completed,
               txResult.publishedTotal,
             )
-          : undefined;
+          : Promise.resolve(undefined),
+        // Second lesson in the course = the learner earns their seat in the
+        // community. Returns null on every completion after the first seating.
+        this.communityService.seatAfterSecondLesson(
+          course.id,
+          userId,
+          txResult.completed.length,
+        ),
+      ]);
 
       return {
         success: true,
@@ -995,6 +1006,7 @@ export class CourseService {
         sectionCompleted: txResult.sectionCompleted,
         isFirstStreakOfDay: txResult.isFirstStreakOfDay,
         ...(sectionCompletion ? { sectionCompletion } : {}),
+        ...(communityUnlock ? { communityUnlock } : {}),
       };
     }
 

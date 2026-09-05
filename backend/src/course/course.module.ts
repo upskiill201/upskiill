@@ -5,9 +5,10 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { MissionsModule } from '../missions/missions.module';
 import { ChestModule } from '../chest/chest.module';
 import { PaymentModule } from '../payment/payment.module';
+import { CommunityModule } from '../community/community.module';
 
 @Module({
-  imports: [PrismaModule, MissionsModule, ChestModule, PaymentModule],
+  imports: [PrismaModule, MissionsModule, ChestModule, PaymentModule, CommunityModule],
   controllers: [CourseController],
   providers: [CourseService],
 })

@@ -20,6 +20,10 @@ interface RawFeedRow {
   authorName: string;
   authorAvatar: string | null;
   authorStreak: number | null;
+  userId: string;
+  images: string[];
+  isLocked: boolean;
+  editedAt: Date | null;
   lessonId: string | null;
   lessonTitle: string | null;
   courseId: string | null;
@@ -91,6 +95,7 @@ export class FeedService {
         p."id", p."postType", p."title",
         LEFT(p."contentText", 280) AS "excerpt",
         p."likeCount", p."commentCount", p."viewCount", p."isPinned",
+        p."isLocked", p."editedAt", p."images", p."userId",
         p."lastActivityAt", p."createdAt",
         u."id" AS "authorId", u."fullName" AS "authorName",
         u."avatarUrl" AS "authorAvatar", sp."streakDays" AS "authorStreak",
@@ -135,39 +140,64 @@ export class FeedService {
       LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}
     `);
 
+    // Same facepile the community list shows. The feed and the community now
+    // render the *same* card component, so they must return the same shape —
+    // a second, thinner card type was how the two surfaces drifted apart.
+    const discussion = await this.communityService.getPostDiscussion(
+      rows.map((r) => r.id),
+    );
+
     return {
       page,
       pageSize,
-      items: rows.map((r) => ({
-        reason: this.reasonFor(r),
-        reasonKind: this.reasonKindFor(r),
-        likedByMe: r.likedByMe,
-        post: {
-          id: r.id,
-          postType: r.postType,
-          title: r.title,
-          excerpt: r.excerpt,
-          likeCount: r.likeCount,
-          commentCount: r.commentCount,
-          lastActivityAt: r.lastActivityAt,
-          createdAt: r.createdAt,
-          author: {
-            id: r.authorId,
-            fullName: r.authorName,
-            avatarUrl: r.authorAvatar,
-            streakDays: r.authorStreak ?? 0,
+      items: rows.map((r) => {
+        const d = discussion.get(r.id);
+        return {
+          reason: this.reasonFor(r),
+          reasonKind: this.reasonKindFor(r),
+          likedByMe: r.likedByMe,
+          post: {
+            id: r.id,
+            postType: r.postType,
+            title: r.title,
+            /** Kept for older callers; `contentText` is what the card reads. */
+            excerpt: r.excerpt,
+            contentText: r.excerpt,
+            images: r.images ?? [],
+            isPinned: r.isPinned,
+            isLocked: r.isLocked,
+            editedAt: r.editedAt,
+            likeCount: r.likeCount,
+            commentCount: r.commentCount,
+            viewCount: r.viewCount,
+            lastActivityAt: r.lastActivityAt,
+            createdAt: r.createdAt,
+            userId: r.userId,
+            author: {
+              id: r.authorId,
+              fullName: r.authorName,
+              avatarUrl: r.authorAvatar,
+              streakDays: r.authorStreak ?? 0,
+            },
+            lesson: r.lessonId ? { id: r.lessonId, title: r.lessonTitle } : null,
+            // The feed query deliberately doesn't join these — a card is a
+            // preview, and the detail page loads the real poll/attachments.
+            attachments: [],
+            poll: null,
+            likedByMe: r.likedByMe,
+            commenters: d?.commenters ?? [],
+            lastCommentAt: d?.lastCommentAt ?? null,
           },
-          lesson: r.lessonId ? { id: r.lessonId, title: r.lessonTitle } : null,
-        },
-        community: {
-          id: r.communityId,
-          name: r.communityName,
-          courseId: r.courseId,
-          courseTitle: r.courseTitle,
-          courseSlug: r.courseSlug,
-          courseThumbnailUrl: r.courseThumb,
-        },
-      })),
+          community: {
+            id: r.communityId,
+            name: r.communityName,
+            courseId: r.courseId,
+            courseTitle: r.courseTitle,
+            courseSlug: r.courseSlug,
+            courseThumbnailUrl: r.courseThumb,
+          },
+        };
+      }),
     };
   }
 

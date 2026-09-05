@@ -34,3 +34,16 @@ export function renderRichText(text: string): React.ReactNode[] {
   }
   return nodes;
 }
+
+/**
+ * Flattens post text to a single clamped line of plain text for card previews.
+ * Mention tokens collapse to "@Name" and newlines to spaces — a card excerpt
+ * is CSS line-clamped, so real <br>s would waste the two lines it gets.
+ */
+export function plainExcerpt(text: string, max = 260): string {
+  const flat = text
+    .replace(/\[([^\]]*)\]\(mention:[a-zA-Z0-9-]+\)/g, (_m, name) => `@${name || 'member'}`)
+    .replace(/\s+/g, ' ')
+    .trim();
+  return flat.length > max ? `${flat.slice(0, max).trimEnd()}…` : flat;
+}

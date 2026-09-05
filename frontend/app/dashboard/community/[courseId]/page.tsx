@@ -4,48 +4,67 @@ import React, { Suspense } from 'react';
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import {
-  Users, MessageSquare, BookOpen, Flame, Crown, AlertCircle,
+  MessageSquare, BookOpen, Flame, Crown, AlertCircle, PanelRight, X,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import PostCard, { PostCardSkeleton } from '@/components/community/PostCard';
 import PostComposer from '@/components/community/PostComposer';
+import CommunityRail from '@/components/community/CommunityRail';
+import LeaderboardPanel from '@/components/community/LeaderboardPanel';
 import TeyMascot from '@/components/community/TeyMascot';
+import { getCachedUser } from '@/lib/user-cache';
 import shared from '@/components/community/community.module.css';
 import styles from './CommunityPage.module.css';
 import {
-  getCommunityByCourse,
+  getCommunityBootstrap,
   getCommunityPosts,
   type CommunityOverview,
   type CommunityPost,
+  type LeaderboardBoard,
 } from '@/lib/communityApi';
 
+/** Category chips — Skool's row above the feed, backed by post types. */
 const TYPE_FILTERS = [
   { value: '', label: 'All' },
   { value: 'QUESTION', label: 'Questions' },
-  { value: 'DISCUSSION', label: 'Discussions' },
   { value: 'WIN', label: 'Wins' },
+  { value: 'DISCUSSION', label: 'Discussion' },
   { value: 'TIP', label: 'Tips' },
   { value: 'RESOURCE', label: 'Resources' },
   { value: 'POLL', label: 'Polls' },
+  { value: 'ANNOUNCEMENT', label: 'Announcements' },
 ];
 
+type Tab = 'feed' | 'members' | 'leaderboards';
+
 export default function CommunityPage() {
-  // useSearchParams needs a Suspense boundary under static prerender
+  // useSearchParams needs a Suspense boundary under static prerender.
   return (
-    <Suspense
-      fallback={
-        <div className={styles.page}>
-          <div className={`${shared.skeletonLine} ${shared.skeletonLineLong}`} style={{ height: 140 }} />
-          <PostCardSkeleton />
-        </div>
-      }
-    >
+    <Suspense fallback={<PageSkeleton />}>
       <CommunityPageInner />
     </Suspense>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <div className={styles.page}>
+      <div className={styles.topBar}>
+        <div className={shared.skeletonAvatar} style={{ width: 40, height: 40, borderRadius: 10 }} />
+        <div className={`${shared.skeletonLine} ${shared.skeletonLineShort}`} />
+      </div>
+      <div className={styles.layout}>
+        <div className={styles.mainCol}>
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+        </div>
+        <div className={styles.railCol} />
+      </div>
+    </div>
   );
 }
 
@@ -55,28 +74,48 @@ function CommunityPageInner() {
   const searchParams = useSearchParams();
   const lessonParam = searchParams.get('lesson');
   const lessonTitleParam = searchParams.get('lessonTitle');
+  const composerDefaultOpen = searchParams.get('compose') === '1';
 
   const [community, setCommunity] = React.useState<CommunityOverview | null>(null);
   const [posts, setPosts] = React.useState<CommunityPost[]>([]);
   const [total, setTotal] = React.useState(0);
   const [page, setPage] = React.useState(1);
+  const [leaderboard, setLeaderboard] = React.useState<LeaderboardBoard | null | undefined>(
+    undefined,
+  );
   const [state, setState] = React.useState<'loading' | 'error' | 'ready'>('loading');
   const [errorMsg, setErrorMsg] = React.useState('');
-  const [tab, setTab] = React.useState<'feed' | 'members'>('feed');
-
+  const [tab, setTab] = React.useState<Tab>('feed');
   const [typeFilter, setTypeFilter] = React.useState('');
   const [sort, setSort] = React.useState<'new' | 'top' | 'unanswered'>('new');
-  const composerDefaultOpen = searchParams.get('compose') === '1';
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const [railOpen, setRailOpen] = React.useState(false);
 
-  // Load community identity once
+  const me = React.useMemo(() => getCachedUser(), []);
+
+  // The first paint is ONE request: identity, first page of posts and the rail
+  // board all arrive together. Every later change (a chip, a sort, a new page)
+  // only refetches the post list.
+  const bootstrapped = React.useRef(false);
+
   React.useEffect(() => {
     let alive = true;
+    bootstrapped.current = false;
     setState('loading');
-    getCommunityByCourse(courseId)
-      .then((c) => {
+    getCommunityBootstrap(courseId, {
+      sort: 'new',
+      lessonId: lessonParam ?? undefined,
+    })
+      .then((data) => {
         if (!alive) return;
-        setCommunity(c);
+        setCommunity(data.community);
+        setPosts(data.posts.posts);
+        setTotal(data.posts.total);
+        setPage(data.posts.page);
+        setLeaderboard(data.leaderboard);
         setState('ready');
+        bootstrapped.current = true;
       })
       .catch((err) => {
         if (!alive) return;
@@ -86,11 +125,13 @@ function CommunityPageInner() {
     return () => {
       alive = false;
     };
-  }, [courseId]);
+  }, [courseId, lessonParam]);
 
   const loadPosts = React.useCallback(
     async (p: number, replace: boolean) => {
       if (!community) return;
+      if (replace) setRefreshing(true);
+      else setLoadingMore(true);
       try {
         const res = await getCommunityPosts(community.id, {
           sort,
@@ -103,15 +144,48 @@ function CommunityPageInner() {
         setPosts((prev) => (replace ? res.posts : [...prev, ...res.posts]));
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : 'Could not load posts.');
-        setState('error');
+      } finally {
+        setRefreshing(false);
+        setLoadingMore(false);
       }
     },
     [community, sort, typeFilter, lessonParam],
   );
 
+  // Refetch on filter/sort change only — the bootstrap already delivered the
+  // default view, and refetching it immediately would double every page load.
+  const filterKey = `${sort}|${typeFilter}`;
+  const lastFilterKey = React.useRef(filterKey);
   React.useEffect(() => {
+    if (!bootstrapped.current) return;
+    if (lastFilterKey.current === filterKey) return;
+    lastFilterKey.current = filterKey;
     void loadPosts(1, true);
-  }, [loadPosts]);
+  }, [filterKey, loadPosts]);
+
+  // Escape closes the mobile rail drawer, and the body must not scroll behind it.
+  React.useEffect(() => {
+    if (!railOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setRailOpen(false);
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [railOpen]);
+
+  const openLeaderboards = React.useCallback(() => {
+    setTab('leaderboards');
+    setRailOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleDeleted = React.useCallback((id: string) => {
+    setPosts((prev) => prev.filter((x) => x.id !== id));
+    setTotal((t) => Math.max(0, t - 1));
+  }, []);
 
   if (state === 'error') {
     return (
@@ -119,10 +193,7 @@ function CommunityPageInner() {
         <div className={shared.errorBanner}>
           <AlertCircle size={28} />
           <span>{errorMsg || 'Something went wrong.'}</span>
-          <Button
-            variant="outline"
-            onClick={() => window.location.reload()}
-          >
+          <Button variant="outline" onClick={() => window.location.reload()}>
             Try again
           </Button>
         </div>
@@ -130,182 +201,208 @@ function CommunityPageInner() {
     );
   }
 
-  if (state === 'loading' || !community) {
-    return (
-      <div className={styles.page}>
-        <div className={`${shared.skeletonLine} ${shared.skeletonLineLong}`} style={{ height: 140 }} />
-        <PostCardSkeleton />
-        <PostCardSkeleton />
-      </div>
-    );
-  }
+  if (state === 'loading' || !community) return <PageSkeleton />;
+
+  const thumb = community.course?.thumbnailUrl;
 
   return (
     <div className={styles.page}>
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className={styles.header}>
-        <div className={styles.cover}>
-          {community.course?.thumbnailUrl && (
-            <Image src={community.course.thumbnailUrl} alt="" fill className={styles.coverImg} />
-          )}
-        </div>
-        <div className={styles.headerBody}>
-          {community.course?.thumbnailUrl ? (
-            <Image
-              src={community.course.thumbnailUrl}
-              alt=""
-              width={76}
-              height={76}
-              className={styles.thumb}
-            />
+      {/* ── Identity + rail trigger ───────────────────────────────────────── */}
+      <div className={styles.topBar}>
+        <div className={styles.identity}>
+          {thumb ? (
+            <Image src={thumb} alt="" width={40} height={40} className={styles.identityThumb} />
           ) : (
-            <div className={styles.thumb}>
-              <Avatar size="xl" name={community.name} />
-            </div>
+            <Avatar name={community.name} size="md" />
           )}
-          <div className={styles.titleBlock}>
+          <div className={styles.identityText}>
             <span className={styles.communityKicker}>Course community</span>
-            <h1 className={styles.title}>{community.name}</h1>
-            <div className={styles.statsRow}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                <MessageSquare size={14} /> {community.stats.totalPosts} posts
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.faces}>
-            <div className={styles.faceStack}>
-              {community.membersPreview.slice(0, 6).map((m) => (
-                <Avatar key={m.id} src={m.avatarUrl ?? undefined} name={m.fullName} size="sm" ring />
-              ))}
-            </div>
-            <div className={styles.facesMeta}>
-              <span className={styles.facesCount}>{community.stats.totalMembers}</span>
-              <span className={styles.facesLabel}>members</span>
-            </div>
-            {community.isModerator ? (
-              <span className={styles.joinedPill}>
-                <Crown size={14} /> You teach this
-              </span>
-            ) : (
-              <span className={styles.joinedPill}>
-                <Users size={14} /> Joined
-              </span>
-            )}
+            <h1 className={styles.communityName}>{community.name}</h1>
           </div>
         </div>
 
-        <nav className={styles.tabs}>
-          <button
-            className={`${styles.tabBtn} ${tab === 'feed' ? styles.tabActive : ''}`}
-            onClick={() => setTab('feed')}
-          >
-            Feed
-          </button>
-          <button
-            className={`${styles.tabBtn} ${tab === 'members' ? styles.tabActive : ''}`}
-            onClick={() => setTab('members')}
-          >
-            Members · {community.stats.totalMembers}
-          </button>
-        </nav>
-      </header>
+        <button
+          type="button"
+          className={styles.railTrigger}
+          onClick={() => setRailOpen(true)}
+          aria-label="Show community info and leaderboard"
+        >
+          <PanelRight size={16} />
+          <span className={styles.railTriggerLabel}>Info</span>
+        </button>
+      </div>
 
-      {tab === 'feed' && (
-        <>
-          {/* ── Lesson deep-link filter banner ──────────────────────────── */}
-          {lessonParam && (
-            <div className={styles.lessonFilter}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-                <BookOpen size={15} />
-                Discussions for lesson:{' '}
-                {lessonTitleParam || (posts[0]?.lesson?.title ?? 'selected lesson')}
-              </span>
-              <Link href={`/dashboard/community/${courseId}`} className={styles.clearFilterBtn}>
-                show all posts
-              </Link>
-            </div>
-          )}
+      <nav className={styles.tabs} aria-label="Community sections">
+        <button
+          className={`${styles.tabBtn} ${tab === 'feed' ? styles.tabActive : ''}`}
+          onClick={() => setTab('feed')}
+        >
+          Community
+        </button>
+        {community.course && (
+          <Link href={`/learn/${community.course.id}`} className={styles.tabBtn}>
+            Classroom
+          </Link>
+        )}
+        <button
+          className={`${styles.tabBtn} ${tab === 'members' ? styles.tabActive : ''}`}
+          onClick={() => setTab('members')}
+        >
+          Members
+        </button>
+        <button
+          className={`${styles.tabBtn} ${tab === 'leaderboards' ? styles.tabActive : ''}`}
+          onClick={() => setTab('leaderboards')}
+        >
+          Leaderboards
+        </button>
+      </nav>
 
-          <PostComposer
-            key={lessonParam ?? 'all'}
-            community={community}
-            defaultOpen={composerDefaultOpen}
-            lessonLink={
-              lessonParam
-                ? { id: lessonParam, title: lessonTitleParam ?? 'this lesson' }
-                : null
-            }
-            onPosted={() => void loadPosts(1, true)}
-          />
-
-          {/* ── Controls ─────────────────────────────────────────────────── */}
-          <div className={styles.controls}>
-            <div className={styles.chipRow}>
-              {TYPE_FILTERS.map((f) => (
-                <button
-                  key={f.value}
-                  className={`${styles.filterChip} ${typeFilter === f.value ? styles.filterChipActive : ''}`}
-                  onClick={() => setTypeFilter(f.value)}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-            {!lessonParam && (
-              <select
-                className={styles.sortSelect}
-                value={sort}
-                onChange={(e) => setSort(e.target.value as typeof sort)}
-                aria-label="Sort posts"
-              >
-                <option value="new">Latest activity</option>
-                <option value="top">Most liked</option>
-                <option value="unanswered">Unanswered</option>
-              </select>
-            )}
-          </div>
-
-          {/* ── Posts list ──────────────────────────────────────────────── */}
-          {posts.length === 0 && sort !== 'new' ? (
+      <div className={styles.layout}>
+        <div className={styles.mainCol}>
+          {tab === 'feed' && (
             <>
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-            </>
-          ) : posts.length === 0 ? (
-            <EmptyState
-              icon={<TeyMascot size={96} />}
-              title="It's quiet in here"
-              description={
-                lessonParam
-                  ? 'No discussions for this lesson yet — be the first to ask something.'
-                  : 'No posts yet — be the first! Ask a question or share what you are learning.'
-              }
-            />
-          ) : (
-            <div className={styles.postList}>
-              {posts.map((p) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-                  <PostCard post={p} isModerator={community.isModerator} onDeleted={(id) => setPosts((prev) => prev.filter((x) => x.id !== id))} />
-                </motion.div>
-              ))}
-
-              {posts.length < total && (
-                <button
-                  className={styles.loadMoreBtn}
-                  disabled={false}
-                  onClick={() => void loadPosts(page + 1, false)}
-                >
-                  Load more posts
-                </button>
+              {lessonParam && (
+                <div className={styles.lessonFilter}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+                    <BookOpen size={15} />
+                    Discussions for lesson:{' '}
+                    {lessonTitleParam || (posts[0]?.lesson?.title ?? 'selected lesson')}
+                  </span>
+                  <Link href={`/dashboard/community/${courseId}`} className={styles.clearFilterBtn}>
+                    show all posts
+                  </Link>
+                </div>
               )}
-            </div>
-          )}
-        </>
-      )}
 
-      {tab === 'members' && (
-        <MembersPanel communityId={community.id} />
+              <PostComposer
+                key={lessonParam ?? 'all'}
+                community={community}
+                defaultOpen={composerDefaultOpen}
+                lessonLink={
+                  lessonParam ? { id: lessonParam, title: lessonTitleParam ?? 'this lesson' } : null
+                }
+                onPosted={() => void loadPosts(1, true)}
+              />
+
+              <div className={styles.controls}>
+                <div className={styles.chipRow}>
+                  {TYPE_FILTERS.map((f) => (
+                    <button
+                      key={f.value}
+                      className={`${styles.filterChip} ${
+                        typeFilter === f.value ? styles.filterChipActive : ''
+                      }`}
+                      onClick={() => setTypeFilter(f.value)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+                {!lessonParam && (
+                  <select
+                    className={styles.sortSelect}
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as typeof sort)}
+                    aria-label="Sort posts"
+                  >
+                    <option value="new">Latest activity</option>
+                    <option value="top">Most liked</option>
+                    <option value="unanswered">Unanswered</option>
+                  </select>
+                )}
+              </div>
+
+              {posts.length === 0 ? (
+                <EmptyState
+                  icon={<TeyMascot size={96} />}
+                  title={typeFilter ? 'Nothing here yet' : "It's quiet in here"}
+                  description={
+                    lessonParam
+                      ? 'No discussions for this lesson yet — be the first to ask something.'
+                      : typeFilter
+                        ? 'No posts in this category yet. Yours would be the first.'
+                        : 'No posts yet — be the first. Ask a question or share what you are learning.'
+                  }
+                />
+              ) : (
+                <div className={`${styles.postList} ${refreshing ? styles.listDim : ''}`}>
+                  {posts.map((p) => (
+                    <PostCard
+                      key={p.id}
+                      post={p}
+                      isModerator={community.isModerator}
+                      currentUserId={me?.id}
+                      onDeleted={handleDeleted}
+                      onCategoryClick={setTypeFilter}
+                    />
+                  ))}
+
+                  {posts.length < total && (
+                    <button
+                      className={styles.loadMoreBtn}
+                      disabled={loadingMore}
+                      onClick={() => void loadPosts(page + 1, false)}
+                    >
+                      {loadingMore ? 'Loading…' : 'Load more posts'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === 'members' && <MembersPanel communityId={community.id} />}
+
+          {tab === 'leaderboards' && (
+            <LeaderboardPanel
+              communityId={community.id}
+              currentUserId={me?.id}
+              currentUserName={me?.fullName}
+              currentUserAvatarUrl={me?.avatarUrl}
+            />
+          )}
+        </div>
+
+        <aside className={styles.railCol}>
+          <CommunityRail
+            community={community}
+            leaderboard={leaderboard}
+            currentUserId={me?.id}
+            onSeeLeaderboards={openLeaderboards}
+          />
+        </aside>
+      </div>
+
+      {/* ── Mobile rail drawer ────────────────────────────────────────────── */}
+      {railOpen && (
+        <>
+          <button
+            className={styles.scrim}
+            aria-label="Close community info"
+            onClick={() => setRailOpen(false)}
+          />
+          <div className={styles.drawer} role="dialog" aria-label="Community info">
+            <div className={styles.drawerHead}>
+              <span className={styles.drawerTitle}>About & leaderboard</span>
+              <button
+                className={styles.drawerClose}
+                onClick={() => setRailOpen(false)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className={styles.drawerRail}>
+              <CommunityRail
+                community={community}
+                leaderboard={leaderboard}
+                currentUserId={me?.id}
+                onSeeLeaderboards={openLeaderboards}
+              />
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -314,24 +411,34 @@ function CommunityPageInner() {
 /** Members tab — paginated roster with creator badge. */
 function MembersPanel({ communityId }: { communityId: string }) {
   const [members, setMembers] = React.useState<
-    Array<{ id: string; fullName: string; avatarUrl: string | null; isCreator: boolean; streakDays: number; xp: number }>
+    Array<{
+      id: string;
+      fullName: string;
+      avatarUrl: string | null;
+      isCreator: boolean;
+      streakDays: number;
+      xp: number;
+    }>
   >([]);
   const [total, setTotal] = React.useState(0);
   const [page, setPage] = React.useState(1);
   const [state, setState] = React.useState<'loading' | 'error' | 'done'>('loading');
 
-  const loadPage = React.useCallback(async (p: number, replace: boolean) => {
-    try {
-      const { getMembers } = await import('@/lib/communityApi');
-      const res = await getMembers(communityId, '', p);
-      setTotal(res.total);
-      setPage(p);
-      setMembers((prev) => (replace ? res.members : [...prev, ...res.members]));
-      setState('done');
-    } catch {
-      setState('error');
-    }
-  }, [communityId]);
+  const loadPage = React.useCallback(
+    async (p: number, replace: boolean) => {
+      try {
+        const { getMembers } = await import('@/lib/communityApi');
+        const res = await getMembers(communityId, '', p);
+        setTotal(res.total);
+        setPage(p);
+        setMembers((prev) => (replace ? res.members : [...prev, ...res.members]));
+        setState('done');
+      } catch {
+        setState('error');
+      }
+    },
+    [communityId],
+  );
 
   React.useEffect(() => {
     void loadPage(1, true);
@@ -341,14 +448,17 @@ function MembersPanel({ communityId }: { communityId: string }) {
     return (
       <div className={shared.errorBanner}>
         Could not load members.
-        <Button variant="outline" onClick={() => void loadPage(1, true)}>Try again</Button>
+        <Button variant="outline" onClick={() => void loadPage(1, true)}>
+          Try again
+        </Button>
       </div>
     );
   }
+
   if (state === 'loading') {
     return (
       <div className={styles.membersPanel}>
-        {[0, 1, 2].map((i) => (
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <div key={i} className={styles.memberCard}>
             <div className={shared.skeletonAvatar} style={{ width: 40, height: 40 }} />
             <div className={shared.skeletonLine} style={{ flex: 1 }} />
@@ -373,6 +483,9 @@ function MembersPanel({ communityId }: { communityId: string }) {
                   <Flame size={12} />
                 )}
                 {m.isCreator ? 'Creator' : `${m.streakDays}-day streak`}
+                <span>·</span>
+                <MessageSquare size={12} />
+                {m.xp} XP
               </div>
             </div>
             {m.isCreator && <span className={styles.creatorTag}>CREATOR</span>}
@@ -382,7 +495,7 @@ function MembersPanel({ communityId }: { communityId: string }) {
       {members.length < total && (
         <button
           className={styles.loadMoreBtn}
-          style={{ alignSelf: 'center', marginTop: 8 }}
+          style={{ alignSelf: 'center', marginTop: 12 }}
           onClick={() => void loadPage(page + 1, false)}
         >
           Show more

@@ -40,6 +40,13 @@ export interface CommunityPost {
   poll: { options: Array<{ id: string; text: string; voteCount: number }>; myOptionId: string | null } | null;
   likedByMe: boolean;
   userId: string;
+  /**
+   * Most recent distinct commenters (newest first, up to 5) and when the last
+   * comment landed — the "who is in this thread" facepile and the
+   * "New comment 2h ago" line. Only present on list responses.
+   */
+  commenters?: Array<{ id: string; fullName: string; avatarUrl: string | null }>;
+  lastCommentAt?: string | null;
 }
 
 export interface FeedItem {
@@ -48,18 +55,13 @@ export interface FeedItem {
   /** Structured reason — drives the pill's icon and tint in the UI. */
   reasonKind: 'announcement' | 'unanswered' | 'win' | 'active' | 'course' | 'general';
   likedByMe: boolean;
-  post: {
-    id: string;
-    postType: string;
-    title: string | null;
-    excerpt: string;
-    likeCount: number;
-    commentCount: number;
-    lastActivityAt: string;
-    createdAt: string;
-    author: CommunityAuthor;
-    lesson: { id: string; title: string } | null;
-  };
+  /**
+   * The full card shape, identical to a community post — the feed and the
+   * community render the SAME <PostCard />. `contentText` is a server-side
+   * 280-char slice (the feed never ships whole post bodies); `excerpt` is the
+   * same string, kept for older callers.
+   */
+  post: CommunityPost & { excerpt: string };
   community: {
     id: string;
     name: string;
@@ -157,6 +159,84 @@ export const getCommunityPosts = (
   if (opts.page) q.set('page', String(opts.page));
   return jsonFetch<{ total: number; page: number; pageSize: number; posts: CommunityPost[] }>(
     `/api/community/${communityId}/posts?${q.toString()}`,
+  );
+};
+
+// ─── Leaderboards ────────────────────────────────────────────────────────────
+
+export type LeaderboardWindow = '7d' | '30d' | 'all';
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  fullName: string;
+  avatarUrl: string | null;
+  isCreator: boolean;
+  streakDays: number;
+  points: number;
+}
+
+export interface LeaderboardBoard {
+  window: LeaderboardWindow;
+  entries: LeaderboardEntry[];
+  scoredMembers: number;
+  me: { rank: number | null; points: number };
+}
+
+export interface CommunityLevelRung {
+  level: number;
+  name: string;
+  minPoints: number;
+  unlocks: string | null;
+  /** Share of this community's members sitting at this rung. */
+  memberPct: number;
+}
+
+export interface LeaderboardBundle {
+  weekly: LeaderboardBoard;
+  monthly: LeaderboardBoard;
+  allTime: LeaderboardBoard;
+  me: {
+    points: number;
+    level: number;
+    levelName: string;
+    pointsToNextLevel: number | null;
+    /** 0–1 fill of the ring around the avatar. */
+    levelProgress: number;
+  };
+  levels: CommunityLevelRung[];
+}
+
+/** All three boards + the caller's level card, in one request. */
+export const getLeaderboards = (communityId: string) =>
+  jsonFetch<LeaderboardBundle>(`/api/community/${communityId}/leaderboards`);
+
+// ─── Page bootstrap ──────────────────────────────────────────────────────────
+
+export interface CommunityBootstrap {
+  community: CommunityOverview;
+  posts: { total: number; page: number; pageSize: number; posts: CommunityPost[] };
+  /** 30-day top 5 for the right rail; null if the board query failed. */
+  leaderboard: LeaderboardBoard | null;
+}
+
+/**
+ * Everything the community page needs to paint, in ONE round trip. The page
+ * used to fetch the overview, then the posts, then the rail — each waiting on
+ * the last, and each re-resolving the community server-side before doing any
+ * work.
+ */
+export const getCommunityBootstrap = (
+  courseId: string,
+  opts: { sort?: string; type?: string; lessonId?: string } = {},
+) => {
+  const q = new URLSearchParams();
+  if (opts.sort) q.set('sort', opts.sort);
+  if (opts.type) q.set('type', opts.type);
+  if (opts.lessonId) q.set('lessonId', opts.lessonId);
+  const qs = q.toString();
+  return jsonFetch<CommunityBootstrap>(
+    `/api/community/course/${courseId}/bootstrap${qs ? `?${qs}` : ''}`,
   );
 };
 

@@ -3,17 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import {
-  Sparkles, HelpCircle, Trophy, Megaphone, LayoutGrid, MessageCircle,
-  BookOpen, Flame, AlertCircle, PencilLine, Heart, ArrowRight, ChevronRight,
+  Sparkles, HelpCircle, Trophy, Megaphone, LayoutGrid,
+  BookOpen, Flame, AlertCircle, PencilLine, ChevronRight,
   Users, TrendingUp,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { PostTypeBadge, PostCardSkeleton } from '@/components/community/PostCard';
+import PostCard, { PostCardSkeleton } from '@/components/community/PostCard';
 import TeyMascot from '@/components/community/TeyMascot';
 import shared from '@/components/community/community.module.css';
 import styles from './FeedPage.module.css';
@@ -21,8 +20,6 @@ import {
   getFeed,
   getDiscover,
   getMyCommunities,
-  timeAgo,
-  togglePostLike,
   type FeedItem,
   type CommunityOverview,
   type MyCommunity,
@@ -250,15 +247,8 @@ export default function FeedPage() {
 
         {items.length > 0 && (
           <div className={`${styles.feedList} ${refreshing ? styles.feedRefreshing : ''}`}>
-            {items.map((item, i) => (
-              <motion.div
-                key={`${item.community.id}-${item.post.id}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: Math.min(i * 0.04, 0.24) }}
-              >
-                <FeedCard item={item} />
-              </motion.div>
+            {items.map((item) => (
+              <FeedRow key={`${item.community.id}-${item.post.id}`} item={item} />
             ))}
 
             {state === 'ready' && (
@@ -410,144 +400,33 @@ export default function FeedPage() {
   );
 }
 
-/** A feed card: floating reason tab + author header + excerpt + real actions.
- *  Mirrors PostCard's anatomy without needing the full post payload the feed
- *  API intentionally doesn't return. */
-function FeedCard({ item }: { item: FeedItem }) {
-  const router = useRouter();
-  const href =
-    item.community.courseId
-      ? `/dashboard/community/${item.community.courseId}/p/${item.post.id}`
-      : '/dashboard/feed';
-
-  const [liked, setLiked] = React.useState(item.likedByMe);
-  const [likeCount, setLikeCount] = React.useState(item.post.likeCount);
-  const [busy, setBusy] = React.useState(false);
-  const [burst, setBurst] = React.useState(0);
-
-  const open = () => router.push(href);
-
-  const handleLike = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (busy) return;
-    setBusy(true);
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    setLikeCount((c) => c + (nextLiked ? 1 : -1));
-    if (nextLiked) setBurst((b) => b + 1);
-    try {
-      const res = await togglePostLike(item.post.id, liked);
-      setLiked(res.liked);
-      setLikeCount(res.likeCount);
-    } catch {
-      setLiked(liked);
-      setLikeCount((c) => c + (nextLiked ? -1 : 1));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleComment = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(`${href}#comments`);
-  };
-
+/**
+ * One feed row: the reason this post surfaced, then the SAME card the
+ * community renders. The feed used to carry a second, hand-rolled card that
+ * drifted from PostCard on every change — likes behaved differently, the
+ * commenter facepile was missing, and the two surfaces stopped looking
+ * related.
+ */
+function FeedRow({ item }: { item: FeedItem }) {
   const reason = REASON_STYLES[item.reasonKind] ?? REASON_STYLES.general;
+  const href = item.community.courseId
+    ? `/dashboard/community/${item.community.courseId}/p/${item.post.id}`
+    : '/dashboard/feed';
 
   return (
-    <motion.article
-      className={styles.feedCard}
-      initial={false}
-      onClick={open}
-      role="link"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && open()}
-    >
-      {/* Floating reason tab — overlaps the card's top border */}
+    <div className={styles.feedRow}>
       <span className={`${styles.reasonTab} ${reason.tint}`}>
         {reason.icon} {item.reason}
       </span>
-
-      <div className={styles.feedCardHeader}>
-        <Avatar src={item.post.author.avatarUrl ?? undefined} name={item.post.author.fullName} size="md" />
-        <div className={styles.feedCardAuthor}>
-          <div className={styles.feedCardName}>{item.post.author.fullName}</div>
-          <div className={styles.feedCardMeta}>
-            {item.post.author.streakDays > 0 && (
-              <span className={styles.streakFlame}>
-                <Flame size={11} /> {item.post.author.streakDays}
-              </span>
-            )}
-            <span>{timeAgo(item.post.createdAt)}</span>
-            {item.community.courseThumbnailUrl && (
-              <span className={styles.communityChip}>
-                <Image
-                  src={item.community.courseThumbnailUrl}
-                  alt=""
-                  width={14}
-                  height={14}
-                  className={styles.communityChipThumb}
-                />
-                <span className={styles.communityChipName}>{item.community.name}</span>
-              </span>
-            )}
-            {!item.community.courseThumbnailUrl && (
-              <span className={styles.communityChip}>
-                <span className={styles.communityChipName}>{item.community.name}</span>
-              </span>
-            )}
-          </div>
-        </div>
-        <span className={styles.feedCardBadge}>
-          <PostTypeBadge postType={item.post.postType} />
-        </span>
-      </div>
-
-      {item.post.title && <div className={styles.feedCardTitle}>{item.post.title}</div>}
-
-      <p className={styles.excerptBody}>{item.post.excerpt}</p>
-
-      {item.post.lesson && (
-        <span className={styles.lessonChip}>
-          <BookOpen size={12} /> {item.post.lesson.title}
-        </span>
-      )}
-
-      <div className={styles.feedCardActions}>
-        <button
-          className={`${styles.actionBtn} ${liked ? styles.actionBtnLiked : ''}`}
-          onClick={handleLike}
-          aria-pressed={liked}
-        >
-          <motion.span
-            key={burst}
-            style={{ display: 'inline-flex' }}
-            initial={burst > 0 ? { scale: 0.6 } : false}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 600, damping: 15 }}
-          >
-            <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
-          </motion.span>
-          {likeCount > 0 ? likeCount : 'Like'}
-        </button>
-        <button className={styles.actionBtn} onClick={handleComment}>
-          <MessageCircle size={16} />
-          {item.post.commentCount > 0 ? item.post.commentCount : 'Comment'}
-        </button>
-        <span className={styles.actionSpacer} />
-        <button
-          className={styles.openBtn}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            open();
-          }}
-        >
-          Open <ArrowRight size={14} />
-        </button>
-      </div>
-    </motion.article>
+      <PostCard
+        post={item.post}
+        detailHref={href}
+        origin={{
+          name: item.community.name,
+          courseId: item.community.courseId,
+          courseThumbnailUrl: item.community.courseThumbnailUrl,
+        }}
+      />
+    </div>
   );
 }

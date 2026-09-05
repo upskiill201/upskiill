@@ -23,13 +23,18 @@ export class CommunityListener {
   ) {}
 
   /**
-   * Seats a learner in the course community the moment they enroll —
-   * emitted from course/orders/payment enrollment sites.
+   * Enrollment no longer seats anyone.
+   *
+   * Learners now join their course community after their SECOND completed
+   * lesson (CommunityService.seatAfterSecondLesson, called synchronously from
+   * completeLesson so the response can carry the welcome moment). Seating at
+   * enrollment filled communities with people who had never opened the course
+   * and made member counts meaningless.
+   *
+   * Access is unaffected: anyone holding an enrollment or entitlement is still
+   * seated lazily by assertMember the moment they open the community
+   * themselves — this only changes when the seat is created *for* them.
    */
-  @OnEvent('enrollment.created', { async: true })
-  async handleEnrollmentCreated(payload: { userId: string; courseId: string }) {
-    await this.communityService.joinCourseCommunity(payload.courseId, payload.userId);
-  }
 
   @OnEvent('community.post.created', { async: true })
   async handlePostCreated(event: PostCreatedEvent) {
