@@ -88,6 +88,13 @@ export interface AppNotification {
    * which resolve their destination client-side.
    */
   deepLink?: string | null;
+  /**
+   * Where tapping this row goes, resolved server-side when the list is built
+   * (comment → its post → its course). Null when the target was deleted or the
+   * viewer lost access. The bell used to resolve this itself on click, which
+   * put two API round trips between the tap and the page.
+   */
+  url?: string | null;
 }
 
 async function jsonFetch<T>(url: string, init?: RequestInit): Promise<T> {

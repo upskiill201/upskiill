@@ -34,6 +34,7 @@ const CourseProgressScene = dynamic(() => import('./scenes/CourseProgressScene')
 const SectionUnlockedScene = dynamic(() => import('./scenes/SectionUnlockedScene'), { ssr: false });
 const CourseCompleteScene = dynamic(() => import('./scenes/CourseCompleteScene'), { ssr: false });
 const LeaderboardScene = dynamic(() => import('./scenes/LeaderboardScene'), { ssr: false });
+const CommunityWelcomeScene = dynamic(() => import('./scenes/CommunityWelcomeScene'), { ssr: false });
 
 let sceneCounter = 0;
 

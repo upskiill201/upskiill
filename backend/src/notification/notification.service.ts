@@ -75,7 +75,82 @@ export class NotificationsService {
       }),
     ]);
 
-    return { total, page, pageSize, items };
+    return { total, page, pageSize, items: await this.withDestinations(items) };
+  }
+
+  /**
+   * Attaches the in-app destination to every row.
+   *
+   * The bell used to resolve this on click: fetch the comment to find its
+   * post, then fetch the post to find its course — two sequential round trips
+   * standing between a tap and a page. Both answers are joins the server can
+   * do for the whole page at once, so the client just follows a URL.
+   *
+   * Rows whose target has since been deleted come back with `url: null`; the
+   * bell shows them as read-only rather than sending anyone to a dead link.
+   */
+  private async withDestinations<
+    T extends {
+      type: string;
+      entityType: string | null;
+      entityId: string | null;
+      deepLink: string | null;
+    },
+  >(items: T[]): Promise<(T & { url: string | null })[]> {
+    // Tey's rows carry a destination validated at send time.
+    const needsLookup = items.filter(
+      (n) => !n.deepLink && n.entityId && (n.entityType === 'POST' || n.entityType === 'COMMENT'),
+    );
+    if (needsLookup.length === 0) {
+      return items.map((n) => ({ ...n, url: n.deepLink ?? null }));
+    }
+
+    const commentIds = needsLookup
+      .filter((n) => n.entityType === 'COMMENT')
+      .map((n) => n.entityId as string);
+
+    // comment id → post id
+    const comments = commentIds.length
+      ? await this.prisma.comment.findMany({
+          where: { id: { in: commentIds } },
+          select: { id: true, postId: true },
+        })
+      : [];
+    const commentToPost = new Map(comments.map((c) => [c.id, c.postId]));
+
+    const postIds = new Set<string>();
+    for (const n of needsLookup) {
+      const id =
+        n.entityType === 'COMMENT'
+          ? commentToPost.get(n.entityId as string)
+          : (n.entityId as string);
+      if (id) postIds.add(id);
+    }
+
+    // post id → the course whose community owns it
+    const posts = postIds.size
+      ? await this.prisma.post.findMany({
+          where: { id: { in: [...postIds] }, status: 'ACTIVE' },
+          select: { id: true, community: { select: { courseId: true } } },
+        })
+      : [];
+    const postToCourse = new Map(
+      posts.map((p) => [p.id, p.community?.courseId ?? null]),
+    );
+
+    return items.map((n) => {
+      if (n.deepLink) return { ...n, url: n.deepLink };
+      if (!n.entityId || (n.entityType !== 'POST' && n.entityType !== 'COMMENT')) {
+        return { ...n, url: null };
+      }
+      const postId =
+        n.entityType === 'COMMENT' ? commentToPost.get(n.entityId) : n.entityId;
+      const courseId = postId ? postToCourse.get(postId) : null;
+      return {
+        ...n,
+        url: postId && courseId ? `/dashboard/community/${courseId}/p/${postId}` : null,
+      };
+    });
   }
 
   async getUnreadCount(userId: string): Promise<{ unreadCount: number }> {

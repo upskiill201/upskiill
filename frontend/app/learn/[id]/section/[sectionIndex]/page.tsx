@@ -325,7 +325,7 @@ function SectionViewContent({
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
   const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
-  const { celebrate } = useCelebration();
+  const { celebrate, closeAll: closeCelebrations } = useCelebration();
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
@@ -772,6 +772,35 @@ function SectionViewContent({
                 completed: idx <= todayIdx,
                 isToday: idx === todayIdx,
               })),
+            });
+          }
+
+          // ── Community unlock: the server seats a learner in their course
+          // community on their SECOND completed lesson, and returns this
+          // payload the one time it does. It plays before the section beats so
+          // the chain still ends on a navigation scene.
+          const cu = data.communityUnlock;
+          if (cu) {
+            scenes.push({
+              kind: 'COMMUNITY_WELCOME',
+              communityId: cu.communityId,
+              courseId: cu.courseId,
+              name: cu.name,
+              courseTitle: cu.courseTitle,
+              thumbnailUrl: cu.thumbnailUrl ?? null,
+              memberCount: cu.memberCount,
+              postCount: cu.postCount,
+              instructor: cu.instructor ?? null,
+              members: cu.members ?? [],
+              samplePost: cu.samplePost ?? null,
+              onEnter: () => {
+                // Walking into the community ends the celebration chain — any
+                // section scenes still queued behind this one would otherwise
+                // replay on top of the page the learner just chose to open.
+                closeCelebrations();
+                router.push(`/dashboard/community/${cu.courseId}?compose=1`);
+              },
+              dedupeKey: `community-welcome-${cu.communityId}`,
             });
           }
 

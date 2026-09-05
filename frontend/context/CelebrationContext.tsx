@@ -200,6 +200,39 @@ export type CelebrationScene =
       dedupeKey?: string;
     }
   | {
+      /**
+       * The learner's first look at their course community, fired the one time
+       * completeLesson seats them (after their second lesson). Unlike every
+       * other scene this one is a short *interactive* flow rather than a
+       * single beat — arriving in a room full of strangers needs to explain
+       * itself, and a passive splash would be skipped and forgotten.
+       */
+      kind: 'COMMUNITY_WELCOME';
+      communityId: string;
+      courseId: string;
+      name: string;
+      courseTitle: string;
+      thumbnailUrl: string | null;
+      memberCount: number;
+      postCount: number;
+      instructor: { id: string; fullName: string; avatarUrl: string | null } | null;
+      members: { id: string; fullName: string; avatarUrl: string | null }[];
+      /** A real post from the room, so the tour is never fabricated. */
+      samplePost: {
+        id: string;
+        postType: string;
+        title: string | null;
+        excerpt: string;
+        commentCount: number;
+        authorName: string;
+        authorAvatarUrl: string | null;
+      } | null;
+      /** Opens the community with the composer expanded. */
+      onEnter: () => void;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
       kind: 'LEADERBOARD';
       /** Mid-week rank moment — a real end-of-week promotion/demotion is
        * still the 'LEAGUE' scene above, not this one. */
