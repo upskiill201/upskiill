@@ -17,7 +17,6 @@ import { AlertCircle, Gift, Package, RefreshCw, Sparkles, Target, Trophy } from 
 import { useGamification } from '@/context/GamificationContext';
 import { useShopEngine } from '@/context/ShopEngineContext';
 import { RightSidebar } from '@/components/layout/RightSidebar';
-import { StatsBar } from '@/components/ui/StatsBar';
 import ShopItemCard from '@/components/shop/ShopItemCard';
 import CountdownPill from '@/components/shop/CountdownPill';
 import InventoryLocker from '@/components/shop/InventoryLocker';
@@ -272,10 +271,6 @@ export default function ShopPage() {
       <div className={dashStyles.dashboardGrid}>
         <div className={dashStyles.middleColumn}>
           <div className={styles.pageWrapper}>
-            <div className={styles.topStats}>
-              <StatsBar variant="pill" />
-            </div>
-
             <header className={styles.shopHeader}>
               <h1 className={styles.shopTitle}>Shop</h1>
               <span className={styles.balancePill}>

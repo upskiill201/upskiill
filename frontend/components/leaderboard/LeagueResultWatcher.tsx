@@ -11,6 +11,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCelebration } from '@/context/CelebrationContext';
+import { useGamification } from '@/context/GamificationContext';
 import type { LeagueTier } from '@/lib/leagues';
 
 interface PendingResultRow {
@@ -34,10 +35,16 @@ interface PendingResult {
 
 export default function LeagueResultWatcher() {
   const { celebrate } = useCelebration();
+  const { profileLoaded, isLoading } = useGamification();
   const router = useRouter();
   const checkedRef = useRef(false);
 
   useEffect(() => {
+    // Mounted at the app root (not just /dashboard) so this always runs once
+    // per session, regardless of which route the learner lands on first.
+    // Gated on a loaded profile so logged-out visitors never pay for the
+    // pending-result fetch.
+    if (!profileLoaded || isLoading) return;
     if (checkedRef.current) return;
     checkedRef.current = true;
 
@@ -89,7 +96,7 @@ export default function LeagueResultWatcher() {
         // League celebration is best-effort — never block the dashboard.
       }
     })();
-  }, [celebrate, router]);
+  }, [celebrate, router, profileLoaded, isLoading]);
 
   return null;
 }

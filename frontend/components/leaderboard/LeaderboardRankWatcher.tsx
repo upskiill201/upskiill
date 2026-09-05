@@ -24,6 +24,7 @@
 import { useCallback, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCelebration, type RankRow } from '@/context/CelebrationContext';
+import { useGamification } from '@/context/GamificationContext';
 import type { LeagueTier } from '@/lib/leagues';
 
 /** Routes where full-page student takeovers must never appear. */
@@ -125,8 +126,10 @@ async function fetchLeaderboard(): Promise<MyLeaderboard> {
 export default function LeaderboardRankWatcher() {
   const pathname = usePathname();
   const { celebrate } = useCelebration();
+  const { profileLoaded, isLoading } = useGamification();
 
   const handleLessonCompleted = useCallback(() => {
+    if (!profileLoaded || isLoading) return;
     const path = pathname || window.location.pathname;
     if (SKIP_ROUTE_PREFIXES.some((p) => path.startsWith(p))) return;
 
@@ -211,9 +214,16 @@ export default function LeaderboardRankWatcher() {
         });
       }
     }, LISTENER_SETTLE_MS);
-  }, [pathname, celebrate]);
+  }, [pathname, celebrate, profileLoaded, isLoading]);
 
   useEffect(() => {
+    // Mounted at the app root so `lesson:completed` (dispatched from the
+    // learn flow) is always heard, not just while under /dashboard — but
+    // hold off registering anything until we know there's a signed-in
+    // profile, so logged-out visitors on marketing/auth routes never pay
+    // for a league fetch.
+    if (!profileLoaded || isLoading) return;
+
     // Silent catch-up on entry so cross-tab/cross-session completions never
     // replay a stale moment later.
     const syncQuietly = () => {
@@ -228,7 +238,7 @@ export default function LeaderboardRankWatcher() {
       window.clearTimeout(t);
       window.removeEventListener('lesson:completed', handleLessonCompleted);
     };
-  }, [handleLessonCompleted]);
+  }, [handleLessonCompleted, profileLoaded, isLoading]);
 
   return null;
 }

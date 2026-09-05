@@ -104,6 +104,12 @@
   background: #F8FAFC;
 }
 
+.pageGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* Shop Item Card */
 .shopItemCard {
   background: #FFFFFF;
@@ -175,8 +181,126 @@
   line-height: 1.35;
 }
 
+.lockedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  background: #F1F5F9;
+  color: #64748B;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.priceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 2px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.priceBadge img {
+  object-fit: contain;
+}
+
+.shopItemCard[aria-disabled='true'] {
+  opacity: 0.65;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ─── Loading skeleton ────────────────────────────────────────────────── */
+
+.shopItemSkeleton {
+  height: 68px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ─── Error row ───────────────────────────────────────────────────────── */
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #B91C1C;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.retryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  color: #B91C1C;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-decoration: underline;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ─── Page dots (rotation indicator) ─────────────────────────────────── */
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.dot,
+.dotActive {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #CBD5E1;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.dotActive {
+  background: #F59E0B;
+  transform: scale(1.3);
+}
+
+/* ─── Footer ──────────────────────────────────────────────────────────── */
+
+.footerRow {
+  padding: 14px 16px 16px;
+  background: #FFFFFF;
+  border-top: 1px solid #F1F5F9;
+}
+
 /* Bottom 3D GO TO SHOP Button */
-.goToShopBtn3D {
+.actionBtn3D {
   height: 42px;
   width: 100%;
   background: #0172FD;
@@ -196,11 +320,11 @@
   box-shadow: 0 4px 12px rgba(1, 114, 253, 0.25);
 }
 
-.goToShopBtn3D:hover {
+.actionBtn3D:hover {
   filter: brightness(1.08);
 }
 
-.goToShopBtn3D:active {
+.actionBtn3D:active {
   transform: translateY(3px);
   border-bottom-width: 1px;
 }

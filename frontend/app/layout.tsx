@@ -175,6 +175,9 @@ import CelebrationEngine from "../components/celebration/CelebrationEngine";
 import DailyRewardWatcher from "../components/gamification/DailyRewardWatcher";
 // Surfaces Monthly Quest beats + claim deposits after lessons
 import QuestProgressWatcher from "../components/quests/QuestProgressWatcher";
+// Weekly league settlement + mid-week leaderboard moments
+import LeagueResultWatcher from "../components/leaderboard/LeagueResultWatcher";
+import LeaderboardRankWatcher from "../components/leaderboard/LeaderboardRankWatcher";
 // Shop Engine — unlock announcements + purchase/chest/collection takeovers
 import { ShopEngineProvider } from "../context/ShopEngineContext";
 import ShopEngine from "../components/shop-engine/ShopEngine";
@@ -211,6 +214,8 @@ export default function RootLayout({
                           <ShopEngine />
                           <DailyRewardWatcher />
                           <QuestProgressWatcher />
+                          <LeagueResultWatcher />
+                          <LeaderboardRankWatcher />
                           {/* Herald & Streak portals — router-independent, render into document.body */}
                           <HeraldOverlay />
                           <DeferredHeraldReveals />

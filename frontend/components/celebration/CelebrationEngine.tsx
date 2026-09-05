@@ -98,6 +98,8 @@ export default function CelebrationEngine() {
         return <CourseCompleteScene scene={scene} onAdvance={advance} />;
       case 'LEADERBOARD':
         return <LeaderboardScene scene={scene} onAdvance={advance} />;
+      case 'COMMUNITY_WELCOME':
+        return <CommunityWelcomeScene scene={scene} onAdvance={advance} />;
       default:
         return null;
     }

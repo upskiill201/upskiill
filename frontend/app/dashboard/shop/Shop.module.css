@@ -11,10 +11,6 @@
   padding-bottom: 48px;
 }
 
-.topStats {
-  padding-top: 8px;
-}
-
 /* ── Header ───────────────────────────────────────────────────────────────── */
 
 .shopHeader {
@@ -22,6 +18,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding-top: 8px;
 }
 
 .shopTitle {

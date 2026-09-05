@@ -24,8 +24,6 @@ import Button from '@/components/ui/Button';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 import NotificationBell from '@/components/community/NotificationBell';
 import PullToRefresh from '@/components/ui/PullToRefresh';
-import LeagueResultWatcher from '@/components/leaderboard/LeagueResultWatcher';
-import LeaderboardRankWatcher from '@/components/leaderboard/LeaderboardRankWatcher';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
@@ -502,14 +500,10 @@ export default function DashboardLayout({
         {/* GAMIFIED STREAK SAVED / RESET moments are now handled by the
             Celebration Engine (teyro:streak-status → full-page scene) */}
 
-        {/* Weekly league settlement — promotion/demotion scene plays once per
-            settled week (server seenAt flag + session dedupe) */}
-        <LeagueResultWatcher />
-
-        {/* Mid-week leaderboard moments — joined / passed a rival / passed by
-            a rival, detected client-side off the same lesson-complete signal
-            quests/missions already use */}
-        <LeaderboardRankWatcher />
+        {/* Weekly league settlement + mid-week leaderboard moments now mount
+            at the app root (see app/layout.tsx) so they're never missed when
+            a lesson completes from /learn, before the learner ever visits
+            /dashboard. */}
       </div>
       </MobileMenuContext.Provider>
     </ComingSoonContext.Provider>

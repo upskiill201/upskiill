@@ -8,6 +8,11 @@ import { useStreakModal } from '@/context/StreakContext';
 import { playHaptic } from '@/lib/haptics';
 import StreakPopover from '@/components/streak/StreakPopover';
 import CoinsPopover from '@/components/coins/CoinsPopover';
+import XpPopover from '@/components/xp/XpPopover';
+import HeartsPopover from '@/components/hearts/HeartsPopover';
+import LevelPopover from '@/components/level/LevelPopover';
+import { prefetchCatalog } from '@/lib/shop/previewCache';
+import { prefetchAchievements } from '@/lib/achievements/previewCache';
 import styles from './StatsBar.module.css';
 
 export interface StatsBarProps {
@@ -56,6 +61,29 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   const [isCoinPinned, setIsCoinPinned] = useState(false);
   const coinRef = useRef<HTMLDivElement>(null);
 
+  // XP popover hover & pin state
+  const [isXpHovered, setIsXpHovered] = useState(false);
+  const [isXpPinned, setIsXpPinned] = useState(false);
+  const xpRef = useRef<HTMLDivElement>(null);
+
+  // Hearts (lives) popover hover & pin state
+  const [isLivesHovered, setIsLivesHovered] = useState(false);
+  const [isLivesPinned, setIsLivesPinned] = useState(false);
+  const livesRef = useRef<HTMLDivElement>(null);
+
+  // Level popover hover & pin state
+  const [isLevelHovered, setIsLevelHovered] = useState(false);
+  const [isLevelPinned, setIsLevelPinned] = useState(false);
+  const levelRef = useRef<HTMLDivElement>(null);
+
+  // Warm the shop-preview and achievements caches as soon as the bar mounts,
+  // so the coins/XP/hearts/level popovers have data ready the instant
+  // someone hovers — no spinner on open.
+  useEffect(() => {
+    void prefetchCatalog();
+    void prefetchAchievements();
+  }, []);
+
   // Close popovers when clicking anywhere outside on screen
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -66,6 +94,18 @@ export const StatsBar: React.FC<StatsBarProps> = ({
       if (coinRef.current && !coinRef.current.contains(e.target as Node)) {
         setIsCoinPinned(false);
         setIsCoinHovered(false);
+      }
+      if (xpRef.current && !xpRef.current.contains(e.target as Node)) {
+        setIsXpPinned(false);
+        setIsXpHovered(false);
+      }
+      if (livesRef.current && !livesRef.current.contains(e.target as Node)) {
+        setIsLivesPinned(false);
+        setIsLivesHovered(false);
+      }
+      if (levelRef.current && !levelRef.current.contains(e.target as Node)) {
+        setIsLevelPinned(false);
+        setIsLevelHovered(false);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
@@ -90,15 +130,45 @@ export const StatsBar: React.FC<StatsBarProps> = ({
     }
   };
 
+  const handleXpClick = () => {
+    playHaptic('medium');
+    if (onXpClick) {
+      onXpClick();
+    } else {
+      setIsXpPinned((prev) => !prev);
+    }
+  };
+
+  const handleLivesClick = () => {
+    playHaptic('medium');
+    if (onLivesClick) {
+      onLivesClick();
+    } else {
+      setIsLivesPinned((prev) => !prev);
+    }
+  };
+
+  const handleLevelClick = () => {
+    playHaptic('medium');
+    if (onLevelClick) {
+      onLevelClick();
+    } else {
+      setIsLevelPinned((prev) => !prev);
+    }
+  };
+
   const showStreakPopover = isStreakHovered || isStreakPinned;
   const showCoinPopover = isCoinHovered || isCoinPinned;
+  const showXpPopover = isXpHovered || isXpPinned;
+  const showLivesPopover = isLivesHovered || isLivesPinned;
+  const showLevelPopover = isLevelHovered || isLevelPinned;
 
   const stats: { type: StatType; value: number | string; onClick?: () => void }[] = [
     { type: 'streak', value: streakDays, onClick: handleStreakClick },
     { type: 'coin', value: coins, onClick: handleCoinClick },
-    { type: 'gem', value: xp, onClick: onXpClick },
-    { type: 'lives', value: lives, onClick: onLivesClick },
-    { type: 'level', value: `Lvl ${userLevel}`, onClick: onLevelClick },
+    { type: 'gem', value: xp, onClick: handleXpClick },
+    { type: 'lives', value: lives, onClick: handleLivesClick },
+    { type: 'level', value: `Lvl ${userLevel}`, onClick: handleLevelClick },
   ];
 
   return (
@@ -111,26 +181,41 @@ export const StatsBar: React.FC<StatsBarProps> = ({
       {stats.map((s) => {
         const isStreak = s.type === 'streak';
         const isCoin = s.type === 'coin';
+        const isXp = s.type === 'gem';
+        const isLives = s.type === 'lives';
+        const isLevel = s.type === 'level';
+
+        const ref = isStreak
+          ? streakRef
+          : isCoin
+          ? coinRef
+          : isXp
+          ? xpRef
+          : isLives
+          ? livesRef
+          : isLevel
+          ? levelRef
+          : undefined;
+
+        const setHovered = isStreak
+          ? setIsStreakHovered
+          : isCoin
+          ? setIsCoinHovered
+          : isXp
+          ? setIsXpHovered
+          : isLives
+          ? setIsLivesHovered
+          : isLevel
+          ? setIsLevelHovered
+          : undefined;
 
         return (
           <div
             key={s.type}
-            ref={isStreak ? streakRef : isCoin ? coinRef : undefined}
+            ref={ref}
             style={{ position: 'relative' }}
-            onMouseEnter={
-              isStreak
-                ? () => setIsStreakHovered(true)
-                : isCoin
-                ? () => setIsCoinHovered(true)
-                : undefined
-            }
-            onMouseLeave={
-              isStreak
-                ? () => setIsStreakHovered(false)
-                : isCoin
-                ? () => setIsCoinHovered(false)
-                : undefined
-            }
+            onMouseEnter={setHovered ? () => setHovered(true) : undefined}
+            onMouseLeave={setHovered ? () => setHovered(false) : undefined}
             className={variant === 'pill' ? styles.pill : undefined}
           >
             <StatPill
@@ -155,6 +240,33 @@ export const StatsBar: React.FC<StatsBarProps> = ({
                 onClose={() => {
                   setIsCoinHovered(false);
                   setIsCoinPinned(false);
+                }}
+              />
+            )}
+
+            {isXp && showXpPopover && (
+              <XpPopover
+                onClose={() => {
+                  setIsXpHovered(false);
+                  setIsXpPinned(false);
+                }}
+              />
+            )}
+
+            {isLives && showLivesPopover && (
+              <HeartsPopover
+                onClose={() => {
+                  setIsLivesHovered(false);
+                  setIsLivesPinned(false);
+                }}
+              />
+            )}
+
+            {isLevel && showLevelPopover && (
+              <LevelPopover
+                onClose={() => {
+                  setIsLevelHovered(false);
+                  setIsLevelPinned(false);
                 }}
               />
             )}
