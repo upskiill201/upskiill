@@ -642,25 +642,61 @@
 }
 
 /* Mini progress bar inside a quest row */
+/* Same 3D groove-and-bevel treatment as .progressTrack/.barTrack above, sized
+   down for an inline per-row bar rather than a standalone hero bar. */
 .questBarTrack {
+  position: relative;
   width: 100%;
-  height: 12px;
+  height: clamp(9px, 1.8vh, 13px);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .questBarFill {
+  position: relative;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 10px rgba(74, 222, 128, 0.5),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
   transition: width 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+  overflow: hidden;
+}
+
+.questBarFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 6px,
+    transparent 6px,
+    transparent 16px
+  );
+  background-size: 160% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
 }
 
 .questBarFillGold {
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
+  box-shadow:
+    0 0 10px rgba(251, 191, 36, 0.5),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 /* Shine sweep across a just-completed row */
@@ -865,7 +901,8 @@
   }
 
   .progressFill::after,
-  .barFill::after {
+  .barFill::after,
+  .questBarFill::after {
     animation: none;
     display: none;
   }
