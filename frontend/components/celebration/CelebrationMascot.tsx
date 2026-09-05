@@ -89,8 +89,8 @@ export default function CelebrationMascot({
 
   return (
     <motion.div
-      className={className}
-      style={{ position: 'relative', width: size ?? undefined, height: size ?? undefined }}
+      className={className ? `${styles.mascotWrap} ${className}` : styles.mascotWrap}
+      style={size ? { width: size, height: size } : undefined}
       initial={entranceProps}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 22 }}

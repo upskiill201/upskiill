@@ -128,7 +128,9 @@
 .headline {
   margin: 0;
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  font-size: clamp(30px, 8vw, 50px);
+  /* Scales down on width OR height, whichever is tighter — a landscape/short
+     viewport shrinks this even when it's plenty wide. */
+  font-size: clamp(22px, min(7.5vw, 6.5vh), 46px);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.01em;
@@ -146,7 +148,7 @@
 .subhead {
   margin: 0;
   font-family: var(--font-jakarta), sans-serif;
-  font-size: clamp(15px, 4vw, 18px);
+  font-size: clamp(13px, min(3.6vw, 3.2vh), 17px);
   font-weight: 600;
   line-height: 1.4;
   color: #b7c4d6;
@@ -270,15 +272,15 @@
 }
 
 .balanceIcon {
-  width: clamp(44px, 12vw, 58px);
-  height: clamp(44px, 12vw, 58px);
+  width: clamp(34px, min(11vw, 6vh), 54px);
+  height: clamp(34px, min(11vw, 6vh), 54px);
   object-fit: contain;
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
 }
 
 .balanceValue {
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  font-size: clamp(48px, 13vw, 72px);
+  font-size: clamp(32px, min(12vw, 7.5vh), 68px);
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
@@ -303,7 +305,7 @@
 .progressTrack {
   position: relative;
   width: 100%;
-  height: 22px;
+  height: clamp(12px, 2.6vh, 22px);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
   box-shadow:
@@ -464,12 +466,12 @@
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  min-height: clamp(220px, 38vh, 320px);
+  min-height: clamp(160px, 34vh, 320px);
 }
 
 .chestShadow {
-  width: clamp(120px, 34vw, 170px);
-  height: clamp(18px, 4vh, 24px);
+  width: clamp(90px, min(34vw, 26vh), 170px);
+  height: clamp(14px, 3vh, 24px);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.45);
   filter: blur(4px);
@@ -483,8 +485,9 @@
 }
 
 .chestArt {
-  width: clamp(150px, 42vw, 200px);
+  width: clamp(110px, min(42vw, 32vh), 200px);
   height: auto;
+  max-height: clamp(110px, 32vh, 200px);
   object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
 }
@@ -686,8 +689,8 @@
 
 .levelBadge {
   position: relative;
-  width: clamp(150px, 40vw, 190px);
-  height: clamp(150px, 40vw, 190px);
+  width: clamp(110px, min(38vw, 30vh), 190px);
+  height: clamp(110px, min(38vw, 30vh), 190px);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -711,7 +714,7 @@
 
 .levelBadgeValue {
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  font-size: clamp(56px, 16vw, 76px);
+  font-size: clamp(38px, min(15vw, 11vh), 76px);
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
@@ -720,10 +723,19 @@
 
 /* ─── Mascot ─────────────────────────────────────────────────────────────── */
 
+/*
+ * The mascot's bounding box. This is the fix for the mascot dominating short
+ * screens: previously CelebrationMascot rendered with no sizing wrapper at
+ * all, so its image fell back to filling the width of the content column
+ * with height:auto — on a wide phone that could mean a 300px+ tall robot
+ * eating most of the vertical budget. Bounding it on BOTH vw and vh means
+ * a short (or landscape) viewport shrinks it, not just a narrow one.
+ */
 .mascotWrap {
   position: relative;
-  width: clamp(120px, 32vw, 170px);
+  width: clamp(90px, min(30vw, 24vh), 170px);
   aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -775,8 +787,8 @@
 }
 
 .flameImg {
-  width: clamp(96px, 26vw, 132px);
-  height: clamp(96px, 26vw, 132px);
+  width: clamp(80px, min(24vw, 20vh), 132px);
+  height: clamp(80px, min(24vw, 20vh), 132px);
   object-fit: contain;
   filter: drop-shadow(0 0 34px rgba(255, 138, 0, 0.55)) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
 }
@@ -787,7 +799,7 @@
   justify-content: center;
   gap: 6px;
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  font-size: clamp(52px, 15vw, 76px);
+  font-size: clamp(36px, min(14vw, 11vh), 76px);
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
@@ -795,7 +807,7 @@
 }
 
 .streakDaysLabel {
-  font-size: clamp(18px, 5vw, 24px);
+  font-size: clamp(15px, min(4.4vw, 3.6vh), 24px);
   color: #ffb020;
 }
 
@@ -916,8 +928,8 @@
 }
 
 .achvMedal {
-  width: clamp(120px, 34vw, 150px);
-  height: clamp(120px, 34vw, 150px);
+  width: clamp(96px, min(30vw, 24vh), 150px);
+  height: clamp(96px, min(30vw, 24vh), 150px);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1007,7 +1019,7 @@
 .barTrack {
   position: relative;
   width: min(100%, 340px);
-  height: 22px;
+  height: clamp(12px, 2.6vh, 22px);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
   box-shadow:
@@ -1194,8 +1206,8 @@
 }
 
 .lockCircle {
-  width: clamp(96px, 26vw, 120px);
-  height: clamp(96px, 26vw, 120px);
+  width: clamp(80px, min(24vw, 20vh), 120px);
+  height: clamp(80px, min(24vw, 20vh), 120px);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1261,8 +1273,8 @@
 /* ─── Course-complete trophy crest ──────────────────────────────────────────── */
 
 .trophyCrest {
-  width: clamp(88px, 24vw, 110px);
-  height: clamp(88px, 24vw, 110px);
+  width: clamp(74px, min(22vw, 18vh), 110px);
+  height: clamp(74px, min(22vw, 18vh), 110px);
   border-radius: 50%;
   display: flex;
   align-items: center;
