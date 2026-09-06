@@ -136,7 +136,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
                 fill 
                 className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
                 priority
-                unoptimized
+                sizes="(max-width: 768px) 90vw, 40vw"
               />
             </motion.div>
 

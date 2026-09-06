@@ -54,7 +54,7 @@ export default function VisionSection2() {
                 alt="Thinking Tey Mascot" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.06)]"
-                unoptimized
+                sizes="(max-width: 768px) 90vw, 40vw"
               />
             </motion.div>
           </div>

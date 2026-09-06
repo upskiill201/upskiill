@@ -2044,7 +2044,13 @@ function SectionViewContent({
                 )}
 
                 <div className={styles.reflectGrowthBanner}>
-                  <img src="/lesson Player/Hi there tey.webp" alt="Growth Mascot" className={styles.reflectGrowthMascot} />
+                  <Image
+                    src="/lesson Player/Hi there tey.webp"
+                    alt="Growth Mascot"
+                    width={100}
+                    height={100}
+                    className={styles.reflectGrowthMascot}
+                  />
                   <p className={styles.reflectGrowthText}>
                     Your reflection helps you turn knowledge into growth.<br/>
                     Be honest. Be thoughtful. Be you. 💙
@@ -2132,11 +2138,13 @@ function SectionViewContent({
               <div className={styles.deepenBottomArea}>
                 {/* Image container carrying the mascot image */}
                 <div className={styles.deepenMascotCol}>
-                  <img 
-                    src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
-                    alt="Tey Verified" 
-                    className={styles.deepenMascotImg} 
-                  />
+                  <Image
+                    src="/User onbarding Assets/Step_7_tey_verified_state.webp"
+                    alt="Tey Verified"
+                    width={220}
+                    height={220}
+                    className={styles.deepenMascotImg}
+                    />
                 </div>
 
                 {/* Text container carrying the recommended step banner and finish lesson button */}

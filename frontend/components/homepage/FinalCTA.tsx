@@ -64,7 +64,7 @@ export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {
               alt="Celebrating Tey Mascot" 
               fill 
               className="object-contain drop-shadow-[0_10px_20px_rgba(1,114,253,0.06)]"
-              unoptimized
+              sizes="144px"
             />
           </motion.div>
 
