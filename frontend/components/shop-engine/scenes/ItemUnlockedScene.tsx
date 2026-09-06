@@ -10,7 +10,7 @@
  * learning with a target.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
@@ -18,10 +18,13 @@ import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
 import ShopItemArt from '../ShopItemArt';
+import CelebrationMascot from '../../celebration/CelebrationMascot';
+import { TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle, SLOT_LABELS } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
 import { playClaimArpeggio } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickUnlockLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'ITEM_UNLOCKED' }>;
 
@@ -35,6 +38,7 @@ export default function ItemUnlockedScene({
   const reducedMotion = useReducedMotion();
   const { item } = scene;
   const tone = rarityStyle(item.rarity);
+  const [teyLine] = useState(() => pickUnlockLine());
 
   useEffect(() => {
     playClaimArpeggio();
@@ -136,6 +140,9 @@ export default function ItemUnlockedScene({
           it&apos;s yours.
         </p>
       )}
+
+      <CelebrationMascot pose="cheer" entrance="puff" />
+      <TypewriterBubble text={teyLine} startDelay={700} />
     </SceneShell>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import useSWR from 'swr';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -10,6 +10,7 @@ import { useCelebration } from '@/context/CelebrationContext';
 import { useHerald } from '@/context/HeraldContext';
 import { playHaptic } from '@/lib/haptics';
 import { fetcher } from '@/lib/swr';
+import { pickChestCardLockedStatus, pickChestCardReadyStatus, pickChestCardOpenedStatus } from '@/lib/tey/chestVoice';
 import styles from './MysteryChestCard.module.css';
 
 interface ChestToday {
@@ -71,6 +72,15 @@ export default function MysteryChestCard() {
   const totalQuests = 10;
   const filledSegments = Math.min(5, Math.floor((currentQuests / totalQuests) * 5));
 
+  // Repicked only when the status actually transitions, not on every
+  // re-render — same "don't reroll mid-read" rule as the scene components.
+  const statusText = useMemo(() => {
+    if (isOpened) return pickChestCardOpenedStatus();
+    if (isUnlocked) return pickChestCardReadyStatus();
+    return pickChestCardLockedStatus(totalQuests - currentQuests);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chestState.status]);
+
   return (
     <div className={styles.card}>
       <div className={styles.headerRow}>
@@ -97,13 +107,7 @@ export default function MysteryChestCard() {
       <div className={styles.bottomInfo}>
         <div className={styles.statusRow}>
           <span className={styles.largeFraction}>{currentQuests} / {totalQuests}</span>
-          <span className={styles.statusText}>
-            {isOpened
-              ? "Chest unlocked today! Great job!"
-              : isUnlocked
-              ? "Chest ready! Tap to claim your loot!"
-              : `Complete ${totalQuests - currentQuests} more quests to unlock your chest!`}
-          </span>
+          <span className={styles.statusText}>{statusText}</span>
         </div>
 
         {/* 5-Segment Loot Bar */}

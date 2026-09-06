@@ -16,11 +16,13 @@ import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
 import ShopItemArt from '../ShopItemArt';
-import { CountUpNumber } from '../../celebration/ScenePrimitives';
+import CelebrationMascot from '../../celebration/CelebrationMascot';
+import { CountUpNumber, TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle, SLOT_LABELS, type CosmeticSlot } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
 import { playClaimArpeggio, playGemChime } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickPurchaseLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'PURCHASE_SUCCESS' }>;
 
@@ -38,6 +40,9 @@ export default function PurchaseSuccessScene({
   // The count-down starts at the pre-purchase balance and settles on the new
   // one a beat later, so the spend is visible rather than instantaneous.
   const [balance, setBalance] = useState(scene.coinsBefore);
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the line mid-read.
+  const [teyLine] = useState(() => pickPurchaseLine(scene.rarity));
 
   useEffect(() => {
     playClaimArpeggio();
@@ -158,6 +163,9 @@ export default function PurchaseSuccessScene({
           </span>
         </div>
       </motion.div>
+
+      <CelebrationMascot pose="cheer" entrance="puff" />
+      <TypewriterBubble text={teyLine} startDelay={500} />
     </SceneShell>
   );
 }

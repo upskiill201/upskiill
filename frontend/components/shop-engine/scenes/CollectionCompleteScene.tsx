@@ -8,7 +8,7 @@
  * scene leads with that fact.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Lock } from 'lucide-react';
@@ -16,10 +16,13 @@ import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
 import ShopItemArt from '../ShopItemArt';
+import CelebrationMascot from '../../celebration/CelebrationMascot';
+import { TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
 import { playClaimArpeggio, playGemChime } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickCollectionCompleteLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'COLLECTION_COMPLETE' }>;
 
@@ -32,6 +35,7 @@ export default function CollectionCompleteScene({
 }) {
   const reducedMotion = useReducedMotion();
   const tone = rarityStyle(scene.rewardItem?.rarity ?? 'LEGENDARY');
+  const [teyLine] = useState(() => pickCollectionCompleteLine());
 
   useEffect(() => {
     playClaimArpeggio();
@@ -128,6 +132,9 @@ export default function CollectionCompleteScene({
           {scene.rewardCoins.toLocaleString()}
         </span>
       </motion.div>
+
+      <CelebrationMascot pose="cheer" entrance="puff" />
+      <TypewriterBubble text={teyLine} startDelay={800} />
     </SceneShell>
   );
 }

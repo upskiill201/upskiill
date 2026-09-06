@@ -1,6 +1,7 @@
 # Tey Personality Audit — Progress Tracker
 
-> Work done on `perf/speed-optimization-pass` (uncommitted, working tree).
+> Phase 1 committed on `perf/speed-optimization-pass` (commit `8861262`) and pushed live to `staging`.
+> Phase 2 committed on `perf/speed-optimization-pass` and pushed live to `staging` — see §Phase 2 below.
 > Full plan: `C:\Users\HP\.claude\plans\i-want-you-to-sparkling-sunbeam.md`
 > Last updated: 2026-09-06.
 
@@ -12,7 +13,7 @@ The ask: make Tey (the mascot) feel like a character reacting to the learner, no
 
 **Scope was deliberately split into phases** (confirmed with the user): this pass covers the **Celebration Engine core gaps** plus two small, high-leverage, unrelated fixes (a notification-bell bug, shop error reason-codes). Shop Engine's own scenes, Lucky Spin, onboarding voice, empty/error states, and the offline page are explicitly **deferred** to follow-up passes — not forgotten, just not built yet.
 
-**Status in one line:** Phase 1 implemented and now confirmed working live in the browser (Level-up scene verified end-to-end) — one real bug found and fixed along the way (see below), a couple of unrelated environment hiccups resolved, and most of the manual verification checklist still to run through.
+**Status in one line:** Phase 1 is implemented, live-verified (Level-up scene confirmed end-to-end by the user), committed, and pushed to `staging` — it should be live wherever staging auto-deploys to. Most of the manual verification checklist is still open, and Phase 2/3 haven't been scoped yet.
 
 ---
 
@@ -71,31 +72,55 @@ Everywhere else — Achievement, Level-up, XP/Claim, Chest, Section-complete, Se
 - **Environment hiccup #2**: backend process restarted/crashed independently mid-session (unrelated to this branch's diff) causing a transient "progress could not be saved" error — resolved once the backend came back up.
 - **Verified live**: dispatching the real `teyro:level-up` window event from the browser console showed the new pooled headline **and** a speech bubble that didn't exist before, confirmed by the user. Real lesson completions after the fix are expected to show the new `CLAIM` pool (not yet independently re-confirmed post-fix).
 
+### 8. Committed and shipped to staging
+
+- Final verification pass before committing: `tsc --noEmit` clean (frontend + backend), `nest build` clean, full `next build` clean across every route.
+- Staged and committed exactly the 31 files belonging to this work — deliberately excluding two things sitting untracked/modified in the same working directory that belong to a **different, concurrently-running session**: an in-progress fix to `AnimatedRankList.tsx` and that session's own `leaderboard_community_engine_progress.md`. Neither was touched.
+- Commit `8861262` — `feat(celebration): give Tey a consistent voice across the Celebration Engine` — pushed to `perf/speed-optimization-pass`.
+- `staging` was confirmed to be at the exact same prior commit as `perf/speed-optimization-pass` (a clean ancestor, so a pure fast-forward), so it was updated directly via `git push origin perf/speed-optimization-pass:staging` — deliberately avoiding a local `git checkout staging`, which would have disrupted the other session's in-progress, uncommitted work in this same checkout. No force-push, no merge commit, both branches confirmed aligned at `8861262` afterward.
+
+---
+
+## Phase 2 — Shop Engine scenes, Lucky Spin dedup, Mystery Chest card, Hearts popover
+
+Scoped and implemented in this pass (uncommitted). Research first (an Explore agent mapped all four areas against the codebase — file paths, exact hardcoded lines, and which queue system each goes through), then wired one domain at a time following the exact `ChestScene.tsx` reference pattern (lazy `useState(() => pick...())` so a re-render never rerolls the line mid-read, `CelebrationMascot` + `TypewriterBubble` for anything that's a full scene).
+
+1. **Shop Engine's own 4 scenes** (`frontend/components/shop-engine/scenes/{PurchaseSuccessScene,ItemUnlockedScene,ChestRevealScene,CollectionCompleteScene}.tsx`) — none had a mascot or pooled copy before. New `frontend/lib/tey/shopEngineVoice.ts` (kept separate from `shopVoice.ts`, which is only the shop *error* pool) adds `pickPurchaseLine`/`pickUnlockLine`/`pickCollectionCompleteLine`, tiered by rarity where the scene has it. `ChestRevealScene` (the *paid* chest, a different scene from the free daily `ChestScene`) reuses `chestVoice.ts`'s existing `pickChestRevealLine` directly rather than duplicating a near-identical pool — same "was it rare?" reaction either way. All four now render `<CelebrationMascot pose="cheer" entrance="puff" />` + `<TypewriterBubble>` after their existing reward beat.
+2. **Lucky Spin de-duplication** (`frontend/components/dashboard/v2/WeeklyLuckySpinCard.tsx` + `frontend/components/herald/HeraldSpinReveal.tsx`) — both files hardcoded an identical `🎉 YOU WON ${amount} ${name}!` template in two places each. New `frontend/lib/tey/spinVoice.ts` (`pickSpinPrizeMessage`) replaces all four call sites, tiered by the landed segment's `rarityTier` (looked up from `wheelConfig[landedSegmentIndex]`) — fixes the duplication and adds voice in the same move. The downstream full-page `CLAIM` scene these hand off to already had Tey voice from Phase 1 — untouched.
+3. **Mystery Chest dashboard card** (`frontend/components/dashboard/v2/MysteryChestCard.tsx`) — the persistent widget itself (not the `ChestScene` reveal it triggers, which already had Tey) had 3 static status strings. Extended `chestVoice.ts` with `pickChestCardLockedStatus/ReadyStatus/OpenedStatus`; wired via `useMemo` keyed on `chestState.status` so the line refreshes on a real state transition, not on every re-render.
+4. **Hearts popover** (`frontend/components/hearts/HeartsPopover.tsx`) — voice-only, no mascot added (it's a small anchored hover/pin popover, not a scene — a mascot didn't fit the compact real estate on a first pass). New `frontend/lib/tey/heartsVoice.ts` (`pickHeartsSubtitle`) replaces the static full/not-full subtitle with 3 tiers (full/low/empty), wired via `useMemo` keyed on `[lives, maxLives]`.
+
+**Verification:** `tsc --noEmit` clean across the frontend. `eslint` on all touched files: only 3 pre-existing issues surfaced (an `any` type on `wheelConfig` state in both spin files, and an unused `isAvailable` var in `HeraldSpinReveal.tsx`) — confirmed via `git diff` that none of those lines were touched by this pass; zero new lint issues introduced. Not yet manually clicked through in the browser.
+
+**Committed and shipped to staging** — decided to ship ahead of the manual click-through this time (unlike Phase 1's stricter checkpoint) since typecheck/lint were clean and the change surface per scene is small and additive (new mascot+bubble appended after existing content, existing hardcoded strings swapped 1:1 for pooled equivalents). Staged and committed exactly the 13 files belonging to this work — deliberately excluding `CourseDetail.module.css`, `Explore.module.css`, `frontend/app/(app)/dev/`, `frontend/frontend.log`, and `leaderboard_community_engine_progress.md`, all of which belong to a different, concurrently-running session or are local log noise. `staging` was confirmed at the same commit as `perf/speed-optimization-pass` before pushing (clean fast-forward), updated via `git push origin perf/speed-optimization-pass:staging` — no local `staging` checkout, no force-push.
+
 ---
 
 ## 📍 Current State
 
-- All changes are **uncommitted**, sitting in the working tree on `perf/speed-optimization-pass`.
+- **Phase 1 is committed and live on `staging`** (commit `8861262`) — should be deployed wherever this project's staging pipeline auto-deploys to (Vercel/Render per project convention).
 - New files: `frontend/lib/tey/{pool,streakVoice,xpClaimVoice,levelUpVoice,achievementVoice,chestVoice,milestoneVoice,shopVoice}.ts`.
 - Modified: `backend/src/shop/shop.service.ts`; and on the frontend — `CelebrationContext.tsx`, `teyMessages.ts`, `notificationCopy.tsx`, `shop/api.ts`, `shop/types.ts`, `ShopItemCard.tsx`, the shop dashboard page, `LeaderboardRankWatcher.tsx`, `LeagueResultWatcher.tsx`, the real lesson-complete page, and 10 celebration scene components.
-- `frontend/.env.local` is back to its original state (no `NEXT_PUBLIC_ENVIRONMENT` line) — both dev servers are running (frontend `:3000`, backend `:3001`).
-- **Level-up scene confirmed working live.** Everything else in the checklist below is still unverified.
+- `frontend/.env.local` is back to its original state (no `NEXT_PUBLIC_ENVIRONMENT` line) — both dev servers are running locally (frontend `:3000`, backend `:3001`) for anyone who wants to keep testing against them.
+- **Level-up scene is the only checklist item confirmed live so far.** Everything else in Phase 1 is implemented and shipped, but not yet independently re-confirmed by clicking through it.
+- **Phase 2 is committed and live on `staging`** — see §Phase 2 above for scope. Not yet manually clicked through in the browser (shipped ahead of that checkpoint this time, on the strength of clean typecheck/lint and small additive diffs per scene).
+- New files this pass: `frontend/lib/tey/{shopEngineVoice,spinVoice,heartsVoice}.ts`; extended `frontend/lib/tey/chestVoice.ts` with the 3 dashboard-card status pools.
+- Modified this pass: the 4 shop-engine scenes, `WeeklyLuckySpinCard.tsx`, `HeraldSpinReveal.tsx`, `MysteryChestCard.tsx`, `HeartsPopover.tsx`.
+- Phase 3 is still fully unscoped.
 
 ---
 
 ## 🔜 Next Steps
 
-1. **Finish the manual run-through on `localhost:3000`** — only Level-up is confirmed so far:
-   - [x] Trigger a level-up → speech bubble appears, doesn't reroll on re-render. **Confirmed.**
-   - [ ] Complete 2-3 lessons in a row → confirm the `CLAIM` scene headline varies (now that the hardcoded override is removed).
-   - [ ] Unlock an achievement → confirm mascot + bubble now appear where the scene used to be silent.
-   - [ ] Open the daily chest → confirm the tap-to-open phase reads mischievous, not just "Tap to open!".
-   - [ ] Complete a section / hit a course-progress milestone / complete a course → confirm mascot + reacting line on each.
-   - [ ] Trigger a leaderboard rank change and a weekly league settlement → confirm the subhead now varies too.
-   - [ ] Open the notification bell with a `TEY_*` row present → confirm the real Tey body renders.
-   - [ ] Attempt an unaffordable shop purchase and an already-owned one → confirm Tey-voiced errors, and that an uncovered error still falls back sensibly.
-   - [ ] Confirm no sound double-fires on any newly-bubbled scene, and that muting SFX silences the new voice-reveal ticks too.
-2. If anything looks off, report what was tapped/expected vs. seen — same process that caught the CLAIM-title bug.
-3. Once the checklist above is clean, **commit Phase 1** (nothing has been committed yet — nice checkpoint before starting Phase 2).
-4. **Decide on Phase 2 scope** (deferred, not started): Shop Engine's own 4 scenes (`PurchaseSuccessScene`, `ItemUnlockedScene`, `ChestRevealScene`, `CollectionCompleteScene` — currently zero mascot, zero pooled copy), Lucky Spin de-duplication (`WeeklyLuckySpinCard.tsx` / `HeraldSpinReveal.tsx` currently copy-paste the same prize string), Mystery Chest dashboard card, Hearts popover.
-5. **Decide on Phase 3 scope** (deferred): onboarding voice reconciliation (`useMessagePool.ts`'s register reads as a different character than the "mischievous owl" spec), empty/error-state Tey variant for lower-stakes surfaces (leaning on `EmptyState.tsx` and the already-shipped precedent `"Your quest got lost in the clouds."`), the offline page, and a judgment call on whether `CommunityWelcomeScene.tsx`'s distinct "confident narrator" voice should be left as-is or pulled toward Tey's register.
+1. **Manually verify Phase 2 live on `staging`** (now the more visible venue — a regression there is real, not just local):
+   - [ ] Buy a shop item → `PurchaseSuccessScene` shows mascot + bubble reacting to rarity.
+   - [ ] Meet an unlock requirement → `ItemUnlockedScene` shows mascot + bubble.
+   - [ ] Buy and open a paid Mystery Chest → `ChestRevealScene` shows mascot + bubble reacting to rarity.
+   - [ ] Complete a cosmetic collection → `CollectionCompleteScene` shows mascot + bubble.
+   - [ ] Spin the Weekly Lucky Spin from both entry points (dashboard card and Herald overlay) → prize message varies and reacts to rarity, no longer the fixed `🎉 YOU WON...` string.
+   - [ ] Watch the Mystery Chest dashboard card across a full day-cycle (locked → ready → opened) → status line varies per state, doesn't reroll on unrelated re-renders.
+   - [ ] Hover/tap the hearts pill with hearts full, partial, and at zero → subtitle varies per tier.
+2. **Finish the Phase 1 manual run-through** (still open, listed for completeness — only Level-up confirmed so far): CLAIM headline variation on real lesson completions, Achievement mascot/bubble, daily chest tap-hint tone, Section/Course-complete and Course-progress/Section-unlock mascot+line, leaderboard/league subhead variation, notification bell real body, shop error Tey-voicing + fallback, and no double-firing sound on any newly-bubbled scene.
+3. If anything looks off in either checklist, report what was tapped/expected vs. seen — same process that's caught every real bug so far in this audit.
+4. **Decide on Phase 3 scope** (deferred): onboarding voice reconciliation (`useMessagePool.ts`'s register reads as a different character than the "mischievous owl" spec), empty/error-state Tey variant for lower-stakes surfaces (leaning on `EmptyState.tsx` and the already-shipped precedent `"Your quest got lost in the clouds."`), the offline page, and a judgment call on whether `CommunityWelcomeScene.tsx`'s distinct "confident narrator" voice should be left as-is or pulled toward Tey's register.
+5. **Note for whoever picks this up next**: another session may still be active in this same repo checkout on unrelated leaderboard/course-detail work (`CourseDetail.module.css`, `Explore.module.css`, a `dev/` route were seen untracked/modified in the working tree throughout this pass) — check `git status` before assuming the working tree only reflects this doc's history, and don't stage/commit files outside this pass's own list above.

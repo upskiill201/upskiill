@@ -17,10 +17,13 @@ import SceneShell from '../../celebration/SceneShell';
 import sceneStyles from '../../celebration/Scene.module.css';
 import styles from '../ShopScene.module.css';
 import ShopItemArt from '../ShopItemArt';
+import CelebrationMascot from '../../celebration/CelebrationMascot';
+import { TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
 import { playClaimArpeggio, playGemChime } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickChestRevealLine } from '@/lib/tey/chestVoice';
 
 type Input = Extract<ShopScene, { kind: 'CHEST_REVEAL' }>;
 
@@ -36,6 +39,7 @@ export default function ChestRevealScene({
   const reducedMotion = useReducedMotion();
   const [beat, setBeat] = useState<Beat>(reducedMotion ? 'OPEN' : 'SHAKE');
   const tone = rarityStyle(scene.rarity);
+  const [teyLine] = useState(() => pickChestRevealLine(scene.rarity));
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -148,6 +152,9 @@ export default function ChestRevealScene({
               instead — no duplicates, ever.
             </p>
           )}
+
+          <CelebrationMascot pose="cheer" entrance="puff" />
+          <TypewriterBubble text={teyLine} startDelay={300} />
         </>
       )}
     </SceneShell>

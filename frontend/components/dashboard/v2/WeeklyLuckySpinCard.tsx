@@ -10,6 +10,7 @@ import { currencyDisplayName, toCelebrationCurrency } from '@/components/celebra
 import { useHerald } from '@/context/HeraldContext';
 import { playHaptic } from '@/lib/haptics';
 import { playTickSound, playWinSound } from '@/utils/audio';
+import { pickSpinPrizeMessage } from '@/lib/tey/spinVoice';
 
 // PERF: GSAP (+ the CustomEase plugin) is ~70KB and is used by exactly one
 // interaction in this file — the wheel spin. This card is statically imported
@@ -84,7 +85,9 @@ export default function WeeklyLuckySpinCard() {
         if (data && data.status) {
           setSpinState(data.status);
           if (data.status === 'SPUN') {
-            setPrizeMessage(`🎉 YOU WON ${data.rewardSnapshotAmount} ${currencyDisplayName(data.rewardSnapshotType)}!`);
+            setPrizeMessage(
+              pickSpinPrizeMessage(data.rewardSnapshotAmount, currencyDisplayName(data.rewardSnapshotType))
+            );
           }
           // Herald signal: weekly spin is available
           if (data.status === 'AVAILABLE') {
@@ -158,6 +161,7 @@ export default function WeeklyLuckySpinCard() {
        }
 
       const { landedSegmentIndex, rewardSnapshotType, rewardSnapshotAmount } = data;
+      const landedRarityTier: string | undefined = wheelConfig[landedSegmentIndex]?.rarityTier;
 
       // 2. Compute Target Angle
       // The segment index starts from 0 at the 12 o'clock position (0 deg) and goes clockwise.
@@ -215,7 +219,7 @@ export default function WeeklyLuckySpinCard() {
                  setIsSpinning(false);
                  setSpinState('SPUN');
                  const prizeName = currencyDisplayName(rewardSnapshotType);
-                 setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${prizeName}!`);
+                 setPrizeMessage(pickSpinPrizeMessage(rewardSnapshotAmount, prizeName, landedRarityTier));
                  playWinSound();
                  playHaptic('success');
                  // The spin was persisted server-first (POST /spin/spin) — the

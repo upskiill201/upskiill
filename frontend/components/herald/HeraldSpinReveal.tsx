@@ -29,6 +29,7 @@ import { currencyDisplayName, toCelebrationCurrency } from '@/components/celebra
 import { useGamification } from '@/context/GamificationContext';
 import { playHaptic } from '@/lib/haptics';
 import { playTickSound, playWinSound } from '@/utils/audio';
+import { pickSpinPrizeMessage } from '@/lib/tey/spinVoice';
 import styles from '../dashboard/v2/WeeklyLuckySpin.module.css';
 // Same default segments as the sidebar card — guarantees the wheel is always
 // spinnable even if /spin/wheel-config is down or returns an empty config.
@@ -90,7 +91,10 @@ export default function HeraldSpinReveal() {
           setSpinState(statusData.status);
           if (statusData.status === 'SPUN') {
             setPrizeMessage(
-              `🎉 YOU WON ${statusData.rewardSnapshotAmount} ${currencyDisplayName(statusData.rewardSnapshotType)}!`
+              pickSpinPrizeMessage(
+                statusData.rewardSnapshotAmount,
+                currencyDisplayName(statusData.rewardSnapshotType)
+              )
             );
           }
         }
@@ -136,6 +140,7 @@ export default function HeraldSpinReveal() {
       if (!response.ok) throw new Error(data.message || 'Spin failed');
 
       const { landedSegmentIndex, rewardSnapshotType, rewardSnapshotAmount } = data;
+      const landedRarityTier: string | undefined = wheelConfig[landedSegmentIndex]?.rarityTier;
 
       const segmentCenter =
         landedSegmentIndex * degreesPerSegment + degreesPerSegment / 2;
@@ -189,7 +194,7 @@ export default function HeraldSpinReveal() {
               setIsSpinning(false);
               setSpinState('SPUN');
               const prizeName = currencyDisplayName(rewardSnapshotType);
-              setPrizeMessage(`🎉 YOU WON ${rewardSnapshotAmount} ${prizeName}!`);
+              setPrizeMessage(pickSpinPrizeMessage(rewardSnapshotAmount, prizeName, landedRarityTier));
               playWinSound();
               playHaptic('success');
               // Persisted server-first by POST /spin/spin — the full-page

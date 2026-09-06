@@ -26,3 +26,22 @@ export function pickChestRevealLine(rarityTier: string): string {
   const isRare = rarityTier === 'rare' || rarityTier === 'epic' || rarityTier === 'legendary';
   return pickFromPool(isRare ? REVEAL_RARE : REVEAL_COMMON, isRare ? 'chest:reveal-rare' : 'chest:reveal-common');
 }
+
+// ── Dashboard Mystery Chest card (always-on widget, not a scene) ───────────
+
+const CARD_LOCKED_STATUS = ["{remaining} more quests and it's all yours 👀", "{remaining} to go — I can already tell it's a good one."];
+const CARD_READY_STATUS = ['Chest ready! Go on, tap it 😏', "It's not going to open itself...", 'Waiting on you, champ 🎁'];
+const CARD_OPENED_STATUS = ['Chest unlocked today! Great job!', "That's today's haul — come back tomorrow.", 'Nice pull! See you tomorrow for another.'];
+
+export function pickChestCardLockedStatus(remaining: number): string {
+  const template = pickFromPool(CARD_LOCKED_STATUS, 'chest:card-locked');
+  return template.replace('{remaining}', String(remaining));
+}
+
+export function pickChestCardReadyStatus(): string {
+  return pickFromPool(CARD_READY_STATUS, 'chest:card-ready');
+}
+
+export function pickChestCardOpenedStatus(): string {
+  return pickFromPool(CARD_OPENED_STATUS, 'chest:card-opened');
+}

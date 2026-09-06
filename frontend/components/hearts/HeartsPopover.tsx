@@ -7,7 +7,7 @@
  * when you're out.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Lock, Shield } from 'lucide-react';
@@ -16,6 +16,7 @@ import { prefetchCatalog } from '@/lib/shop/previewCache';
 import type { ShopItem } from '@/lib/shop/types';
 import CountdownPill from '@/components/shop/CountdownPill';
 import { playHaptic } from '@/lib/haptics';
+import { pickHeartsSubtitle } from '@/lib/tey/heartsVoice';
 import styles from './HeartsPopover.module.css';
 
 interface HeartsPopoverProps {
@@ -42,6 +43,7 @@ export default function HeartsPopover({ onClose }: HeartsPopoverProps) {
   }, []);
 
   const isFull = lives >= maxLives;
+  const subtitle = useMemo(() => pickHeartsSubtitle(lives, maxLives), [lives, maxLives]);
   const refillMs = !isFull && livesRefillAt ? new Date(livesRefillAt).getTime() - Date.now() : null;
   const canAfford = coins >= REFILL_COST_COINS || xp >= REFILL_COST_XP;
   const refillLabel = coins >= REFILL_COST_COINS ? `${REFILL_COST_COINS} COINS` : `${REFILL_COST_XP} XP`;
@@ -79,11 +81,7 @@ export default function HeartsPopover({ onClose }: HeartsPopoverProps) {
             <h3 className={styles.heroTitle}>
               {lives}/{maxLives} Hearts
             </h3>
-            <p className={styles.heroSubtitle}>
-              {isFull
-                ? 'Full hearts — keep your run going!'
-                : 'Lose a heart on a wrong answer in Apply.'}
-            </p>
+            <p className={styles.heroSubtitle}>{subtitle}</p>
           </div>
 
           <div className={styles.heartIconWrap}>
