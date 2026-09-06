@@ -22,13 +22,14 @@ export class LeagueController {
   }
 
   /**
-   * GET /api/leagues/me/pending-result
-   * Most recent unseen week settlement (promotion / demotion / championship),
-   * consumed by the dashboard celebration watcher. Null when nothing new.
+   * GET /api/leagues/me/pending-results
+   * Every unseen week settlement (promotion / demotion / championship),
+   * oldest first, consumed by the dashboard celebration watcher. Empty array
+   * when nothing new.
    */
-  @Get('me/pending-result')
-  async getPendingResult(@Req() req: any) {
-    return this.leagueService.getPendingResult(req.user.id as string);
+  @Get('me/pending-results')
+  async getPendingResults(@Req() req: any) {
+    return this.leagueService.getPendingResults(req.user.id as string);
   }
 
   /**

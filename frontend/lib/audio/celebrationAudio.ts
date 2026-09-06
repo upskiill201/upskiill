@@ -37,6 +37,27 @@ function isCelebrationAudioEnabled(): boolean {
   return soundManager.getSynthBus() !== null;
 }
 
+// ─── Overlap guard ──────────────────────────────────────────────────────────
+// Every play* function below is a synthesized one-shot with no cooldown of
+// its own (unlike soundManager.play()'s registry-based cooldownMs). Once the
+// Leaderboard Engine fires more often — by design — the same sound can get
+// called twice within a few ms (e.g. a rank-list swap plus its scene's intro
+// beat). This is a single, shared guard applied to every exported sound here,
+// not just leaderboard ones, so nothing in the Celebration Engine can
+// double-play from a redundant call.
+const SOUND_COOLDOWN_MS = 150;
+const lastPlayedAt = new Map<string, number>();
+
+/** Returns true (and records the call) the first time `name` is invoked
+ * within the cooldown window; false on a redundant call to be skipped. */
+function shouldPlay(name: string): boolean {
+  const now = Date.now();
+  const last = lastPlayedAt.get(name) ?? 0;
+  if (now - last < SOUND_COOLDOWN_MS) return false;
+  lastPlayedAt.set(name, now);
+  return true;
+}
+
 function scheduleTone(bus: { ctx: AudioContext; output: GainNode }, opts: ToneOptions) {
   const { ctx, output } = bus;
   const {
@@ -122,7 +143,7 @@ function scheduleNoise(
 /** Rising major arpeggio — the "CLAIM" moment. */
 export function playClaimArpeggio() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playClaimArpeggio')) return;
   // C5 E5 G5 C6 E6 — bright, ascending, mallet-like
   [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((freq, i) => {
     scheduleTone(bus, { freq, at: i * 0.07, dur: 0.22, type: 'triangle', gain: 0.16 });
@@ -150,7 +171,7 @@ export function playScenePop(index = 0) {
 /** Quick high gliss — sparkle/shine moments. */
 export function playSparkle() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playSparkle')) return;
   scheduleTone(bus, { freq: 1567.98, dur: 0.18, type: 'sine', gain: 0.08, slideTo: 3135.96 });
   scheduleTone(bus, { freq: 2093, at: 0.06, dur: 0.14, type: 'sine', gain: 0.06 });
 }
@@ -158,7 +179,7 @@ export function playSparkle() {
 /** Airy sweep — scene transitions / mascot movements. */
 export function playWhoosh(direction: 'up' | 'down' = 'up') {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay(`playWhoosh:${direction}`)) return;
   scheduleNoise(bus, {
     dur: 0.32,
     gain: 0.08,
@@ -180,7 +201,7 @@ export function playTypingTick() {
 /** Wooden creak — chest shake before opening. */
 export function playChestCreak() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playChestCreak')) return;
   scheduleTone(bus, { freq: 130, dur: 0.42, type: 'sawtooth', gain: 0.05, slideTo: 96 });
   scheduleTone(bus, { freq: 196, at: 0.1, dur: 0.3, type: 'sawtooth', gain: 0.035, slideTo: 150 });
   scheduleNoise(bus, { dur: 0.35, gain: 0.035, filterFrom: 300, filterTo: 900, q: 2.2 });
@@ -189,7 +210,7 @@ export function playChestCreak() {
 /** Golden burst — chest lid flying open with the light beam. */
 export function playChestBurst() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playChestBurst')) return;
   scheduleNoise(bus, { dur: 0.4, gain: 0.14, filterFrom: 1200, filterTo: 6000, q: 0.7 });
   // Bright major chord bloom
   [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
@@ -211,7 +232,7 @@ export function playGemChime(index: number) {
 /** Warm rising fanfare — streak extended. */
 export function playStreakFanfare() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playStreakFanfare')) return;
   // G4 C5 E5 G5 → C6 (warm, triumphant)
   [392, 523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
     scheduleTone(bus, { freq, at: i * 0.09, dur: 0.3, type: 'triangle', gain: 0.15 });
@@ -223,7 +244,7 @@ export function playStreakFanfare() {
 /** Crackly shimmer — streak saved by a freeze. */
 export function playIceCrackle() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playIceCrackle')) return;
   for (let i = 0; i < 7; i++) {
     scheduleNoise(bus, {
       at: i * 0.055,
@@ -239,7 +260,7 @@ export function playIceCrackle() {
 /** Gentle descending minor motif — streak lost. Sad but kind, never harsh. */
 export function playLossMotif() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playLossMotif')) return;
   [523.25, 466.16, 392, 311.13].forEach((freq, i) => {
     scheduleTone(bus, { freq, at: i * 0.17, dur: 0.34, type: 'triangle', gain: 0.11 });
   });
@@ -252,7 +273,7 @@ export function playLossMotif() {
 /** Bright short sweep + flourish — passed a rival mid-week. */
 export function playRankUp() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playRankUp')) return;
   scheduleNoise(bus, { dur: 0.22, gain: 0.09, filterFrom: 500, filterTo: 2500, q: 1.6 });
   scheduleTone(bus, { freq: 783.99, at: 0.08, dur: 0.16, type: 'triangle', gain: 0.13 });
   scheduleTone(bus, { freq: 1174.66, at: 0.15, dur: 0.16, type: 'sine', gain: 0.1 });
@@ -261,7 +282,7 @@ export function playRankUp() {
 /** Warm single confirming tone + soft sparkle — joined this week's board. */
 export function playRankJoin() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playRankJoin')) return;
   scheduleTone(bus, { freq: PENTATONIC[2], dur: 0.16, type: 'sine', gain: 0.14 });
   scheduleTone(bus, { freq: 1567.98, at: 0.09, dur: 0.16, type: 'sine', gain: 0.07, slideTo: 3135.96 });
 }
@@ -277,7 +298,7 @@ export function playRankDown() {
 /** The big one — full fanfare for level-ups (rare moment, biggest treatment). */
 export function playLevelUpFanfare() {
   const bus = soundManager.getSynthBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('playLevelUpFanfare')) return;
   // I – IV – V – octave hit in C major, brass-ish sawtooth over soft sine bed
   const chords: { freqs: number[]; at: number; dur: number }[] = [
     { freqs: [523.25, 659.25, 783.99], at: 0, dur: 0.16 },      // C major

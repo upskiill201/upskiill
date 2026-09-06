@@ -85,7 +85,7 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const headline =
+  const headline = scene.teyLine ?? (
     scene.outcome === 'PROMOTED' ? (
       <>
         You advanced to <span className={styles.headlineAccent}>{toMeta.name}!</span>
@@ -102,7 +102,8 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
       <>
         You finished #{scene.rank ?? '—'} — down to <span className={styles.headlineAccent}>{toMeta.name}</span>
       </>
-    );
+    )
+  );
 
   const subhead =
     scene.outcome === 'CHAMPION'

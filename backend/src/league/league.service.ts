@@ -372,51 +372,54 @@ export class LeagueService {
   }
 
   /**
-   * GET /leagues/me/pending-result — the user's most recent unseen week
-   * result, consumed by the dashboard celebration watcher.
+   * GET /leagues/me/pending-results — every one of the user's unseen settled
+   * weeks, oldest first, consumed by the dashboard celebration watcher. A
+   * learner who was away for two weekly settlements gets both queued and
+   * played in order, rather than only ever seeing the most recent one.
    */
-  async getPendingResult(userId: string): Promise<{ result: PendingLeagueResult | null }> {
+  async getPendingResults(userId: string): Promise<{ results: PendingLeagueResult[] }> {
     const currentWeek = getUtcWeekStart();
     await this.ensureSettled(userId).catch((err) =>
-      this.logger.error(`ensureSettled failed during pending-result read for ${userId}`, err as Error),
+      this.logger.error(`ensureSettled failed during pending-results read for ${userId}`, err as Error),
     );
 
-    const pending = await this.prisma.leagueMember.findFirst({
+    const pendingRows = await this.prisma.leagueMember.findMany({
       where: { userId, weekStart: { lt: currentWeek }, seenAt: null, outcome: { not: null } },
-      orderBy: { weekStart: 'desc' },
+      orderBy: { weekStart: 'asc' },
     });
-    if (!pending) return { result: null };
+    if (pendingRows.length === 0) return { results: [] };
 
-    // Settled cohort-mates already carry their final `rank` from
-    // settleCohort — one extra read gives the celebration scene a real
-    // "where you finished" list to animate into place before the tier
-    // reveal, at no extra write cost. INACTIVE_DEMOTED rows have no
-    // cohortId (the user never joined that week) — `cohortId: null` would
-    // otherwise match every other unjoined member row in the table, so
-    // skip the query entirely rather than filtering on null.
-    const cohortMembers = pending.cohortId
-      ? await this.prisma.leagueMember.findMany({
-          where: { cohortId: pending.cohortId },
-          orderBy: { rank: 'asc' },
-          select: {
-            userId: true,
-            rank: true,
-            weeklyXp: true,
-            user: { select: { fullName: true, avatarUrl: true } },
-          },
-        })
-      : [];
-    const finalStandings: LeaderboardRow[] = cohortMembers.map((m) => ({
-      rank: m.rank ?? 0,
-      userId: m.userId,
-      name: m.user.fullName,
-      avatarUrl: m.user.avatarUrl,
-      weeklyXp: m.weeklyXp,
-      isMe: m.userId === userId,
-    }));
+    const results: PendingLeagueResult[] = [];
+    for (const pending of pendingRows) {
+      // Settled cohort-mates already carry their final `rank` from
+      // settleCohort — one extra read gives the celebration scene a real
+      // "where you finished" list to animate into place before the tier
+      // reveal, at no extra write cost. INACTIVE_DEMOTED rows have no
+      // cohortId (the user never joined that week) — `cohortId: null` would
+      // otherwise match every other unjoined member row in the table, so
+      // skip the query entirely rather than filtering on null.
+      const cohortMembers = pending.cohortId
+        ? await this.prisma.leagueMember.findMany({
+            where: { cohortId: pending.cohortId },
+            orderBy: { rank: 'asc' },
+            select: {
+              userId: true,
+              rank: true,
+              weeklyXp: true,
+              user: { select: { fullName: true, avatarUrl: true } },
+            },
+          })
+        : [];
+      const finalStandings: LeaderboardRow[] = cohortMembers.map((m) => ({
+        rank: m.rank ?? 0,
+        userId: m.userId,
+        name: m.user.fullName,
+        avatarUrl: m.user.avatarUrl,
+        weeklyXp: m.weeklyXp,
+        isMe: m.userId === userId,
+      }));
 
-    return {
-      result: {
+      results.push({
         weekStart: pending.weekStart,
         league: pending.league as LeagueTier,
         toTier: outcomeNewTier(pending.outcome!, pending.league as LeagueTier),
@@ -424,8 +427,10 @@ export class LeagueService {
         totalXp: pending.weeklyXp,
         outcome: pending.outcome as LeagueOutcome,
         finalStandings,
-      },
-    };
+      });
+    }
+
+    return { results };
   }
 
   /** POST /leagues/me/ack-result — mark a week result as surfaced. */

@@ -1,31 +1,42 @@
 'use client';
 
 /**
- * LeaderboardRankWatcher — surfaces mid-week leaderboard moments (joined /
- * passed a rival / passed by a rival) as full-page LEADERBOARD celebration
- * scenes right after the learner finishes a lesson.
+ * LeaderboardRankWatcher — the living Leaderboard Engine. Surfaces every
+ * meaningful mid-week leaderboard moment (joined, passed/passed-by a rival,
+ * a big jump, entering/escaping the promotion or demotion zone, reaching #1)
+ * as a full-page LEADERBOARD celebration scene.
  *
- * Flow: the learn flow dispatches `lesson:completed` → we give the backend's
- * async league listener ~1.2s to settle (mirrors QuestProgressWatcher's
- * LISTENER_SETTLE_MS — same async chain off the same xp.awarded event),
- * re-fetch `/api/leagues/me`, and diff it against the last snapshot
- * persisted in localStorage:
+ * Unlike the original version, this does NOT only react to `lesson:completed`
+ * — a rival's XP can change the learner's rank while they're idle or off on
+ * another tab, so state is re-checked on:
+ *   - `lesson:completed` (fastest path — the common case)
+ *   - tab focus / visibility regaining (throttled)
+ *   - a foreground-only poll, paused while the tab is hidden
+ *   - mount (after a short delay, so it never races other boot-time scenes)
  *
- *   no prior snapshot, or a fresh week/joined transition → JOINED
- *   rank improved                                        → PASSED_RIVAL
- *   rank worsened                                         → PASSED_BY_RIVAL
- *
- * The snapshot is written BEFORE celebrating, so reloads never replay old
- * moments (mirrors QuestProgressWatcher/DailyRewardWatcher). A real
- * end-of-week promotion/demotion is a separate, already-existing flow —
- * LeagueResultWatcher — untouched by this file.
+ * Each check diffs the fresh read against the last snapshot via
+ * `classifyLeaderboardEvent` (lib/leaderboard/leaderboardEvents.ts), which
+ * returns at most one, already priority-resolved event — never stacks
+ * competing full-page moments for a single state change. The snapshot is
+ * always written BEFORE celebrating (mirrors QuestProgressWatcher /
+ * DailyRewardWatcher) so a refresh mid-scene never replays a moment, but a
+ * genuine change while the app was closed still gets its due celebration on
+ * next open — the CelebrationContext queue safely serializes it behind any
+ * other boot-time scene (level-up, streak, chest, quest, community welcome).
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { useCelebration, type RankRow } from '@/context/CelebrationContext';
+import { useCelebration } from '@/context/CelebrationContext';
 import { useGamification } from '@/context/GamificationContext';
-import type { LeagueTier } from '@/lib/leagues';
+import {
+  classifyLeaderboardEvent,
+  toSnapshot,
+  windowAround,
+  type LeaderboardSnapshot,
+  type MyLeaderboard,
+} from '@/lib/leaderboard/leaderboardEvents';
+import { pickLeaderboardMessage } from '@/lib/leaderboard/teyMessages';
 
 /** Routes where full-page student takeovers must never appear. */
 const SKIP_ROUTE_PREFIXES = [
@@ -42,79 +53,35 @@ const SKIP_ROUTE_PREFIXES = [
  * event as quests/missions/chests) to land. */
 const LISTENER_SETTLE_MS = 1200;
 
+/** Delay before the very first check on mount — lets other boot-time scenes
+ * (level-up, streak, chest) queue first without a race. */
+const MOUNT_CHECK_DELAY_MS = 4000;
+
+/** Foreground-only poll cadence — a rival's XP can move the learner's rank
+ * with no local trigger at all, so this is the catch-all. */
+const POLL_INTERVAL_MS = 90_000;
+
+/** Minimum gap between focus/visibility-triggered checks, so rapid tab
+ * switching can't hammer the endpoint. */
+const FOCUS_CHECK_THROTTLE_MS = 20_000;
+
 const SNAPSHOT_KEY = 'teyro:leaderboard-snapshot';
 
-/** Rows around the learner's rank — a full cohort snapshot would only ever
- * be trimmed down to this before display anyway. */
-const WINDOW_RADIUS = 3;
-
-interface StandingRow {
-  rank: number;
-  userId: string;
-  name: string;
-  avatarUrl: string | null;
-  weeklyXp: number;
-  isMe: boolean;
-}
-
-interface MyLeaderboard {
-  weekStart: string;
-  league: LeagueTier;
-  joined: boolean;
-  myRank: number | null;
-  standings: StandingRow[];
-}
-
-interface Snapshot {
-  weekStart: string;
-  joined: boolean;
-  myRank: number | null;
-  standings: { userId: string; name: string; avatarUrl: string | null; rank: number }[];
-}
-
-function readSnapshot(): Snapshot | null {
+function readSnapshot(): LeaderboardSnapshot | null {
   try {
     const raw = window.localStorage.getItem(SNAPSHOT_KEY);
-    return raw ? (JSON.parse(raw) as Snapshot) : null;
+    return raw ? (JSON.parse(raw) as LeaderboardSnapshot) : null;
   } catch {
     return null;
   }
 }
 
-function writeSnapshot(data: MyLeaderboard): void {
+function writeSnapshot(snapshot: LeaderboardSnapshot): void {
   try {
-    window.localStorage.setItem(
-      SNAPSHOT_KEY,
-      JSON.stringify({
-        weekStart: data.weekStart,
-        joined: data.joined,
-        myRank: data.myRank,
-        standings: data.standings.map((s) => ({
-          userId: s.userId,
-          name: s.name,
-          avatarUrl: s.avatarUrl,
-          rank: s.rank,
-        })),
-      } satisfies Snapshot),
-    );
+    window.localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snapshot));
   } catch {
     /* storage unavailable (private mode) — dedupeKeys still guard */
   }
-}
-
-/** Trims a full cohort's standings to a small window around a rank, for the
- * scene's AnimatedRankList (never renders the whole cohort). */
-function windowAround(rows: { userId: string; name: string; avatarUrl: string | null; rank: number }[], centerRank: number): RankRow[] {
-  const meUserId = rows.find((r) => r.rank === centerRank)?.userId;
-  return rows
-    .filter((r) => Math.abs(r.rank - centerRank) <= WINDOW_RADIUS)
-    .map((r) => ({
-      userId: r.userId,
-      name: r.name,
-      avatarUrl: r.avatarUrl,
-      rank: r.rank,
-      isMe: r.userId === meUserId,
-    }));
 }
 
 async function fetchLeaderboard(): Promise<MyLeaderboard> {
@@ -127,13 +94,17 @@ export default function LeaderboardRankWatcher() {
   const pathname = usePathname();
   const { celebrate } = useCelebration();
   const { profileLoaded, isLoading } = useGamification();
+  const lastCheckedAtRef = useRef(0);
+  const inFlightRef = useRef(false);
 
-  const handleLessonCompleted = useCallback(() => {
+  const runCheck = useCallback(async () => {
     if (!profileLoaded || isLoading) return;
+    if (inFlightRef.current) return; // never overlap two in-flight checks
     const path = pathname || window.location.pathname;
     if (SKIP_ROUTE_PREFIXES.some((p) => path.startsWith(p))) return;
 
-    window.setTimeout(async () => {
+    inFlightRef.current = true;
+    try {
       let fresh: MyLeaderboard;
       try {
         fresh = await fetchLeaderboard();
@@ -141,104 +112,86 @@ export default function LeaderboardRankWatcher() {
         return; // logged out / network blip — nothing to celebrate
       }
 
-      const prev = readSnapshot();
-      writeSnapshot(fresh);
+      const freshSnapshot = toSnapshot(fresh);
+      const prevSnapshot = readSnapshot();
+      // Write BEFORE celebrating — a refresh mid-scene must never replay.
+      writeSnapshot(freshSnapshot);
 
-      if (!fresh.joined || fresh.myRank === null) return;
+      const event = classifyLeaderboardEvent(prevSnapshot, freshSnapshot);
+      if (!event) return;
 
-      // First-ever sight of a joined cohort — the one case where "first
-      // sight" SHOULD celebrate (unlike quests: joining the leaderboard is
-      // itself the moment, not history to sync silently).
-      const isFreshJoin = !prev || prev.weekStart !== fresh.weekStart || !prev.joined;
-      if (isFreshJoin) {
-        celebrate({
-          kind: 'LEADERBOARD',
-          variant: 'JOINED',
-          league: fresh.league,
-          myRank: fresh.myRank,
-          beforeStandings: [],
-          afterStandings: windowAround(fresh.standings, fresh.myRank),
-          weekStart: fresh.weekStart,
-          dedupeKey: `lb-join-${fresh.weekStart}`,
-        });
-        return;
-      }
+      const beforeStandings = event.prevRank !== null && prevSnapshot ? windowAround(prevSnapshot.standings, event.prevRank) : [];
+      const afterStandings = windowAround(freshSnapshot.standings, event.myRank);
 
-      if (prev.myRank === null || fresh.myRank === prev.myRank) return;
+      celebrate({
+        kind: 'LEADERBOARD',
+        variant: event.type,
+        league: event.league,
+        myRank: event.myRank,
+        deltaPositions: event.deltaPositions,
+        beforeStandings,
+        afterStandings,
+        rivalName: event.rivalName,
+        rivalUserId: event.rivalUserId,
+        weekStart: event.weekStart,
+        teyLine: pickLeaderboardMessage(event.type, {
+          deltaPositions: event.deltaPositions,
+          myRank: event.myRank,
+          rivalName: event.rivalName,
+        }),
+        dedupeKey: `lb-${event.weekStart}-${event.type}-${event.prevRank ?? 'x'}-${event.myRank}`,
+      });
+    } finally {
+      inFlightRef.current = false;
+    }
+  }, [celebrate, profileLoaded, isLoading, pathname]);
 
-      const beforeStandings = windowAround(prev.standings, prev.myRank);
-      const afterStandings = windowAround(fresh.standings, fresh.myRank);
+  const handleLessonCompleted = useCallback(() => {
+    window.setTimeout(() => void runCheck(), LISTENER_SETTLE_MS);
+  }, [runCheck]);
 
-      if (fresh.myRank < prev.myRank) {
-        // Moved up — the rival is whoever was ahead of me before and is now
-        // behind, preferring whoever's now closest to my new rank.
-        const rival = prev.standings
-          .filter((p) => p.rank < prev.myRank!)
-          .map((p) => ({ prevRank: p.rank, name: p.name, userId: p.userId, newRank: fresh.standings.find((f) => f.userId === p.userId)?.rank }))
-          .filter((p) => p.newRank !== undefined && p.newRank > fresh.myRank!)
-          .sort((a, b) => (a.newRank as number) - (b.newRank as number))[0];
-        if (!rival) return; // no one actually crossed (e.g. a tie shuffled ranks)
-
-        celebrate({
-          kind: 'LEADERBOARD',
-          variant: 'PASSED_RIVAL',
-          league: fresh.league,
-          myRank: fresh.myRank,
-          beforeStandings,
-          afterStandings,
-          rivalName: rival.name,
-          rivalUserId: rival.userId,
-          weekStart: fresh.weekStart,
-          dedupeKey: `lb-up-${fresh.weekStart}-${fresh.myRank}`,
-        });
-      } else {
-        // Moved down — symmetric: who is now ahead of me who wasn't before.
-        const rival = fresh.standings
-          .filter((f) => f.rank < fresh.myRank!)
-          .map((f) => ({ newRank: f.rank, name: f.name, userId: f.userId, prevRank: prev.standings.find((p) => p.userId === f.userId)?.rank }))
-          .filter((f) => f.prevRank !== undefined && f.prevRank > prev.myRank!)
-          .sort((a, b) => (b.newRank as number) - (a.newRank as number))[0];
-        if (!rival) return;
-
-        celebrate({
-          kind: 'LEADERBOARD',
-          variant: 'PASSED_BY_RIVAL',
-          league: fresh.league,
-          myRank: fresh.myRank,
-          beforeStandings,
-          afterStandings,
-          rivalName: rival.name,
-          rivalUserId: rival.userId,
-          weekStart: fresh.weekStart,
-          dedupeKey: `lb-down-${fresh.weekStart}-${fresh.myRank}`,
-        });
-      }
-    }, LISTENER_SETTLE_MS);
-  }, [pathname, celebrate, profileLoaded, isLoading]);
+  const handleFocusOrVisible = useCallback(() => {
+    if (document.visibilityState !== undefined && document.visibilityState !== 'visible') return;
+    const now = Date.now();
+    if (now - lastCheckedAtRef.current < FOCUS_CHECK_THROTTLE_MS) return;
+    lastCheckedAtRef.current = now;
+    void runCheck();
+  }, [runCheck]);
 
   useEffect(() => {
-    // Mounted at the app root so `lesson:completed` (dispatched from the
-    // learn flow) is always heard, not just while under /dashboard — but
-    // hold off registering anything until we know there's a signed-in
-    // profile, so logged-out visitors on marketing/auth routes never pay
-    // for a league fetch.
     if (!profileLoaded || isLoading) return;
 
-    // Silent catch-up on entry so cross-tab/cross-session completions never
-    // replay a stale moment later.
-    const syncQuietly = () => {
-      const path = window.location.pathname;
-      if (SKIP_ROUTE_PREFIXES.some((p) => path.startsWith(p))) return;
-      fetchLeaderboard().then(writeSnapshot).catch(() => {});
+    const mountTimer = window.setTimeout(() => {
+      lastCheckedAtRef.current = Date.now();
+      void runCheck();
+    }, MOUNT_CHECK_DELAY_MS);
+
+    // Foreground-only poll: a recursive timeout (not setInterval) so a
+    // backgrounded tab never piles up drift, and skips entirely while hidden.
+    let pollTimer: number | null = null;
+    const schedulePoll = () => {
+      pollTimer = window.setTimeout(() => {
+        if (document.visibilityState === 'visible') {
+          lastCheckedAtRef.current = Date.now();
+          void runCheck();
+        }
+        schedulePoll();
+      }, POLL_INTERVAL_MS);
     };
-    const t = window.setTimeout(syncQuietly, 4000);
+    schedulePoll();
 
     window.addEventListener('lesson:completed', handleLessonCompleted);
+    window.addEventListener('focus', handleFocusOrVisible);
+    document.addEventListener('visibilitychange', handleFocusOrVisible);
+
     return () => {
-      window.clearTimeout(t);
+      window.clearTimeout(mountTimer);
+      if (pollTimer !== null) window.clearTimeout(pollTimer);
       window.removeEventListener('lesson:completed', handleLessonCompleted);
+      window.removeEventListener('focus', handleFocusOrVisible);
+      document.removeEventListener('visibilitychange', handleFocusOrVisible);
     };
-  }, [handleLessonCompleted, profileLoaded, isLoading]);
+  }, [handleLessonCompleted, handleFocusOrVisible, runCheck, profileLoaded, isLoading]);
 
   return null;
 }

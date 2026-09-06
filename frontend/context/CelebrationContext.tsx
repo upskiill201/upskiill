@@ -136,6 +136,10 @@ export type CelebrationScene =
        * beat before the tier-shield reveal. Empty for inactivity demotions
        * (never joined that week — nothing to show). */
       finalStandings: RankRow[];
+      /** Tey's headline for this outcome, picked once by the producer
+       * (rotates through a message pool — see lib/leaderboard/teyMessages.ts)
+       * so re-renders of the scene don't reroll it. */
+      teyLine?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -237,19 +241,40 @@ export type CelebrationScene =
   | {
       kind: 'LEADERBOARD';
       /** Mid-week rank moment — a real end-of-week promotion/demotion is
-       * still the 'LEAGUE' scene above, not this one. */
-      variant: 'JOINED' | 'PASSED_RIVAL' | 'PASSED_BY_RIVAL';
+       * still the 'LEAGUE' scene above, not this one. Covers every
+       * meaningful in-week movement: joining, rival crossings, big jumps,
+       * promotion/demotion zone transitions, and reaching #1. */
+      variant:
+        | 'JOINED'
+        | 'PASSED_RIVAL'
+        | 'PASSED_BY_RIVAL'
+        | 'REACHED_FIRST'
+        | 'ENTERED_PROMOTION_ZONE'
+        | 'ESCAPED_DEMOTION_ZONE'
+        | 'ENTERED_DEMOTION_ZONE'
+        | 'EXITED_PROMOTION_ZONE'
+        | 'CLOSE_TO_PROMOTION'
+        | 'BIG_JUMP_UP'
+        | 'BIG_JUMP_DOWN';
       league: LeagueTier;
       myRank: number;
+      /** Positions moved since the last check (0 for JOINED / zone-only
+       * transitions with no rank change to animate). */
+      deltaPositions?: number;
       /** Display window (rank ± a few) — never the whole cohort. Identical
        * shape before/after; only `rank` differs. Empty for JOINED (nothing
        * to animate past, just reveals the fresh cohort window). */
       beforeStandings: RankRow[];
       afterStandings: RankRow[];
-      /** The specific person passed / who passed the learner. Absent for JOINED. */
+      /** The specific person passed / who passed the learner. Only set for
+       * PASSED_RIVAL / PASSED_BY_RIVAL. */
       rivalName?: string;
       rivalUserId?: string;
       weekStart: string;
+      /** Tey's headline for this event, picked once by the producer
+       * (rotates through a message pool — see lib/leaderboard/teyMessages.ts)
+       * so re-renders of the scene don't reroll it. */
+      teyLine?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     };

@@ -88,11 +88,11 @@ async function main() {
     assert(settledCohort?.status === 'SETTLED', 'private cohort marked SETTLED');
 
     // ── 4. Pending result → ack → gone ─────────────────────────────────────
-    const pending1 = await league.getPendingResult(userId);
-    assert(pending1.result?.outcome === 'PROMOTED' && pending1.result.toTier === 'SILVER', 'pending result exposes promotion');
+    const pending1 = await league.getPendingResults(userId);
+    assert(pending1.results[0]?.outcome === 'PROMOTED' && pending1.results[0]?.toTier === 'SILVER', 'pending result exposes promotion');
     await league.ackResult(userId, lastWeek);
-    const pending2 = await league.getPendingResult(userId);
-    assert(pending2.result === null, 'ack clears the pending result');
+    const pending2 = await league.getPendingResults(userId);
+    assert(pending2.results.length === 0, 'ack clears the pending result');
 
     // ── 5. In-progress week must NOT trigger inactivity demotion ───────────
     const synthetic = await prisma.leagueMember.findUnique({
