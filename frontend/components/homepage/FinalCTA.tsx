@@ -19,6 +19,10 @@ const socialLinks = [
 export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  // Separate from isInView above, which is `once: true` (a reveal trigger) and
+  // so can never turn back off. The decorative float needs a live flag, so it
+  // stops costing main-thread time once the section scrolls away.
+  const sectionVisible = useInView(ref, { margin: '200px 0px 200px 0px' });
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,7 +58,7 @@ export default function FinalCTA({ onOpenModal }: { onOpenModal: () => void }) {
             }}
             transition={{
               duration: 4,
-              repeat: Infinity,
+              repeat: sectionVisible ? Infinity : 0,
               ease: "easeInOut"
             }}
             className="relative w-36 h-36 mb-6 flex items-center justify-center"

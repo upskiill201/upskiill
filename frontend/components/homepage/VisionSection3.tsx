@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Image from 'next/image';
 import { Smartphone, ShieldCheck, Globe } from 'lucide-react';
@@ -9,6 +9,11 @@ import { SpeechBubble } from '../onboarding/SpeechBubble';
 
 export default function VisionSection3() {
   const mascotRef = useRef<HTMLDivElement>(null);
+  // Decorative float below, gated on visibility: framer-motion drives these
+  // from JS every frame, and the marketing page ran eight concurrently for as
+  // long as it was open — continuous CPU for motion nobody is looking at.
+  // Invisible by definition, since you cannot see an animation you scrolled past.
+  const mascotInView = useInView(mascotRef, { margin: '200px 0px 200px 0px' });
 
   const teyQuote = [
     `<strong>Education is a human right. 🌍</strong>`,
@@ -106,7 +111,7 @@ export default function VisionSection3() {
           >
             <motion.div 
               animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 5, repeat: mascotInView ? Infinity : 0, ease: "easeInOut" }}
               className="relative w-[95%] h-[95%] z-10 flex items-center justify-center"
             >
               <Image 

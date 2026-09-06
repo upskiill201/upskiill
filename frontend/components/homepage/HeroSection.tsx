@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { Zap, ChevronRight } from 'lucide-react';
 import { MascotBackground } from '../onboarding/MascotBackground';
@@ -14,6 +14,11 @@ interface HeroSectionProps {
 export default function HeroSection({ onOpenModal }: HeroSectionProps) {
   const [count, setCount] = useState<number | null>(null);
   const mascotRef = useRef<HTMLDivElement>(null);
+  // The mascot float and its three badges are decorative infinite loops that
+  // framer-motion drives from JS every frame. Gated so they stop once the hero
+  // scrolls away — this is a long marketing page, and there is no reason to
+  // keep four animations running behind the rest of it.
+  const heroVisible = useInView(mascotRef, { margin: '200px 0px 200px 0px' });
 
   useEffect(() => {
     fetch('/webhook/count')
@@ -125,7 +130,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
               }}
               transition={{
                 duration: 5,
-                repeat: Infinity,
+                repeat: heroVisible ? Infinity : 0,
                 ease: "easeInOut"
               }}
               className="relative w-[95%] h-[95%] z-10 flex items-center justify-center"
@@ -145,7 +150,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             {/* 1. Streak Flame Badge */}
             <motion.div
               animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 4.2, repeat: heroVisible ? Infinity : 0, ease: 'easeInOut' }}
               className="absolute -top-2 right-4 bg-white border-2 border-orange-100 border-b-4 border-orange-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
             >
               <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(249,115,22,0.2)]">🔥</span>
@@ -158,7 +163,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             {/* 2. XP Star Badge */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              transition={{ duration: 3.8, repeat: heroVisible ? Infinity : 0, ease: 'easeInOut', delay: 0.5 }}
               className="absolute top-1/2 -left-6 bg-white border-2 border-amber-100 border-b-4 border-amber-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
             >
               <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(245,158,11,0.2)]">⭐</span>
@@ -171,7 +176,7 @@ export default function HeroSection({ onOpenModal }: HeroSectionProps) {
             {/* 3. Skill Badge */}
             <motion.div
               animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+              transition={{ duration: 4.5, repeat: heroVisible ? Infinity : 0, ease: 'easeInOut', delay: 0.8 }}
               className="absolute -bottom-2 left-1/4 bg-white border-2 border-emerald-100 border-b-4 border-emerald-200 rounded-[1.2rem] px-4 py-2 flex items-center gap-2 shadow-md z-20"
             >
               <span className="text-2xl filter drop-shadow-[0_2px_4px_rgba(16,185,129,0.2)]">✅</span>
