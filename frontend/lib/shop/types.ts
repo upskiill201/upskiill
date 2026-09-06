@@ -36,6 +36,9 @@ export interface ShopItem {
   coinsShort: number;
   /** Null when the item is buyable; otherwise why the button is disabled. */
   blockedReason: string | null;
+  /** Machine-readable twin of `blockedReason` — see `pickShopMessage` in
+   * `frontend/lib/tey/shopVoice.ts`. */
+  blockedReasonCode: string | null;
   activeUntil: string | null;
 }
 

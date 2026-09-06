@@ -16,6 +16,7 @@ import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { playChestBurst, playWhoosh } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickSectionUnlockedHeadline } from '@/lib/tey/milestoneVoice';
 
 type SectionUnlockedInput = Extract<CelebrationScene, { kind: 'SECTION_UNLOCKED' }>;
 
@@ -36,6 +37,9 @@ export default function SectionUnlockedScene({ scene, onAdvance }: SectionUnlock
   // end state renders immediately without any effect-driven state churn.
   const revealed = unlockBeat || reducedMotion === true;
   const shaking = shakeBeat && !revealed;
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the headline mid-reveal.
+  const [headline] = useState(() => pickSectionUnlockedHeadline());
 
   useEffect(() => {
     playHaptic('teyroCelebration');
@@ -82,7 +86,7 @@ export default function SectionUnlockedScene({ scene, onAdvance }: SectionUnlock
         transition={{ type: 'spring', stiffness: 320, damping: 20 }}
         style={{ visibility: revealed ? 'visible' : 'hidden' }}
       >
-        Section <span className={styles.headlineAccent}>unlocked!</span>
+        {headline}
       </motion.h1>
 
       {/* The lock that opens */}

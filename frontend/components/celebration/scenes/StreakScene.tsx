@@ -24,6 +24,7 @@ import {
   playLossMotif,
   playStreakFanfare,
 } from '@/lib/audio/celebrationAudio';
+import { pickStreakSpeech } from '@/lib/tey/streakVoice';
 
 type StreakSceneInput = Extract<CelebrationScene, { kind: 'STREAK' }>;
 
@@ -111,14 +112,12 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
     }
   }, [isLost, isSaved, reducedMotion]);
 
-  // ── Default speech lines (Duolingo-style encouragement) ───────────────────
-  const speech =
-    scene.speech ??
-    (scene.mode === 'EXTENDED'
-      ? `${scene.days} day${scene.days === 1 ? '' : 's'} in a row! Come back tomorrow to keep the fire alive.`
-      : scene.mode === 'SAVED'
-        ? 'Your streak freeze jumped in and saved your streak. Phew!'
-        : 'You missed a day and the streak reset — but your progress is safe.');
+  // ── Default speech lines (Tey's voice — pooled, tiered by day count) ──────
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the line the learner is mid-reading.
+  const [speech] = useState(
+    () => scene.speech ?? pickStreakSpeech(scene.mode, { days: scene.days, personalBest: scene.personalBest }),
+  );
 
   const headline =
     scene.mode === 'EXTENDED' ? 'Streak extended!' : scene.mode === 'SAVED' ? 'Streak saved!' : 'Streak lost';

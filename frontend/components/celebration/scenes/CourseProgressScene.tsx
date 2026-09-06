@@ -6,14 +6,16 @@
  * are now, so finishing one section visibly moves the bigger journey.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { BookOpen, Layers } from 'lucide-react';
 import SceneShell from '../SceneShell';
-import { AnimatedProgressBar, CountUpNumber } from '../ScenePrimitives';
+import CelebrationMascot from '../CelebrationMascot';
+import { AnimatedProgressBar, CountUpNumber, TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { playWhoosh } from '@/lib/audio/celebrationAudio';
+import { pickCourseProgressLine } from '@/lib/tey/milestoneVoice';
 
 type CourseProgressInput = Extract<CelebrationScene, { kind: 'COURSE_PROGRESS' }>;
 
@@ -25,6 +27,9 @@ interface CourseProgressSceneProps {
 export default function CourseProgressScene({ scene, onAdvance }: CourseProgressSceneProps) {
   const reducedMotion = useReducedMotion();
   const whooshedRef = useRef(false);
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the line mid-reveal.
+  const [speech] = useState(() => pickCourseProgressLine(scene.from, scene.to));
 
   useEffect(() => {
     if (whooshedRef.current) return;
@@ -93,6 +98,9 @@ export default function CourseProgressScene({ scene, onAdvance }: CourseProgress
           </span>
         </div>
       </motion.div>
+
+      <CelebrationMascot pose="idle" entrance="puff" />
+      <TypewriterBubble text={speech} startDelay={1200} />
     </SceneShell>
   );
 }

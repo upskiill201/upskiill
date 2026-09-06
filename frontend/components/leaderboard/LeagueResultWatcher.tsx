@@ -14,7 +14,7 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCelebration, type CelebrationScene } from '@/context/CelebrationContext';
 import { useGamification } from '@/context/GamificationContext';
-import { pickLeagueResultMessage, type LeagueResultOutcome } from '@/lib/leaderboard/teyMessages';
+import { pickLeagueResultMessage, pickLeagueResultSubhead, type LeagueResultOutcome } from '@/lib/leaderboard/teyMessages';
 import { getLeagueMeta, type LeagueTier } from '@/lib/leagues';
 
 interface PendingResultRow {
@@ -77,6 +77,13 @@ export default function LeagueResultWatcher() {
 
           const outcome = result.outcome as LeagueResultOutcome;
           const toLeagueName = getLeagueMeta(result.toTier).name;
+          const fromLeagueName = getLeagueMeta(result.league).name;
+          const resultCtx = {
+            leagueName: toLeagueName,
+            fromLeagueName,
+            totalXp: result.totalXp,
+            rank: result.rank,
+          };
           scenes.push({
             kind: 'LEAGUE',
             outcome,
@@ -85,7 +92,8 @@ export default function LeagueResultWatcher() {
             rank: result.rank,
             totalXp: result.totalXp,
             weekStart: result.weekStart,
-            teyLine: pickLeagueResultMessage(outcome, { leagueName: toLeagueName }),
+            teyLine: pickLeagueResultMessage(outcome, resultCtx),
+            teySubhead: pickLeagueResultSubhead(outcome, resultCtx),
             finalStandings: result.finalStandings.map((r) => ({
               userId: r.userId,
               name: r.name,

@@ -15,6 +15,7 @@ import CelebrationMascot from '../CelebrationMascot';
 import {
   AnimatedProgressBar,
   StatPillRow,
+  TypewriterBubble,
 } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
@@ -24,6 +25,7 @@ import {
   playStreakFanfare,
 } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickSectionCompleteSpeech } from '@/lib/tey/milestoneVoice';
 
 type SectionCompleteInput = Extract<CelebrationScene, { kind: 'SECTION_COMPLETE' }>;
 
@@ -37,6 +39,9 @@ const CONFETTI_COLORS = ['#22C55E', '#3D5AFE', '#FFC800', '#FFFFFF', '#6C8CFF'];
 export default function SectionCompleteScene({ scene, onAdvance }: SectionCompleteSceneProps) {
   const reducedMotion = useReducedMotion();
   const firedRef = useRef(false);
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the speech mid-reveal.
+  const [speech] = useState(() => pickSectionCompleteSpeech());
   // Results beat mounts after the progress bar finishes — StatPillRow's
   // staggered pop sounds then land exactly when the pills appear.
   const [resultsBeat, setResultsBeat] = useState(false);
@@ -135,6 +140,7 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
       </motion.h1>
 
       <CelebrationMascot pose="cheer" entrance="puff" />
+      <TypewriterBubble text={speech} startDelay={900} />
 
       {/* The completed section card — progress sweeps to 100% */}
       <motion.div

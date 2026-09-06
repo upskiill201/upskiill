@@ -772,7 +772,10 @@ function SectionViewContent({
 
           const claimScene: CelebrationScene = {
             kind: 'CLAIM',
-            title: 'Lesson complete!',
+            // No title override here on purpose — this is the real,
+            // everyday lesson-complete moment, so it should get Tey's
+            // pooled voice (lib/tey/xpClaimVoice.ts) instead of the same
+            // fixed string every time.
             rewards: [
               { currency: 'XP', amount: data.xpEarned ?? (activeLesson?.xpReward || 20) },
               { currency: 'COINS', amount: data.coinsEarned ?? 5 },

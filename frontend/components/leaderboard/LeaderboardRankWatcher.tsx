@@ -36,7 +36,8 @@ import {
   type LeaderboardSnapshot,
   type MyLeaderboard,
 } from '@/lib/leaderboard/leaderboardEvents';
-import { pickLeaderboardMessage } from '@/lib/leaderboard/teyMessages';
+import { pickLeaderboardMessage, pickLeaderboardSubhead } from '@/lib/leaderboard/teyMessages';
+import { getLeagueMeta } from '@/lib/leagues';
 
 /** Routes where full-page student takeovers must never appear. */
 const SKIP_ROUTE_PREFIXES = [
@@ -123,6 +124,13 @@ export default function LeaderboardRankWatcher() {
       const beforeStandings = event.prevRank !== null && prevSnapshot ? windowAround(prevSnapshot.standings, event.prevRank) : [];
       const afterStandings = windowAround(freshSnapshot.standings, event.myRank);
 
+      const messageCtx = {
+        deltaPositions: event.deltaPositions,
+        myRank: event.myRank,
+        rivalName: event.rivalName,
+        leagueName: getLeagueMeta(event.league).name,
+      };
+
       celebrate({
         kind: 'LEADERBOARD',
         variant: event.type,
@@ -134,11 +142,8 @@ export default function LeaderboardRankWatcher() {
         rivalName: event.rivalName,
         rivalUserId: event.rivalUserId,
         weekStart: event.weekStart,
-        teyLine: pickLeaderboardMessage(event.type, {
-          deltaPositions: event.deltaPositions,
-          myRank: event.myRank,
-          rivalName: event.rivalName,
-        }),
+        teyLine: pickLeaderboardMessage(event.type, messageCtx),
+        teySubhead: pickLeaderboardSubhead(event.type, messageCtx),
         dedupeKey: `lb-${event.weekStart}-${event.type}-${event.prevRank ?? 'x'}-${event.myRank}`,
       });
     } finally {

@@ -20,6 +20,7 @@ import { runSceneClaim } from '../sceneClaim';
 import { playClaimArpeggio, playRewardTick, playSparkle } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
 import { useGamification } from '@/context/GamificationContext';
+import { pickClaimTitle } from '@/lib/tey/xpClaimVoice';
 
 type ClaimSceneInput = Extract<CelebrationScene, { kind: 'CLAIM' }>;
 
@@ -77,6 +78,9 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
   const reducedMotion = useReducedMotion();
   const gamification = useGamification();
   const rewards = scene.rewards.length > 0 ? scene.rewards : [{ currency: 'XP' as const, amount: 0 }];
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the title mid-reveal.
+  const [title] = useState(() => scene.title ?? pickClaimTitle(rewards));
 
   // ── Timeline: grab → hold → toss → deposit per reward ─────────────────────
   const timeline = useMemo<TimelineStep[]>(
@@ -313,7 +317,7 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
       onSkip={showCta ? undefined : onAdvance}
     >
       <motion.h1 className={styles.headline} initial={false} animate={{ scale: [0.8, 1.06, 1], opacity: [0, 1, 1] }} transition={{ duration: 0.4, ease: 'easeOut' }}>
-        {scene.title ?? 'Lesson complete!'}
+        {title}
       </motion.h1>
 
       {statPills.length > 0 && (

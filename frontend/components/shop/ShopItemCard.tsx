@@ -9,12 +9,13 @@
  * catalogue motivates anything.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Check, Lock } from 'lucide-react';
 import ShopItemArt from '../shop-engine/ShopItemArt';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopItem } from '@/lib/shop/types';
+import { pickShopMessage } from '@/lib/tey/shopVoice';
 import styles from './ShopItemCard.module.css';
 
 interface ShopItemCardProps {
@@ -37,6 +38,12 @@ export default function ShopItemCard({
   const tone = rarityStyle(item.rarity);
   const locked = !item.unlock.unlocked;
   const buyable = item.blockedReason === null && !busy;
+
+  const blockedMessage = useMemo(
+    () => (item.blockedReason ? pickShopMessage(item.blockedReasonCode ?? undefined, item.blockedReason) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [item.id, item.blockedReasonCode, item.blockedReason],
+  );
 
   // Owned stackables still show a count; owned one-times are simply done.
   const ownedLabel = item.soldOut
@@ -139,9 +146,12 @@ export default function ShopItemCard({
               <span>{item.price.toLocaleString()}</span>
             </button>
             {/* The blocker is stated rather than left to a disabled button —
-                "72 more coins needed" is actionable, a grey button is not. */}
+                "72 more coins needed" is actionable, a grey button is not.
+                Picked once per (item, reason) pair via useMemo below the
+                effect boundary — a list re-render must not reroll the line
+                the learner is mid-reading. */}
             {item.blockedReason && !busy && (
-              <span className={styles.blockedNote}>{item.blockedReason}</span>
+              <span className={styles.blockedNote}>{blockedMessage}</span>
             )}
           </>
         )}

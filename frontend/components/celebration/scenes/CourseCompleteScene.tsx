@@ -23,6 +23,7 @@ import {
   playSparkle,
 } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickCourseCompleteSpeech } from '@/lib/tey/milestoneVoice';
 
 type CourseCompleteInput = Extract<CelebrationScene, { kind: 'COURSE_COMPLETE' }>;
 
@@ -36,6 +37,9 @@ const CONFETTI_COLORS = ['#FFC800', '#F59E0B', '#3D5AFE', '#22C55E', '#FFFFFF'];
 export default function CourseCompleteScene({ scene, onAdvance }: CourseCompleteSceneProps) {
   const reducedMotion = useReducedMotion();
   const firedRef = useRef(false);
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the speech mid-reveal.
+  const [speech] = useState(() => pickCourseCompleteSpeech());
   // Final stats land after the course bar seals — keeps the pop sounds in
   // sync with the pills appearing.
   const [resultsBeat, setResultsBeat] = useState(false);
@@ -126,7 +130,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
       {/* Tey says a personal word while confetti settles */}
       <CelebrationMascot pose="hug" entrance="puff" />
       <TypewriterBubble
-        text="You did it! Every lesson, every step — all yours now."
+        text={speech}
         startDelay={reducedMotion ? 0 : 900}
       />
 

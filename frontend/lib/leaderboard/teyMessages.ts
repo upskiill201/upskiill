@@ -1,13 +1,14 @@
 /**
  * Tey's voice for the Leaderboard Engine — every full-page moment gets a
  * rotating, non-repeating line from a pool instead of one fixed string.
- * Mirrors the pick-random-non-repeating pattern in
- * `frontend/hooks/onboarding/useMessagePool.ts`, but as a plain module
- * function (not a hook): this needs to be called from scene render logic and
- * should vary across scene *instances*, not just one component's lifetime —
- * same reasoning as `surfacedKeys` in `CelebrationContext.tsx`.
+ * Picking itself lives in `frontend/lib/tey/pool.ts` (shared across every
+ * Tey voice domain, not just the leaderboard): this needs to be called from
+ * scene render logic and should vary across scene *instances*, not just one
+ * component's lifetime — same reasoning as `surfacedKeys` in
+ * `CelebrationContext.tsx`.
  */
 
+import { pickFromPool } from '../tey/pool';
 import type { LeaderboardEventType } from './leaderboardEvents';
 
 /** Matches the `LEAGUE` scene's `outcome` union in `CelebrationContext.tsx`. */
@@ -18,6 +19,10 @@ export interface TeyMessageContext {
   myRank?: number;
   rivalName?: string;
   leagueName?: string;
+  /** League-result subhead pools only. */
+  totalXp?: number;
+  rank?: number | null;
+  fromLeagueName?: string;
 }
 
 type PoolBuilder = (ctx: TeyMessageContext) => string[];
@@ -132,23 +137,60 @@ const LEAGUE_RESULT_POOLS: Record<LeagueResultOutcome, PoolBuilder> = {
   ],
 };
 
-const lastUsed = new Map<string, string>();
-
-function pick(pool: string[], key: string): string {
-  const prior = lastUsed.get(key);
-  const candidates = pool.length > 1 ? pool.filter((m) => m !== prior) : pool;
-  const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-  lastUsed.set(key, chosen);
-  return chosen;
-}
-
 export function pickLeaderboardMessage(type: LeaderboardEventType, ctx: TeyMessageContext = {}): string {
-  return pick(LEADERBOARD_POOLS[type](ctx), `lb:${type}`);
+  return pickFromPool(LEADERBOARD_POOLS[type](ctx), `lb:${type}`);
 }
 
 export function pickLeagueResultMessage(
   outcome: LeagueResultOutcome,
   ctx: TeyMessageContext = {},
 ): string {
-  return pick(LEAGUE_RESULT_POOLS[outcome](ctx), `league:${outcome}`);
+  return pickFromPool(LEAGUE_RESULT_POOLS[outcome](ctx), `league:${outcome}`);
+}
+
+/**
+ * Subhead pools — the functional line under the headline (current rank,
+ * league name, "hold that spot!"). Previously always a fixed ternary even
+ * when `teyLine` overrode the headline; these give the whole moment variety,
+ * not just the first line. Each pool leads with a plain factual candidate
+ * built from `ctx.myRank`/`ctx.leagueName` (so the pool never loses the
+ * actual rank/league info the learner needs), alongside pure-personality
+ * lines that carry no data at all.
+ */
+
+const LEADERBOARD_SUBHEAD_POOLS: Record<LeaderboardEventType, PoolBuilder> = {
+  REACHED_FIRST: (ctx) => [`You're leading ${ctx.leagueName ?? 'the league'} this week`, "Nobody's catching you this week 👑", 'Top of the board. How does it feel? 😎'],
+  ENTERED_PROMOTION_ZONE: (ctx) => [`#${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'} — hold that spot!`, "Don't blink — someone's always climbing 👀", 'Hold the line!'],
+  ESCAPED_DEMOTION_ZONE: (ctx) => [`Back to #${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, "That was close. Let's not do that again 😅", 'Back where you belong.'],
+  ENTERED_DEMOTION_ZONE: (ctx) => [`#${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'} — time to climb`, 'One good lesson fixes this.', "We've got time to turn this around."],
+  EXITED_PROMOTION_ZONE: (ctx) => [`Now #${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, 'So close. Let\'s go get it back.', 'The zone is right there, waiting.'],
+  CLOSE_TO_PROMOTION: (ctx) => [`#${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, 'One more push!', "You can taste it, can't you? 👀"],
+  BIG_JUMP_UP: (ctx) => [`Up to #${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, 'Somebody woke up and chose violence 😤', 'Keep this energy!'],
+  BIG_JUMP_DOWN: (ctx) => [`Down to #${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, 'Rough week. Not a rough you.', "We've all been here. Let's climb."],
+  PASSED_RIVAL: (ctx) => [`You're now #${ctx.myRank ?? '?'} in ${ctx.leagueName ?? 'the league'}`, 'Enjoy the view from up here 😎', "Don't look back now."],
+  PASSED_BY_RIVAL: (ctx) => [`Complete a lesson to take back your spot in ${ctx.leagueName ?? 'the league'}`, 'One lesson and it\'s yours again.', 'The lead is right there for the taking.'],
+  JOINED: (ctx) => [`Climb the ${ctx.leagueName ?? 'league'} this week`, 'Fresh board, fresh start 🔥', "Let's make some noise this week."],
+};
+
+const LEAGUE_RESULT_SUBHEAD_POOLS: Record<LeagueResultOutcome, PoolBuilder> = {
+  PROMOTED: (ctx) => [
+    `${(ctx.totalXp ?? 0).toLocaleString()} XP earned${ctx.rank ? ` · #${ctx.rank} in ${ctx.fromLeagueName ?? 'your old league'}` : ''}`,
+    "Let's see what you've got up here.",
+    'New league, same you (but better) 🚀',
+  ],
+  CHAMPION: (ctx) => [`Top 3 of the tournament — with ${(ctx.totalXp ?? 0).toLocaleString()} XP`, 'Say it with your chest. You earned this.', 'A whole tournament, and you took it.'],
+  DEMOTED: (ctx) => [
+    `${(ctx.totalXp ?? 0).toLocaleString()} XP earned${ctx.rank ? ` · #${ctx.rank} in ${ctx.fromLeagueName ?? 'your old league'}` : ''}`,
+    "It's one league, not the whole story.",
+    'One step back — the comeback starts now 💪',
+  ],
+  INACTIVE_DEMOTED: () => ['Complete a lesson this week to climb back up', 'No judgment. Just a fresh week ahead.', "Whenever you're ready, I'm ready."],
+};
+
+export function pickLeaderboardSubhead(type: LeaderboardEventType, ctx: TeyMessageContext = {}): string {
+  return pickFromPool(LEADERBOARD_SUBHEAD_POOLS[type](ctx), `lb-sub:${type}`);
+}
+
+export function pickLeagueResultSubhead(outcome: LeagueResultOutcome, ctx: TeyMessageContext = {}): string {
+  return pickFromPool(LEAGUE_RESULT_SUBHEAD_POOLS[outcome](ctx), `league-sub:${outcome}`);
 }

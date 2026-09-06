@@ -11,12 +11,13 @@ import { motion, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import SceneShell from '../SceneShell';
 import CelebrationMascot from '../CelebrationMascot';
-import { CountUpNumber, RewardPile } from '../ScenePrimitives';
+import { CountUpNumber, RewardPile, TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
 import { playLevelUpFanfare } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickLevelUpVoice } from '@/lib/tey/levelUpVoice';
 
 type LevelUpSceneInput = Extract<CelebrationScene, { kind: 'LEVEL_UP' }>;
 
@@ -30,6 +31,10 @@ const CONFETTI_COLORS = ['#3D5AFE', '#6C8CFF', '#FFD54D', '#FFFFFF'];
 export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
   const reducedMotion = useReducedMotion();
   const firedRef = useRef(false);
+
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the headline/speech mid-reveal.
+  const [voice] = useState(() => pickLevelUpVoice(scene.newLevel));
 
   // Badge number flips old → new once the badge has landed
   const [shownLevel, setShownLevel] = useState(reducedMotion ? scene.newLevel : scene.oldLevel);
@@ -85,9 +90,7 @@ export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
           : null
       }
     >
-      <h1 className={styles.headline}>
-        You reached <span className={styles.headlineAccent}>level {scene.newLevel}!</span>
-      </h1>
+      <h1 className={styles.headline}>{scene.teyLine ?? voice.headline}</h1>
 
       {/* Level badge — counts old → new */}
       <motion.div
@@ -122,6 +125,7 @@ export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
       )}
 
       <CelebrationMascot pose="cheer" entrance="puff" />
+      <TypewriterBubble text={voice.speech} startDelay={typeof scene.bonusCoins === 'number' && scene.bonusCoins > 0 ? 1400 : 700} />
     </SceneShell>
   );
 }

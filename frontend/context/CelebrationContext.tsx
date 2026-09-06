@@ -71,6 +71,10 @@ export type CelebrationScene =
       oldLevel: number;
       newLevel: number;
       bonusCoins?: number;
+      /** Tey's headline override — picked once by the scene itself (rotates
+       * through a message pool — see lib/tey/levelUpVoice.ts) so re-renders
+       * don't reroll it. Omit to let the scene pick its own. */
+      teyLine?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -118,6 +122,10 @@ export type CelebrationScene =
       iconSrc?: string | null;
       /** CTA label — "CONTINUE" in-app, or a deep-link action like "VIEW ACHIEVEMENT". */
       ctaText?: string;
+      /** Tey's reaction line — picked once by the scene itself (rotates
+       * through a message pool — see lib/tey/achievementVoice.ts) so
+       * re-renders don't reroll it. Omit to let the scene pick its own. */
+      teyLine?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -140,6 +148,9 @@ export type CelebrationScene =
        * (rotates through a message pool — see lib/leaderboard/teyMessages.ts)
        * so re-renders of the scene don't reroll it. */
       teyLine?: string;
+      /** Tey's subhead for this outcome — same pooling/producer-picked
+       * pattern as `teyLine`, but for the functional line under it. */
+      teySubhead?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -275,6 +286,9 @@ export type CelebrationScene =
        * (rotates through a message pool — see lib/leaderboard/teyMessages.ts)
        * so re-renders of the scene don't reroll it. */
       teyLine?: string;
+      /** Tey's subhead for this event — same pooling/producer-picked
+       * pattern as `teyLine`, but for the functional line under it. */
+      teySubhead?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     };

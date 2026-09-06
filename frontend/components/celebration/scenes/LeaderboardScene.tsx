@@ -117,7 +117,7 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
 
   const headline = scene.teyLine ?? fallbackHeadline;
 
-  const subhead =
+  const fallbackSubhead =
     scene.variant === 'JOINED'
       ? `Climb the ${leagueMeta.name} this week`
       : scene.variant === 'PASSED_RIVAL'
@@ -139,6 +139,8 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
                       : scene.variant === 'BIG_JUMP_UP'
                         ? `Up to #${scene.myRank} in ${leagueMeta.name}`
                         : `Down to #${scene.myRank} in ${leagueMeta.name}`;
+
+  const subhead = scene.teySubhead ?? fallbackSubhead;
 
   const ctaText =
     scene.variant === 'JOINED'

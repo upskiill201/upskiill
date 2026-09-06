@@ -33,6 +33,7 @@ import {
 } from '@/lib/shop/api';
 import { CATEGORY_LABELS, rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopCatalog, ShopItem } from '@/lib/shop/types';
+import { pickShopMessage } from '@/lib/tey/shopVoice';
 import dashStyles from '../Page.module.css';
 import styles from './Shop.module.css';
 
@@ -157,7 +158,9 @@ export default function ShopPage() {
         });
       } catch (e) {
         showToast(
-          e instanceof ShopError ? e.message : 'That purchase did not go through.',
+          e instanceof ShopError
+            ? pickShopMessage(e.code, e.message)
+            : 'That purchase did not go through.',
           'bad',
         );
         // Re-read: the failure may have been a stale price or a spent balance.
@@ -195,7 +198,10 @@ export default function ShopPage() {
           },
         });
       } catch (e) {
-        showToast(e instanceof ShopError ? e.message : 'Could not claim that.', 'bad');
+        showToast(
+          e instanceof ShopError ? pickShopMessage(e.code, e.message) : 'Could not claim that.',
+          'bad',
+        );
       } finally {
         setBusyItemId(null);
       }

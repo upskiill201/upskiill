@@ -30,6 +30,12 @@ const TYPE_PHRASES: Record<string, string> = {
 };
 
 export function phraseFor(n: AppNotification): string {
+  // Tey's own rows carry a real, personality-flavored body written by
+  // backend/src/tey/delivery/templates/message-templates.ts — prefer it over
+  // the flat TYPE_PHRASES fallback, which used to win unconditionally and
+  // silently mask that copy. TYPE_PHRASES still backstops the rare row with
+  // no body at all.
+  if (n.type.startsWith('TEY_') && n.body) return n.body;
   return TYPE_PHRASES[n.type] ?? n.body ?? 'sent you a notification';
 }
 

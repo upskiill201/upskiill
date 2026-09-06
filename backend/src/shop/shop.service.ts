@@ -19,6 +19,22 @@ import {
   type CosmeticSlot,
   type ShopItemDef,
 } from './shop.registry';
+
+/**
+ * Machine-readable reason codes for a blocked purchase or a purchase-flow
+ * rejection. Additive alongside the existing human `message`/`blockedReason`
+ * strings (kept for compatibility/logging) — lets the frontend render a
+ * Tey-voiced line by code, falling back to the raw string for any condition
+ * not covered here.
+ */
+export type ShopBlockReasonCode =
+  | 'ALREADY_OWNED'
+  | 'LOCKED'
+  | 'HEARTS_FULL'
+  | 'FREEZE_BANK_FULL'
+  | 'AT_MAX'
+  | 'INSUFFICIENT_COINS'
+  | 'GRANTED_BY_COLLECTION';
 import {
   dayKey,
   getActiveEvent,
@@ -91,6 +107,10 @@ export interface ShopItemView {
   coinsShort: number;
   /** Why the buy button is disabled, or null when it is buyable. */
   blockedReason: string | null;
+  /** Machine-readable twin of `blockedReason` — lets the frontend pick a
+   * Tey-voiced line instead of showing the raw string, with `blockedReason`
+   * itself kept as the graceful fallback when a code is unrecognized. */
+  blockedReasonCode: ShopBlockReasonCode | null;
   /** Timed boosts currently running. */
   activeUntil: string | null;
 }
@@ -347,30 +367,38 @@ export class ShopService {
     // Ordered by what the learner most needs to know: the hard stops first,
     // then the requirement, then the price.
     let blockedReason: string | null = null;
+    let blockedReasonCode: ShopBlockReasonCode | null = null;
     if (item.grantOnly) {
       blockedReason = isOwned ? null : 'Granted by completing its collection';
+      blockedReasonCode = isOwned ? null : 'GRANTED_BY_COLLECTION';
     } else if (soldOut) {
       blockedReason = 'Already owned';
+      blockedReasonCode = 'ALREADY_OWNED';
     } else if (!unlock.unlocked) {
       blockedReason = unlock.label;
+      blockedReasonCode = 'LOCKED';
     } else if (
       item.effect.kind === 'REFILL_HEARTS' &&
       profile.lives >= profile.maxLives
     ) {
       blockedReason = 'Your hearts are already full';
+      blockedReasonCode = 'HEARTS_FULL';
     } else if (
       item.effect.kind === 'GRANT_FREEZE' &&
       profile.streakFreezeBank >= this.freezeCap(state)
     ) {
       blockedReason = 'Freeze bank full';
+      blockedReasonCode = 'FREEZE_BANK_FULL';
     } else if (
       item.maxStorage !== undefined &&
       item.effect.kind === 'CHARGES' &&
       quantity >= item.maxStorage
     ) {
       blockedReason = 'You are holding the maximum';
+      blockedReasonCode = 'AT_MAX';
     } else if (!affordable) {
       blockedReason = `${(price - profile.coins).toLocaleString()} more coins needed`;
+      blockedReasonCode = 'INSUFFICIENT_COINS';
     }
 
     return {
@@ -402,6 +430,7 @@ export class ShopService {
       affordable,
       coinsShort: Math.max(0, price - profile.coins),
       blockedReason,
+      blockedReasonCode,
       activeUntil: row?.expiresAt ? row.expiresAt.toISOString() : null,
     };
   }
@@ -741,25 +770,33 @@ export class ShopService {
       const { metrics } = await this.metricsInTx(tx, userId, profile, state);
       const unlock = evaluateUnlock(item.unlock, metrics);
       if (!unlock.unlocked) {
-        throw new BadRequestException(
-          `${unlock.label} to unlock ${item.name}.`,
-        );
+        throw new BadRequestException({
+          message: `${unlock.label} to unlock ${item.name}.`,
+          code: 'LOCKED' satisfies ShopBlockReasonCode,
+        });
       }
       if (item.oneTime && existing && existing.quantity > 0) {
-        throw new BadRequestException(`You already own ${item.name}.`);
+        throw new BadRequestException({
+          message: `You already own ${item.name}.`,
+          code: 'ALREADY_OWNED' satisfies ShopBlockReasonCode,
+        });
       }
       if (
         item.effect.kind === 'REFILL_HEARTS' &&
         profile.lives >= profile.maxLives
       ) {
-        throw new BadRequestException('Your hearts are already full!');
+        throw new BadRequestException({
+          message: 'Your hearts are already full!',
+          code: 'HEARTS_FULL' satisfies ShopBlockReasonCode,
+        });
       }
       if (item.effect.kind === 'GRANT_FREEZE') {
         const cap = this.freezeCap(state);
         if (profile.streakFreezeBank >= cap) {
-          throw new BadRequestException(
-            `Maximum capacity reached! You can bank up to ${cap} Streak Freezes.`,
-          );
+          throw new BadRequestException({
+            message: `Maximum capacity reached! You can bank up to ${cap} Streak Freezes.`,
+            code: 'FREEZE_BANK_FULL' satisfies ShopBlockReasonCode,
+          });
         }
       }
       if (
@@ -767,9 +804,10 @@ export class ShopService {
         item.maxStorage !== undefined &&
         (existing?.quantity ?? 0) >= item.maxStorage
       ) {
-        throw new BadRequestException(
-          `You are already holding the maximum of ${item.maxStorage} ${item.name}.`,
-        );
+        throw new BadRequestException({
+          message: `You are already holding the maximum of ${item.maxStorage} ${item.name}.`,
+          code: 'AT_MAX' satisfies ShopBlockReasonCode,
+        });
       }
 
       // ── Debit, guarded ────────────────────────────────────────────────────
@@ -778,9 +816,10 @@ export class ShopService {
         data: { coins: { decrement: price } },
       });
       if (debited.count === 0) {
-        throw new BadRequestException(
-          `Not enough Coins. You need 🪙 ${price.toLocaleString()}, but you have 🪙 ${profile.coins.toLocaleString()}.`,
-        );
+        throw new BadRequestException({
+          message: `Not enough Coins. You need 🪙 ${price.toLocaleString()}, but you have 🪙 ${profile.coins.toLocaleString()}.`,
+          code: 'INSUFFICIENT_COINS' satisfies ShopBlockReasonCode,
+        });
       }
 
       // ── Grant ─────────────────────────────────────────────────────────────
@@ -1106,9 +1145,10 @@ export class ShopService {
       const { metrics } = await this.metricsInTx(tx, userId, profile, state);
       const unlock = evaluateUnlock(item.unlock, metrics);
       if (!unlock.unlocked) {
-        throw new BadRequestException(
-          `${unlock.label} to unlock ${item.name}.`,
-        );
+        throw new BadRequestException({
+          message: `${unlock.label} to unlock ${item.name}.`,
+          code: 'LOCKED' satisfies ShopBlockReasonCode,
+        });
       }
 
       const debited = await tx.studentProfile.updateMany({
@@ -1116,9 +1156,10 @@ export class ShopService {
         data: { coins: { decrement: price } },
       });
       if (debited.count === 0) {
-        throw new BadRequestException(
-          `Not enough Coins. You need 🪙 ${price.toLocaleString()}, but you have 🪙 ${profile.coins.toLocaleString()}.`,
-        );
+        throw new BadRequestException({
+          message: `Not enough Coins. You need 🪙 ${price.toLocaleString()}, but you have 🪙 ${profile.coins.toLocaleString()}.`,
+          code: 'INSUFFICIENT_COINS' satisfies ShopBlockReasonCode,
+        });
       }
 
       const ownedRows = await tx.userShopItem.findMany({

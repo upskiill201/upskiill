@@ -20,11 +20,19 @@ import type {
   VisitResult,
 } from './types';
 
-/** Thrown with the server's own message so the UI can show it verbatim. */
+/**
+ * Thrown with the server's own message so the UI can show it verbatim, plus
+ * an optional machine-readable `code` (see `ShopBlockReasonCode` in
+ * `backend/src/shop/shop.service.ts`) the UI can use to pick a Tey-voiced
+ * line instead — falling back to `message` when a code is absent or
+ * unrecognized.
+ */
 export class ShopError extends Error {
-  constructor(message: string) {
+  code?: string;
+  constructor(message: string, code?: string) {
     super(message);
     this.name = 'ShopError';
+    this.code = code;
   }
 }
 
@@ -37,12 +45,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
+    const b = body as { message?: string | string[]; code?: string };
     throw new ShopError(
-      (body as { message?: string | string[] })?.message
-        ? Array.isArray((body as { message: string[] }).message)
-          ? (body as { message: string[] }).message[0]
-          : String((body as { message: string }).message)
+      b?.message
+        ? Array.isArray(b.message)
+          ? b.message[0]
+          : String(b.message)
         : 'Something went wrong in the shop.',
+      b?.code,
     );
   }
   return body as T;

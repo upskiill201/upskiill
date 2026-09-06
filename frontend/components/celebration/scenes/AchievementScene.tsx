@@ -7,16 +7,19 @@
  * ladder while the unlock is marked seen so Herald stops surfacing it.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import SceneShell from '../SceneShell';
+import CelebrationMascot from '../CelebrationMascot';
+import { TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { BadgeGlyph } from '@/components/achievements/badgeArt';
 import { markAchievementSeen } from '@/lib/achievements';
 import { playClaimArpeggio } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
+import { pickAchievementVoice } from '@/lib/tey/achievementVoice';
 
 type AchievementSceneInput = Extract<CelebrationScene, { kind: 'ACHIEVEMENT' }>;
 
@@ -27,6 +30,11 @@ interface AchievementSceneProps {
 
 export default function AchievementScene({ scene, onAdvance }: AchievementSceneProps) {
   const reducedMotion = useReducedMotion();
+
+  // Lazy initializer, not an effect: picked once per scene instance so a
+  // re-render never rerolls the headline/speech mid-reveal.
+  const [voice] = useState(() => pickAchievementVoice(scene.tier, scene.maxTier));
+  const isMaxTier = scene.maxTier > 1 && scene.tier >= scene.maxTier;
 
   // ── Mark viewed + reveal sound ────────────────────────────────────────────
   useEffect(() => {
@@ -48,7 +56,7 @@ export default function AchievementScene({ scene, onAdvance }: AchievementSceneP
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        Achievement unlocked!
+        {scene.teyLine ?? voice.headline}
       </motion.h1>
 
       {/* Badge medallion */}
@@ -112,6 +120,9 @@ export default function AchievementScene({ scene, onAdvance }: AchievementSceneP
         {' — '}
         {scene.tierDescription}
       </p>
+
+      <CelebrationMascot pose={isMaxTier ? 'cheer' : 'hug'} entrance="puff" />
+      <TypewriterBubble text={voice.speech} startDelay={900} />
     </SceneShell>
   );
 }

@@ -13,13 +13,15 @@ import { motion, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import SceneShell from '../SceneShell';
 import ChestArt, { ChestVisualState } from '../ChestArt';
-import { CountUpNumber, RarityLabel, RewardPile } from '../ScenePrimitives';
+import CelebrationMascot from '../CelebrationMascot';
+import { CountUpNumber, RarityLabel, RewardPile, TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationCurrency, CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS, CURRENCY_LABELS, toCelebrationCurrency } from '../currency';
 import { playChestBurst, playChestCreak, playGemChime } from '@/lib/audio/celebrationAudio';
 import { playHaptic } from '@/lib/haptics';
 import { useGamification } from '@/context/GamificationContext';
+import { pickChestReadyHeadline, pickChestRevealLine, pickChestTapHint } from '@/lib/tey/chestVoice';
 
 type ChestSceneInput = Extract<CelebrationScene, { kind: 'CHEST' }>;
 
@@ -58,6 +60,11 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
   const [balanceShown, setBalanceShown] = useState<number>(gamification.coins);
   const chestWrapRef = useRef<HTMLDivElement | null>(null);
   const openedRef = useRef(false);
+  // Lazy initializers, not effects: picked once per scene instance so a
+  // re-render never rerolls the line the learner is mid-reading.
+  const [readyHeadline] = useState(() => pickChestReadyHeadline());
+  const [tapHint] = useState(() => pickChestTapHint());
+  const [revealLine, setRevealLine] = useState<string | null>(null);
 
   // ── Fetch today's chest when no id was supplied ───────────────────────────
   useEffect(() => {
@@ -163,6 +170,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
 
   const finishReveal = (r: OpenResult) => {
     setResult(r);
+    setRevealLine(pickChestRevealLine(r.rarityTier));
     setPhase('revealed');
     setBalanceShown((b) => b + (r.currency === 'COINS' ? r.amount : 0));
     // Sync the header pill with the server — the chest payout landed there
@@ -205,7 +213,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
         ) : phase === 'error' ? (
           'Chest unavailable'
         ) : (
-          'Your daily chest'
+          readyHeadline
         )}
       </h1>
 
@@ -298,8 +306,16 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
 
       {phase === 'loading' && <p className={styles.subhead}>Opening your chest…</p>}
       {phase === 'opening-server' && <p className={styles.subhead}>Unlocking…</p>}
-      {phase === 'ready' && <p className={`${styles.tapHint}`}>Tap to open!</p>}
+      {phase === 'ready' && <p className={`${styles.tapHint}`}>{tapHint}</p>}
       {phase === 'error' && <p className={styles.errorNote}>{error ?? 'Something went wrong.'}</p>}
+
+      {phase === 'ready' && <CelebrationMascot pose="grab" entrance="puff" />}
+      {phase === 'revealed' && result && revealLine && (
+        <>
+          <CelebrationMascot pose="cheer" entrance="puff" />
+          <TypewriterBubble text={revealLine} startDelay={300} />
+        </>
+      )}
     </SceneShell>
   );
 }

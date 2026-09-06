@@ -105,12 +105,14 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
     )
   );
 
-  const subhead =
+  const fallbackSubhead =
     scene.outcome === 'CHAMPION'
       ? `Top 3 of the tournament — with ${scene.totalXp.toLocaleString()} XP`
       : scene.outcome === 'INACTIVE_DEMOTED'
         ? 'Complete a lesson this week to climb back up'
         : `${scene.totalXp.toLocaleString()} XP earned${scene.rank ? ` · #${scene.rank} in ${fromMeta.name}` : ''}`;
+
+  const subhead = scene.teySubhead ?? fallbackSubhead;
 
   return (
     <LeaderboardSceneShell
