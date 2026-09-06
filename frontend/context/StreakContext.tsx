@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useState,
+  useMemo,
 } from 'react';
 
 export interface StreakStats {
@@ -113,21 +114,38 @@ export function StreakProvider({ children }: { children: React.ReactNode }) {
     setIsModalOpen(false);
   }, []);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      streakData,
+      calendarData,
+      loading,
+      isModalOpen,
+      activeTab,
+      setActiveTab,
+      openStreakModal,
+      closeStreakModal,
+      fetchStreakData,
+      fetchCalendar,
+    }),
+    [
+    streakData,
+    calendarData,
+    loading,
+    isModalOpen,
+    activeTab,
+    setActiveTab,
+    openStreakModal,
+    closeStreakModal,
+    fetchStreakData,
+    fetchCalendar,
+    ]
+  );
+
   return (
-    <StreakContext.Provider
-      value={{
-        streakData,
-        calendarData,
-        loading,
-        isModalOpen,
-        activeTab,
-        setActiveTab,
-        openStreakModal,
-        closeStreakModal,
-        fetchStreakData,
-        fetchCalendar,
-      }}
-    >
+    <StreakContext.Provider value={value}>
       {children}
     </StreakContext.Provider>
   );

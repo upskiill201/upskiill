@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { usePathname } from 'next/navigation';
 import { mutate } from 'swr';
@@ -437,23 +438,42 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     setActiveOverlay('SPIN');
   }, []);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      enqueueHeraldNotification,
+      activeNotification,
+      dismissActive,
+      activeOverlay,
+      setActiveOverlay,
+      openStreakModal,
+      openChestModal,
+      openSpinModal,
+      registerNativeWidget,
+      unregisterNativeWidget,
+      suppressHerald,
+      checkClaimables,
+    }),
+    [
+    enqueueHeraldNotification,
+    activeNotification,
+    dismissActive,
+    activeOverlay,
+    setActiveOverlay,
+    openStreakModal,
+    openChestModal,
+    openSpinModal,
+    registerNativeWidget,
+    unregisterNativeWidget,
+    suppressHerald,
+    checkClaimables,
+    ]
+  );
+
   return (
-    <HeraldContext.Provider
-      value={{
-        enqueueHeraldNotification,
-        activeNotification,
-        dismissActive,
-        activeOverlay,
-        setActiveOverlay,
-        openStreakModal,
-        openChestModal,
-        openSpinModal,
-        registerNativeWidget,
-        unregisterNativeWidget,
-        suppressHerald,
-        checkClaimables,
-      }}
-    >
+    <HeraldContext.Provider value={value}>
       {children}
     </HeraldContext.Provider>
   );

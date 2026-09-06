@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -388,24 +389,51 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   const userLevel = state.userLevel || 1;
   const xpInCurrentLevel = state.xpInCurrentLevel ?? ((state.xp || 0) % 100);
 
+  // PERF: memoized. This provider sits near the root of the layout, so the
+  // object literal that used to be inlined here was rebuilt on every render of
+  // any ancestor — and a new context value re-renders EVERY consumer beneath
+  // it, which is effectively the whole page (RewardAnimation, Herald, Streak,
+  // ShopEngine, the celebration engines, the four watchers, the header, and
+  // {children}).
+  //
+  // All ten handlers are already useCallback-stable, so the value now changes
+  // only when the gamification state genuinely changes — an XP/coin/heart/
+  // streak update — rather than on every unrelated render.
+  const value = useMemo(
+    () => ({
+      ...state,
+      refresh,
+      loseLife,
+      applyLessonReward,
+      awardTestReward,
+      claimQuest,
+      buyStreakFreeze,
+      buyShopItem,
+      refillLivesWithXp,
+      claimDailyReward,
+      dismissStreakModal,
+      userLevel,
+      xpInCurrentLevel,
+    }),
+    [
+      state,
+      refresh,
+      loseLife,
+      applyLessonReward,
+      awardTestReward,
+      claimQuest,
+      buyStreakFreeze,
+      buyShopItem,
+      refillLivesWithXp,
+      claimDailyReward,
+      dismissStreakModal,
+      userLevel,
+      xpInCurrentLevel,
+    ]
+  );
+
   return (
-    <GamificationContext.Provider
-      value={{
-        ...state,
-        refresh,
-        loseLife,
-        applyLessonReward,
-        awardTestReward,
-        claimQuest,
-        buyStreakFreeze,
-        buyShopItem,
-        refillLivesWithXp,
-        claimDailyReward,
-        dismissStreakModal,
-        userLevel,
-        xpInCurrentLevel,
-      }}
-    >
+    <GamificationContext.Provider value={value}>
       {children}
     </GamificationContext.Provider>
   );

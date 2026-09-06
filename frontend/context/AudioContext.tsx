@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import soundManager, { CategoryVolumes } from '@/lib/audio/soundManager';
 import { SoundId, SoundConfig } from '@/lib/audio/soundRegistry';
 import { AppAudioEvent, emitAudioEvent } from '@/lib/audio/audioEvents';
@@ -153,27 +153,50 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return success;
   }, [saveSettings]);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      isMuted,
+      isSfxEnabled,
+      isMusicEnabled,
+      volumes,
+      registry,
+      toggleMute,
+      setSfxEnabled,
+      setMusicEnabled,
+      setVolume,
+      updateSoundConfig,
+      play,
+      emitEvent,
+      stopAll,
+      resetToDefault,
+      exportConfigJson,
+      importConfigJson,
+    }),
+    [
+    isMuted,
+    isSfxEnabled,
+    isMusicEnabled,
+    volumes,
+    registry,
+    toggleMute,
+    setSfxEnabled,
+    setMusicEnabled,
+    setVolume,
+    updateSoundConfig,
+    play,
+    emitEvent,
+    stopAll,
+    resetToDefault,
+    exportConfigJson,
+    importConfigJson,
+    ]
+  );
+
   return (
-    <AudioContext.Provider
-      value={{
-        isMuted,
-        isSfxEnabled,
-        isMusicEnabled,
-        volumes,
-        registry,
-        toggleMute,
-        setSfxEnabled,
-        setMusicEnabled,
-        setVolume,
-        updateSoundConfig,
-        play,
-        emitEvent,
-        stopAll,
-        resetToDefault,
-        exportConfigJson,
-        importConfigJson,
-      }}
-    >
+    <AudioContext.Provider value={value}>
       {children}
     </AudioContext.Provider>
   );

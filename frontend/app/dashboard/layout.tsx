@@ -28,7 +28,7 @@ import { getOnboardingState } from '@/lib/user-onboarding';
 import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
-import { getCachedUser, setCachedUser, clearCachedUser } from '@/lib/user-cache';
+import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cache';
 import styles from './Dashboard.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -142,7 +142,7 @@ export default function DashboardLayout({
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
-    clearCachedUser();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {

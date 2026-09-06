@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRewardAnimation, FlyingParticle } from '@/context/RewardAnimationContext';
+import { useRewardAnimation, useRewardAnimationVisuals, FlyingParticle } from '@/context/RewardAnimationContext';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { playHaptic } from '@/lib/haptics';
 
@@ -142,7 +142,9 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
 }
 
 export default function RewardAnimationOverlay() {
-  const { particles, shockwaves, floatingTexts } = useRewardAnimation();
+  // Subscribes to the fast-changing visual context. This is the ONLY component
+  // that should — see RewardAnimationVisualsValue for why.
+  const { particles, shockwaves, floatingTexts } = useRewardAnimationVisuals();
 
   return (
     <>

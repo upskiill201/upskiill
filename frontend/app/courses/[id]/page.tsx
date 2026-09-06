@@ -24,7 +24,7 @@ import {
   Users,
   Zap
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import DashboardLayout from '@/app/dashboard/layout';
 import { StatsBar } from '@/components/ui/StatsBar';
 import GamificationIcon from '@/components/ui/GamificationIcon';
@@ -337,7 +337,7 @@ export default function CourseDetailPage({
     }
 
     // Celebratory entry into the wizard — nothing is enrolled yet.
-    confetti({
+    fireConfetti({
       particleCount: 70,
       spread: 60,
       origin: { y: 0.6 },

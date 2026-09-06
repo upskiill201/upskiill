@@ -35,6 +35,36 @@ export async function fetcher<T = unknown>(url: string): Promise<T> {
  * once). Falls back to an in-memory-only Map if localStorage is unavailable
  * (SSR, privacy mode, etc.) — safe by construction either way.
  */
+/**
+ * The live cache map, so logout can empty it in memory and not just on disk.
+ *
+ * Without this, clearSwrCache() would race the persist listener: we remove the
+ * localStorage key, the page then navigates to /login, the unload persist fires
+ * and writes the still-populated in-memory map straight back. The next account
+ * on the device would read the previous account's data anyway.
+ */
+let activeCacheMap: Map<string, unknown> | null = null;
+
+/**
+ * Wipes the persisted SWR cache — both the localStorage blob and the live map.
+ *
+ * MUST be called on every logout path. This cache holds /api/auth/me (name,
+ * email, avatar), coin/XP/heart balances, mission state and chest state; on a
+ * shared device, leaving it behind paints one account's data for the next.
+ *
+ * Prefer clearClientSession() in lib/user-cache.ts, which clears this and the
+ * user cache together, so no logout path can clear one and forget the other.
+ */
+export function clearSwrCache() {
+  if (typeof window === 'undefined') return;
+  try {
+    activeCacheMap?.clear();
+    window.localStorage.removeItem(LOCAL_STORAGE_KEY);
+  } catch {
+    // storage disabled / privacy mode — the in-memory clear above still ran
+  }
+}
+
 export function localStorageCacheProvider(): Cache {
   let map: Map<string, unknown>;
 
@@ -71,6 +101,7 @@ export function localStorageCacheProvider(): Cache {
     };
   }
 
+  activeCacheMap = map;
   return map as unknown as Cache;
 }
 

@@ -21,6 +21,14 @@ const baloo2 = Baloo_2({
   variable: "--font-celebration",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
+  display: "swap",
+  // PERF: deliberately not preloaded. next/font preloads by default, so all
+  // three weights of a font used ONLY by the Celebration Engine scenes and the
+  // quests page were being fetched with high priority on /, /blog, /terms and
+  // /login — routes where a celebration can never render. The face is still
+  // declared and still resolves the moment a scene mounts; it just stops
+  // competing with the critical path on pages that never use it.
+  preload: false,
 });
 
 export const viewport: Viewport = {

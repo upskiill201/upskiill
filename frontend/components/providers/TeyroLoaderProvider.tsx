@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import TeyroBrandedLoader, { MascotPose } from '../ui/TeyroBrandedLoader';
 
@@ -170,8 +170,16 @@ export function TeyroLoaderProvider({ children }: { children: React.ReactNode })
     hideLoader();
   }, [hideLoader]);
 
+  // PERF: memoized. This provider wraps the header, footer and {children} —
+  // i.e. the entire page — so a fresh object literal here re-rendered the whole
+  // tree on every render of the provider itself.
+  const value = useMemo(
+    () => ({ showLoader, showLoaderImmediate, hideLoader, isLoading: isVisible }),
+    [showLoader, showLoaderImmediate, hideLoader, isVisible],
+  );
+
   return (
-    <TeyroLoaderContext.Provider value={{ showLoader, showLoaderImmediate, hideLoader, isLoading: isVisible }}>
+    <TeyroLoaderContext.Provider value={value}>
       <Suspense fallback={null}>
         <RouteChangeWatcher onRouteChange={handleRouteChange} />
       </Suspense>

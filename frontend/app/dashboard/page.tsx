@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { X, Menu } from 'lucide-react';
 import Image from 'next/image';
@@ -20,11 +21,20 @@ import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
 import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
 import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBanner';
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
-import RewardRunTestWidget from '@/components/dashboard/v2/RewardRunTestWidget';
 import PwaPushNudgeCard from '@/components/dashboard/v2/PwaPushNudgeCard';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import NotificationBell from '@/components/community/NotificationBell';
 import styles from './Page.module.css';
+
+// Dev-only reward/celebration test bench. The component already self-guards on
+// NEXT_PUBLIC_ENVIRONMENT and renders null in production, so this is not a
+// behaviour change — but a static import still shipped all 586 lines of it, and
+// its GSAP/celebration imports, into the dashboard bundle for every learner.
+// Loading it dynamically behind the same guard means production never fetches it.
+const RewardRunTestWidget = dynamic(
+  () => import('@/components/dashboard/v2/RewardRunTestWidget'),
+  { ssr: false },
+);
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -196,7 +206,8 @@ export default function DashboardPage() {
           <ContinueLearningCarousel enrollments={enrollments} />
 
           {/* 9. DEV TEST BENCH (Collapsible) */}
-          <RewardRunTestWidget />
+
+          {process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' && <RewardRunTestWidget />}
 
         </div>
 

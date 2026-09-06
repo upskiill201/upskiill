@@ -15,7 +15,7 @@ import LearnSectionSkeleton from './LearnSectionSkeleton';
 import { StatsBar } from '@/components/ui/StatsBar';
 import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
 import { buildUnlockHref } from '@/lib/return-to';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import { useGamification } from '@/context/GamificationContext';
@@ -472,7 +472,7 @@ function SectionViewContent({
         const unlockAudioTimer = setTimeout(() => {
           try {
             playWinSound();
-            confetti({
+            fireConfetti({
               particleCount: 40,
               spread: 60,
               origin: { y: 0.5 },

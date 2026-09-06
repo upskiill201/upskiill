@@ -27,7 +27,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import GamificationIcon from '@/components/ui/GamificationIcon';
 import { playHaptic } from '@/lib/haptics';
 import { playWinSound } from '@/utils/audio';
@@ -134,7 +134,7 @@ export default function EnrollmentWizard({
       setCommitStatus('done');
       playHaptic('medium');
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        confetti({
+        fireConfetti({
           particleCount: 90,
           spread: 70,
           origin: { y: 0.55 },

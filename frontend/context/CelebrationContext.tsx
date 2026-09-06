@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import type { LeagueTier } from '@/lib/leagues';
 
@@ -404,16 +405,27 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
     };
   }, [celebrate]);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      celebrate,
+      advance,
+      closeAll,
+      activeScene,
+      isCelebrating: activeScene !== null,
+    }),
+    [
+    celebrate,
+    advance,
+    closeAll,
+    activeScene,
+    ]
+  );
+
   return (
-    <CelebrationContext.Provider
-      value={{
-        celebrate,
-        advance,
-        closeAll,
-        activeScene,
-        isCelebrating: activeScene !== null,
-      }}
-    >
+    <CelebrationContext.Provider value={value}>
       {children}
     </CelebrationContext.Provider>
   );

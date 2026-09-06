@@ -42,7 +42,7 @@ import { StatsBar } from '@/components/ui/StatsBar';
 import { useGamification } from '@/context/GamificationContext';
 import { useAudio } from '@/lib/audio/useAudio';
 import { playHaptic } from '@/lib/haptics';
-import { getCachedUser, setCachedUser, clearCachedUser } from '@/lib/user-cache';
+import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cache';
 import { markAchievementSeen } from '@/lib/achievements';
 import { BadgeGlyph, BADGE_UNITS } from '@/components/achievements/badgeArt';
 import styles from './Profile.module.css';
@@ -520,7 +520,7 @@ export default function StudentProfilePage() {
 
   // ── SETTINGS MODAL ACTIONS ──
   const handleLogout = async () => {
-    clearCachedUser();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {
@@ -543,7 +543,7 @@ export default function StudentProfilePage() {
     try {
       const res = await fetch('/api/profile', { method: 'DELETE', credentials: 'include' });
       if (res.ok) {
-        clearCachedUser();
+        clearClientSession();
         window.location.href = '/';
         return;
       }

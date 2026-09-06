@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { clearClientSession } from '@/lib/user-cache';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -51,6 +52,7 @@ export default function Header() {
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {

@@ -21,6 +21,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { isCelebrationActive } from './CelebrationContext';
 import { fetchPendingUnlocks, markUnlocksSeen } from '@/lib/shop/api';
@@ -207,17 +208,29 @@ export function ShopEngineProvider({ children }: { children: React.ReactNode }) 
     };
   }, [checkUnlocks]);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      shopScene,
+      advance,
+      closeAll,
+      activeScene,
+      isPlaying: activeScene !== null,
+      checkUnlocks,
+    }),
+    [
+    shopScene,
+    advance,
+    closeAll,
+    activeScene,
+    checkUnlocks,
+    ]
+  );
+
   return (
-    <ShopEngineContext.Provider
-      value={{
-        shopScene,
-        advance,
-        closeAll,
-        activeScene,
-        isPlaying: activeScene !== null,
-        checkUnlocks,
-      }}
-    >
+    <ShopEngineContext.Provider value={value}>
       {children}
     </ShopEngineContext.Provider>
   );

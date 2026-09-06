@@ -82,12 +82,30 @@ export default function LeaderboardsPage() {
   }, [refresh]);
 
   // Live countdown — tick every second under a day, every 30s otherwise.
+  //
+  // PERF: this used to be a setInterval with `now` in its dependency array.
+  // Because the interval is what sets `now`, every single tick invalidated the
+  // effect, tore the interval down and built a new one — 60 teardown/rebuild
+  // cycles a minute on a page that is already animating a leaderboard.
+  //
+  // A self-rescheduling timeout keeps the exact same behaviour, including
+  // speeding up from 30s to 1s when the week drops under a day remaining
+  // (the cadence is recomputed on each tick), but depends only on `data`.
   useEffect(() => {
     if (!data) return;
-    const remaining = new Date(data.weekEndsAt).getTime() - now;
-    const interval = setInterval(() => setNow(Date.now()), remaining < 86_400_000 ? 1000 : 30_000);
-    return () => clearInterval(interval);
-  }, [data, now]);
+    const endsAt = new Date(data.weekEndsAt).getTime();
+    const cadence = (from: number) => (endsAt - from < 86_400_000 ? 1000 : 30_000);
+
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const current = Date.now();
+      setNow(current);
+      timer = setTimeout(tick, cadence(current));
+    };
+
+    timer = setTimeout(tick, cadence(Date.now()));
+    return () => clearTimeout(timer);
+  }, [data]);
 
   // Track whether my row is on screen → pinned "you" bar visibility.
   useEffect(() => {

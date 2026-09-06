@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useMemo } from 'react';
 import { useGamification } from './GamificationContext';
 import { useCelebration } from './CelebrationContext';
 import { useLoadout } from '@/lib/shop/useLoadout';
@@ -74,14 +74,16 @@ export interface ClaimModalOptions {
   targetBalance?: number;
 }
 
-interface RewardAnimationContextValue {
+/**
+ * Actions are stable for the lifetime of the provider (every one is
+ * useCallback-wrapped), so consumers of this context never re-render because a
+ * reward is playing.
+ */
+interface RewardAnimationActionsValue {
   triggerRewardAnimation: (options: TriggerRewardOptions) => void;
   openClaimModal: (options: ClaimModalOptions) => void;
   /** No-op — the old claim modal is replaced by full-page Celebration scenes. */
   closeClaimModal: () => void;
-  particles: FlyingParticle[];
-  shockwaves: ShockwaveRing[];
-  floatingTexts: FloatingText[];
   removeParticle: (
     id: string,
     targetPillId: string,
@@ -95,7 +97,24 @@ interface RewardAnimationContextValue {
   registerTarget: (currency: RewardCurrency, element: HTMLElement) => void;
 }
 
-const RewardAnimationContext = createContext<RewardAnimationContextValue | null>(null);
+/**
+ * Transient visual state, rewritten on a ~35ms stagger for the duration of a
+ * reward run. Deliberately kept OUT of the actions context: this used to sit in
+ * the same value object, which meant every particle batch re-rendered the whole
+ * application tree — the provider sits near the root of the layout — while the
+ * animation was trying to hold 60fps.
+ *
+ * RewardAnimationOverlay is the only consumer, and it is itself lazily mounted
+ * (see components/providers/DeferredOverlays.tsx), so the churn is contained.
+ */
+interface RewardAnimationVisualsValue {
+  particles: FlyingParticle[];
+  shockwaves: ShockwaveRing[];
+  floatingTexts: FloatingText[];
+}
+
+const RewardAnimationActionsContext = createContext<RewardAnimationActionsValue | null>(null);
+const RewardAnimationVisualsContext = createContext<RewardAnimationVisualsValue | null>(null);
 
 const CURRENCY_ICONS: Record<RewardCurrency, string> = {
   COINS: '/Icons/Coin.png',
@@ -363,28 +382,57 @@ export function RewardAnimationProvider({ children }: { children: React.ReactNod
     [userLevel, colorFor]
   );
 
+  // Stable across the life of the provider: every callback below is
+  // useCallback-wrapped, so this object is created once and consumers of
+  // useRewardAnimation() never re-render because a reward is mid-flight.
+  const actions = useMemo<RewardAnimationActionsValue>(
+    () => ({
+      triggerRewardAnimation,
+      openClaimModal,
+      closeClaimModal,
+      removeParticle,
+      registerTarget,
+    }),
+    [triggerRewardAnimation, openClaimModal, closeClaimModal, removeParticle, registerTarget]
+  );
+
+  // Changes rapidly during a reward run. Only RewardAnimationOverlay subscribes.
+  const visuals = useMemo<RewardAnimationVisualsValue>(
+    () => ({ particles, shockwaves, floatingTexts }),
+    [particles, shockwaves, floatingTexts]
+  );
+
   return (
-    <RewardAnimationContext.Provider
-      value={{
-        triggerRewardAnimation,
-        openClaimModal,
-        closeClaimModal,
-        particles,
-        shockwaves,
-        floatingTexts,
-        removeParticle,
-        registerTarget,
-      }}
-    >
-      {children}
-    </RewardAnimationContext.Provider>
+    <RewardAnimationActionsContext.Provider value={actions}>
+      <RewardAnimationVisualsContext.Provider value={visuals}>
+        {children}
+      </RewardAnimationVisualsContext.Provider>
+    </RewardAnimationActionsContext.Provider>
   );
 }
 
+/**
+ * Reward actions. Stable — using this hook does NOT subscribe the component to
+ * particle state, so it will not re-render while an animation plays.
+ */
 export function useRewardAnimation() {
-  const ctx = useContext(RewardAnimationContext);
+  const ctx = useContext(RewardAnimationActionsContext);
   if (!ctx) {
     throw new Error('useRewardAnimation must be used inside <RewardAnimationProvider>');
+  }
+  return ctx;
+}
+
+/**
+ * Live particle/shockwave/floating-text state.
+ *
+ * Only RewardAnimationOverlay should call this — anything that subscribes here
+ * re-renders on every animation frame batch of a reward run.
+ */
+export function useRewardAnimationVisuals() {
+  const ctx = useContext(RewardAnimationVisualsContext);
+  if (!ctx) {
+    throw new Error('useRewardAnimationVisuals must be used inside <RewardAnimationProvider>');
   }
   return ctx;
 }

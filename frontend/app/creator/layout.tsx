@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { clearClientSession } from '@/lib/user-cache';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   FaHouse,
@@ -153,6 +154,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {

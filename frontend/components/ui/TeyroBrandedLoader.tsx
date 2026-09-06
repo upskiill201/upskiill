@@ -102,6 +102,7 @@ export default function TeyroBrandedLoader({
   const [currentCopyIndex, setCurrentCopyIndex] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWebmSupported, setIsWebmSupported] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   const [dotsCount, setDotsCount] = useState(1);
   const startTimeRef = useRef<number>(Date.now());
 
@@ -117,6 +118,28 @@ export default function TeyroBrandedLoader({
     }
     startTimeRef.current = Date.now();
   }, [isVisible, forcePoolIndex]);
+
+  // PERF: hold the 1.19MB Teyro_loading.webm back for the first 500ms.
+  //
+  // This loader is mounted app-wide (root layout), is app/loading.tsx, and is
+  // the onboarding skeleton — and the dashboard calls showLoader() *before* it
+  // starts fetching. So the browser was downloading a 1.19MB video in order to
+  // display a spinner, competing for bandwidth with the very requests the
+  // spinner was waiting on.
+  //
+  // Note that preload="auto" alone was never the whole story: autoPlay makes
+  // the browser fetch enough to begin playback regardless of the preload hint,
+  // so the fix has to be to not mount the element at all. Under 500ms the
+  // loader is a flash and the static mascot below is indistinguishable; real
+  // waits still get the full animation.
+  useEffect(() => {
+    if (!isVisible) {
+      setShowVideo(false);
+      return;
+    }
+    const t = setTimeout(() => setShowVideo(true), 500);
+    return () => clearTimeout(t);
+  }, [isVisible]);
 
   // Animated typing dots effect (LOADING. -> LOADING.. -> LOADING...)
   useEffect(() => {
@@ -188,13 +211,14 @@ export default function TeyroBrandedLoader({
             {/* Mascot Center Area */}
             <div className={styles.mascotWrapper}>
               {/* WebM Looping Video Engine with WebP Static Fallback */}
-              {isWebmSupported && currentWebmSrc ? (
+              {isWebmSupported && currentWebmSrc && showVideo ? (
                 <video
                   key="teyro-unified-loading-video"
                   autoPlay
                   loop
                   muted
                   playsInline
+                  poster={mascotSrc}
                   preload="auto"
                   onError={() => setIsWebmSupported(false)}
                   className={styles.mascotVideo}

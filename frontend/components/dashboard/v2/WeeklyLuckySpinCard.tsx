@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { CustomEase } from 'gsap/dist/CustomEase';
 import styles from './WeeklyLuckySpin.module.css';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration } from '@/context/CelebrationContext';
@@ -13,9 +11,35 @@ import { useHerald } from '@/context/HeraldContext';
 import { playHaptic } from '@/lib/haptics';
 import { playTickSound, playWinSound } from '@/utils/audio';
 
-// Register CustomEase
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(CustomEase);
+// PERF: GSAP (+ the CustomEase plugin) is ~70KB and is used by exactly one
+// interaction in this file — the wheel spin. This card is statically imported
+// by RightSidebar, which is rendered on BOTH /dashboard and /learn, so a
+// top-level import put GSAP in the initial bundle of the two hottest routes in
+// the app for every learner, whether or not they ever spun the wheel.
+//
+// HeraldSpinReveal has the same static import but does not pay this cost,
+// because that whole component is loaded via next/dynamic. This card renders
+// eagerly, so the split has to happen at the import instead. Loading on click
+// keeps the card render byte-identical.
+type GsapModule = {
+  gsap: typeof import('gsap').default;
+  CustomEase: typeof import('gsap/dist/CustomEase').CustomEase;
+};
+
+let gsapModulePromise: Promise<GsapModule> | null = null;
+
+function loadGsap(): Promise<GsapModule> {
+  if (!gsapModulePromise) {
+    gsapModulePromise = Promise.all([
+      import('gsap'),
+      import('gsap/dist/CustomEase'),
+    ]).then(([gsapMod, easeMod]) => {
+      const gsap = gsapMod.default;
+      gsap.registerPlugin(easeMod.CustomEase);
+      return { gsap, CustomEase: easeMod.CustomEase };
+    });
+  }
+  return gsapModulePromise;
 }
 
 const DEFAULT_WHEEL_CONFIG = [
@@ -151,6 +175,9 @@ export default function WeeklyLuckySpinCard() {
       
       // 3. Animate using GSAP
       lastTickAngleRef.current = currentRotationRef.current;
+
+      // Resolved on first spin, then cached by loadGsap() for the session.
+      const { gsap, CustomEase } = await loadGsap();
       
       gsap.to(wheelRef.current, {
         rotation: finalRotation,

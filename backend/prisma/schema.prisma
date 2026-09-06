@@ -22,8 +22,8 @@ model User {
   updatedAt   DateTime  @updatedAt
 
   // WhatsApp verification (set on onboarding Step 6)
-  whatsappPhone    String?  // E.164 format, e.g. +2347012345678
-  whatsappVerified Boolean  @default(false)
+  whatsappPhone    String? // E.164 format, e.g. +2347012345678
+  whatsappVerified Boolean @default(false)
 
   // Dual-role access flags — the canonical source of truth for which profiles exist
   hasStudentAccess Boolean @default(false)
@@ -33,7 +33,7 @@ model User {
   studentProfile      StudentProfile?
   instructorProfile   InstructorProfile?
   enrollments         Enrollment[]
-  courses             Course[]                @relation("InstructorCourses")
+  courses             Course[]                  @relation("InstructorCourses")
   orders              Order[]
   reviews             Review[]
   onboardingDraft     CreatorOnboardingDraft?
@@ -47,17 +47,17 @@ model User {
   followers UserFollow[] @relation("UserFollowing")
 
   // Account Security, Status & Lifecycle fields (Part 3A.2.1.2.1)
-  accountStatus        AccountStatus @default(ACTIVE)
-  emailVerifiedAt      DateTime?
-  lastLoginAt          DateTime?
-  lastActiveAt         DateTime?
-  loginCount           Int           @default(0)
-  failedLoginAttempts  Int           @default(0)
-  accountLockedUntil   DateTime?
-  deletedAt            DateTime?
+  accountStatus       AccountStatus @default(ACTIVE)
+  emailVerifiedAt     DateTime?
+  lastLoginAt         DateTime?
+  lastActiveAt        DateTime?
+  loginCount          Int           @default(0)
+  failedLoginAttempts Int           @default(0)
+  accountLockedUntil  DateTime?
+  deletedAt           DateTime?
 
   // Failed verify-code submissions; at >= 5 the pending code is voided (B1)
-  verifyAttempts       Int           @default(0)
+  verifyAttempts Int @default(0)
 
   // Persisted timezone — captured opportunistically from the client (see
   // TimezoneInterceptor). The Tey scheduler cannot ask a browser "what time is
@@ -68,32 +68,32 @@ model User {
   timezone              String?
   timezoneOffsetMinutes Int?
 
-  gemTransactions    GemTransaction[]
-  shopTransactions   ShopTransaction[]
-  userAchievements   UserAchievement[]
-  userMissions       UserMission[]
-  dailyMissions      UserDailyMission[]
-  dailyMissionSets   DailyMissionSet[]
-  rewardTransactions RewardTransaction[]
-  spinClaims         SpinClaim[]
-  courseProgresses   UserCourseProgress[]
-  lessonProgresses   UserLessonProgress[]
-  stepProgresses     UserStepProgress[]
-  stepAttempts       UserStepAttempt[]
-  learningSessions   LearningSession[]
-  userLearningStreak UserLearningStreak?
-  userStats          UserStats?
-  weeklyProgresses   UserWeeklyProgress[]
-  weeklySpins        WeeklySpin[]
-  learningEvents     LearningEvent[]
-  userInventories    UserInventory[]
-  shopItems          UserShopItem[]
-  shopUnlocks        UserShopUnlock[]
-  shopState          UserShopState?
-  dailyChests        DailyChest[]
-  dailyActivities    UserDailyActivity[]
-  monthlyQuests      UserMonthlyQuest[]
-  userMomentum       UserMomentum?
+  gemTransactions        GemTransaction[]
+  shopTransactions       ShopTransaction[]
+  userAchievements       UserAchievement[]
+  userMissions           UserMission[]
+  dailyMissions          UserDailyMission[]
+  dailyMissionSets       DailyMissionSet[]
+  rewardTransactions     RewardTransaction[]
+  spinClaims             SpinClaim[]
+  courseProgresses       UserCourseProgress[]
+  lessonProgresses       UserLessonProgress[]
+  stepProgresses         UserStepProgress[]
+  stepAttempts           UserStepAttempt[]
+  learningSessions       LearningSession[]
+  userLearningStreak     UserLearningStreak?
+  userStats              UserStats?
+  weeklyProgresses       UserWeeklyProgress[]
+  weeklySpins            WeeklySpin[]
+  learningEvents         LearningEvent[]
+  userInventories        UserInventory[]
+  shopItems              UserShopItem[]
+  shopUnlocks            UserShopUnlock[]
+  shopState              UserShopState?
+  dailyChests            DailyChest[]
+  dailyActivities        UserDailyActivity[]
+  monthlyQuests          UserMonthlyQuest[]
+  userMomentum           UserMomentum?
   rewardLogs             RewardLog[]
   xpEvents               XpEvent[]
   communityMemberships   CommunityMembership[]
@@ -101,10 +101,10 @@ model User {
   comments               Comment[]
   likes                  Like[]
   activityFeed           ActivityFeed[]
-  viewerFriendActivities FriendActivity[]       @relation("ViewerFriendActivities")
-  actorFriendActivities  FriendActivity[]       @relation("ActorFriendActivities")
+  viewerFriendActivities FriendActivity[]      @relation("ViewerFriendActivities")
+  actorFriendActivities  FriendActivity[]      @relation("ActorFriendActivities")
   notifications          Notification[]
-  notificationActors     Notification[]         @relation("NotificationActor")
+  notificationActors     Notification[]        @relation("NotificationActor")
   pollVotes              PollVote[]
   courseWeeklyXp         CourseWeeklyXp[]
   leagueMembers          LeagueMember[]
@@ -136,44 +136,44 @@ model Profile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  username             String?   @unique
-  creatorStatus        String    @default("founding_creator")
-  headline             String?
-  bio                  String?   @db.Text
-  about                String?   @db.Text
-  avatarUrl            String?
-  coverImageUrl        String?
-  introVideoUrl        String?
-  tagline              String?
-  location             String?
-  languages            Json?
-  primaryExpertise     String?
-  skills               Json?
-  teachingLevels       Json?
-  contentFormats       Json?
+  username         String? @unique
+  creatorStatus    String  @default("founding_creator")
+  headline         String?
+  bio              String? @db.Text
+  about            String? @db.Text
+  avatarUrl        String?
+  coverImageUrl    String?
+  introVideoUrl    String?
+  tagline          String?
+  location         String?
+  languages        Json?
+  primaryExpertise String?
+  skills           Json?
+  teachingLevels   Json?
+  contentFormats   Json?
 
   // Experience, Education & Certifications
-  experiences          Json?
-  education            Json?
-  certifications       Json?
+  experiences    Json?
+  education      Json?
+  certifications Json?
 
   // Social & Professional Links
-  website              String?
-  linkedin             String?
-  github               String?
-  twitter              String?
-  youtube              String?
-  instagram            String?
-  tiktok               String?
-  facebook             String?
-  portfolio            String?
+  website   String?
+  linkedin  String?
+  github    String?
+  twitter   String?
+  youtube   String?
+  instagram String?
+  tiktok    String?
+  facebook  String?
+  portfolio String?
 
   // Contact & Preferences
-  contactMethod        String?   @default("email")
-  businessEmail        String?
-  allowCollaboration   Boolean   @default(true)
-  profileVisibility    String    @default("PUBLIC")
-  privacySettings      Json?
+  contactMethod      String? @default("email")
+  businessEmail      String?
+  allowCollaboration Boolean @default(true)
+  profileVisibility  String  @default("PUBLIC")
+  privacySettings    Json?
 
   usernameLastChangedAt DateTime?
 
@@ -183,7 +183,7 @@ model Profile {
   audienceSize     String? // Step 4: audience scale
   platforms        Json? // Step 5: current platforms
   weeklyHours      String? // Step 9: available time per week
-  biggestChallenge Json?   // Step 7: selected pain points (multi-select array from onboarding)
+  biggestChallenge Json? // Step 7: selected pain points (multi-select array from onboarding)
   teachingStyle    String? // Step 8: content/teaching approach
   launchGoal       String? // Step 12: first course launch goal
 
@@ -314,12 +314,12 @@ model Lesson {
   xpReward Int @default(10)
 
   // Relations
-  sectionId String
-  section   Section              @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  resources LessonResource[]
-  steps     LessonStep[]
+  sectionId            String
+  section              Section              @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  resources            LessonResource[]
+  steps                LessonStep[]
   userLessonProgresses UserLessonProgress[]
-  posts     Post[]
+  posts                Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -329,16 +329,16 @@ model Lesson {
 }
 
 model LessonStep {
-  id              String   @id @default(uuid())
+  id              String  @id @default(uuid())
   lessonId        String
-  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  stepType        String   // 'learn' | 'apply' | 'reflect' | 'resources'
+  lesson          Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  stepType        String // 'learn' | 'apply' | 'reflect' | 'resources'
   title           String?
-  orderIndex      Int      @default(0)
-  isRequired      Boolean  @default(true)
+  orderIndex      Int     @default(0)
+  isRequired      Boolean @default(true)
   unlockCondition Json?
 
-  contents         LessonStepContent[]
+  contents           LessonStepContent[]
   userStepProgresses UserStepProgress[]
   userStepAttempts   UserStepAttempt[]
 
@@ -354,7 +354,7 @@ model LessonStepContent {
   id            String     @id @default(uuid())
   stepId        String
   step          LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
-  contentType   String     // 'video' | 'text' | 'quiz' | 'task' | 'ai_prompt' | 'file'
+  contentType   String // 'video' | 'text' | 'quiz' | 'task' | 'ai_prompt' | 'file'
   content       Json
   orderIndex    Int        @default(0)
   isInteractive Boolean    @default(false)
@@ -382,6 +382,10 @@ model LessonResource {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // FKs are not auto-indexed by Postgres; the owner course read does
+  // `include: { resources: true }` once per lesson.
+  @@index([lessonId])
 }
 
 model Review {
@@ -398,6 +402,9 @@ model Review {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId]) // One review per user per course
+  // The unique above leads with userId, so it cannot serve the rating
+  // rollups that filter by course.
+  @@index([courseId])
 }
 
 model Enrollment {
@@ -412,6 +419,11 @@ model Enrollment {
   user             User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+  // courseId alone is not covered by the leading-userId unique above.
+  @@index([courseId])
+  // Satisfies the sort in getMyEnrollments (orderBy updatedAt desc), which the
+  // unique index cannot.
+  @@index([userId, updatedAt(sort: Desc)])
 }
 
 enum AccessPlan {
@@ -440,11 +452,11 @@ model CourseAccessEntitlement {
   stripeCustomerId     String?
   pricePaid            Float?
 
-  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course               Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
   @@index([userId, courseId, status, expiresAt])
@@ -496,11 +508,11 @@ model CourseSubscription {
   pricePaid              Float?
   currency               String              @default("USD")
 
-  user                   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course                 Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, courseId, status])
   @@index([provider, providerSubscriptionId])
@@ -522,6 +534,8 @@ model Order {
   items       OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model OrderItem {
@@ -532,6 +546,9 @@ model OrderItem {
   course    Course   @relation(fields: [courseId], references: [id])
   price     Float // Price at the time of purchase
   createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([courseId])
 }
 
 enum Role {
@@ -574,24 +591,24 @@ model PasswordResetToken {
 }
 
 model OnboardingSession {
-  id             String    @id @default(uuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentStep    Int       @default(1)
-  completedSteps Int[]     @default([])
-  answers        Json      @default("{}")
-  onboardingComplete Boolean @default(false)
-  startedAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  completedAt    DateTime?
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStep        Int       @default(1)
+  completedSteps     Int[]     @default([])
+  answers            Json      @default("{}")
+  onboardingComplete Boolean   @default(false)
+  startedAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  completedAt        DateTime?
 
   @@map("onboarding_sessions")
 }
 
 model StudentProfile {
-  id           String    @id @default(uuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Learning progress data
   xp                 Int       @default(30) // 30 XP starter grant
@@ -602,10 +619,10 @@ model StudentProfile {
   // Lives system — lose a life on wrong Apply answer, refill 1 per 4h
   lives           Int       @default(5)
   maxLives        Int       @default(5)
-  livesLastLostAt DateTime?  // timestamp of when the last life was lost
+  livesLastLostAt DateTime? // timestamp of when the last life was lost
 
   // Streak freezes (banked freezes)
-  streakFreezeBank Int       @default(1)
+  streakFreezeBank Int @default(1)
 
   // Daily quests log
   completedQuests  Json      @default("[]")
@@ -621,13 +638,13 @@ model StudentProfile {
 
   // Gems & Coins currency & longest streak tracking
   gems                  Int       @default(100) // 100 Gems starter grant
-  coins                 Int       @default(50)  // 50 Coins starter grant
+  coins                 Int       @default(50) // 50 Coins starter grant
   longestStreak         Int       @default(3)
   lastLessonCompletedAt DateTime? // Exact timestamp when a lesson was finished
 
   // Daily goal (XP/day) — Duolingo-style commitment level
   // 20 Casual | 50 Regular | 100 Serious | 200 Intense
-  dailyGoalXp           Int       @default(20)
+  dailyGoalXp Int @default(20)
 
   // Weekly league standing (Duolingo-style leaderboards). Source of truth for
   // which tier the user joins next week; mutated only by league settlement.
@@ -649,9 +666,9 @@ model GemTransaction {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String   // 'EARN' | 'SPEND'
+  type      String // 'EARN' | 'SPEND'
   amount    Int
-  source    String   // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ONBOARDING_CHALLENGE' | 'ADMIN'
+  source    String // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ONBOARDING_CHALLENGE' | 'ADMIN'
   createdAt DateTime @default(now())
 
   // NOTE: a PARTIAL unique index (userId WHERE source = 'ONBOARDING_CHALLENGE')
@@ -666,7 +683,7 @@ model ShopTransaction {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  item      String   // Shop registry item id (see backend/src/shop/shop.registry.ts)
+  item      String // Shop registry item id (see backend/src/shop/shop.registry.ts)
   quantity  Int      @default(1)
   cost      Int
   createdAt DateTime @default(now())
@@ -746,11 +763,11 @@ model UserShopState {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   /// YYYY-MM-DD (learner-local) of the last visit that paid a reward.
-  lastVisitDay    String?
+  lastVisitDay       String?
   /// Consecutive days visited — the visit bonus scales with it.
-  visitStreak     Int     @default(0)
+  visitStreak        Int     @default(0)
   /// Collection ids already paid out, e.g. ["SPACE"].
-  claimedCollections Json @default("[]")
+  claimedCollections Json    @default("[]")
 
   /// Permanent freeze-capacity upgrades bought (Freeze Vault).
   freezeCapacityBonus Int @default(0)
@@ -837,7 +854,7 @@ model UserAchievement {
   id            String    @id @default(uuid())
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievementId String    // 'wildfire' | 'sage' | 'champion' | 'sharpshooter' | 'explorer' | 'marathon'
+  achievementId String // 'wildfire' | 'sage' | 'champion' | 'sharpshooter' | 'explorer' | 'marathon'
   tier          Int       @default(1)
   unlockedAt    DateTime  @default(now())
   // Achievements are their own reward — seenAt only tracks whether the student
@@ -853,12 +870,12 @@ model UserMission {
   id         String    @id @default(uuid())
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  missionKey String    // 'COMPLETE_LESSON' | 'MAINTAIN_STREAK' | 'LEARN_MINUTES'
+  missionKey String // 'COMPLETE_LESSON' | 'MAINTAIN_STREAK' | 'LEARN_MINUTES'
   progress   Int       @default(0)
   target     Int       @default(1)
   completed  Boolean   @default(false)
   claimedAt  DateTime?
-  dateStr    String    // YYYY-MM-DD local date string
+  dateStr    String // YYYY-MM-DD local date string
 
   @@unique([userId, missionKey, dateStr])
   @@index([userId, dateStr])
@@ -869,7 +886,7 @@ model SpinClaim {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rewardType String   // 'COINS' | 'XP' | 'FREEZE' | 'HEARTS'
+  rewardType String // 'COINS' | 'XP' | 'FREEZE' | 'HEARTS'
   rewardVal  Int
   claimedAt  DateTime @default(now())
 
@@ -1021,7 +1038,7 @@ model LearningSession {
   durationSeconds  Int?
   lessonsCompleted Int       @default(0)
   stepsCompleted   Int       @default(0)
-  deviceType       String?   // 'mobile' | 'desktop'
+  deviceType       String? // 'mobile' | 'desktop'
 
   createdAt DateTime @default(now())
 
@@ -1030,12 +1047,12 @@ model LearningSession {
 }
 
 model UserLearningStreak {
-  userId            String   @id
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentStreak     Int      @default(0)
-  longestStreak     Int      @default(0)
-  lastActivityDate  String?  // YYYY-MM-DD
-  streakFreezeCount Int      @default(0)
+  userId            String  @id
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak     Int     @default(0)
+  longestStreak     Int     @default(0)
+  lastActivityDate  String? // YYYY-MM-DD
+  streakFreezeCount Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1061,13 +1078,13 @@ model UserStats {
 }
 
 model UserWeeklyProgress {
-  id               String   @id @default(uuid())
+  id               String @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekStartDate    String   // YYYY-MM-DD (Monday)
-  lessonsCompleted Int      @default(0)
-  xpEarned         Int      @default(0)
-  daysActive       Int      @default(0)
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStartDate    String // YYYY-MM-DD (Monday)
+  lessonsCompleted Int    @default(0)
+  xpEarned         Int    @default(0)
+  daysActive       Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1083,15 +1100,15 @@ model UserWeeklyProgress {
 /// board (deliberately different from UserWeeklyProgress, which is user-local).
 /// `divisionId` is reserved for future Bronze→Diamond-style split boards.
 model CourseWeeklyXp {
-  id               String   @id @default(uuid())
+  id               String  @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId         String
-  course           Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course           Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   divisionId       String?
-  weekStartDate    String   // YYYY-MM-DD, always a Monday in UTC
-  xpEarned         Int      @default(0)
-  lessonsCompleted Int      @default(0)
+  weekStartDate    String // YYYY-MM-DD, always a Monday in UTC
+  xpEarned         Int     @default(0)
+  lessonsCompleted Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1120,11 +1137,11 @@ enum LeagueTier {
 /// Tournament cohorts are rows with league = DIAMOND_TOURNAMENT. Weeks are
 /// fixed UTC Mondays so every user shares one clock (like CourseWeeklyXp).
 model LeagueCohort {
-  id          String    @id @default(uuid())
+  id          String         @id @default(uuid())
   league      LeagueTier
-  weekStart   String    // YYYY-MM-DD, always a Monday in UTC
-  cohortIndex Int       // sequential within (league, weekStart)
-  status      String    @default("ACTIVE") // 'ACTIVE' | 'SETTLED'
+  weekStart   String // YYYY-MM-DD, always a Monday in UTC
+  cohortIndex Int // sequential within (league, weekStart)
+  status      String         @default("ACTIVE") // 'ACTIVE' | 'SETTLED'
   settledAt   DateTime?
   members     LeagueMember[]
 
@@ -1145,13 +1162,13 @@ model LeagueMember {
   cohort      LeagueCohort? @relation(fields: [cohortId], references: [id], onDelete: SetNull)
   userId      String
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekStart   String        // YYYY-MM-DD Monday UTC (denormalized for unique + queries)
-  league      LeagueTier    // tier the user competed in this week
+  weekStart   String // YYYY-MM-DD Monday UTC (denormalized for unique + queries)
+  league      LeagueTier // tier the user competed in this week
   weeklyXp    Int           @default(0)
   xpUpdatedAt DateTime      @default(now()) // tie-break: earlier reach = higher rank
   joinedAt    DateTime      @default(now())
   rank        Int?
-  outcome     String?       // 'PROMOTED' | 'DEMOTED' | 'STAYED' | 'CHAMPION' | 'TOURNAMENT_EXIT' | 'INACTIVE_DEMOTED'
+  outcome     String? // 'PROMOTED' | 'DEMOTED' | 'STAYED' | 'CHAMPION' | 'TOURNAMENT_EXIT' | 'INACTIVE_DEMOTED'
   seenAt      DateTime?
 
   createdAt DateTime @default(now())
@@ -1167,8 +1184,8 @@ model LearningEvent {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventType  String   // 'LESSON_COMPLETED' | 'STREAK_INCREMENTED' | 'ACHIEVEMENT_UNLOCKED'
-  entityType String   // 'lesson' | 'course' | 'achievement'
+  eventType  String // 'LESSON_COMPLETED' | 'STREAK_INCREMENTED' | 'ACHIEVEMENT_UNLOCKED'
+  entityType String // 'lesson' | 'course' | 'achievement'
   entityId   String
   metadata   Json?
   createdAt  DateTime @default(now())
@@ -1182,7 +1199,7 @@ model UserInventory {
   id          String    @id @default(uuid())
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itemType    String    // 'FREEZE' | 'BOOST' | 'CHEST'
+  itemType    String // 'FREEZE' | 'BOOST' | 'CHEST'
   quantity    Int       @default(0)
   activeUntil DateTime? // For duration-based items like XP_BOOST
   updatedAt   DateTime  @updatedAt
@@ -1193,13 +1210,13 @@ model UserInventory {
 }
 
 model ChestRewardPool {
-  id          String   @id @default(uuid())
-  rewardType  String   // 'COINS' | 'GEMS' | 'HEARTS' | 'XP_BOOST' | 'STREAK_FREEZE'
-  amountMin   Int?
-  amountMax   Int?
-  rarityTier  String   // 'common' | 'uncommon' | 'rare'
-  weight      Int
-  active      Boolean  @default(true)
+  id         String  @id @default(uuid())
+  rewardType String // 'COINS' | 'GEMS' | 'HEARTS' | 'XP_BOOST' | 'STREAK_FREEZE'
+  amountMin  Int?
+  amountMax  Int?
+  rarityTier String // 'common' | 'uncommon' | 'rare'
+  weight     Int
+  active     Boolean @default(true)
 
   dailyChests DailyChest[]
 
@@ -1207,18 +1224,18 @@ model ChestRewardPool {
 }
 
 model DailyChest {
-  id                   String            @id @default(uuid())
+  id                   String           @id @default(uuid())
   userId               String
-  user                 User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chestDay             String            // YYYY-MM-DD in user's timezone
-  status               String            @default("LOCKED") // 'LOCKED' | 'READY_TO_OPEN' | 'OPENED'
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chestDay             String // YYYY-MM-DD in user's timezone
+  status               String           @default("LOCKED") // 'LOCKED' | 'READY_TO_OPEN' | 'OPENED'
   unlockedAt           DateTime?
   openedAt             DateTime?
   rewardPoolId         String?
-  rewardPool           ChestRewardPool?  @relation(fields: [rewardPoolId], references: [id])
+  rewardPool           ChestRewardPool? @relation(fields: [rewardPoolId], references: [id])
   rewardSnapshotType   String?
   rewardSnapshotAmount Int?
-  createdAt            DateTime          @default(now())
+  createdAt            DateTime         @default(now())
 
   @@unique([userId, chestDay])
   @@index([userId])
@@ -1229,7 +1246,7 @@ model UserDailyActivity {
   id               String   @id @default(uuid())
   userId           String
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date             String   // YYYY-MM-DD
+  date             String // YYYY-MM-DD
   lessonsCompleted Int      @default(0)
   xpEarned         Int      @default(0)
   timeSpentSeconds Int      @default(0)
@@ -1254,9 +1271,9 @@ model RewardLog {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rewardType  String   // 'XP' | 'COINS' | 'FREEZE' | 'HEARTS' | 'SPIN'
+  rewardType  String // 'XP' | 'COINS' | 'FREEZE' | 'HEARTS' | 'SPIN'
   rewardValue Int
-  sourceType  String   // 'MISSION' | 'CHEST' | 'SPIN' | 'STREAK' | 'LESSON'
+  sourceType  String // 'MISSION' | 'CHEST' | 'SPIN' | 'STREAK' | 'LESSON'
   sourceId    String?
   createdAt   DateTime @default(now())
 
@@ -1268,7 +1285,7 @@ model XpEvent {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sourceType String   // 'LESSON' | 'MISSION' | 'REWARD' | 'CHALLENGE'
+  sourceType String // 'LESSON' | 'MISSION' | 'REWARD' | 'CHALLENGE'
   sourceId   String?
   xpAmount   Int
   createdAt  DateTime @default(now())
@@ -1309,29 +1326,29 @@ model CommunityMembership {
 }
 
 model Post {
-  id           String     @id @default(uuid())
-  userId       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  communityId  String?
-  community    Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  courseId     String?
-  course       Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  postType     String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT' | 'GENERAL' | 'MILESTONE' | 'TIP' | 'WIN' | 'RESOURCE' | 'DISCUSSION' | 'POLL' | 'ANNOUNCEMENT' | 'CHALLENGE'
-  title        String?    // optional headline (150 chars max, enforced in DTOs)
-  contentText  String     @db.Text
-  mediaUrl     String?
-  images       String[]   // ordered image URLs uploaded direct-to-S3
-  lessonId     String? // lesson-linked discussions ("Discuss this lesson")
-  lesson       Lesson?    @relation(fields: [lessonId], references: [id], onDelete: SetNull)
-  isPinned     Boolean    @default(false) // Commons moderation — pinned posts float to top of feed page 1
-  isLocked     Boolean    @default(false) // creator locked comments
-  status       String     @default("ACTIVE") // 'ACTIVE' | 'REMOVED' (moderation soft-delete)
-  likeCount    Int        @default(0)
-  commentCount Int        @default(0)
-  viewCount    Int        @default(0)
-  lastActivityAt DateTime @default(now()) // bumped on comment; drives feed recency
-  editedAt     DateTime?
-  createdAt    DateTime   @default(now())
+  id             String     @id @default(uuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId    String?
+  community      Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  courseId       String?
+  course         Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  postType       String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT' | 'GENERAL' | 'MILESTONE' | 'TIP' | 'WIN' | 'RESOURCE' | 'DISCUSSION' | 'POLL' | 'ANNOUNCEMENT' | 'CHALLENGE'
+  title          String? // optional headline (150 chars max, enforced in DTOs)
+  contentText    String     @db.Text
+  mediaUrl       String?
+  images         String[] // ordered image URLs uploaded direct-to-S3
+  lessonId       String? // lesson-linked discussions ("Discuss this lesson")
+  lesson         Lesson?    @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  isPinned       Boolean    @default(false) // Commons moderation — pinned posts float to top of feed page 1
+  isLocked       Boolean    @default(false) // creator locked comments
+  status         String     @default("ACTIVE") // 'ACTIVE' | 'REMOVED' (moderation soft-delete)
+  likeCount      Int        @default(0)
+  commentCount   Int        @default(0)
+  viewCount      Int        @default(0)
+  lastActivityAt DateTime   @default(now()) // bumped on comment; drives feed recency
+  editedAt       DateTime?
+  createdAt      DateTime   @default(now())
 
   comments    Comment[]
   pollOptions PollOption[]
@@ -1383,14 +1400,14 @@ model PollOption {
 }
 
 model PollVote {
-  id       String     @id @default(uuid())
-  postId   String
-  post     Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
-  optionId String
-  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
+  id        String     @id @default(uuid())
+  postId    String
+  post      Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
 
   // one vote per user per poll — enforced at the DB level
   @@unique([postId, userId])
@@ -1417,7 +1434,7 @@ model Like {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  entityType String   // 'POST' | 'COMMENT'
+  entityType String // 'POST' | 'COMMENT'
   entityId   String
   createdAt  DateTime @default(now())
 
@@ -1430,8 +1447,8 @@ model ActivityFeed {
   id           String   @id @default(uuid())
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activityType String   // 'LESSON_COMPLETED' | 'STREAK' | 'LEVEL_UP'
-  entityType   String   // 'lesson' | 'streak' | 'level'
+  activityType String // 'LESSON_COMPLETED' | 'STREAK' | 'LEVEL_UP'
+  entityType   String // 'lesson' | 'streak' | 'level'
   entityId     String
   metadata     Json?
   createdAt    DateTime @default(now())
@@ -1445,9 +1462,9 @@ model ActivityFeed {
 
 model FriendActivity {
   id           String       @id @default(uuid())
-  userId       String       // Viewer
+  userId       String // Viewer
   user         User         @relation("ViewerFriendActivities", fields: [userId], references: [id], onDelete: Cascade)
-  friendUserId String       // Actor
+  friendUserId String // Actor
   friendUser   User         @relation("ActorFriendActivities", fields: [friendUserId], references: [id], onDelete: Cascade)
   activityId   String
   activity     ActivityFeed @relation(fields: [activityId], references: [id], onDelete: Cascade)
@@ -1464,7 +1481,7 @@ model Notification {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   actorId    String? // who triggered it (liker/replier/mentioner/creator)
   actor      User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
-  type       String   // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM' | 'POST_LIKE' | 'COMMENT_LIKE' | 'REPLY' | 'MENTION' | 'ANNOUNCEMENT'
+  type       String // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM' | 'POST_LIKE' | 'COMMENT_LIKE' | 'REPLY' | 'MENTION' | 'ANNOUNCEMENT'
   entityType String?
   entityId   String?
   title      String?
@@ -1488,9 +1505,9 @@ model MissionTemplate {
   title               String
   description         String?  @db.Text
   icon                String?
-  objectiveType       String   // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE', etc.
+  objectiveType       String // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE', etc.
   defaultTarget       Int
-  defaultRewardType   String   // 'XP', 'COINS', 'GEMS'
+  defaultRewardType   String // 'XP', 'COINS', 'GEMS'
   defaultRewardAmount Int
   difficultyTier      String   @default("medium") // 'easy', 'medium', 'hard'
   isActive            Boolean  @default(true)
@@ -1505,7 +1522,7 @@ model DailyMissionSet {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  missionDay  String   // YYYY-MM-DD local timezone
+  missionDay  String // YYYY-MM-DD local timezone
   generatedAt DateTime @default(now())
   resetAt     DateTime
 
@@ -1524,12 +1541,12 @@ model UserDailyMission {
   dailyMissionSet   DailyMissionSet? @relation(fields: [dailyMissionSetId], references: [id], onDelete: Cascade)
   templateId        String
   template          MissionTemplate  @relation(fields: [templateId], references: [id])
-  missionDate       String           // YYYY-MM-DD
+  missionDate       String // YYYY-MM-DD
   title             String
-  objectiveType     String           // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE'
+  objectiveType     String // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE'
   currentProgress   Int              @default(0)
   targetValue       Int
-  rewardType        String           // 'XP', 'COINS', 'GEMS'
+  rewardType        String // 'XP', 'COINS', 'GEMS'
   rewardAmount      Int
   status            String           @default("IN_PROGRESS") // 'IN_PROGRESS', 'COMPLETED', 'CLAIMED', 'EXPIRED'
   isCompleted       Boolean          @default(false)
@@ -1547,9 +1564,9 @@ model RewardTransaction {
   id             String   @id @default(uuid())
   userId         String
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currency       String   // 'XP', 'COINS', 'GEMS', 'HEARTS'
+  currency       String // 'XP', 'COINS', 'GEMS', 'HEARTS'
   amount         Int
-  sourceType     String   // 'MISSION_CLAIM', 'MYSTERY_CHEST', 'LUCKY_SPIN', etc.
+  sourceType     String // 'MISSION_CLAIM', 'MYSTERY_CHEST', 'LUCKY_SPIN', etc.
   sourceId       String?
   idempotencyKey String   @unique
   createdAt      DateTime @default(now())
@@ -1565,10 +1582,10 @@ model RewardTransaction {
 model SpinWheelSegment {
   id           String  @id @default(uuid())
   segmentIndex Int
-  rewardType   String  // 'COINS', 'XP', 'HEARTS', 'STREAK_FREEZE'
+  rewardType   String // 'COINS', 'XP', 'HEARTS', 'STREAK_FREEZE'
   amountMin    Int
   amountMax    Int
-  rarityTier   String  // 'common', 'uncommon', 'rare'
+  rarityTier   String // 'common', 'uncommon', 'rare'
   weight       Int
   colorKey     String
   active       Boolean @default(true)
@@ -1580,7 +1597,7 @@ model WeeklySpin {
   id                   String    @id @default(uuid())
   userId               String
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weekStart            String    // YYYY-MM-DD (Monday) local timezone
+  weekStart            String // YYYY-MM-DD (Monday) local timezone
   status               String    @default("AVAILABLE") // 'AVAILABLE' | 'SPUN'
   spunAt               DateTime?
   landedSegmentIndex   Int?
@@ -1600,7 +1617,7 @@ model UserMonthlyQuest {
   id                 String   @id @default(uuid())
   userId             String
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  monthKey           String   // 'YYYY-MM' local timezone
+  monthKey           String // 'YYYY-MM' local timezone
   status             String   @default("ACTIVE") // 'ACTIVE' | 'COMPLETED' | 'FULLY_CLAIMED'
   dailyGoalXpAtStart Int // dailyGoalXp snapshot at creation (informational)
   targetDays         Int // required goal-days for 100% — fixed at creation (prorated for mid-month joiners)
@@ -1679,34 +1696,34 @@ model CreatorEarningsAgreement {
 /// later tier change never rewrites history. Signed amounts: credits > 0,
 /// debits < 0. teyroAmountMinor = netMinor − creatorAmountMinor always.
 model EarningsTransaction {
-  id                   String            @id @default(uuid())
-  publicId             String            @unique // "ET-XXXXXXXX" support reference
-  creatorId            String
-  courseId             String?
-  studentId            String?
-  orderId              String?
+  id        String  @id @default(uuid())
+  publicId  String  @unique // "ET-XXXXXXXX" support reference
+  creatorId String
+  courseId  String?
+  studentId String?
+  orderId   String?
 
-  type                 EarningsEntryType
-  grossMinor           Int
-  discountMinor        Int               @default(0)
-  feeMinor             Int               @default(0) // processing fee; 0 until fee capture exists
-  netMinor             Int // gross − discount − fee
-  currency             String            @default("USD") // ledger currency (USD-only v1)
-  nativeCurrency       String? // e.g. XAF — reference only, never summed
-  nativeAmountMinor    Int?
+  type              EarningsEntryType
+  grossMinor        Int
+  discountMinor     Int               @default(0)
+  feeMinor          Int               @default(0) // processing fee; 0 until fee capture exists
+  netMinor          Int // gross − discount − fee
+  currency          String            @default("USD") // ledger currency (USD-only v1)
+  nativeCurrency    String? // e.g. XAF — reference only, never summed
+  nativeAmountMinor Int?
 
-  creatorSharePct      Int
-  creatorAmountMinor   Int // signed
-  teyroAmountMinor     Int // signed
+  creatorSharePct    Int
+  creatorAmountMinor Int // signed
+  teyroAmountMinor   Int // signed
 
   provider             String // STRIPE | MESOMB | MANUAL
   providerReference    String? // pi_/in_/cs_/re_/dp_/pk ids — dedupe key
   relatedTransactionId String? // reversal entries → original row
   reason               String? // MANDATORY for REFUND / CHARGEBACK / ADJUSTMENT
-  occurredAt           DateTime          @default(now()) // drives the clearing window
+  occurredAt           DateTime @default(now()) // drives the clearing window
   metadata             Json?
 
-  createdAt            DateTime          @default(now()) // intentionally NO @updatedAt
+  createdAt DateTime @default(now()) // intentionally NO @updatedAt
 
   @@unique([provider, type, providerReference])
   @@index([creatorId, occurredAt])
@@ -1720,22 +1737,22 @@ model EarningsTransaction {
 /// Where creators get paid. FULL account details are AES-256-GCM encrypted
 /// at rest; only masked display data is ever returned by APIs.
 model CreatorPayoutMethod {
-  id                String          @id @default(uuid())
-  userId            String          @unique
+  id                String           @id @default(uuid())
+  userId            String           @unique
   type              PayoutMethodType
   encryptedData     String // "v1:<keyVersion>:<iv>:<tag>:<cipher>"
-  keyVersion        Int             @default(1) // supports future key rotation
+  keyVersion        Int              @default(1) // supports future key rotation
   holderName        String?
   maskedDisplay     String? // "Bank Acct **4821"
   bankName          String? // display-only metadata
   country           String?
   receivingCurrency String?
-  isVerified        Boolean         @default(false)
+  isVerified        Boolean          @default(false)
   verifiedAt        DateTime?
   eligibilityNote   String?
-  isActive          Boolean         @default(true)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
   @@map("creator_payout_methods")
 }
@@ -1788,7 +1805,6 @@ model EarningsAuditLog {
   @@map("earnings_audit_logs")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Tey Intelligence layer — activity events + learner state projection.
 //
@@ -1805,7 +1821,7 @@ model TeyActivityEvent {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   /// See TEY_EVENT_TYPES in tey/contracts/tey-event.types.ts for the closed union.
-  eventType String
+  eventType  String
   /// 'SERVER' | 'CLIENT' — server-observed events are authoritative.
   source     String  @default("SERVER")
   entityType String?
@@ -1869,9 +1885,9 @@ model LearnerState {
   usualHourLocal   Int?
   usualHourSamples Int  @default(0)
 
-  lastActivityAt DateTime?
+  lastActivityAt           DateTime?
   /// Consecutive nudges sent without an open — drives tone escalation.
-  consecutiveIgnoredNudges Int @default(0)
+  consecutiveIgnoredNudges Int       @default(0)
 
   computedAt DateTime @default(now())
   revision   Int      @default(0)
@@ -1901,7 +1917,7 @@ model TeyScheduledAction {
   /// 'PENDING' | 'CLAIMED' | 'SENT' | 'SKIPPED' | 'CANCELLED' | 'FAILED'
   status   String @default("PENDING")
 
-  dueAt DateTime
+  dueAt     DateTime
   /// Past this, drop rather than send late. A stale nudge is worse than none.
   expiresAt DateTime?
 
@@ -1982,7 +1998,7 @@ model PushSubscription {
   /// 'ios-standalone' | 'android' | 'desktop' | 'other' — instrumented because
   /// iOS only permits push from an installed PWA, and that reachability
   /// ceiling has to be measured rather than assumed.
-  platform String?
+  platform  String?
 
   isActive     Boolean   @default(true)
   failureCount Int       @default(0)
@@ -2011,7 +2027,7 @@ model TeyNotificationPrefs {
   quietHoursStart Int @default(1290)
   quietHoursEnd   Int @default(480)
 
-  maxPerDay Int @default(3)
+  maxPerDay     Int  @default(3)
   /// Learner's own preferred reminder hour, overriding the inferred habit.
   preferredHour Int?
 
@@ -2035,7 +2051,7 @@ model TeyAiProviderConfig {
   name String @unique
 
   /// 'OPENAI_COMPATIBLE' | 'ANTHROPIC' | 'GEMINI'
-  kind String
+  kind    String
   /// Required for OPENAI_COMPATIBLE — this one field covers OpenAI, OpenRouter,
   /// Groq, NVIDIA, DeepSeek, Together, Ollama, LM Studio.
   baseUrl String?
