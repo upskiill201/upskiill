@@ -64,7 +64,14 @@ export default function AnimatedRankList({
 
   const beforeByUser = new Map(beforeRows.map((r) => [r.userId, r]));
   const me = afterRows.find((r) => r.isMe || r.userId === meUserId);
-  const anchorRank = me ? Math.max(me.rank, beforeByUser.get(me.userId)?.rank ?? me.rank) : 1;
+  // Anchor on the DESTINATION rank, not max(before, after). A big jump (say
+  // rank 12 -> 5) with the old max()-based anchor centered the window on the
+  // old, worse rank — so the learner's own row, now at rank 5, fell outside
+  // the visible window and simply never rendered post-move. Anchoring on the
+  // after-rank guarantees the learner's row is always in frame; it flies in
+  // from its (possibly off-window) before position, which reads as exactly
+  // the "climb/fall past everyone" motion this list exists to show.
+  const anchorRank = me ? me.rank : 1;
   const windowStart = Math.max(1, anchorRank - Math.floor(VISIBLE_ROWS / 2));
   const windowEnd = windowStart + VISIBLE_ROWS;
 
