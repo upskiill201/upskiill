@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-09-06T03:10:26.627Z",
+  "measuredAt": "2026-09-06T07:17:14.696Z",
   "sharedByAllRoutes": {
     "files": 6,
     "raw": 456430,
@@ -7,8 +7,8 @@
   },
   "totalClientJs": {
     "files": 180,
-    "raw": 5300023,
-    "gz": 1597148
+    "raw": 5300245,
+    "gz": 1597205
   },
   "totalCss": {
     "files": 44,
@@ -25,12 +25,12 @@
     {
       "route": "/",
       "files": 19,
-      "raw": 1093122,
-      "gz": 341219,
+      "raw": 1093344,
+      "gz": 341276,
       "vendors": {
         "framer-motion": {
           "chunks": 3,
-          "raw": 112067
+          "raw": 112289
         },
         "posthog-js": {
           "chunks": 2,
@@ -269,9 +269,9 @@
       "gz": 18139
     },
     {
-      "file": "chunks\\0n7fg51sc_8-x.js",
-      "raw": 80234,
-      "gz": 21037
+      "file": "chunks\\007l0l-a_e2oj.js",
+      "raw": 80456,
+      "gz": 21094
     },
     {
       "file": "chunks\\0~p7e-9_wnw...js",
