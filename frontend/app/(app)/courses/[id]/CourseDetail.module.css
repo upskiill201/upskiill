@@ -7,6 +7,9 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ─── TOP HEADER ROW (BACK LINK + LIVE STATS) ─── */
@@ -15,6 +18,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 4px 4px 8px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .backLink {
@@ -125,14 +130,15 @@
 .blueFocusHeroCard {
   background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
   border-radius: 22px;
-  padding: 30px 34px;
+  padding: clamp(18px, 4vw, 30px) clamp(16px, 4vw, 34px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(16px, 3vw, 24px);
   box-shadow: 0 12px 36px rgba(1, 114, 253, 0.25);
   color: #FFFFFF;
   position: relative;
   overflow: hidden;
+  min-width: 0;
 }
 
 .blueHeroTop {
@@ -152,30 +158,32 @@
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  padding: 5px 14px;
+  padding: 5px 12px;
   border-radius: 100px;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 
 .levelPillLight {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
   color: #FFFFFF;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  padding: 5px 14px;
+  padding: 5px 12px;
   border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 
 .xpPillGold {
   background: #FEF3C7;
   color: #D97706;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   padding: 5px 12px;
   border-radius: 100px;
@@ -183,12 +191,13 @@
   align-items: center;
   gap: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .pricePillAmber {
   background: #FEF3C7;
   color: #B45309;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   padding: 5px 12px;
   border-radius: 100px;
@@ -196,12 +205,13 @@
   align-items: center;
   gap: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .freeCoursePill {
   background: #DCFCE7;
   color: #15803D;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   padding: 5px 12px;
   border-radius: 100px;
@@ -209,19 +219,21 @@
   align-items: center;
   gap: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .blueFocusTitle {
-  font-size: 30px;
+  font-size: clamp(21px, 5.5vw, 30px);
   font-weight: 900;
   color: #FFFFFF;
-  line-height: 1.2;
+  line-height: 1.25;
   margin: 0;
   letter-spacing: -0.5px;
+  word-break: break-word;
 }
 
 .blueFocusDescription {
-  font-size: 15px;
+  font-size: clamp(13px, 3vw, 15px);
   color: #E0E7FF;
   line-height: 1.6;
   margin: 0;
@@ -255,19 +267,22 @@
 
 .duoActionBtnGreen {
   width: 100%;
-  height: 56px;
+  min-height: 56px;
+  height: auto;
+  padding: 10px 12px;
   background: #22C55E;
   color: #FFFFFF;
   border: none;
   border-bottom: 5px solid #15803D;
   border-radius: 16px;
-  font-size: 16.5px;
+  font-size: clamp(13px, 3.6vw, 16.5px);
   font-weight: 900;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease, filter 0.1s ease;
 }
@@ -291,7 +306,9 @@
 .btnContent {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btnSpinner {
@@ -309,11 +326,12 @@
   backdrop-filter: blur(10px);
   border: 1.5px solid rgba(255, 255, 255, 0.3);
   border-radius: 18px;
-  padding: 16px 20px;
+  padding: clamp(12px, 3vw, 16px) clamp(14px, 3vw, 20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .speechBubbleWhite {
@@ -369,18 +387,20 @@
   background: #FFFFFF;
   border: 2px solid #E2E8F0;
   border-radius: 20px;
-  padding: 24px 28px;
+  padding: clamp(16px, 4vw, 24px) clamp(14px, 4vw, 28px);
   display: flex;
   flex-direction: column;
   gap: 18px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  min-width: 0;
 }
 
 .blockHeaderRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .achievementsHeading {
@@ -496,11 +516,13 @@
 }
 
 .unitBanner {
-  padding: 16px 22px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: #FFFFFF;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .unitBannerActive {
@@ -515,6 +537,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .unitNumberTag {
@@ -526,10 +549,11 @@
 }
 
 .unitBannerTitle {
-  font-size: 17px;
+  font-size: clamp(15px, 4vw, 17px);
   font-weight: 800;
   color: #FFFFFF;
   margin: 0;
+  overflow-wrap: break-word;
 }
 
 .unitToggleBtn {
@@ -562,13 +586,16 @@
 }
 
 .pathNodeRow {
-  padding: 15px 22px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   border-bottom: 1px solid #F1F5F9;
   cursor: pointer;
   transition: background 0.15s ease;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .pathNodeRow:hover {
@@ -585,7 +612,9 @@
 .nodeLeft {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 200px;
 }
 
 .nodeCircle {
@@ -631,12 +660,14 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .nodeTitle {
   font-size: 14px;
   font-weight: 700;
   color: #0F172A;
+  overflow-wrap: break-word;
 }
 
 .nodeMeta {
@@ -648,7 +679,10 @@
 .nodeRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .nodeRewardBadge {
@@ -691,17 +725,20 @@
 }
 
 .chestNodeRow {
-  padding: 16px 22px;
+  padding: 14px 18px;
   background: #FFFBEB;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .chestLeft {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .chestImgWrap {
@@ -928,7 +965,7 @@
 
 .creatorStatsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
   gap: 8px;
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
@@ -1013,6 +1050,77 @@
   .blueFocusTitle {
     font-size: 24px;
   }
+
+  .unitBannerTitle {
+    font-size: 16px;
+  }
+
+  .sideThumbnailWrap,
+  .fallbackThumb {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 640px) {
+  .discoveryWrapper {
+    padding: 8px 10px 48px;
+    gap: 18px;
+  }
+
+  .mascotSmallWrap {
+    width: 64px;
+    height: 64px;
+  }
+
+  .speechBubbleWhite {
+    padding: 12px 14px;
+  }
+
+  .roadmapHeading,
+  .achievementsHeading {
+    font-size: 18px;
+  }
+
+  .unitBanner {
+    padding: 12px 14px;
+  }
+
+  .unitLessonsCount {
+    display: none;
+  }
+
+  .pathNodeRow {
+    padding: 12px 14px;
+  }
+
+  .nodeCircle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nodeRight {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+    padding-left: 48px;
+    box-sizing: border-box;
+  }
+
+  .chestNodeRow {
+    padding: 14px;
+  }
+
+  .chestTitle {
+    font-size: 12.5px;
+  }
+
+  .chestMeta {
+    font-size: 11px;
+  }
+
+  .creatorCardHeader {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1032,5 +1140,294 @@
   .blueSpecsRow {
     gap: 10px;
     padding: 10px 0;
+  }
+
+  .blueSpecItem {
+    font-size: 12px;
+  }
+
+  .duoActionBtnGreen {
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    padding: 10px 8px;
+  }
+
+  .pillRow {
+    gap: 6px;
+  }
+
+  .categoryPillLight,
+  .levelPillLight,
+  .xpPillGold,
+  .pricePillAmber,
+  .freeCoursePill {
+    font-size: 10.5px;
+    padding: 4px 10px;
+  }
+
+  .achievementsBlock,
+  .creatorProfileCard {
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  .sideCardBody {
+    padding: 16px;
+  }
+
+  .unitContainer {
+    border-radius: 14px;
+  }
+
+  .nodeTitle {
+    font-size: 13px;
+  }
+
+  .nodeMeta {
+    font-size: 11px;
+  }
+
+  .chestImgWrap {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ─── SUB-360px: iPhone SE / small Android / narrow foldables ─── */
+@media (max-width: 360px) {
+  .discoveryWrapper {
+    padding: 6px 8px 40px;
+    gap: 14px;
+  }
+
+  .blueFocusHeroCard {
+    padding: 14px 12px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
+  .blueFocusTitle {
+    font-size: 18px;
+  }
+
+  .pillRow {
+    gap: 5px;
+  }
+
+  .categoryPillLight,
+  .levelPillLight,
+  .xpPillGold,
+  .pricePillAmber,
+  .freeCoursePill {
+    font-size: 9.5px;
+    padding: 3px 8px;
+    gap: 4px;
+  }
+
+  .blueSpecsRow {
+    gap: 8px;
+  }
+
+  .blueSpecItem {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .duoActionBtnGreen {
+    font-size: 11.5px;
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .blueActionSub {
+    font-size: 11px;
+  }
+
+  .mascotSmallWrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .speechBubbleTitle {
+    font-size: 12px;
+  }
+
+  .speechBubbleBody {
+    font-size: 11.5px;
+  }
+
+  .achievementsBlock,
+  .creatorProfileCard,
+  .sideQuestCard {
+    border-radius: 14px;
+  }
+
+  .achievementsBlock {
+    padding: 14px 12px;
+  }
+
+  .achieveCard {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .achieveOutcomeText {
+    font-size: 12px;
+  }
+
+  .roadmapHeading,
+  .achievementsHeading {
+    font-size: 16.5px;
+  }
+
+  .roadmapSub,
+  .achievementsSub {
+    font-size: 12px;
+  }
+
+  .unitsCountBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .unitBanner {
+    padding: 10px 12px;
+  }
+
+  .unitNumberTag {
+    font-size: 10px;
+  }
+
+  .unitBannerTitle {
+    font-size: 14px;
+  }
+
+  .unitToggleBtn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .pathNodeRow {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .nodeLeft {
+    flex: 1 1 100%;
+    gap: 10px;
+  }
+
+  .nodeCircle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .nodeTitle {
+    font-size: 12.5px;
+  }
+
+  .nodeMeta {
+    font-size: 10.5px;
+  }
+
+  .nodeRight {
+    padding-left: 40px;
+    gap: 8px;
+  }
+
+  .nodeRewardBadge,
+  .freePreviewTag,
+  .nodeLockedLabel {
+    font-size: 10px;
+    padding: 3px 7px;
+  }
+
+  .nodeStartBtn {
+    font-size: 11px;
+  }
+
+  .chestNodeRow {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .chestImgWrap {
+    width: 28px;
+    height: 28px;
+  }
+
+  .chestTitle {
+    font-size: 11.5px;
+  }
+
+  .chestMeta {
+    font-size: 10px;
+  }
+
+  .chestBadge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+  }
+
+  .sideCardBody {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .sideCourseTitle {
+    font-size: 15px;
+  }
+
+  .sideCourseDesc {
+    font-size: 12px;
+  }
+
+  .specLabel {
+    font-size: 10px;
+  }
+
+  .specValue {
+    font-size: 11px;
+  }
+
+  .sideCtaButton {
+    font-size: 12.5px;
+    height: 44px;
+  }
+
+  .creatorProfileCard {
+    padding: 14px 12px;
+    gap: 12px;
+  }
+
+  .creatorCardName {
+    font-size: 14px;
+  }
+
+  .creatorBioText {
+    font-size: 11.5px;
+  }
+
+  .creatorStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    padding: 8px 6px;
+  }
+
+  .creatorStatVal {
+    font-size: 12px;
+  }
+
+  .creatorStatLabel {
+    font-size: 9px;
+  }
+
+  .viewCreatorProfileBtn {
+    font-size: 12px;
+    height: 40px;
+  }
+
+  .backLink {
+    font-size: 12.5px;
+    padding: 6px 10px;
   }
 }
