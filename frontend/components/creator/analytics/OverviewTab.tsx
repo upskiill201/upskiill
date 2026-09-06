@@ -63,7 +63,7 @@ export function OverviewTab({ data }: { data: OverviewData }) {
       >
         <div className={styles.insightMascotWrap}>
           <Image
-            src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+            src="/User onbarding Assets/Step_7_tey_verified_state.webp"
             alt="Tey"
             width={72}
             height={72}

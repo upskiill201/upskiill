@@ -553,7 +553,7 @@ export default function CourseDetailPage({
                 </div>
                 <div className={styles.mascotSmallWrap}>
                   <Image
-                    src="/dashboard tey.png"
+                    src="/dashboard tey.webp"
                     alt="Tey Mascot"
                     width={96}
                     height={96}
@@ -721,7 +721,7 @@ export default function CourseDetailPage({
                             <div className={styles.chestLeft}>
                               <div className={styles.chestImgWrap}>
                                 <Image
-                                  src="/Tressure box.png"
+                                  src="/Tressure box.webp"
                                   alt="Chest"
                                   width={40}
                                   height={40}

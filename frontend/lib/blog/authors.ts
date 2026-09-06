@@ -10,7 +10,7 @@ export const AUTHORS: Author[] = [
     name: 'The Teyro Team',
     role: 'Learning Team at Teyro',
     bio: 'We build Teyro — an AI-powered learning platform that turns skill-building into a daily habit through bite-sized, gamified lessons. We write about the learning science and study strategies that shape our product.',
-    avatarUrl: '/dashboard tey.png',
+    avatarUrl: '/dashboard tey.webp',
   },
 ];
 

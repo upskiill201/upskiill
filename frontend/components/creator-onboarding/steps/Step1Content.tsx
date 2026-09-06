@@ -145,7 +145,7 @@ export default function Step1Content({ onNext, isLoading }: Step1ContentProps) {
         >
           <div className="relative w-full max-w-[540px] lg:max-w-none rounded-2xl overflow-hidden shadow-[0_12px_32px_-8px_rgba(37,99,235,0.18)] ring-1 ring-gray-900/5 bg-white">
             <Image 
-              src="/creator-welcome-dashboard.png"
+              src="/creator-welcome-dashboard.webp"
               alt="Teyro Creator Dashboard"
               width={2200}
               height={1650}

@@ -59,8 +59,8 @@ const STEP_CONFIG: Record<number, StepMeta> = {
     fullBleed: true,
   },
   2: {
-    mobile: '/User onbarding Assets/Tey_thinking _Mobile.PNG',
-    desktop: '/User onbarding Assets/Tey_thinking_desktop.PNG',
+    mobile: '/User onbarding Assets/Tey_thinking _Mobile.webp',
+    desktop: '/User onbarding Assets/Tey_thinking_desktop.webp',
     mobileMascotHeight: '30dvh',
     softBg: true,
   },

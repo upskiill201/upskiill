@@ -237,7 +237,7 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
       {/* Tey Mascot Avatar */}
       <div className={styles.mascotContainer}>
         <Image
-          src="/dashboard tey.png"
+          src="/dashboard tey.webp"
           alt="Tey Mascot"
           width={58}
           height={58}

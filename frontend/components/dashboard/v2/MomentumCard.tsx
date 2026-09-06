@@ -30,7 +30,7 @@ export default function MomentumCard({ onAction }: MomentumCardProps) {
 
   if (hasCompletedLessonToday) {
     if (isEligibleForReward) {
-      icon = '/Tressure box.png';
+      icon = '/Tressure box.webp';
       title = "One more lesson unlocks today's Mystery Chest!";
       xpReward = 15;
       coinReward = 10;

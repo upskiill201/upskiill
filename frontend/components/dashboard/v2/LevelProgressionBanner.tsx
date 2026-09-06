@@ -54,7 +54,7 @@ export default function LevelProgressionBanner() {
       {/* Right: Floating Gold Treasure Chest */}
       <div className={styles.chestContainer}>
         <Image
-          src="/Tressure box.png"
+          src="/Tressure box.webp"
           alt="Treasure Chest"
           width={52}
           height={48}

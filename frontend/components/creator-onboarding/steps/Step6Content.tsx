@@ -91,7 +91,7 @@ export default function Step6Content({
         <div className="hidden lg:block mt-8 relative w-full max-w-[460px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/Teyro Creator Onbarding flow/CF_ST6_side_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST6_side_img.webp"
               alt="Content Assets"
               fill
               priority

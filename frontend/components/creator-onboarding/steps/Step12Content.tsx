@@ -9,42 +9,42 @@ const FORMAT_OPTIONS = [
     id: 'upload',
     title: 'Upload existing course',
     description: 'Bring your slides, videos and content to Teyro.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card1.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card1.webp',
     cardBg: '#F5F3FF',
   },
   {
     id: 'create',
     title: 'Create new course',
     description: 'Build a new course from scratch with AI assistance.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card2.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card2.webp',
     cardBg: '#ECFDF5',
   },
   {
     id: 'cohort',
     title: 'Build a cohort',
     description: 'Create a time-bound cohort with a structured journey.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card3.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card3.webp',
     cardBg: '#FFF7ED',
   },
   {
     id: 'community',
     title: 'Start with a community',
     description: 'Build your community first and add products later.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card4.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card4.webp',
     cardBg: '#EFF6FF',
   },
   {
     id: 'test',
     title: 'Test with learners',
     description: 'Validate your idea with a small group before launch.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card5.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card5.webp',
     cardBg: '#FFF1F2',
   },
   {
     id: 'explore',
     title: 'Explore platform first',
     description: 'Take a tour and explore features at your own pace.',
-    image: '/Teyro Creator Onbarding flow/CF_ST12_card6.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST12_card6.webp',
     cardBg: '#EEF2FF',
   },
 ];
@@ -83,7 +83,7 @@ export default function Step12Content({
         <div className="hidden lg:block mt-8 relative w-full max-w-[460px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/Teyro Creator Onbarding flow/CF_ST12_side_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST12_side_img.webp"
               alt="Build Objective"
               fill
               priority

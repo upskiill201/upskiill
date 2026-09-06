@@ -39,7 +39,7 @@ const ChestArt = forwardRef<HTMLDivElement, ChestArtProps>(function ChestArt(
       aria-label={onClick ? 'Open chest' : undefined}
     >
       <Image
-        src="/Tressure box.png"
+        src="/Tressure box.webp"
         alt="Teyro treasure chest"
         width={200}
         height={180}

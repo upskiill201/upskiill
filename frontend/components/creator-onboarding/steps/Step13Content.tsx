@@ -59,7 +59,7 @@ export default function Step13Content({
         <div className="hidden lg:block mt-8 relative w-full max-w-[460px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/Teyro Creator Onbarding flow/CF_ST13_side_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST13_side_img.webp"
               alt="Community"
               fill
               priority
@@ -125,7 +125,7 @@ export default function Step13Content({
         {selected === 'yes' && (
           <div className="relative w-full h-[120px] sm:h-[150px] rounded-2xl overflow-hidden border border-blue-100 bg-blue-50/50 p-2 animate-fadeIn">
             <Image
-              src="/Teyro Creator Onbarding flow/CF_ST13_yes_option_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST13_yes_option_img.webp"
               alt="Community Preview"
               fill
               className="object-contain object-center"

@@ -418,7 +418,7 @@ export default function RewardRunTestWidget() {
               cursor: 'pointer',
             }}
           >
-            <Image src="/Tressure box.png" alt="Chest" width={18} height={18} />
+            <Image src="/Tressure box.webp" alt="Chest" width={18} height={18} />
             <span>Mystery Chest</span>
           </button>
         </div>

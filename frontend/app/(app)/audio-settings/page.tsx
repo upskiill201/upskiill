@@ -653,7 +653,7 @@ export default function AudioSettingsPage() {
             <div className="bg-white border-2 border-slate-200/80 rounded-[26px] p-12 flex flex-col items-center text-center gap-4 shadow-sm">
               <div className="w-20 h-20 relative">
                 <Image
-                  src="/Tressure box.png"
+                  src="/Tressure box.webp"
                   alt="Empty State"
                   fill
                   style={{ objectFit: 'contain' }}

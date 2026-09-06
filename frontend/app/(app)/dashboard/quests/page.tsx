@@ -131,7 +131,7 @@ function CurrentQuestHero({
         {/* Tey anchors the hero, same art as the Celebration Engine scenes */}
         <div className={styles.teyAnchor} aria-hidden>
           <Image
-            src="/dashboard tey.png"
+            src="/dashboard tey.webp"
             alt=""
             width={116}
             height={116}

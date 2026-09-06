@@ -118,7 +118,7 @@ export default function HeraldStreakReveal() {
             </motion.div>
             <div className={styles.mascotFront}>
               <Image
-                src="/dashboard tey.png"
+                src="/dashboard tey.webp"
                 alt="Tey Mascot"
                 fill
                 style={{ objectFit: 'contain' }}

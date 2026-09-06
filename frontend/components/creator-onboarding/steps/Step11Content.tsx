@@ -46,7 +46,7 @@ export default function Step11Content() {
         <div className="hidden lg:block mt-8 relative w-full max-w-[460px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/Teyro Creator Onbarding flow/CF_ST11_side_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST11_side_img.webp"
               alt="AI Creator Copilot"
               fill
               priority
@@ -61,7 +61,7 @@ export default function Step11Content() {
         {/* Large Showcase Graphic */}
         <div className="relative w-full h-[180px] sm:h-[220px] lg:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-gradient-to-br from-violet-50 via-blue-50 to-white mb-4">
           <Image
-            src="/Teyro Creator Onbarding flow/CF_ST11_side_img_right.png"
+            src="/Teyro Creator Onbarding flow/CF_ST11_side_img_right.webp"
             alt="AI Assistant Features"
             fill
             priority

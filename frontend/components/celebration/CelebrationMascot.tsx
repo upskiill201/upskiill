@@ -3,7 +3,7 @@
 /**
  * CelebrationMascot — Tey, the celebration scene host.
  *
- * v1 animates the existing `/dashboard tey.png` art programmatically
+ * v1 animates the existing `/dashboard tey.webp` art programmatically
  * (hop, tilt, squash & stretch). The MASCOT_POSES map is the drop-in slot
  * for future designer/Rive pose art: add `{ src: '/path.png' }` per pose
  * and the scenes pick it up with zero code changes.
@@ -21,7 +21,7 @@ const MASCOT_POSES: Partial<Record<MascotPose, { src: string }>> = {
   // Future pose art slots, e.g. grab: { src: '/Tey Poses/Tey_grab.png' }
 };
 
-const DEFAULT_SRC = '/dashboard tey.png';
+const DEFAULT_SRC = '/dashboard tey.webp';
 
 const POSE_ANIMATIONS: Record<
   MascotPose,

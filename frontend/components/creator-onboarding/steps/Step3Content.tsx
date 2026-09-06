@@ -142,7 +142,7 @@ export default function Step3Content({
         <div className="hidden lg:block mt-8 relative w-full max-w-[440px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/onboarding-step3-illustration.png"
+              src="/onboarding-step3-illustration.webp"
               alt="Category Cube"
               fill
               priority

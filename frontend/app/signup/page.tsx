@@ -217,7 +217,7 @@ export default function Signup() {
           
           <div className={styles.floatingGraphic}>
              <Image 
-               src="/hero-graphic.png" 
+               src="/hero-graphic.webp" 
                alt="Master new skills" 
                width={400} 
                height={400} 

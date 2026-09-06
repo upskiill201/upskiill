@@ -265,7 +265,7 @@ export default function CourseCreationWizard() {
         <div className={styles.mascotHeaderRow}>
           <div className={styles.mascotImageWrapper}>
             <Image
-              src="/dashboard tey.png"
+              src="/dashboard tey.webp"
               alt="Tey Mascot"
               fill
               priority

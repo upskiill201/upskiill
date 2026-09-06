@@ -175,7 +175,7 @@ export default function CreatorDashboard() {
                 </div>
                 <div className={styles.focusMascotImageWrapper}>
                   <Image 
-                    src="/dashboard tey.png" 
+                    src="/dashboard tey.webp" 
                     alt="Tey Mascot" 
                     width={130} 
                     height={130} 
@@ -218,7 +218,7 @@ export default function CreatorDashboard() {
                 </div>
                 <div className={styles.focusMascotImageWrapper}>
                   <Image 
-                    src="/dashboard tey.png" 
+                    src="/dashboard tey.webp" 
                     alt="Tey Mascot" 
                     width={130} 
                     height={130} 

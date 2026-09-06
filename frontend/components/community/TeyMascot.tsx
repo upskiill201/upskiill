@@ -13,7 +13,7 @@ export default function TeyMascot({ size = 84 }: { size?: number }) {
   return (
     <div className={shared.teyTile} style={{ width: size, height: size }} aria-hidden>
       <Image
-        src="/dashboard tey.png"
+        src="/dashboard tey.webp"
         alt=""
         width={size}
         height={size}

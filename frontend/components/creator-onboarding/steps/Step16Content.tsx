@@ -57,7 +57,7 @@ export default function Step16Content({
       <div className="w-full lg:w-[55%] flex items-center justify-center">
         <div className="relative w-full max-w-[480px] h-[260px] sm:h-[320px] lg:h-[380px] rounded-3xl overflow-hidden shadow-lg border border-gray-200/80 bg-white">
           <Image 
-            src="/Teyro Creator Onbarding flow/Rocket_take_off_img.png"
+            src="/Teyro Creator Onbarding flow/Rocket_take_off_img.webp"
             alt="Rocket Takeoff"
             fill
             priority

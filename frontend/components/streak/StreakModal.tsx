@@ -297,7 +297,7 @@ export default function StreakModal() {
                   <div className={styles.friendsHeroGraphics}>
                     <div className={styles.friendsIllustrationWrap}>
                       <Image
-                        src="/dashboard tey.png"
+                        src="/dashboard tey.webp"
                         alt="Tey & Friends"
                         width={120}
                         height={120}

@@ -29,16 +29,36 @@ export class HomeService {
       weeklyResult,
       spinResult,
     ] = await Promise.all([
+      // PERF: `select`, not `include`. This previously walked
+      // enrollments -> course -> sections -> lessons: true, pulling every
+      // Lesson row — INCLUDING its full contentBlocks JSON — for every course
+      // the learner is enrolled in, solely to call .length on the array. A
+      // _count aggregate answers the same question without transferring the
+      // lesson bodies cross-region. The same pattern is already done correctly
+      // in auth.service.ts getMyEnrollments.
+      //
+      // studentProfile is NOT selected here: getMyStats() in this same
+      // Promise.all already loads it.
       this.prisma.user.findUnique({
         where: { id: userId },
-        include: {
-          studentProfile: true,
+        select: {
+          id: true,
+          fullName: true,
           enrollments: {
-            include: {
+            orderBy: { updatedAt: 'desc' },
+            select: {
+              progress: true,
+              completedLessons: true,
               course: {
-                include: {
+                select: {
+                  id: true,
+                  title: true,
+                  subtitle: true,
+                  shortDescription: true,
+                  thumbnailUrl: true,
+                  category: true,
                   sections: {
-                    include: { lessons: true },
+                    select: { _count: { select: { lessons: true } } },
                   },
                 },
               },
@@ -54,18 +74,25 @@ export class HomeService {
       this.spinService.getCurrentWeekSpin(userId, timezoneOffsetMinutes),
     ]);
 
-    const profile = user?.studentProfile;
+    // getMyStats already resolved the profile; no second read of the same row.
+    const profile = statsResult;
     const enrollments = user?.enrollments || [];
 
     const now = new Date();
     const localMs = now.getTime() - timezoneOffsetMinutes * 60 * 1000;
     const todayStr = new Date(localMs).toISOString().split('T')[0];
 
-    const lastLessonStr = profile?.lastLessonCompletedAt
-      ? new Date(profile.lastLessonCompletedAt.getTime() - timezoneOffsetMinutes * 60 * 1000)
-          .toISOString()
-          .split('T')[0]
+    // Normalised because this now reads from getMyStats() rather than the raw
+    // Prisma row, and that value can arrive as an ISO string or a Date.
+    const lastLessonAt = profile?.lastLessonCompletedAt
+      ? new Date(profile.lastLessonCompletedAt as string | Date)
       : null;
+    const lastLessonStr =
+      lastLessonAt && !Number.isNaN(lastLessonAt.getTime())
+        ? new Date(lastLessonAt.getTime() - timezoneOffsetMinutes * 60 * 1000)
+            .toISOString()
+            .split('T')[0]
+        : null;
     const hasLessonToday = lastLessonStr === todayStr;
 
     // 1. Continue Learning Hero
@@ -82,7 +109,7 @@ export class HomeService {
             : 0,
           totalLessonsCount:
             currentEnrollment.course.sections.reduce(
-              (acc, s) => acc + s.lessons.length,
+              (acc, s) => acc + s._count.lessons,
               0,
             ) || 1,
         }
@@ -151,27 +178,43 @@ export class HomeService {
       completedLessons: Array.isArray(e.completedLessons)
         ? (e.completedLessons as string[]).length
         : 0,
-      totalLessons: e.course.sections.reduce((acc, s) => acc + s.lessons.length, 0) || 1,
+      totalLessons: e.course.sections.reduce((acc, s) => acc + s._count.lessons, 0) || 1,
     }));
 
     // 9. Learning Stats
+    //
+    // `hoursLearned: 5.8` and `rankPercentile: 'Top 14%'` used to be
+    // hardcoded here. Shipping invented numbers on the home screen would
+    // break the honesty rule this codebase states explicitly in
+    // course.service.ts findOne ("every stat the page renders is computed
+    // here from REAL rows ... it never invents a fallback number"), so they
+    // are omitted rather than faked. Real values are available from
+    // progress.service getStatsSummary (which already computes an XP
+    // percentile against student_profiles.xp) if a consumer needs them —
+    // wire that up rather than reinstating a constant.
     const learningStats = {
       lessonsCompleted: enrollments.reduce(
         (acc, e) =>
           acc + (Array.isArray(e.completedLessons) ? e.completedLessons.length : 0),
         0,
       ),
-      hoursLearned: 5.8,
       xpEarned: statsResult.xp || 0,
-      rankPercentile: 'Top 14%',
     };
 
     // 10. Friends Activity
-    const friendsActivity = [
-      { id: 'f1', name: 'Sarah', action: 'completed Lesson 8 in Figma UI/UX', time: '2h ago' },
-      { id: 'f2', name: 'James', action: 'reached Level 4', time: '5h ago' },
-      { id: 'f3', name: 'Michael', action: "completed today's mission", time: '7h ago' },
-    ];
+    //
+    // Was a hardcoded array of three invented learners ("Sarah", "James",
+    // "Michael") with invented actions and timestamps. Returning that from a
+    // real endpoint would put fake people on the learner's home screen the
+    // moment anything consumed it. Empty until it is backed by the social
+    // graph (see the follow/followers relations on User); the client already
+    // has to handle the empty case for a learner with no friends.
+    const friendsActivity: Array<{
+      id: string;
+      name: string;
+      action: string;
+      time: string;
+    }> = [];
 
     // 11. Weekly Lucky Spin (from live SpinService)
     const weeklyLuckySpin = {

@@ -84,7 +84,7 @@ export default function MysteryChestCard() {
           transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
         >
           <Image
-            src="/Tressure box.png"
+            src="/Tressure box.webp"
             alt="Mystery Chest"
             width={110}
             height={90}

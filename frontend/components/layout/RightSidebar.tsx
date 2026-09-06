@@ -263,7 +263,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         <div className={styles.messageCard}>
           <div className={styles.messageCardMascot}>
             <Image
-              src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+              src="/User onbarding Assets/Step_7_tey_verified_state.webp"
               alt="Tey"
               width={80}
               height={80}
@@ -348,7 +348,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             }}
           >
             <Image
-              src="/Tressure box.png"
+              src="/Tressure box.webp"
               alt="Mystery Chest"
               width={64}
               height={52}
@@ -419,7 +419,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   ) : isDay7 ? (
                     <div style={{ position: 'relative', width: 20, height: 18 }}>
                       <Image
-                        src="/Tressure box.png"
+                        src="/Tressure box.webp"
                         alt="Day 7 Chest"
                         fill
                         style={{ objectFit: 'contain' }}

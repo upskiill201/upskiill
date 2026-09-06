@@ -64,7 +64,7 @@ export default function CurrentQuestCard({ currentEnrollment, currentLessonIndex
 
             <div className={styles.mascotImg}>
               <Image
-                src="/dashboard tey.png"
+                src="/dashboard tey.webp"
                 alt="Tey Mascot Celebrating"
                 fill
                 style={{ objectFit: 'contain' }}
@@ -192,7 +192,7 @@ export default function CurrentQuestCard({ currentEnrollment, currentLessonIndex
 
           <div className={styles.mascotImg}>
             <Image
-              src="/dashboard tey.png"
+              src="/dashboard tey.webp"
               alt="Tey Mascot Celebrating"
               fill
               style={{ objectFit: 'contain' }}

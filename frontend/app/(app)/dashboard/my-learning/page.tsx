@@ -143,7 +143,7 @@ export default function MyLearningPage() {
                       </div>
                       <div className={styles.focusMascotImageWrapper}>
                         <Image 
-                          src="/dashboard tey.png" 
+                          src="/dashboard tey.webp" 
                           alt="Tey Mascot" 
                           width={150} 
                           height={150} 
@@ -194,7 +194,7 @@ export default function MyLearningPage() {
         className={styles.mobileSidebarFab}
         aria-label="Open Gamified Quests & Sidebar"
       >
-        <Image src="/Tressure box.png" width={26} height={26} alt="Quests" priority />
+        <Image src="/Tressure box.webp" width={26} height={26} alt="Quests" priority />
         <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
       </button>
 
@@ -202,7 +202,7 @@ export default function MyLearningPage() {
       <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
         <div className={styles.mobileSidebarHeader}>
           <div className={styles.drawerTitleRow}>
-            <Image src="/Tressure box.png" width={24} height={24} alt="Quests" />
+            <Image src="/Tressure box.webp" width={24} height={24} alt="Quests" />
             <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
           </div>
           <button 

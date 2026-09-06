@@ -8,7 +8,7 @@ const CARDS_DATA = [
   {
     number: '1',
     title: 'AI-guided learners',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card1.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card1.webp',
     cardBg: '#F5F3FF',
     color: '#7C3AED',
     description: 'AI guides each learner personally, helping them stay on track and succeed.',
@@ -21,7 +21,7 @@ const CARDS_DATA = [
   {
     number: '2',
     title: 'Structured learning paths',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card2.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card2.webp',
     cardBg: '#EFF6FF',
     color: '#2563EB',
     description: 'Create step-by-step learning journeys that build skills in the right order.',
@@ -34,7 +34,7 @@ const CARDS_DATA = [
   {
     number: '3',
     title: 'Smart accountability',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card3.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card3.webp',
     cardBg: '#ECFDF5',
     color: '#059669',
     description: 'Keep learners accountable with nudges, reminders and smart goal tracking.',
@@ -47,7 +47,7 @@ const CARDS_DATA = [
   {
     number: '4',
     title: 'Community tools',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card4.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card4.webp',
     cardBg: '#FFFBEB',
     color: '#D97706',
     description: 'Build engaged communities where learners connect, share and grow together.',
@@ -60,7 +60,7 @@ const CARDS_DATA = [
   {
     number: '5',
     title: 'Progress tracking',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card5.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card5.webp',
     cardBg: '#FDF4FF',
     color: '#A855F7',
     description: 'Visualize learner progress in real-time and identify who needs support.',
@@ -73,7 +73,7 @@ const CARDS_DATA = [
   {
     number: '6',
     title: 'Better monetization',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card6.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card6.webp',
     cardBg: '#FFF7ED',
     color: '#EA580C',
     description: 'Sell courses, cohorts and subscriptions with flexible pricing that scales.',
@@ -86,7 +86,7 @@ const CARDS_DATA = [
   {
     number: '7',
     title: 'AI course assistant',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card7.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card7.webp',
     cardBg: '#ECFEFF',
     color: '#0891B2',
     description: 'Your AI copilot helps you create content faster and teach more effectively.',
@@ -99,7 +99,7 @@ const CARDS_DATA = [
   {
     number: '8',
     title: 'Learner analytics',
-    image: '/Teyro Creator Onbarding flow/CF_ST10_card8.png',
+    image: '/Teyro Creator Onbarding flow/CF_ST10_card8.webp',
     cardBg: '#FFF1F2',
     color: '#E11D48',
     description: 'Data-driven insights help you improve outcomes and make better decisions.',
@@ -137,7 +137,7 @@ export default function Step10Content() {
         <div className="hidden lg:block mt-8 relative w-full max-w-[440px]">
           <div className="relative w-full h-[220px] xl:h-[260px] rounded-3xl overflow-hidden shadow-md border border-gray-200/80 bg-white">
             <Image 
-              src="/Teyro Creator Onbarding flow/CF_ST10_side_img.png"
+              src="/Teyro Creator Onbarding flow/CF_ST10_side_img.webp"
               alt="Feature Ecosystem"
               fill
               priority

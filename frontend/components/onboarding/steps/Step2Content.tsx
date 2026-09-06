@@ -8,16 +8,16 @@ import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { playHaptic } from '@/lib/haptics';
 
 const SKILLS = [
-  { id: 'coding',      label: 'Coding',       image: '/User onbarding Assets/Step 2 icons/Coding_3d_icon.png',       bg: '#EBF3FF' },
-  { id: 'photography', label: 'Photography',  image: '/User onbarding Assets/Step 2 icons/Photography_3d_icon.PNG',  bg: '#EDE8FF' },
-  { id: 'cooking',     label: 'Cooking',      image: '/User onbarding Assets/Step 2 icons/Cooking_3d_icon.PNG',      bg: '#FFF4E0' },
-  { id: 'design',      label: 'Design',       image: '/User onbarding Assets/Step 2 icons/Design_3d_icon.PNG',       bg: '#E8FBF0' },
-  { id: 'marketing',  label: 'Marketing',    image: '/User onbarding Assets/Step 2 icons/Marketing_3d_icon.PNG',   bg: '#FFE8F0' },
-  { id: 'fitness',     label: 'Fitness',      image: '/User onbarding Assets/Step 2 icons/Fitness_3d_icon.png',     bg: '#FFF8E0' },
-  { id: 'writing',     label: 'Writing',      image: '/User onbarding Assets/Step 2 icons/Writing_3d_icon.png',     bg: '#EEF0FF' },
-  { id: 'business',   label: 'Business',     image: '/User onbarding Assets/Step 2 icons/Business_3d_icon.PNG',    bg: '#E0F4FF' },
-  { id: 'music',       label: 'Music',        image: '/User onbarding Assets/Step 2 icons/music_3d_icon.PNG',       bg: '#FDE8FF' },
-  { id: 'other',       label: 'Other',        image: '/User onbarding Assets/Step 2 icons/Other_3d_icon.PNG',       bg: '#F0F0F5' },
+  { id: 'coding',      label: 'Coding',       image: '/User onbarding Assets/Step 2 icons/Coding_3d_icon.webp',       bg: '#EBF3FF' },
+  { id: 'photography', label: 'Photography',  image: '/User onbarding Assets/Step 2 icons/Photography_3d_icon.webp',  bg: '#EDE8FF' },
+  { id: 'cooking',     label: 'Cooking',      image: '/User onbarding Assets/Step 2 icons/Cooking_3d_icon.webp',      bg: '#FFF4E0' },
+  { id: 'design',      label: 'Design',       image: '/User onbarding Assets/Step 2 icons/Design_3d_icon.webp',       bg: '#E8FBF0' },
+  { id: 'marketing',  label: 'Marketing',    image: '/User onbarding Assets/Step 2 icons/Marketing_3d_icon.webp',   bg: '#FFE8F0' },
+  { id: 'fitness',     label: 'Fitness',      image: '/User onbarding Assets/Step 2 icons/Fitness_3d_icon.webp',     bg: '#FFF8E0' },
+  { id: 'writing',     label: 'Writing',      image: '/User onbarding Assets/Step 2 icons/Writing_3d_icon.webp',     bg: '#EEF0FF' },
+  { id: 'business',   label: 'Business',     image: '/User onbarding Assets/Step 2 icons/Business_3d_icon.webp',    bg: '#E0F4FF' },
+  { id: 'music',       label: 'Music',        image: '/User onbarding Assets/Step 2 icons/music_3d_icon.webp',       bg: '#FDE8FF' },
+  { id: 'other',       label: 'Other',        image: '/User onbarding Assets/Step 2 icons/Other_3d_icon.webp',       bg: '#F0F0F5' },
 ];
 
 const headlineContainer: any = {

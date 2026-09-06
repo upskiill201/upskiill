@@ -384,7 +384,7 @@ export default function LearningStatsCard() {
       <div className={styles.coachBanner}>
         <div className={styles.coachAvatarWrapper}>
           <Image
-            src="/dashboard tey.png"
+            src="/dashboard tey.webp"
             alt="Tey Coach"
             fill
             style={{ objectFit: 'contain' }}

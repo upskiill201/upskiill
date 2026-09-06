@@ -282,7 +282,7 @@ export default function DailyMissionCelebrationModal({
                         transition={{ duration: 0.5, ease: 'easeInOut' }}
                       >
                         <Image
-                          src="/Tressure box.png"
+                          src="/Tressure box.webp"
                           alt="Reward Chest"
                           width={28}
                           height={28}

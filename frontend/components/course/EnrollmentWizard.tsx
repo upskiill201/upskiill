@@ -218,7 +218,7 @@ export default function EnrollmentWizard({
               >
                 <div className={styles.takeoverMascotWrap}>
                   <Image
-                    src="/dashboard tey.png"
+                    src="/dashboard tey.webp"
                     alt="Tey Mascot"
                     width={240}
                     height={240}
@@ -352,7 +352,7 @@ export default function EnrollmentWizard({
                   <div className={styles.pathChestRow}>
                     <div className={styles.chestGraphicWrap}>
                       <Image
-                        src="/Tressure box.png"
+                        src="/Tressure box.webp"
                         alt="Chest"
                         width={40}
                         height={40}
@@ -402,7 +402,7 @@ export default function EnrollmentWizard({
               >
                 <div className={styles.takeoverMascotWrapSmall}>
                   <Image
-                    src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+                    src="/User onbarding Assets/Step_7_tey_verified_state.webp"
                     alt="Tey Mascot"
                     width={200}
                     height={200}

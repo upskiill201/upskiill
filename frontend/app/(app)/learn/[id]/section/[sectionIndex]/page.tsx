@@ -257,7 +257,7 @@ function SectionSidebar({
         </div>
         <div className={styles.messageCardMascot}>
           <Image 
-            src="/User onbarding Assets/Step_7_tey_verified_state.PNG" 
+            src="/User onbarding Assets/Step_7_tey_verified_state.webp" 
             alt="Tey Mascot" 
             width={76} 
             height={76}
@@ -295,7 +295,7 @@ function SectionSidebar({
 
         <div className={styles.chestWrapper}>
           <Image 
-            src="/Tressure box.png" 
+            src="/Tressure box.webp" 
             alt="Mystery Chest" 
             width={90} 
             height={80}
@@ -1568,7 +1568,7 @@ function SectionViewContent({
                       <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#58cc02" />
                     </svg>
                     <Image
-                      src="/lesson Player/Start_lesson_Tey.png"
+                      src="/lesson Player/Start_lesson_Tey.webp"
                       alt="Tey Start Lesson Mascot"
                       width={360}
                       height={360}
@@ -1806,7 +1806,7 @@ function SectionViewContent({
 
               <div className={styles.stickyBottomBanner}>
                 <div className={styles.bannerLeft}>
-                  <Image src="/lesson Player/Hi there tey.png" width={100} height={100} alt="Tey" className={styles.bannerMascot} />
+                  <Image src="/lesson Player/Hi there tey.webp" width={100} height={100} alt="Tey" className={styles.bannerMascot} />
                   <div className={styles.bannerTextGroup}>
                     <h5>Watch the full lesson to continue</h5>
                     <p>You&apos;ll unlock the next step once you finish.</p>
@@ -1847,7 +1847,7 @@ function SectionViewContent({
                 <div className={styles.applyQuestionContainer}>
                   <h2 className={styles.applyQuestionTitle}>{currentQuestion?.questionText || 'Question unavailable'}</h2>
                   <div className={styles.applyMascotWrap}>
-                    <Image src="/lesson Player/Hi there tey.png" width={160} height={160} alt="Tey Quiz" className={styles.applyMascotImg} />
+                    <Image src="/lesson Player/Hi there tey.webp" width={160} height={160} alt="Tey Quiz" className={styles.applyMascotImg} />
                     <div className={styles.questionMarkBubble}>?</div>
                   </div>
                 </div>
@@ -1984,7 +1984,7 @@ function SectionViewContent({
                     )}
                     <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: sanitizeHtml(reflectPrompt) }} />
                   </div>
-                  <Image src="/lesson Player/Hi there tey.png" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
+                  <Image src="/lesson Player/Hi there tey.webp" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
                 </div>
 
                 {reflectType === 'open' ? (
@@ -2044,7 +2044,7 @@ function SectionViewContent({
                 )}
 
                 <div className={styles.reflectGrowthBanner}>
-                  <img src="/lesson Player/Hi there tey.png" alt="Growth Mascot" className={styles.reflectGrowthMascot} />
+                  <img src="/lesson Player/Hi there tey.webp" alt="Growth Mascot" className={styles.reflectGrowthMascot} />
                   <p className={styles.reflectGrowthText}>
                     Your reflection helps you turn knowledge into growth.<br/>
                     Be honest. Be thoughtful. Be you. 💙
@@ -2287,7 +2287,7 @@ function SectionViewContent({
                 {/* Always Visible Big Mascots on Left/Right Backdrop */}
                 <div className={styles.pathMascotLeft}>
                     <Image
-                      src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+                      src="/User onbarding Assets/Step_7_tey_verified_state.webp"
                       alt="Tey Mascot Left"
                       width={100}
                       height={100}
@@ -2431,7 +2431,7 @@ function SectionViewContent({
                             whileTap={!isLocked ? { scale: 0.92, y: 4 } : {}}
                           >
                             <Image 
-                              src="/Tressure box.png" 
+                              src="/Tressure box.webp" 
                               alt="Mystery Chest" 
                               width={74} 
                               height={66}
@@ -2446,7 +2446,7 @@ function SectionViewContent({
                             whileTap={!isLocked ? { scale: 0.92, y: 4 } : {}}
                           >
                             <Image 
-                              src="/Tressure box.png" 
+                              src="/Tressure box.webp" 
                               alt="Mystery Chest" 
                               width={74} 
                               height={66}
