@@ -3,6 +3,9 @@
   flex-direction: column;
   gap: 32px;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* HEADER SECTION */
@@ -19,7 +22,7 @@
 }
 
 .title {
-  font-size: 28px;
+  font-size: clamp(21px, 5.5vw, 28px);
   font-weight: 800;
   color: #071233;
   margin: 0;
@@ -27,7 +30,7 @@
 }
 
 .subtitle {
-  font-size: 15px;
+  font-size: clamp(12.5px, 3vw, 15px);
   color: #5C6F84;
   margin: 4px 0 0;
   font-weight: 500;
@@ -45,11 +48,12 @@
   border-radius: 14px;
   border: 1px solid #E2E8F0;
   box-shadow: 0 2px 8px rgba(7, 18, 51, 0.03);
+  min-width: 0;
 }
 
 .searchWrapper {
-  flex: 1;
-  min-width: 260px;
+  flex: 1 1 200px;
+  min-width: 0;
   position: relative;
 }
 
@@ -90,6 +94,9 @@
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
+  min-width: 0;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .categoriesScroll::-webkit-scrollbar {
@@ -266,6 +273,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 4px;
+  min-width: 0;
 }
 
 .instructorAvatar {
@@ -280,17 +288,23 @@
   font-size: 13px;
   font-weight: 600;
   color: #475569;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .metaRow {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   font-size: 12px;
   color: #64748B;
   font-weight: 600;
   padding-top: 8px;
   border-top: 1px solid #F1F5F9;
+  min-width: 0;
 }
 
 .metaItem {
@@ -303,6 +317,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: auto;
   padding-top: 12px;
 }
@@ -476,17 +492,177 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    gap: 20px;
+  }
+
   .controlsRow {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filterSelect {
     width: 100%;
   }
 
   .courseGrid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .thumbnailContainer {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .controlsRow {
+    padding: 14px 14px;
+    border-radius: 12px;
+    gap: 12px;
+  }
+
+  .searchInput {
+    height: 40px;
+    font-size: 13px;
+    padding: 0 14px 0 38px;
+  }
+
+  .chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .filterSelect {
+    height: 40px;
+    font-size: 12.5px;
+  }
+
+  .cardBody {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .courseTitle {
+    font-size: 15.5px;
+  }
+
+  .courseDesc {
+    font-size: 12.5px;
+  }
+
+  .metaRow {
+    font-size: 11px;
+    gap: 6px 10px;
+  }
+
+  .price,
+  .priceFree {
+    font-size: 16px;
+  }
+
+  .enrollBtn,
+  .continueBtn {
+    padding: 9px 14px;
+    font-size: 12.5px;
+  }
+
+  .thumbnailContainer {
+    height: 140px;
+  }
+
+  .categoryBadge,
+  .priceTagBadge,
+  .enrolledBadge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}
+
+/* ─── SUB-360px: iPhone SE / small Android / narrow foldables ─── */
+@media (max-width: 360px) {
+  .headerSection {
+    gap: 12px;
+  }
+
+  .controlsRow {
+    padding: 12px;
+  }
+
+  .searchInput {
+    height: 38px;
+    font-size: 12.5px;
+  }
+
+  .searchIcon {
+    left: 12px;
+  }
+
+  .courseGrid {
+    gap: 12px;
+  }
+
+  .exploreCardWrapper {
+    border-radius: 14px;
+  }
+
+  .thumbnailContainer {
+    height: 120px;
+  }
+
+  .cardBody {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .courseTitle {
+    font-size: 14.5px;
+  }
+
+  .courseDesc {
+    font-size: 12px;
+  }
+
+  .instructorRow {
+    gap: 8px;
+  }
+
+  .instructorName {
+    font-size: 12px;
+  }
+
+  .metaRow {
+    font-size: 10.5px;
+    gap: 5px 8px;
+  }
+
+  .cardFooter {
+    gap: 8px;
+  }
+
+  .price,
+  .priceFree {
+    font-size: 14.5px;
+  }
+
+  .enrollBtn,
+  .continueBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .emptyState {
+    padding: 32px 16px;
+  }
+
+  .emptyTitle {
+    font-size: 16px;
+  }
+
+  .emptyDesc {
+    font-size: 12.5px;
   }
 }
 
