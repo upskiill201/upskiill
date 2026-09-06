@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, X } from 'lucide-react';
-import posthog from 'posthog-js';
+import { captureEvent } from '@/lib/analytics';
 
 import Step1Content from './steps/Step1Content';
 import Step2Content from './steps/Step2Content';
@@ -116,7 +116,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
     setDirection(targetStep > currentStep ? 1 : -1);
     setCurrentStep(targetStep);
     window.history.pushState(null, '', `/creator/onboarding/${targetStep}`);
-    posthog.capture('onboarding_step_viewed', { step: targetStep });
+    captureEvent('onboarding_step_viewed', { step: targetStep });
   }, [currentStep]);
 
   // Step Select / Form Handlers
@@ -190,68 +190,68 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
   const handleNext = async () => {
     if (currentStep === 1) {
       saveOnboardingStep(1, { started: true });
-      posthog.capture('onboarding_started', { step: 1 });
+      captureEvent('onboarding_started', { step: 1 });
       goToStep(2);
     } else if (currentStep === 2) {
       if (!step2Type) return;
       saveOnboardingStep(2, { creatorType: step2Type });
-      posthog.capture('onboarding_step_completed', { step: 2, creatorType: step2Type });
+      captureEvent('onboarding_step_completed', { step: 2, creatorType: step2Type });
       goToStep(3);
     } else if (currentStep === 3) {
       if (!step3Category) return;
       saveOnboardingStep(3, { categories: [step3Category] });
-      posthog.capture('onboarding_step_completed', { step: 3, category: step3Category });
+      captureEvent('onboarding_step_completed', { step: 3, category: step3Category });
       goToStep(4);
     } else if (currentStep === 4) {
       if (!step4Audience) return;
       saveOnboardingStep(4, { audienceSize: step4Audience });
-      posthog.capture('onboarding_step_completed', { step: 4, audienceSize: step4Audience });
+      captureEvent('onboarding_step_completed', { step: 4, audienceSize: step4Audience });
       goToStep(5);
     } else if (currentStep === 5) {
       if (step5Platforms.length === 0) return;
       saveOnboardingStep(5, { platforms: step5Platforms });
-      posthog.capture('onboarding_step_completed', { step: 5, platforms: step5Platforms });
+      captureEvent('onboarding_step_completed', { step: 5, platforms: step5Platforms });
       goToStep(6);
     } else if (currentStep === 6) {
       if (step6Content.length === 0) return;
       saveOnboardingStep(6, { existingContent: step6Content });
-      posthog.capture('onboarding_step_completed', { step: 6, existingContent: step6Content });
+      captureEvent('onboarding_step_completed', { step: 6, existingContent: step6Content });
       goToStep(7);
     } else if (currentStep === 7) {
       if (step7Challenges.length === 0) return;
       saveOnboardingStep(7, { biggestChallenge: step7Challenges });
-      posthog.capture('onboarding_step_completed', { step: 7, challenges: step7Challenges });
+      captureEvent('onboarding_step_completed', { step: 7, challenges: step7Challenges });
       goToStep(8);
     } else if (currentStep === 8) {
       if (!step8Revenue) return;
       saveOnboardingStep(8, { teachingStyle: step8Revenue });
-      posthog.capture('onboarding_step_completed', { step: 8, revenueGoal: step8Revenue });
+      captureEvent('onboarding_step_completed', { step: 8, revenueGoal: step8Revenue });
       goToStep(9);
     } else if (currentStep === 9) {
       saveOnboardingStep(9, { viewed: true });
-      posthog.capture('onboarding_step_completed', { step: 9 });
+      captureEvent('onboarding_step_completed', { step: 9 });
       goToStep(10);
     } else if (currentStep === 10) {
       saveOnboardingStep(10, { viewed: true });
-      posthog.capture('onboarding_step_completed', { step: 10 });
+      captureEvent('onboarding_step_completed', { step: 10 });
       goToStep(11);
     } else if (currentStep === 11) {
       saveOnboardingStep(11, { viewed: true });
-      posthog.capture('onboarding_step_completed', { step: 11 });
+      captureEvent('onboarding_step_completed', { step: 11 });
       goToStep(12);
     } else if (currentStep === 12) {
       if (!step12Format) return;
       saveOnboardingStep(12, { courseFormat: step12Format });
-      posthog.capture('onboarding_step_completed', { step: 12, format: step12Format });
+      captureEvent('onboarding_step_completed', { step: 12, format: step12Format });
       goToStep(13);
     } else if (currentStep === 13) {
       if (!step13Community) return;
       saveOnboardingStep(13, { communityOption: step13Community });
-      posthog.capture('onboarding_step_completed', { step: 13, community: step13Community });
+      captureEvent('onboarding_step_completed', { step: 13, community: step13Community });
       goToStep(14);
     } else if (currentStep === 14) {
       saveOnboardingStep(14, { reviewed: true });
-      posthog.capture('onboarding_step_completed', { step: 14 });
+      captureEvent('onboarding_step_completed', { step: 14 });
       goToStep(15);
     } else if (currentStep === 15) {
       if (isLoading) return; // double-fire guard — rapid Enters used to re-POST signup
@@ -308,7 +308,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
         // Account is active and session token is issued
         saveOnboardingStep(15, { accountCreated: true });
         if (data.user || data) setCachedUser(data.user || data);
-        posthog.capture('creator_account_created', { email: step15Data.email, method: 'email' });
+        captureEvent('creator_account_created', { email: step15Data.email, method: 'email' });
         goToStep(16);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Registration failed';
@@ -319,7 +319,7 @@ export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellPr
     } else if (currentStep === 16) {
       setIsLoading(true);
       clearOnboardingData();
-      posthog.capture('creator_studio_entered');
+      captureEvent('creator_studio_entered');
       setTimeout(() => {
         window.location.href = '/creator';
       }, 300);

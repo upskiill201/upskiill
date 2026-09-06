@@ -1,52 +1,57 @@
 'use client'
 
-import posthog from 'posthog-js'
-import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { captureEvent, loadPostHogWhenIdle } from '@/lib/analytics'
 
+/**
+ * Manual pageview tracking (posthog is initialised with capture_pageview:false
+ * because the App Router's client-side navigations do not trigger it).
+ *
+ * captureEvent queues until the library has loaded, so the very first pageview
+ * is preserved even though the load is deferred to idle.
+ */
 function PostHogPageview() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (pathname && posthog.__loaded) {
-      let url = window.origin + pathname
-      if (searchParams && searchParams.toString()) {
-        url = url + `?${searchParams.toString()}`
-      }
-      posthog.capture('$pageview', { '$current_url': url })
+    if (!pathname) return
+    let url = window.origin + pathname
+    if (searchParams && searchParams.toString()) {
+      url = url + `?${searchParams.toString()}`
     }
+    captureEvent('$pageview', { $current_url: url })
   }, [pathname, searchParams])
 
   return null
 }
 
+/**
+ * PostHog, loaded off the critical path.
+ *
+ * This used to statically import posthog-js (~175KB raw) and posthog-js/react,
+ * putting both in the initial chunk set of every route — the largest removable
+ * payload on the marketing pages after React itself. It now loads during the
+ * browser's first idle period via lib/analytics.
+ *
+ * The react context binding (PHProvider / usePostHog) is gone deliberately: it
+ * was the reason the library had to be imported eagerly, and it had exactly one
+ * consumer (app/join/page.tsx), which now calls the lib/analytics helpers
+ * directly. Nothing is no longer tracked — autocapture, pageleave and session
+ * recording all still initialise with the same options as before.
+ */
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (typeof window !== 'undefined' && !posthog.__loaded) {
-      const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-      if (key) {
-        const isDev = process.env.NODE_ENV === 'development';
-        posthog.init(key, {
-          // In development, send directly from client to prevent Next.js dev server ETIMEDOUT proxy logs
-          api_host: isDev ? (process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com') : '/ingest',
-          ui_host: 'https://app.posthog.com',
-          capture_pageview: false,
-          capture_pageleave: !isDev,
-          autocapture: !isDev,
-          disable_session_recording: isDev,
-        });
-      }
-    }
+    loadPostHogWhenIdle()
   }, [])
 
   return (
-    <PHProvider client={posthog}>
+    <>
       <Suspense fallback={null}>
         <PostHogPageview />
       </Suspense>
       {children}
-    </PHProvider>
+    </>
   )
 }

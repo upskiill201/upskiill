@@ -7,7 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { signInWithGoogle } from '@/lib/firebase';
 import { getOnboardingData, saveOnboardingStep } from '@/lib/onboarding';
 import { setCachedUser } from '@/lib/user-cache';
-import posthog from 'posthog-js';
+import { captureEvent } from '@/lib/analytics';
 
 interface Step15ContentProps {
   formData: {
@@ -72,7 +72,7 @@ export default function Step15Content({
       onChange('fullName', displayName);
       onChange('email', userEmail);
       saveOnboardingStep(15, { accountCreated: true, method: 'google' });
-      posthog.capture('creator_account_created', { email: userEmail, method: 'google' });
+      captureEvent('creator_account_created', { email: userEmail, method: 'google' });
 
       if (onGoogleSuccess) {
         onGoogleSuccess(displayName, userEmail);
