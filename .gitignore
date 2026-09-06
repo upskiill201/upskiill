@@ -3,4 +3,7 @@ node_modules
 .env.local
 .next
 dist
-.claude/worktrees
+.claude/worktrees
+# Dev server logs
+frontend/frontend_dev.log
+frontend/frontend.log
