@@ -88,7 +88,7 @@ export default function Header() {
               width={220}
               height={66}
               priority
-              style={{ width: 'auto', height: '56px', objectFit: 'contain' }}
+              style={{ width: 'auto', aspectRatio: '220 / 66', height: '56px', objectFit: 'contain' }}
             />
           </Link>
           
@@ -196,7 +196,7 @@ export default function Header() {
                   alt="Teyro Logo"
                   width={200}
                   height={60}
-                  style={{ width: 'auto', height: '46px', objectFit: 'contain' }}
+                  style={{ width: 'auto', aspectRatio: '200 / 60', height: '46px', objectFit: 'contain' }}
                 />
               </Link>
               <button 

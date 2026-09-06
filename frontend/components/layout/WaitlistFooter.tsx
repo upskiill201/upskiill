@@ -20,7 +20,7 @@ export default function WaitlistFooter() {
                 width={220}
                 height={66}
                 style={{
-                  width: 'auto',
+                  width: 'auto', aspectRatio: '220 / 66',
                   height: '54px',
                   objectFit: 'contain',
                 }}

@@ -95,8 +95,8 @@ export default function Step11Content({ onNext }: Step11ContentProps) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
           onClick={handleNext}
-          className="w-full md:w-[260px] h-14 md:h-16 bg-[#0172FD] text-white rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg md:text-xl tracking-wide cursor-pointer flex items-center justify-center gap-2"
-          style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+          className="w-full md:w-[260px] h-14 md:h-16 bg-[#0172FD] text-white rounded-2xl font-bold text-lg md:text-xl tracking-wide cursor-pointer flex items-center justify-center gap-2"
+          style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
         >
           <span>Let&apos;s Go!</span>
           <ArrowRight className="w-6 h-6 md:w-6 md:h-6 stroke-[3]" />

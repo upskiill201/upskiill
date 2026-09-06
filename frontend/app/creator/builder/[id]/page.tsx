@@ -667,7 +667,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           </button>
 
           <div className={styles.logoMark}>
-            <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} style={{ width: 'auto', height: '28px' }} priority />
+            <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} style={{ width: 'auto', aspectRatio: '110 / 32', height: '28px' }} priority />
           </div>
 
           {/* Mobile: compact step badge */}

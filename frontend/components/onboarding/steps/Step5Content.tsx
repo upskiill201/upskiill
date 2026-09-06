@@ -252,8 +252,8 @@ export default function Step5Content({ onNext }: Step5ContentProps) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
           onClick={handleNext}
-          className="relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg md:text-xl bg-[#0172FD] text-white cursor-pointer"
-          style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+          className="relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-2xl font-bold text-lg md:text-xl bg-[#0172FD] text-white cursor-pointer"
+          style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
         >
           <span>Continue</span>
           <ArrowRight className="absolute right-4 md:right-8 w-6 h-6 stroke-[3]" />

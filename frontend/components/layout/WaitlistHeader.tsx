@@ -92,7 +92,7 @@ export default function WaitlistHeader() {
               height={66}
               priority
               style={{
-                width: 'auto',
+                width: 'auto', aspectRatio: '220 / 66',
                 height: '56px',
                 objectFit: 'contain',
               }}
@@ -170,7 +170,7 @@ export default function WaitlistHeader() {
                   width={200}
                   height={60}
                   style={{
-                    width: 'auto',
+                    width: 'auto', aspectRatio: '200 / 60',
                     height: '46px',
                     objectFit: 'contain',
                   }}

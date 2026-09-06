@@ -234,7 +234,7 @@ export default function CourseCreationWizard() {
               width={100}
               height={28}
               priority
-              style={{ width: 'auto', height: '24px' }}
+              style={{ width: 'auto', aspectRatio: '100 / 28', height: '24px' }}
             />
           </Link>
           <div className={`${styles.stepPill} ${styles.stepPillActive}`}>

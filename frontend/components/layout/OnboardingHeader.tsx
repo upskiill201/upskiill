@@ -15,7 +15,7 @@ export default function OnboardingHeader() {
           alt="Teyro Logo" 
           width={140} 
           height={40} 
-          style={{ width: 'auto', height: '32px', objectFit: 'contain' }}
+          style={{ width: 'auto', aspectRatio: '140 / 40', height: '32px', objectFit: 'contain' }}
         />
       </Link>
 

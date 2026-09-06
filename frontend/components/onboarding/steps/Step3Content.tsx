@@ -297,12 +297,12 @@ export default function Step3Content({ onNext }: Step3ContentProps) {
           whileTap={hasSelection ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
           onClick={handleNext}
           disabled={!hasSelection}
-          className={`relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-[1.75rem] md:rounded-[2rem] font-bold text-lg md:text-xl transition-all ${
+          className={`relative w-full md:w-[240px] flex items-center justify-center h-14 md:h-16 rounded-2xl font-bold text-lg md:text-xl transition-all ${
             hasSelection ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
           }`}
           style={
             hasSelection
-              ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }
+              ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }
               : {}
           }
         >

@@ -292,12 +292,12 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
                 whileTap={canSubmit && !isSending ? { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } } : {}}
                 onClick={handleGetStarted}
                 disabled={!canSubmit || isSending}
-                className={`relative w-full h-14 md:h-14 flex items-center justify-center gap-2 rounded-[1.75rem] font-bold text-lg transition-all ${
+                className={`relative w-full h-14 md:h-14 flex items-center justify-center gap-2 rounded-2xl font-bold text-lg transition-all ${
                   canSubmit && !isSending ? 'bg-[#0172FD] text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                 }`}
                 style={
                   canSubmit && !isSending
-                    ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }
+                    ? { boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }
                     : { boxShadow: '0 0 10px rgba(255,255,255,0.8)' }
                 }
               >
@@ -419,8 +419,8 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
             <motion.button
               whileTap={{ scale: 0.94 }}
               onClick={onNext}
-              className="relative w-full h-14 flex items-center justify-center gap-2 rounded-[1.75rem] bg-[#0172FD] text-white font-bold text-lg cursor-pointer"
-              style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+              className="relative w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-[#0172FD] text-white font-bold text-lg cursor-pointer"
+              style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
             >
               <span>Continue</span>
               <ArrowRight className="w-5 h-5 stroke-[3]" />

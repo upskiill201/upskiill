@@ -288,7 +288,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
                   whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                   onClick={handleGoogleSignup}
                   disabled={authLoading}
-                  className="w-full h-14 bg-white border-2 border-slate-200 text-slate-700 rounded-[1.5rem] font-bold text-base flex items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-slate-50 transition-all cursor-pointer"
+                  className="w-full h-14 bg-white border-2 border-slate-200 text-slate-700 rounded-2xl font-bold text-base flex items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:bg-slate-50 transition-all cursor-pointer"
                   style={{ fontFamily: 'var(--font-jakarta)' }}
                 >
                   <Image src="/User onbarding Assets/google.webp" alt="Google Logo" width={20} height={20} className="object-contain" />
@@ -305,7 +305,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                   onClick={() => setView('signup')}
-                  className="w-full h-14 bg-[#EBF3FE] text-[#0172FD] rounded-[1.5rem] font-bold text-base flex items-center justify-center gap-3 hover:bg-[#D6E6FE] transition-all cursor-pointer"
+                  className="w-full h-14 bg-[#EBF3FE] text-[#0172FD] rounded-2xl font-bold text-base flex items-center justify-center gap-3 hover:bg-[#D6E6FE] transition-all cursor-pointer"
                   style={{ fontFamily: 'var(--font-jakarta)' }}
                 >
                   <Mail className="w-5 h-5 text-[#0172FD]" />
@@ -396,7 +396,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
                   whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                   disabled={authLoading}
                   className="flex-1 h-12 bg-[#0172FD] text-white rounded-[1.25rem] font-bold text-sm flex items-center justify-center cursor-pointer"
-                  style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+                  style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
                 >
                   <span>{authLoading ? 'Signing up...' : isLinkAccountMode ? 'Activate Profile' : 'Create Account'}</span>
                 </motion.button>
@@ -443,7 +443,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
                   whileTap={{ scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
                   disabled={verifyingCode}
                   className="w-full h-12 bg-[#0172FD] text-white rounded-[1.25rem] font-bold text-sm flex items-center justify-center cursor-pointer"
-                  style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -4px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
+                  style={{ boxShadow: '0 8px 16px -4px rgba(1,114,253,0.4), inset 0px -5px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)' }}
                 >
                   <span>{verifyingCode ? 'Verifying...' : 'Verify Code & Continue'}</span>
                 </motion.button>

@@ -195,11 +195,11 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
           whileTap={cta.disabled ? undefined : { scale: 0.94, transition: { type: 'spring', stiffness: 500, damping: 15 } }}
           onClick={cta.onClick}
           disabled={cta.disabled}
-          className="group relative w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-4 md:py-6 rounded-[1.75rem] md:rounded-[2rem] text-white font-bold text-[clamp(1.05rem,5vw,1.3rem)] md:text-2xl cursor-pointer disabled:cursor-default disabled:opacity-70"
+          className="group relative w-full md:w-[340px] lg:w-[400px] flex items-center justify-center py-4 md:py-6 rounded-2xl text-white font-bold text-[clamp(1.05rem,5vw,1.3rem)] md:text-2xl cursor-pointer disabled:cursor-default disabled:opacity-70"
           style={{
             backgroundColor: '#0172FD',
             boxShadow:
-              '0 12px 24px -8px rgba(1,114,253,0.4), inset 0px -6px 0px rgba(0,0,0,0.15), inset 0px 2px 0px rgba(255,255,255,0.2)',
+              '0 12px 24px -8px rgba(1,114,253,0.4), inset 0px -6px 0px rgba(0,0,0,0.24), inset 0px 2px 0px rgba(255,255,255,0.2)',
           }}
         >
           <span>{cta.label}</span>
