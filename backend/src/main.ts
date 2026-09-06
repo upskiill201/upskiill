@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
@@ -24,6 +25,28 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(cookieParser());
+
+  // ─── RESPONSE COMPRESSION ──────────────────────────────────────────────────
+  // Express does not gzip by default and Render's proxy does not do it for us,
+  // so every response shipped uncompressed until now. The JSON this API returns
+  // is highly compressible: GET /courses carries up to 100 courses with full
+  // @db.Text descriptions, and the course document carries whole lesson trees.
+  //
+  // This is response-side only, so it cannot disturb the `rawBody: true` above
+  // that Stripe/Paystack signature verification depends on (that is request-side).
+  //
+  // The 1KB threshold skips tiny payloads where the gzip header would cost more
+  // than it saves. `x-no-compression` is compression's standard opt-out, kept so
+  // a future streaming/SSE endpoint can bypass buffering without code changes.
+  app.use(
+    compression({
+      threshold: 1024,
+      filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+      },
+    }),
+  );
 
   // ─── CORS ──────────────────────────────────────────────────────────────────
   // Allowed origins are set per environment via the ALLOWED_ORIGINS env var.

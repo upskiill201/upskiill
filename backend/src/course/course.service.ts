@@ -229,7 +229,38 @@ export class CourseService {
    * Internal callers (unenroll, progress writes) use this; external requests
    * must go through findOne() so draft content never leaks.
    */
-  private async findCourseAny(idOrSlug: string) {
+  private async findCourseAny(idOrSlug: string, withContent = true) {
+    // PERF: `withContent: false` is the public/student path. It omits the three
+    // heaviest columns on every lesson — `contentBlocks` (the entire
+    // learn/apply/reflect/deepen payload), `stepCompletion`, and the `resources`
+    // relation — because findOne() strips all three in JavaScript anyway for
+    // non-privileged viewers (see the .map below). Reading, transferring
+    // cross-region, and JSON-parsing a whole course's lesson bodies only to
+    // delete them was the single largest read in the app.
+    //
+    // The privileged path (owner/admin preview) still needs them, so it keeps
+    // the full shape and this stays byte-identical for those viewers.
+    const lessonSelect = withContent
+      ? undefined
+      : {
+          id: true,
+          title: true,
+          description: true,
+          shortDescription: true,
+          lessonType: true,
+          orderIndex: true,
+          isFreePreview: true,
+          durationMinutes: true,
+          status: true,
+          version: true,
+          publishedAt: true,
+          estimatedDurationSeconds: true,
+          xpReward: true,
+          sectionId: true,
+          createdAt: true,
+          updatedAt: true,
+        };
+
     return this.prisma.course.findFirst({
       where: {
         OR: [
@@ -277,7 +308,9 @@ export class CourseService {
           include: {
             lessons: {
               orderBy: { orderIndex: 'asc' },
-              include: { resources: true },
+              ...(withContent
+                ? { include: { resources: true } }
+                : { select: lessonSelect }),
             },
           },
         },
@@ -307,25 +340,39 @@ export class CourseService {
    * public page — actual content is served per-lesson by getStudentLesson().
    */
   async findOne(idOrSlug: string, requesterId?: string, isAdmin = false) {
-    const course = await this.findCourseAny(idOrSlug);
+    // PERF: fetch the lean shape first. Privilege can only be decided after we
+    // know instructorId, and the overwhelmingly common caller is a student or an
+    // anonymous visitor who gets the lesson bodies stripped below anyway — so
+    // the default path never reads them. Owner/admin preview is rare and pays
+    // one extra query to fetch the full content shape.
+    const lean = await this.findCourseAny(idOrSlug, false);
 
-    if (!course) throw new NotFoundException('Course not found');
+    if (!lean) throw new NotFoundException('Course not found');
 
-    const isOwner = !!requesterId && course.instructorId === requesterId;
+    const isOwner = !!requesterId && lean.instructorId === requesterId;
     const isPrivileged = isOwner || isAdmin;
 
-    if (!course.published && !isPrivileged) {
+    if (!lean.published && !isPrivileged) {
       // Same response as a missing course — don't reveal draft existence
       throw new NotFoundException('Course not found');
     }
 
+    const course = isPrivileged
+      ? ((await this.findCourseAny(idOrSlug, true)) ?? lean)
+      : lean;
+
+    // The non-privileged lesson shape no longer needs stripping in JS: the
+    // `withContent: false` query above never selects contentBlocks,
+    // stepCompletion, or resources in the first place. The guarantee that
+    // locked payloads can't ride along on a public page moved from this .map
+    // up into the query itself — which is both stricter (they are never read
+    // from the DB at all) and vastly cheaper. Draft lessons are still filtered
+    // here, because that depends on the row we did fetch.
     const sections = isPrivileged
       ? course.sections
       : course.sections.map((s) => ({
           ...s,
-          lessons: s.lessons
-            .filter((l) => l.status === 'published')
-            .map(({ contentBlocks: _cb, stepCompletion: _sc, resources: _res, ...publicLesson }) => publicLesson),
+          lessons: s.lessons.filter((l) => l.status === 'published'),
         }));
     const visibleLessons = isPrivileged ? course.sections.flatMap((s) => s.lessons) : sections.flatMap((s) => s.lessons);
 
@@ -649,10 +696,32 @@ export class CourseService {
 
     // Visibility-aware fetch — students can't complete lessons in draft
     // courses, and the section/lesson lists already exclude drafts.
-    const course = await this.findOne(idOrSlug, userId, isAdmin);
+    //
+    // PERF: this used to call findOne(), which loads the ENTIRE course document
+    // — every section, every lesson, and every lesson's `contentBlocks` JSON —
+    // just to read three scalar fields off it (id, instructorId, price). For a
+    // 40-lesson course that pulled ~1.2MB from Supabase to Render, cross-region,
+    // on EVERY lesson completion, before any of the completion work began. The
+    // lesson itself is re-queried immediately below, so none of that payload was
+    // ever used. Select only what this method actually reads.
+    //
+    // The two visibility rules findOne() enforced are preserved verbatim: a
+    // missing course and a draft course viewed by a non-owner both surface the
+    // same NotFoundException, so draft existence still never leaks.
+    const course = await this.prisma.course.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+      select: { id: true, title: true, instructorId: true, published: true, price: true },
+    });
+
+    if (!course) throw new NotFoundException('Course not found');
 
     const isOwner = course.instructorId === userId;
     const isPrivileged = isOwner || isAdmin;
+
+    if (!course.published && !isPrivileged) {
+      // Same response as a missing course — don't reveal draft existence
+      throw new NotFoundException('Course not found');
+    }
 
     // ─── VALIDATE THE LESSON ──────────────────────────────────────────────
     // The lesson must exist AND belong to THIS course. Previously any UUID
