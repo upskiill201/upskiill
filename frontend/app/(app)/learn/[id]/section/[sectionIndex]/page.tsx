@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare, Shield } from 'lucide-react';
 import { fetchInventory, usePowerUp } from '@/lib/shop/api';
 import { playHaptic } from '@/lib/haptics';
-import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
+import StudentShell, { useComingSoon } from '@/components/layout/StudentShell';
 import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import LearnSectionSkeleton from './LearnSectionSkeleton';
@@ -2718,22 +2718,22 @@ export default function SectionViewPage() {
 
   if (loading) {
     return (
-      <DashboardLayout isWide hideMobileChrome>
+      <StudentShell isWide hideMobileChrome>
         <LearnSectionSkeleton />
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
   if (!course) {
     return (
-      <DashboardLayout>
+      <StudentShell>
         <div className={styles.errorShell}>
           <h2>Course Not Found</h2>
           <button onClick={() => { playHaptic('light'); router.push('/dashboard/my-learning'); }} className={styles.errorBtn}>
             Back to My Learning
           </button>
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
@@ -2742,7 +2742,7 @@ export default function SectionViewPage() {
 
   if (!section) {
     return (
-      <DashboardLayout>
+      <StudentShell>
         <div className={styles.errorShell}>
           <h2>Section Not Found</h2>
           <p>This section doesn&apos;t exist in the course.</p>
@@ -2750,12 +2750,12 @@ export default function SectionViewPage() {
             Back to Course
           </button>
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
   return (
-    <DashboardLayout isWide hideMobileChrome>
+    <StudentShell isWide hideMobileChrome>
       <SectionViewContent
         course={course}
         section={section}
@@ -2763,6 +2763,6 @@ export default function SectionViewPage() {
         completedLessons={completedLessons}
         setCompletedLessons={setCompletedLessons}
       />
-    </DashboardLayout>
+    </StudentShell>
   );
 }

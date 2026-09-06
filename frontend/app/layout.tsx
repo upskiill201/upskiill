@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans, Baloo_2 } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
@@ -15,21 +15,10 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-// Rounded display font for the Celebration Engine scenes only (Duolingo-style
-// bubbly headlines/CTAs) — scoped to --font-celebration, never used elsewhere.
-const baloo2 = Baloo_2({
-  variable: "--font-celebration",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  display: "swap",
-  // PERF: deliberately not preloaded. next/font preloads by default, so all
-  // three weights of a font used ONLY by the Celebration Engine scenes and the
-  // quests page were being fetched with high priority on /, /blog, /terms and
-  // /login — routes where a celebration can never render. The face is still
-  // declared and still resolves the moment a scene mounts; it just stops
-  // competing with the critical path on pages that never use it.
-  preload: false,
-});
+// NOTE: Baloo_2 (--font-celebration) is declared in app/(app)/layout.tsx, not
+// here. It is used only by Celebration Engine scenes and the quests page, all
+// of which live inside that group — loading it at the root meant serving three
+// weights on /, /blog, /terms and /login, where a celebration cannot render.
 
 export const viewport: Viewport = {
   themeColor: '#3D5AFE',
@@ -159,91 +148,54 @@ export const metadata: Metadata = {
 
 import { SWRProvider } from "../components/providers/SWRProvider";
 import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
-import { TeyActivityProvider } from "../components/providers/TeyActivityProvider";
-import { TeyPushProvider } from "../components/providers/TeyPushProvider";
+import { TeyPushNavigation } from "../components/providers/TeyPushProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
-import { GamificationProvider } from "../context/GamificationContext";
-import { RewardAnimationProvider } from "../context/RewardAnimationContext";
-import { HeraldProvider } from "../context/HeraldContext";
-import HeraldOverlay from "../components/herald/HeraldOverlay";
-import { StreakProvider } from "../context/StreakContext";
-import {
-  DeferredRewardAnimationOverlay,
-  DeferredHeraldReveals,
-  DeferredStreakModal,
-} from "../components/providers/DeferredOverlays";
-import { AudioProvider } from "../context/AudioContext";
-import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
-import { TeyroLoaderProvider } from "../components/providers/TeyroLoaderProvider";
-// Celebration Engine — full-page Duolingo-style scene takeovers
-import { CelebrationProvider } from "../context/CelebrationContext";
-import CelebrationEngine from "../components/celebration/CelebrationEngine";
-// Auto-surfaces the Daily Login Reward as a scene on app entry / unlock
-import DailyRewardWatcher from "../components/gamification/DailyRewardWatcher";
-// Surfaces Monthly Quest beats + claim deposits after lessons
-import QuestProgressWatcher from "../components/quests/QuestProgressWatcher";
-// Weekly league settlement + mid-week leaderboard moments
-import LeagueResultWatcher from "../components/leaderboard/LeagueResultWatcher";
-import LeaderboardRankWatcher from "../components/leaderboard/LeaderboardRankWatcher";
-// Shop Engine — unlock announcements + purchase/chest/collection takeovers
-import { ShopEngineProvider } from "../context/ShopEngineContext";
-import ShopEngine from "../components/shop-engine/ShopEngine";
 
+/**
+ * Root layout — deliberately light.
+ *
+ * The entire authenticated student runtime (Gamification, Celebration, Herald,
+ * Streak, ShopEngine, RewardAnimation, Audio, the four watchers and the two
+ * engines) used to live here, which meant every visitor to the landing page,
+ * the blog and the legal pages downloaded and booted it, and fired a handful of
+ * authenticated requests that could only ever 401. It now lives in
+ * app/(app)/layout.tsx, scoped to the routes that actually consume it.
+ *
+ * What stays here, and why:
+ *  - ServiceWorkerRegistrar — PWA install has to work from the landing page.
+ *  - SWRProvider — small, and NotificationBell/AdminUI need it outside (app).
+ *  - CartProvider — Header and CourseCard call useCart, which THROWS without a
+ *    provider, and both render on public routes.
+ *  - PostHogProvider — removing it from marketing would delete the top of the
+ *    acquisition funnel.
+ *  - TeyPushNavigation — a notification tap must route from whatever page the
+ *    learner happens to have open. Its authenticated other half (TeyPushSync)
+ *    moved into (app).
+ *  - HeaderWrapper / FooterWrapper — these already switch on pathname and
+ *    render the right chrome (or none) per route; leaving them here keeps that
+ *    behaviour byte-identical rather than re-deriving it per group.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${baloo2.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ServiceWorkerRegistrar />
-        <TeyActivityProvider />
-        <TeyPushProvider />
+        <TeyPushNavigation />
         <SWRProvider>
-        <PostHogProvider>
-          <CartProvider>
-            <AudioProvider>
-              <BackgroundMusicManager />
-              {/* Celebration Engine sits high in the tree so any layer
-                  (RewardRun adapter, Herald, Gamification) can queue scenes */}
-              <CelebrationProvider>
-                <GamificationProvider>
-                  <RewardAnimationProvider>
-                    <DeferredRewardAnimationOverlay />
-                    <HeraldProvider>
-                      <StreakProvider>
-                        {/* Shop Engine nests inside the Celebration provider:
-                            it defers to an active celebration rather than
-                            stacking a second full-page takeover. */}
-                        <ShopEngineProvider>
-                          <CelebrationEngine />
-                          <ShopEngine />
-                          <DailyRewardWatcher />
-                          <QuestProgressWatcher />
-                          <LeagueResultWatcher />
-                          <LeaderboardRankWatcher />
-                          {/* Herald & Streak portals — router-independent, render into document.body */}
-                          <HeraldOverlay />
-                          <DeferredHeraldReveals />
-                          <DeferredStreakModal />
-                          <TeyroLoaderProvider>
-                            <HeaderWrapper />
-                            <main className="flex-1" style={{ overflow: 'visible' }}>
-                              {children}
-                            </main>
-                            <FooterWrapper />
-                          </TeyroLoaderProvider>
-                        </ShopEngineProvider>
-                      </StreakProvider>
-                    </HeraldProvider>
-                  </RewardAnimationProvider>
-                </GamificationProvider>
-              </CelebrationProvider>
-            </AudioProvider>
-          </CartProvider>
-        </PostHogProvider>
+          <PostHogProvider>
+            <CartProvider>
+              <HeaderWrapper />
+              <main className="flex-1" style={{ overflow: 'visible' }}>
+                {children}
+              </main>
+              <FooterWrapper />
+            </CartProvider>
+          </PostHogProvider>
         </SWRProvider>
       </body>
     </html>

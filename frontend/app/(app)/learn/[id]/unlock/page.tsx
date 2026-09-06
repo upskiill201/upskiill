@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LogIn } from 'lucide-react';
-import DashboardLayout from '@/app/dashboard/layout';
+import StudentShell from '@/components/layout/StudentShell';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import JourneySceneShell from '@/components/features/course-unlock/JourneySceneShell';
 import SceneCelebrate from '@/components/features/course-unlock/SceneCelebrate';
@@ -308,17 +308,17 @@ export default function LearnUnlockPage() {
   // ── Render shells ─────────────────────────────────────────────────────
   if (phase === 'loading') {
     return (
-      <DashboardLayout isWide hideMobileChrome>
+      <StudentShell isWide hideMobileChrome>
         <div className={styles.centerShell}>
           <TeyroBrandedLoader suppressConnectionCheck />
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
   if (phase === 'error') {
     return (
-      <DashboardLayout isWide hideMobileChrome>
+      <StudentShell isWide hideMobileChrome>
         <div className={`${styles.centerShell} ${styles.errorShell}`}>
           <h2>{authRequired ? 'Almost there!' : 'Hmm.'}</h2>
           <p>{loadError}</p>
@@ -337,12 +337,12 @@ export default function LearnUnlockPage() {
             </button>
           )}
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
   return (
-    <DashboardLayout isWide hideMobileChrome>
+    <StudentShell isWide hideMobileChrome>
       {phase === 'success' && <SuccessBeat returnTo={returnTo} />}
 
       {phase === 'waiting' && (
@@ -402,7 +402,7 @@ export default function LearnUnlockPage() {
           </JourneySceneShell>
         </div>
       )}
-    </DashboardLayout>
+    </StudentShell>
   );
 }
 

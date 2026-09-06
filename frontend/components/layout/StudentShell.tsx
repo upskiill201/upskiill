@@ -29,7 +29,7 @@ import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cache';
-import styles from './Dashboard.module.css';
+import styles from './StudentShell.module.css';
 
 // ─── COMING SOON CONTEXT ───
 interface ComingSoonContextType {
@@ -40,7 +40,7 @@ const ComingSoonContext = createContext<ComingSoonContextType | undefined>(undef
 
 export const useComingSoon = () => {
   const context = useContext(ComingSoonContext);
-  if (!context) throw new Error('useComingSoon must be used within DashboardLayout');
+  if (!context) throw new Error('useComingSoon must be used within StudentShell');
   return context;
 };
 
@@ -55,7 +55,7 @@ const MobileMenuContext = createContext<MobileMenuContextType | undefined>(undef
 
 export const useMobileMenu = () => {
   const context = useContext(MobileMenuContext);
-  if (!context) throw new Error('useMobileMenu must be used within DashboardLayout');
+  if (!context) throw new Error('useMobileMenu must be used within StudentShell');
   return context;
 };
 
@@ -63,17 +63,17 @@ interface EnhancedDashboardLink extends DashboardLink {
   isComingSoon?: boolean;
 }
 
-interface DashboardLayoutProps {
+interface StudentShellProps {
   children: React.ReactNode;
   isWide?: boolean;
   hideMobileChrome?: boolean;
 }
 
-export default function DashboardLayout({
+export default function StudentShell({
   children,
   isWide = false,
   hideMobileChrome = false,
-}: DashboardLayoutProps) {
+}: StudentShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   // Student homescreen goes headerless on mobile (Duolingo-style) — the page

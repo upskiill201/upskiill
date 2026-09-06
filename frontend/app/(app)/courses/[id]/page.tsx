@@ -25,7 +25,7 @@ import {
   Zap
 } from 'lucide-react';
 import { fireConfetti } from '@/lib/confetti';
-import DashboardLayout from '@/app/dashboard/layout';
+import StudentShell from '@/components/layout/StudentShell';
 import { StatsBar } from '@/components/ui/StatsBar';
 import GamificationIcon from '@/components/ui/GamificationIcon';
 import Avatar from '@/components/ui/Avatar';
@@ -381,18 +381,18 @@ export default function CourseDetailPage({
 
   if (isLoading) {
     return (
-      <DashboardLayout isWide>
+      <StudentShell isWide>
         <div className={styles.loadingContainer}>
           <div className={styles.duoSpinner} />
           <p className={styles.loadingText}>Unrolling your quest...</p>
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
   if (!course && !isPreviewMode) {
     return (
-      <DashboardLayout isWide>
+      <StudentShell isWide>
         <div className={styles.loadingContainer}>
           <Image
             src="/User onbarding Assets/Tey_welcome.webp"
@@ -409,7 +409,7 @@ export default function CourseDetailPage({
             Explore Courses
           </Link>
         </div>
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
@@ -420,7 +420,7 @@ export default function CourseDetailPage({
   const secondLesson = firstSection?.lessons?.[1];
 
   return (
-    <DashboardLayout isWide>
+    <StudentShell isWide>
       <div className={styles.discoveryWrapper}>
         {/* ─── TOP NAV / STATS ROW (DUOLINGO STUDENT HEADER) ─── */}
         <div className={styles.topHeaderRow}>
@@ -933,6 +933,6 @@ export default function CourseDetailPage({
           />
         )}
       </AnimatePresence>
-    </DashboardLayout>
+    </StudentShell>
   );
 }

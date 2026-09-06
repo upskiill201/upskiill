@@ -5,7 +5,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTeyPush } from '../../hooks/useTeyPush';
 
 /**
- * Two jobs, both invisible.
+ * Notification routing and open-attribution. Both are invisible, and both must
+ * work on ANY page the learner might have open when a notification is tapped —
+ * including the marketing pages — so this half lives in the root layout.
  *
  * 1. Route a notification tap client-side. The service worker focuses an
  *    existing tab and posts TEY_NAVIGATE rather than forcing a reload, so the
@@ -13,20 +15,14 @@ import { useTeyPush } from '../../hooks/useTeyPush';
  *
  * 2. Attribute the open. A `?tey=<deliveryId>` param means the learner arrived
  *    from a notification; reporting it resets Tey's ignored-nudge counter,
- *    which is what stops the tone escalating at someone who does engage.
+ *    which is what stops the tone escalating at someone who does engage. This
+ *    only makes a request when the param is actually present, so it costs
+ *    nothing on an ordinary page view.
  */
-export function TeyPushProvider() {
+export function TeyPushNavigation() {
   const router = useRouter();
   const pathname = usePathname();
-  const { syncExisting } = useTeyPush();
   const reportedRef = useRef<string | null>(null);
-
-  // Re-register the browser's current subscription on boot. Endpoints rotate
-  // silently, so without this, delivery quietly decays over weeks.
-  useEffect(() => {
-    const id = window.setTimeout(() => void syncExisting(), 2000);
-    return () => window.clearTimeout(id);
-  }, [syncExisting]);
 
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
@@ -68,6 +64,26 @@ export function TeyPushProvider() {
       scroll: false,
     });
   }, [pathname, router]);
+
+  return null;
+}
+
+/**
+ * Re-registers the browser's current push subscription on boot. Endpoints
+ * rotate silently, so without this, delivery quietly decays over weeks.
+ *
+ * Split out of the navigation half above and mounted only inside the
+ * authenticated (app) group: this call is unconditional and authenticated, so
+ * in the root layout it fired a guaranteed 401 two seconds after every
+ * anonymous visit to the landing page, the blog and the legal pages.
+ */
+export function TeyPushSync() {
+  const { syncExisting } = useTeyPush();
+
+  useEffect(() => {
+    const id = window.setTimeout(() => void syncExisting(), 2000);
+    return () => window.clearTimeout(id);
+  }, [syncExisting]);
 
   return null;
 }

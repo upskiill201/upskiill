@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Bot, Lock, BookOpen, Target, Check, Trophy, ChevronRight } from 'lucide-react';
 import { getLeagueMeta } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
-import { useComingSoon } from '@/app/dashboard/layout';
+import { useComingSoon } from '@/components/layout/StudentShell';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';

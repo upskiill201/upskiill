@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, BookOpen, Lock, CheckCircle2, Layers, BarChart2, LayoutGrid, Info, Star, Users, Clock, Check, X } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
-import DashboardLayout, { useComingSoon } from '@/app/dashboard/layout';
+import StudentShell, { useComingSoon } from '@/components/layout/StudentShell';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
@@ -772,9 +772,9 @@ export default function LearnCoursePage() {
   /* ── Loading state ─────────────────────────────── */
   if (loading) {
     return (
-      <DashboardLayout>
+      <StudentShell>
         <LearnCourseSkeleton />
-      </DashboardLayout>
+      </StudentShell>
     );
   }
 
@@ -790,12 +790,12 @@ export default function LearnCoursePage() {
   }
 
   return (
-    <DashboardLayout>
+    <StudentShell>
       <LearnCourseContent
         course={course}
         completedLessons={completedLessons}
         initialHasAccess={hasAccess}
       />
-    </DashboardLayout>
+    </StudentShell>
   );
 }

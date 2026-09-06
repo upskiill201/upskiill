@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { X, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { playHaptic } from '@/lib/haptics';
-import { useComingSoon, useMobileMenu } from './layout';
+import { useComingSoon, useMobileMenu } from '@/components/layout/StudentShell';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { StatsBar } from '@/components/ui/StatsBar';
