@@ -23,6 +23,19 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
+  env: {
+    // Versions the service worker. public/sw.js is a static file and cannot
+    // read env at runtime, so the registrar appends this as `?v=` — a
+    // byte-different script URL is a different worker, which is what makes a
+    // deploy install a new SW and drop the previous build's caches. Without it
+    // the version was a hardcoded constant that no build step touched, so the
+    // static cache accumulated every build's chunks and served them
+    // cache-first forever.
+    NEXT_PUBLIC_BUILD_ID:
+      process.env.VERCEL_GIT_COMMIT_SHA ??
+      process.env.NEXT_PUBLIC_BUILD_ID ??
+      'dev',
+  },
   images: {
     // AVIF/WebP first — the browser picks whichever it supports; falls
     // back to the original format for anything that supports neither.

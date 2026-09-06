@@ -1,0 +1,52 @@
+/*
+ * Offline fallback styling.
+ *
+ * Uses the existing design tokens from globals.css only — no new colours, no
+ * new type scale. This surface has no design of its own to preserve (before it
+ * existed the offline state was a blank screen or a SyntaxError), so it simply
+ * matches the rest of the app.
+ */
+
+.wrap {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px max(16px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));
+  background: var(--bg-page);
+}
+
+.card {
+  max-width: 420px;
+  text-align: center;
+}
+
+.mascot {
+  width: 140px;
+  height: auto;
+  margin: 0 auto 20px;
+  opacity: 0.9;
+}
+
+.title {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+
+.hint {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
