@@ -23,6 +23,7 @@ import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBann
 import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
 import PwaPushNudgeCard from '@/components/dashboard/v2/PwaPushNudgeCard';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
+import { useMe } from '@/hooks/useMe';
 import NotificationBell from '@/components/community/NotificationBell';
 import styles from './Page.module.css';
 
@@ -48,6 +49,16 @@ export default function DashboardPage() {
 
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
+  // Shared with StudentShell — one request, not two.
+  const { me } = useMe();
+
+  useEffect(() => {
+    if (me?.fullName) {
+      setUserName(me.fullName.split(' ')[0]);
+      setCachedUser(me);
+    }
+  }, [me]);
+
   useEffect(() => {
     // 1. Hydrate cached user on client mount safely to prevent SSR hydration mismatch
     const cached = getCachedUser();
@@ -68,23 +79,15 @@ export default function DashboardPage() {
     let cancelled = false;
     const loadAllDashboardData = async () => {
       try {
-        await Promise.allSettled([
-          fetch('/api/auth/me', { credentials: 'include' })
-            .then((res) => (res.ok ? res.json() : null))
-            .then((data) => {
-              if (data?.fullName) {
-                setUserName(data.fullName.split(' ')[0]);
-                setCachedUser(data);
-              }
-            }),
-          fetch('/api/auth/me/enrollments', { credentials: 'include' })
-            .then((res) => (res.ok ? res.json() : []))
-            .then((data) => {
-              if (Array.isArray(data)) {
-                setEnrollments(data);
-              }
-            }),
-        ]);
+        // /api/auth/me is NOT fetched here any more — StudentShell already
+        // reads it through useMe(), and this duplicate raw fetch went out in
+        // the same tick as that one on every dashboard entry. The display name
+        // now comes from the shared SWR record below.
+        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
+        const data = res.ok ? await res.json() : [];
+        if (Array.isArray(data)) {
+          setEnrollments(data);
+        }
       } catch (err) {
         console.error('Failed loading dashboard data', err);
       } finally {

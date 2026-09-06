@@ -9,6 +9,7 @@
  */
 
 import { mutate } from 'swr';
+import { dedupeInFlight } from '@/lib/in-flight';
 import type { CelebrationScene, QuestRow } from '@/context/CelebrationContext';
 import type { CelebrationCurrency } from '@/components/celebration/currency';
 import { fetcher } from '@/lib/swr';
@@ -81,14 +82,22 @@ function tzParam(): string {
 
 // ─── API ────────────────────────────────────────────────────────────────────
 
-// Both routed through SWR's global mutate (not a bare fetch) — the dashboard
-// card and the sidebar widget each run their own `useMonthlyQuest()` hook
-// instance and used to fire this fetch twice per mount; sharing the same
-// cache key lets SWR's request dedupe collapse them into one call.
+// CORRECTION: these were previously written as `mutate(key, fetcher(key))`
+// with a comment claiming SWR would dedupe them. It does not — `fetcher(key)`
+// is evaluated as an argument, so the request is already in flight before
+// `mutate` is called, and SWR consults its dedupe map only on `useSWR`'s
+// revalidate path. The dashboard card and the sidebar widget each run their
+// own useMonthlyQuest() instance, so this really did fire twice per mount,
+// and three times on a lesson completion (both hooks plus QuestProgressWatcher).
+//
+// dedupeInFlight collapses genuinely-concurrent callers onto one request while
+// still writing through to the SWR cache for anything reading it there.
 export async function fetchCurrentQuest(): Promise<MonthlyQuest> {
   const endpoint = `/api/v2/monthly-quest/current?${tzParam()}`;
   try {
-    return await mutate<MonthlyQuest>(endpoint, fetcher(endpoint)) as MonthlyQuest;
+    return await dedupeInFlight(endpoint, () =>
+      mutate<MonthlyQuest>(endpoint, fetcher(endpoint)) as Promise<MonthlyQuest>,
+    );
   } catch (err) {
     const status = (err as { status?: number })?.status;
     throw new Error(`Failed to load quest${status ? ` (${status})` : ''}`);
@@ -98,7 +107,9 @@ export async function fetchCurrentQuest(): Promise<MonthlyQuest> {
 export async function fetchQuestHistory(): Promise<QuestHistoryEntry[]> {
   const endpoint = `/api/v2/monthly-quest/history?${tzParam()}`;
   try {
-    return await mutate<QuestHistoryEntry[]>(endpoint, fetcher(endpoint)) as QuestHistoryEntry[];
+    return await dedupeInFlight(endpoint, () =>
+      mutate<QuestHistoryEntry[]>(endpoint, fetcher(endpoint)) as Promise<QuestHistoryEntry[]>,
+    );
   } catch (err) {
     const status = (err as { status?: number })?.status;
     throw new Error(`Failed to load quest history${status ? ` (${status})` : ''}`);

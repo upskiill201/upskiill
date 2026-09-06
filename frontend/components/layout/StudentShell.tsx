@@ -29,6 +29,7 @@ import { useGamification } from '@/context/GamificationContext';
 import { useStreakModal } from '@/context/StreakContext';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cache';
+import { useMe } from '@/hooks/useMe';
 import styles from './StudentShell.module.css';
 
 // ─── COMING SOON CONTEXT ───
@@ -93,52 +94,54 @@ export default function StudentShell({
     setComingSoonFeature(feature);
   };
 
-  // Fetch user data on mount (middleware handles route protection)
+  // Current user. Shared via SWR rather than fetched here with a raw fetch:
+  // the dashboard page needs the same record, and because child effects run
+  // before parent effects the two raw fetches went out in the same tick as two
+  // identical authenticated round trips on every dashboard entry.
+  const { me, error: meError } = useMe();
+
+  // Hydrate from the local cache on mount so the sidebar paints a name and
+  // avatar immediately instead of waiting on the network. Kept separate from
+  // the SWR read below so the first client render still matches the server.
   useEffect(() => {
-    // Safely hydrate cached user on client mount to prevent SSR hydration mismatch
     const cached = getCachedUser();
     if (cached?.fullName) setUserName(cached.fullName);
     if (cached?.avatarUrl) setUserAvatar(cached.avatarUrl);
     if (cached?.hasStudentAccess !== undefined) setHasStudentAccess(cached.hasStudentAccess);
     if (cached?.hasCreatorAccess !== undefined) setHasCreatorAccess(cached.hasCreatorAccess);
-
-    const fetchMe = async () => {
-      try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.fullName) setUserName(data.fullName);
-          if (data?.avatarUrl !== undefined) setUserAvatar(data.avatarUrl);
-          if (data?.hasStudentAccess !== undefined) setHasStudentAccess(data.hasStudentAccess);
-          if (data?.hasCreatorAccess !== undefined) setHasCreatorAccess(data.hasCreatorAccess);
-          setCachedUser(data);
-
-          // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-01 & AUTH-02)
-          // Pure creators without a verified student account should be in /creator, not /dashboard.
-          // Use window.location.href (hard navigation) to break any localStorage-based infinite redirect
-          // loops that router.push() cannot escape.
-          if (!data.hasStudentAccess && !data.studentProfile) {
-            if (!data.hasCreatorAccess) {
-              // Neither role confirmed yet — onboarding never finished.
-              // Sending this account to /creator would just bounce back
-              // here forever, since creator/layout.tsx redirects
-              // non-creators back to /dashboard.
-              window.location.href = '/onboarding/0';
-            } else {
-              window.location.href = '/creator';
-            }
-            return;
-          }
-        } else if (res.status === 401) {
-          router.push('/login');
-          return;
-        }
-      } catch (err) {
-        console.error('Failed to load user data', err);
-      }
-    };
-    fetchMe();
   }, []);
+
+  useEffect(() => {
+    if (meError?.status === 401) {
+      router.push('/login');
+    }
+  }, [meError, router]);
+
+  useEffect(() => {
+    if (!me) return;
+
+    if (me.fullName) setUserName(me.fullName);
+    if (me.avatarUrl !== undefined) setUserAvatar(me.avatarUrl ?? null);
+    if (me.hasStudentAccess !== undefined) setHasStudentAccess(me.hasStudentAccess);
+    if (me.hasCreatorAccess !== undefined) setHasCreatorAccess(me.hasCreatorAccess);
+    setCachedUser(me);
+
+    // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-01 & AUTH-02)
+    // Pure creators without a verified student account should be in /creator, not /dashboard.
+    // Use window.location.href (hard navigation) to break any localStorage-based infinite redirect
+    // loops that router.push() cannot escape.
+    if (!me.hasStudentAccess && !me.studentProfile) {
+      if (!me.hasCreatorAccess) {
+        // Neither role confirmed yet — onboarding never finished.
+        // Sending this account to /creator would just bounce back
+        // here forever, since creator/layout.tsx redirects
+        // non-creators back to /dashboard.
+        window.location.href = '/onboarding/0';
+      } else {
+        window.location.href = '/creator';
+      }
+    }
+  }, [me]);
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
