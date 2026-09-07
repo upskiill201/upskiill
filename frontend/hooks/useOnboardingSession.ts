@@ -28,8 +28,13 @@ import {
   type OnboardingAnswers,
 } from '@/lib/user-onboarding';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+// Routed through the frontend's own same-origin `/api/*` proxy (see
+// next.config.ts fallback rewrite), NOT the backend's own domain directly.
+// The auth cookie is `sameSite: 'lax'`, so it never rides along on a
+// cross-site fetch to the backend's domain — only same-origin requests (which
+// Next's server-side rewrite then forwards to the backend with the cookie
+// intact) actually authenticate. Hitting the backend URL directly here silently
+// 401s and was why onboarding progress never reached the DB post-login.
 async function fetchSessionFromBackend(): Promise<{
   exists: boolean;
   currentStep?: number;
@@ -38,7 +43,7 @@ async function fetchSessionFromBackend(): Promise<{
   onboardingComplete?: boolean;
 } | null> {
   try {
-    const res = await fetch(`${API_URL}/user-onboarding`, {
+    const res = await fetch('/api/user-onboarding', {
       credentials: 'include', // sends the httpOnly JWT cookie
     });
     if (!res.ok) return null;
@@ -55,7 +60,7 @@ export async function syncToBackend(payload: {
   onboardingComplete?: boolean;
 }): Promise<boolean> {
   try {
-    const res = await fetch(`${API_URL}/user-onboarding`, {
+    const res = await fetch('/api/user-onboarding', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
