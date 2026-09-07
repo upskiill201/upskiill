@@ -20,6 +20,7 @@ import { HomeModule } from './home/home.module';
 import { MissionsModule } from './missions/missions.module';
 import { MonthlyQuestModule } from './monthly-quest/monthly-quest.module';
 import { ProgressModule } from './progress/progress.module';
+import { LearnerAnalyticsModule } from './learner-analytics/learner-analytics.module';
 import { ChestModule } from './chest/chest.module';
 import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
@@ -56,6 +57,7 @@ import { TeyModule } from './tey/tey.module';
     MissionsModule,
     MonthlyQuestModule,
     ProgressModule,
+    LearnerAnalyticsModule,
     ChestModule,
     SpinModule,
     StreakModule,

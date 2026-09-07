@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #1F2A44);
+}
+
+.value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748B);
+}
+
+/* Track: the "groove" the fill sits in — a border + darker bottom border, no shadow/glow. */
+.track {
+  width: 100%;
+  position: relative;
+  border-radius: 999px;
+  background-color: var(--bg-section, #F5F7FB);
+  border: 2px solid var(--border, #E2E8F0);
+  border-bottom: 3px solid var(--border-strong, #CBD5E1);
+  overflow: hidden;
+}
+
+.sm {
+  height: 12px;
+}
+
+.md {
+  height: 18px;
+}
+
+/* Fill: the raised 3D lip technique — a darker bottom border reads as depth. */
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.blue {
+  background-color: #0172FD;
+  border-bottom: 3px solid #00459E;
+}
+
+.green {
+  background-color: #22C55E;
+  border-bottom: 3px solid #15803D;
+}
+
+.purple {
+  background-color: #9333EA;
+  border-bottom: 3px solid #6B21A8;
+}
