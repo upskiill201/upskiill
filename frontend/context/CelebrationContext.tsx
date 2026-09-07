@@ -94,6 +94,22 @@ export type CelebrationScene =
       dedupeKey?: string;
     }
   | {
+      /**
+       * The learner returns after a gap since their last finished lesson,
+       * with no live streak in play (a broken/frozen streak already gets its
+       * own beat from the 'STREAK' scene above — see the producer in
+       * GamificationContext.tsx). Sad-Tey moment, not celebratory: no
+       * confetti, no fanfare, just "we noticed you were gone, glad you're
+       * back."
+       */
+      kind: 'WELCOME_BACK';
+      /** Full calendar days since the learner's last completed lesson. */
+      days: number;
+      speech?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
       kind: 'CHEST';
       /** When omitted the scene fetches /chest/today itself. */
       chestId?: string;
@@ -436,11 +452,25 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
       });
     };
 
+    const handleWelcomeBack = (e: Event) => {
+      const detail = (e as CustomEvent<{ days: number }>).detail;
+      if (!detail || typeof detail.days !== 'number' || detail.days <= 0) return;
+      celebrate({
+        kind: 'WELCOME_BACK',
+        days: detail.days,
+        // Keyed by day count (not a timestamp) — resurfaces if the gap grows
+        // on a later app open, but not on every poll for the same gap.
+        dedupeKey: `welcome-back-${detail.days}`,
+      });
+    };
+
     window.addEventListener('teyro:level-up', handleLevelUp);
     window.addEventListener('teyro:streak-status', handleStreakStatus);
+    window.addEventListener('teyro:welcome-back', handleWelcomeBack);
     return () => {
       window.removeEventListener('teyro:level-up', handleLevelUp);
       window.removeEventListener('teyro:streak-status', handleStreakStatus);
+      window.removeEventListener('teyro:welcome-back', handleWelcomeBack);
     };
   }, [celebrate]);
 

@@ -61,6 +61,38 @@ export function pickStreakSpeech(mode: 'EXTENDED' | 'SAVED' | 'LOST', ctx: Strea
     : pickFromPool(extendedSmall(ctx.days), 'streak:EXTENDED_SMALL');
 }
 
+// ── Welcome back (sad-Tey, no live streak in play) ──────────────────────────
+// Distinct from LOST above: this is for a learner who wasn't mid-streak when
+// they disappeared, so there's no "streak reset" beat to carry the moment —
+// just Tey noticing the gap. Tease the gap itself, never the learner; stay
+// glad they're back rather than guilt-tripping (see tey-personality.ts).
+
+function welcomeBackShort(days: number): string[] {
+  const s = days === 1 ? '' : 's';
+  return [
+    `${days} day${s}? I was starting to worry 👀`,
+    "Oh, you're back! I was about to send a search party.",
+    `Look who remembered me after ${days} day${s} 😌 Let's go.`,
+    "There you are! Ready to pick up where we left off?",
+  ];
+}
+
+function welcomeBackLong(days: number): string[] {
+  return [
+    `${days} DAYS?! I counted every single one 😤`,
+    `It's been ${days} days. I'm not mad. Okay, a little mad. Let's fix that.`,
+    `${days} days away and you're still my favorite student. Let's make up for lost time!`,
+    `Okay, ${days} days is a lot — but you're here now, and that's what matters 🥹`,
+  ];
+}
+
+export function pickWelcomeBackSpeech(days: number): string {
+  const isLong = days >= 5;
+  return isLong
+    ? pickFromPool(welcomeBackLong(days), 'streak:WELCOME_BACK_LONG')
+    : pickFromPool(welcomeBackShort(days), 'streak:WELCOME_BACK_SHORT');
+}
+
 /**
  * The Herald "streak committed" full-screen overlay (`HeraldStreakReveal.tsx`)
  * — separate moment from the Celebration Engine's StreakScene above, but the

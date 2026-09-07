@@ -35,6 +35,7 @@ const SectionUnlockedScene = dynamic(() => import('./scenes/SectionUnlockedScene
 const CourseCompleteScene = dynamic(() => import('./scenes/CourseCompleteScene'), { ssr: false });
 const LeaderboardScene = dynamic(() => import('./scenes/LeaderboardScene'), { ssr: false });
 const CommunityWelcomeScene = dynamic(() => import('./scenes/CommunityWelcomeScene'), { ssr: false });
+const WelcomeBackScene = dynamic(() => import('./scenes/WelcomeBackScene'), { ssr: false });
 
 let sceneCounter = 0;
 
@@ -100,6 +101,8 @@ export default function CelebrationEngine() {
         return <LeaderboardScene scene={scene} onAdvance={advance} />;
       case 'COMMUNITY_WELCOME':
         return <CommunityWelcomeScene scene={scene} onAdvance={advance} />;
+      case 'WELCOME_BACK':
+        return <WelcomeBackScene scene={scene} onAdvance={advance} />;
       default:
         return null;
     }
