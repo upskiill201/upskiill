@@ -80,7 +80,7 @@ export default function SceneWall({
                 {' '}in <em>{courseTitle}</em>
               </>
             ) : null}
-            . Unlock once to keep every streak, coin and win counting.
+            . Unlock once and I&apos;ll keep every streak, coin and win counting with you.
           </p>
         </motion.div>
       </div>

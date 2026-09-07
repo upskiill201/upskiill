@@ -151,16 +151,16 @@ export default function SceneCelebrate({
           <p className={styles.subtitle}>
             {rows.hasProgress ? (
               <>
-                <strong>{model.completedCount} lessons</strong> conquered
+                I&apos;ve watched you conquer <strong>{model.completedCount} lessons</strong>
                 {courseTitle ? (
                   <>
                     {' '}in <em>{courseTitle}</em>
                   </>
                 ) : null}
-                . Keep the momentum going.
+                . Let&apos;s keep that momentum going.
               </>
             ) : (
-              <>Every expert was once a beginner — here&apos;s where it begins.</>
+              <>Every expert was once a beginner — I&apos;ll walk you through where it begins.</>
             )}
           </p>
         </motion.div>

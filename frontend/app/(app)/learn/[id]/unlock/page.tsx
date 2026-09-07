@@ -143,7 +143,7 @@ export default function LearnUnlockPage() {
 
         if (accessRes.status === 401) {
           setAuthRequired(true);
-          setLoadError('Please log in to unlock this course.');
+          setLoadError("Log in and I'll pick up right where you left off.");
           setPhase('error');
           return;
         }
@@ -188,7 +188,7 @@ export default function LearnUnlockPage() {
         }
 
         if (!courseData) {
-          setLoadError('This course could not be loaded. Please try again.');
+          setLoadError("I couldn't load this course. Give it another try?");
           setPhase('error');
           return;
         }
@@ -196,7 +196,7 @@ export default function LearnUnlockPage() {
         setPhase('journey');
       } catch {
         if (!cancelled) {
-          setLoadError('Something went wrong while loading this course.');
+          setLoadError("Something went wrong on my end loading this course.");
           setPhase('error');
         }
       }

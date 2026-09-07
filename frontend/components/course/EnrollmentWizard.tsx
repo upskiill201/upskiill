@@ -229,9 +229,9 @@ export default function EnrollmentWizard({
 
                 <h1 className={styles.takeoverTitleClean}>YOUR QUEST AWAITS</h1>
                 <p className={styles.takeoverSubtitle}>
-                  You&apos;re about to begin an adventure through
+                  I&apos;ve got your first steps in
                   <br />
-                  <span className={styles.highlightCourseName}>{courseTitle}</span>
+                  <span className={styles.highlightCourseName}>{courseTitle}</span> ready to go.
                 </p>
 
                 {thumbnailUrl ? (
@@ -316,7 +316,7 @@ export default function EnrollmentWizard({
 
                 <h1 className={styles.takeoverTitleClean}>Your Learning Path</h1>
                 <p className={styles.takeoverSubtitle}>
-                  Here&apos;s how your quest unfolds, lesson by lesson.
+                  Here&apos;s what I&apos;ve mapped out for you, lesson by lesson.
                 </p>
 
                 <div className={styles.duoSerpentinePathBox}>
@@ -415,16 +415,16 @@ export default function EnrollmentWizard({
                   {commitStatus === 'error' ? 'HMM, THAT DIDN’T WORK' : 'READY TO BEGIN?'}
                 </h1>
                 <p className={styles.takeoverSubtitle}>
-                  One tap enrolls you in{' '}
-                  <span className={styles.highlightCourseName}>{courseTitle}</span> — your
-                  progress will be saved from the very first lesson.
+                  One tap and I&apos;ll get you started in{' '}
+                  <span className={styles.highlightCourseName}>{courseTitle}</span> — I&apos;m
+                  tracking your progress from lesson one.
                 </p>
 
                 {commitStatus === 'error' && (
                   <div className={styles.errorCard}>
                     <AlertTriangle size={20} color="#DC2626" />
                     <span className={styles.errorCardText}>
-                      We couldn&apos;t reach Teyro HQ. Check your connection and try again —
+                      I couldn&apos;t reach Teyro HQ. Check your connection and try again —
                       nothing was charged or lost.
                     </span>
                   </div>
@@ -472,9 +472,8 @@ export default function EnrollmentWizard({
               >
                 <h1 className={styles.takeoverTitleClean}>YOU&apos;RE ALL SET!</h1>
                 <p className={styles.takeoverSubtitle}>
-                  Your quest in{' '}
-                  <span className={styles.highlightCourseName}>{courseTitle}</span>{' '}
-                  officially begins now.
+                  You&apos;re in. I&apos;ll see you at lesson one of{' '}
+                  <span className={styles.highlightCourseName}>{courseTitle}</span>.
                 </p>
 
                 {welcomeReward && (

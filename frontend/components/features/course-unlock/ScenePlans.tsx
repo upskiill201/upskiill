@@ -178,14 +178,14 @@ export default function ScenePlans({
               priority
             />
             <p className={styles.plansAsideNote}>
-              Unlock once — keep every lesson, streak and coin you&apos;ve
-              earned.
+              Unlock once and I&apos;ll hold onto every lesson, streak and
+              coin you&apos;ve earned.
             </p>
           </aside>
 
           <div className={styles.plansColumn}>
           <h1 className={styles.headline} style={{ textAlign: 'left', maxWidth: 'none' }}>
-            Choose your <span className={styles.titleAccent}>unlock</span>
+            Pick the plan that <span className={styles.titleAccent}>works for you</span>
           </h1>
 
           {/* PLAN RADIOGROUP */}
@@ -273,7 +273,7 @@ export default function ScenePlans({
                 <strong>
                   {formatLocalFromUsd(currentPlan.price, countryMeta.currency)}
                 </strong>{' '}
-                · You&apos;ll receive a prompt on your phone to approve.
+                · I&apos;ll send a prompt to your phone to approve.
               </p>
             </div>
           )}

@@ -73,12 +73,12 @@ export default function WaitingForApproval({
               {' '}for <strong>{amountLabel}</strong>
             </>
           ) : null}
-          . Approve it and this screen unlocks automatically — you can leave
-          this page, we&apos;ll keep checking.
+          . Approve it and I&apos;ll unlock this automatically — feel free to
+          leave the page, I&apos;ll keep watching for it.
         </p>
       ) : (
         <p className={styles.wallSub}>
-          Your payment went through — we&apos;re confirming it now. This usually
+          Your payment went through — I&apos;m confirming it now. This usually
           takes only a few seconds.
         </p>
       )}
@@ -86,7 +86,7 @@ export default function WaitingForApproval({
       {phase === 'polling' && (
         <p className={styles.localNotice}>
           <CircleCheck size={12} style={{ display: 'inline', marginRight: 4 }} />
-          Checking automatically…
+          I&apos;m checking automatically…
         </p>
       )}
 
@@ -95,7 +95,7 @@ export default function WaitingForApproval({
           <Zap size={14} />
           <span>
             Still processing — some providers take a minute or two. Your
-            payment is not lost.
+            payment isn&apos;t lost, I promise.
           </span>
         </div>
       )}

@@ -64,7 +64,7 @@ export default function SuccessBeat({ returnTo, durationMs }: SuccessBeatProps) 
         priority
       />
       <h1 className={styles.successHeadline}>Course unlocked!</h1>
-      <p className={styles.successSub}>Taking you back…</p>
+      <p className={styles.successSub}>Let&apos;s go — taking you back in…</p>
     </div>
   );
 }
