@@ -27,6 +27,8 @@ export interface GamificationState {
   streakFreezeBank: number;
   streakStatus: 'NORMAL' | 'SAVED' | 'RESET';
   lostStreakCount: number;
+  /** Full calendar days since the learner last finished a lesson (0 = today or yesterday). */
+  daysSinceLastLesson: number;
   lastLessonCompletedAt: string | null;
   completedQuests: string[];
   // Daily Reward (Login Chest)
@@ -78,6 +80,7 @@ const DEFAULT_STATE: GamificationState = {
   streakFreezeBank: 1, // Start with 1 starter freeze banked
   streakStatus: 'NORMAL',
   lostStreakCount: 0,
+  daysSinceLastLesson: 0,
   lastLessonCompletedAt: null,
   completedQuests: [],
   // Daily Reward
@@ -154,6 +157,22 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         );
       }
 
+      // ── Welcome back: learner missed one or more days since their last
+      // lesson. Fires on app open for learners with no live streak to break
+      // (or whose streak was already freeze-protected) — those cases have no
+      // other "you were gone" moment. Skipped when the streak itself just
+      // reconciled (SAVED/RESET) so the learner isn't shown two back-to-back
+      // "you missed days" scenes for the same gap; the STREAK scene already
+      // carries that beat in that case.
+      const daysSinceLastLesson = typeof data.daysSinceLastLesson === 'number' ? data.daysSinceLastLesson : 0;
+      if (daysSinceLastLesson > 0 && serverStreakStatus === 'NORMAL') {
+        window.dispatchEvent(
+          new CustomEvent('teyro:welcome-back', {
+            detail: { days: daysSinceLastLesson },
+          })
+        );
+      }
+
       setState({
         xp: data.xp ?? 30,
         gems: currentCoins,
@@ -166,6 +185,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         streakFreezeBank: data.streakFreezeBank ?? 1,
         streakStatus: data.streakStatus ?? 'NORMAL',
         lostStreakCount: data.lostStreakCount ?? 0,
+        daysSinceLastLesson,
         lastLessonCompletedAt: data.lastLessonCompletedAt ?? null,
         completedQuests: Array.isArray(data.completedQuests) ? data.completedQuests : [],
         // Daily Reward

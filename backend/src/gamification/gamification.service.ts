@@ -76,6 +76,20 @@ export class GamificationService {
       }
     }
 
+    // 1b. Timezone-aware "welcome back" gap detection — independent of streak
+    // reconciliation above, so it still fires when the learner never had a
+    // streak, or a freeze already covered the gap. Answers "how long since
+    // they last actually finished a lesson", for the Celebration Engine's
+    // welcome-back moment (not a push notification — this is read on app open).
+    let daysSinceLastLesson = 0;
+    if (profile.lastLessonCompletedAt) {
+      const lastLessonStr = this.getLocalDayString(profile.lastLessonCompletedAt, timezoneOffsetMinutes);
+      const diffLessonDays = this.getDaysDiff(todayStr, lastLessonStr);
+      if (diffLessonDays > 1) {
+        daysSinceLastLesson = diffLessonDays - 1;
+      }
+    }
+
     // 2. Timezone-aware Daily Quests reset
     if (profile.lastQuestResetAt) {
       const lastResetStr = this.getLocalDayString(profile.lastQuestResetAt, timezoneOffsetMinutes);
@@ -120,7 +134,7 @@ export class GamificationService {
       });
     }
 
-    return this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount);
+    return this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount, daysSinceLastLesson);
   }
 
   /**
@@ -490,6 +504,7 @@ export class GamificationService {
     timezoneOffsetMinutes = 0,
     streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL',
     lostStreakCount = 0,
+    daysSinceLastLesson = 0,
   ) {
     let livesRefillAt: string | null = null;
 
@@ -524,6 +539,7 @@ export class GamificationService {
       streakFreezeBank: profile.streakFreezeBank,
       streakStatus,
       lostStreakCount,
+      daysSinceLastLesson,
       lastLessonCompletedAt: profile.lastLessonCompletedAt ? profile.lastLessonCompletedAt.toISOString() : null,
       completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       lastRewardClaimedAt: profile.lastRewardClaimedAt ? profile.lastRewardClaimedAt.toISOString() : null,
