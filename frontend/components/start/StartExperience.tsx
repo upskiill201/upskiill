@@ -295,7 +295,14 @@ export default function StartExperience() {
   // ── Render ───────────────────────────────────────────────────────────────
   // `ready` gates the branching UI only. The intro renders immediately with no
   // platform-dependent copy, so first paint never waits on detection.
-  const showIntro = phase === 'intro';
+  //
+  // Tey stays full-size on the intro AND on the installed/success screen —
+  // both are moments where Tey IS the content. Everywhere in between (the
+  // guides, the dismissed/manual/unsupported panels) shrinks Tey to a small
+  // chip up top, because a card full of instructions is what the learner
+  // needs to look at there, and on a short phone a large mascot is what
+  // pushes the CTA off the bottom.
+  const bigMascot = phase === 'intro' || phase === 'installed';
 
   return (
     // A <div>, not a <main>: the root layout already wraps every route in one,
@@ -312,22 +319,19 @@ export default function StartExperience() {
         <MascotBackground variant="soft" />
       </div>
 
-      {/* ── Mascot ──────────────────────────────────────────────────────────
-          Full-bleed on the intro, a small chip once a guide takes the screen —
-          the guide's mocks are the thing to look at then, and on a short phone
-          a large mascot is what pushes the CTA off the bottom. */}
+      {/* ── Mascot ── full-size on intro + installed, a small chip elsewhere ── */}
       <motion.div
         layout={!reduce}
         transition={{ type: 'spring', stiffness: 300, damping: 32 }}
         className={`relative z-10 w-full flex items-center justify-center shrink-0 ${
-          showIntro ? 'flex-1 min-h-[30dvh]' : 'h-[13dvh] min-h-[86px]'
+          bigMascot ? 'flex-1 min-h-[30dvh]' : 'h-[13dvh] min-h-[86px]'
         }`}
       >
         <motion.div
           initial={reduce ? false : { scale: 0.88, opacity: 0, y: 14 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-          className={`relative ${showIntro ? 'w-[88vw] max-w-[420px] md:max-w-[440px] aspect-square' : 'h-full aspect-square'}`}
+          className={`relative ${bigMascot ? 'w-[88vw] max-w-[420px] md:max-w-[440px] aspect-square' : 'h-full aspect-square'}`}
         >
           <Image
             src="/User onbarding Assets/Tey_welcome.webp"
