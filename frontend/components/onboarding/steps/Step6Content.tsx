@@ -83,7 +83,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
     playHaptic('medium');
     setIsSending(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-otp`, {
+      const res = await fetch('/api/whatsapp/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -152,7 +152,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
     setIsVerifying(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/whatsapp/verify-otp`, {
+      const res = await fetch('/api/whatsapp/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

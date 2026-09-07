@@ -192,7 +192,7 @@ export default function Step9Content({ onNext }: Step9ContentProps) {
             | { whatsappNumber?: string; verified?: boolean }
             | undefined;
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/user-onboarding/challenge-complete/anonymous`,
+            '/api/user-onboarding/challenge-complete/anonymous',
             {
               method: 'POST',
               credentials: 'include', // httpOnly JWT cookie when one exists
