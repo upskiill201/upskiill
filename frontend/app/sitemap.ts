@@ -16,6 +16,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      // The install gateway — the entry point into the app itself, and a
+      // legitimate landing page for "get the Teyro app" style queries.
+      url: 'https://teyro.app/start',
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: 'https://teyro.app/blog',
       lastModified: now,
       changeFrequency: 'daily',

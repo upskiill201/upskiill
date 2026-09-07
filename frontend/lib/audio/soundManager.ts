@@ -300,3 +300,32 @@ class SoundManager {
 /** Export singleton instance */
 export const soundManager = new SoundManager();
 export default soundManager;
+
+/**
+ * Where AudioContext persists the learner's mute / volume / per-sound settings.
+ *
+ * v2: the engine moved from MP3 assets to synthesized sounds — stale v1
+ * preferences (toggles tuned for the old assets) must not silently disable the
+ * new engine.
+ */
+export const AUDIO_SETTINGS_STORAGE_KEY = 'teyro_audio_settings_v2';
+
+/**
+ * Loads saved audio preferences into the singleton.
+ *
+ * AudioProvider does this on mount, but it only wraps the (app) route group.
+ * Surfaces outside that group which still make noise — the /start install
+ * gateway is the first one — must call this themselves, or a learner who muted
+ * Teyro yesterday gets sound today. Idempotent and safe to call repeatedly.
+ */
+export function hydrateSoundPreferences(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const saved = window.localStorage.getItem(AUDIO_SETTINGS_STORAGE_KEY);
+    if (!saved) return false;
+    return soundManager.importConfigJson(saved);
+  } catch {
+    // Storage blocked (private mode) — defaults are a fine outcome here.
+    return false;
+  }
+}

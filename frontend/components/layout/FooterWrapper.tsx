@@ -15,7 +15,10 @@ export default function FooterWrapper() {
     pathname?.startsWith('/blog');
 
   if (
-    pathname === '/join' || 
+    // Full-bleed app surfaces — see the matching note in HeaderWrapper.
+    pathname === '/start' ||
+    pathname === '/launch' ||
+    pathname === '/join' ||
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/dashboard') ||
     pathname?.startsWith('/courses') ||

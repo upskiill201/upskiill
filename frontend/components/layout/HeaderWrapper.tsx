@@ -17,6 +17,12 @@ export default function HeaderWrapper() {
 
   // Routes that show NO header at all
   const isHiddenRoute =
+    // The install gateway and the PWA launch router are full-bleed app
+    // surfaces, not site pages — marketing chrome on either would break the
+    // "I'm entering Teyro" handoff and, on /start, push the CTA off a short
+    // phone's viewport.
+    pathname === '/start' ||
+    pathname === '/launch' ||
     pathname === '/join' ||
     pathname === '/signup' ||
     pathname === '/login' ||

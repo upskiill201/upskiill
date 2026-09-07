@@ -77,6 +77,20 @@ export default function WaitlistHeader() {
     router.push('/join');
   }, [router]);
 
+  /**
+   * "Login" is the application-entry CTA, not a waitlist-conversion one — it
+   * goes to the install gateway, which hands a returning learner to
+   * /onboarding/0 (sign-in) and a new one to install-then-onboard.
+   *
+   * "Get Started" deliberately still goes to /join: that is the waitlist
+   * conversion path while Teyro is pre-launch, and repointing it would quietly
+   * turn off the top of the acquisition funnel.
+   */
+  const goToStart = useCallback(() => {
+    setMobileOpen(false);
+    router.push('/start');
+  }, [router]);
+
   return (
     <>
       <header
@@ -123,7 +137,7 @@ export default function WaitlistHeader() {
           <div className={styles.rightSection}>
             <button
               className={styles.loginBtn}
-              onClick={goToJoin}
+              onClick={goToStart}
               type="button"
             >
               Login
@@ -215,7 +229,7 @@ export default function WaitlistHeader() {
             <div className={styles.mobileAuthButtons}>
               <button
                 className={styles.mobileLoginBtn}
-                onClick={goToJoin}
+                onClick={goToStart}
                 type="button"
               >
                 Login

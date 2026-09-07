@@ -4,6 +4,58 @@ Scope: everything under `frontend/app/onboarding/`. Migrated from root CLAUDE.md
 
 ---
 
+## Where onboarding starts, and where notifications are asked for
+
+Added 2026-09-07 with the `/start` install gateway.
+
+### Installation happens BEFORE onboarding
+
+Learners now install Teyro at `/start`, not during onboarding. The flow is:
+
+```
+marketing site → /start (install gateway) → installed PWA
+              → /launch (manifest start_url) → /onboarding/0 → steps 1–15
+```
+
+- `/start` owns installation end to end (`components/start/`, `lib/pwa/`). **Do not
+  add a second install guide inside an onboarding step** — step 15 links to
+  `/start` rather than duplicating it, and that is the pattern to follow.
+- `app/launch/page.tsx` is the manifest `start_url`. It routes to `/dashboard`,
+  the learner's next step, or `/onboarding/0`, via `lib/pwa/entry.ts`.
+- Installed-ness is always re-derived from `detectStandalone()`. Never gate a
+  route on a stored "installed" boolean — it goes stale and traps people.
+
+### Notification permission lives on step 15
+
+Chosen deliberately, not by default:
+
+1. **Hard constraint:** it must come after step 12 (sign-up). The push
+   subscription is registered against an authenticated user at
+   `POST /api/tey/push/subscriptions`. Asking earlier — including on step 11,
+   the streak screen, which is otherwise the obvious spot — would win the
+   browser permission with nowhere to attach the subscription.
+2. By step 15 the learner has picked a skill, set a pace, completed a real
+   exercise, seen that daily consistency is the mechanic, and earned a badge.
+3. It is the last screen before the app, so permission is asked when it is
+   about to be useful.
+4. Steps 13–14 are emotional peaks; asking on the beat after one converts
+   better than interrupting it.
+
+Rules for anyone touching it:
+
+- **Request only inside a user gesture.** Browsers ignore a request that is
+  not, and Safari scores a programmatic one as a denial the learner can only
+  undo in system settings.
+- **Permission granted ≠ subscription registered.** They are separate states
+  and step 15 handles both; a failed subscription must never block onboarding.
+  `TeyPushProvider.syncExisting` re-registers on every boot, so failures heal.
+- **Never block on a denial.** Declining is a valid answer — neutral copy,
+  neutral sound, straight to the celebration.
+- No step was inserted or renumbered for this. `TOTAL_STEPS` is still 15 and
+  the progress bar still reads X/15.
+
+---
+
 ## Onboarding Flow & UI Implementation (Steps 1–15)
 
 The onboarding flow consists of 15 sequential steps located under `frontend/app/onboarding/`. The designs must strictly adhere to the following principles:

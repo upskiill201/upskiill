@@ -1,14 +1,15 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import soundManager, { CategoryVolumes } from '@/lib/audio/soundManager';
+import soundManager, { AUDIO_SETTINGS_STORAGE_KEY, CategoryVolumes } from '@/lib/audio/soundManager';
 import { SoundId, SoundConfig } from '@/lib/audio/soundRegistry';
 import { AppAudioEvent, emitAudioEvent } from '@/lib/audio/audioEvents';
 
-// v2: the audio engine moved from MP3 assets to synthesized sounds —
-// stale v1 preferences (mute flags, per-sound toggles tuned for the old
-// assets) must not silently disable the new engine.
-const STORAGE_KEY = 'teyro_audio_settings_v2';
+// Re-exported from soundManager rather than declared here, so the surfaces
+// outside this provider that hydrate the same preferences (see
+// hydrateSoundPreferences — /start is the first) cannot drift onto a
+// different key.
+const STORAGE_KEY = AUDIO_SETTINGS_STORAGE_KEY;
 
 export interface AudioContextType {
   isMuted: boolean;

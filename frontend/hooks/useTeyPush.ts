@@ -10,6 +10,16 @@ export type PushEnableResult =
   | 'error';
 
 export interface TeyPushState {
+  /**
+   * False until the first `refresh()` has resolved.
+   *
+   * Every other field below starts at its most pessimistic value — `supported:
+   * false`, `permission: 'unsupported'` — and only becomes true after an await
+   * on `navigator.serviceWorker.ready`. A caller that branches before this
+   * flips reads "this browser cannot do notifications" from every browser,
+   * including the ones that can, and silently skips its own permission screen.
+   */
+  ready: boolean;
   /** The browser can do push at all, here, right now. */
   supported: boolean;
   permission: NotificationPermission | 'unsupported';
@@ -72,6 +82,7 @@ function urlBase64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
  */
 export function useTeyPush() {
   const [state, setState] = useState<TeyPushState>({
+    ready: false,
     supported: false,
     permission: 'unsupported',
     subscribed: false,
@@ -90,6 +101,7 @@ export function useTeyPush() {
     if (!supported) {
       setState((s) => ({
         ...s,
+        ready: true,
         supported: false,
         permission: 'unsupported',
         needsInstall: isIosWithoutInstall(),
@@ -107,10 +119,14 @@ export function useTeyPush() {
 
     setState((s) => ({
       ...s,
+      ready: true,
       supported: true,
       permission: Notification.permission,
       subscribed,
-      needsInstall: false,
+      // iOS Safari before 16.4 exposes no PushManager at all and is caught by
+      // the `supported` branch above; 16.4+ exposes it ONLY inside the
+      // installed app, so a browser tab reaching here still needs the install.
+      needsInstall: isIosWithoutInstall(),
     }));
   }, []);
 
