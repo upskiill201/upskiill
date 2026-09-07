@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import SceneShell from '../SceneShell';
+import CelebrationMascot from '../CelebrationMascot';
 import { CountUpNumber } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import local from '../CommunityWelcome.module.css';
@@ -395,6 +396,12 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
         All three earn <b>community points</b> — posts, comments and the likes they pick up. Points
         are what the leaderboard ranks, and they’re counted separately from your learning XP.
       </p>
+
+      {/* A quiet sign-off, not a joke: this scene's voice teaches the room's
+          rules and stays out of Tey's usual mischief on purpose (see the file
+          header). The mascot appears here only as visual continuity with the
+          rest of the Celebration Engine — no speech bubble, no pooled line. */}
+      <CelebrationMascot pose="hug" entrance="puff" size={64} />
     </SceneShell>
   );
 }

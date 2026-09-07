@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Check } from 'lucide-react';
@@ -8,14 +8,8 @@ import { useHerald } from '@/context/HeraldContext';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import { playHaptic } from '@/lib/haptics';
+import { pickHeraldStreakLine } from '@/lib/tey/streakVoice';
 import styles from './HeraldStreakReveal.module.css';
-
-const SPEECH_MESSAGES = [
-  "Try to make it a whole week. I'll be watching!",
-  "You're building an unstoppable habit! Keep it blazing!",
-  "Consistency is your superpower! High five!",
-  "Another day, another step closer to mastery!",
-];
 
 const WEEK_DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -27,14 +21,10 @@ export default function HeraldStreakReveal() {
   const isOpen = activeOverlay === 'STREAK';
   const currentStreak = Math.max(1, streakDays);
 
-  const [message, setMessage] = useState(SPEECH_MESSAGES[0]);
-
-  useEffect(() => {
-    if (isOpen) {
-      const idx = Math.floor(Math.random() * SPEECH_MESSAGES.length);
-      setMessage(SPEECH_MESSAGES[idx]);
-    }
-  }, [isOpen]);
+  // Fresh line picked each time the overlay opens (isOpen flips false → true),
+  // not on every render — same rule as the rest of the Celebration Engine.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const message = useMemo(() => pickHeraldStreakLine(), [isOpen]);
 
   if (!isOpen) return null;
 

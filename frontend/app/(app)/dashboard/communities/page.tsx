@@ -10,6 +10,7 @@ import TeyMascot from '@/components/community/TeyMascot';
 import shared from '@/components/community/community.module.css';
 import styles from './CommunitiesPage.module.css';
 import { getMyCommunities, type MyCommunity } from '@/lib/communityApi';
+import { pickCommunitiesEmptyLine } from '@/lib/tey/emptyStateVoice';
 
 export default function CommunitiesPage() {
   const [communities, setCommunities] = React.useState<MyCommunity[]>([]);
@@ -56,7 +57,7 @@ export default function CommunitiesPage() {
         <EmptyState
           icon={<TeyMascot size={96} />}
           title="No communities yet"
-          description="Enroll in a course and its community shows up here automatically."
+          description={pickCommunitiesEmptyLine()}
           action={
             <Button variant="primary" onClick={() => (window.location.href = '/dashboard/explore')}>
               Explore courses

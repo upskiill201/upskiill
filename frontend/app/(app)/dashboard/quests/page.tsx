@@ -14,6 +14,7 @@ import {
   type QuestMilestone,
 } from '@/lib/monthlyQuest';
 import { useMonthlyQuest } from '@/hooks/useMonthlyQuest';
+import { pickErrorHeadline } from '@/lib/tey/errorStateVoice';
 import styles from './QuestsPage.module.css';
 
 /**
@@ -449,7 +450,7 @@ function LoadingState() {
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className={styles.errorCard}>
-      <p className={styles.errorTitle}>Your quest got lost in the clouds.</p>
+      <p className={styles.errorTitle}>{pickErrorHeadline('quests')}</p>
       <p className={styles.errorText}>{message}</p>
       <button type="button" className={styles.retryBtn} onClick={onRetry}>
         Try again

@@ -15,6 +15,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import PostCard, { PostCardSkeleton } from '@/components/community/PostCard';
 import TeyMascot from '@/components/community/TeyMascot';
 import shared from '@/components/community/community.module.css';
+import { pickFeedEmptyLine } from '@/lib/tey/emptyStateVoice';
 import styles from './FeedPage.module.css';
 import {
   getFeed,
@@ -236,7 +237,7 @@ export default function FeedPage() {
           <EmptyState
             icon={<TeyMascot size={96} />}
             title="Your feed is waiting to come alive"
-            description="Join a course community and the best discussions, wins and announcements will gather here."
+            description={pickFeedEmptyLine()}
             action={
               <Button variant="primary" onClick={() => (window.location.href = '/dashboard/explore')}>
                 Explore courses

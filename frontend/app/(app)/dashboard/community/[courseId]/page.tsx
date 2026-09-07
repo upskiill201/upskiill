@@ -17,6 +17,7 @@ import LeaderboardPanel from '@/components/community/LeaderboardPanel';
 import TeyMascot from '@/components/community/TeyMascot';
 import { getCachedUser } from '@/lib/user-cache';
 import shared from '@/components/community/community.module.css';
+import { pickCommunityPostsEmptyLine } from '@/lib/tey/emptyStateVoice';
 import styles from './CommunityPage.module.css';
 import {
   getCommunityBootstrap,
@@ -326,13 +327,7 @@ function CommunityPageInner() {
                 <EmptyState
                   icon={<TeyMascot size={96} />}
                   title={typeFilter ? 'Nothing here yet' : "It's quiet in here"}
-                  description={
-                    lessonParam
-                      ? 'No discussions for this lesson yet — be the first to ask something.'
-                      : typeFilter
-                        ? 'No posts in this category yet. Yours would be the first.'
-                        : 'No posts yet — be the first. Ask a question or share what you are learning.'
-                  }
+                  description={pickCommunityPostsEmptyLine(lessonParam ? 'lesson' : typeFilter ? 'filter' : 'general')}
                 />
               ) : (
                 <div className={`${styles.postList} ${refreshing ? styles.listDim : ''}`}>

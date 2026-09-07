@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { pickOfflineBodyLine } from '@/lib/tey/offlineVoice';
 import styles from './Offline.module.css';
 
 export const metadata: Metadata = {
@@ -37,10 +38,7 @@ export default function OfflinePage() {
           priority
         />
         <h1 className={styles.title}>You&rsquo;re offline</h1>
-        <p className={styles.body}>
-          Teyro can&rsquo;t reach the network right now. Your progress is safe — reconnect
-          and pick up exactly where you left off.
-        </p>
+        <p className={styles.body}>{pickOfflineBodyLine()}</p>
         <p className={styles.hint}>This page will work again as soon as you&rsquo;re back online.</p>
       </div>
     </main>

@@ -2,8 +2,9 @@
 
 > Phase 1 committed on `perf/speed-optimization-pass` (commit `8861262`) and pushed live to `staging`.
 > Phase 2 committed on `perf/speed-optimization-pass` and pushed live to `staging` — see §Phase 2 below.
+> Phase 3 committed on `perf/speed-optimization-pass` and pushed live to `staging` — see §Phase 3 below.
 > Full plan: `C:\Users\HP\.claude\plans\i-want-you-to-sparkling-sunbeam.md`
-> Last updated: 2026-09-06.
+> Last updated: 2026-09-07.
 
 ---
 
@@ -13,7 +14,7 @@ The ask: make Tey (the mascot) feel like a character reacting to the learner, no
 
 **Scope was deliberately split into phases** (confirmed with the user): this pass covers the **Celebration Engine core gaps** plus two small, high-leverage, unrelated fixes (a notification-bell bug, shop error reason-codes). Shop Engine's own scenes, Lucky Spin, onboarding voice, empty/error states, and the offline page are explicitly **deferred** to follow-up passes — not forgotten, just not built yet.
 
-**Status in one line:** Phase 1 is implemented, live-verified (Level-up scene confirmed end-to-end by the user), committed, and pushed to `staging` — it should be live wherever staging auto-deploys to. Most of the manual verification checklist is still open, and Phase 2/3 haven't been scoped yet.
+**Status in one line:** All three planned phases (Celebration Engine core gaps, Shop Engine/Lucky Spin/Chest-card/Hearts, onboarding/empty-state/offline/community-welcome) are implemented, typecheck/lint-clean, committed, and pushed live to `staging` on the same commit. Only Phase 1's Level-up scene has been independently clicked through in the browser so far — the rest of the manual verification checklist (all three phases) is the main open item, see §Next Steps.
 
 ---
 
@@ -96,6 +97,21 @@ Scoped and implemented in this pass (uncommitted). Research first (an Explore ag
 
 ---
 
+## Phase 3 — onboarding voice reconciliation, empty/error states, offline page, community-welcome judgment call
+
+Scoped and implemented in this pass (committed and pushed — see below). Research first (an Explore agent read every file involved end-to-end and reported exact current copy, tone comparisons against the spec, and every call site), then four independent pieces of work:
+
+1. **Onboarding voice reconciliation** — `frontend/hooks/onboarding/useMessagePool.ts` (feeds `Step9Content.tsx`'s drag-and-drop challenge) had its own "beeping robot" pool (`"Bloop! Perfect fit! 🤖✨"`, `"Zot! Exactly right! ⚡"`) — a different, generic arcade-mascot voice with no wit and heavy stacked emoji, plus its own component-local `useRef` dedupe that reset on remount. `HeraldStreakReveal.tsx`'s inline 4-line pool (`"Consistency is your superpower! High five!"`) read as an earnest motivational-poster coach — zero emoji, zero teasing, and no dedupe logic at all (could repeat the same line twice in a row). Both reconciled onto Tey's actual register (mischievous, sparing emoji, teases the task) and onto the shared `pickFromPool` mechanism: new `frontend/lib/tey/onboardingVoice.ts` (`useMessagePool.ts` is now a 12-line wrapper around it, same public API so `Step9Content.tsx` needed zero changes) and a new pool added to `frontend/lib/tey/streakVoice.ts` (`pickHeraldStreakLine`), wired into `HeraldStreakReveal.tsx` via `useMemo` keyed on the overlay opening.
+2. **Empty/error-state Tey variant** — found two *different* `EmptyState` components in the codebase: `components/ui/EmptyState.tsx` (used on learner-facing dashboard pages — feed, communities, a single community's post list, all three already using `TeyMascot` as the icon but with one fixed description string) and a separate `EmptyState` in `components/creator/analytics/bits.tsx` (used across every creator/instructor-dashboard surface — students, analytics, earnings). Deliberately scoped this to the **learner-facing set only** — the creator dashboard is a business/ops tool for instructors, not a Tey-voiced surface, same persona boundary already established for `CommunityWelcomeScene` below. New `frontend/lib/tey/emptyStateVoice.ts` pools the description on `dashboard/feed`, `dashboard/communities`, and `dashboard/community/[courseId]`'s three post-list-empty variants (lesson/filter/general). Separately, systematized the one already-shipped precedent for error-state tone — `"Your quest got lost in the clouds."` on `dashboard/quests` — which was a single hardcoded string with no pooling mechanism at all, into a new reusable `frontend/lib/tey/errorStateVoice.ts` (`pickErrorHeadline(key)`) and wired it into that page's local `ErrorState`. Other learner-facing pages with their own ad-hoc error/empty copy (my-learning, leaderboards, explore, shop) were **not** touched this pass — flagged as a candidate for a future pass rather than folded in here, since "leaning on `EmptyState.tsx` and the precedent" was the literal scope named, not every fetch-error fallback in the app.
+3. **Offline page** (`frontend/app/offline/page.tsx`) — already showed a Tey mascot image (the "thinking" pose) but the copy was three plain, sincere, unpooled sentences. Added `frontend/lib/tey/offlineVoice.ts` (`pickOfflineBodyLine`) for the body line only — title and the functional "this page will work again" hint stay fixed, since those carry real information the learner needs regardless of tone. Kept the page a pure Server Component with zero client JS, per its own documented constraint (nothing can be fetched when it's shown) — the pool pick is a plain function call at render time, no hooks, no client bundle added.
+4. **`CommunityWelcomeScene.tsx` — the judgment call** — this scene's entire point, per its own file-header doc comment, is to be real and instructional ("a community is the one reward that means nothing until you understand what it's for"): it explains *how* and *why* to post, like, and answer, in a confident-narrator voice with zero emoji and zero mischief. Decided **not** to rewrite that instructional copy into Tey's joke-mascot register — teaching "the one you think is too basic is the one five other people also have" doesn't want a wisecrack. But the scene had **zero mascot presence** at all (unlike every other Celebration Engine scene), which was the actual inconsistency worth fixing. Added a small, silent `CelebrationMascot` (pose `hug`, no speech bubble, no pooled line) at the very end of the flow's last beat (the "SAY HI" sign-off) — visual continuity with the rest of the engine without disturbing the voice that's doing real teaching work.
+
+**Verification:** `tsc --noEmit` clean across the frontend. `eslint` on all 13 touched files: only 2 pre-existing warnings surfaced (`claimable` unused in `quests/page.tsx`, `longestStreak` unused in `HeraldStreakReveal.tsx`) — confirmed via `git diff` that neither variable appears anywhere in this pass's diff of either file; zero new lint issues introduced. Not yet manually clicked through in the browser (same call as Phase 2 — shipped ahead of that checkpoint on the strength of clean typecheck/lint and small, additive/1:1-substitution diffs).
+
+**Committed and pushed to staging** — staged and committed exactly the 13 files belonging to this work, same exclusion list as Phase 2 (other session's `CourseDetail.module.css`, `Explore.module.css`, `frontend/app/(app)/dev/`, `frontend/frontend.log`, `leaderboard_community_engine_progress.md`). Pushed to `perf/speed-optimization-pass`, then fast-forwarded `staging` the same way (ancestor alignment confirmed before and after, no local `staging` checkout, no force-push).
+
+---
+
 ## 📍 Current State
 
 - **Phase 1 is committed and live on `staging`** (commit `8861262`) — should be deployed wherever this project's staging pipeline auto-deploys to (Vercel/Render per project convention).
@@ -103,16 +119,26 @@ Scoped and implemented in this pass (uncommitted). Research first (an Explore ag
 - Modified: `backend/src/shop/shop.service.ts`; and on the frontend — `CelebrationContext.tsx`, `teyMessages.ts`, `notificationCopy.tsx`, `shop/api.ts`, `shop/types.ts`, `ShopItemCard.tsx`, the shop dashboard page, `LeaderboardRankWatcher.tsx`, `LeagueResultWatcher.tsx`, the real lesson-complete page, and 10 celebration scene components.
 - `frontend/.env.local` is back to its original state (no `NEXT_PUBLIC_ENVIRONMENT` line) — both dev servers are running locally (frontend `:3000`, backend `:3001`) for anyone who wants to keep testing against them.
 - **Level-up scene is the only checklist item confirmed live so far.** Everything else in Phase 1 is implemented and shipped, but not yet independently re-confirmed by clicking through it.
-- **Phase 2 is committed and live on `staging`** — see §Phase 2 above for scope. Not yet manually clicked through in the browser (shipped ahead of that checkpoint this time, on the strength of clean typecheck/lint and small additive diffs per scene).
-- New files this pass: `frontend/lib/tey/{shopEngineVoice,spinVoice,heartsVoice}.ts`; extended `frontend/lib/tey/chestVoice.ts` with the 3 dashboard-card status pools.
-- Modified this pass: the 4 shop-engine scenes, `WeeklyLuckySpinCard.tsx`, `HeraldSpinReveal.tsx`, `MysteryChestCard.tsx`, `HeartsPopover.tsx`.
-- Phase 3 is still fully unscoped.
+- **Phase 2 is committed and live on `staging`** — see §Phase 2 above for scope. Not yet manually clicked through in the browser.
+- New files (Phase 2): `frontend/lib/tey/{shopEngineVoice,spinVoice,heartsVoice}.ts`; extended `frontend/lib/tey/chestVoice.ts` with the 3 dashboard-card status pools.
+- Modified (Phase 2): the 4 shop-engine scenes, `WeeklyLuckySpinCard.tsx`, `HeraldSpinReveal.tsx`, `MysteryChestCard.tsx`, `HeartsPopover.tsx`.
+- **Phase 3 is committed and live on `staging`** — see §Phase 3 above for scope. Not yet manually clicked through in the browser.
+- New files (Phase 3): `frontend/lib/tey/{onboardingVoice,emptyStateVoice,errorStateVoice,offlineVoice}.ts`; extended `frontend/lib/tey/streakVoice.ts` with `pickHeraldStreakLine`.
+- Modified (Phase 3): `useMessagePool.ts` (now a thin wrapper), `HeraldStreakReveal.tsx`, `dashboard/feed/page.tsx`, `dashboard/communities/page.tsx`, `dashboard/community/[courseId]/page.tsx`, `dashboard/quests/page.tsx`, `app/offline/page.tsx`, `CommunityWelcomeScene.tsx`.
+- All three phases now sit on `staging` at the same commit — no phase is ahead of another on that branch.
 
 ---
 
 ## 🔜 Next Steps
 
-1. **Manually verify Phase 2 live on `staging`** (now the more visible venue — a regression there is real, not just local):
+1. **Manually verify Phase 3 live on `staging`:**
+   - [ ] Play the onboarding drag-and-drop challenge (Step 9) → toast/mascot lines read mischievous ("Nice, that's the one 🙂", "Okay, you're on a roll 😏"), not the old "Bloop!"/"Zot!" robot lines.
+   - [ ] Trigger the Herald streak-commit overlay → speech bubble line reads in Tey's voice, varies across multiple opens, no back-to-back repeats.
+   - [ ] Empty the feed / communities / a community's post list → description text is pooled (reload a few times to see it vary), mascot still shows.
+   - [ ] Force the Quests page into an error state → headline varies across reloads, still ends with "Try again".
+   - [ ] Load `/offline` (devtools → offline, or throttle to offline and navigate) → body text is pooled, mascot and title unchanged.
+   - [ ] Trigger `CommunityWelcomeScene` (2nd lesson completion) → confirm the small mascot now appears on the final "SAY HI" beat with no speech bubble, and the instructional copy on every beat is unchanged.
+2. **Manually verify Phase 2 live on `staging`** (still open from last pass):
    - [ ] Buy a shop item → `PurchaseSuccessScene` shows mascot + bubble reacting to rarity.
    - [ ] Meet an unlock requirement → `ItemUnlockedScene` shows mascot + bubble.
    - [ ] Buy and open a paid Mystery Chest → `ChestRevealScene` shows mascot + bubble reacting to rarity.
@@ -120,7 +146,7 @@ Scoped and implemented in this pass (uncommitted). Research first (an Explore ag
    - [ ] Spin the Weekly Lucky Spin from both entry points (dashboard card and Herald overlay) → prize message varies and reacts to rarity, no longer the fixed `🎉 YOU WON...` string.
    - [ ] Watch the Mystery Chest dashboard card across a full day-cycle (locked → ready → opened) → status line varies per state, doesn't reroll on unrelated re-renders.
    - [ ] Hover/tap the hearts pill with hearts full, partial, and at zero → subtitle varies per tier.
-2. **Finish the Phase 1 manual run-through** (still open, listed for completeness — only Level-up confirmed so far): CLAIM headline variation on real lesson completions, Achievement mascot/bubble, daily chest tap-hint tone, Section/Course-complete and Course-progress/Section-unlock mascot+line, leaderboard/league subhead variation, notification bell real body, shop error Tey-voicing + fallback, and no double-firing sound on any newly-bubbled scene.
-3. If anything looks off in either checklist, report what was tapped/expected vs. seen — same process that's caught every real bug so far in this audit.
-4. **Decide on Phase 3 scope** (deferred): onboarding voice reconciliation (`useMessagePool.ts`'s register reads as a different character than the "mischievous owl" spec), empty/error-state Tey variant for lower-stakes surfaces (leaning on `EmptyState.tsx` and the already-shipped precedent `"Your quest got lost in the clouds."`), the offline page, and a judgment call on whether `CommunityWelcomeScene.tsx`'s distinct "confident narrator" voice should be left as-is or pulled toward Tey's register.
-5. **Note for whoever picks this up next**: another session may still be active in this same repo checkout on unrelated leaderboard/course-detail work (`CourseDetail.module.css`, `Explore.module.css`, a `dev/` route were seen untracked/modified in the working tree throughout this pass) — check `git status` before assuming the working tree only reflects this doc's history, and don't stage/commit files outside this pass's own list above.
+3. **Finish the Phase 1 manual run-through** (still open, listed for completeness — only Level-up confirmed so far): CLAIM headline variation on real lesson completions, Achievement mascot/bubble, daily chest tap-hint tone, Section/Course-complete and Course-progress/Section-unlock mascot+line, leaderboard/league subhead variation, notification bell real body, shop error Tey-voicing + fallback, and no double-firing sound on any newly-bubbled scene.
+4. If anything looks off in any of the three checklists, report what was tapped/expected vs. seen — same process that's caught every real bug so far in this audit.
+5. **Not built this pass, flagged as a real follow-up candidate, not forgotten**: Tey voice for the other learner-facing pages with their own ad-hoc empty/error copy (my-learning, leaderboards, explore, shop) — Phase 3 only covered `EmptyState.tsx`'s callers and the one already-shipped error-tone precedent, per the scope as named; a judgment call on whether the creator-dashboard `EmptyState` (a separate component in `components/creator/analytics/bits.tsx`, business-toned, ~10 call sites) should ever get Tey's voice or stay professional by design.
+6. **Note for whoever picks this up next**: another session may still be active in this same repo checkout on unrelated leaderboard/course-detail work (`CourseDetail.module.css`, `Explore.module.css`, a `dev/` route were seen untracked/modified in the working tree throughout this pass) — check `git status` before assuming the working tree only reflects this doc's history, and don't stage/commit files outside this pass's own list above.
