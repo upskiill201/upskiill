@@ -1,27 +1,13 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useOnboardingSession } from '@/hooks/useOnboardingSession';
 import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { SpeechBubble } from '@/components/onboarding/SpeechBubble';
 import { playHaptic } from '@/lib/haptics';
-
-const VERIFIED_LINES = [
-  `<strong style="font-size:1.25rem;color:#071233;font-weight:900;display:block">You're all set! ✅</strong>`,
-  `Thanks for trusting me with your <span style="color:#0172FD;font-weight:800">WhatsApp</span>.`,
-  `I promise not to spam you… unless you keep skipping your lessons. 😅`,
-  `Now let me prove learning can actually be fun.`,
-  `<span style="color:#0172FD;font-weight:900;display:block;border-top:1px solid #E5EAEF;padding-top:10px;margin-top:6px">Ready for a 2-minute challenge?</span>`,
-];
-
-const SKIPPED_LINES = [
-  `<strong style="font-size:1.25rem;color:#071233;font-weight:900;display:block">You <span style="color:#0172FD">skipped WhatsApp.</span> 😅</strong>`,
-  `There goes my plan to become your favorite notification.`,
-  `That's okay though… I'll earn that title first. 😉`,
-  `<span style="color:#0172FD;font-weight:900;display:block;border-top:1px solid #E5EAEF;padding-top:10px;margin-top:6px">Ready for a 2-minute challenge?</span>`,
-];
+import { pickWhatsAppSkippedLines, pickWhatsAppVerifiedLines } from '@/lib/tey/whatsappVoice';
 
 interface Step7ContentProps {
   onNext: () => void;
@@ -32,6 +18,12 @@ export default function Step7Content({ onNext }: Step7ContentProps) {
   const mascotRef = useRef<HTMLDivElement>(null);
 
   const isVerified = !!answers['6']?.whatsappNumber;
+  // Repicked only when the verified/skipped outcome actually resolves (the
+  // answer hydrates async), not on every unrelated re-render.
+  const lines = useMemo(
+    () => (isVerified ? pickWhatsAppVerifiedLines() : pickWhatsAppSkippedLines()),
+    [isVerified]
+  );
 
   const handleContinue = () => {
     playHaptic('medium');
@@ -44,7 +36,7 @@ export default function Step7Content({ onNext }: Step7ContentProps) {
       <div className="flex-1 flex flex-col md:flex-row items-center justify-between w-full min-h-0 relative gap-3 md:gap-8">
         {/* SpeechBubble */}
         <div className="w-full md:w-[48%] flex flex-col justify-center items-center md:items-start z-20 shrink-0">
-          <SpeechBubble lines={isVerified ? VERIFIED_LINES : SKIPPED_LINES} tailAlign={0.18} mascotRef={mascotRef} />
+          <SpeechBubble lines={lines} tailAlign={0.18} mascotRef={mascotRef} />
         </div>
 
         {/* Mascot */}

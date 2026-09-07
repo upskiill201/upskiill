@@ -103,11 +103,11 @@ export default function Step8Content({ onNext }: Step8ContentProps) {
             style={{ fontFamily: 'var(--font-jakarta)', textShadow: subheadShadow }}
           >
             <span className="md:hidden">
-              A short challenge is the best
+              A quick challenge with me is
               <br />
-              way to learn by doing.
+              the best way to learn by doing.
             </span>
-            <span className="hidden md:inline">Experience the Teyro way of learning.</span>
+            <span className="hidden md:inline">Let me show you how learning works around here.</span>
           </motion.p>
         </div>
       </div>

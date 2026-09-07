@@ -116,7 +116,7 @@ export default function WelcomeAuthScreen({
       // This prevents creators from being blindly sent to /dashboard.
       window.location.href = nextPath || data.redirectTo || '/dashboard';
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Login failed';
+      const message = err instanceof Error ? err.message : "That didn't work — let's try again.";
       setError(message);
     } finally {
       setLoading(false);
@@ -142,7 +142,7 @@ export default function WelcomeAuthScreen({
 
       if (!res.ok) {
         if (res.status === 429) {
-          throw new Error('Too many requests. Please try again later.');
+          throw new Error('Whoa, slow down — try again in a bit.');
         }
         const data = await res.json().catch(() => null);
         throw new Error(extractErrorMessage(data, res.status));
@@ -151,7 +151,7 @@ export default function WelcomeAuthScreen({
       playHaptic('medium');
       setView('forgot-success');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to send reset link';
+      const message = err instanceof Error ? err.message : "That didn't go through — try again?";
       setError(message);
     } finally {
       setLoading(false);
@@ -183,7 +183,7 @@ export default function WelcomeAuthScreen({
       window.location.href = nextPath || data.redirectTo || '/dashboard';
     } catch (err: unknown) {
       console.error(err);
-      const message = err instanceof Error ? err.message : 'Google authentication failed';
+      const message = err instanceof Error ? err.message : "Google didn't cooperate — mind trying again?";
       setError(message);
     } finally {
       setLoading(false);
@@ -266,7 +266,7 @@ export default function WelcomeAuthScreen({
                 {/* Account check section */}
                 <div className="w-full flex flex-col items-center text-center">
                   <h2 className="text-[4.2vw] xs:text-[4.5vw] sm:text-base font-extrabold text-[#071233] mb-1.5" style={{ textShadow }}>
-                    Already have an account?
+                    Have we met before?
                   </h2>
                   <motion.button
                     animate={idle ? { scale: [1, 1.02, 1] } : { scale: 1 }}
@@ -290,7 +290,7 @@ export default function WelcomeAuthScreen({
                 {/* New user section */}
                 <div className="w-full flex flex-col items-center text-center">
                   <h2 className="text-[4.2vw] xs:text-[4.5vw] sm:text-base font-extrabold text-[#071233] mb-1.5" style={{ textShadow }}>
-                    New to Teyro?
+                    New here? Let&apos;s fix that.
                   </h2>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -316,8 +316,8 @@ export default function WelcomeAuthScreen({
               >
                 {/* Sign-in Header */}
                 <div className="w-full text-center">
-                  <h2 className="text-xl font-[900] text-[#071233]" style={{ textShadow }}>Welcome back</h2>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">Please enter your details to sign in.</p>
+                  <h2 className="text-xl font-[900] text-[#071233]" style={{ textShadow }}>Good to see you again</h2>
+                  <p className="text-xs font-semibold text-slate-400 mt-0.5">Just need your details and I&apos;ll let you in.</p>
                 </div>
 
                 {/* Form Inputs Container */}
@@ -424,8 +424,8 @@ export default function WelcomeAuthScreen({
                 className="w-full h-full flex flex-col justify-between pt-6 pb-4 z-20"
               >
                 <div className="w-full text-center">
-                  <h2 className="text-xl font-[900] text-[#071233]" style={{ textShadow }}>Forgot Password</h2>
-                  <p className="text-xs font-semibold text-slate-400 mt-1 max-w-[85%] mx-auto text-center leading-normal">Enter your email address and we{"'"}ll send you a link to reset your password.</p>
+                  <h2 className="text-xl font-[900] text-[#071233]" style={{ textShadow }}>Locked out?</h2>
+                  <p className="text-xs font-semibold text-slate-400 mt-1 max-w-[85%] mx-auto text-center leading-normal">Send me your email and I{"'"}ll get you a reset link.</p>
                 </div>
 
                 <form onSubmit={handleForgotPassword} className="w-full flex-grow flex flex-col justify-center gap-4 my-4 max-w-[340px] mx-auto">
@@ -489,9 +489,9 @@ export default function WelcomeAuthScreen({
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-[900] text-[#071233]">Check your email</h2>
+                  <h2 className="text-xl font-[900] text-[#071233]">On its way!</h2>
                   <p className="text-xs font-semibold text-slate-500 mt-2 max-w-[85%] mx-auto leading-relaxed text-center">
-                    We has sent a link to <span className="text-slate-800 font-bold">{resetEmail}</span>. Click the link inside the email to reset your password.
+                    I&apos;ve sent a link to <span className="text-slate-800 font-bold">{resetEmail}</span>. Click it to reset your password.
                   </p>
                 </div>
 
@@ -579,7 +579,7 @@ export default function WelcomeAuthScreen({
                     {/* Account Check Section */}
                     <div className="w-full mb-8">
                       <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] text-left w-full mb-3 tracking-tight" style={{ textShadow: headlineShadow }}>
-                        Already have an account?
+                        Have we met before?
                       </h1>
                       <motion.button
                         animate={idle ? { scale: [1, 1.02, 1] } : { scale: 1 }}
@@ -603,7 +603,7 @@ export default function WelcomeAuthScreen({
                     {/* New User Section */}
                     <div className="w-full mt-4">
                       <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] text-left w-full mb-3 tracking-tight" style={{ textShadow: headlineShadow }}>
-                        New to Teyro?
+                        New here? Let&apos;s fix that.
                       </h1>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
@@ -629,9 +629,9 @@ export default function WelcomeAuthScreen({
                   >
                     <div className="mb-6">
                       <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] text-left" style={{ textShadow: headlineShadow }}>
-                        Welcome back
+                        Good to see you again
                       </h1>
-                      <p className="text-sm font-semibold text-slate-400 mt-1">Please enter your details to sign in.</p>
+                      <p className="text-sm font-semibold text-slate-400 mt-1">Just need your details and I&apos;ll let you in.</p>
                     </div>
 
                     <form onSubmit={handleEmailLogin} className="w-full flex flex-col gap-4">
@@ -738,10 +738,10 @@ export default function WelcomeAuthScreen({
                   >
                     <div className="mb-6">
                       <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] text-left" style={{ textShadow: headlineShadow }}>
-                        Forgot Password
+                        Locked out?
                       </h1>
                       <p className="text-sm font-semibold text-slate-400 mt-2 text-left leading-relaxed">
-                        Enter your email address and we{"'"}ll send you a link to reset your password.
+                        Send me your email and I{"'"}ll get you a reset link.
                       </p>
                     </div>
 
@@ -808,9 +808,9 @@ export default function WelcomeAuthScreen({
                       <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                     </div>
 
-                    <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] mb-2 tracking-tight">Check your email</h1>
+                    <h1 className="text-2xl lg:text-3xl font-[900] text-[#071233] mb-2 tracking-tight">On its way!</h1>
                     <p className="text-sm font-semibold text-slate-500 leading-relaxed mb-6 text-center">
-                      We has sent a link to <span className="text-slate-800 font-bold">{resetEmail}</span>. Click the link inside the email to reset your password.
+                      I&apos;ve sent a link to <span className="text-slate-800 font-bold">{resetEmail}</span>. Click it to reset your password.
                     </p>
 
                     <motion.button

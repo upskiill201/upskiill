@@ -147,9 +147,9 @@ export default function Step15Content({ onNext }: Step15ContentProps) {
               className="text-[clamp(1.9rem,10vw,2.6rem)] font-[900] leading-[1.1] mb-3 text-[#071233]"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: headlineShadow }}
             >
-              You&apos;re already carrying Teyro with you! 🎉
+              Look at you — already carrying me around! 🎉
             </h1>
-            <p className="text-slate-500 font-medium mb-6">Teyro is installed and ready whenever you are.</p>
+            <p className="text-slate-500 font-medium mb-6">I&apos;m installed and ready whenever you are.</p>
             <PrimaryButton onClick={goNotifications}>Continue</PrimaryButton>
           </motion.div>
         )}
@@ -166,7 +166,7 @@ export default function Step15Content({ onNext }: Step15ContentProps) {
               <div className="flex flex-col gap-4 mb-6">
                 <Benefit icon={<Flame className="w-4 h-4" />} label="Keep your streak going" />
                 <Benefit icon={<Target className="w-4 h-4" />} label="Never miss your learning goal" />
-                <Benefit icon={<Trophy className="w-4 h-4" />} label="Get important Teyro updates" />
+                <Benefit icon={<Trophy className="w-4 h-4" />} label="Hear from me when it matters" />
               </div>
               <PrimaryButton onClick={handleInstallClick} ariaLabel="Install Teyro app">
                 {canPromptInstall ? 'Install Teyro' : 'Continue'}
@@ -234,7 +234,7 @@ export default function Step15Content({ onNext }: Step15ContentProps) {
             </h1>
             <Card>
               <p className="text-[15px] font-medium text-slate-500 mb-6">
-                Teyro works great right here in your browser. Open teyro.app on your phone any time to install it
+                I work great right here in your browser. Open teyro.app on your phone any time to bring me along
                 there too.
               </p>
               <PrimaryButton onClick={goNotifications}>Continue</PrimaryButton>
@@ -256,7 +256,7 @@ export default function Step15Content({ onNext }: Step15ContentProps) {
                   <Bell className="w-4 h-4" />
                 </div>
                 <p className="text-[15px] font-semibold text-[#071233]">
-                  Teyro can remind you when it&apos;s time to learn — no spam, just nudges that matter.
+                  I can remind you when it&apos;s time to learn — no spam, just nudges that matter.
                 </p>
               </div>
               <PrimaryButton onClick={handleEnableNotifications} ariaLabel="Turn on reminder notifications">

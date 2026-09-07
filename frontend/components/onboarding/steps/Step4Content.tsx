@@ -139,11 +139,11 @@ export default function Step4Content({ onNext }: Step4ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           <span className="md:hidden">
-            This helps us personalize your
+            This helps me get to know
             <br />
-            learning experience.
+            you a little better.
           </span>
-          <span className="hidden md:inline">This helps me personalize your learning experience just for you.</span>
+          <span className="hidden md:inline">This helps me shape things just for you.</span>
         </motion.p>
       </div>
 

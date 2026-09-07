@@ -78,7 +78,7 @@ export default function Step10Content({ onNext }: Step10ContentProps) {
           </h1>
 
           <p className="text-slate-500 font-medium text-sm md:text-lg leading-relaxed mb-4 max-w-[320px] md:max-w-none">
-            You completed the demo. Keep up the momentum!
+            You just crushed the demo — keep that momentum going!
           </p>
 
           {/* XP Badge — mirrors the real one-time reward the server granted

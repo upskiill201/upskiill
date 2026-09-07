@@ -65,9 +65,9 @@ export default function Step1Content({ onNext }: Step1ContentProps) {
         className="text-[clamp(1.05rem,5vw,1.25rem)] md:text-xl lg:text-[1.35rem] mb-8 md:mb-10 font-medium text-slate-500 md:text-slate-600 leading-snug max-w-[92%] md:max-w-none"
         style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
       >
-        Your journey to mastering
+        I&apos;m Tey — I&apos;ll be with you
         <br />
-        new skills starts here.
+        every step of the way.
       </motion.p>
 
       {/* ── CTA ── */}

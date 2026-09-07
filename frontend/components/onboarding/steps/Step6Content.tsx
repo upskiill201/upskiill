@@ -101,12 +101,12 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
         const errData = await res.json().catch(() => ({}));
         failWith(
           errData?.message ||
-            'Failed to send the code. Please check your number and try again.',
+            "That didn't send — check your number and try again?",
         );
       }
     } catch (e) {
       console.warn('[WhatsApp] send-otp request failed:', e);
-      failWith('Could not connect to send your code. Please check your internet connection.');
+      failWith("Couldn't reach you — check your internet and try again?");
     } finally {
       setIsSending(false);
     }
@@ -174,14 +174,14 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
       const errData = await res.json().catch(() => ({}));
       const errMsg =
         errData?.message ??
-        "Tey checked his notes — that code doesn't match! Double check WhatsApp and try again.";
+        "I checked my notes — that code doesn't match! Double check WhatsApp and try again.";
       failWith(errMsg);
       // A wrong code shouldn't wipe what they typed unless the code was consumed.
       setOtp(['', '', '', '', '', '']);
       otpRefs.current[0]?.focus();
     } catch (e) {
       console.warn('[WhatsApp] verify-otp request failed:', e);
-      failWith('Could not connect to verify your code. Please check your internet and try again!');
+      failWith("Couldn't verify that — check your internet and try again?");
     } finally {
       setIsVerifying(false);
     }
@@ -236,11 +236,11 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
         >
           <span className="md:hidden">
-            Verify your number for reminders,
+            Verify your number and I&apos;ll send
             <br />
-            streak alerts, and updates.
+            reminders, streak alerts, and updates.
           </span>
-          <span className="hidden md:inline">For verification and learning reminders via WhatsApp. Tey checks in with reminders, streak alerts, and updates.</span>
+          <span className="hidden md:inline">For verification and learning reminders via WhatsApp. I&apos;ll check in with reminders, streak alerts, and updates.</span>
         </motion.p>
       </div>
 
@@ -316,7 +316,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
               className="w-full flex flex-col items-center"
             >
               <p className="text-xs md:text-sm font-medium text-slate-400 mb-3 text-center">
-                Enter the 6-digit code sent to your WhatsApp:
+                I sent a 6-digit code to your WhatsApp — enter it below:
               </p>
 
               {/* Dev builds only — backend echoes the OTP when EXPOSE_DEV_OTP is set */}

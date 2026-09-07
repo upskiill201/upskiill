@@ -176,9 +176,9 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
         className="text-[clamp(1.05rem,5vw,1.25rem)] md:text-xl lg:text-[1.35rem] mb-6 md:mb-10 font-medium text-slate-500 md:text-slate-600 leading-snug max-w-[92%] md:max-w-none"
         style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
       >
-        You&apos;re making great progress.
+        I&apos;m impressed already.
         <br />
-        Keep going, you&apos;re doing amazing!
+        Keep going — you&apos;re doing amazing!
       </motion.p>
 
       {/* ── CTA (claim-gated) ── */}
@@ -216,7 +216,7 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
             >
               <Check className="w-4 h-4 stroke-[3]" />
-              Novice badge added to your collection
+              Got it — added to your collection
             </motion.p>
           )}
           {claimState === 'error' && (
@@ -226,7 +226,7 @@ export default function Step13Content({ onNext }: Step13ContentProps) {
               className="text-sm font-medium text-red-500"
               style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
             >
-              Couldn&apos;t reach the server — check your connection and try again.
+              I couldn&apos;t reach the server — check your connection and try again.
             </motion.p>
           )}
         </div>

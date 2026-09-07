@@ -104,11 +104,11 @@ export default function Step5Content({ onNext }: Step5ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           <span className="md:hidden">
-            Choose how much time you want
+            Pick how much time you want
             <br />
-            to invest in yourself each day.
+            to spend with me each day.
           </span>
-          <span className="hidden md:inline">Choose a time commitment that fits your schedule. Consistency builds mastery.</span>
+          <span className="hidden md:inline">Pick a pace that fits your schedule — I&apos;ll match your energy.</span>
         </motion.p>
       </div>
 
@@ -231,7 +231,7 @@ export default function Step5Content({ onNext }: Step5ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#0172FD] shrink-0" />
-          <span className="text-center">Most waitlist learners chose 30 min — their sweet spot</span>
+          <span className="text-center">Psst — most learners pick 30 min. It&apos;s the sweet spot.</span>
         </motion.p>
       </div>
 

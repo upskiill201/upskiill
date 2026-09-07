@@ -74,11 +74,11 @@ export default function Step11Content({ onNext }: Step11ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
         >
           <span className="md:hidden">
-            Your daily practice builds momentum.
+            Show up daily and I&apos;ll help you
             <br />
-            Keep it going and unlock your potential!
+            build real momentum.
           </span>
-          <span className="hidden md:inline">Your daily practice builds momentum. Keep it going and unlock your potential!</span>
+          <span className="hidden md:inline">Show up daily and I&apos;ll help you build real momentum.</span>
         </motion.p>
       </div>
 

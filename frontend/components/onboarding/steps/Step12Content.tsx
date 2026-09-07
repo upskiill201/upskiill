@@ -83,7 +83,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
       onNext();
     } catch (err: unknown) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Google authentication failed';
+      const msg = err instanceof Error ? err.message : "Google didn't cooperate — mind trying again?";
       setAuthError(msg);
     } finally {
       setAuthLoading(false);
@@ -115,12 +115,12 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
         if (res.status === 409 || data.code === 'EMAIL_ALREADY_EXISTS') {
           if (data.canLink !== false) {
             setIsLinkAccountMode(true);
-            setLinkPromptMessage('It looks like you already have a Teyro account! Please enter your password to activate your Student profile.');
-            throw new Error(data.message || 'Please enter your existing account password to activate your Student profile.');
+            setLinkPromptMessage("Looks like I already know you — enter your password and I'll activate your Student profile.");
+            throw new Error(data.message || "Enter your existing account password and I'll get you activated.");
           }
         }
         const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
-        throw new Error(errMsg || 'Signup failed');
+        throw new Error(errMsg || "That didn't go through — try again?");
       }
 
       if (data.linked && data.verified) {
@@ -131,7 +131,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
 
       setView('verification');
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Registration failed';
+      const msg = err instanceof Error ? err.message : "That didn't go through — try again?";
       setAuthError(msg);
     } finally {
       setAuthLoading(false);
@@ -164,7 +164,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (verificationCode.trim().length !== 6) {
-      setVerificationError('Please enter a 6-digit code');
+      setVerificationError('I need all 6 digits first.');
       return;
     }
     setVerifyingCode(true);
@@ -182,13 +182,13 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || 'Invalid verification code');
+        throw new Error(data.message || "That code doesn't look right — try again?");
       }
 
       playHaptic('medium');
       onNext();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Verification failed';
+      const msg = err instanceof Error ? err.message : "That didn't work — try again?";
       setVerificationError(msg);
     } finally {
       setVerifyingCode(false);
@@ -269,11 +269,11 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
                 style={{ fontFamily: 'var(--font-jakarta)', textShadow: '0 0 10px rgba(255,255,255,1)' }}
               >
                 <span className="md:hidden">
-                  Create an account to save your
+                  Make an account and I&apos;ll keep your
                   <br />
-                  achievements and continue anytime.
+                  achievements safe — come back anytime.
                 </span>
-                <span className="hidden md:inline">Create an account to save your achievements and continue anytime.</span>
+                <span className="hidden md:inline">Make an account and I&apos;ll keep your achievements safe — come back anytime.</span>
               </motion.p>
 
               {authError && (
@@ -330,7 +330,7 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
 
               {isLinkAccountMode && (
                 <div className="text-xs text-blue-900 font-medium px-4 text-center bg-blue-50 py-2 rounded-xl border border-blue-200">
-                  {linkPromptMessage || 'Enter your password to activate your Student profile.'}
+                  {linkPromptMessage || "Enter your password and I'll activate your Student profile."}
                 </div>
               )}
 
@@ -417,11 +417,11 @@ export default function Step12Content({ onNext }: Step12ContentProps) {
               </div>
 
               <h2 className="text-xl font-[900] text-slate-800" style={{ fontFamily: 'var(--font-jakarta)' }}>
-                Check your email!
+                I sent you a code!
               </h2>
 
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                We sent a 6-digit code to <strong className="text-[#0172FD]">{maskEmail(email)}</strong>.
+                Check <strong className="text-[#0172FD]">{maskEmail(email)}</strong> for the 6-digit code.
               </p>
 
               <form onSubmit={handleVerifyCode} className="w-full flex flex-col gap-3">

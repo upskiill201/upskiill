@@ -178,14 +178,14 @@ export default function Step2Content({ onNext }: Step2ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           <span className="md:hidden">
-            Choose a skill to start
+            Pick one, and I&apos;ll build
             <br />
-            your learning adventure.
+            your path around it.
           </span>
           <span className="hidden md:inline">
-            Choose a skill you&apos;re passionate about.
+            Pick what excites you most.
             <br />
-            We&apos;ll create a personalized learning path just for you.
+            I&apos;ll build your learning path around it.
           </span>
         </motion.p>
       </div>

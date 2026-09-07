@@ -245,14 +245,14 @@ export default function Step3Content({ onNext }: Step3ContentProps) {
           style={{ fontFamily: 'var(--font-jakarta)' }}
         >
           <span className="md:hidden">
-            This helps us personalize
+            This helps me get to know
             <br />
-            your learning experience.
+            you a little better.
           </span>
           <span className="hidden md:inline">
-            Choose what matters most to you right now.
+            Pick what matters most right now.
             <br />
-            We&apos;ll create a personalized learning path just for you.
+            I&apos;ll build your learning path around it.
           </span>
         </motion.p>
       </div>
