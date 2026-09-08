@@ -36,7 +36,9 @@ import PhaseStepper from '@/components/learn/PhaseStepper';
 import PhaseTransition from '@/components/learn/PhaseTransition';
 import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
 import LearnProgressBar, { useLearnProgress } from '@/components/learn/LearnProgressBar';
+import WordCountBadge from '@/components/learn/WordCountBadge';
 import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import { CURRENCY_ICONS } from '@/components/celebration/currency';
 import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
 import DOMPurify from 'dompurify';
@@ -345,6 +347,11 @@ function SectionViewContent({
   // Use global gamification context for live XP, streak, and lives
   const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
   const { celebrate, closeAll: closeCelebrations } = useCelebration();
+  // Purely visual: this only flies a particle at the pill and fires a DOM
+  // event a dashboard card uses to refetch its own stats — it never mutates
+  // the XP balance itself. The number stays exactly what applyLessonReward
+  // sets on completion; this is a preview of it, not an early payout.
+  const { triggerRewardAnimation } = useRewardAnimation();
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
@@ -623,7 +630,7 @@ function SectionViewContent({
       .catch(() => setRetryCharges(0));
   }, [livesCount, lessonPhase, retryCharges]);
 
-  const handleCheckAnswer = () => {
+  const handleCheckAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (selectedOptionIndex === null) return;
     playHaptic('medium');
     setIsAnswerChecked(true);
@@ -640,6 +647,17 @@ function SectionViewContent({
       setApplyCombo(combo);
       playComboCorrect(combo);
       if (combo >= 3) sayTey(pickComboLine(combo), 'cheer');
+
+      // A preview flight toward the XP pill, not a payout: triggerRewardAnimation
+      // only flies a particle and pops the pill, it never touches the stored XP
+      // balance (that stays exactly what applyLessonReward sets on completion —
+      // see GamificationContext). Intensifies slightly with the combo so a run
+      // feels like it is building toward something, without implying a false
+      // per-question XP value we don't actually know client-side.
+      triggerRewardAnimation({
+        originElement: e.currentTarget,
+        rewards: [{ currency: 'XP', amount: Math.min(3 + combo, 8) }],
+      });
     } else {
       const brokenStreak = applyComboRef.current;
       applyComboRef.current = 0;
@@ -2073,9 +2091,12 @@ function SectionViewContent({
                         value={reflectionText}
                         onChange={(e) => setReflectionText(e.target.value)}
                       />
-                      <div className={`${styles.reflectWordCount} ${reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length >= reflectMinWords ? styles.reflectWordCountSuccess : ''}`}>
-                        {reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length} / {reflectMinWords} words
-                      </div>
+                      <WordCountBadge
+                        count={reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length}
+                        min={reflectMinWords}
+                        className={styles.reflectWordCount}
+                        metClassName={styles.reflectWordCountSuccess}
+                      />
                     </div>
                   </>
                 ) : (
@@ -2083,7 +2104,6 @@ function SectionViewContent({
                     {reflectGuidedConfig.questions.map((q: any, idx: number) => {
                       const text = guidedAnswers[idx] || '';
                       const wc = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-                      const hasMet = wc >= reflectGuidedConfig.minWordCountPerQuestion;
                       return (
                         <div key={idx} className={styles.guidedQuestionCard}>
                           <h4 className={styles.guidedQuestionTitle}>
@@ -2096,9 +2116,12 @@ function SectionViewContent({
                               value={text}
                               onChange={(e) => handleGuidedAnswerChange(idx, e.target.value)}
                             />
-                            <div className={`${styles.reflectWordCount} ${hasMet ? styles.reflectWordCountSuccess : ''}`}>
-                              {wc} / {reflectGuidedConfig.minWordCountPerQuestion} words
-                            </div>
+                            <WordCountBadge
+                              count={wc}
+                              min={reflectGuidedConfig.minWordCountPerQuestion}
+                              className={styles.reflectWordCount}
+                              metClassName={styles.reflectWordCountSuccess}
+                            />
                           </div>
                         </div>
                       );
