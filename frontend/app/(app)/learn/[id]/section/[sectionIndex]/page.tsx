@@ -1740,6 +1740,12 @@ function SectionViewContent({
             <LessonShell
               phase={lessonPhase}
               onClose={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+              // Keeps the legacy hook alive: `.mainColumn`/`.grid` use
+              // `:has(.lessonLearnContainer)` to detect "the player is showing"
+              // and stretch themselves accordingly. LessonShell renders its own
+              // `.shell` class, so without this those selectors would silently
+              // stop matching and the surrounding grid would stop stretching.
+              className={styles.lessonLearnContainer}
             >
               <TeyLessonCoach message={teyLine} token={teyToken} tone={teyTone} />
 
