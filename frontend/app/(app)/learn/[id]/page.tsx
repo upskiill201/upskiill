@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, BookOpen, Lock, CheckCircle2, Layers, BarChart2, LayoutGrid, Info, Star, Users, Clock, Check, X } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
+import { playAnswerWrong } from '@/lib/audio/lessonAudio';
 import StudentShell, { useComingSoon } from '@/components/layout/StudentShell';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import Skeleton from '@/components/ui/Skeleton';
@@ -173,12 +174,19 @@ function LearnCourseContent({
   };
 
   const handleStartOrContinue = (sIdx?: number) => {
-    playHaptic('medium');
     const targetIndex = sIdx !== undefined ? sIdx : currentActiveIndex;
     if (!hasAccess && !sectionHasFreePreview(targetIndex)) {
       // The learner may have just paid — the unlock watcher is still polling,
       // so don't flash the paywall back at them.
       if (isAwaitingUnlock) return;
+      // Previously the identical playHaptic('medium') as an unlocked tap —
+      // no signal distinguished "this is locked" from "this is opening"
+      // before the redirect. Reused playAnswerWrong's tone deliberately: its
+      // whole design is a *gentle* "not that one," which generalizes to "not
+      // yet available" better than an error/warning haptic would (this
+      // isn't a mistake, just a gate).
+      playHaptic('rigid', false);
+      playAnswerWrong();
       router.push(
         buildUnlockHref(
           String(params.id),
@@ -187,13 +195,15 @@ function LearnCourseContent({
       );
       return;
     }
+    playHaptic('medium');
     router.push(`/learn/${params.id}/section/${targetIndex}`);
   };
 
   const handleJumpToSection = (sIdx: number, isLocked: boolean) => {
-    playHaptic('medium');
     if (!hasAccess && (isLocked || !sectionHasFreePreview(sIdx))) {
       if (!isAwaitingUnlock) {
+        playHaptic('rigid', false);
+        playAnswerWrong();
         router.push(
           buildUnlockHref(
             String(params.id),
@@ -202,6 +212,7 @@ function LearnCourseContent({
         );
       }
     } else {
+      playHaptic('medium');
       router.push(`/learn/${params.id}/section/${sIdx}`);
     }
   };
