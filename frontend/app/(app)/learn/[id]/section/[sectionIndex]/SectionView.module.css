@@ -2568,6 +2568,8 @@
 /* ─── APPLY SCREEN STYLES ─── */
 .applyHeaderRow {
   display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
@@ -2580,6 +2582,49 @@
   border-radius: 8px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* Run counter. Appears from three correct in a row — the point at which the
+   streak starts to feel like something the learner would rather not lose.
+   Same amber family as the review-mode "TRY AGAIN FOR FUN" pill below. */
+.comboPill {
+  background-color: #FEF08A;
+  color: #854D0E;
+  border: 1.5px solid #EAB308;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Review mode's "try it again with nothing at stake" button — was an inline
+   style block. Same amber family as .comboPill above. */
+.tryAgainForFunBtn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  background-color: #FEF08A;
+  color: #854D0E;
+  font-weight: 900;
+  font-size: 13px;
+  border: 2px solid #EAB308;
+  box-shadow: 0 3px 0 #CA8A04;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Review mode's "Tey's Saved Choice" tag — was an inline style block. */
+.savedChoicePill {
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .applyQuestionContainer {
@@ -2628,17 +2673,17 @@
   border: 2px solid #E2E8F0;
 }
 
+/* Single column at every width.
+   Two columns produced ragged rows whenever answers differed in length and
+   forced a two-axis scan; one column lets the eye travel straight down and
+   compare directly, and gives the selected-state lip and the wrong-answer
+   shake room to actually read. Capped so lines don't run long on desktop. */
 .applyOptionsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   padding-bottom: 32px;
-}
-
-@media (max-width: 768px) {
-  .applyOptionsGrid {
-    grid-template-columns: 1fr;
-  }
+  max-width: 680px;
 }
 
 .applyOptionCard {
@@ -2675,6 +2720,16 @@
 .optionSelected:hover:not(:disabled) {
   background-color: #E6F0FF;
   box-shadow: 0 6px 0 #005AD5;
+}
+
+/* The card they picked, once it has been checked and found wrong. Tinted, not
+   alarming — getting one wrong should never be the loudest thing on screen.
+   Same wrong-answer red used by .applyBottomBtnWrapWrong / .celebrationIconCircleWrong
+   below, so the card and the feedback banner read as one signal. */
+.optionWrong {
+  background-color: #FFDFE0;
+  border-color: #FF4B4B;
+  box-shadow: 0 4px 0 #D63939;
 }
 
 .optionLetter {
@@ -2899,6 +2954,24 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 12px;
+}
+
+.reviewModeNote {
+  background-color: var(--light-blue-bg);
+  border: 2px solid #BFDBFE;
+  padding: 12px 16px;
+  border-radius: 14px;
+  margin: 0 0 20px;
+  color: #1E40AF;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewModeNoteIcon {
+  font-size: 20px;
 }
 
 .reflectTitleRow {
