@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -59,31 +59,27 @@ const popoverItemVariants = {
 };
 
 import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
+import { useCourseDetail, useCourseProgress, useCourseAccess } from '@/hooks/useCourse';
 import { buildUnlockHref } from '@/lib/return-to';
 
 interface LearnCourseContentProps {
   course: any;
   completedLessons: string[];
-  initialHasAccess: boolean;
-  /** Lesson ids the server says are readable without paying. */
-  freePreviewLessonIds: string[];
 }
 
 function LearnCourseContent({
   course,
   completedLessons,
-  initialHasAccess,
-  freePreviewLessonIds,
 }: LearnCourseContentProps) {
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const [showDetails, setShowDetails] = useState(false);
-  // Seeded from the parent's parallel fetch (Promise.all alongside course +
-  // progress) instead of its own useEffect — that used to only start once
-  // `loading` flipped false, turning this into a second serial round trip
-  // on top of the parent's.
-  const [hasAccess, setHasAccess] = useState(initialHasAccess);
+  // Access is read from the shared SWR cache (hooks/useCourse.ts) rather than
+  // its own local state seeded via props — the parent page reads the same
+  // key, so this dedupes against that fetch instead of costing a second
+  // round trip, and both stay in sync through one cache entry.
+  const { hasAccess, freePreviewLessonIds, mutate: mutateAccess } = useCourseAccess(course?.id || (params.id as string));
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isUnenrollModalOpen, setIsUnenrollModalOpen] = useState(false);
   const [unenrollLoading, setUnenrollLoading] = useState(false);
@@ -93,7 +89,7 @@ function LearnCourseContent({
   // ?payment=success — poll briefly until the webhook grants entitlement.
   const { isPolling: isAwaitingUnlock } = usePostPaymentUnlock(params.id as string, {
     onUnlocked: () => {
-      setHasAccess(true);
+      mutateAccess();
       setToastMessage({ message: '🎉 Course unlocked — welcome back! Happy learning!', type: 'success' });
     },
     onExhausted: (message) => {
@@ -746,54 +742,15 @@ function LearnCourseContent({
 export default function LearnCoursePage() {
   const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [hasAccess, setHasAccess] = useState(false);
-  const [freePreviewLessonIds, setFreePreviewLessonIds] = useState<string[]>([]);
+  // Shared SWR cache (hooks/useCourse.ts): a repeat visit to a course already
+  // fetched this session paints from cache immediately instead of blocking on
+  // the network again, and the /api/courses/:id request is deduped against
+  // the section-journey page's identical fetch rather than firing twice.
+  const { course, error } = useCourseDetail(params.id as string);
+  const { completedLessons } = useCourseProgress(params.id as string);
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        // Access used to be fetched by the child only after this effect set
-        // loading=false — a strictly serial two-stage waterfall. It's now
-        // part of the same parallel batch.
-        const [courseRes, progRes, accessRes] = await Promise.all([
-          fetch(`/api/courses/${params.id}`),
-          fetch(`/api/courses/${params.id}/progress`, { credentials: 'include' }),
-          fetch(`/api/courses/${params.id}/access`, { credentials: 'include' }),
-        ]);
-
-        if (courseRes.ok) {
-          const data = await courseRes.json();
-          setCourse(data);
-        } else {
-          setCourse(null);
-        }
-
-        if (progRes.ok) {
-          const pd = await progRes.json();
-          setCompletedLessons(pd.completedLessons || []);
-        }
-
-        if (accessRes.ok) {
-          const ad = await accessRes.json();
-          setHasAccess(ad.hasAccess === true);
-          setFreePreviewLessonIds(
-            Array.isArray(ad.freePreviewLessonIds) ? ad.freePreviewLessonIds : [],
-          );
-        }
-      } catch (e) {
-        console.error('Failed to load course:', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
-  }, [params.id]);
-
-  /* ── Loading state ─────────────────────────────── */
-  if (loading) {
+  /* ── Loading state: only when there is truly no cached data yet ── */
+  if (!course && !error) {
     return (
       <StudentShell>
         <LearnCourseSkeleton />
@@ -817,8 +774,6 @@ export default function LearnCoursePage() {
       <LearnCourseContent
         course={course}
         completedLessons={completedLessons}
-        initialHasAccess={hasAccess}
-        freePreviewLessonIds={freePreviewLessonIds}
       />
     </StudentShell>
   );

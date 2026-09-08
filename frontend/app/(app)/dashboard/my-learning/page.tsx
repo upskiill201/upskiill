@@ -7,51 +7,31 @@ import { ArrowRight, BookOpen, X, MessagesSquare } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { RightSidebar } from '@/components/layout/RightSidebar';
 import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
+import { useEnrollments } from '@/hooks/useCourse';
 import styles from './MyLearning.module.css';
 
 export default function MyLearningPage() {
   const router = useRouter();
-  const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
-  const [enrollments, setEnrollments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { showLoader, hideLoader } = useTeyroLoader();
+  // Shared SWR cache (hooks/useCourse.ts): a repeat visit to My Learning
+  // within the dedupe window paints from cache immediately instead of
+  // reshowing the full-screen loader every time.
+  const { enrollments: enrollmentsData } = useEnrollments();
+  const enrollments = enrollmentsData ?? [];
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    // Trigger loader without overrideText so it polls the 36 motivational text pool!
+    if (enrollmentsData) {
+      hideLoader(); // Only hide once data has actually resolved (fresh or cached).
+      return;
+    }
+    // No cached data yet — trigger loader without overrideText so it polls
+    // the 36 motivational text pool!
     showLoader(undefined, false, undefined, true);
-
-    let cancelled = false;
-    const fetchEnrollments = async () => {
-      try {
-        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          setEnrollments(data);
-        }
-      } catch (err) {
-        console.error('Failed to load enrolled courses', err);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-          hideLoader(); // Only hide when backend data is loaded!
-        }
-      }
-    };
-    fetchEnrollments();
-    return () => {
-      cancelled = true;
-    };
-  }, [showLoader, hideLoader]);
+  }, [enrollmentsData, showLoader, hideLoader]);
 
   const handleContinueLearning = (courseId: string) => {
     playHaptic('medium');
-    showLoaderImmediate(
-      "Tey is preparing your course roadmap...",
-      false, // Preserves desktop sidebar (replaces middle column + right sidebar)!
-      undefined, // No artificial hold — loader clears as soon as the next page's data resolves
-      true,  // Suppress connection check warning unless error
-      'reading'
-    );
     router.push(`/learn/${courseId}`);
   };
 

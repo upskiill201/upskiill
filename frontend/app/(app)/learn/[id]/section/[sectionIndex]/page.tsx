@@ -14,6 +14,7 @@ import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import LearnSectionSkeleton from './LearnSectionSkeleton';
 import { StatsBar } from '@/components/ui/StatsBar';
 import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
+import { useCourseDetail, useCourseProgress, useCourseAccess } from '@/hooks/useCourse';
 import { buildUnlockHref } from '@/lib/return-to';
 import { fireConfetti } from '@/lib/confetti';
 import { playWinSound } from '@/utils/audio';
@@ -337,30 +338,10 @@ function SectionViewContent({
   const lessonStartTimeRef = useRef<number>(Date.now());
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const [accessInfo, setAccessInfo] = useState<{
-    hasAccess: boolean;
-    isInstructor?: boolean;
-    isExpired?: boolean;
-    freePreviewLessonIds?: string[];
-  } | null>(null);
-
-  const fetchAccess = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/courses/${course?.id || params.id}/access`, {
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setAccessInfo(data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch course access:', err);
-    }
-  }, [course?.id, params.id]);
-
-  useEffect(() => {
-    fetchAccess();
-  }, [fetchAccess]);
+  // Read from the shared SWR cache (hooks/useCourse.ts) rather than a
+  // private fetch — dedupes against the /learn/[id] page's identical
+  // /access request instead of firing a second one for the same course.
+  const { access: accessInfo, mutate: mutateAccess } = useCourseAccess(course?.id || (params.id as string));
 
   // ── Post-payment unlock watcher ─────────────────────────────────────────
   // After Stripe checkout the learner lands back here with ?payment=success,
@@ -369,7 +350,7 @@ function SectionViewContent({
   // paywall again to someone who just paid.
   usePostPaymentUnlock(course?.id || params.id, {
     onUnlocked: () => {
-      fetchAccess();
+      mutateAccess();
       setLockedToast({ message: '🎉 Course unlocked — welcome back! Happy learning!', key: Date.now() });
       setTimeout(() => setLockedToast((prev) => (prev?.key ? null : prev)), 5000);
     },
@@ -2721,44 +2702,33 @@ function SectionViewContent({
 export default function SectionViewPage() {
   const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  // Shared SWR cache (hooks/useCourse.ts): dedupes against the /learn/[id]
+  // page's identical /api/courses/:id and /progress fetches, and paints
+  // instantly from cache on a repeat visit instead of blocking on network.
+  const { course, error } = useCourseDetail(params.id as string);
+  const { completedLessons, mutate: mutateProgress } = useCourseProgress(params.id as string);
+
+  // Keeps the call-site shape SectionViewContent already used
+  // (`setCompletedLessons(prev => [...prev, id])`) while writing the
+  // optimistic update straight into the shared SWR cache entry.
+  const setCompletedLessons = useCallback<React.Dispatch<React.SetStateAction<string[]>>>(
+    (updater) => {
+      mutateProgress(
+        (current) => {
+          const prevList = current?.completedLessons ?? [];
+          const nextList = typeof updater === 'function' ? (updater as (prev: string[]) => string[])(prevList) : updater;
+          return { ...(current ?? {}), completedLessons: nextList };
+        },
+        { revalidate: false },
+      );
+    },
+    [mutateProgress],
+  );
 
   const sectionIndex = parseInt(params.sectionIndex as string, 10);
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        // course + progress used to be strictly serial (progress only
-        // started after course resolved); they don't depend on each other,
-        // so they now fire together like the parent /learn/[id] page does.
-        const [res, progRes] = await Promise.all([
-          fetch(`/api/courses/${params.id}`),
-          fetch(`/api/courses/${params.id}/progress`, { credentials: 'include' }),
-        ]);
-
-        if (!res.ok) {
-          setCourse(null);
-        } else {
-          const data = await res.json();
-          setCourse(data);
-        }
-
-        if (progRes.ok) {
-          const pd = await progRes.json();
-          setCompletedLessons(pd.completedLessons || []);
-        }
-      } catch (e) {
-        console.error('Failed to load course:', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
-  }, [params.id]);
-
-  if (loading) {
+  /* ── Loading state: only when there is truly no cached data yet ── */
+  if (!course && !error) {
     return (
       <StudentShell isWide hideMobileChrome>
         <LearnSectionSkeleton />
