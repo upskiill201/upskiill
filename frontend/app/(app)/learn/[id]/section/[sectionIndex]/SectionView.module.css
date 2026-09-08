@@ -2568,6 +2568,8 @@
 /* ─── APPLY SCREEN STYLES ─── */
 .applyHeaderRow {
   display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
@@ -2580,6 +2582,33 @@
   border-radius: 8px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* Run counter. Appears from three correct in a row — the point at which the
+   streak starts to feel like something the learner would rather not lose. */
+.comboPill {
+  background-color: #FFF3D4;
+  color: #B45309;
+  border: 1.5px solid #FCD34D;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Review mode's "Tey's Saved Choice" tag — was an inline style block. */
+.savedChoicePill {
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .applyQuestionContainer {
@@ -2628,17 +2657,17 @@
   border: 2px solid #E2E8F0;
 }
 
+/* Single column at every width.
+   Two columns produced ragged rows whenever answers differed in length and
+   forced a two-axis scan; one column lets the eye travel straight down and
+   compare directly, and gives the selected-state lip and the wrong-answer
+   shake room to actually read. Capped so lines don't run long on desktop. */
 .applyOptionsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   padding-bottom: 32px;
-}
-
-@media (max-width: 768px) {
-  .applyOptionsGrid {
-    grid-template-columns: 1fr;
-  }
+  max-width: 680px;
 }
 
 .applyOptionCard {
@@ -2675,6 +2704,14 @@
 .optionSelected:hover:not(:disabled) {
   background-color: #E6F0FF;
   box-shadow: 0 6px 0 #005AD5;
+}
+
+/* The card they picked, once it has been checked and found wrong. Tinted, not
+   alarming — getting one wrong should never be the loudest thing on screen. */
+.optionWrong {
+  background-color: #FFF1F2;
+  border-color: #FCA5A5;
+  box-shadow: 0 4px 0 #F87171;
 }
 
 .optionLetter {

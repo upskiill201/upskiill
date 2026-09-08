@@ -18,6 +18,23 @@ import { buildUnlockHref } from '@/lib/return-to';
 import { fireConfetti } from '@/lib/confetti';
 import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
+import {
+  playAnswerWrong,
+  playButtonUnlock,
+  playComboCorrect,
+  playPhaseUnlock,
+} from '@/lib/audio/lessonAudio';
+import {
+  pickComboLine,
+  pickPhaseUnlockLine,
+  pickUnlockedButtonLine,
+  pickWrongAnswerLine,
+} from '@/lib/tey/lessonVoice';
+import LessonShell from '@/components/learn/LessonShell';
+import PhaseStepper from '@/components/learn/PhaseStepper';
+import PhaseTransition from '@/components/learn/PhaseTransition';
+import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
+import LearnProgressBar, { useLearnProgress } from '@/components/learn/LearnProgressBar';
 import { useGamification } from '@/context/GamificationContext';
 import { CURRENCY_ICONS } from '@/components/celebration/currency';
 import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
@@ -466,6 +483,23 @@ function SectionViewContent({
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
 
+  // Consecutive correct answers within this lesson. Feedback only — it pitches
+  // the reward sound and drives Tey's reaction, and deliberately does NOT touch
+  // XP or coins, which the server alone calculates on completion.
+  const applyComboRef = useRef(0);
+  const [applyCombo, setApplyCombo] = useState(0);
+
+  // Tey's current line. `teyToken` lets the same line re-show (a second wrong
+  // answer in a row would otherwise be a no-op, since the string is unchanged).
+  const [teyLine, setTeyLine] = useState<string | null>(null);
+  const [teyTone, setTeyTone] = useState<'neutral' | 'cheer' | 'nudge'>('neutral');
+  const [teyToken, setTeyToken] = useState(0);
+  const sayTey = useCallback((line: string, tone: 'neutral' | 'cheer' | 'nudge' = 'neutral') => {
+    setTeyLine(line);
+    setTeyTone(tone);
+    setTeyToken((t) => t + 1);
+  }, []);
+
   const isReviewMode = activeLesson ? completedLessons.includes(activeLesson.id) : false;
 
   useEffect(() => {
@@ -560,7 +594,14 @@ function SectionViewContent({
   const [usingRetry, setUsingRetry] = useState(false);
 
   useEffect(() => {
-    if (activeLesson) applyWrongCountRef.current = 0;
+    if (activeLesson) {
+      applyWrongCountRef.current = 0;
+      // A combo belongs to one lesson; carrying it across would make the first
+      // answer of a fresh lesson sound like the middle of a run.
+      applyComboRef.current = 0;
+      setApplyCombo(0);
+      setTeyLine(null);
+    }
   }, [activeLesson]);
 
   useEffect(() => {
@@ -589,8 +630,23 @@ function SectionViewContent({
     const correct = selectedOption.id === currentQuestion.correctOptionId;
     setIsAnswerCorrect(correct);
     if (correct) {
-      playWinSound();
-    } else if (!isReviewMode) {
+      // Climb the ladder. The old fixed arpeggio sounded identical on the
+      // tenth correct answer as on the first, which is a fixed reinforcement
+      // schedule — it stops registering. Pitching by the run makes each one a
+      // slightly new outcome.
+      const combo = applyComboRef.current + 1;
+      applyComboRef.current = combo;
+      setApplyCombo(combo);
+      playComboCorrect(combo);
+      if (combo >= 3) sayTey(pickComboLine(combo), 'cheer');
+    } else {
+      const brokenStreak = applyComboRef.current;
+      applyComboRef.current = 0;
+      setApplyCombo(0);
+      playAnswerWrong();
+      sayTey(pickWrongAnswerLine(brokenStreak), 'nudge');
+    }
+    if (!correct && !isReviewMode) {
       applyWrongCountRef.current += 1;
       // A Perfect Lesson Protection charge may absorb this instead of costing
       // a heart. The server decides (it holds the charge count); we only
@@ -603,13 +659,21 @@ function SectionViewContent({
   };
 
   const handleApplyContinue = () => {
-    playHaptic('medium', false);
-    if (currentQuestionIndex < applyQuestions.length - 1) {
+    const isLastQuestion = currentQuestionIndex >= applyQuestions.length - 1;
+
+    // Moving to the next question gets an ordinary button click. Advancing a
+    // phase does NOT — PhaseStepper plays the three-beat unlock for that, and a
+    // click layered underneath it just muddies the seal.
+    playHaptic('medium', !isLastQuestion);
+
+    if (!isLastQuestion) {
       setCurrentQuestionIndex(prev => prev + 1);
       setSelectedOptionIndex(null);
       setIsAnswerChecked(false);
       setIsAnswerCorrect(false);
     } else {
+      const perfectRun = applyWrongCountRef.current === 0 ? applyQuestions.length : 0;
+      sayTey(pickPhaseUnlockLine('reflect', { perfectRun }), perfectRun ? 'cheer' : 'neutral');
       setLessonPhase('reflect');
       setCurrentQuestionIndex(0);
       setSelectedOptionIndex(null);
@@ -671,7 +735,9 @@ function SectionViewContent({
 
   const handleReflectSubmit = () => {
     if (canSubmitReflect) {
+      // Audio suppressed here on purpose: PhaseStepper owns the advance sound.
       playHaptic('success', false);
+      sayTey(pickPhaseUnlockLine('deepen'));
       setLessonPhase('deepen');
     }
   };
@@ -741,7 +807,13 @@ function SectionViewContent({
     if (isCompletingLesson) return;
     setIsCompletingLesson(true);
     setFinishError(null);
-    playHaptic('success');
+    // The last rung of the ladder. Finishing is not a phase change, so
+    // PhaseStepper never sees it — this is the one advance the page plays
+    // itself. It resolves, landing "done" a beat before the celebration
+    // scenes confirm it. Haptic only from playHaptic, to keep the note clean.
+    playHaptic('success', false);
+    playPhaseUnlock(3);
+    setTeyLine(null);
     try {
       const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
         method: 'POST',
@@ -1196,6 +1268,29 @@ function SectionViewContent({
   }, [activeLesson]);
   const canContinueFromLearn = !videoUrl || videoEnded;
 
+  // Learn-phase progress. This is a *signal*, not a new gate — `canContinueFromLearn`
+  // above still decides when CONTINUE opens, so a text lesson is not suddenly
+  // locked behind scrolling to the bottom.
+  const learnScrollRef = useRef<HTMLDivElement | null>(null);
+  const learnVideoRef = useRef<HTMLVideoElement | null>(null);
+  const learnProgress = useLearnProgress(learnScrollRef, learnVideoRef);
+
+  // Announce the moment the gate opens. Without this the button silently
+  // became enabled and nothing told the learner they had earned it.
+  const continueWasLockedRef = useRef(false);
+  useEffect(() => {
+    if (lessonPhase !== 'learn') return;
+    if (!canContinueFromLearn) {
+      continueWasLockedRef.current = true;
+      return;
+    }
+    if (continueWasLockedRef.current) {
+      continueWasLockedRef.current = false;
+      playButtonUnlock();
+      sayTey(pickUnlockedButtonLine(), 'cheer');
+    }
+  }, [canContinueFromLearn, lessonPhase, sayTey]);
+
   const handleNodeClick = (idx: number, isLocked: boolean) => {
     if (isLocked) {
       playHaptic('warning');
@@ -1528,38 +1623,9 @@ function SectionViewContent({
                 </div>
               )}
 
-              {/* Stepper Progress Indicator */}
-              <div className={styles.stepperContainer}>
-                <div className={styles.stepperWrapper}>
-                  {/* Connecting background lines */}
-                  <div className={styles.stepperLineBg}></div>
-                  <div className={styles.stepperLineActive} style={{ width: '0%' }}></div>
-
-                  {/* Step 1: Learn */}
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${styles.circleActive}`}>1</div>
-                    <span className={`${styles.circleText} ${styles.circleTextActive}`}>Learn</span>
-                  </div>
-                  
-                  {/* Step 2: Apply */}
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${styles.circleUpcoming}`}>2</div>
-                    <span className={styles.circleText}>Apply</span>
-                  </div>
-                  
-                  {/* Step 3: Reflect */}
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${styles.circleUpcoming}`}>3</div>
-                    <span className={styles.circleText}>Reflect</span>
-                  </div>
-                  
-                  {/* Step 4: Deepen */}
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${styles.circleUpcoming}`}>4</div>
-                    <span className={styles.circleText}>Deepen</span>
-                  </div>
-                </div>
-              </div>
+              {/* Preview of the four steps. Static — nothing is unlocked yet,
+                  so this shows the shape of the lesson without choreography. */}
+              <PhaseStepper phase="start" staticDisplay />
 
               {/* Start Screen Body */}
               <div className={styles.startScreenBody}>
@@ -1659,7 +1725,7 @@ function SectionViewContent({
 
               {/* Centered 3D Start Button */}
               <div className={styles.btnContainerCentred}>
-                <button 
+                <button
                   onClick={() => {
                     playHaptic('medium');
                     setLessonPhase('learn');
@@ -1671,43 +1737,19 @@ function SectionViewContent({
               </div>
             </div>
           ) : activeLesson && lessonPhase !== 'start' ? (
-            <div className={styles.lessonLearnContainer}>
-              {/* Stepper Progress Indicator (reusing same logic) */}
-              <div className={styles.stepperContainer}>
-                <div className={styles.stepperWrapper}>
-                  <div className={styles.stepperLineBg}></div>
-                  <div className={styles.stepperLineActive} style={{ width: lessonPhase === 'learn' ? '0%' : lessonPhase === 'apply' ? '33%' : lessonPhase === 'reflect' ? '66%' : '100%' }}></div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'learn' ? styles.circleActive : styles.circleCompleted}`}>1</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'learn' ? styles.circleTextActive : ''}`}>Learn</span>
-                  </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'apply' ? styles.circleActive : (lessonPhase === 'learn' ? styles.circleUpcoming : styles.circleCompleted)}`}>2</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'apply' ? styles.circleTextActive : ''}`}>Apply</span>
-                  </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'reflect' ? styles.circleActive : (['learn', 'apply'].includes(lessonPhase) ? styles.circleUpcoming : styles.circleCompleted)}`}>3</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'reflect' ? styles.circleTextActive : ''}`}>Reflect</span>
-                  </div>
-                  <div className={styles.stepperItem}>
-                    <div className={`${styles.stepperCircle} ${lessonPhase === 'deepen' ? styles.circleActive : styles.circleUpcoming}`}>4</div>
-                    <span className={`${styles.circleText} ${lessonPhase === 'deepen' ? styles.circleTextActive : ''}`}>Deepen</span>
-                  </div>
-                </div>
+            <LessonShell
+              phase={lessonPhase}
+              onClose={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+            >
+              <TeyLessonCoach message={teyLine} token={teyToken} tone={teyTone} />
 
-                {/* Close Button on Right side of Stepper */}
-                <button
-                  onClick={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
-                  className={styles.closeLearnBtn}
-                >
-                  <X size={20} strokeWidth={2.5} color="#AFBFCF" />
-                </button>
-              </div>
+              <PhaseTransition phaseKey={lessonPhase}>
 
               {/* LEARN PHASE */}
               {lessonPhase === 'learn' && (
                 <>
-                  <div className={styles.learnContentScroll}>
+                  <LearnProgressBar progress={learnProgress} />
+                  <div className={styles.learnContentScroll} ref={learnScrollRef}>
                 <div className={styles.learnHeader}>
                   <span className={styles.letsLearnText}>Let&apos;s learn!</span>
                   <h2 className={styles.learnTitle}>{activeLesson.title}</h2>
@@ -1716,6 +1758,7 @@ function SectionViewContent({
                 {videoUrl ? (
                   <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
                     <video
+                      ref={learnVideoRef}
                       src={videoUrl}
                       controls
                       controlsList="nodownload"
@@ -1820,9 +1863,15 @@ function SectionViewContent({
                 <button
                   className={`${styles.reflectSubmitBtn} ${!canContinueFromLearn ? styles.reflectBtnDisabled : ''}`}
                   onClick={() => {
-                    playHaptic('medium');
+                    // Audio off: PhaseStepper plays the advance.
+                    playHaptic('medium', false);
                     // Lessons with a real Apply activity go to the quiz; the
                     // rest skip straight to Reflect instead of faking one.
+                    sayTey(
+                      hasApplyActivity
+                        ? pickPhaseUnlockLine('apply', { watchedVideo: Boolean(videoUrl) && videoEnded })
+                        : pickPhaseUnlockLine('reflect')
+                    );
                     setLessonPhase(hasApplyActivity ? 'apply' : 'reflect');
                   }}
                   disabled={!canContinueFromLearn}
@@ -1840,6 +1889,22 @@ function SectionViewContent({
               <div className={styles.learnContentScroll}>
                 <div className={styles.applyHeaderRow}>
                   <span className={styles.applyBadge}>QUESTION {currentQuestionIndex + 1} OF {applyQuestions.length}</span>
+                  {/* The run becomes visible from three, which is where it
+                      starts to feel like something worth protecting. */}
+                  <AnimatePresence>
+                    {applyCombo >= 3 && (
+                      <motion.span
+                        key={applyCombo}
+                        className={styles.comboPill}
+                        initial={{ opacity: 0, scale: 0.7, y: -6 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ type: 'spring', stiffness: 420, damping: 18 }}
+                      >
+                        {applyCombo} IN A ROW 🔥
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 </div>
                 {applyScenario && (
                   <div className={styles.applyScenarioBox}>
@@ -1856,10 +1921,15 @@ function SectionViewContent({
                 <div className={styles.applyOptionsGrid}>
                   {(currentQuestion?.options || []).map((option: any, idx: number) => {
                     const isSelected = selectedOptionIndex === idx;
+                    // Only the card they actually picked shakes, and only once
+                    // it has been checked and found wrong.
+                    const isWrongPick = isSelected && isAnswerChecked && !isAnswerCorrect;
                     return (
-                      <button 
+                      <motion.button
                         key={idx}
-                        className={`${styles.applyOptionCard} ${isSelected ? styles.optionSelected : ''}`}
+                        className={`${styles.applyOptionCard} ${isSelected ? styles.optionSelected : ''} ${isWrongPick ? styles.optionWrong : ''}`}
+                        animate={isWrongPick ? { x: [0, -8, 8, -5, 5, 0] } : { x: 0 }}
+                        transition={{ duration: 0.24, ease: 'easeInOut' }}
                         onClick={() => {
                           if (!isAnswerChecked) {
                             playHaptic('light');
@@ -1873,11 +1943,11 @@ function SectionViewContent({
                         </div>
                         <span className={styles.optionText}>{option.text}</span>
                         {isReviewMode && isSelected && (
-                          <span style={{ backgroundColor: '#DCFCE7', color: '#15803D', border: '1px solid #86EFAC', padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                          <span className={styles.savedChoicePill}>
                             Tey&apos;s Saved Choice 🎯
                           </span>
                         )}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -2235,7 +2305,8 @@ function SectionViewContent({
             </>
           )}
 
-        </div>
+              </PhaseTransition>
+        </LessonShell>
           ) : (
             <>
               {/* Duolingo Green Header */}

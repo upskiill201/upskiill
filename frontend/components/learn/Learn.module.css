@@ -1,0 +1,282 @@
+/**
+ * Lesson player shell — the frame the four phases live inside.
+ *
+ * Colours come from the palette in `docs/08-color-system.md` (defined on
+ * :root in globals.css). The only literals here are the per-phase accent
+ * *pairs* — each phase needs a "deep" companion for the 3D button/circle lip,
+ * and the palette has no shade scale, so the deep values are declared once
+ * below as lesson-scoped tokens rather than sprinkled through the rules.
+ */
+
+/* ── Per-phase accent ──────────────────────────────────────────────────────
+   One custom property set on the shell, inherited by everything inside it, so
+   a phase change re-tints the header, badge and controls together instead of
+   each component knowing which phase is active. */
+
+.shell {
+  --phase-accent: var(--brand-blue);
+  --phase-accent-deep: #2D4AEE;
+  --phase-accent-wash: rgba(61, 90, 254, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.phaseLearn {
+  --phase-accent: var(--brand-blue);
+  --phase-accent-deep: #2D4AEE;
+  --phase-accent-wash: rgba(61, 90, 254, 0.06);
+}
+
+.phaseApply {
+  --phase-accent: var(--success-green);
+  --phase-accent-deep: #16A34A;
+  --phase-accent-wash: rgba(34, 197, 94, 0.07);
+}
+
+.phaseReflect {
+  --phase-accent: var(--brand-purple);
+  --phase-accent-deep: #7420C4;
+  --phase-accent-wash: rgba(147, 51, 234, 0.06);
+}
+
+.phaseDeepen {
+  --phase-accent: var(--warning);
+  --phase-accent-deep: #C77C08;
+  --phase-accent-wash: rgba(245, 158, 11, 0.08);
+}
+
+/* ── Header bar ───────────────────────────────────────────────────────────
+   Promoted from an inline stepper with an absolutely-positioned close button
+   to a real bar: the progress indicator is the primary chrome of a lesson and
+   needs to read that way, and the unlock choreography needs a stable stage. */
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 16px 16px 24px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+
+.headerBar::after {
+  /* Very subtle accent wash along the top edge — ambient "where am I" signal
+     that does not fight the content the way a full background swap would. */
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background-color: var(--phase-accent);
+  opacity: 0.9;
+  transition: background-color 0.35s ease;
+}
+
+.closeBtn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  margin-left: auto;
+  background: var(--bg-section);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: var(--border);
+  color: var(--text-secondary);
+}
+
+/* ── Stepper ──────────────────────────────────────────────────────────────── */
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.lineTrack,
+.lineFill {
+  position: absolute;
+  top: 26px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.lineTrack {
+  left: 26px;
+  right: 26px;
+  background-color: var(--border);
+  z-index: 1;
+}
+
+.lineFill {
+  left: 26px;
+  background-color: var(--phase-accent);
+  z-index: 2;
+  transition: background-color 0.35s ease;
+}
+
+/* The bright dot that rides the fill to the next step during Beat 2. It is
+   what makes the line read as travelling rather than merely growing. */
+.travelDot {
+  position: absolute;
+  top: 21px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background-color: var(--phase-accent);
+  box-shadow: 0 0 0 4px var(--bg-card), 0 0 12px var(--phase-accent);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 84px;
+}
+
+.circleWrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.circleUpcoming {
+  background-color: #E5E7EB;
+  color: var(--text-muted);
+  box-shadow: 0 4px 0 var(--border-strong);
+}
+
+.circleActive {
+  background-color: var(--phase-accent);
+  color: #FFFFFF;
+  box-shadow: 0 4px 0 var(--phase-accent-deep);
+}
+
+/* Completed is deliberately distinct from active — previously the two rules
+   were byte-identical, so a finished step and the step you were standing on
+   looked the same and the stepper carried no information. */
+.circleCompleted {
+  background-color: var(--bg-card);
+  color: var(--phase-accent);
+  box-shadow: 0 0 0 3px var(--phase-accent) inset, 0 4px 0 var(--border);
+}
+
+/* The ring that expands out of a circle at the moment it unlocks. */
+.unlockRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--phase-accent);
+  pointer-events: none;
+  z-index: 11;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 8px;
+  color: var(--text-muted);
+  text-align: center;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+}
+
+.labelActive {
+  color: var(--text-primary);
+}
+
+.labelDone {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .headerBar {
+    padding: 12px 12px 12px 16px;
+    gap: 8px;
+  }
+
+  .stepper {
+    max-width: 340px;
+  }
+
+  .step {
+    width: 64px;
+  }
+
+  .circleWrap,
+  .circle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .circle {
+    font-size: 15px;
+  }
+
+  .lineTrack,
+  .lineFill {
+    top: 22px;
+  }
+
+  .lineTrack {
+    left: 22px;
+    right: 22px;
+  }
+
+  .lineFill {
+    left: 22px;
+  }
+
+  .travelDot {
+    top: 18px;
+  }
+
+  .label {
+    font-size: 11px;
+  }
+
+  .closeBtn {
+    width: 34px;
+    height: 34px;
+  }
+}

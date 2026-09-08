@@ -6,136 +6,22 @@
  * mute / sfx-toggle / volume settings apply automatically. When audio is muted
  * or unavailable every function is a silent no-op.
  *
- * Sound design language (Duolingo-style):
- *  - Mallet/marimba tones: sine + triangle blend, fast attack, exponential decay
- *  - Major pentatonic pitch sets so any random combination still sounds consonant
- *  - Rising sequences for reward/claim moments, descending minor for loss moments
+ * The scheduling primitives and the shared sound-design language live in
+ * `./synth` — `lessonAudio.ts` builds on the same base so the celebration
+ * scenes and the in-lesson feedback stay in one sonic world.
  */
 
 import soundManager from './soundManager';
-
-type OscType = OscillatorType;
-
-interface ToneOptions {
-  freq: number;
-  /** Start offset in seconds from now */
-  at?: number;
-  /** Duration in seconds */
-  dur?: number;
-  type?: OscType;
-  /** 0..1 peak gain */
-  gain?: number;
-  /** Glide target frequency (portamento) */
-  slideTo?: number;
-  /** Detune in cents */
-  detune?: number;
-}
-
-const PENTATONIC = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51]; // C5 D5 E5 G5 A5 C6 D6 E6
+import {
+  PENTATONIC,
+  scheduleNoise,
+  scheduleSparkleDust,
+  scheduleTone,
+  shouldPlay,
+} from './synth';
 
 function isCelebrationAudioEnabled(): boolean {
   return soundManager.getSynthBus() !== null;
-}
-
-// ─── Overlap guard ──────────────────────────────────────────────────────────
-// Every play* function below is a synthesized one-shot with no cooldown of
-// its own (unlike soundManager.play()'s registry-based cooldownMs). Once the
-// Leaderboard Engine fires more often — by design — the same sound can get
-// called twice within a few ms (e.g. a rank-list swap plus its scene's intro
-// beat). This is a single, shared guard applied to every exported sound here,
-// not just leaderboard ones, so nothing in the Celebration Engine can
-// double-play from a redundant call.
-const SOUND_COOLDOWN_MS = 150;
-const lastPlayedAt = new Map<string, number>();
-
-/** Returns true (and records the call) the first time `name` is invoked
- * within the cooldown window; false on a redundant call to be skipped. */
-function shouldPlay(name: string): boolean {
-  const now = Date.now();
-  const last = lastPlayedAt.get(name) ?? 0;
-  if (now - last < SOUND_COOLDOWN_MS) return false;
-  lastPlayedAt.set(name, now);
-  return true;
-}
-
-function scheduleTone(bus: { ctx: AudioContext; output: GainNode }, opts: ToneOptions) {
-  const { ctx, output } = bus;
-  const {
-    freq,
-    at = 0,
-    dur = 0.18,
-    type = 'sine',
-    gain = 0.2,
-    slideTo,
-    detune = 0,
-  } = opts;
-
-  const t0 = ctx.currentTime + at;
-
-  // Layer 1: fundamental (sine — soft body)
-  const osc = ctx.createOscillator();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, t0);
-  if (detune) osc.detune.setValueAtTime(detune, t0);
-  if (slideTo !== undefined) {
-    osc.frequency.exponentialRampToValueAtTime(Math.max(1, slideTo), t0 + dur);
-  }
-
-  const env = ctx.createGain();
-  env.gain.setValueAtTime(0.0001, t0);
-  env.gain.exponentialRampToValueAtTime(gain, t0 + 0.012);
-  env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-
-  osc.connect(env);
-  env.connect(output);
-  osc.start(t0);
-  osc.stop(t0 + dur + 0.05);
-}
-
-function scheduleNoise(
-  bus: { ctx: AudioContext; output: GainNode },
-  opts: { at?: number; dur?: number; gain?: number; filterFrom?: number; filterTo?: number; q?: number }
-) {
-  const { ctx, output } = bus;
-  const {
-    at = 0,
-    dur = 0.25,
-    gain = 0.15,
-    filterFrom = 4000,
-    filterTo,
-    q = 0.8,
-  } = opts;
-
-  const t0 = ctx.currentTime + at;
-
-  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * dur));
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
-  }
-
-  const src = ctx.createBufferSource();
-  src.buffer = buffer;
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(filterFrom, t0);
-  if (filterTo !== undefined) {
-    filter.frequency.exponentialRampToValueAtTime(Math.max(40, filterTo), t0 + dur);
-  }
-  filter.Q.value = q;
-
-  const env = ctx.createGain();
-  env.gain.setValueAtTime(0.0001, t0);
-  env.gain.exponentialRampToValueAtTime(gain, t0 + 0.02);
-  env.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-
-  src.connect(filter);
-  filter.connect(env);
-  env.connect(output);
-  src.start(t0);
-  src.stop(t0 + dur + 0.05);
 }
 
 // ─── Reward / claim moments ─────────────────────────────────────────────────
@@ -315,20 +201,6 @@ export function playLevelUpFanfare() {
   scheduleSparkleDust(bus, 0.5);
   // Timpani-ish thump under the final hit
   scheduleTone(bus, { freq: 130.81, at: 0.42, dur: 0.4, type: 'sine', gain: 0.16, slideTo: 65 });
-}
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function scheduleSparkleDust(bus: { ctx: AudioContext; output: GainNode }, startAt: number) {
-  for (let i = 0; i < 5; i++) {
-    scheduleTone(bus, {
-      freq: 1567.98 + Math.random() * 1046.5,
-      at: startAt + i * 0.06,
-      dur: 0.1,
-      type: 'sine',
-      gain: 0.045,
-    });
-  }
 }
 
 /** Convenience guard for callers that want to know before doing work. */
