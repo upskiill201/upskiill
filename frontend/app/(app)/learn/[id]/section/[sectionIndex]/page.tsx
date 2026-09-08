@@ -721,7 +721,6 @@ function SectionViewContent({
 
   const deepenTitle = deepenData?.collectionTitle || 'More Rabbit Holes! 🐰';
   const deepenDesc = deepenData?.collectionDescription || 'Explore these helpful resources to master the topic.';
-  const nextStepConfig = deepenData?.recommendedNextStep || { type: 'practice' };
 
   const [isCompletingLesson, setIsCompletingLesson] = useState(false);
   const [finishError, setFinishError] = useState<string | null>(null);
@@ -1000,32 +999,6 @@ function SectionViewContent({
       }
     }
     return rows;
-  };
-
-  const getNextStepInfo = (type: string) => {
-    switch (type) {
-      case 'continue':
-        return {
-          title: 'Next Lesson!',
-          desc: 'Keep moving forward to the next lesson.'
-        };
-      case 'practice':
-        return {
-          title: 'Practice what you\'ve learned!',
-          desc: 'Reinforce your knowledge with a quick challenge.'
-        };
-      case 'project':
-        return {
-          title: 'Submit your project!',
-          desc: 'Upload your work to apply what you\'ve learned.'
-        };
-      case 'explore':
-      default:
-        return {
-          title: 'Explore more topics!',
-          desc: 'Check out other courses or lessons.'
-        };
-    }
   };
 
   const getResourceIconInfo = (type: string) => {
@@ -2192,21 +2165,6 @@ function SectionViewContent({
                       ⚠️ {finishError}
                     </div>
                   )}
-                  {/* Recommended Next Step Banner */}
-                  <div className={styles.nextStepBanner}>
-                    <div className={styles.nextStepIconCircle}>
-                      {nextStepConfig.type === 'practice' ? '🎯' : nextStepConfig.type === 'project' ? '🏆' : nextStepConfig.type === 'explore' ? '🔍' : '🚀'}
-                    </div>
-                    <div className={styles.nextStepTextGroup}>
-                      <span className={styles.nextStepBadge}>RECOMMENDED NEXT STEP</span>
-                      <h5 className={styles.nextStepTitle}>{getNextStepInfo(nextStepConfig.type).title}</h5>
-                      <p className={styles.nextStepDesc}>{getNextStepInfo(nextStepConfig.type).desc}</p>
-                    </div>
-                    <button className={styles.nextStepArrowBtn} onClick={handleDeepenFinish}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </button>
-                  </div>
-
                   {/* Finish Lesson Button */}
                   <button 
                     className={styles.finishLessonBtn3D}
