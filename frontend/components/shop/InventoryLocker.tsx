@@ -11,11 +11,13 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Package } from 'lucide-react';
 import ShopItemArt from '../shop-engine/ShopItemArt';
 import { rarityStyle, SLOT_LABELS, type CosmeticSlot } from '@/lib/shop/cosmetics';
 import { equipItem, fetchInventory, ShopError } from '@/lib/shop/api';
 import type { ShopInventory, ShopItem } from '@/lib/shop/types';
+import { playHaptic } from '@/lib/haptics';
 import styles from './InventoryLocker.module.css';
 
 const SLOT_ORDER: CosmeticSlot[] = ['FRAME', 'BACKGROUND', 'CELEBRATION_FX', 'XP_FX'];
@@ -31,6 +33,14 @@ export default function InventoryLocker({
   const [inventory, setInventory] = useState<ShopInventory | null>(null);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Set only after the server confirms the swap (not optimistically on
+  // click) — the chip's "snap into place" pop should follow the state
+  // actually changing, not a request that might still fail. Equipping was
+  // previously an instant, near-silent CSS border-fade with no haptic or
+  // motion at all; the haptic on click stays optimistic (immediate tactile
+  // response to the tap), the pop below is the confirmed reaction.
+  const [justEquippedId, setJustEquippedId] = useState<string | null>(null);
+  const reducedMotion = useReducedMotion();
 
   const load = useCallback(async () => {
     try {
@@ -50,10 +60,15 @@ export default function InventoryLocker({
 
   const handleEquip = async (item: ShopItem, equipped: boolean) => {
     if (busyId) return;
+    playHaptic('selection');
     setBusyId(item.id);
     try {
       await equipItem(item.id, equipped);
       await load();
+      if (equipped) {
+        setJustEquippedId(item.id);
+        setTimeout(() => setJustEquippedId(null), 650);
+      }
     } catch (e) {
       onError?.(e instanceof ShopError ? e.message : 'Could not change that.');
     } finally {
@@ -99,7 +114,7 @@ export default function InventoryLocker({
                 const isEquipped = item.id === equippedId;
                 const tone = rarityStyle(item.rarity);
                 return (
-                  <button
+                  <motion.button
                     key={item.id}
                     type="button"
                     className={isEquipped ? styles.chipEquipped : styles.chip}
@@ -107,6 +122,12 @@ export default function InventoryLocker({
                     disabled={busyId === item.id}
                     onClick={() => void handleEquip(item, !isEquipped)}
                     aria-pressed={isEquipped}
+                    animate={
+                      justEquippedId === item.id && !reducedMotion
+                        ? { scale: [1, 1.12, 1] }
+                        : { scale: 1 }
+                    }
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
                   >
                     <ShopItemArt
                       art={item.art}
@@ -120,7 +141,7 @@ export default function InventoryLocker({
                         <Check size={12} strokeWidth={3.2} />
                       </span>
                     )}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

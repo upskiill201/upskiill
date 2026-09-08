@@ -25,6 +25,11 @@
 }
 
 /* ─── Candy-3D variant (opt-in only, e.g. shop coin balance card) ─── */
+/* The stat-increment glow (streak going up) is driven imperatively via
+   Framer's animation controls on the button's boxShadow in StatPill.tsx,
+   not a CSS class — reduced-motion is handled there by skipping the
+   .start() call entirely. */
+
 .candy.pillBtn {
   border: 2px solid #E2E8F0;
   background: #FFFFFF;
