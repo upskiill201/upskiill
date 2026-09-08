@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import useSWR from 'swr';
 import Image from 'next/image';
 import {
   FaChartSimple,
@@ -18,6 +19,7 @@ import {
 } from 'react-icons/fa6';
 import { playHaptic } from '@/lib/haptics';
 import { useGamification } from '@/context/GamificationContext';
+import { fetcher } from '@/lib/swr';
 import styles from './LearningStatsCard.module.css';
 
 interface DayActivity {
@@ -41,6 +43,21 @@ interface StatsSummary {
   /** Real Apply-phase quiz average (0–100) or null when no scored quiz yet. */
   accuracyRate: number | null;
   rankPercentile: string;
+}
+
+/** Shape of the raw /api/v2/progress/stats-summary payload before defaulting. */
+interface RawStatsResponse {
+  lessonsCompleted?: number;
+  hoursLearned?: string;
+  xpEarned?: number;
+  totalXp?: number;
+  weeklyXp?: number;
+  weeklyTarget?: number;
+  activeDays?: number;
+  coursesCompleted?: number;
+  accuracyRate?: number | null;
+  rankPercentile?: string;
+  weekActivity?: DayActivity[];
 }
 
 interface CalendarDay {
@@ -85,38 +102,15 @@ export default function LearningStatsCard() {
   const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
-  const [stats, setStats] = useState<StatsSummary>(EMPTY_STATS);
-  const [weekActivity, setWeekActivity] = useState<DayActivity[]>(EMPTY_WEEK);
-  /** True only until the first payload for the current filter arrives. */
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Shared SWR cache (lib/swr.ts) keyed by filter + timezone offset — a
+  // revisit, or flipping back to a previously-viewed tab, paints from cache
+  // immediately instead of re-flashing the skeleton on every mount/tab click.
+  const offset = useMemo(() => new Date().getTimezoneOffset(), []);
+  const statsKey = `/api/v2/progress/stats-summary?filter=${timeFilter}&timezoneOffset=${offset}`;
+  const { data, error: swrError, isLoading, mutate } = useSWR<RawStatsResponse>(statsKey, fetcher);
 
-  const abortRef = useRef<AbortController | null>(null);
-  const lastFetchAtRef = useRef(0);
-  const filterRef = useRef(timeFilter);
-  filterRef.current = timeFilter;
-
-  const fetchStats = useCallback(async (filter: 'week' | 'month' | 'all', opts?: { silent?: boolean }) => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    if (!opts?.silent) {
-      setLoading(true);
-    }
-    try {
-      const offset = new Date().getTimezoneOffset();
-      const res = await fetch(
-        `/api/v2/progress/stats-summary?filter=${filter}&timezoneOffset=${offset}`,
-        { credentials: 'include', signal: controller.signal }
-      );
-
-      if (!res.ok) {
-        throw new Error(`Stats request failed (${res.status})`);
-      }
-
-      const data = await res.json();
-      setStats({
+  const stats: StatsSummary = data
+    ? {
         lessonsCompleted: data.lessonsCompleted ?? 0,
         hoursLearned: data.hoursLearned ?? '0m',
         xpEarned: data.xpEarned ?? 0,
@@ -127,34 +121,24 @@ export default function LearningStatsCard() {
         coursesCompleted: data.coursesCompleted ?? 0,
         accuracyRate: data.accuracyRate ?? null,
         rankPercentile: data.rankPercentile ?? '—',
-      });
-
-      if (Array.isArray(data.weekActivity) && data.weekActivity.length > 0) {
-        setWeekActivity(data.weekActivity);
-      } else {
-        setWeekActivity(EMPTY_WEEK);
       }
-      setError(null);
-      lastFetchAtRef.current = Date.now();
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      console.error('Failed to fetch learning stats:', err);
-      setError('Could not load your stats. Check your connection and try again.');
-    } finally {
-      if (abortRef.current === controller) {
-        setLoading(false);
-      }
-    }
-  }, []);
+    : EMPTY_STATS;
 
+  const weekActivity: DayActivity[] =
+    data && Array.isArray(data.weekActivity) && data.weekActivity.length > 0 ? data.weekActivity : EMPTY_WEEK;
+
+  const loading = isLoading;
+  const error = swrError ? 'Could not load your stats. Check your connection and try again.' : null;
+
+  const lastRevalidateAtRef = useRef(0);
   useEffect(() => {
-    fetchStats(timeFilter);
-
-    // Background refresh whenever the user finishes a lesson or returns to the tab.
-    // Throttled so celebration particle bursts + focus don't hammer the endpoint.
+    // Background refresh whenever the user finishes a lesson or returns to the
+    // tab. Throttled so celebration particle bursts + focus don't hammer the
+    // endpoint faster than SWR's own dedupingInterval would otherwise allow.
     const handleRefresh = () => {
-      if (Date.now() - lastFetchAtRef.current < REFETCH_THROTTLE_MS) return;
-      fetchStats(filterRef.current, { silent: true });
+      if (Date.now() - lastRevalidateAtRef.current < REFETCH_THROTTLE_MS) return;
+      lastRevalidateAtRef.current = Date.now();
+      void mutate();
     };
     window.addEventListener('rewardrun:particle-land', handleRefresh);
     window.addEventListener('focus', handleRefresh);
@@ -162,9 +146,8 @@ export default function LearningStatsCard() {
     return () => {
       window.removeEventListener('rewardrun:particle-land', handleRefresh);
       window.removeEventListener('focus', handleRefresh);
-      abortRef.current?.abort();
     };
-  }, [timeFilter, fetchStats]);
+  }, [mutate]);
 
   const handleTabClick = (filter: 'week' | 'month' | 'all') => {
     playHaptic('light');
@@ -173,7 +156,7 @@ export default function LearningStatsCard() {
 
   const handleRetry = () => {
     playHaptic('light');
-    fetchStats(timeFilter);
+    void mutate();
   };
 
   const maxXp = Math.max(...weekActivity.map((d) => d.xp), 40);
@@ -440,8 +423,16 @@ const DetailedInsightsModal: React.FC<DetailedInsightsModalProps> = ({
   longestStreak,
   onClose,
 }) => {
-  const [calendar, setCalendar] = useState<CalendarDay[] | null>(null);
-  const [calendarError, setCalendarError] = useState(false);
+  // Shared SWR cache keyed by month — reopening the modal within the same
+  // month paints the calendar instantly instead of re-fetching every time.
+  const calendarKey = useMemo(() => {
+    const now = new Date();
+    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    return `/api/streak/calendar?month=${month}&timezoneOffset=${now.getTimezoneOffset()}`;
+  }, []);
+  const { data: calendarData, error: calendarSwrError } = useSWR<{ days?: CalendarDay[] }>(calendarKey, fetcher);
+  const calendar = calendarData ? (Array.isArray(calendarData.days) ? calendarData.days : []) : null;
+  const calendarError = Boolean(calendarSwrError);
 
   // Close on Escape
   useEffect(() => {
@@ -458,37 +449,6 @@ const DetailedInsightsModal: React.FC<DetailedInsightsModalProps> = ({
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
-    };
-  }, []);
-
-  // Fetch the current-month activity calendar when the modal opens
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const now = new Date();
-        const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const offset = new Date().getTimezoneOffset();
-        const res = await fetch(
-          `/api/streak/calendar?month=${month}&timezoneOffset=${offset}`,
-          { credentials: 'include' }
-        );
-        if (!res.ok) throw new Error(`Calendar failed (${res.status})`);
-        const data = await res.json();
-        if (!cancelled) {
-          setCalendar(Array.isArray(data.days) ? data.days : []);
-          setCalendarError(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error('Failed to fetch streak calendar:', err);
-          setCalendarError(true);
-        }
-      }
-    };
-    load();
-    return () => {
-      cancelled = true;
     };
   }, []);
 

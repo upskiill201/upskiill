@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bot, Lock, BookOpen, Target, Check, Trophy, ChevronRight } from 'lucide-react';
 import { getLeagueMeta } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
+import { fetcher } from '@/lib/swr';
 import { useComingSoon } from '@/components/layout/StudentShell';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
@@ -44,31 +46,25 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
   // never reflected the real join rule (any XP joins you, not a lesson
   // count) or the learner's actual rank. Best-effort: a failed/slow fetch
   // just leaves the card in its loading skeleton, never blocks the sidebar.
-  const [leagueStanding, setLeagueStanding] = useState<{
-    joined: boolean;
-    league: string;
-    myRank: number | null;
-    cohortSize: number;
-  } | null>(null);
+  //
+  // Shared SWR cache (lib/swr.ts) — a revisit to the dashboard paints the
+  // league card instantly from cache instead of re-flashing its skeleton.
+  const { data: leagueData } = useSWR<{
+    joined?: boolean;
+    league?: string;
+    myRank?: number | null;
+    standings?: unknown[];
+    cohortSize?: number;
+  }>('/api/leagues/me', fetcher);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/leagues/me', { credentials: 'include' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (cancelled || !data) return;
-        setLeagueStanding({
-          joined: Boolean(data.joined),
-          league: data.league ?? 'BRONZE',
-          myRank: data.myRank ?? null,
-          cohortSize: Array.isArray(data.standings) ? data.standings.length : (data.cohortSize ?? 0),
-        });
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const leagueStanding = leagueData
+    ? {
+        joined: Boolean(leagueData.joined),
+        league: leagueData.league ?? 'BRONZE',
+        myRank: leagueData.myRank ?? null,
+        cohortSize: Array.isArray(leagueData.standings) ? leagueData.standings.length : (leagueData.cohortSize ?? 0),
+      }
+    : null;
 
   useEffect(() => {
     if (isEligibleForReward || !nextRewardClaimInMs) {

@@ -80,6 +80,11 @@ function tzParam(): string {
   return `timezoneOffset=${new Date().getTimezoneOffset()}`;
 }
 
+/** Exported so hooks/useMonthlyQuest.ts's SWR key matches this module's writes exactly. */
+export function monthlyQuestKey(): string {
+  return `/api/v2/monthly-quest/current?${tzParam()}`;
+}
+
 // ─── API ────────────────────────────────────────────────────────────────────
 
 // CORRECTION: these were previously written as `mutate(key, fetcher(key))`
@@ -93,7 +98,7 @@ function tzParam(): string {
 // dedupeInFlight collapses genuinely-concurrent callers onto one request while
 // still writing through to the SWR cache for anything reading it there.
 export async function fetchCurrentQuest(): Promise<MonthlyQuest> {
-  const endpoint = `/api/v2/monthly-quest/current?${tzParam()}`;
+  const endpoint = monthlyQuestKey();
   try {
     return await dedupeInFlight(endpoint, () =>
       mutate<MonthlyQuest>(endpoint, fetcher(endpoint)) as Promise<MonthlyQuest>,

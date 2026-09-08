@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { mutate } from 'swr';
+import useSWR from 'swr';
 import { Clock, BookOpen, Check, ArrowRight } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { usePathname } from 'next/navigation';
@@ -80,11 +80,43 @@ export default function TodaysMissionsCard() {
     return () => unregisterNativeWidget('mission-card');
   }, [registerNativeWidget, unregisterNativeWidget]);
 
-  const [missions, setMissions] = useState<MissionItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Shared SWR cache (lib/swr.ts), same key HeraldContext's claimables sweep
+  // already polls — reading it directly instead of setMissions(await
+  // mutate(key, fetcher(key))) means a revisit paints from cache instantly
+  // instead of re-flashing the skeleton on every mount.
+  const endpoint = `/api/v2/missions/today?timezoneOffset=${new Date().getTimezoneOffset()}`;
+  const { data, isLoading, mutate } = useSWR<{ missions: MissionItem[] }>(endpoint, fetcher);
+  const baseMissions = data && Array.isArray(data.missions) && data.missions.length > 0 ? data.missions : null;
+
+  // Live incremental patches from the `missions:updated` event land here,
+  // layered on top of whatever SWR currently has — mirrors the
+  // WeeklyLuckySpinCard/MysteryChestCard localOverride pattern so a mission
+  // ticking over doesn't need a full refetch to show immediately.
+  const [localOverride, setLocalOverride] = useState<MissionItem[] | null>(null);
+  const missions = localOverride ?? baseMissions ?? (isLoading ? [] : getFallbackMissions());
+  const loading = isLoading;
+  // Derived straight from the latest fetch — matches the original
+  // fetch-only computation (not re-evaluated on every local patch) without
+  // needing its own state/effect.
+  const showCelebrationBanner = baseMissions
+    ? baseMissions.every((m) => m.isClaimed || m.status === 'CLAIMED')
+    : false;
+
+  const latestMissionsRef = useRef<MissionItem[]>(missions);
+  useEffect(() => {
+    latestMissionsRef.current = missions;
+  }, [missions]);
+
   const [resetTimer, setResetTimer] = useState('12h 45m');
   const [isWarningReset, setIsWarningReset] = useState(false);
-  const [showCelebrationBanner, setShowCelebrationBanner] = useState(false);
+
+  // A fresh payload supersedes any stale local patch from before it arrived
+  // — resetting local override state in reaction to a new SWR payload, not
+  // deriving render output; no non-effect way to react to that arrival.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (baseMissions) setLocalOverride(null);
+  }, [data]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -108,41 +140,10 @@ export default function TodaysMissionsCard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch Today's Missions from backend API
-  const fetchMissions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const offset = new Date().getTimezoneOffset();
-      const endpoint = `/api/v2/missions/today?timezoneOffset=${offset}`;
-
-      // Routed through SWR's global mutate (not a bare fetch) so this shares
-      // its request + cache with HeraldContext's claimables sweep, which
-      // polls the same endpoint — the two no longer double the network call.
-      const data = await mutate<{ missions: MissionItem[] }>(endpoint, fetcher(endpoint));
-
-      if (data && Array.isArray(data.missions) && data.missions.length > 0) {
-        setMissions(data.missions);
-
-        // Check if all missions are already claimed
-        const allClaimed = data.missions.every((m: MissionItem) => m.isClaimed || m.status === 'CLAIMED');
-        setShowCelebrationBanner(allClaimed);
-        return;
-      }
-      setMissions(getFallbackMissions());
-    } catch (err) {
-      console.error('Failed to fetch today missions:', err);
-      setMissions(getFallbackMissions());
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchMissions();
-    
-    const handleFocus = () => fetchMissions();
-    const handleMissionRefresh = () => fetchMissions();
-    
+    const handleFocus = () => void mutate();
+    const handleMissionRefresh = () => void mutate();
+
     const handleMissionUpdate = (e: any) => {
       const updatedList = e.detail;
       if (updatedList && Array.isArray(updatedList)) {
@@ -152,41 +153,39 @@ export default function TodaysMissionsCard() {
         const localDay = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
           now.getDate()
         ).padStart(2, '0')}`;
-        setMissions(prev => {
-          const next = prev.map(m => {
-            const update = updatedList.find((u: any) => u.userMissionId === m.id);
-            if (update) {
-              const isDone = update.progress >= update.target || update.status === 'COMPLETED';
+        const next = latestMissionsRef.current.map(m => {
+          const update = updatedList.find((u: any) => u.userMissionId === m.id);
+          if (update) {
+            const isDone = update.progress >= update.target || update.status === 'COMPLETED';
 
-              // Herald signal: mission just became claimable
-              if (isDone && !m.isCompleted && !m.isClaimed) {
-                const transitionKey = `mission-${m.id}-${localDay}`;
-                const rewardType = m.reward.type === 'GEMS' ? 'COINS' : m.reward.type as 'XP' | 'COINS';
-                enqueueHeraldNotification({
-                  id: `herald-mission-${m.id}-${Date.now()}`,
-                  type: 'MISSION',
-                  entityId: m.id,
-                  transitionKey,
-                  title: m.title,
-                  subtitle: `+${m.reward.amount} ${rewardType}`,
-                  rewardType,
-                  rewardAmount: m.reward.amount,
-                  missionId: m.id,
-                });
-              }
-
-              return {
-                ...m,
-                currentProgress: update.progress,
-                targetValue: update.target,
-                status: update.status,
-                isCompleted: isDone
-              };
+            // Herald signal: mission just became claimable
+            if (isDone && !m.isCompleted && !m.isClaimed) {
+              const transitionKey = `mission-${m.id}-${localDay}`;
+              const rewardType = m.reward.type === 'GEMS' ? 'COINS' : m.reward.type as 'XP' | 'COINS';
+              enqueueHeraldNotification({
+                id: `herald-mission-${m.id}-${Date.now()}`,
+                type: 'MISSION',
+                entityId: m.id,
+                transitionKey,
+                title: m.title,
+                subtitle: `+${m.reward.amount} ${rewardType}`,
+                rewardType,
+                rewardAmount: m.reward.amount,
+                missionId: m.id,
+              });
             }
-            return m;
-          });
-          return next;
+
+            return {
+              ...m,
+              currentProgress: update.progress,
+              targetValue: update.target,
+              status: update.status,
+              isCompleted: isDone
+            };
+          }
+          return m;
         });
+        setLocalOverride(next);
       }
     };
 
@@ -194,14 +193,14 @@ export default function TodaysMissionsCard() {
     document.addEventListener('visibilitychange', handleFocus);
     window.addEventListener('mission:refresh', handleMissionRefresh);
     window.addEventListener('missions:updated', handleMissionUpdate);
-    
+
     return () => {
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleFocus);
       window.removeEventListener('mission:refresh', handleMissionRefresh);
       window.removeEventListener('missions:updated', handleMissionUpdate);
     };
-  }, [fetchMissions, pathname]);
+  }, [mutate, pathname]);
 
   // Claim Mission Reward Handler — full-page Celebration Engine sequence:
   // QUEST scene (mission rows + shine on the completed one) → CLAIM scene
@@ -256,7 +255,7 @@ export default function TodaysMissionsCard() {
           if (typeof data?.userBalances?.coins === 'number') balances.COINS = data.userBalances.coins;
           return balances;
         },
-        onComplete: () => void fetchMissions(),
+        onComplete: () => void mutate(),
       },
     ]);
   };
