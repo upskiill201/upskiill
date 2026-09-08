@@ -390,6 +390,29 @@ function SectionViewContent({
   );
   const currentActiveLessonIndex = activeLessonIndex === -1 ? lessons.length - 1 : activeLessonIndex;
 
+  /**
+   * Is this lesson behind the paywall for THIS learner?
+   *
+   * Progress ("have you finished the previous lesson?") and entitlement ("have
+   * you paid?") are two independent gates and must both be consulted. Deriving
+   * lock state from progress alone silently unlocked the first paid lesson the
+   * moment a learner finished the free preview, because the first incomplete
+   * lesson is by definition never "ahead of" the progress cursor.
+   *
+   * The server remains the authority — this only decides what the map draws;
+   * /api/courses/:id/lessons/:lessonId still 403s on its own.
+   */
+  const isPaywalled = useCallback(
+    (lessonId: string) => {
+      // Access not resolved yet: assume nothing is unlocked. Failing closed
+      // here means a slow/failed access fetch shows a lock, never free content.
+      if (!accessInfo) return true;
+      if (accessInfo.hasAccess) return false;
+      return !(accessInfo.freePreviewLessonIds ?? []).includes(lessonId);
+    },
+    [accessInfo],
+  );
+
   const [activePopoverIndex, setActivePopoverIndex] = useState<number | null>(null);
   const [showGuidebook, setShowGuidebook] = useState(false);
   const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
@@ -419,8 +442,11 @@ function SectionViewContent({
     // completed or unpublished since the notification was sent.
     if (idx === -1 || idx > currentActiveLessonIndex) return;
 
-    setActiveLesson(lessons[idx]);
-    setLessonPhase('start');
+    // Open it through the guarded endpoint rather than handing over the
+    // catalog object directly. Anyone can type ?lesson=<id>, so this path gets
+    // the same server-side entitlement check (and 403 → unlock screen) as a
+    // normal tap; short-circuiting it made the URL bar a paywall bypass.
+    void openLesson(requestedLessonId);
 
     // Strip the param so a refresh does not re-enter the lesson. Rewrite the
     // CURRENT pathname rather than rebuilding it — this component does not have
@@ -2326,8 +2352,13 @@ function SectionViewContent({
 
                   if (item.type === 'lesson') {
                     isCompleted = completedLessons.includes(item.id);
-                    isActive = item.lessonIndex === currentActiveLessonIndex;
-                    isLocked = item.lessonIndex > currentActiveLessonIndex;
+                    // Locked when EITHER gate says so: sequencing (haven't
+                    // reached it yet) or the paywall (haven't paid for it).
+                    isLocked =
+                      item.lessonIndex > currentActiveLessonIndex ||
+                      isPaywalled(item.id);
+                    isActive =
+                      item.lessonIndex === currentActiveLessonIndex && !isLocked;
                   } else if (item.type === 'challenge') {
                     // Challenge unlocks once the lesson pair before it is done.
                     // mapItems always interleaves [lesson, lesson, challenge],

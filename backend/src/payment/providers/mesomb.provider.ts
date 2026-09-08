@@ -1,4 +1,10 @@
-import { Injectable, Logger, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  HttpException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import {
   IPaymentProvider,
   CreateSubscriptionInput,
@@ -120,9 +126,23 @@ export class MesombProvider implements IPaymentProvider {
 
     const { amount, currency, rateUsed } = localAmountFromUsd(price, country);
 
-    // Mock success ONLY outside production — without real MeSomb credentials
-    // in production this previously activated subscriptions for free.
-    if (!this.mesombClient && process.env.NODE_ENV !== 'production') {
+    // Mock success requires an EXPLICIT opt-in, not merely "NODE_ENV is not
+    // production". A staging box that boots without NODE_ENV set, or with it
+    // set to "staging", is not a licence to mint paid entitlements for any
+    // caller who posts a phone number — that made the free-course path
+    // reachable from the open internet. Fail closed instead.
+    if (!this.mesombClient) {
+      const mockAllowed =
+        process.env.MESOMB_ALLOW_MOCK_PAYMENTS === 'true' &&
+        process.env.NODE_ENV !== 'production';
+      if (!mockAllowed) {
+        this.logger.error(
+          'MeSomb credentials are not configured (MESOMB_APP_KEY missing) — refusing to activate a subscription.',
+        );
+        throw new ServiceUnavailableException(
+          'Mobile Money is temporarily unavailable. Please try Card payment instead.',
+        );
+      }
       this.logger.log(
         `[MeSomb Test Mode] Simulated prompt sent to ${payer} (${chosenService}, ${country.code}, ${amount} ${currency}). Auto-granting course subscription.`,
       );
@@ -157,7 +177,22 @@ export class MesombProvider implements IPaymentProvider {
         reference,
       });
 
-      if (response.isOperationSuccess()) {
+      // ⚠️ isOperationSuccess() is NOT payment confirmation. It returns the
+      // response's `success` flag, which only means "MeSomb accepted the
+      // collect request and dispatched the USSD push" — it is already true
+      // while the learner is still staring at the PIN prompt, and stays true
+      // if they dismiss it. Treating it as settlement handed out free
+      // entitlements to anyone who merely started a payment.
+      //
+      // Money has actually moved only when the transaction itself reports
+      // SUCCESS: response.status is MeSomb's top-level settlement verdict and
+      // isTransactionSuccess() reads transaction.status === 'SUCCESS'.
+      // Anything else is PENDING (the signed webhook is the authority) or an
+      // outright failure.
+      const settled =
+        response.status === 'SUCCESS' || response.isTransactionSuccess();
+
+      if (settled) {
         return {
           success: true,
           provider: 'MESOMB',
@@ -166,6 +201,18 @@ export class MesombProvider implements IPaymentProvider {
           message: 'Payment confirmed via Mobile Money. Course unlocked!',
           rawResponse: response,
         };
+      }
+
+      if (response.status === 'FAILED') {
+        // Tell the learner it failed instead of leaving them waiting on a
+        // prompt that will never arrive.
+        this.logger.warn(
+          `MeSomb collect FAILED for ${payer} (${chosenService}, ${country.code}): ${response.message || 'no message'}`,
+        );
+        throw new BadRequestException(
+          response.message ||
+            'Mobile Money payment failed. No money was taken — please try again.',
+        );
       }
 
       return {
@@ -179,6 +226,11 @@ export class MesombProvider implements IPaymentProvider {
         rawResponse: response,
       };
     } catch (err: any) {
+      // Verdicts we raised ourselves (e.g. an explicit FAILED collect) are
+      // already learner-ready — don't relabel them as a transport failure.
+      if (err instanceof HttpException) {
+        throw err;
+      }
       // Map SDK error classes to messages the learner can act on.
       if (err instanceof InvalidClientRequestError) {
         // Bad payer/service/country — fixable by the user.

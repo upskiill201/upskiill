@@ -65,9 +65,16 @@ interface LearnCourseContentProps {
   course: any;
   completedLessons: string[];
   initialHasAccess: boolean;
+  /** Lesson ids the server says are readable without paying. */
+  freePreviewLessonIds: string[];
 }
 
-function LearnCourseContent({ course, completedLessons, initialHasAccess }: LearnCourseContentProps) {
+function LearnCourseContent({
+  course,
+  completedLessons,
+  initialHasAccess,
+  freePreviewLessonIds,
+}: LearnCourseContentProps) {
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
@@ -157,10 +164,22 @@ function LearnCourseContent({ course, completedLessons, initialHasAccess }: Lear
     return secLessons.every((l: any) => completedLessons.includes(l.id || String(l.index)));
   }).length;
 
+  /**
+   * A section is reachable without paying when it still contains at least one
+   * free-preview lesson. "sIdx > 0" was a stand-in for that and matched the
+   * real rule only by accident: the free preview is the first two lessons of
+   * the COURSE, which can sit inside one section (leaving paid lessons in
+   * section 0) or straddle two (leaving a free lesson in section 1).
+   */
+  const sectionHasFreePreview = (sIdx: number) => {
+    const secLessons = sections[sIdx]?.lessons || [];
+    return secLessons.some((l: any) => freePreviewLessonIds.includes(l.id));
+  };
+
   const handleStartOrContinue = (sIdx?: number) => {
     playHaptic('medium');
     const targetIndex = sIdx !== undefined ? sIdx : currentActiveIndex;
-    if (targetIndex > 0 && !hasAccess) {
+    if (!hasAccess && !sectionHasFreePreview(targetIndex)) {
       // The learner may have just paid — the unlock watcher is still polling,
       // so don't flash the paywall back at them.
       if (isAwaitingUnlock) return;
@@ -177,7 +196,7 @@ function LearnCourseContent({ course, completedLessons, initialHasAccess }: Lear
 
   const handleJumpToSection = (sIdx: number, isLocked: boolean) => {
     playHaptic('medium');
-    if ((isLocked || sIdx > 0) && !hasAccess) {
+    if (!hasAccess && (isLocked || !sectionHasFreePreview(sIdx))) {
       if (!isAwaitingUnlock) {
         router.push(
           buildUnlockHref(
@@ -731,6 +750,7 @@ export default function LearnCoursePage() {
   const [loading, setLoading] = useState(true);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [hasAccess, setHasAccess] = useState(false);
+  const [freePreviewLessonIds, setFreePreviewLessonIds] = useState<string[]>([]);
 
   useEffect(() => {
     const run = async () => {
@@ -759,6 +779,9 @@ export default function LearnCoursePage() {
         if (accessRes.ok) {
           const ad = await accessRes.json();
           setHasAccess(ad.hasAccess === true);
+          setFreePreviewLessonIds(
+            Array.isArray(ad.freePreviewLessonIds) ? ad.freePreviewLessonIds : [],
+          );
         }
       } catch (e) {
         console.error('Failed to load course:', e);
@@ -795,6 +818,7 @@ export default function LearnCoursePage() {
         course={course}
         completedLessons={completedLessons}
         initialHasAccess={hasAccess}
+        freePreviewLessonIds={freePreviewLessonIds}
       />
     </StudentShell>
   );
