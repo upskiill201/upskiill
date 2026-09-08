@@ -1971,9 +1971,14 @@ function SectionViewContent({
                         className={styles.celebrationHeaderRow}
                       >
                         <div className={styles.celebrationHeaderLeft}>
-                          <div className={isAnswerCorrect ? styles.celebrationIconCircleCorrect : styles.celebrationIconCircleWrong}>
+                          <motion.div
+                            className={isAnswerCorrect ? styles.celebrationIconCircleCorrect : styles.celebrationIconCircleWrong}
+                            initial={{ scale: 0.3 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                          >
                             {isAnswerCorrect ? <Check size={20} strokeWidth={4} /> : <X size={20} strokeWidth={4} />}
-                          </div>
+                          </motion.div>
                           <div>
                             <h4 className={isAnswerCorrect ? styles.celebrationTitleCorrect : styles.celebrationTitleWrong}>
                               {isAnswerCorrect ? (isReviewMode ? 'Bullseye! You still got it! 🎯' : 'Awesome!') : 'Incorrect'}
@@ -2155,13 +2160,24 @@ function SectionViewContent({
                       />
                     </svg>
 
+                    {/* Nodes stagger in along the path rather than appearing all
+                        at once — one running index across rows, since map()
+                        runs its callbacks in order within a single render. */}
                     <div className={styles.deepenGrid}>
-                      {getSerpentineRows(activeLesson.resources.slice(0, 8)).map((rowItems, rowIndex) => (
+                      {(() => { let nodeIndex = -1; return getSerpentineRows(activeLesson.resources.slice(0, 8)).map((rowItems, rowIndex) => (
                         <div key={rowIndex} className={styles.deepenGridRow}>
                           {rowItems.map((res: any) => {
                             const iconInfo = getResourceIconInfo(res.type);
+                            nodeIndex += 1;
+                            const delay = nodeIndex * 0.06;
                             return (
-                              <div key={res.id} className={styles.deepenGridItem}>
+                              <motion.div
+                                key={res.id}
+                                className={styles.deepenGridItem}
+                                initial={{ opacity: 0, y: 16, scale: 0.85 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ delay, type: 'spring', stiffness: 380, damping: 22 }}
+                              >
                                 <motion.button
                                   type="button"
                                   onClick={() => { playHaptic('medium'); setSelectedResource(res); }}
@@ -2178,11 +2194,11 @@ function SectionViewContent({
                                   {iconInfo.icon}
                                 </motion.button>
                                 <span className={styles.deepenNodeTitle}>{res.title || 'Resource'}</span>
-                              </div>
+                              </motion.div>
                             );
                           })}
                         </div>
-                      ))}
+                      )); })()}
                     </div>
                   </div>
                 ) : (
