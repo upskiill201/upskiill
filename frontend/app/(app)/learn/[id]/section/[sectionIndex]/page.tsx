@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare, Shield } from 'lucide-react';
 import { fetchInventory, usePowerUp } from '@/lib/shop/api';
 import { playHaptic } from '@/lib/haptics';
@@ -17,7 +17,6 @@ import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
 import { useCourseDetail, useCourseProgress, useCourseAccess } from '@/hooks/useCourse';
 import { buildUnlockHref } from '@/lib/return-to';
 import { fireConfetti } from '@/lib/confetti';
-import { playWinSound } from '@/utils/audio';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
 import {
   playAnswerWrong,
@@ -25,8 +24,11 @@ import {
   playComboCorrect,
   playPhaseUnlock,
 } from '@/lib/audio/lessonAudio';
+import { playChestBurst, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
 import {
   pickComboLine,
+  pickLessonWelcomeLines,
+  pickNodeUnlockLine,
   pickPhaseUnlockLine,
   pickUnlockedButtonLine,
   pickWrongAnswerLine,
@@ -38,6 +40,7 @@ import PhaseTransition from '@/components/learn/PhaseTransition';
 import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
 import LearnProgressBar, { useLearnProgress } from '@/components/learn/LearnProgressBar';
 import WordCountBadge from '@/components/learn/WordCountBadge';
+import { SpeechBubble } from '@/components/onboarding/SpeechBubble';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import { CURRENCY_ICONS } from '@/components/celebration/currency';
@@ -353,11 +356,13 @@ function SectionViewContent({
   // the XP balance itself. The number stays exactly what applyLessonReward
   // sets on completion; this is a preview of it, not an early payout.
   const { triggerRewardAnimation } = useRewardAnimation();
+  const reducedMotion = useReducedMotion();
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
   const mapRef = useRef<HTMLDivElement>(null);
+  const startMascotRef = useRef<HTMLDivElement>(null);
   const xpCardRef = useRef<HTMLDivElement>(null);
   const coinCardRef = useRef<HTMLDivElement>(null);
   const lessonStartTimeRef = useRef<number>(Date.now());
@@ -422,6 +427,11 @@ function SectionViewContent({
   const [activePopoverIndex, setActivePopoverIndex] = useState<number | null>(null);
   const [showGuidebook, setShowGuidebook] = useState(false);
   const [justUnlockedIndex, setJustUnlockedIndex] = useState<number | null>(null);
+  // False for the whole anticipation window — the target node renders as
+  // still-locked even though the data already unlocked it, so the payoff at
+  // t=1400ms is the moment it visibly happens rather than a decoration on top
+  // of an already-changed state. See the effect below for the full beat map.
+  const [unlockRevealed, setUnlockRevealed] = useState(false);
   const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
   const [activeLesson, setActiveLesson] = useState<any>(null);
   const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
@@ -490,6 +500,17 @@ function SectionViewContent({
   }, []);
 
   const isReviewMode = activeLesson ? completedLessons.includes(activeLesson.id) : false;
+  // Picked once per lesson (keyed by id, not re-rolled on every re-render —
+  // SpeechBubble's typewriter would restart mid-sentence otherwise). `id` is
+  // an intentional extra invalidation key, not something the body reads: two
+  // consecutive fresh (non-review) lessons both have isReviewMode === false,
+  // and without `id` here the memo would reuse lesson A's greeting for
+  // lesson B since the referenced dependency never changed.
+  const startWelcomeLines = React.useMemo(
+    () => pickLessonWelcomeLines({ isReviewMode }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeLesson?.id, isReviewMode]
+  );
 
   useEffect(() => {
     if (activeLesson) {
@@ -498,6 +519,22 @@ function SectionViewContent({
   }, [activeLesson]);
 
   // PHASE 1 & 3: Camera Auto-Scroll & Lock Shatter Audio Choreography
+  //
+  // The reveal used to be backwards: the node's color/icon already showed
+  // "unlocked" the instant this screen mounted (React just renders whatever
+  // `currentActiveLessonIndex` says right now), and the sound+confetti at
+  // t=1400ms landed on top of a change that had already happened — a
+  // decoration, not a cause. `unlockRevealed` below is what fixes that: while
+  // it's false the node JSX (further down) is told to render as still-locked
+  // even though the data already says otherwise, so the payoff at t=1400ms is
+  // the moment the lock actually visibly breaks, not an afterthought.
+  //
+  // The three beats: t=0 the target node starts a quiet charging glow (pure
+  // CSS, see .duoPedestalCharging) so the eye is drawn there before anything
+  // happens — anticipation is what makes a payoff read as a payoff, not a
+  // surprise. t=700ms a soft rising sparkle previews it's about to land.
+  // t=1400ms the lock shatters: icon swap, chest-burst sound, confetti, Tey
+  // reacts. t=3200ms everything settles back to normal chrome.
   useEffect(() => {
     if (lessonPhase === 'start' && mapRef.current) {
       const targetNodeIdx = justUnlockedIndex !== null ? justUnlockedIndex : currentActiveLessonIndex;
@@ -516,18 +553,33 @@ function SectionViewContent({
         }
       }
 
-      // Phase 3: Lock Shatter & Sound Timing (plays at exact peak moment: t = 1.4s)
       if (justUnlockedIndex !== null) {
-        const unlockAudioTimer = setTimeout(() => {
+        setUnlockRevealed(false);
+
+        const anticipationTimer = setTimeout(() => {
           try {
-            playWinSound();
+            playSparkle();
+          } catch {}
+        }, 700);
+
+        // Phase 3: Lock Shatter & Sound Timing (plays at exact peak moment: t = 1.4s)
+        const unlockAudioTimer = setTimeout(() => {
+          setUnlockRevealed(true);
+          try {
+            playChestBurst();
             fireConfetti({
-              particleCount: 40,
-              spread: 60,
+              particleCount: 60,
+              spread: 70,
               origin: { y: 0.5 },
               colors: ['#58CC02', '#0172FD', '#EAB308'],
             });
           } catch {}
+          const item = mapItems[targetNodeIdx];
+          if (item?.type === 'lesson') {
+            const isFirstEver = item.lessonIndex === 0 && completedInSection === 0;
+            const isFinal = item.lessonIndex === totalLessons - 1;
+            sayTey(pickNodeUnlockLine(isFirstEver ? 'first' : isFinal ? 'final' : 'mid'), 'cheer');
+          }
         }, 1400);
 
         const resetTimer = setTimeout(() => {
@@ -535,11 +587,25 @@ function SectionViewContent({
         }, 3200);
 
         return () => {
+          clearTimeout(anticipationTimer);
           clearTimeout(unlockAudioTimer);
           clearTimeout(resetTimer);
         };
       }
     }
+    // mapItems/completedInSection/totalLessons/sayTey deliberately excluded:
+    // `mapItems` (and the `lessons` array it's built from) get a new
+    // reference most renders — see the pre-existing "could make deps change
+    // every render" warning on `lessons` above. Adding it here would re-run
+    // this effect on any unrelated re-render during the 1.4-3.2s unlock
+    // window, clearing and rescheduling every timer from t=0 and potentially
+    // never reaching the peak. The closure already reads their current
+    // values correctly at the moment this effect actually runs (on
+    // `justUnlockedIndex` changing) — only the *rerun trigger* needs to
+    // stay narrow, not what the closure sees. `sayTey` is a stable
+    // useCallback and safe to omit for the same "keep the trigger narrow"
+    // reason.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonPhase, currentActiveLessonIndex, justUnlockedIndex]);
 
   const targetLevelXpNeeded = 100 * (userLevel || 1);
@@ -1553,7 +1619,9 @@ function SectionViewContent({
         
         {/* Main Column */}
         <div className={styles.mainColumn}>
-          {activeLesson && lessonPhase === 'start' ? (
+          {activeLesson ? (
+          <PhaseTransition phaseKey={lessonPhase === 'start' ? 'start' : 'player'} variant="portal">
+          {lessonPhase === 'start' ? (
             <div className={styles.lessonPlayerInnerContainer}>
               {/* Duolingo Green Header matching design */}
               <div className={styles.duolingoHeader}>
@@ -1629,11 +1697,21 @@ function SectionViewContent({
 
               {/* Start Screen Body */}
               <div className={styles.startScreenBody}>
-                {/* Mascot on Left with Floating Glowing Star */}
+                {/* Mascot on Left, greeting via SpeechBubble, with a small
+                    ambient sparkle field around it. */}
                 <div className={styles.mascotLeftCol}>
-                  <div className={styles.mascotContainer}>
+                  <div className={styles.startBubbleWrap}>
+                    <SpeechBubble lines={startWelcomeLines} tailAlign={0.5} mascotRef={startMascotRef} />
+                  </div>
+                  <div className={styles.mascotContainer} ref={startMascotRef}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles.mascotStar}>
                       <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#58cc02" />
+                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className={styles.mascotStar2}>
+                      <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#0172FD" />
+                    </svg>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={styles.mascotStar3}>
+                      <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#EAB308" />
                     </svg>
                     <Image
                       src="/lesson Player/Start_lesson_Tey.webp"
@@ -1727,7 +1805,10 @@ function SectionViewContent({
               <div className={styles.btnContainerCentred}>
                 <button
                   onClick={() => {
-                    playHaptic('medium');
+                    // Audio suppressed on the haptic — the whoosh carries this
+                    // moment, a generic UI click underneath it would muddy it.
+                    playHaptic('medium', false);
+                    playWhoosh('up');
                     setLessonPhase('learn');
                   }}
                   className={styles.startLessonBtn3D}
@@ -1736,7 +1817,7 @@ function SectionViewContent({
                 </button>
               </div>
             </div>
-          ) : activeLesson && lessonPhase !== 'start' ? (
+          ) : (
             <LessonShell
               phase={lessonPhase}
               onClose={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
@@ -2313,8 +2394,15 @@ function SectionViewContent({
 
               </PhaseTransition>
         </LessonShell>
+          )}
+          </PhaseTransition>
           ) : (
             <>
+              {/* Tey reacting to a node unlocking — fixed variant since the
+                  map has no LessonShell ancestor for the anchored one to
+                  position against. */}
+              <TeyLessonCoach message={teyLine} token={teyToken} tone={teyTone} variant="fixed" />
+
               {/* Duolingo Green Header */}
               <motion.div className={styles.duolingoHeader} variants={nodeVariants} custom={0}>
                 <div className={styles.headerLeft}>
@@ -2423,6 +2511,15 @@ function SectionViewContent({
                   const isLeftBubble = multiplier >= 0;
                   const theme = item.type === 'lesson' ? getLessonColorTheme(item.lessonIndex) : { main: '#58cc02', shadow: '#46a302' };
 
+                  // This node is mid-reveal: the data already says it's
+                  // unlocked, but the anticipation window (see the effect
+                  // above) hasn't reached its peak yet — render it as still
+                  // locked so the peak is the moment it visibly changes, not
+                  // a decoration on top of a change that already happened.
+                  const isRevealPending = item.type === 'lesson' && justUnlockedIndex === idx && !unlockRevealed;
+                  const displayLocked = isRevealPending ? true : isLocked;
+                  const displayActive = isRevealPending ? false : isActive;
+
                   return (
                     <div 
                       key={item.id} 
@@ -2438,7 +2535,7 @@ function SectionViewContent({
                       >
                         
                         {/* Floating Active Indicator */}
-                        {isActive && !isPopoverOpen && (
+                        {displayActive && !isPopoverOpen && (
                           <motion.div 
                             className={styles.startBadgeBubble} 
                             style={{ color: theme.main }}
@@ -2465,7 +2562,7 @@ function SectionViewContent({
                         )}
 
                         {/* Outer backing target dish ring (Active nodes only) */}
-                        {isActive && (
+                        {displayActive && (
                           <div className={styles.activeTargetRing} />
                         )}
 
@@ -2475,15 +2572,16 @@ function SectionViewContent({
                             type="button"
                             onClick={() => handleNodeClick(idx, isLocked)}
                             className={`
-                              ${styles.duoPedestal} 
-                              ${isCompleted ? styles.duoPedestalCompleted : isActive ? styles.duoPedestalActive : styles.duoPedestalLocked}
+                              ${styles.duoPedestal}
+                              ${isCompleted ? styles.duoPedestalCompleted : displayActive ? styles.duoPedestalActive : styles.duoPedestalLocked}
+                              ${isRevealPending ? styles.duoPedestalCharging : ''}
                             `}
-                            animate={justUnlockedIndex === idx ? {
+                            animate={unlockRevealed && justUnlockedIndex === idx && !reducedMotion ? {
                               scale: [1, 1.3, 0.9, 1.15, 1],
                               rotate: [0, -10, 10, -5, 5, 0],
                             } : undefined}
                             transition={{ duration: 0.8, ease: 'easeInOut' }}
-                            style={(!isLocked) ? {
+                            style={(!displayLocked) ? {
                               backgroundColor: theme.main,
                               boxShadow: `0 8px 0 ${theme.shadow}`,
                             } : undefined}
@@ -2492,13 +2590,36 @@ function SectionViewContent({
                               boxShadow: '0 0px 0 transparent',
                             }}
                           >
-                              {isCompleted ? (
-                                <Check size={32} strokeWidth={4} color="white" />
-                              ) : isActive ? (
-                                <Star size={32} strokeWidth={3} fill="white" color="white" />
-                              ) : (
-                                <Lock size={28} strokeWidth={2.5} color="#afafaf" />
-                              )}
+                              <AnimatePresence mode="wait" initial={false}>
+                                {isCompleted ? (
+                                  <motion.span
+                                    key="check"
+                                    initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
+                                    animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                                    transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+                                  >
+                                    <Check size={32} strokeWidth={4} color="white" />
+                                  </motion.span>
+                                ) : displayActive ? (
+                                  <motion.span
+                                    key="star"
+                                    initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
+                                    animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                                    transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+                                  >
+                                    <Star size={32} strokeWidth={3} fill="white" color="white" />
+                                  </motion.span>
+                                ) : (
+                                  <motion.span
+                                    key="lock"
+                                    initial={{ scale: 1, rotate: 0, opacity: 1 }}
+                                    exit={{ scale: 0.4, rotate: 25, opacity: 0 }}
+                                    transition={{ duration: 0.18, ease: 'easeIn' }}
+                                  >
+                                    <Lock size={28} strokeWidth={2.5} color="#afafaf" />
+                                  </motion.span>
+                                )}
+                              </AnimatePresence>
                           </motion.button>
                         ) : item.type === 'challenge' ? (
                           <motion.button
