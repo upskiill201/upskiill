@@ -126,3 +126,66 @@ const CONTINUE_UNLOCKED = [
 export function pickUnlockedButtonLine(): string {
   return pickFromPool(CONTINUE_UNLOCKED, 'lesson:button-unlocked');
 }
+
+// ─── Start-screen welcome ───────────────────────────────────────────────────
+
+// Two-line beats, same mechanism as `whatsappVoice.ts`'s `pickVariant`: a
+// short reaction, then the nudge into starting — picked as one atomic unit
+// so a variant never mixes lines from a different one. LINE_SEP must be a
+// character that never appears in the copy itself — U+2028 (line separator),
+// built via fromCharCode rather than typed literally so it can't silently
+// collapse to an ordinary space in an editor/copy-paste — or `.split()`
+// breaks on every natural space in the text too, turning each WORD into its
+// own array element (and therefore its own <p> in SpeechBubble, one word per
+// line). That exact bug shipped here once; caught by screenshotting the
+// rendered bubble, not by reading the code.
+const LINE_SEP = String.fromCharCode(8232);
+
+const WELCOME_FRESH_VARIANTS: string[][] = [
+  ["New lesson, clean slate.", "Take your time — I'm not going anywhere."],
+  ["This one's yours whenever you're ready.", "No rush. Start when it feels right."],
+  ["Fresh one, just for you.", "Let's see what we've got."],
+];
+
+const WELCOME_REVIEW_VARIANTS: string[][] = [
+  ["Back for another round?", "Let's see if it stuck."],
+  ["You've done this one before.", "Let's find out how well."],
+  ["Round two.", "No pressure — you already know this."],
+];
+
+function pickVariant(variants: string[][], key: string): string[] {
+  const pool = variants.map((v) => v.join(LINE_SEP));
+  return pickFromPool(pool, key).split(LINE_SEP);
+}
+
+/** Fires once when the pre-lesson start screen loads. */
+export function pickLessonWelcomeLines(opts: { isReviewMode?: boolean } = {}): string[] {
+  return opts.isReviewMode
+    ? pickVariant(WELCOME_REVIEW_VARIANTS, 'lesson:welcome:review')
+    : pickVariant(WELCOME_FRESH_VARIANTS, 'lesson:welcome:fresh');
+}
+
+// ─── Map node unlock ────────────────────────────────────────────────────────
+
+const NODE_UNLOCK_FIRST = [
+  "First one's unlocked. Let's go. 🚀",
+  "Right, the path's open. Off we go.",
+];
+
+const NODE_UNLOCK_MID = [
+  "Next one's open. Keep the run going.",
+  "Unlocked. Whenever you're ready.",
+  "Onward — the next one's waiting.",
+];
+
+const NODE_UNLOCK_FINAL = [
+  "Last one. Let's finish this properly.",
+  "Final stretch. Make it count.",
+];
+
+/** Fires when a lesson node on the section map unlocks. */
+export function pickNodeUnlockLine(kind: 'first' | 'mid' | 'final'): string {
+  if (kind === 'first') return pickFromPool(NODE_UNLOCK_FIRST, 'lesson:node-unlock:first');
+  if (kind === 'final') return pickFromPool(NODE_UNLOCK_FINAL, 'lesson:node-unlock:final');
+  return pickFromPool(NODE_UNLOCK_MID, 'lesson:node-unlock:mid');
+}

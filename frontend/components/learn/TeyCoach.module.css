@@ -28,6 +28,27 @@
   cursor: pointer;
 }
 
+/* Used outside LessonShell (no `--phase-accent` ancestor to anchor to, and no
+   scoped container to position relative to) — the section map's node-unlock
+   moment. Same visual language, pinned to the viewport instead, with a warm
+   gold border tying it to the unlock glow rather than a generic grey one. */
+.coachFixed {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  margin: 0 auto;
+  border-color: #EAB308;
+}
+
+@media (max-width: 768px) {
+  .coachFixed {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
 .avatar {
   width: 56px;
   height: 56px;

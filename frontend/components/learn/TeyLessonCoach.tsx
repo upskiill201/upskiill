@@ -39,9 +39,20 @@ interface TeyLessonCoachProps {
   token?: number;
   /** Tone affects only the mascot's little entrance, not the copy. */
   tone?: 'neutral' | 'cheer' | 'nudge';
+  /**
+   * `'anchored'` (default) positions relative to the nearest positioned
+   * ancestor — how it's used inside `LessonShell`. `'fixed'` pins it to the
+   * viewport instead, for surfaces with no such ancestor (the section map).
+   */
+  variant?: 'anchored' | 'fixed';
 }
 
-export default function TeyLessonCoach({ message, token = 0, tone = 'neutral' }: TeyLessonCoachProps) {
+export default function TeyLessonCoach({
+  message,
+  token = 0,
+  tone = 'neutral',
+  variant = 'anchored',
+}: TeyLessonCoachProps) {
   const reducedMotion = useReducedMotion();
 
   // Visibility is derived, not stored: a line is up unless its token has been
@@ -67,7 +78,7 @@ export default function TeyLessonCoach({ message, token = 0, tone = 'neutral' }:
     <AnimatePresence>
       {visible && message && (
         <motion.div
-          className={styles.coach}
+          className={`${styles.coach} ${variant === 'fixed' ? styles.coachFixed : ''}`}
           role="status"
           aria-live="polite"
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.94 }}

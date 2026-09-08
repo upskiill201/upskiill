@@ -368,6 +368,29 @@
   box-shadow: 0 8px 0 #cccccc;
 }
 
+/* The anticipation window before a node's reveal — a warm pulsing glow draws
+   the eye to it before anything happens, so the payoff a beat later reads as
+   a payoff instead of a surprise cut. Pure CSS, no JS animation loop. */
+.duoPedestalCharging {
+  animation: pedestalCharge 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes pedestalCharge {
+  0% {
+    box-shadow: 0 8px 0 #cccccc, 0 0 0 0 rgba(234, 179, 8, 0.35);
+  }
+  100% {
+    box-shadow: 0 8px 0 #cccccc, 0 0 0 14px rgba(234, 179, 8, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duoPedestalCharging {
+    animation: none;
+    box-shadow: 0 8px 0 #cccccc, 0 0 0 6px rgba(234, 179, 8, 0.35);
+  }
+}
+
 /* Purple Challenge Pedestal */
 .duoPedestalChallenge {
   background-color: #a346ff;
@@ -1675,6 +1698,41 @@
   100% { transform: translateY(-6px) scale(1.1) rotate(15deg); }
 }
 
+/* Two more sparkles, smaller and offset in position/timing/color from the
+   original so the field reads as ambient dust rather than one star ×3. */
+.mascotStar2 {
+  position: absolute;
+  top: 60%;
+  left: 8%;
+  animation: floatStar 3.6s ease-in-out 0.4s infinite alternate;
+  filter: drop-shadow(0 2px 6px rgba(1, 114, 253, 0.35));
+  opacity: 0.85;
+  z-index: 20;
+}
+
+.mascotStar3 {
+  position: absolute;
+  top: 22%;
+  left: 4%;
+  animation: floatStar 2.6s ease-in-out 0.9s infinite alternate;
+  filter: drop-shadow(0 2px 6px rgba(234, 179, 8, 0.4));
+  opacity: 0.75;
+  z-index: 20;
+}
+
+/* Sits above the mascot; SpeechBubble sizes itself via ResizeObserver, this
+   just gives it a stable anchor point in the flow.
+   `text-align: center` centers the inline-block SpeechBubble WITHOUT making
+   it a flex item — a flex item's default `min-width: auto` shrinks text
+   content to its min-content width (the narrowest point a line can break),
+   which wrapped every single word onto its own line when this was
+   `display: flex; justify-content: center` instead. */
+.startBubbleWrap {
+  text-align: center;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
 .mascotWavingImg {
   object-fit: contain;
   width: 100%;
@@ -2005,7 +2063,9 @@
     max-height: clamp(80px, 20vh, 120px);
   }
 
-  .mascotStar {
+  .mascotStar,
+  .mascotStar2,
+  .mascotStar3 {
     display: none; /* decorative — cut first on small screens */
   }
 
