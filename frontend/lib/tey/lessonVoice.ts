@@ -18,6 +18,10 @@
  * Tey speaks at moments and then gets out of the way — he is not a persistent
  * narrator. `tey-personality.ts` is explicit that nagging kills the character:
  * say the dramatic thing once, then stop.
+ *
+ * Every pool here has at least 3 members. `pickFromPool` excludes the last
+ * two distinct picks per key, so a 2-line pool degrades to "either one, no
+ * memory" — three is the floor for the dedupe to actually do anything.
  */
 
 import { pickFromPool } from './pool';
@@ -33,17 +37,20 @@ const INTO_APPLY = [
 const INTO_APPLY_AFTER_VIDEO = [
   'You watched the whole thing. Respect. Now the hard bit.',
   'Full video, no skipping. Okay. Questions time.',
+  "You made it to the end. Let's see if it landed.",
 ];
 
 const INTO_REFLECT = [
   "Questions done. Now the part that actually makes it stick.",
   "Nice. Slow down for a second — what did you just learn?",
+  "Quiz's over. This next bit is where it actually sinks in.",
 ];
 
 function intoReflectPerfect(total: number): string[] {
   return [
     `${total} for ${total}. I'm updating my notes on you.`,
     `Perfect run — ${total} out of ${total}. Show-off.`,
+    `Not one miss. ${total} out of ${total}. Noted.`,
   ];
 }
 
@@ -105,6 +112,7 @@ function wrongAfterStreak(brokenStreak: number): string[] {
   return [
     `And there goes the ${brokenStreak}-run. Shake it off.`,
     `${brokenStreak} in a row, then that. Happens. Go again.`,
+    `Streak's broken at ${brokenStreak}. Doesn't erase it — go again.`,
   ];
 }
 
@@ -145,12 +153,14 @@ const WELCOME_FRESH_VARIANTS: string[][] = [
   ["New lesson, clean slate.", "Take your time — I'm not going anywhere."],
   ["This one's yours whenever you're ready.", "No rush. Start when it feels right."],
   ["Fresh one, just for you.", "Let's see what we've got."],
+  ["Alright, next one up.", "Same deal as always — go at your pace."],
 ];
 
 const WELCOME_REVIEW_VARIANTS: string[][] = [
   ["Back for another round?", "Let's see if it stuck."],
   ["You've done this one before.", "Let's find out how well."],
   ["Round two.", "No pressure — you already know this."],
+  ["Revisiting this one, huh.", "Good instinct. Let's go again."],
 ];
 
 function pickVariant(variants: string[][], key: string): string[] {
@@ -165,11 +175,69 @@ export function pickLessonWelcomeLines(opts: { isReviewMode?: boolean } = {}): s
     : pickVariant(WELCOME_FRESH_VARIANTS, 'lesson:welcome:fresh');
 }
 
+// ─── Map: progress acknowledgment ("you're doing well") ────────────────────
+//
+// Fires the instant the learner lands back on the section map, BEFORE the
+// anticipation glow/reveal sequence even starts — this is deliberately the
+// first thing Tey says, separate from (and earlier than) the "here's what's
+// next" unlock line below. It answers "how am I doing," not "what's new" —
+// the two together are the two-beat narrative: acknowledge the effort, then
+// reveal the reward. Framed by real progress meaning, not a bare number.
+
+function progressLines(completed: number, total: number): string[] {
+  const fraction = total > 0 ? completed / total : 0;
+  const remaining = total - completed;
+
+  if (completed >= total && total > 0) {
+    return [
+      `That's every lesson in this section. All ${total} of them.`,
+      `Section cleared — all ${total} lessons. Look at that.`,
+      `${total} for ${total} in this section. Done and done.`,
+    ];
+  }
+  if (fraction >= 0.66) {
+    return [
+      `${completed} of ${total} now — just ${remaining} left to close this section out.`,
+      `That's ${completed} of ${total}. You're basically through it.`,
+      `${remaining} to go and this section's finished. You're close.`,
+    ];
+  }
+  if (fraction >= 0.34) {
+    return [
+      `${completed} of ${total} — you're properly into this section now.`,
+      `That's ${completed} down, ${remaining} to go. Good pace.`,
+      `Halfway-ish. ${completed} of ${total} lessons done.`,
+    ];
+  }
+  return [
+    `Lesson done — that's ${completed} of ${total} in this section.`,
+    `${completed} of ${total} now. Good start.`,
+    `That's one more in the bank. ${completed} of ${total} so far.`,
+  ];
+}
+
+/**
+ * @param completed lessons completed in this section so far (post-completion count)
+ * @param total     lessons in this section
+ */
+export function pickLessonProgressLine(completed: number, total: number): string {
+  const bucket =
+    total > 0 && completed >= total
+      ? 'done'
+      : total > 0 && completed / total >= 0.66
+        ? 'late'
+        : total > 0 && completed / total >= 0.34
+          ? 'mid'
+          : 'early';
+  return pickFromPool(progressLines(completed, total), `lesson:progress:${bucket}`);
+}
+
 // ─── Map node unlock ────────────────────────────────────────────────────────
 
 const NODE_UNLOCK_FIRST = [
   "First one's unlocked. Let's go. 🚀",
   "Right, the path's open. Off we go.",
+  "There it is. First lesson's live.",
 ];
 
 const NODE_UNLOCK_MID = [
@@ -181,9 +249,12 @@ const NODE_UNLOCK_MID = [
 const NODE_UNLOCK_FINAL = [
   "Last one. Let's finish this properly.",
   "Final stretch. Make it count.",
+  "The last lesson in this section just opened up.",
 ];
 
-/** Fires when a lesson node on the section map unlocks. */
+/** Fires when a lesson node on the section map unlocks (the reveal peak — the
+ *  second beat, after pickLessonProgressLine has already acknowledged the
+ *  effort). */
 export function pickNodeUnlockLine(kind: 'first' | 'mid' | 'final'): string {
   if (kind === 'first') return pickFromPool(NODE_UNLOCK_FIRST, 'lesson:node-unlock:first');
   if (kind === 'final') return pickFromPool(NODE_UNLOCK_FINAL, 'lesson:node-unlock:final');

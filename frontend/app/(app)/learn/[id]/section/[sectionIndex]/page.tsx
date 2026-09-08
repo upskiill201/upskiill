@@ -27,6 +27,7 @@ import {
 import { playChestBurst, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
 import {
   pickComboLine,
+  pickLessonProgressLine,
   pickLessonWelcomeLines,
   pickNodeUnlockLine,
   pickPhaseUnlockLine,
@@ -867,6 +868,13 @@ function SectionViewContent({
     try {
       playAscendingPopSound(4);
     } catch {}
+    // Beat 0 — before the anticipation glow, before the reveal, Tey
+    // acknowledges the effort with the real count ("2 of 5, good pace"),
+    // not a generic "keep going." The reveal-peak line (pickNodeUnlockLine,
+    // fired ~1.4s later by the node-unlock effect) is what's NEW; this one is
+    // how they're DOING — the two together are the full narrative: earned,
+    // then rewarded.
+    sayTey(pickLessonProgressLine(completedInSection, totalLessons), 'cheer');
   };
 
   const handleDeepenFinish = async () => {

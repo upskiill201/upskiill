@@ -12,6 +12,9 @@ import { useHerald } from '@/context/HeraldContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { toCelebrationCurrency, type CelebrationCurrency } from '@/components/celebration/currency';
 import { fetcher } from '@/lib/swr';
+import { playButtonUnlock, playProgressTick } from '@/lib/audio/lessonAudio';
+import { pickMissionReadyLine } from '@/lib/tey/missionVoice';
+import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
 import styles from './TodaysMissionsCard.module.css';
 
 interface MissionReward {
@@ -107,6 +110,29 @@ export default function TodaysMissionsCard() {
     latestMissionsRef.current = missions;
   }, [missions]);
 
+  // In-card reaction to a live progress update — this is the gap the earlier
+  // audit found: Herald's own banner is deliberately suppressed while this
+  // card is mounted (see registerNativeWidget below), on the assumption the
+  // card itself shows the change. It didn't; a CSS width transition was the
+  // entire reaction. `tickedIds` pulses the bar on any progress tick;
+  // `readyIds` gives the bigger pulse + sound + Tey line the moment a
+  // mission actually becomes claimable — both keyed by mission id and
+  // auto-cleared, so the CSS animation can replay next time the same id
+  // fires again later in the day.
+  const [tickedIds, setTickedIds] = useState<Set<string>>(new Set());
+  const [readyIds, setReadyIds] = useState<Set<string>>(new Set());
+  const [teyLine, setTeyLine] = useState<string | null>(null);
+  const [teyToken, setTeyToken] = useState(0);
+
+  const pulseTick = (id: string) => {
+    setTickedIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setTickedIds((prev) => { const next = new Set(prev); next.delete(id); return next; }), 450);
+  };
+  const pulseReady = (id: string) => {
+    setReadyIds((prev) => new Set(prev).add(id));
+    setTimeout(() => setReadyIds((prev) => { const next = new Set(prev); next.delete(id); return next; }), 900);
+  };
+
   const [resetTimer, setResetTimer] = useState('12h 45m');
   const [isWarningReset, setIsWarningReset] = useState(false);
 
@@ -173,6 +199,19 @@ export default function TodaysMissionsCard() {
                 rewardAmount: m.reward.amount,
                 missionId: m.id,
               });
+              // Herald's banner is suppressed while this card is visible (see
+              // registerNativeWidget above) — this is the reaction that
+              // fills that gap, in-place, right where the learner is
+              // already looking.
+              pulseReady(m.id);
+              playButtonUnlock();
+              setTeyLine(pickMissionReadyLine(m.title));
+              setTeyToken((t) => t + 1);
+            } else if (!isDone && update.progress > m.currentProgress) {
+              // A tick that doesn't complete the mission still gets a small
+              // acknowledgment — the bar filling used to be the only signal.
+              pulseTick(m.id);
+              playProgressTick(1);
             }
 
             return {
@@ -342,6 +381,8 @@ export default function TodaysMissionsCard() {
                   styles.missionCard,
                   isReadyToClaim ? styles.missionCardReady : '',
                   isClaimed ? styles.missionCardClaimed : '',
+                  readyIds.has(m.id) ? styles.missionCardJustReady : '',
+                  tickedIds.has(m.id) ? styles.missionCardTicked : '',
                 ].join(' ')}
               >
                 <div className={`${styles.iconWrap} ${iconClass}`}>{icon}</div>
@@ -405,6 +446,8 @@ export default function TodaysMissionsCard() {
           <ArrowRight size={14} />
         </div>
       </div>
+
+      <TeyLessonCoach message={teyLine} token={teyToken} tone="cheer" variant="fixed" />
     </div>
   );
 }
