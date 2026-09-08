@@ -229,7 +229,53 @@
   color: var(--text-secondary);
 }
 
+/* ── PhaseHeader ──────────────────────────────────────────────────────────
+   One shape for all four phases: badge, title, optional subtitle. Left-
+   aligned everywhere — Deepen previously centred and Reflect ran a heavier
+   weight, both of which broke the shared rhythm this replaces them with. */
+
+.phaseHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.phaseHeaderBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  background-color: var(--phase-accent-wash);
+  color: var(--phase-accent-deep);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.phaseHeaderTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.phaseHeaderSubtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
+  .phaseHeaderTitle {
+    font-size: clamp(20px, 5.5vw, 28px);
+  }
+
   .headerBar {
     padding: 12px 12px 12px 16px;
     gap: 8px;

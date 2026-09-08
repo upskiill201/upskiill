@@ -31,6 +31,7 @@ import {
   pickWrongAnswerLine,
 } from '@/lib/tey/lessonVoice';
 import LessonShell from '@/components/learn/LessonShell';
+import PhaseHeader from '@/components/learn/PhaseHeader';
 import PhaseStepper from '@/components/learn/PhaseStepper';
 import PhaseTransition from '@/components/learn/PhaseTransition';
 import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
@@ -1756,10 +1757,7 @@ function SectionViewContent({
                 <>
                   <LearnProgressBar progress={learnProgress} />
                   <div className={styles.learnContentScroll} ref={learnScrollRef}>
-                <div className={styles.learnHeader}>
-                  <span className={styles.letsLearnText}>Let&apos;s learn!</span>
-                  <h2 className={styles.learnTitle}>{activeLesson.title}</h2>
-                </div>
+                <PhaseHeader eyebrow="Let's learn" title={activeLesson.title} />
 
                 {videoUrl ? (
                   <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
@@ -2014,22 +2012,11 @@ function SectionViewContent({
                       {isReviewMode && (
                         <button
                           type="button"
+                          className={styles.tryAgainForFunBtn}
                           onClick={() => {
                             setSelectedOptionIndex(null);
                             setIsAnswerChecked(false);
                             setIsAnswerCorrect(false);
-                          }}
-                          style={{
-                            padding: '12px 18px',
-                            borderRadius: '12px',
-                            backgroundColor: '#FEF08A',
-                            color: '#854D0E',
-                            fontWeight: 900,
-                            fontSize: '13px',
-                            border: '2px solid #EAB308',
-                            boxShadow: '0 3px 0 #CA8A04',
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
                           }}
                         >
                           ⚡ TRY AGAIN FOR FUN!
@@ -2046,24 +2033,17 @@ function SectionViewContent({
             <>
               {/* TOP AND MIDDLE CONTAINERS */}
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                <div className={styles.reflectTitleRow}>
-                  <div>
-                    <span className={styles.applyBadge}>
-                      {isReviewMode ? 'TEY\'S MEMORY VAULT 📦' : 'REFLECTION'}
-                    </span>
-                    <h2 className={styles.reflectTitle}>
-                      {isReviewMode ? 'Your Saved Reflections ✨' : 'Take a moment to reflect ✨'}
-                    </h2>
-                    {isReviewMode && (
-                      <div style={{ backgroundColor: '#EFF6FF', border: '2px solid #BFDBFE', padding: '12px 16px', borderRadius: '14px', margin: '14px 0', color: '#1E40AF', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '20px' }}>💡</span>
-                        <span>Tey stored your notes from your first completion! Feel free to polish or update your thoughts below.</span>
-                      </div>
-                    )}
-                    <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: sanitizeHtml(reflectPrompt) }} />
+                <PhaseHeader
+                  eyebrow={isReviewMode ? "TEY'S MEMORY VAULT 📦" : 'REFLECTION'}
+                  title={isReviewMode ? 'Your Saved Reflections ✨' : 'Take a moment to reflect ✨'}
+                />
+                {isReviewMode && (
+                  <div className={styles.reviewModeNote}>
+                    <span className={styles.reviewModeNoteIcon}>💡</span>
+                    <span>Tey stored your notes from your first completion! Feel free to polish or update your thoughts below.</span>
                   </div>
-                  <Image src="/lesson Player/Hi there tey.webp" width={180} height={180} alt="Reflect Mascot" className={styles.reflectMascotImg} />
-                </div>
+                )}
+                <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: sanitizeHtml(reflectPrompt) }} />
 
                 {reflectType === 'open' ? (
                   <>
@@ -2155,11 +2135,11 @@ function SectionViewContent({
             <>
               {/* TOP AND MIDDLE CONTAINERS */}
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }} className={styles.deepenContentScroll}>
-                <div className={styles.deepenHeader}>
-                  <span className={styles.applyBadge}>DEEPEN</span>
-                  <h2 className={styles.deepenTitle}>{deepenTitle}</h2>
-                  <div className={styles.deepenDescription} dangerouslySetInnerHTML={{ __html: sanitizeHtml(deepenDesc) }} />
-                </div>
+                <PhaseHeader
+                  eyebrow="DEEPEN"
+                  title={deepenTitle}
+                  subtitle={<span dangerouslySetInnerHTML={{ __html: sanitizeHtml(deepenDesc) }} />}
+                />
 
                 {/* Serpentine Pathway Grid */}
                 {activeLesson?.resources && activeLesson.resources.length > 0 ? (
