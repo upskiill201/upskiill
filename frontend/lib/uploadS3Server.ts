@@ -141,6 +141,36 @@ export async function verifyLessonOwnership(
 }
 
 /**
+ * Like verifyLessonOwnership, but hands back the lesson itself.
+ *
+ * Cleanup needs more than "may this user touch this lesson" — it has to know
+ * what the lesson currently POINTS AT, so it can refuse to delete media that
+ * is still referenced.
+ */
+export async function fetchOwnedLesson(
+  cookieHeader: string,
+  lessonId: string,
+): Promise<{ ok: true; lesson: unknown } | { ok: false; status: number; error: string }> {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  let res: Response;
+  try {
+    res = await fetch(`${backendUrl}/lesson/${encodeURIComponent(lessonId)}`, {
+      headers: { cookie: cookieHeader },
+    });
+  } catch {
+    return { ok: false, status: 502, error: 'Could not verify your session. Please try again.' };
+  }
+
+  if (res.status === 401) {
+    return { ok: false, status: 401, error: 'Your session has expired. Please sign in again.' };
+  }
+  if (!res.ok) {
+    return { ok: false, status: 403, error: 'You do not have permission to modify this lesson.' };
+  }
+  return { ok: true, lesson: await res.json().catch(() => null) };
+}
+
+/**
  * Deterministic S3 object key shape: lessons/<lessonId>/<folder>/<sanitised>_<ts>.<ext>
  * Part-signature requests re-derive this shape so a stolen signing call can
  * never target keys outside the uploader's own lesson prefix.
