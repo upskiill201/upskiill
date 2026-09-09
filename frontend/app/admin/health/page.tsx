@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Activity, CheckCircle2, Send, XCircle } from 'lucide-react';
 import {
+  Button,
   Card,
   DataTable,
   Empty,
@@ -183,23 +184,11 @@ export default function AdminHealthPage() {
             There is deliberately no way to target another learner — policy,
             quiet hours and caps all apply exactly as they would in production.
           </p>
-          <button
-            onClick={() => void sendTest()}
-            disabled={testing}
-            style={{
-              marginTop: 12,
-              padding: '10px 18px',
-              borderRadius: 10,
-              border: 'none',
-              background: 'var(--brand-blue)',
-              color: 'var(--text-on-blue)',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: testing ? 'wait' : 'pointer',
-            }}
-          >
-            {testing ? 'Sending…' : 'Send test push'}
-          </button>
+          <div style={{ marginTop: 12 }}>
+            <Button onClick={() => void sendTest()} disabled={testing}>
+              {testing ? 'Sending…' : 'Send test push'}
+            </Button>
+          </div>
           {testResult && (
             <p style={{ marginTop: 12, fontSize: 13 }}>{testResult}</p>
           )}

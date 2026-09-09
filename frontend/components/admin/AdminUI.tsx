@@ -295,6 +295,77 @@ export function relativeTime(iso: string | null): string {
 }
 
 /**
+ * The chunky "3D pressed" button used everywhere in the admin UI — same
+ * construction as the student app's DuolingoButton3D (solid fill, a darker
+ * border, an offset shadow standing in for the extra-thick bottom edge,
+ * press = drop onto the shadow) so Admin Center and product share one
+ * visual language instead of the admin area looking like a different app.
+ */
+export function Button({
+  children,
+  onClick,
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  className = '',
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit';
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md';
+  disabled?: boolean;
+  className?: string;
+}) {
+  const variantClass =
+    variant === 'danger'
+      ? styles.buttonDanger
+      : variant === 'secondary'
+        ? styles.buttonSecondary
+        : styles.buttonPrimary;
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${styles.button} ${variantClass} ${size === 'sm' ? styles.buttonSm : ''} ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** A row of pill filters (e.g. the Queue page's status filter). */
+export function TabGroup({
+  options,
+  value,
+  onChange,
+  formatLabel = humanize,
+}: {
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+  formatLabel?: (value: string) => string;
+}) {
+  return (
+    <div className={styles.tabGroup}>
+      {options.map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => onChange(opt)}
+          className={`${styles.tab} ${opt === value ? styles.tabActive : ''}`}
+        >
+          {formatLabel(opt)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
  * Base overlay + panel every admin dialog builds on. Escape and a
  * click on the backdrop both close it — every future modal (Users, Courses,
  * Payouts, ...) should sit on this rather than growing its own overlay.
@@ -380,26 +451,16 @@ export function ConfirmDialog({
         />
       )}
       <div className={styles.modalActions}>
-        <button
-          type="button"
-          className={styles.modalButtonSecondary}
-          onClick={onCancel}
-          disabled={busy}
-        >
+        <Button variant="secondary" onClick={onCancel} disabled={busy}>
           Cancel
-        </button>
-        <button
-          type="button"
-          className={
-            tone === 'danger'
-              ? styles.modalButtonDanger
-              : styles.modalButtonPrimary
-          }
+        </Button>
+        <Button
+          variant={tone === 'danger' ? 'danger' : 'primary'}
           onClick={() => onConfirm(requireReason ? reason.trim() : undefined)}
           disabled={!canConfirm || busy}
         >
           {busy ? 'Working…' : confirmLabel}
-        </button>
+        </Button>
       </div>
     </Modal>
   );
