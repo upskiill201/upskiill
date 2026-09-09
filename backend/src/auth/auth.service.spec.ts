@@ -9,6 +9,7 @@ import { ProfileService } from '../profile/profile.service';
 import { EmailService } from '../email/email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { firebaseAdmin } from './firebase-admin';
+import { Role } from '@prisma/client';
 
 // signToken hard-fails when JWT_SECRET is unset (A2) — give every test a value.
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
@@ -173,7 +174,9 @@ describe('AuthService', () => {
     });
 
     it('should hydrate the creator profile from onboarding answers on INSTRUCTOR signup', async () => {
-      const instructorDto = { ...dto, role: 'INSTRUCTOR', draftId: 'draft-1' };
+      // The role must be the Prisma Role enum, not a bare string, or this
+      // object no longer satisfies SignupDto and the file fails to typecheck.
+      const instructorDto = { ...dto, role: Role.INSTRUCTOR, draftId: 'draft-1' };
       const onboarding = {
         step7: { biggestChallenge: ['not_enough_time'] },
         step3: { categories: ['Marketing'] },
@@ -935,6 +938,7 @@ describe('AuthService', () => {
           id: true,
           courseId: true,
           progress: true,
+          completedLessons: true,
           course: {
             select: {
               id: true,
@@ -947,7 +951,11 @@ describe('AuthService', () => {
             },
           },
         },
-        orderBy: { id: 'desc' },
+        // Most recently STUDIED first, not most recently enrolled — enrolling
+        // in a second course must not bury the one the student is partway
+        // through on the dashboard. This assertion tracked the older
+        // `id: 'desc'` ordering and was left behind by that fix.
+        orderBy: { updatedAt: 'desc' },
       });
       // ONE grouped query for all enrolled courses — no N+1
       expect(prisma.section.findMany).toHaveBeenCalledWith({

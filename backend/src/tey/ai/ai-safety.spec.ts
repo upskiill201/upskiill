@@ -61,7 +61,9 @@ describe('AI secret handling', () => {
 
     expect(encryptedData).not.toContain(REAL_KEY);
     expect(encryptedData.startsWith('v1:')).toBe(true);
-    expect(decryptJson<{ apiKey: string }>(encryptedData).apiKey).toBe(REAL_KEY);
+    // No type argument: `decryptJson` comes from an untyped require() above,
+    // so TypeScript rejects generics on it. Assert the shape instead.
+    expect((decryptJson(encryptedData) as { apiKey: string }).apiKey).toBe(REAL_KEY);
   });
 });
 
