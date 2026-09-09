@@ -6,22 +6,43 @@
  *   - the file is sent in 8MB chunks, each PUT directly to S3,
  *   - a failed chunk retries on its own — the rest of the upload survives,
  *   - progress is aggregated across chunks,
- *   - cancelling/aborting tells S3 to discard the partial upload so we never
- *     pay storage for orphaned parts.
+ *   - an interrupted upload RESUMES ACROSS PAGE RELOADS: the session pointer
+ *     is kept in localStorage, and on re-pick the parts already stored are
+ *     read back from storage itself (never from a local record, which could
+ *     drift) so only the missing tail is sent,
+ *   - cancelling tells S3 to discard the partial upload; a failure keeps it,
+ *     because that is precisely what makes resuming possible.
  *
  * Bytes always go browser → S3 directly; this module only ever talks to our
  * own /api/upload/* routes to mint short-lived signed URLs.
  */
 
 import { extractErrorMessage } from './apiError';
+import {
+  fileFingerprint,
+  findSession,
+  saveSession,
+  clearSession,
+} from './uploadSessionStore';
 
 const PART_SIZE = 8 * 1024 * 1024; // 8MB — must match the server's partSize
 const MAX_PART_ATTEMPTS = 3;
 
 export interface UploadHandleOptions {
   onProgress?: (percent: number) => void;
+  /** Fired when an interrupted upload is picked back up, with the number of
+   *  parts already stored — lets the UI say "Resuming…" instead of appearing
+   *  to jump mysteriously to 60%. */
+  onResume?: (partsAlreadyUploaded: number) => void;
   signal?: AbortSignal;
 }
+
+/** Byte length the part at `partNumber` must have for a file of `fileSize`. */
+function expectedPartSize(partNumber: number, fileSize: number): number {
+  const start = (partNumber - 1) * PART_SIZE;
+  return Math.min(PART_SIZE, Math.max(0, fileSize - start));
+}
+
 
 /** PUTs one blob to a presigned URL with progress + abort support. */
 function putWithProgress(
@@ -128,16 +149,69 @@ async function simpleUpload(
 async function multipartUpload(
   file: File,
   lessonId: string,
-  { onProgress, signal }: UploadHandleOptions,
+  { onProgress, onResume, signal }: UploadHandleOptions,
 ): Promise<{ cloudFrontUrl: string; key: string }> {
-  const start = await jsonPost({
-    action: 'start',
-    filename: file.name,
-    contentType: file.type || 'application/octet-stream',
+  const fingerprint = fileFingerprint(file, lessonId);
+
+  // ─── RESUME ───
+  // If this exact file was already part-way uploaded (before a reload, a
+  // crash, or a closed tab), re-attach to that storage-side session instead
+  // of starting a fresh one. Storage is asked which parts it actually holds —
+  // we never trust a locally-remembered parts list.
+  // The public URL comes from the `complete` response, so it is never needed
+  // here — a resumed upload gets the same URL a fresh one would.
+  let uploadId = '';
+  let key = '';
+  let alreadyUploaded = new Map<number, string>();
+
+  const saved = findSession(fingerprint);
+  if (saved && saved.partSize === PART_SIZE && saved.fileSize === file.size) {
+    try {
+      const listed = await jsonPost({
+        action: 'list-parts',
+        key: saved.key,
+        uploadId: saved.uploadId,
+        lessonId,
+      });
+      if (listed?.valid) {
+        uploadId = saved.uploadId;
+        key = saved.key;
+        for (const p of (listed.parts ?? []) as { PartNumber: number; ETag: string; Size: number }[]) {
+          // Only trust a part that is exactly the size we would have sent for
+          // that index — a short/partial part must be re-uploaded, not reused.
+          const expected = expectedPartSize(p.PartNumber, file.size);
+          if (p.Size === expected) alreadyUploaded.set(p.PartNumber, p.ETag);
+        }
+        onResume?.(alreadyUploaded.size);
+      }
+    } catch {
+      // Couldn't re-attach — fall through and start a clean upload.
+    }
+  }
+  if (!uploadId) {
+    alreadyUploaded = new Map();
+    clearSession(fingerprint);
+    const start = await jsonPost({
+      action: 'start',
+      filename: file.name,
+      contentType: file.type || 'application/octet-stream',
+      lessonId,
+      size: file.size,
+    });
+    ({ uploadId, key } = start as { uploadId: string; key: string });
+  }
+
+  // Remember the session BEFORE sending bytes, so an interruption at any
+  // point still leaves something to resume from.
+  saveSession({
+    fingerprint,
+    uploadId,
+    key,
     lessonId,
-    size: file.size,
+    partSize: PART_SIZE,
+    fileSize: file.size,
+    createdAt: Date.now(),
   });
-  const { uploadId, key, cloudFrontUrl } = start as { uploadId: string; key: string; cloudFrontUrl: string };
 
   const totalParts = Math.ceil(file.size / PART_SIZE);
   const parts: { ETag: string; PartNumber: number }[] = [];
@@ -149,6 +223,16 @@ async function multipartUpload(
 
       const startByte = (partNumber - 1) * PART_SIZE;
       const chunk = file.slice(startByte, Math.min(startByte + PART_SIZE, file.size));
+
+      // Already stored from a previous session — skip the transfer entirely.
+      // This is what turns "re-upload 1.8GB" into "finish the last 200MB".
+      const done = alreadyUploaded.get(partNumber);
+      if (done) {
+        parts.push({ ETag: done, PartNumber: partNumber });
+        completedBytes += chunk.size;
+        onProgress?.(Math.max(1, Math.round((completedBytes / file.size) * 99)));
+        continue;
+      }
 
       // A failed part retries ALONE — previously any network blip meant
       // restarting the whole multi-hundred-MB upload from zero.
@@ -181,11 +265,26 @@ async function multipartUpload(
     }
 
     const result = await jsonPost({ action: 'complete', key, uploadId, lessonId, parts });
+    // Stored for real — there is nothing left to resume.
+    clearSession(fingerprint);
     onProgress?.(100);
     return { cloudFrontUrl: result.cloudFrontUrl, key };
   } catch (err) {
-    // Never leave orphaned parts billing us for storage
-    abortMultipart(key, uploadId, lessonId);
+    // A CANCELLATION is intentional: discard the storage-side session too.
+    // A FAILURE is not — keep both the storage session and our pointer to it
+    // so the creator can resume rather than restart.
+    //
+    // COST NOTE: this is a deliberate trade. Previously every failure aborted
+    // the multipart immediately, so nothing was ever orphaned; resuming
+    // requires the opposite. Parts from uploads that are never resumed will
+    // linger and bill as storage. The bucket needs a lifecycle rule to abort
+    // incomplete multipart uploads (7 days is typical) — the client-side TTL
+    // below only stops us OFFERING a stale resume, it cannot free storage.
+    const cancelled = err instanceof DOMException && err.name === 'AbortError';
+    if (cancelled) {
+      clearSession(fingerprint);
+      abortMultipart(key, uploadId, lessonId);
+    }
     throw err;
   }
 }
@@ -204,6 +303,73 @@ export async function uploadFileToS3(
     return simpleUpload(file, lessonId, options);
   }
   return multipartUpload(file, lessonId, options);
+}
+
+/** Client-side mirror of the thumbnail route's limits, so an oversized or
+ *  unsupported image is rejected instantly with a friendly message instead of
+ *  costing a round-trip and returning a raw server error. */
+const THUMBNAIL_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
+const MAX_THUMBNAIL_ATTEMPTS = 3;
+
+/**
+ * Uploads a course thumbnail via presigned PUT.
+ *
+ * The Course Builder previously inlined its own XHR for this: no retry, no
+ * cancellation, and a `status === 200` check that would have treated a
+ * perfectly valid 204 as a failure. This routes thumbnails through the same
+ * retry/progress/abort behaviour every other upload already gets.
+ */
+export async function uploadThumbnail(
+  file: File,
+  { onProgress, signal }: UploadHandleOptions = {},
+): Promise<{ url: string }> {
+  if (!THUMBNAIL_TYPES.includes(file.type)) {
+    throw new Error(
+      'That image format isn’t supported. Please use a JPG, PNG or WebP file.',
+    );
+  }
+  if (file.size > MAX_THUMBNAIL_BYTES) {
+    throw new Error(
+      `That image is ${(file.size / (1024 * 1024)).toFixed(1)}MB — the limit is 5MB. Try a smaller or more compressed image.`,
+    );
+  }
+
+  const presignRes = await fetch('/api/upload/thumbnail', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filename: file.name,
+      contentType: file.type,
+      size: file.size,
+    }),
+    signal,
+  });
+  if (!presignRes.ok) {
+    const errData = await presignRes.json().catch(() => ({}));
+    throw new Error(extractErrorMessage(errData, presignRes.status));
+  }
+  const { uploadUrl, url } = await presignRes.json();
+
+  // Retry the transfer itself — a single dropped connection shouldn't make
+  // the creator re-pick the file.
+  for (let attempt = 1; attempt <= MAX_THUMBNAIL_ATTEMPTS; attempt++) {
+    try {
+      await putWithProgress(
+        uploadUrl,
+        file,
+        file.type,
+        (loaded) => onProgress?.(Math.max(1, Math.round((loaded / file.size) * 99))),
+        signal,
+      );
+      onProgress?.(100);
+      return { url };
+    } catch (err) {
+      if (signal?.aborted || attempt === MAX_THUMBNAIL_ATTEMPTS) throw err;
+      await new Promise((r) => setTimeout(r, 400 * attempt));
+    }
+  }
+  throw new Error('The image could not be uploaded. Please try again.');
 }
 
 /**

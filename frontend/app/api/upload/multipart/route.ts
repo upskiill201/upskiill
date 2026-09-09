@@ -4,7 +4,9 @@ import {
   UploadPartCommand,
   CompleteMultipartUploadCommand,
   AbortMultipartUploadCommand,
+  ListPartsCommand,
 } from '@aws-sdk/client-s3';
+import type { ListPartsCommandOutput } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   getS3Client,
@@ -98,6 +100,55 @@ export async function POST(req: NextRequest) {
       // Short expiry — each part is fetched right before its PUT.
       const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
       return NextResponse.json({ presignedUrl });
+    }
+
+    // ─── LIST-PARTS ────────────────────────────────────────────────────────
+    // Authoritative resume state. The browser remembers only the uploadId and
+    // key across a reload; WHICH parts actually landed is answered by storage
+    // itself, so a half-written or stale client record can never cause us to
+    // skip a part that was never stored (which would silently corrupt the
+    // assembled file).
+    if (action === 'list-parts') {
+      const parts: { PartNumber: number; ETag: string; Size: number }[] = [];
+      let marker: string | undefined = undefined;
+
+      try {
+        // Paginate — R2/S3 return at most 1000 parts per call, and a 2GB file
+        // at 8MB parts is 250, but a smaller part size could exceed that.
+        do {
+          // Explicit annotation: `page` and `marker` reference each other
+          // across loop iterations, which defeats inference.
+          const page: ListPartsCommandOutput = await s3Client.send(
+            new ListPartsCommand({
+              Bucket: AWS_S3_BUCKET,
+              Key: key,
+              UploadId: uploadId,
+              PartNumberMarker: marker,
+            }),
+          );
+          for (const p of page.Parts ?? []) {
+            if (typeof p.PartNumber === 'number' && p.ETag) {
+              parts.push({
+                PartNumber: p.PartNumber,
+                ETag: p.ETag,
+                Size: p.Size ?? 0,
+              });
+            }
+          }
+          marker = page.IsTruncated ? page.NextPartNumberMarker : undefined;
+        } while (marker);
+      } catch (err: unknown) {
+        // NoSuchUpload — the session expired or was aborted. Not an error
+        // condition for the caller: it just means "start over".
+        const name = (err as { name?: string; Code?: string } | null)?.name;
+        const code = (err as { name?: string; Code?: string } | null)?.Code;
+        if (name === 'NoSuchUpload' || code === 'NoSuchUpload') {
+          return NextResponse.json({ valid: false, parts: [] });
+        }
+        throw err;
+      }
+
+      return NextResponse.json({ valid: true, parts });
     }
 
     // ─── COMPLETE ──────────────────────────────────────────────────────────

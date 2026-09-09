@@ -224,6 +224,11 @@ model Course {
 
   curriculum Json? @default("[]")
 
+  // Optimistic locking for the Course Builder's autosave, mirroring Lesson.
+  // Every creator-facing metadata write bumps this; a save carrying a stale
+  // version is rejected with 409 instead of silently overwriting newer data.
+  version Int @default(1)
+
   // Relations
   instructorId String
   instructor   User   @relation("InstructorCourses", fields: [instructorId], references: [id])

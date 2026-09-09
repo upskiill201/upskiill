@@ -15,11 +15,14 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { useCourseAutosave } from '@/hooks/useCourseAutosave';
+import { useLinkNavigationGuard } from '@/hooks/useLinkNavigationGuard';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
 import { VideoPoolModal, VideoPreviewCard, PoolLesson } from '@/components/features/VideoPoolModal';
 import Step4PreviewPublish, { CurriculumSection } from './Step4PreviewPublish';
 import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
+import { uploadThumbnail } from '@/lib/s3Uploader';
 import styles from './Builder.module.css';
 
 // ─── TYPES ───────────────────────────────────────────────────
@@ -220,8 +223,13 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [data, setData] = useState<CourseDraft>(EMPTY_DRAFT);
+  // Optimistic-lock token for this course, seeded from the loaded draft.
+  const [courseVersion, setCourseVersion] = useState<number | undefined>(undefined);
+  // Status of curriculum (module/lesson) writes, which are their own
+  // request path — kept separate from the course-metadata autosave so the two
+  // can never report over the top of each other.
+  const [curriculumStatus, setCurriculumStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [skillInput, setSkillInput] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [thumbUploadProgress, setThumbUploadProgress] = useState(0);
@@ -246,6 +254,25 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
   const [inactiveStepModal, setInactiveStepModal] = useState<{ label: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  /** Latches the id of a course created from the 'new' route, so this page can
+   *  never create a second one for the same session. */
+  const createdCourseIdRef = useRef<string | null>(null);
+
+  // ─── AUTOSAVE ───
+  // Course metadata now saves itself, with the same optimistic-locking and
+  // conflict semantics the Lesson Builder already had. Disabled while the
+  // course is still unsaved ('new'), so an empty form can never create a
+  // course on its own — creation stays an explicit action.
+  const autosave = useCourseAutosave(courseId, data, {
+    enabled: !isNew && !loading,
+    initialVersion: courseVersion,
+  });
+
+  // Guard in-app link navigation while there is unsaved or in-flight work.
+  useLinkNavigationGuard(
+    !loading && (autosave.isDirty || autosave.status === 'saving' || saving),
+    'Your course has changes that are still saving. Leave anyway?',
+  );
 
   // For Preview Video selector & Step 4 validation
   const [courseLessons, setCourseLessons] = useState<PoolLesson[]>([]);
@@ -330,6 +357,9 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
             creatorTimeWeekly: fetched.creatorTimeWeekly,
             price: typeof fetched.price === 'number' ? fetched.price : 0,
           });
+          // Seed the optimistic-lock token so the first autosave carries the
+          // version this data was actually read at.
+          if (typeof fetched.version === 'number') setCourseVersion(fetched.version);
         }
         await refreshCurriculum();
       } catch (err) {
@@ -394,76 +424,76 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
   // Returns true ONLY on success so navigation can depend on the save having
   // actually happened (failed saves used to still advanced the wizard).
   const saveDraft = useCallback(async (): Promise<boolean> => {
+    // Existing course: hand off to the autosave controller so this explicit
+    // save shares the same single-writer lock, version token and retry policy
+    // as the background saves. Two independent writers was how a slow
+    // background PATCH could land on top of a newer explicit one.
+    if (!isNew) {
+      return autosave.saveNow();
+    }
+
+    // 'new' course: creation is an explicit, ONE-SHOT action. If this page
+    // has already created a course, never POST again — re-render timing
+    // around the post-create router.replace must not be able to mint a
+    // second, duplicate course. Patch the one we made instead.
+    if (createdCourseIdRef.current) {
+      const id = createdCourseIdRef.current;
+      const patchRes = await fetch(`/api/courses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ ...data, version: courseVersion }),
+      });
+      if (!patchRes.ok) return false;
+      const patched = await patchRes.json().catch(() => null);
+      if (typeof patched?.version === 'number') setCourseVersion(patched.version);
+      return true;
+    }
+
     setSaving(true);
-    setSaveStatus('saving');
     try {
-      let savedId = courseId;
-
-      if (isNew) {
-        // First save: create the course
-        const res = await fetch('/api/courses', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            title: data.title || 'Untitled Course',
-            category: data.category || "I don't know yet",
-          }),
-        });
-        if (!res.ok) {
-          const errBody = await res.text();
-          console.error('Failed to create course', res.status, errBody);
-          setSaveStatus('error');
-          setSaving(false);
-          return false;
-        }
-        const created = await res.json();
-        savedId = created.id;
-
-        // Patch with full data
-        const patchRes = await fetch(`/api/courses/${savedId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(data),
-        });
-        if (!patchRes.ok) {
-          console.error('Failed to save course draft', patchRes.status);
-          setSaveStatus('error');
-          setSaving(false);
-          return false;
-        }
-
-        // Redirect to the permanent URL (same route → component stays
-        // mounted, local step state survives)
-        router.replace(`/creator/builder/${savedId}`);
-      } else {
-        // Subsequent saves: just patch
-        const patchRes = await fetch(`/api/courses/${courseId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(data),
-        });
-        if (!patchRes.ok) {
-          console.error('Failed to save course draft', patchRes.status);
-          setSaveStatus('error');
-          setTimeout(() => setSaveStatus('idle'), 3000);
-          return false;
-        }
+      const res = await fetch('/api/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: data.title || 'Untitled Course',
+          category: data.category || "I don't know yet",
+        }),
+      });
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.error('Failed to create course', res.status, errBody);
+        return false;
       }
+      const created = await res.json();
+      createdCourseIdRef.current = created.id;
 
-      setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      // Patch with the full form, carrying the version the row was born at.
+      const patchRes = await fetch(`/api/courses/${created.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ ...data, version: created.version ?? 1 }),
+      });
+      if (!patchRes.ok) {
+        console.error('Failed to save course draft', patchRes.status);
+        return false;
+      }
+      const patched = await patchRes.json().catch(() => null);
+      if (typeof patched?.version === 'number') setCourseVersion(patched.version);
+
+      // Redirect to the permanent URL (same route → component stays
+      // mounted, local step state survives)
+      router.replace(`/creator/builder/${created.id}`);
       return true;
     } catch (err) {
       console.error('Save failed', err);
-      setSaveStatus('error');
       return false;
     } finally {
       setSaving(false);
     }
-  }, [courseId, isNew, data, router]);
+  }, [isNew, data, router, autosave, courseVersion]);
 
   // ─── HANDLERS ───
   const updateField = (field: keyof CourseDraft, value: any) =>
@@ -501,59 +531,18 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
     setThumbUploadProgress(0);
     setThumbError(null);
     try {
-      // 1. Get Presigned URL
-      const presignRes = await fetch('/api/upload/thumbnail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          filename: file.name, 
-          contentType: file.type, 
-          size: file.size 
-        }),
+      // Validation, presign, direct PUT, progress and bounded retry all live
+      // in the shared uploader — this page no longer hand-rolls its own XHR.
+      const { url } = await uploadThumbnail(file, {
+        onProgress: setThumbUploadProgress,
       });
-
-      if (!presignRes.ok) {
-        const errorData = await presignRes.json();
-        throw new Error(errorData.error || 'Failed to get upload URL');
-      }
-
-      const { uploadUrl, url } = await presignRes.json();
-
-      // 2. Upload directly to S3
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', uploadUrl, true);
-        xhr.setRequestHeader('Content-Type', file.type);
-        // Do NOT send withCredentials for AWS S3
-        // xhr.withCredentials = true; 
-
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            setThumbUploadProgress(Math.round((event.loaded / event.total) * 100));
-          }
-        };
-
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            updateField('thumbnailUrl', url);
-            setThumbUploadProgress(100);
-            resolve();
-          } else {
-            setThumbError('Upload to S3 failed');
-            reject(new Error('Upload failed'));
-          }
-        };
-
-        xhr.onerror = () => {
-          setThumbError('Network error during S3 upload.');
-          reject(new Error('Network error'));
-        };
-
-        xhr.send(file);
-      });
+      updateField('thumbnailUrl', url);
+      // The new URL is a normal field change, so the autosave picks it up and
+      // persists it like any other edit.
     } catch (err: any) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       console.error('Thumbnail upload error:', err);
-      setThumbError(err.message || 'Upload failed');
+      setThumbError(err?.message || 'The image could not be uploaded. Please try again.');
     } finally {
       setUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -706,8 +695,12 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
         </div>
 
         <div className={styles.headerRight}>
-          <button className={styles.saveDraftBtn} onClick={saveDraft} disabled={saving}>
-            {saving ? 'Saving...' : 'Save draft'}
+          <button
+            className={styles.saveDraftBtn}
+            onClick={() => void saveDraft()}
+            disabled={saving || autosave.status === 'saving'}
+          >
+            {saving || autosave.status === 'saving' ? 'Saving…' : 'Save draft'}
           </button>
           <button className={styles.closeBtn} onClick={() => router.push('/creator/courses')}>
             <X size={20} />
@@ -816,7 +809,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           <CurriculumBuilder
             courseId={courseId}
             onBack={() => setActiveStep(1)}
-            onSaveStatus={setSaveStatus}
+            onSaveStatus={setCurriculumStatus}
             previewLessonId={previewLessonId}
             courseLessons={courseLessons}
             onPreviewChange={handlePreviewLessonChange}
@@ -1455,14 +1448,65 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
       {activeStep !== 4 && (
         <footer className={styles.stickyFooter}>
           <div className={styles.footerLeft}>
-            {saveStatus === 'saved' && (
-              <><Check size={15} className={styles.savedIcon} /> Draft saved just now</>
+            {/* Step 2 writes go through the curriculum endpoints, not the
+                course-metadata autosave — report whichever channel is active. */}
+            {activeStep === 2 && curriculumStatus === 'saving' && (
+              <span style={{ color: '#64748B' }}>Saving…</span>
             )}
-            {saveStatus === 'error' && (
-              <span style={{ color: '#EF4444' }}>Save failed. Please try again.</span>
+            {activeStep === 2 && curriculumStatus === 'saved' && (
+              <><Check size={15} className={styles.savedIcon} /> Changes saved</>
             )}
-            {saveStatus === 'saving' && (
-              <span style={{ color: '#64748B' }}>Saving...</span>
+            {activeStep === 2 && curriculumStatus === 'error' && (
+              <span style={{ color: '#EF4444' }}>Couldn&apos;t save that change. Please try again.</span>
+            )}
+            {activeStep !== 2 && autosave.status === 'saving' && (
+              <span style={{ color: '#64748B' }}>Saving…</span>
+            )}
+            {activeStep !== 2 && autosave.status === 'saved' && (
+              <><Check size={15} className={styles.savedIcon} /> All changes saved</>
+            )}
+            {activeStep !== 2 && autosave.status === 'dirty' && (
+              <span style={{ color: '#64748B' }}>Unsaved changes</span>
+            )}
+            {/* Offline / error / conflict always surface, whatever step the
+                creator is on — these are the states that risk losing work. */}
+            {autosave.status === 'offline' && (
+              <span style={{ color: '#B45309' }}>
+                You&apos;re offline — your changes are safe and will save when you reconnect.
+              </span>
+            )}
+            {autosave.status === 'error' && (
+              <span style={{ color: '#EF4444' }}>
+                Couldn&apos;t save your changes. They&apos;re still here —{' '}
+                <button
+                  type="button"
+                  onClick={() => void autosave.saveNow()}
+                  style={{ background: 'none', border: 'none', padding: 0, color: '#0172FD', fontWeight: 700, cursor: 'pointer', fontSize: 'inherit' }}
+                >
+                  retry
+                </button>
+                .
+              </span>
+            )}
+            {autosave.status === 'conflict' && (
+              <span style={{ color: '#B45309' }}>
+                This course was edited in another tab.{' '}
+                <button
+                  type="button"
+                  onClick={() => void autosave.overwriteServer()}
+                  style={{ background: 'none', border: 'none', padding: 0, color: '#0172FD', fontWeight: 700, cursor: 'pointer', fontSize: 'inherit' }}
+                >
+                  Keep my version
+                </button>
+                {' · '}
+                <button
+                  type="button"
+                  onClick={() => { autosave.clearBackup(); window.location.reload(); }}
+                  style={{ background: 'none', border: 'none', padding: 0, color: '#0172FD', fontWeight: 700, cursor: 'pointer', fontSize: 'inherit' }}
+                >
+                  Load theirs
+                </button>
+              </span>
             )}
           </div>
           <div className={styles.footerRight}>

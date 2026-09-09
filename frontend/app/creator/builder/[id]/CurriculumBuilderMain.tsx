@@ -254,30 +254,13 @@ export default function CurriculumBuilder({ courseId, onBack, onSaveStatus, prev
   const duplicateModule = async (section: Section) => {
     onSaveStatus('saving');
     try {
-      const res = await fetch(`/api/courses/${courseId}/sections`, {
+      // One transactional call: the module and every lesson copy land
+      // together, or nothing does. The old client-side create-then-loop could
+      // strand a half-copied module in the curriculum.
+      const res = await fetch(`/api/courses/sections/${section.id}/duplicate`, {
         method: 'POST', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: `${section.title} (Copy)` }),
       });
       if (!res.ok) throw new Error(`Section copy failed (${res.status})`);
-      const newSec = await res.json();
-      for (const l of section.lessons) {
-        // Check each lesson copy — a mid-loop failure used to leave a silent
-        // partial duplicate that was still reported as "saved".
-        const lessonRes = await fetch(`/api/courses/sections/${newSec.id}/lessons`, {
-          method: 'POST', credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: l.title, lessonType: l.lessonType }),
-        });
-        if (!lessonRes.ok) {
-          console.error('Duplicate module partially failed at lesson:', l.title, lessonRes.status);
-          await fetchCurriculum();
-          onSaveStatus('error');
-          alert('Some lessons could not be copied — the module was duplicated but may be incomplete.');
-          setTimeout(() => onSaveStatus('idle'), 3000);
-          return;
-        }
-      }
       await fetchCurriculum(); onSaveStatus('saved'); setTimeout(() => onSaveStatus('idle'), 3000);
     } catch { onSaveStatus('error'); alert('The module could not be duplicated. Please try again.'); }
   };

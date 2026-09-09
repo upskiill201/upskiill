@@ -1574,6 +1574,13 @@ export class CourseService {
       requirements?: string[];
       outcomes?: string[];
       curriculum?: unknown;
+      // Category was accepted at creation but silently dropped here, so every
+      // category edit made in the Course Builder was lost on save.
+      category?: string;
+      /** Optimistic-lock token. When supplied, the write only lands if the
+       *  stored version still matches; otherwise it 409s. Omitting it keeps
+       *  older clients working (last-write-wins, as before). */
+      version?: number;
     },
   ) {
     const course = await this.prisma.course.findFirst({
@@ -1595,9 +1602,18 @@ export class CourseService {
       }
     }
 
-    return await this.prisma.course.update({
-      where: { id: course.id },
+    // Atomic optimistic lock, matching lesson.service.ts semantics: the row is
+    // only written when the stored version still equals the one the client
+    // loaded. Two builder tabs (or a slow save landing after a fast one) used
+    // to silently overwrite each other with no conflict ever surfaced.
+    const result = await this.prisma.course.updateMany({
+      where: {
+        id: course.id,
+        ...(data.version !== undefined && { version: data.version }),
+      },
       data: {
+        version: { increment: 1 },
+        ...(data.category !== undefined && { category: data.category }),
         ...(data.title !== undefined && { title: data.title }),
         ...(data.description !== undefined && {
           description: data.description,
@@ -1635,6 +1651,22 @@ export class CourseService {
         }),
       },
     });
+
+    if (result.count === 0) {
+      // Only reachable when a version was supplied and no longer matches —
+      // ownership and existence were already checked above. Hand back the
+      // current server state so the client can offer a real choice instead of
+      // a dead end.
+      const current = await this.prisma.course.findUnique({
+        where: { id: course.id },
+      });
+      throw new ConflictException({
+        message: 'Conflict: This course was modified by another session.',
+        currentServerState: current,
+      });
+    }
+
+    return await this.prisma.course.findUnique({ where: { id: course.id } });
   }
 
   async publishCourse(userId: string, courseIdOrSlug: string) {
@@ -2056,6 +2088,71 @@ export class CourseService {
           contentBlocks: {},
           stepCompletion: { learn: false, apply: false, reflect: false, deepen: false },
         },
+      });
+    });
+  }
+
+  /**
+   * Duplicate a module and all of its lessons in ONE transaction.
+   *
+   * The builder used to do this client-side: create the section, then POST
+   * each lesson in a loop. Any mid-loop failure (a dropped connection, a
+   * closed tab) left a half-copied module stranded in the curriculum with no
+   * way to tell it apart from a real one. Either the whole copy lands or
+   * nothing does.
+   */
+  async duplicateSection(userId: string, sectionId: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: {
+        course: { select: { instructorId: true, id: true } },
+        lessons: { orderBy: { orderIndex: 'asc' } },
+      },
+    });
+
+    if (!section) throw new NotFoundException('Section not found');
+    if (section.course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const count = await tx.section.count({
+        where: { courseId: section.course.id },
+      });
+
+      const copy = await tx.section.create({
+        data: {
+          title: `${section.title} (Copy)`,
+          ...(section.goal !== null && { goal: section.goal }),
+          orderIndex: count,
+          courseId: section.course.id,
+        },
+      });
+
+      if (section.lessons.length > 0) {
+        await tx.lesson.createMany({
+          data: section.lessons.map((l, index) => ({
+            title: l.title,
+            lessonType: l.lessonType,
+            orderIndex: index,
+            sectionId: copy.id,
+            status: 'draft',
+            // Copies start as empty drafts, matching what the client-side
+            // duplicate produced — content is authored per lesson.
+            contentBlocks: {},
+            stepCompletion: {
+              learn: false,
+              apply: false,
+              reflect: false,
+              deepen: false,
+            },
+          })),
+        });
+      }
+
+      return await tx.section.findUnique({
+        where: { id: copy.id },
+        include: { lessons: { orderBy: { orderIndex: 'asc' } } },
       });
     });
   }

@@ -183,6 +183,9 @@ export class CourseController {
       requirements?: string[];
       outcomes?: string[];
       curriculum?: unknown;
+      category?: string;
+      /** Optimistic-lock token from the Course Builder's autosave. */
+      version?: number;
     },
   ) {
     return await this.courseService.updateCourse(
@@ -312,6 +315,19 @@ export class CourseController {
   @Delete('sections/:sectionId')
   async deleteSection(@Req() req: any, @Param('sectionId') sectionId: string) {
     return await this.courseService.deleteSection(
+      req.user.id as string,
+      sectionId,
+    );
+  }
+
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('sections/:sectionId/duplicate')
+  async duplicateSection(
+    @Req() req: any,
+    @Param('sectionId') sectionId: string,
+  ) {
+    return await this.courseService.duplicateSection(
       req.user.id as string,
       sectionId,
     );

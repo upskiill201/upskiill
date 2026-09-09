@@ -1,0 +1,25 @@
+-- Type: ADDITIVE ONLY — one new column with a safe default. No existing
+-- column, table, or row is altered or removed.
+--
+-- WHY: Lesson already carries `version` and every lesson write goes through an
+-- atomic optimistic lock (`where: { id, version }`) in lesson.service.ts.
+-- Course had no such column, so PATCH /courses/:id was blind last-write-wins:
+-- two builder tabs (or a slow save landing after a fast one) silently
+-- overwrote each other's course metadata with no conflict ever surfaced.
+-- This column brings Course to parity with Lesson so the Course Builder can
+-- use the same 409-on-mismatch contract the Lesson Builder already relies on.
+--
+-- BACKFILL: DEFAULT 1 applies to every existing row, so all current courses
+-- start at version 1 and keep saving normally. Clients that omit `version`
+-- still succeed (the lock is only applied when a version is supplied), which
+-- is what keeps this deploy backwards-compatible with the currently-shipped
+-- frontend.
+--
+-- LOCKING NOTE: adding a column with a non-volatile DEFAULT is a metadata-only
+-- change in Postgres 11+ — it does NOT rewrite the table and takes only a
+-- brief ACCESS EXCLUSIVE lock.
+--
+-- Rollback:
+--   ALTER TABLE "Course" DROP COLUMN IF EXISTS "version";
+
+ALTER TABLE "Course" ADD COLUMN IF NOT EXISTS "version" INTEGER NOT NULL DEFAULT 1;
