@@ -109,6 +109,7 @@ export class ProfileService {
         whatsappVerified: true,
         createdAt: true,
         profile: true,
+        instructorProfile: { select: { avatarUrl: true } },
         studentProfile: {
           select: {
             xp: true,
@@ -131,8 +132,18 @@ export class ProfileService {
       this.prisma.userFollow.count({ where: { followerId: userId } }),
     ]);
 
+    // User.avatarUrl only gets written once someone saves a photo through
+    // this app's own settings form. Google sign-up writes straight to
+    // Profile.avatarUrl instead (auth.service.ts) and never backfills the
+    // User row, so returning the raw column here silently drops the photo
+    // for every Google-onboarded account. Same precedence as
+    // getPublicCreatorProfile below: instructorProfile → profile → user.
+    const avatarUrl =
+      user.instructorProfile?.avatarUrl || user.profile?.avatarUrl || user.avatarUrl || null;
+
     return {
       ...user,
+      avatarUrl,
       followersCount,
       followingCount,
     };
