@@ -6,9 +6,14 @@ import { getSessionUser } from '@/lib/server-session';
 const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
 const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
 const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
 
 const s3Client = new S3Client({
-  region: AWS_REGION,
+  region: R2_ACCOUNT_ID ? 'auto' : AWS_REGION,
+  ...(R2_ACCOUNT_ID && {
+    endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    forcePathStyle: true,
+  }),
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,

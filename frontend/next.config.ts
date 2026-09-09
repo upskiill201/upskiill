@@ -71,9 +71,9 @@ const nextConfig: NextConfig = {
         hostname: 'iobdpmczxikgocvfzouo.supabase.co',
       },
       {
-        // AWS CloudFront CDN — course thumbnails + lesson videos/audio
+        // Cloudflare R2 public dev URL — course thumbnails + lesson videos/audio
         protocol: 'https',
-        hostname: 'dhnydb8s9j6i4.cloudfront.net',
+        hostname: 'pub-d1eea6d3cd36417ea274a8c49e11c316.r2.dev',
       },
     ],
   },

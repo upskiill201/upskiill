@@ -13,15 +13,22 @@ const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 export const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
 export const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
 const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
+// Cloudflare R2 account id — presence of this switches the client from AWS S3
+// to R2's S3-compatible endpoint (https://<account_id>.r2.cloudflarestorage.com).
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
 
 let s3Client: S3Client | null = null;
 
-/** Returns a singleton S3 client, or null when AWS env vars are missing. */
+/** Returns a singleton S3-compatible client (AWS S3 or Cloudflare R2), or null when required env vars are missing. */
 export function getS3Client(): S3Client | null {
   if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !CLOUDFRONT_URL) return null;
   if (!s3Client) {
     s3Client = new S3Client({
-      region: AWS_REGION,
+      region: R2_ACCOUNT_ID ? 'auto' : AWS_REGION,
+      ...(R2_ACCOUNT_ID && {
+        endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        forcePathStyle: true,
+      }),
       credentials: {
         accessKeyId: AWS_ACCESS_KEY_ID,
         secretAccessKey: AWS_SECRET_ACCESS_KEY,
