@@ -151,3 +151,33 @@ describe('AdminUsersService — list', () => {
     );
   });
 });
+
+describe('AdminUsersService — unlock', () => {
+  it('refuses to unlock an account that is not locked', async () => {
+    const { svc } = makeService();
+    await expect(svc.unlock('admin1', 'u1')).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('clears the lockout and resets failedLoginAttempts', async () => {
+    const { svc, userUpdate, auditCreate } = makeService({
+      findUnique: jest.fn().mockResolvedValue({ accountStatus: 'LOCKED' }),
+    });
+    const result = await svc.unlock('admin1', 'u1', 'support ticket #42');
+
+    expect(result).toEqual({ accountStatus: 'ACTIVE' });
+    expect(userUpdate).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: {
+        accountStatus: 'ACTIVE',
+        accountLockedUntil: null,
+        failedLoginAttempts: 0,
+      },
+    });
+    expect(auditCreate).toHaveBeenCalledWith({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+      data: expect.objectContaining({ action: 'ADMIN_UNLOCKED_USER' }),
+    });
+  });
+});

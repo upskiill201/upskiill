@@ -20,5 +20,8 @@ import { ShopModule } from '../shop/shop.module';
   ],
   controllers: [CourseController],
   providers: [CourseService],
+  // The Admin Center (Courses phase) reuses publishCourse/unpublishCourse
+  // rather than duplicating the quality-gate validation in admin code.
+  exports: [CourseService],
 })
 export class CourseModule {}

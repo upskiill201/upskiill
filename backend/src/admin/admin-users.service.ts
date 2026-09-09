@@ -127,6 +127,7 @@ export class AdminUsersService {
         lastActiveAt: true,
         loginCount: true,
         failedLoginAttempts: true,
+        accountLockedUntil: true,
         whatsappVerified: true,
         hasStudentAccess: true,
         hasCreatorAccess: true,
@@ -242,6 +243,49 @@ export class AdminUsersService {
         data: {
           actorId,
           action: 'ADMIN_UNSUSPENDED_USER',
+          entityType: 'User',
+          entityId: id,
+          reason: reason?.trim() || null,
+          meta: { previousStatus: user.accountStatus },
+        },
+      }),
+    ]);
+
+    return { accountStatus: 'ACTIVE' as const };
+  }
+
+  /**
+   * Clears the automatic 5-failed-attempts lockout early (auth.service.ts —
+   * a wrong password 5 times sets accountStatus=LOCKED + accountLockedUntil
+   * for 15 minutes, and clears itself on the learner's next successful
+   * login). This is a distinct state from SUSPENDED: it's not an admin
+   * punishment, it's a self-service security timeout that normally resolves
+   * on its own — this action exists only for the rare case someone needs
+   * back in before the 15 minutes are up.
+   */
+  async unlock(actorId: string, id: string, reason?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { accountStatus: true },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.accountStatus !== 'LOCKED') {
+      throw new BadRequestException('This account is not locked');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id },
+        data: {
+          accountStatus: 'ACTIVE',
+          accountLockedUntil: null,
+          failedLoginAttempts: 0,
+        },
+      }),
+      this.prisma.adminAuditLog.create({
+        data: {
+          actorId,
+          action: 'ADMIN_UNLOCKED_USER',
           entityType: 'User',
           entityId: id,
           reason: reason?.trim() || null,

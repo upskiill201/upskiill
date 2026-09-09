@@ -15,6 +15,7 @@ import {
   Pill,
   SearchInput,
   TabGroup,
+  accountStatusTone,
   adminStyles as s,
   humanize,
   relativeTime,
@@ -44,12 +45,6 @@ interface UsersResponse {
 
 const ROLES = ['', 'STUDENT', 'INSTRUCTOR', 'ADMIN'];
 const STATUSES = ['', 'ACTIVE', 'PENDING_VERIFICATION', 'SUSPENDED', 'LOCKED', 'DELETED'];
-
-const statusPillTone = (status: string) => {
-  if (status === 'ACTIVE') return 'good';
-  if (status === 'SUSPENDED' || status === 'LOCKED' || status === 'DELETED') return 'bad';
-  return 'warn';
-};
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -134,7 +129,7 @@ export default function AdminUsersPage() {
                   </Pill>
                 </td>
                 <td>
-                  <Pill tone={statusPillTone(u.accountStatus)}>
+                  <Pill tone={accountStatusTone(u.accountStatus)}>
                     {humanize(u.accountStatus)}
                   </Pill>
                 </td>

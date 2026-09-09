@@ -1497,14 +1497,18 @@ export class CourseService {
     return newCourse;
   }
 
-  async unpublishCourse(userId: string, courseIdOrSlug: string) {
+  async unpublishCourse(
+    userId: string,
+    courseIdOrSlug: string,
+    isAdmin = false,
+  ) {
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
       },
     });
     if (!course) throw new NotFoundException('Course not found');
-    if (course.instructorId !== userId) {
+    if (course.instructorId !== userId && !isAdmin) {
       throw new ForbiddenException('You do not own this course');
     }
 
@@ -1691,7 +1695,7 @@ export class CourseService {
     return await this.prisma.course.findUnique({ where: { id: course.id } });
   }
 
-  async publishCourse(userId: string, courseIdOrSlug: string) {
+  async publishCourse(userId: string, courseIdOrSlug: string, isAdmin = false) {
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
@@ -1709,7 +1713,7 @@ export class CourseService {
       },
     });
     if (!course) throw new NotFoundException('Course not found');
-    if (course.instructorId !== userId) {
+    if (course.instructorId !== userId && !isAdmin) {
       throw new ForbiddenException('You do not own this course');
     }
 

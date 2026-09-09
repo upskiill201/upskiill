@@ -54,7 +54,10 @@ const OVERVIEW: NavLink = { href: '/admin', label: 'Overview', icon: Gauge };
 const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Platform',
-    items: [{ href: '/admin/users', label: 'Users', icon: Users }],
+    items: [
+      { href: '/admin/users', label: 'Users', icon: Users },
+      { href: '/admin/courses', label: 'Courses', icon: BookOpen },
+    ],
   },
   {
     label: 'Tey',
@@ -71,7 +74,6 @@ const COMING_SOON: ComingSoonGroup[] = [
   {
     label: 'Platform',
     items: [
-      { label: 'Courses', icon: BookOpen },
       { label: 'Creators', icon: UserCheck },
       { label: 'Moderation', icon: ShieldAlert },
     ],

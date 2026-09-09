@@ -50,17 +50,29 @@ export async function adminMutate<T = unknown>(
     // Nest's default error shape is { statusCode, message, error } — surface
     // that message (e.g. "This account is already suspended") instead of a
     // bare status code, so a ConfirmDialog can show the real reason a
-    // BadRequestException was thrown rather than a generic failure.
+    // BadRequestException was thrown rather than a generic failure. A
+    // validation-style 422 (e.g. the course publish quality gate) additionally
+    // carries a `details` array of the individual reasons — stashed on the
+    // error too so a caller can render each one instead of just the summary.
     let message = `Request failed (${res.status})`;
+    let details: string[] | undefined;
     try {
-      const body = (await res.json()) as { message?: string | string[] };
+      const body = (await res.json()) as {
+        message?: string | string[];
+        errors?: string[];
+      };
       if (Array.isArray(body.message)) message = body.message.join(', ');
       else if (body.message) message = body.message;
+      if (Array.isArray(body.errors)) details = body.errors;
     } catch {
       // Non-JSON error body — keep the generic message.
     }
-    const err = new Error(message) as Error & { status?: number };
+    const err = new Error(message) as Error & {
+      status?: number;
+      details?: string[];
+    };
     err.status = res.status;
+    err.details = details;
     throw err;
   }
   if (res.status === 204) return undefined as T;
@@ -225,6 +237,27 @@ export function statusTone(
   }
 }
 
+/** Same idea as statusTone, for User.accountStatus — kept separate since the
+ *  two enums don't share values (and LOCKED is deliberately 'warn', not
+ *  'bad': it's a self-resolving security timeout, not an admin punishment,
+ *  see AdminUsersService#unlock). */
+export function accountStatusTone(
+  status: string,
+): 'neutral' | 'good' | 'warn' | 'bad' | 'brand' {
+  switch (status) {
+    case 'ACTIVE':
+      return 'good';
+    case 'SUSPENDED':
+    case 'DELETED':
+      return 'bad';
+    case 'LOCKED':
+    case 'PENDING_VERIFICATION':
+      return 'warn';
+    default:
+      return 'neutral';
+  }
+}
+
 export function DataTable({
   columns,
   children,
@@ -293,15 +326,22 @@ export function humanize(value: string): string {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
+/** Past timestamps read "3h ago"; future ones (a lock expiry, a scheduled
+ *  payout date) read "in 3h" instead of the nonsense a plain "ago" suffix
+ *  would produce on a negative diff. */
 export function relativeTime(iso: string | null): string {
   if (!iso) return '—';
   const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.round(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  const future = diff < 0;
+  const mins = Math.round(Math.abs(diff) / 60_000);
+  const suffix = (n: number, unit: string) =>
+    future ? `in ${n}${unit}` : `${n}${unit} ago`;
+
+  if (mins < 1) return future ? 'in a moment' : 'just now';
+  if (mins < 60) return suffix(mins, 'm');
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
+  if (hours < 24) return suffix(hours, 'h');
+  return suffix(Math.round(hours / 24), 'd');
 }
 
 /**

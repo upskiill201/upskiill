@@ -202,6 +202,11 @@ model Course {
   originalPrice    Float?
   published        Boolean @default(false)
 
+  // Admin-only homepage/explore curation flag — distinct from `published`
+  // (which is the creator's own catalog visibility toggle). Set only from
+  // the Admin Center.
+  featured Boolean @default(false)
+
   // Teyro Course Transformation Engine
   category          String  @default("Uncategorized")
   level             String  @default("Beginner")
@@ -254,6 +259,7 @@ model Course {
   // load. `instructorId` backs every "my courses" / ownership-check query.
   @@index([published, createdAt])
   @@index([instructorId])
+  @@index([featured])
 }
 
 /// Daily page-view aggregate for a course detail page. One row per

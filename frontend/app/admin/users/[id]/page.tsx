@@ -10,6 +10,7 @@ import {
   Coins,
   Flame,
   Heart,
+  LockKeyholeOpen,
   ShieldCheck,
   Sparkles,
   Trophy,
@@ -26,6 +27,7 @@ import {
   Metric,
   PageHeader,
   Pill,
+  accountStatusTone,
   adminMutate,
   adminStyles as s,
   humanize,
@@ -48,6 +50,7 @@ interface UserDetail {
     lastActiveAt: string | null;
     loginCount: number;
     failedLoginAttempts: number;
+    accountLockedUntil: string | null;
     whatsappVerified: boolean;
     hasStudentAccess: boolean;
     hasCreatorAccess: boolean;
@@ -74,19 +77,15 @@ interface UserDetail {
   }[];
 }
 
-const statusPillTone = (status: string) => {
-  if (status === 'ACTIVE') return 'good';
-  if (status === 'SUSPENDED' || status === 'LOCKED' || status === 'DELETED') return 'bad';
-  return 'warn';
-};
-
 export default function AdminUserDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const key = `/api/admin/users/${params.id}`;
   const { data, error, isLoading } = useAdminData<UserDetail>(key);
 
-  const [dialog, setDialog] = useState<'suspend' | 'unsuspend' | null>(null);
+  const [dialog, setDialog] = useState<'suspend' | 'unsuspend' | 'unlock' | null>(
+    null,
+  );
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -102,8 +101,12 @@ export default function AdminUserDetailPage() {
 
   const { account, learning, activity, economy, adminHistory } = data;
   const isSuspended = account.accountStatus === 'SUSPENDED';
+  const isLocked = account.accountStatus === 'LOCKED';
 
-  const runAction = async (action: 'suspend' | 'unsuspend', reason?: string) => {
+  const runAction = async (
+    action: 'suspend' | 'unsuspend' | 'unlock',
+    reason?: string,
+  ) => {
     setBusy(true);
     setActionError(null);
     try {
@@ -173,19 +176,25 @@ export default function AdminUserDetailPage() {
               <Pill tone={account.role === 'ADMIN' ? 'brand' : 'neutral'}>
                 {humanize(account.role)}
               </Pill>
-              <Pill tone={statusPillTone(account.accountStatus)}>
+              <Pill tone={accountStatusTone(account.accountStatus)}>
                 {humanize(account.accountStatus)}
               </Pill>
             </div>
           </div>
         </div>
 
-        <div>
-          {isSuspended ? (
+        <div style={{ display: 'flex', gap: 8 }}>
+          {isSuspended && (
             <Button onClick={() => setDialog('unsuspend')}>
               <CheckCircle2 size={15} /> Unsuspend account
             </Button>
-          ) : (
+          )}
+          {isLocked && (
+            <Button onClick={() => setDialog('unlock')}>
+              <LockKeyholeOpen size={15} /> Unlock account
+            </Button>
+          )}
+          {!isSuspended && (
             <Button variant="danger" onClick={() => setDialog('suspend')}>
               <Ban size={15} /> Suspend account
             </Button>
@@ -229,6 +238,16 @@ export default function AdminUserDetailPage() {
               label="Failed logins"
               value={String(account.failedLoginAttempts)}
             />
+            {isLocked && (
+              <DetailRow
+                label="Locked until"
+                value={
+                  account.accountLockedUntil
+                    ? relativeTime(account.accountLockedUntil)
+                    : '—'
+                }
+              />
+            )}
             <DetailRow
               label="Access"
               value={[
@@ -358,6 +377,32 @@ export default function AdminUserDetailPage() {
           confirmLabel="Unsuspend"
           busy={busy}
           onConfirm={(reason) => void runAction('unsuspend', reason)}
+          onCancel={() => {
+            setDialog(null);
+            setActionError(null);
+          }}
+        />
+      )}
+
+      {dialog === 'unlock' && (
+        <ConfirmDialog
+          title="Unlock this account?"
+          description={
+            <>
+              This clears the automatic lockout from 5 failed login attempts —{' '}
+              <strong>{account.fullName}</strong> can sign in again immediately instead
+              of waiting for it to expire on its own. This is not the same as
+              suspending or unsuspending.
+              {actionError && (
+                <div style={{ color: 'var(--error-red)', marginTop: 8, fontWeight: 600 }}>
+                  {actionError}
+                </div>
+              )}
+            </>
+          }
+          confirmLabel="Unlock"
+          busy={busy}
+          onConfirm={(reason) => void runAction('unlock', reason)}
           onCancel={() => {
             setDialog(null);
             setActionError(null);
