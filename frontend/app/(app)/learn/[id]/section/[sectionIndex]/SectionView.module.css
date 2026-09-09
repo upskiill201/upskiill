@@ -368,6 +368,16 @@
   box-shadow: 0 8px 0 #cccccc;
 }
 
+/* A lesson the learner has actually reached in sequence, but that sits
+   behind the paywall — was rendering identically to .duoPedestalLocked
+   (flat grey, low-contrast icon), giving no visual difference from a lesson
+   they simply hadn't gotten to yet. Same amber family as the badge text
+   above it, so the two read as one signal: reached, tap to subscribe. */
+.duoPedestalPaywalled {
+  background-color: #F59E0B;
+  box-shadow: 0 8px 0 #B45309;
+}
+
 /* The anticipation window before a node's reveal — a warm pulsing glow draws
    the eye to it before anything happens, so the payoff a beat later reads as
    a payoff instead of a surprise cut. Pure CSS, no JS animation loop. */

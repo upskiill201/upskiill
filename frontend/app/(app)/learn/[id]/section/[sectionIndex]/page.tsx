@@ -2568,7 +2568,11 @@ function SectionViewContent({
                   // above) hasn't reached its peak yet — render it as still
                   // locked so the peak is the moment it visibly changes, not
                   // a decoration on top of a change that already happened.
-                  const isRevealPending = item.type === 'lesson' && justUnlockedIndex === idx && !unlockRevealed;
+                  // A paywall lock isn't something that resolves via this
+                  // animation at all — only payment changes it — so it never
+                  // enters the "pretend still locked, then reveal" charade.
+                  // It shows its real, distinct state immediately.
+                  const isRevealPending = item.type === 'lesson' && justUnlockedIndex === idx && !unlockRevealed && !isPaywallLocked;
                   const displayLocked = isRevealPending ? true : isLocked;
                   const displayActive = isRevealPending ? false : isActive;
 
@@ -2586,11 +2590,17 @@ function SectionViewContent({
                         style={{ '--offset-multiplier': multiplier } as React.CSSProperties}
                       >
                         
-                        {/* Floating Active Indicator */}
-                        {displayActive && !isPopoverOpen && (
-                          <motion.div 
-                            className={styles.startBadgeBubble} 
-                            style={{ color: theme.main }}
+                        {/* Floating Active Indicator — also fires for a
+                            reached-but-paywalled lesson. Without this, that
+                            node had no signal at all that it was reached
+                            (displayActive is false there, same as a node the
+                            learner hasn't gotten to yet) — just an identical
+                            grey padlock with nothing to tell them tapping it
+                            leads anywhere. */}
+                        {(displayActive || isPaywallLocked) && !isPopoverOpen && (
+                          <motion.div
+                            className={styles.startBadgeBubble}
+                            style={{ color: isPaywallLocked ? '#B45309' : theme.main }}
                             initial={{ scale: 0.8, y: 5 }}
                             animate={{ scale: [0.9, 1.1, 1], y: [0, -6, 0] }}
                             transition={{
@@ -2599,7 +2609,9 @@ function SectionViewContent({
                             }}
                           >
                             <span>
-                              {item.type === 'trophy'
+                              {isPaywallLocked
+                                ? 'SUBSCRIBE TO UNLOCK 🔓'
+                                : item.type === 'trophy'
                                 ? 'SECTION CHEST!'
                                 : item.type === 'challenge'
                                 ? 'COMING SOON'
@@ -2625,7 +2637,7 @@ function SectionViewContent({
                             onClick={() => handleNodeClick(idx, isLocked, isPaywallLocked)}
                             className={`
                               ${styles.duoPedestal}
-                              ${isCompleted ? styles.duoPedestalCompleted : displayActive ? styles.duoPedestalActive : styles.duoPedestalLocked}
+                              ${isCompleted ? styles.duoPedestalCompleted : displayActive ? styles.duoPedestalActive : isPaywallLocked ? styles.duoPedestalPaywalled : styles.duoPedestalLocked}
                               ${isRevealPending ? styles.duoPedestalCharging : ''}
                             `}
                             animate={unlockRevealed && justUnlockedIndex === idx && !isLocked && !reducedMotion ? {
@@ -2668,7 +2680,7 @@ function SectionViewContent({
                                     exit={{ scale: 0.4, rotate: 25, opacity: 0 }}
                                     transition={{ duration: 0.18, ease: 'easeIn' }}
                                   >
-                                    <Lock size={28} strokeWidth={2.5} color="#afafaf" />
+                                    <Lock size={28} strokeWidth={2.5} color={isPaywallLocked ? '#FFFFFF' : '#afafaf'} />
                                   </motion.span>
                                 )}
                               </AnimatePresence>
