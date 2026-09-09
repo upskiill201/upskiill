@@ -1810,6 +1810,27 @@ model EarningsAuditLog {
   @@map("earnings_audit_logs")
 }
 
+/// General Admin Center audit trail — the Phase 2+ counterpart to
+/// EarningsAuditLog, for admin mutations outside the earnings/payout system
+/// (user suspension first; course/creator/moderation actions land here too
+/// as their phases ship). No FK to User: audit history must survive the
+/// subject account being deleted, same reasoning as earnings_audit_logs.
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  actorId    String // the admin's userId — every action here is admin-initiated
+  actorType  String   @default("ADMIN")
+  action     String // e.g. ADMIN_SUSPENDED_USER
+  entityType String // e.g. User
+  entityId   String?
+  reason     String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("admin_audit_logs")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Tey Intelligence layer — activity events + learner state projection.
 //

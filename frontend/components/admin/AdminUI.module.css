@@ -405,6 +405,29 @@
   box-shadow: 0 1px 0 0 var(--border-strong);
 }
 
+/* ── Search ───────────────────────────────────────────────────────────── */
+
+.searchInput {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
 /* ── Tabs (status filters etc.) ───────────────────────────────────────── */
 
 .tabGroup {

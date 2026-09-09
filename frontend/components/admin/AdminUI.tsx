@@ -47,9 +47,19 @@ export async function adminMutate<T = unknown>(
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
   if (!res.ok) {
-    const err = new Error(`Request failed (${res.status})`) as Error & {
-      status?: number;
-    };
+    // Nest's default error shape is { statusCode, message, error } — surface
+    // that message (e.g. "This account is already suspended") instead of a
+    // bare status code, so a ConfirmDialog can show the real reason a
+    // BadRequestException was thrown rather than a generic failure.
+    let message = `Request failed (${res.status})`;
+    try {
+      const body = (await res.json()) as { message?: string | string[] };
+      if (Array.isArray(body.message)) message = body.message.join(', ');
+      else if (body.message) message = body.message;
+    } catch {
+      // Non-JSON error body — keep the generic message.
+    }
+    const err = new Error(message) as Error & { status?: number };
     err.status = res.status;
     throw err;
   }
@@ -483,6 +493,44 @@ export function PermissionGate({
   children: React.ReactNode;
 }) {
   return <>{allowed ? children : fallback}</>;
+}
+
+/**
+ * Debounced server-side search box — types locally, only pushes `onChange`
+ * (and therefore only re-fires the list fetch) 300ms after the user stops
+ * typing. Every future list page (Courses, Creators, ...) should use this
+ * rather than firing a request per keystroke.
+ */
+export function SearchInput({
+  value,
+  onChange,
+  placeholder = 'Search…',
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  const [draft, setDraft] = useState(value);
+
+  useEffect(() => setDraft(value), [value]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (draft !== value) onChange(draft);
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only the draft should retrigger the debounce timer
+  }, [draft]);
+
+  return (
+    <input
+      type="search"
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      placeholder={placeholder}
+      className={styles.searchInput}
+    />
+  );
 }
 
 /** Page/of/total control for any server-paginated admin list. */

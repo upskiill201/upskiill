@@ -53,6 +53,10 @@ const OVERVIEW: NavLink = { href: '/admin', label: 'Overview', icon: Gauge };
  *  concern — but the sidebar already groups them under their own heading. */
 const NAV_GROUPS: NavGroup[] = [
   {
+    label: 'Platform',
+    items: [{ href: '/admin/users', label: 'Users', icon: Users }],
+  },
+  {
     label: 'Tey',
     items: [
       { href: '/admin/rules', label: 'Rules', icon: Sparkles },
@@ -67,7 +71,6 @@ const COMING_SOON: ComingSoonGroup[] = [
   {
     label: 'Platform',
     items: [
-      { label: 'Users', icon: Users },
       { label: 'Courses', icon: BookOpen },
       { label: 'Creators', icon: UserCheck },
       { label: 'Moderation', icon: ShieldAlert },
