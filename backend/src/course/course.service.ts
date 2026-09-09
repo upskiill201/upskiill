@@ -1514,6 +1514,30 @@ export class CourseService {
     });
   }
 
+  /**
+   * Ownership check ONLY — selects two columns, nothing else.
+   *
+   * Callers that just need "does this user own this course" were going
+   * through getOwnedDraft, which loads the instructor, every section, every
+   * lesson (including full contentBlocks JSON) and every lesson resource.
+   * Adding a single module therefore read the entire course. This is the
+   * cheap path for those callers; getOwnedDraft stays for the endpoint that
+   * genuinely returns course data.
+   */
+  private async assertOwnsCourse(userId: string, courseIdOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        OR: [{ id: courseIdOrSlug }, { slug: courseIdOrSlug }],
+      },
+      select: { id: true, instructorId: true },
+    });
+    if (!course) throw new NotFoundException('Course not found');
+    if (course.instructorId !== userId) {
+      throw new ForbiddenException('You do not own this course');
+    }
+    return course;
+  }
+
   async getOwnedDraft(userId: string, courseIdOrSlug: string) {
     const course = await this.prisma.course.findFirst({
       where: {
@@ -1532,15 +1556,13 @@ export class CourseService {
             },
           },
         },
-        sections: {
-          orderBy: { orderIndex: 'asc' },
-          include: {
-            lessons: {
-              orderBy: { orderIndex: 'asc' },
-              include: { resources: true },
-            },
-          },
-        },
+        // The section/lesson/resource tree is deliberately NOT loaded here.
+        // Every consumer of this endpoint (course builder, manage page,
+        // preview) reads only scalar course fields and fetches the curriculum
+        // separately from /curriculum when it needs it — so this include
+        // serialized every lesson's contentBlocks on each call only to be
+        // thrown away. It grew with course size, making the biggest courses
+        // the slowest to open.
         _count: {
           select: { enrollments: true },
         },
@@ -1914,7 +1936,11 @@ export class CourseService {
   // ─── CURRICULUM MANAGEMENT ───
 
   async getFullCurriculum(userId: string, courseIdOrSlug: string) {
-    const course = await this.getOwnedDraft(userId, courseIdOrSlug);
+    // The ownership guard used to be getOwnedDraft, which already loaded the
+    // whole section/lesson tree — and then this method threw it away and
+    // queried the same rows again. Every curriculum fetch was doing the work
+    // twice.
+    const course = await this.assertOwnsCourse(userId, courseIdOrSlug);
     return await this.prisma.section.findMany({
       where: { courseId: course.id },
       orderBy: { orderIndex: 'asc' },
@@ -1930,7 +1956,7 @@ export class CourseService {
     const trimmedTitle = (title || '').trim();
     if (!trimmedTitle) throw new BadRequestException('Module title is required');
 
-    const course = await this.getOwnedDraft(userId, courseId);
+    const course = await this.assertOwnsCourse(userId, courseId);
 
     return await this.prisma.$transaction(async (tx) => {
       const count = await tx.section.count({ where: { courseId: course.id } });
@@ -1974,7 +2000,7 @@ export class CourseService {
    * every section of the course exactly once, in the desired order.
    */
   async reorderSections(userId: string, courseIdOrSlug: string, orderedIds: string[]) {
-    const course = await this.getOwnedDraft(userId, courseIdOrSlug);
+    const course = await this.assertOwnsCourse(userId, courseIdOrSlug);
 
     const existing = await this.prisma.section.findMany({
       where: { courseId: course.id },
