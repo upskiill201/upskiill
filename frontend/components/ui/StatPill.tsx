@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
+import { playRewardTick } from '@/lib/audio/celebrationAudio';
 import styles from './StatPill.module.css';
 
 export type StatType = 'streak' | 'gem' | 'lives' | 'coin' | 'level';
@@ -86,7 +87,41 @@ export const StatPill: React.FC<StatPillProps> = ({
 }) => {
   const cfg = STAT_CONFIG[type];
   const displayLabel = label ?? cfg.defaultLabel;
-  const [isHovered, setIsHovered] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  // The streak number previously just re-rendered to its new value with zero
+  // acknowledgment — the only reaction anywhere was the full-screen STREAK
+  // scene reserved for the first completion of the day, so on every other
+  // page the pill itself was silent. This is the middle ground: a small pop
+  // + chime right on the always-visible pill, every time it actually goes up
+  // while mounted (a route swap that remounts this component with an
+  // already-current value does not retrigger it — only a real increment
+  // does, since the ref starts equal to whatever value first arrives).
+  const prevValueRef = useRef(value);
+  const iconPulse = useAnimationControls();
+  const glowPulse = useAnimationControls();
+  useEffect(() => {
+    if (type === 'streak' && typeof value === 'number' && typeof prevValueRef.current === 'number' && value > prevValueRef.current) {
+      playRewardTick(3);
+      if (!reducedMotion) {
+        void iconPulse.start({
+          scale: [1, 1.35, 1],
+          rotate: [0, -12, 10, 0],
+          y: [0, -3, 0],
+          transition: { duration: 0.55, ease: 'easeInOut' },
+        });
+        void glowPulse.start({
+          boxShadow: [
+            '0 0 0 0 rgba(234, 88, 12, 0)',
+            '0 0 0 6px rgba(234, 88, 12, 0.22)',
+            '0 0 0 0 rgba(234, 88, 12, 0)',
+          ],
+          transition: { duration: 0.7, ease: 'easeOut' },
+        });
+      }
+    }
+    prevValueRef.current = value;
+  }, [value, type, reducedMotion, iconPulse, glowPulse]);
 
   // Dynamic icon for Coins
   const iconSrc =
@@ -109,8 +144,16 @@ export const StatPill: React.FC<StatPillProps> = ({
       id={`stat-pill-${type}`}
       data-stat-pill={type}
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        if (!reducedMotion) {
+          void iconPulse.start({
+            y: [0, -2, 0],
+            rotate: type === 'streak' ? [0, -5, 5, 0] : 0,
+            transition: { duration: 0.35, ease: 'easeInOut' },
+          });
+        }
+      }}
+      animate={glowPulse}
       className={[
         styles.pillBtn,
         typePillClass,
@@ -122,18 +165,14 @@ export const StatPill: React.FC<StatPillProps> = ({
         .join(' ')}
       aria-label={`${displayLabel}: ${value}`}
     >
-      {/* Icon with subtle hover micro-bounce */}
+      {/* Icon with subtle hover micro-bounce, plus a bigger flare the instant
+          the streak actually increments — both driven imperatively through
+          iconPulse so the two don't fight over the declarative `animate`
+          prop. */}
       <motion.div
         className={styles.iconWrapper}
         style={isInactive ? { filter: 'grayscale(1) opacity(0.55)' } : undefined}
-        animate={{
-          y: isHovered ? [0, -2, 0] : 0,
-          rotate: isHovered && type === 'streak' ? [0, -5, 5, 0] : 0,
-        }}
-        transition={{
-          duration: 0.35,
-          ease: 'easeInOut',
-        }}
+        animate={iconPulse}
       >
         <Image
           src={iconSrc}

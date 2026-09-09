@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PanelRightOpen } from 'lucide-react';
 import Skeleton from '@/components/ui/Skeleton';
 import styles from './SectionView.module.css';
 
@@ -87,8 +87,11 @@ export default function LearnSectionSkeleton() {
           </div>
         </div>
 
-        {/* SIDEBAR COLUMN */}
-        <div className={styles.sidebarColumn}>
+        {/* SIDEBAR COLUMN — same wrapper class as the real page (styles.rightColumn)
+            so the existing @media (max-width: 1024px) rules in
+            SectionView.module.css turn this into the same off-canvas drawer
+            on mobile, instead of stacking a full sidebar under the path. */}
+        <div className={styles.rightColumn}>
           {/* Section Progress Card Skeleton */}
           <div className={styles.sidebarCard}>
             <h4 className={styles.sidebarCardTitle}>Section Progress</h4>
@@ -115,7 +118,13 @@ export default function LearnSectionSkeleton() {
             </div>
           </div>
         </div>
-        
+
+      </div>
+
+      {/* Mobile FAB placeholder — matches the real page's toggle for the
+          off-canvas progress panel, hidden on desktop by the same CSS. */}
+      <div className={styles.mobileSidebarFab} style={{ pointerEvents: 'none' }}>
+        <PanelRightOpen size={22} />
       </div>
     </div>
   );

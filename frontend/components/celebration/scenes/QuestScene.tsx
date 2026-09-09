@@ -6,16 +6,19 @@
  * and the CTA moves the learner on.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import SceneShell from '../SceneShell';
+import CelebrationMascot from '../CelebrationMascot';
+import { TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
 import { playHaptic } from '@/lib/haptics';
 import { playScenePop } from '@/lib/audio/celebrationAudio';
+import { pickQuestSpeech } from '@/lib/tey/questVoice';
 
 type QuestSceneInput = Extract<CelebrationScene, { kind: 'QUEST' }>;
 
@@ -27,14 +30,21 @@ interface QuestSceneProps {
 export default function QuestScene({ scene, onAdvance }: QuestSceneProps) {
   const reducedMotion = useReducedMotion();
 
+  const allDone = scene.rows.every((r) => r.current >= r.target);
+
+  // Lazy initializer, not derived inline: picked once per scene instance so
+  // a re-render never rerolls the line mid-reveal (matches ClaimScene's
+  // pattern). This was the one Celebration Engine scene with no mascot and
+  // no spoken line at all — the headline already carries the fact, this is
+  // just Tey reacting next to it.
+  const [speech] = useState(() => pickQuestSpeech(allDone));
+
   // Row entrance pops (mirrored in the stagger below)
   useEffect(() => {
     if (reducedMotion) return;
     const timers = scene.rows.map((_, i) => setTimeout(() => playScenePop(i), i * 170 + 150));
     return () => timers.forEach(clearTimeout);
   }, [scene.rows, reducedMotion]);
-
-  const allDone = scene.rows.every((r) => r.current >= r.target);
 
   return (
     <SceneShell
@@ -124,6 +134,9 @@ export default function QuestScene({ scene, onAdvance }: QuestSceneProps) {
           );
         })}
       </div>
+
+      <CelebrationMascot pose={allDone ? 'cheer' : 'idle'} entrance="puff" />
+      <TypewriterBubble text={speech} startDelay={scene.rows.length * 170 + 400} />
     </SceneShell>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import useSWR from 'swr';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './WeeklyLuckySpin.module.css';
 import { useGamification } from '@/context/GamificationContext';
@@ -9,6 +10,7 @@ import type { CelebrationScene } from '@/context/CelebrationContext';
 import { currencyDisplayName, toCelebrationCurrency } from '@/components/celebration/currency';
 import { useHerald } from '@/context/HeraldContext';
 import { playHaptic } from '@/lib/haptics';
+import { fetcher } from '@/lib/swr';
 import { playTickSound, playWinSound } from '@/utils/audio';
 import { pickSpinPrizeMessage } from '@/lib/tey/spinVoice';
 
@@ -59,10 +61,11 @@ export default function WeeklyLuckySpinCard() {
   const { celebrate } = useCelebration();
   const { enqueueHeraldNotification, registerNativeWidget, unregisterNativeWidget } = useHerald();
   const [showModal, setShowModal] = useState(false);
-  const [spinState, setSpinState] = useState<'LOADING' | 'AVAILABLE' | 'SPUN'>('AVAILABLE');
-  const [wheelConfig, setWheelConfig] = useState<any[]>(DEFAULT_WHEEL_CONFIG);
   const [isSpinning, setIsSpinning] = useState(false);
   const [prizeMessage, setPrizeMessage] = useState<string | null>(null);
+  // Set the instant a spin finishes, so the UI doesn't wait on SWR's next
+  // revalidation to reflect it — mirrors MysteryChestCard's localOverride.
+  const [localSpinOverride, setLocalSpinOverride] = useState<'SPUN' | null>(null);
 
   const wheelRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<HTMLDivElement>(null);
@@ -75,56 +78,49 @@ export default function WeeklyLuckySpinCard() {
     return () => unregisterNativeWidget('weekly-spin');
   }, [registerNativeWidget, unregisterNativeWidget]);
 
-  // Fetch initial state + emit Herald signal if spin is available
-  useEffect(() => {
-    fetch('/api/v2/spin/current-week', {
-      credentials: 'include',
-    })
-      .then(res => (res.ok ? res.json() : null))
-      .then(data => {
-        if (data && data.status) {
-          setSpinState(data.status);
-          if (data.status === 'SPUN') {
-            setPrizeMessage(
-              pickSpinPrizeMessage(data.rewardSnapshotAmount, currencyDisplayName(data.rewardSnapshotType))
-            );
-          }
-          // Herald signal: weekly spin is available
-          if (data.status === 'AVAILABLE') {
-            // Dedup key: week number so it only fires once per week boundary per session
-            const now = new Date();
-            const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay());
-            weekStart.setHours(0, 0, 0, 0);
-            const transitionKey = `spin-available-${weekStart.getTime()}`;
-            enqueueHeraldNotification({
-              id: `herald-spin-${Date.now()}`,
-              type: 'SPIN',
-              entityId: 'weekly-spin',
-              transitionKey,
-              title: 'Weekly Lucky Spin',
-              subtitle: "Your weekly spin is ready — don't miss it!",
-            });
-          }
-        }
-      })
-      .catch(() => {
-        setSpinState('AVAILABLE'); // Fallback to let them click and see any error if backend is down
-      });
+  // Shared SWR cache (lib/swr.ts) — a revisit to the dashboard paints this
+  // card from cache instantly instead of re-fetching both endpoints and
+  // re-flashing its loading state on every mount.
+  interface SpinCurrentWeek {
+    status?: 'AVAILABLE' | 'SPUN';
+    rewardSnapshotAmount?: number;
+    rewardSnapshotType?: string;
+  }
+  const { data: spinData } = useSWR<SpinCurrentWeek>('/api/v2/spin/current-week', fetcher);
+  const { data: wheelConfigData } = useSWR<any[]>('/api/v2/spin/wheel-config', fetcher);
 
-    fetch('/api/v2/spin/wheel-config', {
-      credentials: 'include',
-    })
-      .then(res => (res.ok ? res.json() : null))
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setWheelConfig(data);
-        }
-      })
-      .catch(() => {
-        // Keep DEFAULT_WHEEL_CONFIG
+  const spinState: 'AVAILABLE' | 'SPUN' = localSpinOverride ?? spinData?.status ?? 'AVAILABLE';
+  const wheelConfig = Array.isArray(wheelConfigData) && wheelConfigData.length > 0 ? wheelConfigData : DEFAULT_WHEEL_CONFIG;
+
+  // Emit the prize message / Herald "spin available" signal once per
+  // resolved status, not on every re-render.
+  const notifiedStatusRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!spinData?.status || notifiedStatusRef.current === spinData.status) return;
+    notifiedStatusRef.current = spinData.status;
+
+    if (spinData.status === 'SPUN') {
+      setPrizeMessage(
+        pickSpinPrizeMessage(spinData.rewardSnapshotAmount ?? 0, currencyDisplayName(spinData.rewardSnapshotType))
+      );
+    }
+    if (spinData.status === 'AVAILABLE') {
+      // Dedup key: week number so it only fires once per week boundary per session
+      const now = new Date();
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - now.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const transitionKey = `spin-available-${weekStart.getTime()}`;
+      enqueueHeraldNotification({
+        id: `herald-spin-${Date.now()}`,
+        type: 'SPIN',
+        entityId: 'weekly-spin',
+        transitionKey,
+        title: 'Weekly Lucky Spin',
+        subtitle: "Your weekly spin is ready — don't miss it!",
       });
-  }, [enqueueHeraldNotification]);
+    }
+  }, [spinData, enqueueHeraldNotification]);
 
   const totalSegments = wheelConfig.length || 8;
   const degreesPerSegment = 360 / totalSegments;
@@ -217,7 +213,7 @@ export default function WeeklyLuckySpinCard() {
              repeat: 1,
                onComplete: async () => {
                  setIsSpinning(false);
-                 setSpinState('SPUN');
+                 setLocalSpinOverride('SPUN');
                  const prizeName = currencyDisplayName(rewardSnapshotType);
                  setPrizeMessage(pickSpinPrizeMessage(rewardSnapshotAmount, prizeName, landedRarityTier));
                  playWinSound();
@@ -255,9 +251,7 @@ export default function WeeklyLuckySpinCard() {
 
   return (
     <>
-      <div className={styles.card} onClick={() => {
-        if (spinState !== 'LOADING') setShowModal(true);
-      }}>
+      <div className={styles.card} onClick={() => setShowModal(true)}>
         <div className={styles.headerRow}>
           <h3 className={styles.title}>WEEKLY LUCKY SPIN</h3>
           <span className={styles.timer}>Available this week!</span>
@@ -272,9 +266,8 @@ export default function WeeklyLuckySpinCard() {
         <button
           type="button"
           className={styles.spinBtn}
-          disabled={spinState === 'LOADING'}
         >
-          {spinState === 'LOADING' ? 'LOADING...' : (isAvailable ? 'SPIN NOW 🎉' : 'ALREADY SPUN')}
+          {isAvailable ? 'SPIN NOW 🎉' : 'ALREADY SPUN'}
         </button>
       </div>
 

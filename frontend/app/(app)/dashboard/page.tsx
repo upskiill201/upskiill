@@ -24,6 +24,7 @@ import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearning
 import PwaPushNudgeCard from '@/components/dashboard/v2/PwaPushNudgeCard';
 import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import { useMe } from '@/hooks/useMe';
+import { useEnrollments } from '@/hooks/useCourse';
 import NotificationBell from '@/components/community/NotificationBell';
 import styles from './Page.module.css';
 
@@ -43,14 +44,17 @@ export default function DashboardPage() {
   const { openMobileMenu } = useMobileMenu();
   const { streakDays, xp: xpPoints, lives: livesCount, coins, userLevel } = useGamification();
   const [userName, setUserName] = useState<string | null>(null);
-  const [enrollments, setEnrollments] = useState<any[]>([]);
-  const [loadingEnrollments, setLoadingEnrollments] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
   // Shared with StudentShell — one request, not two.
   const { me } = useMe();
+  // Shared SWR cache (hooks/useCourse.ts) — dedupes against My Learning's
+  // identical /api/auth/me/enrollments fetch, and paints instantly on a
+  // revisit to the dashboard instead of reloading from scratch.
+  const { enrollments: enrollmentsData } = useEnrollments();
+  const enrollments = enrollmentsData ?? [];
 
   useEffect(() => {
     if (me?.fullName) {
@@ -60,7 +64,7 @@ export default function DashboardPage() {
   }, [me]);
 
   useEffect(() => {
-    // 1. Hydrate cached user on client mount safely to prevent SSR hydration mismatch
+    // Hydrate cached user on client mount safely to prevent SSR hydration mismatch
     const cached = getCachedUser();
     if (cached?.fullName) {
       setUserName(cached.fullName.split(' ')[0]);
@@ -70,39 +74,17 @@ export default function DashboardPage() {
         setUserName((state.answers['1'].name as string).split(' ')[0]);
       }
     }
+  }, []);
 
-    // 2. Trigger loader with suppressed connection check popups; loader hides
-    // itself the instant data resolves below (no artificial hold).
+  useEffect(() => {
+    if (enrollmentsData) {
+      hideLoader(); // Only hide once data has actually resolved (fresh or cached).
+      return;
+    }
+    // No cached data yet — trigger loader with suppressed connection-check
+    // popups; loader hides itself the instant cached-or-fresh data lands above.
     showLoader(undefined, false, undefined, true);
-
-    // 3. Fetch all backend data (me & enrollments) in parallel
-    let cancelled = false;
-    const loadAllDashboardData = async () => {
-      try {
-        // /api/auth/me is NOT fetched here any more — StudentShell already
-        // reads it through useMe(), and this duplicate raw fetch went out in
-        // the same tick as that one on every dashboard entry. The display name
-        // now comes from the shared SWR record below.
-        const res = await fetch('/api/auth/me/enrollments', { credentials: 'include' });
-        const data = res.ok ? await res.json() : [];
-        if (Array.isArray(data)) {
-          setEnrollments(data);
-        }
-      } catch (err) {
-        console.error('Failed loading dashboard data', err);
-      } finally {
-        if (!cancelled) {
-          setLoadingEnrollments(false);
-          hideLoader();
-        }
-      }
-    };
-
-    loadAllDashboardData();
-    return () => {
-      cancelled = true;
-    };
-  }, [showLoader, hideLoader]);
+  }, [enrollmentsData, showLoader, hideLoader]);
 
   const handleContinueLearning = () => {
     playHaptic('medium');
