@@ -7,7 +7,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, EarningsEntryType } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
@@ -1276,17 +1276,68 @@ export class CourseService {
           include: {
             _count: { select: { lessons: true } },
             lessons: {
-              select: { id: true, title: true, durationMinutes: true },
+              select: { id: true, title: true, durationMinutes: true, contentBlocks: true },
             },
           },
         },
       },
     });
 
+    const courseIds = courses.map((c) => c.id);
+
+    // Real per-course performance signals — mirrors the aggregation pattern
+    // in AnalyticsService.getInstructorCoursesTable, but scoped to ALL of the
+    // instructor's courses (including drafts), so this list never has to
+    // choose between omitting a stat and fabricating one.
+    const [revenueRows, viewRows, ratingRows, completedRows] = await Promise.all([
+      this.prisma.earningsTransaction.groupBy({
+        by: ['courseId'],
+        where: {
+          creatorId: userId,
+          courseId: { in: courseIds },
+          type: { in: ['SALE', 'RENEWAL'] as EarningsEntryType[] },
+        },
+        _sum: { grossMinor: true },
+      }),
+      this.prisma.courseView.groupBy({
+        by: ['courseId'],
+        where: { courseId: { in: courseIds } },
+        _sum: { count: true },
+      }),
+      this.prisma.review.groupBy({
+        by: ['courseId'],
+        where: { courseId: { in: courseIds } },
+        _avg: { rating: true },
+        _count: { rating: true },
+      }),
+      this.prisma.userCourseProgress.groupBy({
+        by: ['courseId'],
+        where: { courseId: { in: courseIds }, status: 'completed' },
+        _count: { _all: true },
+      }),
+    ]);
+
+    const revenueMap = new Map(
+      revenueRows.map((r) => [r.courseId, Math.round(r._sum.grossMinor ?? 0) / 100]),
+    );
+    const viewMap = new Map(viewRows.map((r) => [r.courseId, r._sum.count ?? 0]));
+    const ratingMap = new Map(
+      ratingRows.map((r) => [
+        r.courseId,
+        { avg: r._avg.rating != null ? Math.round(r._avg.rating * 10) / 10 : null, count: r._count.rating },
+      ]),
+    );
+    const completedMap = new Map(completedRows.map((r) => [r.courseId, r._count._all]));
+
     return courses.map((course) => {
       let totalLessons = 0;
+      let hasRealLessonContent = false;
       course.sections.forEach((sec) => {
         totalLessons += sec._count?.lessons || sec.lessons?.length || 0;
+        sec.lessons?.forEach((lesson) => {
+          const blocks = lesson.contentBlocks as Record<string, unknown> | null;
+          if (blocks && Object.keys(blocks).length > 0) hasRealLessonContent = true;
+        });
       });
 
       const checklist = [
@@ -1296,18 +1347,38 @@ export class CourseService {
         { id: 'description', label: 'Course description', complete: !!course.description && course.description.length >= 20 },
         { id: 'sections', label: 'At least 1 module', complete: course.sections.length >= 1 },
         { id: 'lessons', label: 'At least 2 lessons', complete: totalLessons >= 2 },
+        { id: 'content', label: 'Lessons have real content, not just titles', complete: hasRealLessonContent },
       ];
 
       const completedCount = checklist.filter((c) => c.complete).length;
       const readinessPercentage = Math.round((completedCount / checklist.length) * 100);
       const remainingItems = checklist.filter((c) => !c.complete).map((c) => c.label);
 
+      const learners = course._count?.enrollments ?? 0;
+      const views = viewMap.get(course.id) ?? 0;
+      const rating = ratingMap.get(course.id);
+      const completed = completedMap.get(course.id) ?? 0;
+
+      // contentBlocks was only fetched to compute hasRealLessonContent above —
+      // strip it back out so this list payload doesn't ship raw lesson JSON.
+      const sections = course.sections.map((sec) => ({
+        ...sec,
+        lessons: sec.lessons?.map(({ contentBlocks: _contentBlocks, ...lesson }) => lesson),
+      }));
+
       return {
         ...course,
+        sections,
         totalSections: course.sections.length,
         totalLessons,
         readinessPercentage,
         remainingItems,
+        revenue: revenueMap.get(course.id) ?? 0,
+        views,
+        conversionPct: views > 0 ? Math.round((learners / views) * 100) : null,
+        completionPct: learners > 0 ? Math.round((completed / learners) * 100) : 0,
+        ratingAvg: rating?.avg ?? null,
+        ratingCount: rating?.count ?? 0,
       };
     });
   }

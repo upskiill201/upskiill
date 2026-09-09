@@ -11,7 +11,6 @@ import {
   FaMagnifyingGlass,
   FaEllipsisVertical,
   FaUsers,
-  FaStar,
   FaTriangleExclamation,
   FaEye,
   FaCopy,
@@ -23,6 +22,7 @@ import {
   FaArrowsRotate,
   FaPlay
 } from 'react-icons/fa6';
+import { Stars, timeAgo } from '@/components/creator/analytics/bits';
 import styles from './Courses.module.css';
 
 interface Course {
@@ -44,6 +44,12 @@ interface Course {
   totalLessons?: number;
   readinessPercentage?: number;
   remainingItems?: string[];
+  revenue?: number;
+  views?: number;
+  conversionPct?: number | null;
+  completionPct?: number;
+  ratingAvg?: number | null;
+  ratingCount?: number;
   _count?: {
     enrollments?: number;
     sections?: number;
@@ -330,12 +336,17 @@ export default function CreatorCoursesPage() {
         <div className={styles.coursesGrid}>
           {filteredCourses.map((course) => {
             const isDraft = !course.published;
-            const readiness = course.readinessPercentage ?? (isDraft ? 60 : 100);
+            // No fallback — readinessPercentage is always computed server-side now.
+            // If it's ever missing, that's a bug to see, not paper over.
+            const readiness = course.readinessPercentage ?? 0;
             const totalLessons = course.totalLessons ?? 0;
-            const learners = course.studentsCount ?? course._count?.enrollments ?? 0;
-            // Real data only — a course with no reviews shows no rating rather
-            // than an invented 5.0.
-            const rating = course.rating;
+            const learners = course._count?.enrollments ?? course.studentsCount ?? 0;
+            const views = course.views ?? 0;
+            const conversionPct = course.conversionPct ?? null;
+            const completionPct = course.completionPct ?? 0;
+            const revenue = course.revenue ?? 0;
+            const ratingAvg = course.ratingAvg ?? null;
+            const hasTraffic = views > 0 || learners > 0 || revenue > 0;
 
             return (
               <div key={course.id} className={styles.courseCard}>
@@ -400,22 +411,60 @@ export default function CreatorCoursesPage() {
 
                   {/* For Published: Live Metrics */}
                   {!isDraft && (
-                    <div className={styles.metricsRow}>
-                      <div className={styles.metricItem}>
-                        <FaUsers size={14} color="#0172FD" />
-                        <span>{learners} learners</span>
-                      </div>
-                      <div className={styles.metricItem}>
-                        <FaBookOpen size={14} color="#10B981" />
-                        <span>{totalLessons} lessons</span>
-                      </div>
-                      {typeof rating === 'number' && rating > 0 && (
+                    <>
+                      <div className={styles.metricsRow}>
                         <div className={styles.metricItem}>
-                          <FaStar size={14} color="#F59E0B" />
-                          <span>{rating.toFixed(1)}</span>
+                          <FaUsers size={14} color="#0172FD" />
+                          <span>{learners} learners</span>
+                        </div>
+                        <div className={styles.metricItem}>
+                          <FaBookOpen size={14} color="#10B981" />
+                          <span>{totalLessons} lessons</span>
+                        </div>
+                        <div className={styles.metricItem}>
+                          <Stars rating={ratingAvg} size={12} />
+                        </div>
+                      </div>
+
+                      {/* Context for the learner count — 0 learners next to 0 views
+                          reads as "not launched yet"; 0 learners next to real views
+                          reads as a conversion problem. Never show one without the other. */}
+                      {hasTraffic ? (
+                        <div className={styles.metricsRow}>
+                          <div className={styles.metricItem}>
+                            <FaEye size={13} color="#64748B" />
+                            <span>
+                              {views} view{views === 1 ? '' : 's'}
+                              {conversionPct !== null ? ` · ${conversionPct}% enrolled` : ''}
+                            </span>
+                          </div>
+                          {learners > 0 && (
+                            <div className={styles.metricItem}>
+                              <FaCircleCheck size={13} color="#8B5CF6" />
+                              <span>{completionPct}% complete</span>
+                            </div>
+                          )}
+                          {revenue > 0 && (
+                            <div className={styles.metricItem}>
+                              <span style={{ fontWeight: 700, color: '#059669' }}>
+                                ${revenue.toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className={styles.remainingText}>
+                          <FaTriangleExclamation size={12} />
+                          <span>No traffic yet — share your course link to get your first views</span>
                         </div>
                       )}
-                    </div>
+
+                      {course.updatedAt && (
+                        <div className={styles.courseDescription} style={{ fontSize: 12, opacity: 0.65 }}>
+                          Updated {timeAgo(course.updatedAt)}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
