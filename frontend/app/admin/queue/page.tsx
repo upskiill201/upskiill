@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { mutate } from 'swr';
 import {
+  Button,
   DataTable,
   Empty,
   ErrorState,
   Loading,
   PageHeader,
   Pill,
+  TabGroup,
   adminStyles as s,
   humanize,
   relativeTime,
@@ -59,28 +61,7 @@ export default function AdminQueuePage() {
         subtitle="Scheduled actions waiting on the tick. Cancelling one is safe — the learner simply is not nudged for that reason today."
       />
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {STATUSES.map((sv) => (
-          <button
-            key={sv}
-            onClick={() => setStatus(sv)}
-            style={{
-              padding: '6px 14px',
-              borderRadius: 999,
-              border: '1px solid var(--border)',
-              background:
-                status === sv ? 'var(--light-blue-bg)' : 'var(--bg-card)',
-              color:
-                status === sv ? 'var(--brand-blue)' : 'var(--text-secondary)',
-              fontSize: 13,
-              fontWeight: status === sv ? 600 : 500,
-              cursor: 'pointer',
-            }}
-          >
-            {humanize(sv)}
-          </button>
-        ))}
-      </div>
+      <TabGroup options={STATUSES} value={status} onChange={setStatus} />
 
       {isLoading || !data ? (
         <Loading />
@@ -115,22 +96,14 @@ export default function AdminQueuePage() {
                 </td>
                 <td>
                   {a.status === 'PENDING' && (
-                    <button
+                    <Button
+                      variant="danger"
+                      size="sm"
                       onClick={() => void cancel(a.id)}
                       disabled={cancelling === a.id}
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: 10,
-                        border: '1px solid var(--border)',
-                        background: 'var(--bg-card)',
-                        color: 'var(--error-red)',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
                     >
                       {cancelling === a.id ? '…' : 'Cancel'}
-                    </button>
+                    </Button>
                   )}
                 </td>
               </tr>
