@@ -203,6 +203,16 @@ describe('TeySchedulerService', () => {
     });
 
     it('keeps the batch alive when one action blows up', async () => {
+      // Pin the delivery mode. This test used to assert
+      // `prisma.teyDelivery.create`, which the scheduler only writes itself in
+      // DRY-RUN — with delivery enabled it delegates to TeyDeliveryService
+      // instead. So the test passed or failed purely on whether
+      // TEY_DELIVERY_ENABLED happened to be set in the ambient environment
+      // (it is in .env, absent on CI). Pinning it makes the result the same
+      // everywhere, and the assertion below now checks the thing the test is
+      // actually about: the second action still got processed.
+      process.env.TEY_DELIVERY_ENABLED = 'true';
+
       (actions.claimDue as jest.Mock).mockResolvedValue([
         dueAction({ id: 'bad' }),
         dueAction({ id: 'good', dedupeKey: 'k2' }),
@@ -215,8 +225,9 @@ describe('TeySchedulerService', () => {
 
       expect(summary.failed).toBe(1);
       expect(actions.markFailed).toHaveBeenCalledWith('bad', 1, 'db blip');
-      // The second action still ran.
-      expect(prisma.teyDelivery.create).toHaveBeenCalledTimes(1);
+      // The second action still ran and was delivered.
+      expect(summary.sent).toBe(1);
+      expect(delivery.deliver).toHaveBeenCalledTimes(1);
     });
 
     it('delivers, and counts the nudge as ignored until it is opened', async () => {
