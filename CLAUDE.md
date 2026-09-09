@@ -23,7 +23,7 @@ It is an AI-powered gamified learning platform that makes mastering real-world s
 
 - **Frontend (`/frontend`):** Next.js 14 (App Router), TypeScript, Redux, Tailwind CSS v4, Framer Motion, GSAP, Rive.
 - **Backend (`/backend`):** NestJS 11, Prisma ORM, PostgreSQL (Supabase), Redis, Firebase Admin SDK.
-- **Infra:** Vercel (Frontend), Render (Backend), AWS S3 + CloudFront (Media/Uploads), Firebase Auth, Stripe/Paystack.
+- **Infra:** Vercel (Frontend), Render (Backend), Cloudflare R2 (Media/Uploads), Firebase Auth, Stripe/Paystack.
 - *UI/Design System & Motion Standards live in `frontend/CLAUDE.md` and `docs/08-color-system.md`.*
 
 ---
@@ -35,7 +35,7 @@ It is an AI-powered gamified learning platform that makes mastering real-world s
 | **Frontend** | `localhost:3000` | `upskiill-git-staging-upskiill201s-projects.vercel.app` (`staging` branch) | `teyro.app` / `upskiill.vercel.app` (`main` branch) |
 | **Backend** | `localhost:3001` | `https://upskiill-backend.onrender.com` (`teyro-backend-staging`) | `https://teyro-backend.onrender.com` (`teyro-backend`) |
 | **Database** | Local / Supabase pooler | Supabase `iobdpmczxikgocvfzouo` (`aws-1-eu-west-1`) | Supabase `lemajgyltvxjqvwjqvtg` (`aws-0-eu-west-1`) |
-| **Storage** | S3 `teyro-course-videos` / CloudFront `dhnydb8s9j6i4.cloudfront.net` | Same | Same |
+| **Storage** | Cloudflare R2 `teyro-production` / public URL `pub-d1eea6d3cd36417ea274a8c49e11c316.r2.dev` | Same | Same |
 
 ### Deployment Pipeline
 1. **Local Dev:** Build & test on `localhost:3000` / `localhost:3001`.
@@ -74,7 +74,7 @@ Phases are stored as independent JSON arrays (`learnBlocks`, `applyBlocks`, `ref
   - `POST /api/v1/lessons/:id/publish`
 - **Optimistic Locking:** Frontend passes `{ ...data, version }`. Backend rejects mismatch with `409 Conflict`.
 - **Throttling & Validation:** Global `ValidationPipe` (`whitelist: true`, `forbidNonWhitelisted: true`). Rate limiting on public/auth/AI endpoints.
-- **Direct S3 Uploads (Presigned URLs):** Never route file bytes through NestJS. Frontend gets presigned S3 URL (`POST /api/v1/uploads/presign`) and uploads directly. Multipart chunked uploads for video.
+- **Direct Uploads (Presigned URLs):** Never route file bytes through NestJS. ⚠️ **Correction (2026-09-09):** the backend has *no* upload endpoints at all — every storage route lives in the frontend's Next.js API routes (`frontend/app/api/upload/*`), signing against Cloudflare R2 via `frontend/lib/uploadS3Server.ts`. Browser PUTs directly to R2; multipart chunked uploads for video. The one exception is `/api/upload/avatar`, which proxies bytes through the Next server rather than presigning.
 - **Webhooks & CORS:** Always verify Stripe/Paystack webhook signatures. Strict CORS origin whitelist (`ALLOWED_ORIGINS`).
 
 ---

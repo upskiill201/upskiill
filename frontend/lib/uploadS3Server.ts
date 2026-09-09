@@ -8,20 +8,33 @@
  */
 import { S3Client } from '@aws-sdk/client-s3';
 
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-export const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
-export const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
-const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
+/**
+ * Every storage value is trimmed. A dashboard paste that carries a trailing
+ * newline is invisible in the UI but travels all the way into the signed
+ * request — a stray "\n" on the bucket name addresses `teyro-production%0A`,
+ * which does not exist, and the provider answers with a bare "Access Denied"
+ * that looks exactly like a credentials problem. Trimming here is the only
+ * place that can catch it for every route at once.
+ */
+const env = (name: string): string | undefined => process.env[name]?.trim() || undefined;
+
+const AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID');
+const AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY');
+export const AWS_REGION = env('AWS_REGION') || 'eu-west-1';
+// No default bucket: a wrong-but-plausible fallback (the old AWS bucket name)
+// silently pointed every upload at a bucket that does not exist on R2, which
+// fails identically to a permissions error. Missing config must fail loudly.
+export const AWS_S3_BUCKET = env('AWS_S3_BUCKET');
+const CLOUDFRONT_URL = env('CLOUDFRONT_URL');
 // Cloudflare R2 account id — presence of this switches the client from AWS S3
 // to R2's S3-compatible endpoint (https://<account_id>.r2.cloudflarestorage.com).
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
+const R2_ACCOUNT_ID = env('R2_ACCOUNT_ID');
 
 let s3Client: S3Client | null = null;
 
 /** Returns a singleton S3-compatible client (AWS S3 or Cloudflare R2), or null when required env vars are missing. */
 export function getS3Client(): S3Client | null {
-  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !CLOUDFRONT_URL) return null;
+  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !CLOUDFRONT_URL || !AWS_S3_BUCKET) return null;
   if (!s3Client) {
     s3Client = new S3Client({
       region: R2_ACCOUNT_ID ? 'auto' : AWS_REGION,

@@ -8,6 +8,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   getS3Client,
+  AWS_S3_BUCKET,
   validateUploadMeta,
   verifyLessonOwnership,
   buildObjectKey,
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
 
       const s3Key = buildObjectKey(filename, contentType, lessonId);
       const command = new CreateMultipartUploadCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: AWS_S3_BUCKET,
         Key: s3Key,
         ContentType: contentType,
       });
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
       }
 
       const command = new UploadPartCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: AWS_S3_BUCKET,
         Key: key,
         PartNumber: partNumber,
         UploadId: uploadId,
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
       }
 
       const command = new CompleteMultipartUploadCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: AWS_S3_BUCKET,
         Key: key,
         UploadId: uploadId,
         MultipartUpload: { Parts: parts },
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
     // ─── ABORT ─────────────────────────────────────────────────────────────
     if (action === 'abort') {
       const command = new AbortMultipartUploadCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: AWS_S3_BUCKET,
         Key: key,
         UploadId: uploadId,
       });

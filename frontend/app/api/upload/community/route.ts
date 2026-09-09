@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { getS3Client, cloudFrontUrlFor } from '@/lib/uploadS3Server';
+import { getS3Client, AWS_S3_BUCKET, cloudFrontUrlFor } from '@/lib/uploadS3Server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const key = `community/${userId}/${subFolder}/${base}_${Date.now()}.${ext}`;
 
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET,
+      Bucket: AWS_S3_BUCKET,
       Key: key,
       ContentType: contentType,
     });

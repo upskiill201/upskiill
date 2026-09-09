@@ -3,6 +3,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   getS3Client,
+  AWS_S3_BUCKET,
   validateUploadMeta,
   verifyLessonOwnership,
   buildObjectKey,
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     const s3Key = buildObjectKey(filename!, contentType!, lessonId);
 
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET,
+      Bucket: AWS_S3_BUCKET,
       Key: s3Key,
       ContentType: contentType,
     });
