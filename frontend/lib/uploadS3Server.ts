@@ -28,6 +28,10 @@ export function getS3Client(): S3Client | null {
       ...(R2_ACCOUNT_ID && {
         endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
         forcePathStyle: true,
+        // R2 rejects the default per-request CRC32 checksum newer AWS SDK
+        // versions attach to every call (surfaces as a bare "Access Denied",
+        // not a checksum error) — only send one when a command needs it.
+        requestChecksumCalculation: 'WHEN_REQUIRED',
       }),
       credentials: {
         accessKeyId: AWS_ACCESS_KEY_ID,

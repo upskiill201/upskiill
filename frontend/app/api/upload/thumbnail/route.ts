@@ -15,6 +15,7 @@ const s3Client = new S3Client({
   ...(R2_ACCOUNT_ID && {
     endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     forcePathStyle: true,
+    requestChecksumCalculation: 'WHEN_REQUIRED',
   }),
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
