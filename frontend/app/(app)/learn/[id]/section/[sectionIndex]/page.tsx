@@ -28,6 +28,7 @@ import { playChestBurst, playSparkle, playWhoosh } from '@/lib/audio/celebration
 import {
   pickComboLine,
   pickLessonProgressLine,
+  pickLessonReadyToUnlockLine,
   pickLessonWelcomeLines,
   pickNodeUnlockLine,
   pickPhaseUnlockLine,
@@ -566,6 +567,18 @@ function SectionViewContent({
         // Phase 3: Lock Shatter & Sound Timing (plays at exact peak moment: t = 1.4s)
         const unlockAudioTimer = setTimeout(() => {
           setUnlockRevealed(true);
+          const item = mapItems[targetNodeIdx];
+          // A sequence-reached lesson that's still behind the paywall never
+          // actually unlocks here — `isLocked` (the real, data-driven value)
+          // stays true regardless of `unlockRevealed`. Celebrating it anyway
+          // (chest-burst, confetti, the wiggle, "next one's open!") would be
+          // theater over a door that's still shut; the honest version tells
+          // them it's reached and points at what actually opens it.
+          const stillPaywalled = item?.type === 'lesson' && isPaywalled(item.id);
+          if (stillPaywalled) {
+            sayTey(pickLessonReadyToUnlockLine(), 'nudge');
+            return;
+          }
           try {
             playChestBurst();
             fireConfetti({
@@ -575,7 +588,6 @@ function SectionViewContent({
               colors: ['#58CC02', '#0172FD', '#EAB308'],
             });
           } catch {}
-          const item = mapItems[targetNodeIdx];
           if (item?.type === 'lesson') {
             const isFirstEver = item.lessonIndex === 0 && completedInSection === 0;
             const isFinal = item.lessonIndex === totalLessons - 1;
@@ -1365,8 +1377,22 @@ function SectionViewContent({
     }
   }, [canContinueFromLearn, lessonPhase, sayTey]);
 
-  const handleNodeClick = (idx: number, isLocked: boolean) => {
+  const handleNodeClick = (idx: number, isLocked: boolean, isPaywallLocked = false) => {
     if (isLocked) {
+      if (isPaywallLocked) {
+        // Reached this lesson in sequence, just hasn't paid for it — there's
+        // somewhere to go, so send them there instead of a dead-end toast
+        // that (incorrectly, for this case) tells them to finish lessons
+        // they've already finished.
+        playHaptic('light');
+        router.push(
+          buildUnlockHref(
+            String(course?.id || params.id),
+            `/learn/${params.id}/section/${sectionIndex}`,
+          ),
+        );
+        return;
+      }
       playHaptic('warning');
       setLockedToast({
         message: 'Complete preceding lessons to unlock this step! 🔒',
@@ -2481,8 +2507,26 @@ function SectionViewContent({
                   let isActive = false;
                   let isLocked = false;
 
+                  // Set below only for a `lesson` item, and only meaningful
+                  // there — a node the learner has actually SEQUENCE-reached
+                  // (index <= currentActiveLessonIndex) but hasn't paid for.
+                  // `isLocked` below still folds this in (needed so the map
+                  // never draws a paid lesson as freely open — see
+                  // `isPaywalled`'s own comment on why that check exists at
+                  // all), but tapping a node locked for THIS reason, unlike
+                  // one that's genuinely not sequence-reached yet, has
+                  // somewhere to go: the subscribe flow. Distinguishing it is
+                  // what `handleNodeClick` uses to route there instead of the
+                  // generic "complete preceding lessons" toast, which was
+                  // previously shown here too — actively wrong copy for a
+                  // lesson the learner already reached, and a dead end with
+                  // no path to actually unlocking the course.
+                  let isPaywallLocked = false;
+
                   if (item.type === 'lesson') {
                     isCompleted = completedLessons.includes(item.id);
+                    isPaywallLocked =
+                      item.lessonIndex <= currentActiveLessonIndex && isPaywalled(item.id);
                     // Locked when EITHER gate says so: sequencing (haven't
                     // reached it yet) or the paywall (haven't paid for it).
                     isLocked =
@@ -2578,13 +2622,13 @@ function SectionViewContent({
                         {item.type === 'lesson' ? (
                           <motion.button
                             type="button"
-                            onClick={() => handleNodeClick(idx, isLocked)}
+                            onClick={() => handleNodeClick(idx, isLocked, isPaywallLocked)}
                             className={`
                               ${styles.duoPedestal}
                               ${isCompleted ? styles.duoPedestalCompleted : displayActive ? styles.duoPedestalActive : styles.duoPedestalLocked}
                               ${isRevealPending ? styles.duoPedestalCharging : ''}
                             `}
-                            animate={unlockRevealed && justUnlockedIndex === idx && !reducedMotion ? {
+                            animate={unlockRevealed && justUnlockedIndex === idx && !isLocked && !reducedMotion ? {
                               scale: [1, 1.3, 0.9, 1.15, 1],
                               rotate: [0, -10, 10, -5, 5, 0],
                             } : undefined}

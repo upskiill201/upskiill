@@ -260,3 +260,18 @@ export function pickNodeUnlockLine(kind: 'first' | 'mid' | 'final'): string {
   if (kind === 'final') return pickFromPool(NODE_UNLOCK_FINAL, 'lesson:node-unlock:final');
   return pickFromPool(NODE_UNLOCK_MID, 'lesson:node-unlock:mid');
 }
+
+// A lesson the learner has actually reached in sequence, but that sits behind
+// the paywall — celebrating an "unlock" here would be theater over a door
+// that's still shut. This is the honest version: acknowledges it's reached,
+// points at what actually opens it, without faking a payoff.
+const READY_TO_UNLOCK = [
+  "That one's reached — just needs unlocking to open.",
+  "You're there. That lesson's just behind the subscription.",
+  "Next one's ready and waiting — unlock the course to get in.",
+];
+
+/** Fires when the reveal-peak node is sequence-reached but still paywalled. */
+export function pickLessonReadyToUnlockLine(): string {
+  return pickFromPool(READY_TO_UNLOCK, 'lesson:node-unlock:paywalled');
+}
