@@ -31,7 +31,11 @@ export default function HeaderWrapper() {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/courses') ||
     pathname.startsWith('/learn') ||
-    pathname.startsWith('/creator');
+    pathname.startsWith('/creator') ||
+    // The Admin Center has its own shell (AdminShell) with its own sidebar
+    // and branding — the marketing header (with logged-out Login/Sign Up
+    // CTAs) has no business rendering above an internal, admin-only tool.
+    pathname.startsWith('/admin');
 
   if (isHiddenRoute) return null;
 
