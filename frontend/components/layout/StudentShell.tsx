@@ -98,7 +98,7 @@ export default function StudentShell({
   // the dashboard page needs the same record, and because child effects run
   // before parent effects the two raw fetches went out in the same tick as two
   // identical authenticated round trips on every dashboard entry.
-  const { me, error: meError } = useMe();
+  const { me, avatarUrl: resolvedAvatarUrl, error: meError } = useMe();
 
   // Hydrate from the local cache on mount so the sidebar paints a name and
   // avatar immediately instead of waiting on the network. Kept separate from
@@ -121,10 +121,13 @@ export default function StudentShell({
     if (!me) return;
 
     if (me.fullName) setUserName(me.fullName);
-    if (me.avatarUrl !== undefined) setUserAvatar(me.avatarUrl ?? null);
+    setUserAvatar(resolvedAvatarUrl);
     if (me.hasStudentAccess !== undefined) setHasStudentAccess(me.hasStudentAccess);
     if (me.hasCreatorAccess !== undefined) setHasCreatorAccess(me.hasCreatorAccess);
-    setCachedUser(me);
+    // Cache the *resolved* photo (falls back through Profile/InstructorProfile —
+    // see resolveAvatarUrl in useMe.ts), not the raw User.avatarUrl column, so
+    // a Google-onboarded user's cached first-paint isn't null too.
+    setCachedUser({ ...me, avatarUrl: resolvedAvatarUrl });
 
     // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-01 & AUTH-02)
     // Pure creators without a verified student account should be in /creator, not /dashboard.

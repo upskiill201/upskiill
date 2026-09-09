@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
 
   // Shared with StudentShell — one request, not two.
-  const { me } = useMe();
+  const { me, avatarUrl } = useMe();
   // Shared SWR cache (hooks/useCourse.ts) — dedupes against My Learning's
   // identical /api/auth/me/enrollments fetch, and paints instantly on a
   // revisit to the dashboard instead of reloading from scratch.
@@ -59,9 +59,13 @@ export default function DashboardPage() {
   useEffect(() => {
     if (me?.fullName) {
       setUserName(me.fullName.split(' ')[0]);
-      setCachedUser(me);
+      // Cache the resolved photo, not the raw User.avatarUrl column — see
+      // resolveAvatarUrl in useMe.ts. Otherwise this write races
+      // StudentShell's own setCachedUser and can clobber a resolved photo
+      // back to null for Google-onboarded users.
+      setCachedUser({ ...me, avatarUrl });
     }
-  }, [me]);
+  }, [me, avatarUrl]);
 
   useEffect(() => {
     // Hydrate cached user on client mount safely to prevent SSR hydration mismatch
