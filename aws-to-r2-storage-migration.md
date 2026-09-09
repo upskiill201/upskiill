@@ -85,5 +85,45 @@ Confirmed the NestJS backend has no AWS/storage code; nothing to change there.
 
 ---
 
+---
+
+## Post-migration debugging (2026-09-09)
+
+Two failures showed up on the first live test, with very different symptoms and one shared cause.
+
+### 1. AWS SDK checksums (fixed in `96fb7cd`)
+Newer `@aws-sdk/client-s3` versions (this repo is on `3.1050.0`) attach a CRC32 checksum header to every request by default. R2 does not accept that flexible-checksum feature the way S3 does and rejects the request as a bare `Access Denied` — nothing in the message points at checksums. Fixed by setting `requestChecksumCalculation: 'WHEN_REQUIRED'` on the client, which is Cloudflare's documented workaround.
+
+### 2. A trailing newline in the bucket env var (fixed in `21b74d3` + a Vercel edit)
+The real blocker. The `AWS_S3_BUCKET` value pasted into Vercel carried a trailing newline, so every signed request addressed `teyro-production%0A` — a bucket that does not exist. It surfaced as two unrelated-looking errors:
+- server-side `PutObject` (the avatar route) → `Access Denied`, looking like a credentials problem;
+- browser-direct presigned `PUT` (the thumbnail route) → `400` on the CORS preflight, looking like a CORS problem.
+
+Neither guess was right. The giveaway was `%0A` in the failing request URL. **When a storage call fails, read the full request URL before touching credentials or CORS.**
+
+Hardening applied so this class of bug cannot recur:
+- every storage env var is trimmed at the single point it is read (`frontend/lib/uploadS3Server.ts`);
+- the `teyro-course-videos` bucket fallback is gone — a plausible-but-wrong default silently pointed uploads at a non-existent bucket and failed identically to a permissions error, so missing config now fails loudly;
+- `getS3Client()` requires a bucket name before returning a client;
+- the duplicate `S3Client` constructions in the avatar and thumbnail routes were collapsed into the shared helper, and `presign`/`multipart`/`community` now use the shared trimmed bucket constant. The config had been copied three times, which is why both fixes above each needed three separate edits.
+
+### 3. Database URL cleanup — no action needed
+A read-only sweep of all 487 text/json/array columns in the staging database found **zero** rows referencing the dead `dhnydb8s9j6i4.cloudfront.net` domain. There is nothing to clean up; the old media references are simply not present.
+
+### 4. End-to-end verification (staging, 2026-09-09)
+The same sweep confirmed live R2 URLs written by three distinct upload code paths:
+
+| Path | Column | Stored key prefix |
+|---|---|---|
+| Server-proxied `PutObject` (avatar) | `User.avatarUrl`, `Profile.avatarUrl`, `instructor_profiles.avatarUrl` | `avatars/<userId>/…` |
+| Presigned browser PUT (thumbnail) | `Course.thumbnailUrl` | `thumbnails/<userId>/…` |
+| Presigned browser PUT (community) | `posts.images` | `community/<userId>/images/…` |
+
+All values well-formed, correctly extensioned, no `%0A`. A newline check across every URL-bearing column came back clean — the only two hits were `Course.description` (multi-line prose that happens to contain a link) and `_prisma_migrations.logs` (multi-line log text), neither of which is a URL field.
+
+Lesson video/audio upload (the `multipart` path, for files over 8MB) is the one route not yet exercised live.
+
+---
+
 ## Related memory
 - `teyro-aws-s3-audit` — full pre-migration map of AWS S3/CloudFront usage (now superseded by this doc for the storage-provider decision, but still accurate for upload-flow architecture: presign vs multipart, key shapes, client hooks).
