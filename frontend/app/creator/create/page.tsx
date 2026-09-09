@@ -111,21 +111,76 @@ const STEP_COACHING = [
   }
 ];
 
+/**
+ * The wizard's answers live only in this component until the final step
+ * creates the course, so a refresh, an accidental Back, or a tab restore used
+ * to drop everything and restart at step 1. Persisting to sessionStorage is
+ * the right weight here: the four answers are cheap, and no course row should
+ * exist until the creator actually commits. It is per-tab and clears itself
+ * once the course is created.
+ */
+const DRAFT_KEY = 'teyro_course_wizard_draft';
+
+type WizardDraft = {
+  step: number;
+  courseType: 'course' | 'test' | null;
+  title: string;
+  category: string;
+  timeWeekly: string;
+};
+
+function loadDraft(): Partial<WizardDraft> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as Partial<WizardDraft>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export default function CourseCreationWizard() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
-  const [step, setStep] = useState(1);
+
+  // Read once, synchronously, so the first paint is already the resumed step
+  // rather than flashing step 1 and jumping.
+  const [restored] = useState<Partial<WizardDraft>>(() => loadDraft());
+
+  const [step, setStep] = useState(() =>
+    typeof restored.step === 'number' && restored.step >= 1 && restored.step <= 4
+      ? restored.step
+      : 1,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Form State
-  const [courseType, setCourseType] = useState<'course' | 'test' | null>('course');
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [timeWeekly, setTimeWeekly] = useState('');
+  const [courseType, setCourseType] = useState<'course' | 'test' | null>(
+    restored.courseType ?? 'course',
+  );
+  const [title, setTitle] = useState(restored.title ?? '');
+  const [category, setCategory] = useState(restored.category ?? '');
+  const [timeWeekly, setTimeWeekly] = useState(restored.timeWeekly ?? '');
+
+  // Persist every answer as it changes so leaving and coming back resumes
+  // exactly where the creator stopped.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ step, courseType, title, category, timeWeekly }),
+      );
+    } catch {
+      /* storage disabled — the wizard still works, it just won't resume */
+    }
+  }, [step, courseType, title, category, timeWeekly]);
 
   // Keyboard Shortcuts (Duolingo Style: Enter to proceed, 1/2 on Step 1)
   const isSubmittingRef = useRef(false);
+  /** Latches once a course has actually been created, so the submit guard is
+   *  never released while the router is still navigating away. */
+  const createdRef = useRef(false);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
@@ -194,6 +249,17 @@ export default function CourseCreationWizard() {
 
       if (res.ok) {
         const data = await res.json();
+        // The course now exists — the wizard draft has served its purpose.
+        // Clearing it stops a later visit resuming into a course already made.
+        try {
+          sessionStorage.removeItem(DRAFT_KEY);
+        } catch {
+          /* nothing to clean up */
+        }
+        // Deliberately leave the submit guard ARMED on success. The component
+        // stays mounted while the router navigates, and releasing it here let
+        // one more Enter press create a second, identical course.
+        createdRef.current = true;
         router.push(`/creator/builder/${data.id}`);
       } else {
         const err = await res.json().catch(() => ({}));
@@ -207,8 +273,11 @@ export default function CourseCreationWizard() {
       console.error('Network error:', err);
       setErrorMsg('A network connection error occurred. Please try again.');
     } finally {
-      isSubmittingRef.current = false;
-      setIsSubmitting(false);
+      // Only re-arm for another attempt if nothing was actually created.
+      if (!createdRef.current) {
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
+      }
     }
   };
 

@@ -10,6 +10,9 @@ export interface UseS3UploadResult {
   uploading: boolean;
   progress: number;
   error: string | null;
+  /** True when this upload picked up where an interrupted one left off, so
+   *  the UI can explain the head start instead of just jumping to 60%. */
+  resumed: boolean;
   reset: () => void;
 }
 
@@ -17,6 +20,7 @@ export function useS3Upload(): UseS3UploadResult {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [resumed, setResumed] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -28,6 +32,7 @@ export function useS3Upload(): UseS3UploadResult {
     setUploading(false);
     setProgress(0);
     setError(null);
+    setResumed(false);
   }, []);
 
   const upload = useCallback(async (
@@ -44,6 +49,7 @@ export function useS3Upload(): UseS3UploadResult {
     setUploading(true);
     setProgress(0);
     setError(null);
+    setResumed(false);
 
     try {
       // Read the real duration off the local file while the upload runs —
@@ -54,6 +60,9 @@ export function useS3Upload(): UseS3UploadResult {
 
       const result = await uploadFileToS3(file, lessonId, {
         onProgress: setProgress,
+        onResume: (partsDone) => {
+          if (partsDone > 0 && !controller.signal.aborted) setResumed(true);
+        },
         signal: controller.signal,
       });
       return result;
@@ -70,5 +79,5 @@ export function useS3Upload(): UseS3UploadResult {
     }
   }, []);
 
-  return { upload, uploading, progress, error, reset };
+  return { upload, uploading, progress, error, resumed, reset };
 }

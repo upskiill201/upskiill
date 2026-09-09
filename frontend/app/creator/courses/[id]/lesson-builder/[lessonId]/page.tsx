@@ -73,6 +73,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     upload: uploadVideo,
     uploading: uploadingVideo,
     progress: videoProgress,
+    resumed: videoResumed,
     error: videoError
   } = useS3Upload();
 
@@ -996,12 +997,18 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                         <div className={styles.richUploadProgress}>
                           <div className={styles.richUploadProgressInner}>
                             <Film size={28} style={{ color: '#3D5AFE' }} className={styles.pulse} />
-                            <div className={styles.richUploadProgressLabel}>Uploading to AWS S3…</div>
+                            <div className={styles.richUploadProgressLabel}>
+                              {videoResumed ? 'Resuming your upload…' : 'Uploading your video…'}
+                            </div>
                             <div className={styles.richUploadBar}>
                               <div className={styles.richUploadBarFill} style={{ width: `${videoProgress}%` }} />
                             </div>
                             <div className={styles.richUploadPct}>{videoProgress}%</div>
-                            <div className={styles.richUploadSub}>Transferring directly to S3 — bypassing server · CloudFront CDN on completion</div>
+                            <div className={styles.richUploadSub}>
+                              {videoResumed
+                                ? 'We picked up where the last attempt stopped — only the missing part is being sent.'
+                                : 'Large videos upload in pieces, so a dropped connection won’t restart it. You can keep working.'}
+                            </div>
                             {videoError && <div className={styles.uploadError}>{videoError}</div>}
                           </div>
                         </div>
