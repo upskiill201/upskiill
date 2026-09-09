@@ -260,3 +260,114 @@
   background: color-mix(in srgb, var(--warning) 10%, transparent);
   border-color: var(--warning);
 }
+
+/* ── Modal / ConfirmDialog ────────────────────────────────────────────── */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 35, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modalPanel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 12px 40px rgba(15, 20, 35, 0.18);
+}
+
+.modalTitle {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.modalBody {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modalReason {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-section);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.modalButtonPrimary,
+.modalButtonSecondary,
+.modalButtonDanger {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.modalButtonPrimary { background: var(--brand-blue); color: var(--text-on-blue); }
+.modalButtonPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.modalButtonDanger { background: var(--error-red); color: var(--text-on-blue); }
+.modalButtonDanger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.modalButtonSecondary {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+.modalButtonSecondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Pagination ───────────────────────────────────────────────────────── */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.pageStatus {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pageButton {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -3,12 +3,15 @@
 import {
   AlertTriangle,
   Bell,
+  BookOpen,
   Eye,
   Flame,
   Send,
   Smartphone,
   Timer,
+  UserCheck,
   Users,
+  Wallet,
 } from 'lucide-react';
 import {
   BarList,
@@ -22,7 +25,26 @@ import {
   useAdminData,
 } from '@/components/admin/AdminUI';
 
-interface Overview {
+/** GET /admin/summary — platform-wide numbers, real and currently
+ *  computable only. Anything not yet computable (revenue, DAU/MAU,
+ *  retention) is left out here rather than faked; those land with the
+ *  Analytics phase. */
+interface PlatformSummary {
+  users: {
+    total: number;
+    newLast7d: number;
+    byRole: Record<string, number>;
+    byAccountStatus: Record<string, number>;
+  };
+  courses: { total: number; published: number };
+  creators: {
+    total: number;
+    byVerificationStatus: Record<string, number>;
+  };
+  payouts: { pendingReview: number };
+}
+
+interface TeyOverview {
   windowDays: number;
   learners: number;
   states: {
@@ -42,7 +64,7 @@ interface Overview {
   scheduler: { backlog: number; queue: Record<string, number> };
 }
 
-interface Health {
+interface TeyHealth {
   config: {
     schedulerEnabled: boolean;
     dryRun: boolean;
@@ -52,32 +74,75 @@ interface Health {
   };
 }
 
-export default function AdminOverviewPage() {
-  const { data, error, isLoading } = useAdminData<Overview>(
-    '/api/tey/admin/overview',
+/** The platform-wide half of the Overview. Deliberately independent of the
+ *  Tey fetches below it — a failure in one section should never blank the
+ *  other, they're unrelated systems sharing one page. */
+function PlatformSection() {
+  const { data, error, isLoading } = useAdminData<PlatformSummary>(
+    '/api/admin/summary',
   );
-  const { data: health } = useAdminData<Health>('/api/tey/admin/health');
 
   if (error) return <ErrorState error={error as Error} />;
-  if (isLoading || !data) {
-    return (
-      <>
-        <PageHeader title="Overview" />
-        <Loading />
-      </>
-    );
-  }
+  if (isLoading || !data) return <Loading />;
+
+  return (
+    <>
+      <div className={s.grid}>
+        <Metric
+          label="Total users"
+          value={data.users.total.toLocaleString()}
+          icon={<Users size={13} />}
+          hint={`${data.users.newLast7d.toLocaleString()} new in the last 7 days`}
+        />
+        <Metric
+          label="Courses"
+          value={data.courses.total.toLocaleString()}
+          icon={<BookOpen size={13} />}
+          hint={`${data.courses.published.toLocaleString()} published`}
+        />
+        <Metric
+          label="Creators"
+          value={data.creators.total.toLocaleString()}
+          icon={<UserCheck size={13} />}
+          hint={`${(data.creators.byVerificationStatus.PENDING ?? 0).toLocaleString()} pending verification`}
+        />
+        <Metric
+          label="Payouts awaiting review"
+          value={data.payouts.pendingReview.toLocaleString()}
+          icon={<Wallet size={13} />}
+          hint="Requested or under review"
+          accent={data.payouts.pendingReview > 0 ? 'warn' : 'none'}
+        />
+      </div>
+
+      <div className={s.grid}>
+        <Card title="Users by role" icon={<Users size={15} />}>
+          <BarList data={data.users.byRole} />
+        </Card>
+        <Card title="Users by account status" icon={<UserCheck size={15} />}>
+          <BarList data={data.users.byAccountStatus} />
+        </Card>
+      </div>
+    </>
+  );
+}
+
+/** The existing Tey (notification pipeline) half of the Overview, unchanged
+ *  in substance from the original Tey-only admin page. */
+function TeySection() {
+  const { data, error, isLoading } = useAdminData<TeyOverview>(
+    '/api/tey/admin/overview',
+  );
+  const { data: health } = useAdminData<TeyHealth>('/api/tey/admin/health');
+
+  if (error) return <ErrorState error={error as Error} />;
+  if (isLoading || !data) return <Loading />;
 
   const { deliveries, scheduler } = data;
   const cfg = health?.config;
 
   return (
     <>
-      <PageHeader
-        title="Overview"
-        subtitle={`Learner states now · delivery over the last ${data.windowDays} days`}
-      />
-
       {/* The single most common "why did nobody get a notification?" answer,
           surfaced before any of the numbers that would look broken because
           of it. */}
@@ -171,6 +236,42 @@ export default function AdminOverviewPage() {
           />
         </Card>
       </div>
+    </>
+  );
+}
+
+/** Section label used to separate Platform from Tey within one Overview
+ *  page — not a full PageHeader, just enough to orient the reader. */
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <h2
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: '0.06em',
+        textTransform: 'uppercase',
+        color: 'var(--text-muted)',
+        margin: '32px 0 12px',
+      }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+export default function AdminOverviewPage() {
+  return (
+    <>
+      <PageHeader
+        title="Overview"
+        subtitle="Platform-wide numbers, plus Tey's notification pipeline"
+      />
+
+      <SectionLabel>Platform</SectionLabel>
+      <PlatformSection />
+
+      <SectionLabel>Tey · notifications</SectionLabel>
+      <TeySection />
     </>
   );
 }

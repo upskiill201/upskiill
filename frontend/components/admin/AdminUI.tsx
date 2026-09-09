@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import styles from './AdminUI.module.css';
 
@@ -28,6 +29,32 @@ export function useAdminData<T>(path: string | null) {
     revalidateOnFocus: true,
     dedupingInterval: 15_000,
   });
+}
+
+/**
+ * The write-side counterpart to adminFetcher: every admin mutation (POST/
+ * PATCH/DELETE) goes through this so error shape, credentials, and JSON
+ * handling stay identical to reads instead of every page re-inventing it.
+ */
+export async function adminMutate<T = unknown>(
+  path: string,
+  options: { method?: 'POST' | 'PATCH' | 'DELETE'; body?: unknown } = {},
+): Promise<T> {
+  const res = await fetch(path, {
+    method: options.method ?? 'POST',
+    credentials: 'include',
+    headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+  if (!res.ok) {
+    const err = new Error(`Request failed (${res.status})`) as Error & {
+      status?: number;
+    };
+    err.status = res.status;
+    throw err;
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json();
 }
 
 export function PageHeader({
@@ -265,6 +292,176 @@ export function relativeTime(iso: string | null): string {
   const hours = Math.round(mins / 60);
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
+}
+
+/**
+ * Base overlay + panel every admin dialog builds on. Escape and a
+ * click on the backdrop both close it — every future modal (Users, Courses,
+ * Payouts, ...) should sit on this rather than growing its own overlay.
+ */
+export function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className={styles.modalOverlay}
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className={styles.modalPanel}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admin-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="admin-modal-title" className={styles.modalTitle}>
+          {title}
+        </h2>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The gate every destructive admin action (suspend, refund, reject, ...)
+ * must go through — section 17/28 of the admin spec bans one-click
+ * destructive operations. `requireReason` is for the higher-risk actions
+ * that need a paper trail (payout rejection, refund) rather than just a
+ * yes/no.
+ */
+export function ConfirmDialog({
+  title,
+  description,
+  confirmLabel = 'Confirm',
+  tone = 'default',
+  requireReason = false,
+  busy = false,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  description: React.ReactNode;
+  confirmLabel?: string;
+  tone?: 'default' | 'danger';
+  requireReason?: boolean;
+  busy?: boolean;
+  onConfirm: (reason?: string) => void;
+  onCancel: () => void;
+}) {
+  const [reason, setReason] = useState('');
+  const canConfirm = !requireReason || reason.trim().length > 0;
+
+  return (
+    <Modal title={title} onClose={onCancel}>
+      <div className={styles.modalBody}>{description}</div>
+      {requireReason && (
+        <textarea
+          className={styles.modalReason}
+          placeholder="Reason (required)"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          rows={3}
+        />
+      )}
+      <div className={styles.modalActions}>
+        <button
+          type="button"
+          className={styles.modalButtonSecondary}
+          onClick={onCancel}
+          disabled={busy}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className={
+            tone === 'danger'
+              ? styles.modalButtonDanger
+              : styles.modalButtonPrimary
+          }
+          onClick={() => onConfirm(requireReason ? reason.trim() : undefined)}
+          disabled={!canConfirm || busy}
+        >
+          {busy ? 'Working…' : confirmLabel}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+/**
+ * Isolates "is this admin allowed to see/do this" behind one function.
+ * Today every admin is the same ADMIN role, so this is trivially `allowed`
+ * — but every future admin page should render optional sections through
+ * this rather than an inline role check, so Phase 15's real permission
+ * matrix is a one-file change instead of an every-page hunt.
+ */
+export function PermissionGate({
+  allowed,
+  fallback = null,
+  children,
+}: {
+  allowed: boolean;
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return <>{allowed ? children : fallback}</>;
+}
+
+/** Page/of/total control for any server-paginated admin list. */
+export function Pagination({
+  page,
+  pageSize,
+  total,
+  onPageChange,
+}: {
+  page: number;
+  pageSize: number;
+  total: number;
+  onPageChange: (page: number) => void;
+}) {
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  if (pageCount <= 1) return null;
+
+  return (
+    <div className={styles.pagination}>
+      <button
+        type="button"
+        onClick={() => onPageChange(page - 1)}
+        disabled={page <= 1}
+        className={styles.pageButton}
+      >
+        Previous
+      </button>
+      <span className={styles.pageStatus}>
+        Page {page} of {pageCount} · {total.toLocaleString()} total
+      </span>
+      <button
+        type="button"
+        onClick={() => onPageChange(page + 1)}
+        disabled={page >= pageCount}
+        className={styles.pageButton}
+      >
+        Next
+      </button>
+    </div>
+  );
 }
 
 export { styles as adminStyles };
