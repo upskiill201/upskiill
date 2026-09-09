@@ -4,8 +4,9 @@
  * Small files (≤ PART_SIZE) take the simple presigned-PUT path.
  * Large files use RESUMABLE MULTIPART upload:
  *   - the file is sent in 8MB chunks, each PUT directly to S3,
+ *   - up to CONCURRENT_PARTS chunks are in flight at once,
  *   - a failed chunk retries on its own — the rest of the upload survives,
- *   - progress is aggregated across chunks,
+ *   - progress is summed across the chunks currently in flight,
  *   - an interrupted upload RESUMES ACROSS PAGE RELOADS: the session pointer
  *     is kept in localStorage, and on re-pick the parts already stored are
  *     read back from storage itself (never from a local record, which could
@@ -27,6 +28,14 @@ import {
 
 const PART_SIZE = 8 * 1024 * 1024; // 8MB — must match the server's partSize
 const MAX_PART_ATTEMPTS = 3;
+/**
+ * How many parts travel at once. Sequential uploads left most of a creator's
+ * upstream bandwidth idle; 3 is enough to saturate a typical connection while
+ * holding at most ~24MB of slices in memory and staying well clear of
+ * storage-side rate limits. Raising this has sharply diminishing returns and
+ * starts to hurt users on constrained mobile links.
+ */
+const CONCURRENT_PARTS = 3;
 
 export interface UploadHandleOptions {
   onProgress?: (percent: number) => void;
@@ -214,55 +223,117 @@ async function multipartUpload(
   });
 
   const totalParts = Math.ceil(file.size / PART_SIZE);
-  const parts: { ETag: string; PartNumber: number }[] = [];
-  let completedBytes = 0;
+
+  // ETag per finished part. Seeded with whatever a previous session already
+  // stored, so resumed parts are simply "done" and never re-sent.
+  const etagByPart = new Map<number, string>(alreadyUploaded);
+
+  // Bytes confirmed sent per part. With several parts in flight at once we
+  // can't keep a single running total — each part reports its own absolute
+  // `loaded`, so progress is the SUM of these, recomputed on every tick. A
+  // retrying part resets its own entry and no other part is disturbed.
+  const loadedByPart = new Map<number, number>();
+  for (const partNumber of etagByPart.keys()) {
+    loadedByPart.set(partNumber, expectedPartSize(partNumber, file.size));
+  }
+
+  const reportProgress = () => {
+    let total = 0;
+    for (const bytes of loadedByPart.values()) total += bytes;
+    // Stay shy of 100% until `complete` actually returns.
+    onProgress?.(Math.max(1, Math.min(99, Math.round((total / file.size) * 99))));
+  };
+  reportProgress();
+
+  const pending: number[] = [];
+  for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+    if (!etagByPart.has(partNumber)) pending.push(partNumber);
+  }
 
   try {
-    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
-      if (signal?.aborted) throw new DOMException('Upload cancelled.', 'AbortError');
+    // ─── BOUNDED PARALLELISM ───
+    // Parts used to upload strictly one at a time, which left most of the
+    // creator's bandwidth idle on a large video. A small fixed pool of workers
+    // pulls from a shared cursor: enough to saturate a normal connection,
+    // few enough not to exhaust memory (each worker holds one 8MB slice) or
+    // trip storage-side request limits.
+    let cursor = 0;
+    let failure: unknown = null;
 
-      const startByte = (partNumber - 1) * PART_SIZE;
-      const chunk = file.slice(startByte, Math.min(startByte + PART_SIZE, file.size));
+    const worker = async (): Promise<void> => {
+      for (;;) {
+        // Stop pulling new work the moment anything goes wrong, so one failed
+        // part doesn't drag the rest of the file up with it.
+        if (failure !== null || signal?.aborted) return;
 
-      // Already stored from a previous session — skip the transfer entirely.
-      // This is what turns "re-upload 1.8GB" into "finish the last 200MB".
-      const done = alreadyUploaded.get(partNumber);
-      if (done) {
-        parts.push({ ETag: done, PartNumber: partNumber });
-        completedBytes += chunk.size;
-        onProgress?.(Math.max(1, Math.round((completedBytes / file.size) * 99)));
-        continue;
-      }
+        const index = cursor++;
+        if (index >= pending.length) return;
+        const partNumber = pending[index];
 
-      // A failed part retries ALONE — previously any network blip meant
-      // restarting the whole multi-hundred-MB upload from zero.
-      let etag = '';
-      for (let attempt = 1; attempt <= MAX_PART_ATTEMPTS; attempt++) {
+        const startByte = (partNumber - 1) * PART_SIZE;
+        const chunk = file.slice(startByte, Math.min(startByte + PART_SIZE, file.size));
+
         try {
-          const { presignedUrl } = await jsonPost({
-            action: 'sign-part', key, uploadId, lessonId, partNumber,
-          });
-          etag = await putWithProgress(
-            presignedUrl,
-            chunk,
-            'application/octet-stream',
-            (loaded) => {
-              const totalDone = completedBytes + loaded;
-              onProgress?.(Math.max(1, Math.round((totalDone / file.size) * 99)));
-            },
-            signal,
-          );
-          break;
+          // A failed part retries ALONE — a network blip never restarts the
+          // whole multi-hundred-MB upload.
+          let etag = '';
+          for (let attempt = 1; attempt <= MAX_PART_ATTEMPTS; attempt++) {
+            try {
+              const { presignedUrl } = await jsonPost({
+                action: 'sign-part', key, uploadId, lessonId, partNumber,
+              });
+              etag = await putWithProgress(
+                presignedUrl,
+                chunk,
+                'application/octet-stream',
+                (loaded) => {
+                  loadedByPart.set(partNumber, loaded);
+                  reportProgress();
+                },
+                signal,
+              );
+              break;
+            } catch (err) {
+              if (signal?.aborted || attempt === MAX_PART_ATTEMPTS) throw err;
+              // This part starts over; its bytes must stop counting or the
+              // bar would drift upward on every retry.
+              loadedByPart.set(partNumber, 0);
+              reportProgress();
+              await new Promise((r) => setTimeout(r, 500 * attempt));
+            }
+          }
+
+          if (!etag) {
+            // Completing with a blank ETag fails server-side with an opaque
+            // error; say plainly what went wrong instead.
+            throw new Error(
+              'The storage service did not return an ETag for part ' +
+                `${partNumber}. The upload cannot be completed.`,
+            );
+          }
+
+          etagByPart.set(partNumber, etag);
+          loadedByPart.set(partNumber, chunk.size);
+          reportProgress();
         } catch (err) {
-          if (signal?.aborted || attempt === MAX_PART_ATTEMPTS) throw err;
-          await new Promise((r) => setTimeout(r, 500 * attempt)); // brief backoff
+          failure = failure ?? err;
+          return;
         }
       }
+    };
 
-      parts.push({ ETag: etag, PartNumber: partNumber });
-      completedBytes += chunk.size;
-      onProgress?.(Math.max(1, Math.round((completedBytes / file.size) * 99)));
-    }
+    await Promise.all(
+      Array.from({ length: Math.min(CONCURRENT_PARTS, pending.length) }, () => worker()),
+    );
+
+    if (failure !== null) throw failure;
+    if (signal?.aborted) throw new DOMException('Upload cancelled.', 'AbortError');
+
+    // CompleteMultipartUpload requires parts in ascending PartNumber order,
+    // which parallel completion does not give us for free.
+    const parts = Array.from(etagByPart.entries())
+      .map(([PartNumber, ETag]) => ({ PartNumber, ETag }))
+      .sort((a, b) => a.PartNumber - b.PartNumber);
 
     const result = await jsonPost({ action: 'complete', key, uploadId, lessonId, parts });
     // Stored for real — there is nothing left to resume.

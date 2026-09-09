@@ -14,6 +14,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
+import { useOrphanedMediaCleanup } from '@/hooks/useOrphanedMediaCleanup';
 import { useLinkNavigationGuard } from '@/hooks/useLinkNavigationGuard';
 import { Toast } from '@/components/ui/Toast';
 
@@ -103,7 +104,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             if (minutes) setLesson((l: any) => ({ ...l, durationMinutes: minutes }));
           },
         });
-        setLesson((l: any) => ({ ...l, learnVideoUrl: cloudFrontUrl }));
+        setLesson((l: any) => {
+          // Queue the video this one replaces for cleanup. It is only
+          // actually deleted once the new URL is saved AND the server
+          // confirms nothing still points at the old object.
+          markSuperseded(l?.learnVideoUrl);
+          return { ...l, learnVideoUrl: cloudFrontUrl };
+        });
         // Persistence is handled by the debounced autosave (learn phase block).
       } catch (err) {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
@@ -125,7 +132,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             if (minutes) setLesson((l: any) => ({ ...l, durationMinutes: minutes }));
           },
         });
-        setLesson((l: any) => ({ ...l, learnAudioUrl: cloudFrontUrl }));
+        setLesson((l: any) => {
+          markSuperseded(l?.learnAudioUrl);
+          return { ...l, learnAudioUrl: cloudFrontUrl };
+        });
         // Persistence is handled by the debounced autosave (learn phase block).
       } catch (err) {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
@@ -200,6 +210,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   });
 
   const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion, resyncVersion, clearLocalBackups } = useSyncQueue(lessonId as string, lesson?.version || 1);
+
+  // Media replaced during authoring is deleted only once the replacement is
+  // durably saved — and only if the server agrees nothing references it.
+  const { markSuperseded } = useOrphanedMediaCleanup(
+    lessonId as string,
+    syncStatus === 'saved' && !isDirty,
+  );
 
   // Guard in-app link navigation while there is unsaved or in-flight work.
   useLinkNavigationGuard(!loading && (isDirty || saving));

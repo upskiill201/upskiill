@@ -1,17 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CourseService } from './course.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
+import { CommunityService } from '../community/community.service';
+import { ShopService } from '../shop/shop.service';
 
 const mockPrismaService = {
   course: {
     create: jest.fn(),
     findFirst: jest.fn(),
+    findUnique: jest.fn(),
     count: jest.fn(),
+    // Optimistic-locked writes go through updateMany so the version check and
+    // the write are one atomic statement.
+    updateMany: jest.fn(),
   },
   community: {
     create: jest.fn(),
@@ -29,12 +40,16 @@ const mockPrismaService = {
   },
   section: {
     findMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    count: jest.fn(),
   },
   lesson: {
     findFirst: jest.fn(),
     findMany: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
+    createMany: jest.fn(),
   },
   gemTransaction: {
     create: jest.fn(),
@@ -73,6 +88,23 @@ describe('CourseService', () => {
         { provide: MissionsService, useValue: {} },
         { provide: ChestService, useValue: {} },
         { provide: StripeProvider, useValue: {} },
+        // CourseService gained these two collaborators without the spec being
+        // updated, which made every test in this file fail to even construct
+        // the module — the service has effectively been untested since.
+        {
+          provide: CommunityService,
+          // Seats the learner into the course community after their 2nd
+          // lesson; fire-and-forget from the completion path.
+          useValue: { seatAfterSecondLesson: jest.fn().mockResolvedValue(undefined) },
+        },
+        {
+          provide: ShopService,
+          // Neutral 1x multipliers: these tests assert the BASE reward maths,
+          // so an active boost would silently change every XP expectation.
+          useValue: {
+            getActiveMultipliers: jest.fn().mockResolvedValue({ xp: 1, coins: 1 }),
+          },
+        },
       ],
     }).compile();
 
@@ -686,6 +718,149 @@ describe('CourseService', () => {
       const data = lastUpdateData();
       expect(data.streakDays).toBe(7);
       expect(data.streakFreezeBank).toBeUndefined();
+    });
+  });
+
+  /* ── Optimistic locking + the category fix ──
+   * updateCourse was blind last-write-wins until Course gained a `version`
+   * column, and `category` was absent from the update path entirely, so every
+   * category edit made in the builder was silently dropped on save. */
+  describe('updateCourse', () => {
+    const userId = 'user-123';
+    const courseId = 'course-1';
+    const ownedCourse = { id: courseId, instructorId: userId, version: 3 };
+
+    it('persists category — it used to be silently dropped on every save', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(ownedCourse);
+      mockPrismaService.course.updateMany.mockResolvedValue({ count: 1 });
+      mockPrismaService.course.findUnique.mockResolvedValue({
+        ...ownedCourse,
+        category: 'Design',
+        version: 4,
+      });
+
+      await service.updateCourse(userId, courseId, { category: 'Design' });
+
+      const call = mockPrismaService.course.updateMany.mock.calls[0][0];
+      expect(call.data.category).toBe('Design');
+    });
+
+    it('applies the write and bumps the version when the version matches', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(ownedCourse);
+      mockPrismaService.course.updateMany.mockResolvedValue({ count: 1 });
+      mockPrismaService.course.findUnique.mockResolvedValue({ ...ownedCourse, version: 4 });
+
+      const result = await service.updateCourse(userId, courseId, {
+        title: 'New title',
+        version: 3,
+      });
+
+      const call = mockPrismaService.course.updateMany.mock.calls[0][0];
+      // The version guard and the write must be ONE atomic statement.
+      expect(call.where).toEqual({ id: courseId, version: 3 });
+      expect(call.data.version).toEqual({ increment: 1 });
+      expect(result).toEqual({ ...ownedCourse, version: 4 });
+    });
+
+    it('rejects a stale save with 409 instead of overwriting newer data', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(ownedCourse);
+      // count: 0 => the stored version had already moved on.
+      mockPrismaService.course.updateMany.mockResolvedValue({ count: 0 });
+      mockPrismaService.course.findUnique.mockResolvedValue({ ...ownedCourse, version: 9 });
+
+      await expect(
+        service.updateCourse(userId, courseId, { title: 'Stale', version: 3 }),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('stays backwards-compatible: a save with no version still applies', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(ownedCourse);
+      mockPrismaService.course.updateMany.mockResolvedValue({ count: 1 });
+      mockPrismaService.course.findUnique.mockResolvedValue({ ...ownedCourse, version: 4 });
+
+      await service.updateCourse(userId, courseId, { title: 'No version' });
+
+      const call = mockPrismaService.course.updateMany.mock.calls[0][0];
+      // No version in the guard — an older client must not start 409-ing.
+      expect(call.where).toEqual({ id: courseId });
+    });
+
+    it('refuses to update a course the caller does not own', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        ...ownedCourse,
+        instructorId: 'someone-else',
+      });
+
+      await expect(
+        service.updateCourse(userId, courseId, { title: 'Hijack' }),
+      ).rejects.toThrow(ForbiddenException);
+      expect(mockPrismaService.course.updateMany).not.toHaveBeenCalled();
+    });
+  });
+
+  /* ── Transactional module duplication ──
+   * The builder used to create the section then POST each lesson in a loop, so
+   * a mid-loop failure stranded a half-copied module in the curriculum. */
+  describe('duplicateSection', () => {
+    const userId = 'user-123';
+    const sectionId = 'section-1';
+
+    it('copies the module and all its lessons in one transaction', async () => {
+      mockPrismaService.section.findUnique.mockResolvedValue({
+        id: sectionId,
+        title: 'Module A',
+        goal: 'Learn things',
+        course: { id: 'course-1', instructorId: userId },
+        lessons: [
+          { title: 'L1', lessonType: 'video', orderIndex: 0 },
+          { title: 'L2', lessonType: 'text', orderIndex: 1 },
+        ],
+      });
+      mockPrismaService.section.count.mockResolvedValue(2);
+      mockPrismaService.section.create.mockResolvedValue({ id: 'section-copy' });
+      mockPrismaService.lesson.createMany.mockResolvedValue({ count: 2 });
+      mockPrismaService.section.findUnique.mockResolvedValueOnce({
+        id: sectionId,
+        title: 'Module A',
+        goal: 'Learn things',
+        course: { id: 'course-1', instructorId: userId },
+        lessons: [
+          { title: 'L1', lessonType: 'video', orderIndex: 0 },
+          { title: 'L2', lessonType: 'text', orderIndex: 1 },
+        ],
+      });
+
+      await service.duplicateSection(userId, sectionId);
+
+      // Everything must run inside the transaction, not as separate writes.
+      expect(mockPrismaService.$transaction).toHaveBeenCalled();
+      expect(mockPrismaService.section.create).toHaveBeenCalledTimes(1);
+      const created = mockPrismaService.section.create.mock.calls[0][0];
+      expect(created.data.title).toBe('Module A (Copy)');
+      // Appended at the end of the course, not colliding with an existing index.
+      expect(created.data.orderIndex).toBe(2);
+
+      const lessons = mockPrismaService.lesson.createMany.mock.calls[0][0].data;
+      expect(lessons).toHaveLength(2);
+      expect(lessons.map((l: { title: string }) => l.title)).toEqual(['L1', 'L2']);
+      // Copies are drafts scoped to the NEW section.
+      expect(lessons.every((l: { sectionId: string }) => l.sectionId === 'section-copy')).toBe(true);
+      expect(lessons.every((l: { status: string }) => l.status === 'draft')).toBe(true);
+    });
+
+    it('refuses to duplicate a module in a course the caller does not own', async () => {
+      mockPrismaService.section.findUnique.mockResolvedValue({
+        id: sectionId,
+        title: 'Module A',
+        goal: null,
+        course: { id: 'course-1', instructorId: 'someone-else' },
+        lessons: [],
+      });
+
+      await expect(service.duplicateSection(userId, sectionId)).rejects.toThrow(
+        ForbiddenException,
+      );
+      expect(mockPrismaService.section.create).not.toHaveBeenCalled();
     });
   });
 });
