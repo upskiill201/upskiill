@@ -8,6 +8,7 @@
 User-agent: Googlebot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
 Allow: /*.jpg$
@@ -18,6 +19,7 @@ Disallow: /
 # ── Google Image Search ────────────────────────────────────
 User-agent: Googlebot-Image
 Allow: /blog
+Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
 Allow: /*.jpg$
@@ -29,12 +31,14 @@ Disallow: /
 User-agent: Google-Extended
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Bing / Microsoft Search ────────────────────────────────
 User-agent: Bingbot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
 Allow: /*.jpg$
@@ -46,12 +50,14 @@ Disallow: /
 User-agent: msnbot-media
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── DuckDuckGo ─────────────────────────────────────────────
 User-agent: DuckDuckBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
 Allow: /*.jpg$
@@ -63,119 +69,140 @@ Disallow: /
 User-agent: Slurp
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Yandex ─────────────────────────────────────────────────
 User-agent: YandexBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Baidu ──────────────────────────────────────────────────
 User-agent: Baiduspider
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── OpenAI — ChatGPT Browse & GPT plugins ──────────────────
 User-agent: GPTBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: ChatGPT-User
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: OAI-SearchBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Anthropic — Claude AI ──────────────────────────────────
 User-agent: ClaudeBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: Claude-Web
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: anthropic-ai
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Perplexity AI ──────────────────────────────────────────
 User-agent: PerplexityBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Meta AI (Llama) ────────────────────────────────────────
 User-agent: Meta-ExternalAgent
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: Meta-ExternalFetcher
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Amazon Alexa / Amazonbot ───────────────────────────────
 User-agent: Amazonbot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Apple (Siri / Spotlight) ───────────────────────────────
 User-agent: Applebot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 User-agent: Applebot-Extended
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Cohere AI ──────────────────────────────────────────────
 User-agent: cohere-ai
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── You.com AI ─────────────────────────────────────────────
 User-agent: YouBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Diffbot (used by many AI knowledge graphs) ─────────────
 User-agent: Diffbot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Common Crawl (powers many AI training datasets) ────────
 User-agent: CCBot
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── ByteDance / TikTok AI ──────────────────────────────────
 User-agent: Bytespider
 Allow: /$
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── All other bots — app routes stay blocked, /blog stays open
 User-agent: *
 Allow: /blog
+Allow: /sitemap.xml
 Disallow: /
 
 # ── Sitemap ────────────────────────────────────────────────
