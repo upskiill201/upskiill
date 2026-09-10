@@ -38,11 +38,26 @@ CREATE TABLE IF NOT EXISTS "daily_chests" (
 CREATE UNIQUE INDEX IF NOT EXISTS "daily_chests_userId_chestDay_key" ON "daily_chests"("userId", "chestDay");
 CREATE INDEX IF NOT EXISTS "daily_chests_userId_idx" ON "daily_chests"("userId");
 
--- AddForeignKey
-ALTER TABLE "daily_chests" ADD CONSTRAINT "daily_chests_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (guarded — staging already has this constraint from an
+-- out-of-band db push; plain ADD CONSTRAINT has no IF NOT EXISTS in Postgres)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'daily_chests_userId_fkey'
+  ) THEN
+    ALTER TABLE "daily_chests" ADD CONSTRAINT "daily_chests_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "daily_chests" ADD CONSTRAINT "daily_chests_rewardPoolId_fkey" FOREIGN KEY ("rewardPoolId") REFERENCES "chest_reward_pool"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- AddForeignKey (guarded, same reason)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'daily_chests_rewardPoolId_fkey'
+  ) THEN
+    ALTER TABLE "daily_chests" ADD CONSTRAINT "daily_chests_rewardPoolId_fkey" FOREIGN KEY ("rewardPoolId") REFERENCES "chest_reward_pool"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+END $$;
 
 -- Rollback SQL (manual):
 -- DROP TABLE IF EXISTS "daily_chests";
