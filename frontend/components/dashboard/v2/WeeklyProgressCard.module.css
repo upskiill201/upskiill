@@ -1,0 +1,260 @@
+.card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 0 0 #E2E8F0;
+  height: 100%;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 #CBD5E1;
+  border-color: #CBD5E1;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.header {
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #071233;
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.subHeader {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748B;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.dayLabels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  width: 100%;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #94A3B8;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.statText {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #071233;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.pctBadge {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #0172FD;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.card:hover .pctBadge {
+  transform: scale(1.05);
+  background: #DBEAFE;
+}
+
+/* 7-Day GitHub Style Skill Heatmap Grid */
+.heatmapContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.heatmapGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+}
+
+.dotCell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.dotCell:hover {
+  transform: scale(1.15);
+  z-index: 5;
+}
+
+.dotEmpty {
+  background: #F1F5F9;
+  border: 1.5px solid #E2E8F0;
+}
+
+.dotActive {
+  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
+  border: 1.5px solid #0047A5;
+  box-shadow: 0 2px 5px rgba(1, 114, 253, 0.35);
+}
+
+.dotToday {
+  border: 2px dashed #0172FD;
+  background: #EFF6FF;
+  animation: pulseToday 2s infinite ease-in-out;
+}
+
+.dotToday.dotActive {
+  border: 2px solid #0047A5;
+  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
+  box-shadow: 0 0 8px rgba(1, 114, 253, 0.6);
+  animation: none;
+}
+
+@keyframes pulseToday {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(1, 114, 253, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(1, 114, 253, 0.15);
+  }
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid #F1F5F9;
+}
+
+.streakWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.streakText {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FF8A00;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.viewMoreBtn {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #0172FD;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  transition: transform 0.15s ease, color 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.viewMoreBtn:hover {
+  transform: translateX(2px);
+  color: #0056C6;
+}
+
+.chevronIcon {
+  transition: transform 0.15s ease;
+}
+
+.viewMoreBtn:hover .chevronIcon {
+  transform: translateX(2px);
+}
+
+/* Skeleton Loading Pulse */
+.skeleton {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .header {
+    font-size: 0.74rem;
+  }
+
+  .subHeader {
+    font-size: 0.68rem;
+  }
+
+  .statText {
+    font-size: 0.78rem;
+  }
+
+  .pctBadge {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.45rem;
+  }
+
+  .dayLabels, .heatmapGrid {
+    gap: 0.3rem;
+  }
+
+  .dotCell {
+    border-radius: 6px;
+  }
+
+  .streakText {
+    font-size: 0.76rem;
+  }
+
+  .viewMoreBtn {
+    font-size: 0.72rem;
+  }
+}

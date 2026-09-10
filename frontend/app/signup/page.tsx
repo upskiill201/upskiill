@@ -7,7 +7,19 @@ import { FaGraduationCap, FaRocket, FaVideo, FaAward } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
 import { signInWithGoogle } from '@/lib/firebase';
+import { getOnboardingState } from '@/lib/user-onboarding';
 import styles from './Signup.module.css';
+
+/**
+ * Pre-signup proofs (WhatsApp verification from Step 6, the deferred Step 9
+ * challenge reward) live inside the onboarding answers — attaching them lets
+ * the backend settle both the moment this account exists.
+ */
+function pendingOnboardingAnswers(): Record<string, unknown> | null {
+  if (typeof window === 'undefined') return null;
+  const { answers } = getOnboardingState();
+  return Object.keys(answers).length > 0 ? answers : null;
+}
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +38,12 @@ export default function Signup() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, fullName, password }),
+        body: JSON.stringify({
+          email,
+          fullName,
+          password,
+          ...(pendingOnboardingAnswers() && { onboarding: pendingOnboardingAnswers() }),
+        }),
       });
 
       const data = await res.json();
@@ -58,7 +75,11 @@ export default function Signup() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ idToken, role: 'STUDENT' }),
+        body: JSON.stringify({
+          idToken,
+          role: 'STUDENT',
+          ...(pendingOnboardingAnswers() && { onboarding: pendingOnboardingAnswers() }),
+        }),
       });
 
       const data = await res.json();
@@ -196,7 +217,7 @@ export default function Signup() {
           
           <div className={styles.floatingGraphic}>
              <Image 
-               src="/hero-graphic.png" 
+               src="/hero-graphic.webp" 
                alt="Master new skills" 
                width={400} 
                height={400} 

@@ -1,0 +1,315 @@
+/*
+ * Shop Engine scene styling.
+ *
+ * The shell, headline, CTA and backdrop come from the Celebration Engine's
+ * Scene.module.css — shop scenes deliberately share that grammar so a purchase
+ * feels like part of the same product as a level-up, not a different app.
+ * Only what is specific to shop scenes lives here: the item pedestal, rarity
+ * ribbon, price ledger and unlock receipt.
+ */
+
+/* ── Item pedestal ────────────────────────────────────────────────────────── */
+
+.pedestal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 16px 0 8px;
+}
+
+/* Rarity glow sits behind the art; --glow is set inline per rarity. */
+.pedestalGlow {
+  position: absolute;
+  width: min(62vw, 240px);
+  height: min(62vw, 240px);
+  border-radius: 999px;
+  box-shadow: var(--glow);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.pedestalShadow {
+  width: min(40vw, 150px);
+  height: 16px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.45) 0%, transparent 72%);
+}
+
+/* ── Rarity ribbon ────────────────────────────────────────────────────────── */
+
+.rarityRibbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 2px solid currentColor;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.raritySparkle {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+/* ── Item identity ────────────────────────────────────────────────────────── */
+
+.itemName {
+  margin: 12px 0 6px;
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: 800;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.itemDesc {
+  margin: 0 auto;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+}
+
+.slotHint {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+/* ── Unlock receipt (what the learner just cleared) ───────────────────────── */
+
+.receipt {
+  margin: 20px auto 0;
+  padding: 12px 18px;
+  max-width: 32ch;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.receiptIcon {
+  width: 18px;
+  height: 18px;
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+.receiptText {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Price ledger ─────────────────────────────────────────────────────────── */
+
+.priceRow {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.priceTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.14);
+  border: 2px solid rgba(234, 179, 8, 0.45);
+  font-size: 20px;
+  font-weight: 800;
+  color: #fde68a;
+}
+
+.priceStruck {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: line-through;
+}
+
+.discountChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #052e16;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* ── Balance ledger (spend shown as a count-down) ─────────────────────────── */
+
+.ledger {
+  margin: 22px auto 0;
+  max-width: 300px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ledgerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.ledgerLabel {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+.ledgerValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledgerSpend {
+  color: #fca5a5;
+}
+
+.ledgerDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Chest reveal ─────────────────────────────────────────────────────────── */
+
+.chestStage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(200px, 34vh, 280px);
+  width: 100%;
+}
+
+.chestBeam {
+  position: absolute;
+  bottom: 34%;
+  width: min(52vw, 200px);
+  height: min(58vh, 320px);
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.12) 45%,
+    transparent 100%
+  );
+  clip-path: polygon(38% 100%, 62% 100%, 88% 0%, 12% 0%);
+  pointer-events: none;
+}
+
+.chestBox {
+  width: min(46vw, 170px);
+  height: min(46vw, 170px);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 12px 0 0 rgba(0, 0, 0, 0.28),
+    0 26px 50px rgba(0, 0, 0, 0.5);
+}
+
+.chestGlyph {
+  width: 48%;
+  height: 48%;
+  color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.5));
+}
+
+.rewardRow {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rewardChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.substituteNote {
+  margin-top: 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  max-width: 32ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* ── Collection complete ──────────────────────────────────────────────────── */
+
+.collectionStrip {
+  margin: 18px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.collectionDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.collectionDotFilled {
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.exclusiveTag {
+  margin: 16px auto 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fde68a;
+}

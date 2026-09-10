@@ -60,8 +60,8 @@ export function DropSlot({
     <div className="flex items-center justify-between gap-4 w-full">
       
       {/* Source shape container (Left) */}
-      <div className="w-[18vw] h-[18vw] max-w-[80px] max-h-[80px] sm:w-20 sm:h-20 bg-white border border-slate-100 rounded-[1.2rem] flex items-center justify-center shadow-sm relative z-10">
-        <div className="w-14 h-14 relative">
+      <div className="w-[14.5vw] h-[14.5vw] max-w-[70px] max-h-[70px] sm:w-20 sm:h-20 bg-white border border-slate-100 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center shadow-sm relative z-10">
+        <div className="w-[9vw] h-[9vw] max-w-[44px] max-h-[44px] sm:w-14 sm:h-14 relative">
           <Image src={img} alt={label} fill className="object-contain" />
         </div>
       </div>
@@ -96,7 +96,7 @@ export function DropSlot({
       <motion.div
         ref={targetRef}
         animate={borderControls}
-        className={`w-[18vw] h-[18vw] max-w-[80px] max-h-[80px] sm:w-20 sm:h-20 rounded-[1.2rem] flex items-center justify-center relative transition-all duration-300 ${
+        className={`w-[14.5vw] h-[14.5vw] max-w-[70px] max-h-[70px] sm:w-20 sm:h-20 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center relative transition-all duration-300 ${
           isMatched ? 'bg-[#F0F7FF]' : 'bg-white/40 backdrop-blur-sm'
         }`}
       >
@@ -105,7 +105,7 @@ export function DropSlot({
             initial={{ scale: 0.4, rotate: -15 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 350, damping: 15 }} // Spring bounce settle
-            className="w-14 h-14 relative"
+            className="w-[9vw] h-[9vw] max-w-[44px] max-h-[44px] sm:w-14 sm:h-14 relative"
           >
             <Image src={img} alt={label} fill className="object-contain" />
           </motion.div>

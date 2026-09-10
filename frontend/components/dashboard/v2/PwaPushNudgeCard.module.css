@@ -1,0 +1,192 @@
+/* Follows the dashboard v2 "hard shadow" game-UI convention (see
+   AlmostThereCard.module.css) — flat offset shadows, not blur, with a
+   translateY press effect on buttons. */
+
+.card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 3px 0 0 var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.dismissBtn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--bg-section);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dismissBtn:hover {
+  background: var(--border);
+  color: var(--text-secondary);
+}
+
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding-right: 1.5rem; /* room for the dismiss button */
+}
+
+.iconWrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 0.85rem;
+  background: var(--light-blue-bg);
+  border: 1.5px solid var(--border-indigo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-blue);
+  box-shadow: 0 2.5px 0 0 var(--border-indigo);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.subtitle {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ctaBtn {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-on-blue);
+  background: var(--brand-blue);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2.5px 0 0 var(--brand-blue-hover);
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.ctaBtn:hover {
+  background: var(--brand-blue-hover);
+}
+
+.ctaBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 var(--brand-blue-hover);
+}
+
+.ctaBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondaryBtn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem;
+}
+
+.secondaryBtn:hover {
+  color: var(--text-primary);
+}
+
+/* Inline "Add to Home Screen" steps — appear when the install CTA is opened. */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0.2rem 0 0.1rem;
+  padding: 0.85rem;
+  background: var(--bg-section);
+  border-radius: 0.85rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stepIcon {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-blue);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 0.85rem 0.95rem;
+    border-radius: 0.95rem;
+  }
+
+  .iconWrap {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .title {
+    font-size: 0.78rem;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+  }
+
+  .ctaBtn {
+    font-size: 0.68rem;
+    padding: 0.45rem 0.85rem;
+  }
+}

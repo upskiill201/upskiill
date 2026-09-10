@@ -755,35 +755,10 @@ This course distills the best research from Cal Newport, James Clear, and the Hu
 
   console.log('✅ Course 6 upserted.');
 
-  console.log('📦 Seeding Enrollments (Idempotent)...');
-  const initialEnrollments = [
-    { userId: alex.id, courseId: course1.id },
-    { userId: alex.id, courseId: course2.id },
-    { userId: alex.id, courseId: course3.id },
-    { userId: student.id, courseId: course1.id },
-    { userId: student.id, courseId: course2.id },
-    { userId: student.id, courseId: course3.id },
-  ];
+  console.log('📦 Seeding Enrollments...');
+  // Auto-enrollments removed: users enroll manually via Explore page catalog.
 
-  for (const enrollment of initialEnrollments) {
-    await prisma.enrollment.upsert({
-      where: {
-        userId_courseId: {
-          userId: enrollment.userId,
-          courseId: enrollment.courseId,
-        },
-      },
-      update: {}, // No updates needed if already enrolled
-      create: {
-        userId: enrollment.userId,
-        courseId: enrollment.courseId,
-        progress: 0,
-        completedLessons: [],
-      },
-    });
-  }
-
-  console.log('🌱 Seeding Joel Ndakwe (upskiill201@gmail.com) test courses & enrollments...');
+  console.log('🌱 Seeding Joel Ndakwe (upskiill201@gmail.com) test courses...');
   const joel = await prisma.user.upsert({
     where: { email: 'upskiill201@gmail.com' },
     update: {
@@ -1203,39 +1178,28 @@ This course distills the best research from Cal Newport, James Clear, and the Hu
     }
   }
 
-  console.log('📦 Enrolling Joel Ndakwe in the published seed courses...');
-  const enrolledCourseSlugs = [
-    'figma-ui-ux-essentials-zero-to-hero',
-    'full-stack-web-development-modern-html-css-js',
-    'startup-pitch-deck-design-presentation-blueprint'
-  ];
-  for (const slug of enrolledCourseSlugs) {
-    const course = await prisma.course.findUnique({ where: { slug } });
-    if (course) {
-      const enrollmentId = `enroll-${joel.id}-${course.id}`;
-      await prisma.enrollment.upsert({
-        where: {
-          userId_courseId: {
-            userId: joel.id,
-            courseId: course.id,
-          },
-        },
-        update: {
-          progress: 15,
-        },
-        create: {
-          id: enrollmentId,
-          userId: joel.id,
-          courseId: course.id,
-          progress: 15,
-          completedLessons: [],
-        },
-      });
-      console.log(`   └─ Successfully enrolled Joel Ndakwe in course: "${course.title}"`);
-    }
-  }
+  console.log('🎉 All courses seeded successfully!');
 
-  console.log('🎉 All courses and initial enrollments seeded successfully!');
+  console.log('🎡 Seeding Lucky Spin segments...');
+  const segments = [
+    { id: 'seg-0', segmentIndex: 0, rewardType: 'COINS', amountMin: 50, amountMax: 50, rarityTier: 'common', weight: 30, colorKey: '#3B82F6' },
+    { id: 'seg-1', segmentIndex: 1, rewardType: 'XP', amountMin: 20, amountMax: 20, rarityTier: 'common', weight: 20, colorKey: '#EC4899' },
+    { id: 'seg-2', segmentIndex: 2, rewardType: 'COINS', amountMin: 100, amountMax: 100, rarityTier: 'uncommon', weight: 15, colorKey: '#EAB308' },
+    { id: 'seg-3', segmentIndex: 3, rewardType: 'HEARTS', amountMin: 1, amountMax: 1, rarityTier: 'common', weight: 15, colorKey: '#22C55E' },
+    { id: 'seg-4', segmentIndex: 4, rewardType: 'XP', amountMin: 50, amountMax: 50, rarityTier: 'uncommon', weight: 10, colorKey: '#A855F7' },
+    { id: 'seg-5', segmentIndex: 5, rewardType: 'COINS', amountMin: 200, amountMax: 200, rarityTier: 'rare', weight: 4, colorKey: '#EF4444' },
+    { id: 'seg-6', segmentIndex: 6, rewardType: 'XP', amountMin: 100, amountMax: 100, rarityTier: 'rare', weight: 5, colorKey: '#3B82F6' },
+    { id: 'seg-7', segmentIndex: 7, rewardType: 'STREAK_FREEZE', amountMin: 1, amountMax: 1, rarityTier: 'rare', weight: 1, colorKey: '#EAB308' },
+  ];
+
+  for (const seg of segments) {
+    await prisma.spinWheelSegment.upsert({
+      where: { id: seg.id },
+      update: seg,
+      create: seg,
+    });
+  }
+  console.log('✅ Lucky Spin segments seeded.');
 }
 
 main()

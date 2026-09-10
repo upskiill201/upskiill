@@ -1,16 +1,19 @@
-'use client';
-
-import { WebHaptics } from 'web-haptics';
 import { emitAudioEvent, AppAudioEvent } from '@/lib/audio/audioEvents';
 
 let hapticsInstance: any = null;
 
-if (typeof window !== 'undefined') {
-  try {
-    hapticsInstance = new WebHaptics();
-  } catch (err) {
-    console.warn('Failed to initialize web-haptics:', err);
+function getHapticsInstance() {
+  if (typeof window === 'undefined') return null;
+  if (!hapticsInstance) {
+    try {
+      // Lazy load web-haptics on client side to prevent SSR/Turbopack chunk instantiation issues
+      const { WebHaptics } = require('web-haptics');
+      hapticsInstance = new WebHaptics();
+    } catch {
+      hapticsInstance = null;
+    }
   }
+  return hapticsInstance;
 }
 
 export type HapticType =
@@ -63,17 +66,18 @@ export function playHaptic(type: HapticType, playAudio = true) {
     return;
   }
 
-  if (hapticsInstance) {
+  const instance = getHapticsInstance();
+  if (instance) {
     try {
       if (type === 'medium') {
         // Custom button haptic requested by the user
-        hapticsInstance.trigger([
+        instance.trigger([
           { duration: 30 },
           { delay: 60, duration: 40, intensity: 1 },
         ]);
       } else if (type === 'teyroIncorrect') {
         // Custom wrong-position haptic requested by the user
-        hapticsInstance.trigger([
+        instance.trigger([
           { duration: 40, intensity: 0.7 },
           { delay: 40, duration: 40, intensity: 0.7 },
           { delay: 40, duration: 40, intensity: 0.9 },
@@ -81,21 +85,21 @@ export function playHaptic(type: HapticType, playAudio = true) {
         ]);
       } else if (type === 'teyroCelebration') {
         // Custom victory buzz haptic requested by the user
-        hapticsInstance.trigger([
+        instance.trigger([
           { duration: 1000 },
         ], { intensity: 1 });
       } else if (typeof type === 'number') {
         if (type <= 10) {
-          hapticsInstance.trigger('light');
+          instance.trigger('light');
         } else if (type <= 20) {
-          hapticsInstance.trigger('medium');
+          instance.trigger('medium');
         } else {
-          hapticsInstance.trigger('heavy');
+          instance.trigger('heavy');
         }
       } else if (Array.isArray(type)) {
-        hapticsInstance.trigger('buzz');
+        instance.trigger('buzz');
       } else {
-        hapticsInstance.trigger(type);
+        instance.trigger(type);
       }
       return;
     } catch (e) {

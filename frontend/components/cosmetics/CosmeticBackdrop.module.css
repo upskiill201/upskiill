@@ -1,0 +1,77 @@
+.backdrop {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 16px;
+  isolation: isolate;
+}
+
+.paint {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/*
+ * Readability scrim. Backdrops range from pale Aurora to near-black Deep
+ * Space, and the profile content on top is dark text — without this, half the
+ * catalogue would make a profile unreadable the moment it was equipped.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-card) 74%, transparent) 0%,
+    color-mix(in srgb, var(--bg-card) 90%, transparent) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+}
+
+.motion_pulse .paint {
+  animation: backdropPulse 6s ease-in-out infinite;
+}
+
+.motion_orbit .paint {
+  background-size: 160% 160%;
+  animation: backdropDrift 18s ease-in-out infinite;
+}
+
+.motion_sweep .paint,
+.motion_flicker .paint {
+  animation: backdropPulse 5s ease-in-out infinite;
+}
+
+@keyframes backdropPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.86;
+  }
+}
+
+@keyframes backdropDrift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion_pulse .paint,
+  .motion_orbit .paint,
+  .motion_sweep .paint,
+  .motion_flicker .paint {
+    animation: none;
+  }
+}

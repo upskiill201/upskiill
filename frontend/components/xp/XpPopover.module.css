@@ -1,0 +1,213 @@
+/* ─── XP Popover ──────────────────────────────────────────────────────── */
+
+.popoverCard {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 340px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  box-shadow:
+    0 16px 40px rgba(7, 18, 51, 0.16),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  z-index: 9999;
+  animation: popoverSlideIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (max-width: 640px) {
+  .popoverCard {
+    position: fixed !important;
+    top: 75px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: 360px !important;
+    margin: 0 auto !important;
+    z-index: 10000 !important;
+  }
+}
+
+@keyframes popoverSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── Top Hero Header (Blue Banner) ─────────────────────────────────────── */
+
+.heroHeader {
+  background: linear-gradient(135deg, #0172FD 0%, #005FDB 100%);
+  padding: 18px 20px 16px 20px;
+  color: #FFFFFF;
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heroTextGroup {
+  flex: 1;
+}
+
+.heroTitle {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0 0 4px 0;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.heroSubtitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.gemIconWrap {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Level progress bar ──────────────────────────────────────────────── */
+
+.progressTrack {
+  margin-top: 14px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: #FFFFFF;
+  transition: width 0.3s ease;
+}
+
+/* ─── Content Cards ───────────────────────────────────────────────────── */
+
+.cardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #F8FAFC;
+}
+
+/* Sage Achievement Card */
+.sageCard {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sageIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #EFF6FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sageText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sageTitle {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #1E293B;
+  margin: 0;
+}
+
+.sageSubtitle {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Active Boost Card */
+.boostCard {
+  background: #0172FD;
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(1, 114, 253, 0.25);
+}
+
+.boostLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.boostLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+/* Bottom 3D View More Button */
+.viewMoreBtn3D {
+  height: 42px;
+  width: 100%;
+  background: #0172FD;
+  border: none;
+  border-bottom: 4px solid #0056C6;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(1, 114, 253, 0.25);
+}
+
+.viewMoreBtn3D:hover {
+  filter: brightness(1.08);
+}
+
+.viewMoreBtn3D:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}

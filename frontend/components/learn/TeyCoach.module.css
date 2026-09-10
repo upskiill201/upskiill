@@ -1,0 +1,92 @@
+/**
+ * Tey's in-lesson coach bubble.
+ *
+ * Floats above the content rather than sitting in the flow — a line that
+ * reflowed the page every time Tey spoke would be worse than no line at all.
+ * Pointer events stay on so the learner can dismiss it by tapping.
+ */
+
+.coach {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto;
+  max-width: 560px;
+  padding: 12px 16px 12px 12px;
+  box-sizing: border-box;
+
+  background-color: var(--bg-card);
+  border: 2px solid var(--phase-accent, var(--border));
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(31, 42, 68, 0.12);
+  cursor: pointer;
+}
+
+/* Used outside LessonShell (no `--phase-accent` ancestor to anchor to, and no
+   scoped container to position relative to) — the section map's node-unlock
+   moment. Same visual language, pinned to the viewport instead, with a warm
+   gold border tying it to the unlock glow rather than a generic grey one. */
+.coachFixed {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  margin: 0 auto;
+  border-color: #EAB308;
+}
+
+@media (max-width: 768px) {
+  .coachFixed {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bubble {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .coach {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 10px 12px 10px 10px;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bubble {
+    font-size: 13px;
+  }
+}

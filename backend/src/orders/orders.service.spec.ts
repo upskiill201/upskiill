@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from './orders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { BadRequestException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -15,6 +16,8 @@ describe('OrdersService', () => {
     course: {
       findMany: jest.fn(),
       update: jest.fn(),
+      // checkout bumps studentsCount inside its transaction via updateMany
+      updateMany: jest.fn(),
     },
     enrollment: {
       findMany: jest.fn(),
@@ -36,6 +39,11 @@ describe('OrdersService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        // OrdersService emits league/xp events on checkout (6876d21)
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
         },
       ],
     }).compile();
@@ -178,10 +186,9 @@ describe('OrdersService', () => {
         ],
       });
 
-      // Verify course student count updates
-      expect(mockPrismaService.course.update).toHaveBeenCalledTimes(2);
-      expect(mockPrismaService.course.update).toHaveBeenCalledWith({
-        where: { id: 'course-1' },
+      // Verify course student count updates (single bulk increment)
+      expect(mockPrismaService.course.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['course-1', 'course-2'] } },
         data: { studentsCount: { increment: 1 } },
       });
 

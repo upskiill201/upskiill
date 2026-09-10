@@ -20,7 +20,7 @@ export default function WaitlistFooter() {
                 width={220}
                 height={66}
                 style={{
-                  width: 'auto',
+                  width: 'auto', aspectRatio: '220 / 66',
                   height: '54px',
                   objectFit: 'contain',
                 }}
@@ -37,6 +37,7 @@ export default function WaitlistFooter() {
               <ul>
                 <li><Link href="#features">Features</Link></li>
                 <li><Link href="#faq">FAQs</Link></li>
+                <li><Link href="/blog">Blog</Link></li>
               </ul>
             </div>
 

@@ -1,0 +1,267 @@
+/*
+ * Shop item artwork. Sizes are driven by one --art-size custom property so a
+ * single set of rules serves the 56px grid thumbnail and the 200px scene hero.
+ */
+
+.wrap {
+  --art-size: 72px;
+  position: relative;
+  width: var(--art-size);
+  height: var(--art-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.sm {
+  --art-size: 48px;
+}
+.md {
+  --art-size: 72px;
+}
+.lg {
+  --art-size: 112px;
+}
+.hero {
+  --art-size: min(46vw, 190px);
+}
+
+.locked {
+  filter: grayscale(0.85) brightness(0.86);
+  opacity: 0.72;
+}
+
+/* ── Frames ───────────────────────────────────────────────────────────────── */
+
+.frameRing {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--art-size) * 0.09);
+  box-shadow: 0 6px 18px rgba(31, 42, 68, 0.18);
+}
+
+.frameSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.frameInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: #1f2a44;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.frameAvatar {
+  width: 52%;
+  height: 52%;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* ── Backdrops ────────────────────────────────────────────────────────────── */
+
+.backdrop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(31, 42, 68, 0.18);
+}
+
+/* A miniature profile card, so the backdrop reads as a backdrop and not just
+   a coloured square. */
+.backdropCard {
+  width: 62%;
+  padding: calc(var(--art-size) * 0.06);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--art-size) * 0.045);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+}
+
+.backdropAvatar {
+  width: calc(var(--art-size) * 0.16);
+  height: calc(var(--art-size) * 0.16);
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.backdropLine {
+  width: 78%;
+  height: calc(var(--art-size) * 0.045);
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.backdropLineShort {
+  width: 52%;
+}
+
+/* ── Effects ──────────────────────────────────────────────────────────────── */
+
+.fxOrb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(31, 42, 68, 0.2);
+}
+
+.fxGlyph {
+  width: 44%;
+  height: 44%;
+  color: rgba(255, 255, 255, 0.94);
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.35));
+}
+
+.fxSpark {
+  position: absolute;
+  width: calc(var(--art-size) * 0.09);
+  height: calc(var(--art-size) * 0.09);
+  border-radius: 999px;
+  top: 12%;
+  right: 16%;
+  opacity: 0.9;
+}
+
+.fxSparkTwo {
+  top: auto;
+  right: auto;
+  bottom: 16%;
+  left: 14%;
+  width: calc(var(--art-size) * 0.06);
+  height: calc(var(--art-size) * 0.06);
+}
+
+/* ── Power-ups & chests ───────────────────────────────────────────────────── */
+
+.tile {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(31, 42, 68, 0.18);
+}
+
+.tileGlyph {
+  width: 46%;
+  height: 46%;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 5px rgba(15, 23, 42, 0.4));
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────────── */
+
+.motion_pulse .frameRing,
+.motion_pulse .fxOrb,
+.motion_pulse .backdrop,
+.motion_pulse .tile {
+  animation: artPulse 3.2s ease-in-out infinite;
+}
+
+.motion_orbit .frameRing,
+.motion_orbit .fxOrb {
+  animation: artSpin 9s linear infinite;
+}
+
+/* Counter-rotate the contents so only the ring turns. */
+.motion_orbit .frameInner,
+.motion_orbit .fxGlyph {
+  animation: artSpinReverse 9s linear infinite;
+}
+
+.motion_flicker .frameRing,
+.motion_flicker .fxOrb,
+.motion_flicker .tile {
+  animation: artFlicker 2.4s ease-in-out infinite;
+}
+
+.motion_sweep .frameSheen,
+.motion_sweep .fxSpark {
+  animation: artSweep 2.8s ease-in-out infinite;
+}
+
+@keyframes artPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes artSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes artSpinReverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes artFlicker {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  45% {
+    filter: brightness(1.14);
+  }
+  70% {
+    filter: brightness(0.96);
+  }
+}
+
+@keyframes artSweep {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Motion here is decoration, never information — every state above is still
+   legible with animation off. */
+@media (prefers-reduced-motion: reduce) {
+  .motion_pulse .frameRing,
+  .motion_pulse .fxOrb,
+  .motion_pulse .backdrop,
+  .motion_pulse .tile,
+  .motion_orbit .frameRing,
+  .motion_orbit .fxOrb,
+  .motion_orbit .frameInner,
+  .motion_orbit .fxGlyph,
+  .motion_flicker .frameRing,
+  .motion_flicker .fxOrb,
+  .motion_flicker .tile,
+  .motion_sweep .frameSheen,
+  .motion_sweep .fxSpark {
+    animation: none;
+  }
+}

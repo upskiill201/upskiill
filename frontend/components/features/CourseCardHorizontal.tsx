@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Users, Clock, BookOpen, ChevronRight, Play } from 'lucide-react';
+import { Heart, Users, Clock, BookOpen, ChevronRight, Play, Lock } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import { StarRating } from '../ui/StarRating';
@@ -146,17 +146,7 @@ export const CourseCardHorizontal = ({
                 {isFree ? (
                   <span className={styles.priceFree}>Free</span>
                 ) : (
-                  <>
-                    <span className={styles.price}>${price.toFixed(2)}</span>
-                    {originalPrice && (
-                      <div className={styles.oldPriceBox}>
-                        <span className={styles.originalPrice}>${originalPrice.toFixed(2)}</span>
-                        {discountPercentage && (
-                          <span className={styles.discountTag}>{discountPercentage}% off</span>
-                        )}
-                      </div>
-                    )}
-                  </>
+                  <Badge variant="purple" size="sm" icon={<Lock size={12} />}>Premium</Badge>
                 )}
               </div>
               <div className={styles.actionBtns}>

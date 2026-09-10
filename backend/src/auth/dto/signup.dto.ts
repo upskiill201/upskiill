@@ -1,6 +1,6 @@
 import {
   IsEmail,
-  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -23,7 +23,8 @@ export class SignupDto {
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 
-  @IsEnum(Role)
+  // ADMIN is never a client-selectable role — validation rejects it with 400
+  @IsIn([Role.STUDENT, Role.INSTRUCTOR])
   @IsOptional()
   role?: Role;
 

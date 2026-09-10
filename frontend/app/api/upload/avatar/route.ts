@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 
-const AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
-const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET || 'teyro-course-videos';
-const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL;
-
-const s3Client = new S3Client({
-  region: AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+import { getSessionUser } from '@/lib/server-session';
+import { getS3Client, AWS_S3_BUCKET, cloudFrontUrlFor } from '@/lib/uploadS3Server';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -25,7 +16,18 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
  */
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.AWS_ACCESS_KEY_ID || !CLOUDFRONT_URL) {
+    // Only signed-in users may write to the bucket — this route previously
+    // accepted anonymous uploads straight into production S3.
+    const session = await getSessionUser(req);
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in and try again.' },
+        { status: 401 }
+      );
+    }
+
+    const s3Client = getS3Client();
+    if (!s3Client) {
       return NextResponse.json(
         { error: 'File storage is not configured on the server.' },
         { status: 500 }
@@ -53,10 +55,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate a unique S3 key under the avatars/ prefix
+    // Generate a unique S3 key scoped to the uploader's own prefix
     const ext = file.name.split('.').pop() || 'jpg';
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const s3Key = `avatars/${uniqueName}`;
+    const s3Key = `avatars/${session.id}/${uniqueName}`;
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -70,12 +72,7 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    const cleanBase = CLOUDFRONT_URL!.endsWith('/')
-      ? CLOUDFRONT_URL!.slice(0, -1)
-      : CLOUDFRONT_URL;
-    const url = `${cleanBase}/${s3Key}`;
-
-    return NextResponse.json({ url });
+    return NextResponse.json({ url: cloudFrontUrlFor(s3Key) });
   } catch (err: unknown) {
     console.error('Avatar upload error:', err);
     const message = err instanceof Error ? err.message : 'Internal server error';

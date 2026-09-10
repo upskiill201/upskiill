@@ -1,0 +1,275 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Leaderboard Celebration — light, flat, Duolingo-card styling.
+   Deliberately separate from Scene.module.css (the dark, glow-based
+   Celebration Engine theme): white background, brand-token colors, no
+   ambient glow, no colored box-shadow blooms — flat neutral elevation only.
+   Same fluid clamp()/vh-aware sizing discipline as Scene.module.css, applied
+   from the start so this family never needs a follow-up fit-to-viewport pass.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  overflow: hidden;
+  user-select: none;
+  padding: clamp(16px, 4vh, 36px) clamp(16px, 5vw, 40px);
+  padding-top: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-top, 0px));
+}
+
+.skipButton {
+  position: absolute;
+  top: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-top, 0px));
+  left: clamp(16px, 5vw, 40px);
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.skipButton:hover {
+  background: var(--bg-section);
+  color: var(--text-primary);
+}
+
+.skipButton:active {
+  transform: scale(0.92);
+}
+
+/* Scroll viewport — see Scene.module.css's .contentColumn for why this
+   exists as a silent fallback: content is sized to always fit, but nothing
+   should ever be able to clip off-screen or overlap the pinned CTA. */
+.contentColumn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.contentColumn::-webkit-scrollbar {
+  display: none;
+}
+
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: auto auto;
+  text-align: center;
+  /* Tightened to match Scene.module.css's headroom trim for the bigger
+     shared mascot (.mascotWrap). */
+  gap: clamp(10px, 1.8vh, 16px);
+  padding-block: 4px;
+}
+
+.bottomAction {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Icon ────────────────────────────────────────────────────────────────── */
+
+.iconBadge {
+  width: clamp(64px, min(20vw, 16vh), 96px);
+  height: clamp(64px, min(20vw, 16vh), 96px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+  flex-shrink: 0;
+}
+
+.iconBadge svg {
+  width: 56%;
+  height: 56%;
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+
+.headline {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(22px, min(7vw, 6vh), 40px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.headlineAccent {
+  color: var(--brand-blue);
+}
+
+.subhead {
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(13px, min(3.6vw, 3.2vh), 16px);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  max-width: 40ch;
+}
+
+/* ─── Rank list card ─────────────────────────────────────────────────────── */
+
+.rankCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-page);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.rankListStage {
+  position: relative;
+  width: 100%;
+  /* Height for a fixed 5-row window; rows animate their `top` inside this
+     box rather than reflowing, so the box itself never resizes mid-scene. */
+  height: calc(var(--rank-row-h, 56px) * 5);
+}
+
+.rankRow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--rank-row-h, 56px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-page);
+}
+
+.rankRow:last-child {
+  border-bottom: none;
+}
+
+.rankRowMe {
+  background: var(--light-blue-bg);
+}
+
+.rankRowRivalHighlight {
+  box-shadow: inset 0 0 0 2px var(--brand-blue);
+}
+
+.rankNumber {
+  width: 22px;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-muted, var(--text-secondary));
+}
+
+.rankName {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rankRowMe .rankName {
+  color: var(--brand-blue);
+}
+
+/* ─── 3D CTA (flat brand-blue, no glow) ──────────────────────────────────── */
+
+.ctaButton {
+  width: 100%;
+  min-height: clamp(52px, 7vh, 60px);
+  border: none;
+  border-radius: 16px;
+  background: var(--brand-blue);
+  color: var(--text-on-blue, #ffffff);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(15px, 4vw, 17px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--brand-blue-hover);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctaButton:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+.ctaButton:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--brand-blue-hover);
+}
+
+.ctaButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ─── 320px floor ────────────────────────────────────────────────────────── */
+
+@media (max-width: 320px) {
+  .backdrop {
+    padding: 12px 12px;
+  }
+
+  .headline {
+    font-size: 22px;
+  }
+
+  .ctaButton {
+    min-height: 48px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rankRow {
+    transition: none !important;
+  }
+}

@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
+  width: 100%;
+  position: sticky;
+  top: 32px;
+  min-width: 0;
 }
 
 /* COURSE PROGRESS CARD */
@@ -241,14 +245,11 @@
 
 /* DAILY QUESTS CARD */
 .questsCard {
-  background: white;
-  border: 1px solid #E2E8F0;
-  border-radius: 16px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 1.25rem;
   padding: 20px;
-  box-shadow:
-    0 12px 26px -6px rgba(7, 18, 51, 0.12),
-    inset 0px 2px 0px rgba(255, 255, 255, 0.9),
-    inset 0px -5px 0px rgba(7, 18, 51, 0.05);
+  box-shadow: 0 3px 0 0 #CBD5E1;
 }
 
 .cardHeaderWithLink {
@@ -345,18 +346,15 @@
 
 /* UNLOCK LEADERBOARDS CARD */
 .leaderboardsCard {
-  background: white;
-  border: 1px solid #E2E8F0;
-  border-radius: 16px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 1.25rem;
   padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow:
-    0 12px 26px -6px rgba(7, 18, 51, 0.12),
-    inset 0px 2px 0px rgba(255, 255, 255, 0.9),
-    inset 0px -5px 0px rgba(7, 18, 51, 0.05);
+  box-shadow: 0 3px 0 0 #CBD5E1;
 }
 
 .lockIconOuter {
@@ -434,24 +432,22 @@
 
 /* DAILY REWARD CARD */
 .rewardCard {
-  background: linear-gradient(135deg, #FFB800 0%, #FF9900 100%);
-  border-radius: 16px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 1.25rem;
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow:
-    0 12px 26px -6px rgba(255, 153, 0, 0.45),
-    inset 0px 2px 0px rgba(255, 255, 255, 0.45),
-    inset 0px -5px 0px rgba(0, 0, 0, 0.18);
-  color: white;
+  box-shadow: 0 3px 0 0 #CBD5E1;
+  color: #071233;
 }
 
 .rewardHeader {
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.9);
+  color: #071233;
   align-self: flex-start;
   margin-bottom: 12px;
 }
@@ -546,9 +542,10 @@
 }
 
 .button3dWhiteReward {
-  background-color: white;
-  color: #FF9900;
+  background-color: #0172FD;
+  color: white;
   border: none;
+  border-bottom: 4px solid #0050B3;
   border-radius: 12px;
   padding: 12px 24px;
   font-size: 15px;
@@ -560,20 +557,18 @@
   transition: all 0.15s ease;
   font-family: var(--font-jakarta), sans-serif;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05),
-              inset 0px -4px 0px #E28700;
+  box-shadow: 0 4px 12px rgba(1, 114, 253, 0.2);
 }
 
 .button3dWhiteReward:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08),
-              inset 0px -4px 0px #E28700;
+  background-color: #1A84FF;
 }
 
 .button3dWhiteReward:active {
   transform: translateY(4px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02),
-              inset 0px 0px 0px transparent;
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 4px rgba(1, 114, 253, 0.2);
 }
 
 /* ─── SECTION VIEW ADDITIONS ─── */
@@ -669,23 +664,23 @@
 
 /* DAILY REWARD LOGIN CHEST CARD */
 .dailyRewardCard {
-  background-color: #FFFDF5;
-  border: 2px solid #FCD34D;
-  border-radius: 18px;
+  background-color: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 1.25rem;
   padding: 18px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 12px -2px rgba(251, 191, 36, 0.12);
+  box-shadow: 0 3px 0 0 #CBD5E1;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
 }
 
 .dailyRewardCard:hover {
-  transform: translateY(-4px) scale(1.01);
-  border-color: #F59E0B;
-  box-shadow: 0 14px 28px -6px rgba(251, 191, 36, 0.28), 0 6px 12px -2px rgba(251, 191, 36, 0.18);
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: 0 5px 0 0 #CBD5E1;
 }
 
 .dailyRewardClaimBtn {

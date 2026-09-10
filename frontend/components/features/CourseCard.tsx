@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Play, Heart, Users, Clock, BookOpen, ChevronRight, ShoppingCart, Check, Lock } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import { StarRating } from '../ui/StarRating';
 import { ProgressBar } from '../ui/ProgressBar';
 import { useCart } from '@/context/CartContext';
+import { playHaptic } from '@/lib/haptics';
 import styles from './CourseCard.module.css';
 
 export type CourseCardProps = {
@@ -71,6 +73,10 @@ export const CourseCard = ({
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Was a bare setState with no acknowledgment at all — a meaningful
+    // commitment (saving a course to come back to) deserves at least a
+    // tactile click, not a silent icon-fill swap.
+    playHaptic('selection');
     setIsWishlisted(!isWishlisted);
   };
 
@@ -78,6 +84,7 @@ export const CourseCard = ({
     e.preventDefault();
     e.stopPropagation();
     if (!inCart) {
+      playHaptic('medium');
       // The context expects: id, title, thumbnail, instructorName, price
       addItem({
         id,
@@ -112,13 +119,16 @@ export const CourseCard = ({
 
           {/* Wishlist Icon */}
           {!isEnrolled && (
-            <button 
-              className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ''}`} 
+            <motion.button
+              className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ''}`}
               onClick={toggleWishlist}
               aria-label="Add to wishlist"
+              whileTap={{ scale: 0.85 }}
+              animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
-            </button>
+            </motion.button>
           )}
           
           {/* Preview Button (slides up on hover) */}
@@ -188,25 +198,20 @@ export const CourseCard = ({
                   {isFree ? (
                     <span className={styles.priceFree}>Free</span>
                   ) : (
-                    <>
-                      <span className={styles.price}>${price.toFixed(2)}</span>
-                      {originalPrice && (
-                        <span className={styles.originalPrice}>${originalPrice.toFixed(2)}</span>
-                      )}
-                    </>
+                    <Badge variant="purple" size="sm" icon={<Lock size={11} />}>Premium</Badge>
                   )}
                 </div>
-                {discountPercentage && !isFree && (
-                  <span className={styles.discountBadge}>{discountPercentage}% OFF</span>
-                )}
                 {!isFree && (
-                  <button 
+                  <motion.button
                     className={`${styles.addToCartBtn} ${inCart ? styles.inCart : ''}`}
                     onClick={handleAddToCart}
                     title={inCart ? "In Cart" : "Add to Cart"}
+                    whileTap={{ scale: 0.85 }}
+                    animate={inCart ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
                   >
                     {inCart ? <Check size={16} /> : <ShoppingCart size={16} />}
-                  </button>
+                  </motion.button>
                 )}
               </div>
             )}

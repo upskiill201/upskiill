@@ -1,0 +1,207 @@
+/* ─── TEYRO BRANDED FULL-SCREEN & WORKSPACE LOADER (PATTERN A) ────────────────────────── */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 500; /* Placed below desktop sidebar (z-index: 1000) so menubar/sidebar remains visible! */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  padding: 1.5rem;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+  transition: padding-left 0.3s ease;
+}
+
+/* Fullscreen mode for cold starts / auth redirects */
+.fullScreen {
+  z-index: 99999 !important;
+}
+
+/* On desktop, offset content container slightly to center perfectly in the main workspace */
+@media (min-width: 1024px) {
+  .overlay:not(.fullScreen) {
+    padding-left: 280px; /* Aligns center relative to desktop main workspace */
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Mascot Wrapper */
+.mascotWrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .mascotWrapper {
+    width: 220px;
+    height: 220px;
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mascotWrapper {
+    width: 270px;
+    height: 270px;
+    margin-bottom: 1.35rem;
+  }
+}
+
+.mascotImage {
+  object-fit: contain;
+  filter: none !important;
+}
+
+.mascotVideo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none !important;
+  pointer-events: none;
+  mix-blend-mode: multiply; /* Blends WebM background 100% seamlessly into pure white #FFFFFF */
+}
+
+/* Loading Tag Label: LOADING... */
+.label {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #5B7A9C;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .label {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.dots {
+  display: inline-block;
+  min-width: 1.8em;
+  text-align: left;
+  font-weight: 900;
+}
+
+/* Micro-copy line */
+.microcopy {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #1E293B;
+  max-width: 360px;
+  margin: 0 auto;
+  min-height: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .microcopy {
+    font-size: 1.15rem;
+    max-width: 420px;
+  }
+}
+
+/* Timeout / Slow Connection Action */
+.actionWrapper {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reloadBtn {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #FFFFFF;
+  background-color: #0172FD;
+  border: 1.5px solid #0172FD;
+  border-radius: 1rem;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #0050B3, 0 10px 20px -5px rgba(1, 114, 253, 0.3);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.reloadBtn:hover {
+  background-color: #0060D9;
+}
+
+.reloadBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #0050B3;
+}
+
+/* ── Extra small devices (<= 380px, e.g. 300px - 360px screens) ── */
+@media (max-width: 380px) {
+  .overlay {
+    padding: 1rem 0.75rem;
+  }
+
+  .mascotWrapper {
+    width: 145px;
+    height: 145px;
+    margin-bottom: 0.85rem;
+  }
+
+  .label {
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    margin-bottom: 0.5rem;
+  }
+
+  .microcopy {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    max-width: 270px;
+    min-height: 3.6rem;
+  }
+
+  .actionWrapper {
+    margin-top: 0.85rem;
+  }
+
+  .reloadBtn {
+    font-size: 0.8rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 3px 0 0 #0050B3, 0 6px 12px -3px rgba(1, 114, 253, 0.3);
+  }
+}

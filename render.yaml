@@ -44,6 +44,39 @@ services:
         sync: false
       - key: MESOMB_SECRET_KEY
         sync: false
+      - key: EARNINGS_ENC_KEY
+        sync: false
+      # ── Tey intelligence layer ──────────────────────────────────────────
+      # The scheduler runs an in-process cron AND accepts an external tick
+      # (POST /tey/scheduler/tick), because a spun-down free-plan instance runs
+      # no cron at all. See backend/src/tey/README.md.
+      - key: TEY_SCHEDULER_ENABLED
+        value: "true"
+      # Dry-run: revalidate and record what WOULD be sent, then send nothing.
+      # Flip to "true" only once a delivery channel ships.
+      - key: TEY_DELIVERY_ENABLED
+        value: "false"
+      - key: TEY_SCHEDULER_SECRET
+        sync: false   # shared secret for the external tick caller
+      # Web Push (VAPID). Generate with: npx web-push generate-vapid-keys
+      # The PRIVATE key never leaves the server; the public one is served to
+      # browsers at GET /tey/push/public-key.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:support@teyro.app
+      # AI layer. Off by default — providers are configured at /admin and their
+      # keys are encrypted at rest with EARNINGS_ENC_KEY, never in env.
+      - key: TEY_AI_ENABLED
+        value: "false"
+      - key: TEY_AI_DAILY_BUDGET_USD
+        value: "2"
+      - key: TEY_AI_MAX_CALLS_PER_USER_DAY
+        value: "20"
+      - key: TEY_AI_MAX_PROACTIVE_DAY
+        value: "200"
 
   # ─── PRODUCTION BACKEND ─────────────────────────────────────────────────────
   # New service created for production.
@@ -89,3 +122,36 @@ services:
         sync: false
       - key: MESOMB_SECRET_KEY
         sync: false
+      - key: EARNINGS_ENC_KEY
+        sync: false
+      # ── Tey intelligence layer ──────────────────────────────────────────
+      # The scheduler runs an in-process cron AND accepts an external tick
+      # (POST /tey/scheduler/tick), because a spun-down free-plan instance runs
+      # no cron at all. See backend/src/tey/README.md.
+      - key: TEY_SCHEDULER_ENABLED
+        value: "true"
+      # Dry-run: revalidate and record what WOULD be sent, then send nothing.
+      # Flip to "true" only once a delivery channel ships.
+      - key: TEY_DELIVERY_ENABLED
+        value: "false"
+      - key: TEY_SCHEDULER_SECRET
+        sync: false   # shared secret for the external tick caller
+      # Web Push (VAPID). Generate with: npx web-push generate-vapid-keys
+      # The PRIVATE key never leaves the server; the public one is served to
+      # browsers at GET /tey/push/public-key.
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:support@teyro.app
+      # AI layer. Off by default — providers are configured at /admin and their
+      # keys are encrypted at rest with EARNINGS_ENC_KEY, never in env.
+      - key: TEY_AI_ENABLED
+        value: "false"
+      - key: TEY_AI_DAILY_BUDGET_USD
+        value: "2"
+      - key: TEY_AI_MAX_CALLS_PER_USER_DAY
+        value: "20"
+      - key: TEY_AI_MAX_PROACTIVE_DAY
+        value: "200"

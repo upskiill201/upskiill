@@ -2,14 +2,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const courses = await prisma.course.findMany({
-    include: { instructor: true }
-  });
-  console.log('--- DATABASE COURSE COUNT ---');
-  console.log(courses.length);
-  console.log('--- COURSES ---');
-  courses.forEach(c => console.log(`- ${c.title} (Slug: ${c.slug}) (ID: ${c.id})`));
+async function check() {
+  try {
+    console.log('Testing DailyMissionSet table...');
+    const count = await prisma.dailyMissionSet.count();
+    console.log('DailyMissionSet count:', count);
+  } catch (err: any) {
+    console.error('Database query error:', err.message);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-main().finally(() => prisma.$disconnect());
+check();

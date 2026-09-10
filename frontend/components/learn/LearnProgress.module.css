@@ -1,0 +1,31 @@
+/**
+ * The Learn phase's reading/watching progress bar.
+ *
+ * Sits directly under the lesson header so it reads as part of the same
+ * chrome, and stays thin — this is ambient feedback, not a second stepper
+ * competing with the one above it.
+ */
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background-color: var(--bg-section);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--phase-accent, var(--brand-blue));
+  transform-origin: center;
+  transition: width 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}

@@ -7,10 +7,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronRight } from 'lucide-react';
 import styles from './WaitlistHeader.module.css';
 
-const NAV_LINKS = [
+interface NavLink {
+  label: string;
+  /** In-page section anchor (homepage) */
+  anchor?: string;
+  /** Standalone route (navigates via <Link>) */
+  href?: string;
+}
+
+const NAV_LINKS: NavLink[] = [
   { label: 'Features', anchor: '#features' },
   { label: 'Solutions', anchor: '#solutions' },
   { label: 'Marketplace', anchor: '#marketplace' },
+  { label: 'Blog', href: '/blog' },
   { label: 'FAQ', anchor: '#faq' },
 ];
 
@@ -68,6 +77,20 @@ export default function WaitlistHeader() {
     router.push('/join');
   }, [router]);
 
+  /**
+   * "Login" is the application-entry CTA, not a waitlist-conversion one — it
+   * goes to the install gateway, which hands a returning learner to
+   * /onboarding/0 (sign-in) and a new one to install-then-onboard.
+   *
+   * "Get Started" deliberately still goes to /join: that is the waitlist
+   * conversion path while Teyro is pre-launch, and repointing it would quietly
+   * turn off the top of the acquisition funnel.
+   */
+  const goToStart = useCallback(() => {
+    setMobileOpen(false);
+    router.push('/start');
+  }, [router]);
+
   return (
     <>
       <header
@@ -83,7 +106,7 @@ export default function WaitlistHeader() {
               height={66}
               priority
               style={{
-                width: 'auto',
+                width: 'auto', aspectRatio: '220 / 66',
                 height: '56px',
                 objectFit: 'contain',
               }}
@@ -92,23 +115,29 @@ export default function WaitlistHeader() {
 
           {/* Desktop Navigation */}
           <nav className={styles.desktopNav}>
-            {NAV_LINKS.map(({ label, anchor }) => (
-              <button
-                key={label}
-                className={styles.navLink}
-                onClick={() => handleNavClick(anchor)}
-                type="button"
-              >
-                {label}
-              </button>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href ? (
+                <Link key={link.label} href={link.href} className={styles.navLink}>
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.label}
+                  className={styles.navLink}
+                  onClick={() => handleNavClick(link.anchor ?? '')}
+                  type="button"
+                >
+                  {link.label}
+                </button>
+              )
+            )}
           </nav>
 
           {/* Desktop Right: Login + Get Started */}
           <div className={styles.rightSection}>
             <button
               className={styles.loginBtn}
-              onClick={goToJoin}
+              onClick={goToStart}
               type="button"
             >
               Login
@@ -155,7 +184,7 @@ export default function WaitlistHeader() {
                   width={200}
                   height={60}
                   style={{
-                    width: 'auto',
+                    width: 'auto', aspectRatio: '200 / 60',
                     height: '46px',
                     objectFit: 'contain',
                   }}
@@ -172,16 +201,27 @@ export default function WaitlistHeader() {
             </div>
 
             <nav className={styles.mobileNavLinks}>
-              {NAV_LINKS.map(({ label, anchor }) => (
-                <button
-                  key={label}
-                  className={styles.mobileNavLink}
-                  onClick={() => handleNavClick(anchor)}
-                  type="button"
-                >
-                  {label}
-                </button>
-              ))}
+              {NAV_LINKS.map((link) =>
+                link.href ? (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={styles.mobileNavLink}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={link.label}
+                    className={styles.mobileNavLink}
+                    onClick={() => handleNavClick(link.anchor ?? '')}
+                    type="button"
+                  >
+                    {link.label}
+                  </button>
+                )
+              )}
             </nav>
 
             <div className={styles.mobileDivider} />
@@ -189,7 +229,7 @@ export default function WaitlistHeader() {
             <div className={styles.mobileAuthButtons}>
               <button
                 className={styles.mobileLoginBtn}
-                onClick={goToJoin}
+                onClick={goToStart}
                 type="button"
               >
                 Login

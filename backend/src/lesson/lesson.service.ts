@@ -1,12 +1,82 @@
-import { Injectable, NotFoundException, ConflictException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  UnprocessableEntityException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateLessonMetadataDto, UpdateLessonPhaseDto, AddLessonResourceDto, PublishLessonDto, FullSaveLessonDto } from './dto/update-lesson.dto';
+import {
+  UpdateLessonMetadataDto,
+  UpdateLessonPhaseDto,
+  AddLessonResourceDto,
+  UpdateLessonResourceDto,
+  PublishLessonDto,
+  FullSaveLessonDto,
+} from './dto/update-lesson.dto';
+import { CourseReviewService } from '../course-review/course-review.service';
+
+const VALID_PHASES = ['learn', 'apply', 'reflect', 'deepen'];
+
+interface AuthenticatedUser {
+  id: string;
+  role?: string;
+}
 
 @Injectable()
 export class LessonService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private courseReview: CourseReviewService,
+  ) {}
 
-  async getLesson(id: string) {
+  /**
+   * Load a lesson and verify the requesting user owns the course it belongs to.
+   * Every lesson mutation/read in the builder flows through here so a student
+   * (or another creator) can never touch someone else's lesson by guessing IDs.
+   */
+  private async getOwnedLesson(id: string, user: AuthenticatedUser) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id },
+      include: {
+        section: {
+          select: {
+            courseId: true,
+            course: { select: { instructorId: true } },
+          },
+        },
+      },
+    });
+
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+    if (
+      lesson.section.course.instructorId !== user.id &&
+      user.role !== 'ADMIN'
+    ) {
+      throw new ForbiddenException(
+        'You do not have permission to modify this lesson.',
+      );
+    }
+    return lesson;
+  }
+
+  /**
+   * The same review-workflow edit-lock course.service.ts's structural
+   * mutations go through, applied here for lesson content — the most common
+   * kind of "substantive edit" a creator actually makes. Called explicitly
+   * from mutation methods only, never from reads (getLesson), so viewing a
+   * lesson during review still works.
+   */
+  private async assertLessonEditable(lesson: {
+    section: { courseId: string };
+  }) {
+    await this.courseReview.assertEditableAndReopen(lesson.section.courseId);
+  }
+
+  async getLesson(id: string, user: AuthenticatedUser) {
+    await this.getOwnedLesson(id, user);
+
     const lesson = await this.prisma.lesson.findUnique({
       where: { id },
       include: {
@@ -17,8 +87,8 @@ export class LessonService {
           },
         },
         resources: {
-          orderBy: { displayOrder: 'asc' }
-        }
+          orderBy: { displayOrder: 'asc' },
+        },
       },
     });
 
@@ -26,230 +96,391 @@ export class LessonService {
     return lesson;
   }
 
-  async updateLessonMetadata(id: string, updateData: UpdateLessonMetadataDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
-
-    if (updateData.version !== undefined && updateData.version !== lesson.version) {
-      throw new ConflictException({
-        message: 'Conflict: This lesson was modified by another session.',
-        currentServerState: lesson
-      });
-    }
+  async updateLessonMetadata(
+    id: string,
+    updateData: UpdateLessonMetadataDto,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
 
     const { version, ...data } = updateData;
-    
-    return this.prisma.lesson.update({
-      where: { id },
+
+    // Guard against nonsense values from the client (negative / absurd lengths)
+    if (typeof data.durationMinutes === 'number') {
+      data.durationMinutes = Math.max(
+        0,
+        Math.min(600, Math.round(data.durationMinutes)),
+      );
+    }
+
+    // Atomic optimistic lock: only updates when the stored version still matches.
+    const result = await this.prisma.lesson.updateMany({
+      where: { id, ...(version !== undefined && { version }) },
       data: {
         ...data,
-        version: lesson.version + 1,
+        version: { increment: 1 },
       },
     });
-  }
 
-  async updateLessonPhase(id: string, phase: string, updateData: UpdateLessonPhaseDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
-
-    if (updateData.version !== lesson.version) {
+    if (result.count === 0) {
+      const lesson = await this.prisma.lesson.findUnique({ where: { id } });
       throw new ConflictException({
         message: 'Conflict: This lesson was modified by another session.',
-        currentServerState: lesson
+        currentServerState: lesson,
       });
     }
 
-    // Merge content blocks
-    const currentBlocks = lesson.contentBlocks ? (typeof lesson.contentBlocks === 'string' ? JSON.parse(lesson.contentBlocks) : lesson.contentBlocks) : {};
+    return this.prisma.lesson.findUnique({ where: { id } });
+  }
+
+  async updateLessonPhase(
+    id: string,
+    phase: string,
+    updateData: UpdateLessonPhaseDto,
+    user: AuthenticatedUser,
+  ) {
+    const owned = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(owned);
+
+    if (!VALID_PHASES.includes(phase)) {
+      throw new BadRequestException(
+        `Invalid phase "${phase}". Must be one of: ${VALID_PHASES.join(', ')}`,
+      );
+    }
+
+    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+
+    const blocks = this.parseJsonObject(lesson.contentBlocks);
     const updatedBlocks = {
-      ...currentBlocks,
-      [phase]: updateData.contentBlocks
+      ...blocks,
+      [phase]: updateData.contentBlocks,
     };
 
     // Merge completion state
-    const currentCompletion = lesson.stepCompletion ? (typeof lesson.stepCompletion === 'string' ? JSON.parse(lesson.stepCompletion) : lesson.stepCompletion) : {};
+    const currentCompletion = this.parseJsonObject(lesson.stepCompletion);
     const updatedCompletion = {
       ...currentCompletion,
-      [phase]: updateData.isCompleted !== undefined ? updateData.isCompleted : currentCompletion[phase] || false
+      [phase]:
+        updateData.isCompleted !== undefined
+          ? updateData.isCompleted
+          : currentCompletion[phase] || false,
     };
 
-    return this.prisma.lesson.update({
-      where: { id },
+    const result = await this.prisma.lesson.updateMany({
+      where: { id, version: updateData.version },
       data: {
         contentBlocks: updatedBlocks,
         stepCompletion: updatedCompletion,
-        version: lesson.version + 1,
+        version: { increment: 1 },
       },
     });
+
+    if (result.count === 0) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+        currentServerState: lesson,
+      });
+    }
+
+    return this.prisma.lesson.findUnique({ where: { id } });
   }
 
-  async addLessonResource(id: string, data: AddLessonResourceDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+  async addLessonResource(
+    id: string,
+    data: AddLessonResourceDto,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
+
+    // Append to the end of the list unless the client explicitly positions it
+    const resourceCount = await this.prisma.lessonResource.count({
+      where: { lessonId: id },
+    });
 
     return this.prisma.lessonResource.create({
       data: {
         lessonId: id,
-        ...data
-      }
+        ...data,
+        displayOrder: data.displayOrder ?? resourceCount,
+      },
     });
   }
 
-  async removeLessonResource(id: string, resourceId: string) {
+  async updateLessonResource(
+    id: string,
+    resourceId: string,
+    data: UpdateLessonResourceDto,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
+
+    const resource = await this.prisma.lessonResource.findUnique({
+      where: { id: resourceId },
+    });
+    if (!resource || resource.lessonId !== id) {
+      throw new NotFoundException(
+        `Resource with ID ${resourceId} not found on this lesson`,
+      );
+    }
+
+    return this.prisma.lessonResource.update({
+      where: { id: resourceId },
+      data,
+    });
+  }
+
+  async removeLessonResource(
+    id: string,
+    resourceId: string,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
+
+    const resource = await this.prisma.lessonResource.findUnique({
+      where: { id: resourceId },
+    });
+    if (!resource || resource.lessonId !== id) {
+      throw new NotFoundException(
+        `Resource with ID ${resourceId} not found on this lesson`,
+      );
+    }
+
     return this.prisma.lessonResource.delete({
-      where: { id: resourceId }
+      where: { id: resourceId },
     });
   }
 
   /**
    * fullSave — saves ALL lesson data in a SINGLE database write.
    * Replaces 5 sequential API calls (metadata + 4 phases) with 1.
-   * This is the key to fast, reliable saves in the lesson builder.
+   * Honours the version number for optimistic locking when provided.
    */
-  async fullSave(id: string, data: FullSaveLessonDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+  async fullSave(id: string, data: FullSaveLessonDto, user: AuthenticatedUser) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
 
-    // Merge content blocks from each phase
-    const currentBlocks: any = lesson.contentBlocks
-      ? (typeof lesson.contentBlocks === 'string' ? JSON.parse(lesson.contentBlocks) : lesson.contentBlocks)
-      : {};
+    const updatedBlocks = this.mergeBlocks(lesson.contentBlocks, data);
+    const updatedCompletion = this.mergeCompletion(lesson.stepCompletion, data);
 
-    const updatedBlocks = {
-      ...currentBlocks,
-      ...(data.learnBlocks !== undefined && { learn: data.learnBlocks }),
-      ...(data.applyBlocks !== undefined && { apply: data.applyBlocks }),
-      ...(data.reflectBlocks !== undefined && { reflect: data.reflectBlocks }),
-      ...(data.deepenBlocks !== undefined && { deepen: data.deepenBlocks }),
-    };
-
-    // Merge completion state
-    const currentCompletion: any = lesson.stepCompletion
-      ? (typeof lesson.stepCompletion === 'string' ? JSON.parse(lesson.stepCompletion) : lesson.stepCompletion)
-      : {};
-
-    const updatedCompletion = {
-      ...currentCompletion,
-      ...(data.isLearnCompleted !== undefined && { learn: data.isLearnCompleted }),
-      ...(data.isApplyCompleted !== undefined && { apply: data.isApplyCompleted }),
-      ...(data.isReflectCompleted !== undefined && { reflect: data.isReflectCompleted }),
-      ...(data.isDeepenCompleted !== undefined && { deepen: data.isDeepenCompleted }),
-    };
-
-    const updated = await this.prisma.lesson.update({
-      where: { id },
+    const result = await this.prisma.lesson.updateMany({
+      where: {
+        id,
+        ...(data.version !== undefined && { version: data.version }),
+      },
       data: {
         ...(data.title !== undefined && { title: data.title }),
-        ...(data.shortDescription !== undefined && { shortDescription: data.shortDescription }),
+        ...(data.shortDescription !== undefined && {
+          shortDescription: data.shortDescription,
+        }),
         ...(data.lessonType !== undefined && { lessonType: data.lessonType }),
+        ...(data.durationMinutes !== undefined && {
+          durationMinutes: Math.max(
+            0,
+            Math.min(600, Math.round(data.durationMinutes)),
+          ),
+        }),
         contentBlocks: updatedBlocks,
         stepCompletion: updatedCompletion,
-        version: lesson.version + 1,
+        version: { increment: 1 },
       },
     });
 
-    return { ok: true, version: updated.version };
+    if (result.count === 0) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+        currentServerState: await this.prisma.lesson.findUnique({
+          where: { id },
+        }),
+      });
+    }
+
+    const updated = await this.prisma.lesson.findUnique({ where: { id } });
+    return { ok: true, version: updated?.version };
   }
 
   /**
-   * fullSaveAndPublish — saves everything + marks lesson as published in one transaction.
+   * fullSaveAndPublish — saves everything + marks lesson as published in one write.
    */
-  async fullSaveAndPublish(id: string, saveData: FullSaveLessonDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+  async fullSaveAndPublish(
+    id: string,
+    saveData: FullSaveLessonDto,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
 
-    // Merge content blocks
-    const currentBlocks: any = lesson.contentBlocks
-      ? (typeof lesson.contentBlocks === 'string' ? JSON.parse(lesson.contentBlocks) : lesson.contentBlocks)
-      : {};
-
-    const updatedBlocks = {
-      ...currentBlocks,
-      ...(saveData.learnBlocks !== undefined && { learn: saveData.learnBlocks }),
-      ...(saveData.applyBlocks !== undefined && { apply: saveData.applyBlocks }),
-      ...(saveData.reflectBlocks !== undefined && { reflect: saveData.reflectBlocks }),
-      ...(saveData.deepenBlocks !== undefined && { deepen: saveData.deepenBlocks }),
-    };
-
-    const currentCompletion: any = lesson.stepCompletion
-      ? (typeof lesson.stepCompletion === 'string' ? JSON.parse(lesson.stepCompletion) : lesson.stepCompletion)
-      : {};
-
-    const updatedCompletion = {
-      ...currentCompletion,
-      ...(saveData.isLearnCompleted !== undefined && { learn: saveData.isLearnCompleted }),
-      ...(saveData.isApplyCompleted !== undefined && { apply: saveData.isApplyCompleted }),
-      ...(saveData.isReflectCompleted !== undefined && { reflect: saveData.isReflectCompleted }),
-      ...(saveData.isDeepenCompleted !== undefined && { deepen: saveData.isDeepenCompleted }),
-    };
+    const updatedBlocks = this.mergeBlocks(lesson.contentBlocks, saveData);
+    const updatedCompletion = this.mergeCompletion(
+      lesson.stepCompletion,
+      saveData,
+    );
 
     // Validate before publishing — check the MERGED completion state
     const errors: string[] = [];
-    if (!updatedCompletion.learn) errors.push('Learn phase is incomplete or missing content.');
-    if (!updatedCompletion.apply) errors.push('Apply phase requires at least 1 valid activity.');
-    if (!updatedCompletion.reflect) errors.push('Reflect phase requires a prompt.');
+    if (!updatedCompletion.learn)
+      errors.push('Learn phase is incomplete or missing content.');
+    if (!updatedCompletion.apply)
+      errors.push('Apply phase requires at least 1 valid activity.');
+    if (!updatedCompletion.reflect)
+      errors.push('Reflect phase requires a prompt.');
 
     if (errors.length > 0) {
-      throw new UnprocessableEntityException({ message: 'Validation failed', errors });
+      throw new UnprocessableEntityException({
+        message: 'Validation failed',
+        errors,
+      });
     }
 
-    const updated = await this.prisma.lesson.update({
-      where: { id },
+    const result = await this.prisma.lesson.updateMany({
+      where: {
+        id,
+        ...(saveData.version !== undefined && { version: saveData.version }),
+      },
       data: {
         ...(saveData.title !== undefined && { title: saveData.title }),
-        ...(saveData.shortDescription !== undefined && { shortDescription: saveData.shortDescription }),
-        ...(saveData.lessonType !== undefined && { lessonType: saveData.lessonType }),
+        ...(saveData.shortDescription !== undefined && {
+          shortDescription: saveData.shortDescription,
+        }),
+        ...(saveData.lessonType !== undefined && {
+          lessonType: saveData.lessonType,
+        }),
+        ...(saveData.durationMinutes !== undefined && {
+          durationMinutes: Math.max(
+            0,
+            Math.min(600, Math.round(saveData.durationMinutes)),
+          ),
+        }),
         contentBlocks: updatedBlocks,
         stepCompletion: updatedCompletion,
         status: 'published',
-        publishedAt: new Date(),
-        version: lesson.version + 1,
+        publishedAt: lesson.publishedAt ?? new Date(), // keep the original publish date on re-publish
+        version: { increment: 1 },
       },
     });
 
+    if (result.count === 0) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+        currentServerState: await this.prisma.lesson.findUnique({
+          where: { id },
+        }),
+      });
+    }
+
+    const updated = await this.prisma.lesson.findUnique({ where: { id } });
     return { ok: true, lesson: updated };
   }
 
-  async publishLesson(id: string, publishData: PublishLessonDto) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id }, include: { resources: true } });
-    if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
+  async publishLesson(
+    id: string,
+    publishData: PublishLessonDto,
+    user: AuthenticatedUser,
+  ) {
+    const lesson = await this.getOwnedLesson(id, user);
+    await this.assertLessonEditable(lesson);
 
     if (publishData.publishOption !== 'draft') {
-      const currentCompletion = lesson.stepCompletion ? (typeof lesson.stepCompletion === 'string' ? JSON.parse(lesson.stepCompletion) : lesson.stepCompletion) : {};
-      const currentBlocks = lesson.contentBlocks ? (typeof lesson.contentBlocks === 'string' ? JSON.parse(lesson.contentBlocks) : lesson.contentBlocks) : {};
+      const currentCompletion = this.parseJsonObject(lesson.stepCompletion);
 
       const errors: string[] = [];
 
-      const isLearnComplete = currentCompletion.learn === true;
-      if (!isLearnComplete) errors.push('Learn phase is incomplete or missing content.');
-
-      const isApplyComplete = currentCompletion.apply === true;
-      if (!isApplyComplete) errors.push('Apply phase requires at least 1 valid activity.');
-
-      const isReflectComplete = currentCompletion.reflect === true;
-      if (!isReflectComplete) errors.push('Reflect phase requires a prompt.');
+      if (currentCompletion.learn !== true)
+        errors.push('Learn phase is incomplete or missing content.');
+      if (currentCompletion.apply !== true)
+        errors.push('Apply phase requires at least 1 valid activity.');
+      if (currentCompletion.reflect !== true)
+        errors.push('Reflect phase requires a prompt.');
 
       if (errors.length > 0) {
-        throw new UnprocessableEntityException({ message: 'Validation failed', errors });
+        throw new UnprocessableEntityException({
+          message: 'Validation failed',
+          errors,
+        });
       }
     }
 
-    const newStatus = publishData.publishOption === 'now' ? 'published' : 'draft';
-    const publishedAt = publishData.publishOption === 'now' ? new Date() : null;
+    const newStatus =
+      publishData.publishOption === 'now' ? 'published' : 'draft';
+    const publishedAt =
+      publishData.publishOption === 'now'
+        ? (lesson.publishedAt ?? new Date())
+        : null;
 
-    const updatedLesson = await this.prisma.lesson.update({
-      where: { id },
+    const result = await this.prisma.lesson.updateMany({
+      where: { id, version: lesson.version },
       data: {
         status: newStatus,
-        publishedAt: publishedAt,
-        version: lesson.version + 1,
+        publishedAt,
+        version: { increment: 1 },
       },
+    });
+
+    if (result.count === 0) {
+      throw new ConflictException({
+        message: 'Conflict: This lesson was modified by another session.',
+      });
+    }
+
+    const updatedLesson = await this.prisma.lesson.findUnique({
+      where: { id },
     });
 
     return {
       success: true,
       lesson: updatedLesson,
-      publishedAt: updatedLesson.publishedAt,
+      publishedAt: updatedLesson?.publishedAt,
+    };
+  }
+
+  /* ── helpers ── */
+
+  private parseJsonObject(value: unknown): Record<string, any> {
+    if (!value) return {};
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+          ? parsed
+          : {};
+      } catch {
+        return {}; // corrupted JSON — treat as empty rather than crashing the save
+      }
+    }
+    return value as Record<string, any>;
+  }
+
+  private mergeBlocks(currentBlocks: unknown, data: FullSaveLessonDto) {
+    const blocks = this.parseJsonObject(currentBlocks);
+    return {
+      ...blocks,
+      ...(data.learnBlocks !== undefined && { learn: data.learnBlocks }),
+      ...(data.applyBlocks !== undefined && { apply: data.applyBlocks }),
+      ...(data.reflectBlocks !== undefined && { reflect: data.reflectBlocks }),
+      ...(data.deepenBlocks !== undefined && { deepen: data.deepenBlocks }),
+    };
+  }
+
+  private mergeCompletion(currentCompletion: unknown, data: FullSaveLessonDto) {
+    const completion = this.parseJsonObject(currentCompletion);
+    return {
+      ...completion,
+      ...(data.isLearnCompleted !== undefined && {
+        learn: data.isLearnCompleted,
+      }),
+      ...(data.isApplyCompleted !== undefined && {
+        apply: data.isApplyCompleted,
+      }),
+      ...(data.isReflectCompleted !== undefined && {
+        reflect: data.isReflectCompleted,
+      }),
+      ...(data.isDeepenCompleted !== undefined && {
+        deepen: data.isDeepenCompleted,
+      }),
     };
   }
 }

@@ -1,0 +1,556 @@
+.card {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 0 0 #CBD5E1;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerIcon {
+  color: #0172FD;
+  font-size: 16px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0F172A;
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+/* 3D Segmented Filter Tabs */
+.segmentedSwitch {
+  display: flex;
+  background: #F1F5F9;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+}
+
+.switchTab {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.switchTabActive {
+  background: #FFFFFF;
+  color: #0172FD;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* 7-Day Activity Histogram */
+.activitySection {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 14px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.activityDaysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  align-items: flex-end;
+  height: 80px;
+  padding-top: 8px;
+}
+
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+  cursor: pointer;
+  position: relative;
+}
+
+.dayBarTrack {
+  width: 100%;
+  max-width: 22px;
+  height: 48px;
+  background: #E2E8F0;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  position: relative;
+}
+
+.dayBarFill {
+  width: 100%;
+  background: #0172FD;
+  border-radius: 6px;
+  transition: height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dayBarFillToday {
+  background: linear-gradient(180deg, #38BDF8 0%, #0172FD 100%);
+  box-shadow: 0 0 8px rgba(1, 114, 253, 0.5);
+}
+
+.dayStreakIcon {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: streakBounce 2s ease-in-out infinite;
+}
+
+@keyframes streakBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-2px); }
+}
+
+.dayLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+}
+
+.dayLabelToday {
+  color: #0172FD;
+  font-weight: 900;
+}
+
+/* Micro-Tooltip on hover/active */
+.barTooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 2x2 Metric Tiles Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.statTile {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.statTile:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+}
+
+.tileIcon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.tileContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tileLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tileValue {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0F172A;
+  line-height: 1.2;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.tileSub {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin-top: 1px;
+}
+
+/* Tey Coach AI Insight Banner */
+.coachBanner {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #BFDBFE;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coachAvatarWrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+
+.coachText {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E40AF;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* 3D Deep Analytics View More Button */
+.viewMoreBtn {
+  width: 100%;
+  font-size: 13px;
+  font-weight: 900;
+  color: #0172FD;
+  background: #F0F7FF;
+  border: 1.5px solid #BAE6FD;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.viewMoreBtn:hover {
+  background: #E0F2FE;
+  border-color: #7DD3FC;
+}
+
+.viewMoreBtn:active {
+  transform: translateY(1px);
+}
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 100100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalCard {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 24px;
+  padding: 26px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+}
+
+.modalCloseBtn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #F1F5F9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+/* ─── Loading Skeleton ─────────────────────────────────────────────────── */
+
+@keyframes statsShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonLine {
+  display: inline-block;
+  height: 14px;
+  width: 48px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #E9EEF5 25%, #F8FAFC 50%, #E9EEF5 75%);
+  background-size: 800px 100%;
+  animation: statsShimmer 1.3s infinite linear;
+}
+
+.skeletonValue {
+  margin: 2px 0;
+}
+
+.dayBarSkeleton {
+  width: 100%;
+  height: 60%;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #EDF1F7 25%, #E2E8F0 50%, #EDF1F7 75%);
+  background-size: 800px 100%;
+  animation: statsShimmer 1.3s infinite linear;
+}
+
+/* ─── Inline Error + Retry ─────────────────────────────────────────────── */
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #FEF2F2;
+  border: 1.5px solid #FECACA;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.errorText {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #B91C1C;
+  line-height: 1.35;
+}
+
+.retryBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border: 1.5px solid #FECACA;
+  color: #DC2626;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.retryBtn:hover {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+}
+
+.retryBtn:active {
+  transform: translateY(1px);
+}
+
+/* ─── Detailed Insights Modal — Month Heatmap & Snapshot Rows ──────────── */
+
+.calWeekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.calWeekday {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calDay {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #94A3B8;
+  background: #EEF2F7;
+  border-radius: 8px;
+  cursor: default;
+}
+
+.calDayActive {
+  background: #58CC02;
+  color: #FFFFFF;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.calDayFreeze {
+  background: #7DD3FC;
+  color: #FFFFFF;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.calDayFuture {
+  opacity: 0.45;
+}
+
+.calDayToday {
+  outline: 2px solid #0172FD;
+  outline-offset: 1px;
+}
+
+.calLegend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.calLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.calLegendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.calLegendActive {
+  background: #58CC02;
+}
+
+.calLegendFreeze {
+  background: #7DD3FC;
+}
+
+.calSkeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calSkeletonDay {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #E9EEF5 25%, #F8FAFC 50%, #E9EEF5 75%);
+  background-size: 800px 100%;
+  animation: statsShimmer 1.3s infinite linear;
+}
+
+.insightRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.insightRow + .insightRow {
+  border-top: 1px solid #EDF1F7;
+}
+
+.insightLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.insightValue {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0F172A;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.insightSub {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+}

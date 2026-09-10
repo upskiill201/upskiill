@@ -251,7 +251,7 @@ function AuthContent() {
         <div className={styles.wowContent}>
           <div className={styles.floatingGraphic}>
              <Image 
-               src="/hero-graphic.png" 
+               src="/hero-graphic.webp" 
                alt="Instructor Platform" 
                width={400}
                height={400}

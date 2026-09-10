@@ -1,25 +1,39 @@
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { Upload, X, Check, File as FileIcon, FileText, Image as ImageIcon, Video, FileCode } from 'lucide-react';
+import { uploadFileToS3 } from '@/lib/s3Uploader';
 import styles from './FileUploadZone.module.css';
 
 interface FileUploadZoneProps {
   type: 'pdf' | 'template' | 'link' | 'video' | 'demo';
+  lessonId: string;
   onFileComplete: (fileDetails: { name: string; size: string; url: string }) => void;
   onFileCleared: () => void;
 }
 
-export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUploadZoneProps) {
+const ALLOWED_CONTENT_TYPES = [
+  // Videos
+  'video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm', 'video/avi', 'video/mpeg',
+  // Documents & archives
+  'application/pdf', 'application/zip', 'application/x-zip-compressed',
+  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain', 'text/csv',
+];
+
+export function FileUploadZone({ type, lessonId, onFileComplete, onFileCleared }: FileUploadZoneProps) {
   const [dragOver, setDragOver] = useState(false);
   const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'complete'>('idle');
   const [progress, setProgress] = useState(0);
   const [fileMeta, setFileMeta] = useState<{ name: string; size: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   const iconRef = useRef<HTMLDivElement>(null);
   const checkRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const particleContainerRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Global Drag Detection
   useEffect(() => {
@@ -77,6 +91,7 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
       document.body.removeEventListener('dragover', handleDragOver);
       document.body.removeEventListener('drop', handleDrop);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadState, type]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,63 +100,82 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
     e.target.value = ''; // reset
   };
 
-  const handleFile = (file: File) => {
+  /**
+   * Uploads the file to AWS S3 (presigned PUT for small files, resumable
+   * multipart for large ones) and only THEN calls onFileComplete with the
+   * real CloudFront URL. Previously this returned the literal string
+   * "mock_url_from_s3", so every stored resource link was dead.
+   */
+  const uploadToS3 = async (file: File): Promise<string> => {
+    const controller = new AbortController();
+    abortRef.current = controller;
+    try {
+      const { cloudFrontUrl } = await uploadFileToS3(file, lessonId, {
+        onProgress: (pct) => setProgress(pct),
+        signal: controller.signal,
+      });
+      return cloudFrontUrl;
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
+    }
+  };
+
+  const handleFile = async (file: File) => {
     setError(null);
-    
+
     // Validation
     const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
       setError('File exceeds 50MB limit');
       return;
     }
+    if (file.type && !ALLOWED_CONTENT_TYPES.includes(file.type)) {
+      setError('This file type is not supported. Please use PDF, Office, ZIP, video or text files.');
+      return;
+    }
 
     const sizeStr = (file.size / 1024 / 1024).toFixed(1) + ' MB';
     setFileMeta({ name: file.name, size: sizeStr });
-    
-    // Start Mock Upload
+
+    // Real upload with live progress — same visual states as before
     setUploadState('uploading');
-    setProgress(0);
-    
-    // Mock upload progress
-    const duration = 1500; // 1.5s mock
-    const startTime = Date.now();
-    
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const p = Math.min((elapsed / duration) * 100, 100);
-      setProgress(p);
-      
-      if (p >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setUploadState('complete');
-          onFileComplete({ name: file.name, size: sizeStr, url: 'mock_url_from_s3' });
-          triggerParticleBurst();
-        }, 200);
-      }
-    }, 50);
+    setProgress(1);
+
+    try {
+      const cloudFrontUrl = await uploadToS3(file);
+      setUploadState('complete');
+      onFileComplete({ name: file.name, size: sizeStr, url: cloudFrontUrl });
+      triggerParticleBurst();
+    } catch (err: any) {
+      // A user-initiated cancel already reset the UI in clearFile — no error banner
+      const cancelled = err instanceof DOMException && err.name === 'AbortError';
+      if (!cancelled) setError(err?.message || 'An error occurred during the upload.');
+      setUploadState('idle');
+      setFileMeta(null);
+      setProgress(0);
+    }
   };
 
   const triggerParticleBurst = () => {
     if (!particleContainerRef.current) return;
-    
+
     // Create 4 particles
     for(let i=0; i<4; i++) {
       const p = document.createElement('div');
       p.className = styles.particle;
       particleContainerRef.current.appendChild(p);
-      
+
       const angle = (i / 4) * Math.PI * 2;
       const distance = 24;
-      
-      gsap.fromTo(p, 
+
+      gsap.fromTo(p,
         { x: 0, y: 0, opacity: 1, scale: 1 },
-        { 
-          x: Math.cos(angle) * distance, 
-          y: Math.sin(angle) * distance, 
-          opacity: 0, 
-          scale: 0, 
-          duration: 0.6, 
+        {
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance,
+          opacity: 0,
+          scale: 0,
+          duration: 0.6,
           ease: 'power2.out',
           onComplete: () => {
             const container = particleContainerRef.current;
@@ -152,7 +186,7 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
         }
       );
     }
-    
+
     // Bounce the check icon
     if (checkRef.current) {
       gsap.fromTo(checkRef.current, { scale: 0 }, { scale: 1, duration: 0.5, ease: 'back.out(2)' });
@@ -160,6 +194,7 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
   };
 
   const clearFile = () => {
+    abortRef.current?.abort();
     setUploadState('idle');
     setProgress(0);
     setFileMeta(null);
@@ -170,14 +205,15 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
     return (
       <div className={styles.linkContainer}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>URL Link</div>
-        <input 
-          type="url" 
-          placeholder="https://..." 
-          className={styles.linkInput} 
+        <input
+          type="url"
+          placeholder="https://..."
+          className={styles.linkInput}
           onChange={(e) => {
-            if (e.target.value) {
-              onFileComplete({ name: e.target.value, size: 'Link', url: e.target.value });
-            } else {
+            const value = e.target.value.trim();
+            if (value && /^https?:\/\/.+\..+/.test(value)) {
+              onFileComplete({ name: value, size: 'Link', url: value });
+            } else if (!value) {
               onFileCleared();
             }
           }}
@@ -205,7 +241,7 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
             <div className={styles.completeSize}>{fileMeta.size}</div>
           </div>
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div className={styles.completeIcon} style={{ backgroundColor: '#DCFCE7' }} ref={particleContainerRef}>
             <div ref={checkRef}>
@@ -243,14 +279,14 @@ export function FileUploadZone({ type, onFileComplete, onFileCleared }: FileUplo
 
   // Idle state
   return (
-    <div 
+    <div
       className={`${styles.uploadZone} ${dragOver ? styles.dragOver : ''}`}
       onClick={() => fileInputRef.current?.click()}
     >
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        style={{ display: 'none' }} 
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
         onChange={handleFileSelect}
         accept={type === 'pdf' ? '.pdf,.txt,.doc,.docx' : type === 'video' ? 'video/*' : '*/*'}
       />

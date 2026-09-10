@@ -8,12 +8,20 @@ export default function FooterWrapper() {
   const pathname = usePathname();
 
   // Define routes that should display the dedicated Waitlist Footer
-  const isWaitlistRoute = pathname === '/' || pathname === '/terms' || pathname === '/privacy';
+  const isWaitlistRoute =
+    pathname === '/' ||
+    pathname === '/terms' ||
+    pathname === '/privacy' ||
+    pathname?.startsWith('/blog');
 
   if (
-    pathname === '/join' || 
+    // Full-bleed app surfaces — see the matching note in HeaderWrapper.
+    pathname === '/start' ||
+    pathname === '/launch' ||
+    pathname === '/join' ||
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/courses') ||
     pathname?.startsWith('/learn') ||
     pathname?.startsWith('/creator')
   ) return null;

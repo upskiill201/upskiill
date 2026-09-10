@@ -1,0 +1,348 @@
+/* Styles for the instructor-wide analytics hub tabs */
+
+.hubTabRoot { display: flex; flex-direction: column; gap: 16px; }
+
+.sectionHeading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #3c3c3c;
+}
+
+.sectionSub {
+  margin: -10px 0 4px 0;
+  font-size: 13.5px;
+  color: #777777;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* DAU/WAU/MAU tiles */
+.mauTiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.mauTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 16px 12px 14px 12px;
+}
+
+.mauValue { font-size: 26px; font-weight: 800; color: #3c3c3c; }
+.mauLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #afafaf;
+}
+.mauCaption { font-size: 11.5px; font-weight: 600; color: #777777; }
+
+/* Panel boxes (two-column sections) */
+.panelBox {
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #afafaf;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.retList { display: flex; flex-direction: column; gap: 9px; }
+
+.retNote {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #afafaf;
+}
+
+/* ─── COURSES TABLE ────────────────────────────────────────────────── */
+
+.sortChips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.sortChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid #e5e5e5;
+  background: #ffffff;
+  color: #777777;
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 7px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.sortChip:hover { border-color: #d0d5db; }
+.sortChipActive { background: #1cb0f6; border-color: #1cb0f6; color: #ffffff; }
+.sortChipActive:hover { border-color: #1cb0f6; }
+
+.perfList { display: flex; flex-direction: column; gap: 10px; }
+
+.perfRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 14px 18px;
+}
+
+.perfMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.perfTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #3c3c3c;
+  min-width: 0;
+}
+
+.perfTitle {
+  font-size: 15px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.perfTitleRow:hover .perfTitle { color: #1cb0f6; }
+
+.perfProgressBar { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.perfProgressBar > div:first-child { flex: 1; max-width: 300px; }
+.perfProgressText { font-size: 11.5px; font-weight: 700; color: #777777; white-space: nowrap; }
+
+.perfChips {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 46%;
+}
+
+.perfChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: #f0f2f5;
+  color: #3c3c3c;
+  white-space: nowrap;
+}
+
+.perfChipGood { background: #d7ffb8; color: #58a700; }
+.perfChipMid { background: #fff0c9; color: #b45309; }
+.perfChipBad { background: #ffdfe0; color: #ea2b2b; }
+.perfChipMuted { color: #afafaf; }
+.perfChipMoney { background: #fff4cc; color: #7a5a00; }
+
+.perfLeak {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffdfe0;
+  color: #ea2b2b;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.emptyBox {
+  padding: 40px 24px;
+  text-align: center;
+  color: #777777;
+  background: #ffffff;
+  border: 2px dashed #e5e5e5;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.draftsNote {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #afafaf;
+}
+
+/* ─── REVENUE ──────────────────────────────────────────────────────── */
+
+.revRankList { display: flex; flex-direction: column; gap: 10px; }
+
+.revRankRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 13px 18px;
+}
+
+.revRankBubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffc800;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.revRankMid { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.revRankTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #3c3c3c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.revRankTrack { height: 14px; background: #f0f2f5; border-radius: 999px; overflow: hidden; }
+.revRankFill { height: 100%; border-radius: 999px; }
+
+.revRankMeta { font-size: 11.5px; font-weight: 700; color: #777777; }
+
+.revAmount {
+  font-size: 17px;
+  font-weight: 800;
+  color: #7a5a00;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.grossNote {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #afafaf;
+}
+
+/* ─── FEEDBACK ─────────────────────────────────────────────────────── */
+
+.ratingHead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 20px 24px;
+}
+
+.ratingBigNumber { font-size: 44px; font-weight: 800; color: #3c3c3c; line-height: 1; }
+.ratingOutOf { font-size: 13px; font-weight: 700; color: #afafaf; margin-top: 2px; }
+.ratingSideInfo { display: flex; flex-direction: column; gap: 7px; }
+.ratingCountLine { font-size: 13px; font-weight: 700; color: #777777; }
+
+.distLabels {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.distStarNum { font-size: 12.5px; font-weight: 800; color: #3c3c3c; width: 52px; }
+
+.reviewList { display: flex; flex-direction: column; gap: 10px; }
+
+.reviewCard {
+  display: flex;
+  gap: 14px;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  padding: 15px 18px;
+}
+
+.reviewBody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+
+.reviewNameRow { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.reviewName { font-size: 14px; font-weight: 800; color: #3c3c3c; }
+.reviewUsername { font-size: 12px; font-weight: 600; color: #afafaf; }
+.reviewCoursePill {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #ddf4ff;
+  color: #1899d6;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.reviewComment { margin: 0; font-size: 13.5px; line-height: 1.55; color: #555555; }
+.reviewNoComment { font-size: 13px; font-style: italic; color: #afafaf; }
+
+.reviewWhen {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #afafaf;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── INSIGHTS ─────────────────────────────────────────────────────── */
+.insightsList { display: flex; flex-direction: column; gap: 12px; }
+
+@media (max-width: 720px) {
+  .perfRow { flex-wrap: wrap; }
+  .perfChips { max-width: 100%; width: 100%; justify-content: flex-start; }
+  .ratingHead { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .reviewCard { flex-wrap: wrap; }
+}

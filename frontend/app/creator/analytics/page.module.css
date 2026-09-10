@@ -1,0 +1,314 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.headerIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: #ddf4ff;
+  color: #1899d6;
+  border: 2px solid #1899d6;
+  border-bottom-width: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: #3c3c3c;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #777777;
+  max-width: 560px;
+}
+
+.pickHeading {
+  margin: 6px 0 0 0;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #afafaf;
+}
+
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.courseCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 5px;
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.courseCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(60, 60, 60, 0.12);
+}
+
+.thumbWrap {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: #1cb0f6;
+}
+
+.thumbFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1cb0f6 0%, #58cc02 130%);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 16px 16px 16px;
+}
+
+.statusPill {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.published { background: #d7ffb8; color: #58a700; }
+.draft { background: #fff0c9; color: #b45309; }
+
+.cardTitle {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #3c3c3c;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardStats {
+  display: flex;
+  gap: 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #777777;
+}
+
+.cardStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cardArrow {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f2f5;
+  color: #777777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.courseCard:hover .cardArrow {
+  background: #58cc02;
+  color: #ffffff;
+}
+
+.createCta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #58cc02;
+  border-bottom: 4px solid #58a700;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 12px 22px;
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+/* ─── All-courses command center band ─────────────────────────────── */
+.band {
+  background: #ffffff;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 5px;
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bandHeadRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bandTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #3c3c3c;
+}
+
+.bandCaption {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #afafaf;
+}
+
+.bandKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.bandCharts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.topCoursesBox {
+  border-top: 2px solid #f0f2f5;
+  padding-top: 14px;
+}
+
+.topCoursesTitle {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #afafaf;
+}
+
+.topCoursesList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.topCourseRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #3c3c3c;
+  transition: background 120ms ease;
+}
+
+.topCourseRow:hover { background: #f7f9fb; }
+
+.topCourseName {
+  font-size: 13.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topCourseMeta {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #777777;
+  white-space: nowrap;
+}
+
+.draftsNote {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #afafaf;
+}
+
+/* ─── Hub tab bar ──────────────────────────────────────────────────── */
+.tabBar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 2px solid #e5e5e5;
+  border-bottom-width: 4px;
+  background: #ffffff;
+  color: #777777;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.tabBtn:hover { border-color: #d0d5db; color: #3c3c3c; }
+
+.tabActive {
+  background: #58cc02;
+  border-color: #58a700;
+  color: #ffffff;
+}
+
+.tabActive:hover { border-color: #58a700; color: #ffffff; }
+
+@media (max-width: 720px) {
+  .tabBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .tabBtn { flex-shrink: 0; }
+}

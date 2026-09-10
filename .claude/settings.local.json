@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Skill(impeccable)",
-      "Skill(impeccable:*)"
+      "Skill(impeccable:*)",
+      "Bash(node -e ' *)",
+      "Bash(node validate-blog-posts.js)",
+      "Bash(npm run *)",
+      "Bash(npx prisma *)",
+      "Bash(npx nest *)",
+      "Bash(npx tsc *)",
+      "Bash(npx jest *)",
+      "PowerShell(winget uninstall *)",
+      "Read(//c/Users/HP/**)",
+      "Bash(claude update *)"
     ]
   }
 }

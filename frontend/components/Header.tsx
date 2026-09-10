@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { clearClientSession } from '@/lib/user-cache';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -51,6 +52,7 @@ export default function Header() {
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {
@@ -86,7 +88,7 @@ export default function Header() {
               width={220}
               height={66}
               priority
-              style={{ width: 'auto', height: '56px', objectFit: 'contain' }}
+              style={{ width: 'auto', aspectRatio: '220 / 66', height: '56px', objectFit: 'contain' }}
             />
           </Link>
           
@@ -159,7 +161,7 @@ export default function Header() {
                      <Link href="/dashboard" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <LayoutGrid size={16} /> Dashboard
                      </Link>
-                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
+                     <Link href="/dashboard/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)} role="menuitem">
                        <User size={16} /> Edit Profile
                      </Link>
                      <button onClick={handleLogout} className={`${styles.dropdownItem} ${styles.logout}`} role="menuitem">
@@ -194,7 +196,7 @@ export default function Header() {
                   alt="Teyro Logo"
                   width={200}
                   height={60}
-                  style={{ width: 'auto', height: '46px', objectFit: 'contain' }}
+                  style={{ width: 'auto', aspectRatio: '200 / 60', height: '46px', objectFit: 'contain' }}
                 />
               </Link>
               <button 
@@ -234,7 +236,7 @@ export default function Header() {
                     <Link href="/dashboard" className={styles.mobileNavLink}>
                       <LayoutGrid size={18} /> Dashboard
                     </Link>
-                    <Link href="/profile" className={styles.mobileNavLink}>
+                    <Link href="/dashboard/profile" className={styles.mobileNavLink}>
                       <User size={18} /> Edit Profile
                     </Link>
                     <button onClick={handleLogout} className={`${styles.mobileNavLink} ${styles.logoutText}`}>

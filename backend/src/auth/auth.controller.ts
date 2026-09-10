@@ -8,6 +8,7 @@ import {
   UseGuards,
   Res,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,17 +16,21 @@ import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { VerifyCodeDto } from './dto/verify-code.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsIn, MinLength, IsObject } from 'class-validator';
 
 export class FirebaseLoginDto {
   @IsString()
   @IsNotEmpty()
   idToken: string;
 
+  // ADMIN is never a client-selectable role — validation rejects it with 400
+  @IsIn(['STUDENT', 'INSTRUCTOR'])
   @IsString()
   @IsOptional()
   role?: string;
@@ -35,8 +40,20 @@ export class FirebaseLoginDto {
   draftId?: string;
 
   // Full onboarding answers — attached by Step 15 Google OAuth flow
+  @IsObject()
   @IsOptional()
   onboarding?: Record<string, unknown>;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  // Matches the signup password rule.
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  newPassword: string;
 }
 
 @UseGuards(ThrottlerGuard)
@@ -49,44 +66,66 @@ export class AuthController {
 
   @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 per 15 mins
   @Post('signup')
-  async signup(@Body() dto: SignupDto) {
-    // We don't set cookie here anymore, user must verify email first
+  async signup(
+    @Body() dto: SignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.signup(dto);
-    return result;
+    // Unverified signups return no token (verification is still required).
+    // The existing-account LINK branch does complete with a live session —
+    // set the cookie so the creator isn't bounced to a login wall right
+    // after activating their profile.
+    const accessToken = (result as { access_token?: string }).access_token;
+    if (accessToken) {
+      this.setCookie(res, accessToken);
+    }
+    return this.withoutToken(result);
   }
 
   @Get('verify-email')
-  async verifyEmail(
-    @Query('token') token: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  verifyEmailRedirect(@Query('token') token: string, @Res() res: Response) {
+    // Legacy emails pointed straight at the API origin, where any session
+    // cookie would be set for the wrong domain and verification double-hashed
+    // the token. Real verification now happens app-side: this page exchanges
+    // the token via the proxied /api route so the cookie lands first-party.
     const appUrl = process.env.APP_URL || 'https://teyro.app';
-    try {
-      const result = await this.authService.verifyEmail(token);
-      this.setCookie(res, result.access_token);
-      // Redirect to frontend creator studio Step 16
-      return res.redirect(`${appUrl}/creator/onboarding/16`);
-    } catch (error) {
-      // Redirect to a frontend failure page
-      return res.redirect(`${appUrl}/creator/verify-failed`);
-    }
+    return res.redirect(
+      `${appUrl}/verify-email${token ? `?token=${encodeURIComponent(token)}` : ''}`,
+    );
   }
 
-  @Post('verify-code')
-  async verifyCode(
-    @Body('email') email: string,
-    @Body('code') code: string,
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins — the token has the same 10^6 space as codes
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-link')
+  async verifyLink(
+    @Body('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.verifyCode(email, code);
+    // JSON contract: the app-origin /verify-email page POSTs here through the
+    // proxied route so the session cookie lands first-party, then routes by
+    // the returned role itself (INSTRUCTOR → creator onboarding, else
+    // dashboard). A server-side 302 to appUrl would set nothing useful.
+    const result = await this.authService.verifyEmail(token);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
+  }
+
+  /** Codes are 6 digits with a 10-minute TTL — cap guesses hard per IP. */
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('verify-code')
+  async verifyCode(
+    @Body() dto: VerifyCodeDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.verifyCode(dto.email, dto.code);
+    this.setCookie(res, result.access_token);
+    return this.withoutToken(result);
   }
 
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('resend-verification')
-  async resendVerification(@Body('email') email: string) {
-    return this.authService.resendVerification(email);
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerification(dto.email);
   }
 
   @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
@@ -98,7 +137,7 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -111,9 +150,10 @@ export class AuthController {
       dto.idToken,
       dto.role || 'STUDENT',
       dto.draftId,
+      dto.onboarding,
     );
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -140,7 +180,7 @@ export class AuthController {
   ) {
     const result = await this.authService.switchRole(user.id, role);
     this.setCookie(res, result.access_token);
-    return result;
+    return this.withoutToken(result);
   }
 
   private setCookie(res: Response, token: string) {
@@ -151,6 +191,15 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/',
     });
+  }
+
+  /**
+   * Strips access_token from response payload so it only travels in the
+   * httpOnly cookie.
+   */
+  private withoutToken<T extends object>(result: T): Omit<T, 'access_token'> {
+    const { access_token, ...safe } = result as Record<string, any>;
+    return safe as Omit<T, 'access_token'>;
   }
 
   /**
@@ -178,12 +227,6 @@ export class AuthController {
     return this.authService.getMyEnrollments(user.id);
   }
 
-  /**
-   * GET /auth/check-email?email=...
-   * Real-time email duplicate check for the Step 15 signup form.
-   * Called on email field blur — returns { exists: boolean }.
-   */
-
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 per hour
   @Post('forgot-password')
   async forgotPassword(
@@ -202,22 +245,32 @@ export class AuthController {
     return this.authService.validateResetToken(token);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
   @Post('reset-password')
-  async resetPassword(@Body() body: any) {
-    const { token, newPassword } = body;
-    if (!token || !newPassword) {
-      throw new Error('Token and new password are required');
-    }
-    return this.authService.resetPassword(token, newPassword);
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
+  /**
+   * GET /auth/check-email?email=...
+   * Real-time email duplicate check for the Step 15 signup form.
+   * Called on email field blur — returns { exists: boolean }.
+   */
+  // Loose cap: it's a keystroke-level helper, but also an unauthenticated
+  // existence oracle, so it must not be freely scriptable.
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // 20 per minute
   @Get('check-email')
   async checkEmail(@Query('email') email: string) {
     if (!email) return { exists: false };
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
-      select: { id: true },
+      select: { id: true, hasCreatorAccess: true, hasStudentAccess: true, isVerified: true },
     });
-    return { exists: !!user };
+    return { 
+      exists: !!user,
+      hasCreatorAccess: user?.hasCreatorAccess ?? false,
+      hasStudentAccess: user?.hasStudentAccess ?? false,
+      isVerified: user?.isVerified ?? false,
+    };
   }
 }

@@ -15,9 +15,14 @@ describe('proxy middleware', () => {
     jest.clearAllMocks();
   });
 
-  const createMockRequest = (pathname: string, tokenValue?: string): NextRequest => {
+  const createMockRequest = (
+    pathname: string,
+    tokenValue?: string,
+    search = '',
+  ): NextRequest => {
     return {
-      nextUrl: { pathname },
+      // Mirrors NextRequest: `search` is always a string, '' when empty.
+      nextUrl: { pathname, search },
       url: `http://localhost${pathname}`,
       cookies: {
         get: jest.fn().mockImplementation((name) => {
@@ -38,12 +43,38 @@ describe('proxy middleware', () => {
   };
 
   describe('Unauthenticated users', () => {
-    it('should redirect to /login when accessing /dashboard', () => {
+    it('should redirect to /login when accessing /dashboard, preserving the destination', () => {
+      // The `next` param is what makes push deep links survive an expired
+      // session: without it a learner tapping a streak reminder after their
+      // 7-day JWT lapsed lands on a generic dashboard, and the lesson Tey
+      // pointed them at is silently lost.
       const req = createMockRequest('/dashboard');
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/login', 'http://localhost/dashboard'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/login' });
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Fdashboard',
+      });
+    });
+
+    it('should wall /learn and carry the deep link through login', () => {
+      const req = createMockRequest('/learn/c1/section/2');
+      const res = proxy(req);
+
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Flearn%2Fc1%2Fsection%2F2',
+      });
+    });
+
+    it('should wall /admin', () => {
+      const req = createMockRequest('/admin');
+      const res = proxy(req);
+
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/login?next=%2Fadmin',
+      });
     });
 
     it('should redirect to /creator/login when accessing /creator', () => {
@@ -100,36 +131,49 @@ describe('proxy middleware', () => {
       expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /dashboard when accessing instructor areas (/creator)', () => {
+    /* ── Token-holders are passed through, NOT bounced ──
+     *
+     * These four used to assert a redirect. The middleware deliberately
+     * stopped doing that: it runs in the Edge Runtime, where it cannot make
+     * the DB call needed to tell a student from a creator, so bouncing every
+     * token-holder off an auth page caused an INFINITE LOOP — a student opens
+     * /creator/login, the middleware sends them to /creator, the creator
+     * layout sends them back to /creator/login, forever.
+     *
+     * The "already logged in, go to your dashboard" behaviour still exists;
+     * it moved to the page/layout level where the user's actual access can be
+     * checked. Do not restore a redirect here to make these pass.
+     */
+    it('passes a token-holder through to /creator instead of bouncing them', () => {
       const req = createMockRequest('/creator', studentToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/dashboard', 'http://localhost/creator'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/dashboard' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /dashboard when accessing /login', () => {
+    it('passes a token-holder through to /login (the page handles it)', () => {
       const req = createMockRequest('/login', studentToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/dashboard', 'http://localhost/login'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/dashboard' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /dashboard when accessing /signup', () => {
+    it('passes a token-holder through to /signup (the page handles it)', () => {
       const req = createMockRequest('/signup', studentToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/dashboard', 'http://localhost/signup'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/dashboard' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /dashboard when accessing /creator/login', () => {
+    it('passes a token-holder through to /creator/login without looping', () => {
       const req = createMockRequest('/creator/login', studentToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/dashboard', 'http://localhost/creator/login'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/dashboard' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
   });
 
@@ -144,36 +188,39 @@ describe('proxy middleware', () => {
       expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /creator when accessing /creator/login', () => {
+    /* Same rule as for students: the middleware cannot tell roles apart in the
+     * Edge Runtime, so it passes every token-holder through and lets the
+     * destination page decide. See the note above. */
+    it('passes a token-holder through to /creator/login without looping', () => {
       const req = createMockRequest('/creator/login', instructorToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator', 'http://localhost/creator/login'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /creator when accessing /creator/signup', () => {
+    it('passes a token-holder through to /creator/signup', () => {
       const req = createMockRequest('/creator/signup', instructorToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator', 'http://localhost/creator/signup'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /creator when accessing student /login', () => {
+    it('passes a token-holder through to student /login', () => {
       const req = createMockRequest('/login', instructorToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator', 'http://localhost/login'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
-    it('should redirect to /creator when accessing student /signup', () => {
+    it('passes a token-holder through to student /signup', () => {
       const req = createMockRequest('/signup', instructorToken);
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator', 'http://localhost/signup'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator' });
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
     });
 
     it('should allow access to /dashboard (instructors can view student dashboard)', () => {
