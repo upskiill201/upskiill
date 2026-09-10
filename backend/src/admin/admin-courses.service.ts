@@ -3,9 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CourseReviewStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseService } from '../course/course.service';
+import { CourseReviewService } from '../course-review/course-review.service';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 25;
@@ -17,7 +18,8 @@ export interface ListCoursesQuery {
   search?: string;
   status?: 'published' | 'unpublished' | '';
   category?: string;
-  sortBy?: 'newest' | 'oldest' | 'students' | 'rating';
+  reviewStatus?: string;
+  sortBy?: 'newest' | 'oldest' | 'students' | 'rating' | 'review';
 }
 
 /**
@@ -40,6 +42,7 @@ export class AdminCoursesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly courseService: CourseService,
+    private readonly courseReview: CourseReviewService,
   ) {}
 
   async list(query: ListCoursesQuery) {
@@ -69,6 +72,17 @@ export class AdminCoursesService {
 
     if (query.category) where.category = query.category;
 
+    if (query.reviewStatus) {
+      if (!(query.reviewStatus in CourseReviewStatus)) {
+        throw new BadRequestException(
+          `Unknown review status: ${query.reviewStatus}`,
+        );
+      }
+      where.reviewStatus = query.reviewStatus as CourseReviewStatus;
+    }
+
+    // The review queue reads oldest-submission-first by default (section
+    // 3.9) — everything else defaults to newest-created-first.
     const orderBy: Prisma.CourseOrderByWithRelationInput =
       query.sortBy === 'students'
         ? { studentsCount: 'desc' }
@@ -76,7 +90,9 @@ export class AdminCoursesService {
           ? { rating: 'desc' }
           : query.sortBy === 'oldest'
             ? { createdAt: 'asc' }
-            : { createdAt: 'desc' };
+            : query.sortBy === 'review'
+              ? { submittedForReviewAt: 'asc' }
+              : { createdAt: 'desc' };
 
     const [items, total, categories] = await Promise.all([
       this.prisma.course.findMany({
@@ -95,6 +111,9 @@ export class AdminCoursesService {
           reviewsCount: true,
           studentsCount: true,
           createdAt: true,
+          reviewStatus: true,
+          submittedForReviewAt: true,
+          reviewedAt: true,
           instructor: { select: { id: true, fullName: true, email: true } },
         },
         orderBy,
@@ -143,11 +162,25 @@ export class AdminCoursesService {
         version: true,
         createdAt: true,
         updatedAt: true,
+        reviewStatus: true,
+        submittedForReviewAt: true,
+        reviewedAt: true,
+        reviewedBy: true,
         instructor: {
           select: { id: true, fullName: true, email: true, avatarUrl: true },
         },
         sections: {
-          select: { id: true, lessons: { select: { id: true, status: true } } },
+          orderBy: { orderIndex: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            lessons: {
+              orderBy: { orderIndex: 'asc' },
+              // Enough for a reviewer to inspect the actual structure
+              // without duplicating the student lesson-rendering UI.
+              select: { id: true, title: true, status: true, lessonType: true },
+            },
+          },
         },
       },
     });
@@ -156,23 +189,25 @@ export class AdminCoursesService {
     const { sections, ...courseFields } = course;
     const lessons = sections.flatMap((s) => s.lessons);
 
-    const [enrollments, revenue, adminHistory] = await Promise.all([
-      this.prisma.enrollment.count({ where: { courseId: id } }),
-      this.prisma.earningsTransaction.aggregate({
-        where: { courseId: id },
-        _sum: {
-          netMinor: true,
-          creatorAmountMinor: true,
-          teyroAmountMinor: true,
-        },
-        _count: { _all: true },
-      }),
-      this.prisma.adminAuditLog.findMany({
-        where: { entityType: 'Course', entityId: id },
-        orderBy: { createdAt: 'desc' },
-        take: HISTORY_LIMIT,
-      }),
-    ]);
+    const [enrollments, revenue, adminHistory, reviewHistory] =
+      await Promise.all([
+        this.prisma.enrollment.count({ where: { courseId: id } }),
+        this.prisma.earningsTransaction.aggregate({
+          where: { courseId: id },
+          _sum: {
+            netMinor: true,
+            creatorAmountMinor: true,
+            teyroAmountMinor: true,
+          },
+          _count: { _all: true },
+        }),
+        this.prisma.adminAuditLog.findMany({
+          where: { entityType: 'Course', entityId: id },
+          orderBy: { createdAt: 'desc' },
+          take: HISTORY_LIMIT,
+        }),
+        this.courseReview.historyForAdmin(id),
+      ]);
 
     return {
       course: courseFields,
@@ -181,6 +216,7 @@ export class AdminCoursesService {
         lessonsCount: lessons.length,
         publishedLessonsCount: lessons.filter((l) => l.status === 'published')
           .length,
+        sections,
       },
       enrollments,
       revenue: {
@@ -190,6 +226,7 @@ export class AdminCoursesService {
         transactionCount: revenue._count._all,
       },
       adminHistory,
+      reviewHistory,
     };
   }
 
@@ -271,5 +308,85 @@ export class AdminCoursesService {
       }),
     ]);
     return { featured: false };
+  }
+
+  // ── Review decisions ─────────────────────────────────────────────────
+  // Thin wrappers: CourseReviewService owns the actual lifecycle rules and
+  // writes the domain-specific CourseReview history row; this layer only
+  // adds admin authorization context and the cross-cutting AdminAuditLog
+  // entry every admin mutation gets, same pattern as publish/feature above.
+
+  async startReview(actorId: string, id: string) {
+    const result = await this.courseReview.startReview(id, actorId);
+    await this.prisma.adminAuditLog.create({
+      data: {
+        actorId,
+        action: 'ADMIN_STARTED_COURSE_REVIEW',
+        entityType: 'Course',
+        entityId: id,
+      },
+    });
+    return result;
+  }
+
+  async requestChanges(
+    actorId: string,
+    id: string,
+    feedback: string,
+    internalNote?: string,
+  ) {
+    const result = await this.courseReview.requestChanges(
+      id,
+      actorId,
+      feedback,
+      internalNote,
+    );
+    await this.prisma.adminAuditLog.create({
+      data: {
+        actorId,
+        action: 'ADMIN_REQUESTED_COURSE_CHANGES',
+        entityType: 'Course',
+        entityId: id,
+        reason: feedback,
+      },
+    });
+    return result;
+  }
+
+  async approveReview(actorId: string, id: string, internalNote?: string) {
+    const result = await this.courseReview.approve(id, actorId, internalNote);
+    await this.prisma.adminAuditLog.create({
+      data: {
+        actorId,
+        action: 'ADMIN_APPROVED_COURSE',
+        entityType: 'Course',
+        entityId: id,
+      },
+    });
+    return result;
+  }
+
+  async rejectReview(
+    actorId: string,
+    id: string,
+    reason: string,
+    internalNote?: string,
+  ) {
+    const result = await this.courseReview.reject(
+      id,
+      actorId,
+      reason,
+      internalNote,
+    );
+    await this.prisma.adminAuditLog.create({
+      data: {
+        actorId,
+        action: 'ADMIN_REJECTED_COURSE',
+        entityType: 'Course',
+        entityId: id,
+        reason,
+      },
+    });
+    return result;
   }
 }

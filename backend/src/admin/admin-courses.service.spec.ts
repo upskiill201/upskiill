@@ -45,10 +45,25 @@ function makeService(courseOverrides: Record<string, unknown> = {}) {
     unpublishCourse: jest.fn().mockResolvedValue({ published: false }),
   };
 
+  const courseReview = {
+    startReview: jest.fn().mockResolvedValue({ reviewStatus: 'UNDER_REVIEW' }),
+    requestChanges: jest
+      .fn()
+      .mockResolvedValue({ reviewStatus: 'CHANGES_REQUESTED' }),
+    approve: jest.fn().mockResolvedValue({ reviewStatus: 'APPROVED' }),
+    reject: jest.fn().mockResolvedValue({ reviewStatus: 'REJECTED' }),
+    historyForAdmin: jest.fn().mockResolvedValue([]),
+  };
+
   return {
-    svc: new AdminCoursesService(prisma as never, courseService as never),
+    svc: new AdminCoursesService(
+      prisma as never,
+      courseService as never,
+      courseReview as never,
+    ),
     prisma,
     courseService,
+    courseReview,
     auditCreate,
   };
 }
@@ -189,5 +204,86 @@ describe('AdminCoursesService — list', () => {
         where: expect.objectContaining({ published: true }),
       }),
     );
+  });
+
+  it('rejects an unknown reviewStatus filter', async () => {
+    const { svc } = makeService();
+    await expect(svc.list({ reviewStatus: 'PENDING' })).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('sorts the review queue oldest-submission-first when sortBy=review', async () => {
+    const { svc, prisma } = makeService();
+    await svc.list({ reviewStatus: 'SUBMITTED', sortBy: 'review' });
+    expect(prisma.course.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+        where: expect.objectContaining({ reviewStatus: 'SUBMITTED' }),
+        orderBy: { submittedForReviewAt: 'asc' },
+      }),
+    );
+  });
+});
+
+describe('AdminCoursesService — review decisions (thin wrapper over CourseReviewService)', () => {
+  it('startReview delegates and writes an AdminAuditLog row', async () => {
+    const { svc, courseReview, auditCreate } = makeService();
+    const result = await svc.startReview('admin1', 'c1');
+    expect(result).toEqual({ reviewStatus: 'UNDER_REVIEW' });
+    expect(courseReview.startReview).toHaveBeenCalledWith('c1', 'admin1');
+    expect(auditCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ action: 'ADMIN_STARTED_COURSE_REVIEW' }), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+    });
+  });
+
+  it('requestChanges delegates with the feedback text and audits it as the reason', async () => {
+    const { svc, courseReview, auditCreate } = makeService();
+    await svc.requestChanges('admin1', 'c1', 'Fix lesson 2', 'looked rushed');
+    expect(courseReview.requestChanges).toHaveBeenCalledWith(
+      'c1',
+      'admin1',
+      'Fix lesson 2',
+      'looked rushed',
+    );
+    expect(auditCreate).toHaveBeenCalledWith({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+      data: expect.objectContaining({
+        action: 'ADMIN_REQUESTED_COURSE_CHANGES',
+        reason: 'Fix lesson 2',
+      }),
+    });
+  });
+
+  it('approveReview delegates and audits', async () => {
+    const { svc, courseReview, auditCreate } = makeService();
+    const result = await svc.approveReview('admin1', 'c1');
+    expect(result).toEqual({ reviewStatus: 'APPROVED' });
+    expect(courseReview.approve).toHaveBeenCalledWith(
+      'c1',
+      'admin1',
+      undefined,
+    );
+    expect(auditCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ action: 'ADMIN_APPROVED_COURSE' }), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+    });
+  });
+
+  it('rejectReview delegates with the reason and audits it', async () => {
+    const { svc, courseReview, auditCreate } = makeService();
+    await svc.rejectReview('admin1', 'c1', 'Policy violation');
+    expect(courseReview.reject).toHaveBeenCalledWith(
+      'c1',
+      'admin1',
+      'Policy violation',
+      undefined,
+    );
+    expect(auditCreate).toHaveBeenCalledWith({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- expect.objectContaining() is typed `any` in @types/jest
+      data: expect.objectContaining({
+        action: 'ADMIN_REJECTED_COURSE',
+        reason: 'Policy violation',
+      }),
+    });
   });
 });

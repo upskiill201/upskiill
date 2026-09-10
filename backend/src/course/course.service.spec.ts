@@ -13,6 +13,7 @@ import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
 import { CommunityService } from '../community/community.service';
 import { ShopService } from '../shop/shop.service';
+import { CourseReviewService } from '../course-review/course-review.service';
 
 const mockPrismaService = {
   course: {
@@ -23,6 +24,9 @@ const mockPrismaService = {
     // Optimistic-locked writes go through updateMany so the version check and
     // the write are one atomic statement.
     updateMany: jest.fn(),
+    // publishCourse/unpublishCourse flip `published` directly — no version
+    // check on that particular write.
+    update: jest.fn(),
   },
   community: {
     create: jest.fn(),
@@ -104,6 +108,14 @@ describe('CourseService', () => {
           useValue: {
             getActiveMultipliers: jest.fn().mockResolvedValue({ xp: 1, coins: 1 }),
           },
+        },
+        {
+          provide: CourseReviewService,
+          // No-op by default: assertEditableAndReopen resolving undefined
+          // means "this course is editable" for every existing test, which
+          // is correct — none of them are exercising the review-lock itself
+          // (that lives in course-review.service.spec.ts).
+          useValue: { assertEditableAndReopen: jest.fn().mockResolvedValue(undefined) },
         },
       ],
     }).compile();
@@ -861,6 +873,65 @@ describe('CourseService', () => {
         ForbiddenException,
       );
       expect(mockPrismaService.section.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('publishCourse — review gate', () => {
+    const userId = 'user-123';
+    const readyCourse = {
+      id: 'course-1',
+      instructorId: userId,
+      reviewStatus: 'APPROVED',
+      sections: [
+        { title: 'Intro', lessons: [{ id: 'l1', title: 'Welcome', status: 'published' }] },
+      ],
+    };
+
+    it('refuses to publish an unapproved course, even one that is otherwise ready', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        ...readyCourse,
+        reviewStatus: 'DRAFT',
+      });
+
+      await expect(service.publishCourse(userId, 'course-1')).rejects.toThrow(
+        /must be approved by Teyro/,
+      );
+      expect(mockPrismaService.course.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses an admin-initiated publish on an unapproved course too — no bypass', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        ...readyCourse,
+        instructorId: 'someone-else',
+        reviewStatus: 'SUBMITTED',
+      });
+
+      await expect(service.publishCourse('admin-1', 'course-1', true)).rejects.toThrow(
+        /must be approved by Teyro/,
+      );
+    });
+
+    it('publishes an approved, structurally-ready course', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue(readyCourse);
+      mockPrismaService.course.update.mockResolvedValue({ ...readyCourse, published: true });
+
+      await service.publishCourse(userId, 'course-1');
+
+      expect(mockPrismaService.course.update).toHaveBeenCalledWith({
+        where: { id: 'course-1' },
+        data: { published: true },
+      });
+    });
+
+    it('still enforces the structural quality gate on an approved course', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({
+        ...readyCourse,
+        sections: [],
+      });
+
+      await expect(service.publishCourse(userId, 'course-1')).rejects.toThrow(
+        /not ready to be published/,
+      );
     });
   });
 });

@@ -35,6 +35,7 @@ interface Course {
   category?: string;
   level?: string;
   published: boolean;
+  reviewStatus?: string;
   rating?: number;
   reviewsCount?: number;
   studentsCount?: number;
@@ -54,6 +55,26 @@ interface Course {
     enrollments?: number;
     sections?: number;
   };
+}
+
+/** Badge text for an unpublished course — reuses the existing draft-styled
+ *  pill, just with a label that reflects where the course actually is in
+ *  Teyro's review workflow instead of a flat, uninformative "Draft". */
+function reviewStatusBadgeLabel(reviewStatus?: string): string {
+  switch (reviewStatus) {
+    case 'SUBMITTED':
+      return '📨 Submitted';
+    case 'UNDER_REVIEW':
+      return '🔍 In review';
+    case 'CHANGES_REQUESTED':
+      return '✏️ Changes requested';
+    case 'APPROVED':
+      return '✅ Approved';
+    case 'REJECTED':
+      return '⛔ Rejected';
+    default:
+      return '🟡 Draft';
+  }
 }
 
 export default function CreatorCoursesPage() {
@@ -125,15 +146,29 @@ export default function CreatorCoursesPage() {
     }
   };
 
-  // Toggle Publish / Unpublish
+  // A course can only reach `published` after Teyro approves it
+  // (CourseService#publishCourse now enforces reviewStatus === 'APPROVED').
+  // A draft/changes-requested/rejected course's row action is therefore
+  // "submit for review", not "publish" — clicking Publish on one of those
+  // would just bounce off the server with a rejection.
+  const needsReview = (course: Course) =>
+    !course.published && course.reviewStatus !== 'APPROVED';
+
+  // Toggle Publish / Unpublish / Submit for review
   const handleTogglePublish = async (e: React.MouseEvent, course: Course) => {
     e.stopPropagation();
     setOpenDropdownId(null);
     setActionLoading(true);
-    const verb = course.published ? 'unpublish' : 'publish';
+
+    const reviewFirst = needsReview(course);
+    const verb = course.published ? 'unpublish' : reviewFirst ? 'submit for review' : 'publish';
+    const endpoint = course.published
+      ? `/api/courses/${course.id}/unpublish`
+      : reviewFirst
+        ? `/api/courses/${course.id}/submit-for-review`
+        : `/api/courses/${course.id}/publish`;
 
     try {
-      const endpoint = course.published ? `/api/courses/${course.id}/unpublish` : `/api/courses/${course.id}/publish`;
       const res = await fetch(endpoint, {
         method: 'POST',
         credentials: 'include',
@@ -145,7 +180,8 @@ export default function CreatorCoursesPage() {
         // (missing thumbnail, no lessons, …). A generic alert swallowed them.
         const errData = await res.json().catch(() => null);
         const msg = Array.isArray(errData?.message) ? errData.message[0] : errData?.message;
-        alert(msg || `Failed to ${verb} course.`);
+        const details: string[] = Array.isArray(errData?.errors) ? errData.errors : [];
+        alert([msg || `Failed to ${verb} course.`, ...details].join('\n'));
       }
     } catch (err) {
       console.error('Error updating course status:', err);
@@ -366,13 +402,16 @@ export default function CreatorCoursesPage() {
                     </div>
                   )}
 
-                  {/* Status Badge */}
+                  {/* Status Badge — published/draft is catalog visibility;
+                      for an unpublished course the label also carries Teyro's
+                      review state, since "Draft" alone hid whether a course
+                      was actually just sitting untouched vs. mid-review. */}
                   <span
                     className={`${styles.statusBadge} ${
                       course.published ? styles.publishedBadge : styles.draftBadge
                     }`}
                   >
-                    {course.published ? '🟢 Published' : '🟡 Draft'}
+                    {course.published ? '🟢 Published' : reviewStatusBadgeLabel(course.reviewStatus)}
                   </span>
 
                   {/* Category Tag */}
@@ -513,13 +552,27 @@ export default function CreatorCoursesPage() {
                         >
                           <FaCopy size={13} /> Duplicate Course
                         </button>
-                        <button
-                          type="button"
-                          className={styles.dropdownItem}
-                          onClick={(e) => handleTogglePublish(e, course)}
-                        >
-                          <FaCircleCheck size={13} /> {course.published ? 'Unpublish Course' : 'Publish Course'}
-                        </button>
+                        {course.reviewStatus === 'SUBMITTED' || course.reviewStatus === 'UNDER_REVIEW' ? (
+                          <span className={styles.dropdownItem} style={{ color: '#94A3B8', cursor: 'default' }}>
+                            <FaCircleCheck size={13} /> Awaiting Teyro review…
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.dropdownItem}
+                            onClick={(e) => handleTogglePublish(e, course)}
+                          >
+                            <FaCircleCheck size={13} />{' '}
+                            {course.published
+                              ? 'Unpublish Course'
+                              : needsReview(course)
+                                ? course.reviewStatus === 'CHANGES_REQUESTED' ||
+                                  course.reviewStatus === 'REJECTED'
+                                  ? 'Resubmit for Review'
+                                  : 'Submit for Review'
+                                : 'Publish Course'}
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}

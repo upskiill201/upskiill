@@ -7,6 +7,7 @@ import { ChestModule } from '../chest/chest.module';
 import { PaymentModule } from '../payment/payment.module';
 import { CommunityModule } from '../community/community.module';
 import { ShopModule } from '../shop/shop.module';
+import { CourseReviewModule } from '../course-review/course-review.module';
 
 @Module({
   imports: [
@@ -17,6 +18,10 @@ import { ShopModule } from '../shop/shop.module';
     CommunityModule,
     // Lesson rewards read the learner's active XP/Coin boosts from the shop.
     ShopModule,
+    // The review workflow's edit-lock guard (CourseService) and the
+    // creator-facing submit-for-review/review-status endpoints
+    // (CourseController) both live against this.
+    CourseReviewModule,
   ],
   controllers: [CourseController],
   providers: [CourseService],

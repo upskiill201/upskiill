@@ -184,13 +184,17 @@ export default function Step4PreviewPublish({
     );
   };
 
-  // ─── PUBLISH HANDLER ───
+  // ─── SUBMIT FOR REVIEW HANDLER ───
+  // Courses no longer go live on a direct "Publish" click — Teyro reviews
+  // every course first. This calls the review-submission endpoint; the old
+  // /publish endpoint still exists but now refuses any course that isn't
+  // reviewStatus === 'APPROVED', so a creator genuinely can't skip this step.
   const handlePublish = async () => {
     if (!isReadyToPublish || isPublishing) return;
     setIsPublishing(true);
     setPublishError(null);
     try {
-      const res = await fetch(`/api/courses/${courseId}/publish`, {
+      const res = await fetch(`/api/courses/${courseId}/submit-for-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -199,7 +203,7 @@ export default function Step4PreviewPublish({
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
         const details: string[] = errorData?.errors || [];
-        const base = errorData?.message || 'Could not publish course. Please try again.';
+        const base = errorData?.message || 'Could not submit this course for review. Please try again.';
         throw new Error(details.length > 0 ? `${base} ${details.join(' ')}` : base);
       }
 
@@ -451,7 +455,7 @@ export default function Step4PreviewPublish({
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Pre-Publish Checklist
+              Pre-Submission Checklist
             </h2>
             <span style={{ background: isReadyToPublish ? '#ECFDF5' : '#FEF2F2', color: isReadyToPublish ? '#059669' : '#DC2626', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
               {isReadyToPublish ? '100% Ready' : `${failingChecks.length} issue${failingChecks.length !== 1 ? 's' : ''}`}
@@ -460,8 +464,8 @@ export default function Step4PreviewPublish({
 
           <p style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.5', marginBottom: '20px' }}>
             {isReadyToPublish
-              ? 'All quality assurance requirements are met! You are ready to publish your course.'
-              : 'Complete the items below to unlock the Publish Course button.'}
+              ? "All quality requirements are met! You're ready to submit this course for Teyro's review."
+              : 'Complete the items below to unlock the Submit for Review button.'}
           </p>
 
           {/* Checklist Items */}
@@ -548,7 +552,7 @@ export default function Step4PreviewPublish({
               cursor: isReadyToPublish ? 'pointer' : 'not-allowed',
             }}
           >
-            {isReadyToPublish ? 'Publish Course 🚀' : 'Locked — Fix Issues Above'}
+            {isReadyToPublish ? 'Submit for Review 📨' : 'Locked — Fix Issues Above'}
           </Button>
 
           {!isReadyToPublish && (
@@ -568,10 +572,10 @@ export default function Step4PreviewPublish({
               <Sparkles size={36} style={{ color: '#10B981' }} />
             </div>
             <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0F172A', marginBottom: '8px' }}>
-              Course Published! 🎉
+              Submitted for review! 🎉
             </h2>
             <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.5', marginBottom: '24px' }}>
-              Your course <strong>&ldquo;{data.title}&rdquo;</strong> is now live on Teyro. Students can enroll and start learning immediately!
+              <strong>&ldquo;{data.title}&rdquo;</strong> is now in Teyro&apos;s review queue. We&apos;ll let you know as soon as it&apos;s been reviewed — usually within a couple of days.
             </p>
             <Button variant="primary" fullWidth onClick={() => router.push('/creator/courses')}>
               Go to Creator Dashboard →

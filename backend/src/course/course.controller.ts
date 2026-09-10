@@ -19,10 +19,14 @@ import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { OptionalJwtGuard } from '../auth/guard/optional-jwt.guard';
 import { Role } from '@prisma/client';
+import { CourseReviewService } from '../course-review/course-review.service';
 
 @Controller('courses')
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly courseReview: CourseReviewService,
+  ) {}
 
   @Get()
   async findAll(
@@ -207,6 +211,28 @@ export class CourseController {
   @Post(':id/unpublish')
   async unpublishCourse(@Req() req: any, @Param('id') id: string) {
     return await this.courseService.unpublishCourse(req.user.id as string, id);
+  }
+
+  // ── Review workflow ──────────────────────────────────────────────────
+  // publishCourse above now requires reviewStatus === 'APPROVED' — this is
+  // the creator's actual path to get there. See course-review.service.ts.
+
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post(':id/submit-for-review')
+  async submitForReview(@Req() req: any, @Param('id') id: string) {
+    return await this.courseReview.submitForReview(id, req.user.id as string);
+  }
+
+  @Roles(Role.INSTRUCTOR, Role.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get(':id/review')
+  async getReviewStatus(@Req() req: any, @Param('id') id: string) {
+    return await this.courseReview.statusFor(
+      id,
+      req.user.id as string,
+      req.user.role === Role.ADMIN,
+    );
   }
 
   @Roles(Role.INSTRUCTOR, Role.ADMIN)

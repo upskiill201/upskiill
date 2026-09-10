@@ -207,6 +207,16 @@ model Course {
   // the Admin Center.
   featured Boolean @default(false)
 
+  // Course review workflow (Teyro's pre-publication gate). `published`
+  // still gates the public catalog, and publishCourse() is still the only
+  // place that ever sets it true — reviewStatus is a precondition layered
+  // in front of that existing call, not a second publishing mechanism.
+  reviewStatus         CourseReviewStatus @default(DRAFT)
+  submittedForReviewAt DateTime?
+  reviewedAt           DateTime?
+  reviewedBy           String? // admin userId of the most recent decision
+  reviewHistory        CourseReview[]
+
   // Teyro Course Transformation Engine
   category          String  @default("Uncategorized")
   level             String  @default("Beginner")
@@ -260,6 +270,54 @@ model Course {
   @@index([published, createdAt])
   @@index([instructorId])
   @@index([featured])
+  // Backs the admin review queue (GET /admin/courses?reviewStatus=...),
+  // sorted oldest-submission-first by default.
+  @@index([reviewStatus, submittedForReviewAt])
+}
+
+enum CourseReviewStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum CourseReviewAction {
+  SUBMITTED
+  STARTED_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  /// System-triggered, not an admin decision: an already-approved course had
+  /// a substantive edit, so its approval no longer covers the live content.
+  REOPENED
+}
+
+/// Append-only review history — the record of every decision made about a
+/// course, in order. Never updated or deleted; a new review always adds a
+/// new row rather than overwriting the last one, so past feedback survives
+/// resubmission. Distinct from `Review` (student ratings/comments) despite
+/// the similar name — hence `reviewHistory` as the Course relation field.
+model CourseReview {
+  id       String @id @default(uuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  reviewerId String? // admin userId; null for creator submissions and system-triggered rows
+  action     CourseReviewAction
+
+  previousStatus CourseReviewStatus
+  newStatus      CourseReviewStatus
+
+  feedback     String? @db.Text // shown to the creator
+  internalNote String? @db.Text // admin-only, never returned to the creator
+
+  createdAt DateTime @default(now())
+
+  @@index([courseId, createdAt])
+  @@map("course_reviews")
 }
 
 /// Daily page-view aggregate for a course detail page. One row per

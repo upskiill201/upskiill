@@ -18,6 +18,8 @@ import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
 import { calculateCoursePricingLadder } from './pricing-engine';
+import { assessCourseReadiness } from './course-readiness.util';
+import { CourseReviewService } from '../course-review/course-review.service';
 import * as crypto from 'crypto';
 
 const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
@@ -86,6 +88,7 @@ export class CourseService {
     private stripeProvider: StripeProvider,
     private communityService: CommunityService,
     private shopService: ShopService,
+    private courseReview: CourseReviewService,
   ) {}
 
   /**
@@ -1618,6 +1621,7 @@ export class CourseService {
     if (course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(course.id);
 
     // Prices must be real, non-negative numbers — negative/garbage values used
     // to flow straight into the ledger math downstream.
@@ -1717,23 +1721,19 @@ export class CourseService {
       throw new ForbiddenException('You do not own this course');
     }
 
-    // Server-side quality gate — the UI checklist is advisory, this is enforced.
-    const errors: string[] = [];
-    if (course.sections.length === 0) {
-      errors.push('Add at least one module before publishing.');
-    }
-    for (const section of course.sections) {
-      if (section.lessons.length === 0) {
-        errors.push(`Module "${section.title}" has no lessons yet.`);
-        continue;
-      }
-      for (const lesson of section.lessons) {
-        if (lesson.status !== 'published') {
-          errors.push(`Lesson "${lesson.title}" is still a draft. Open it in the Lesson Builder and publish it first.`);
-        }
-      }
+    // Course review gate: a course may only go live once Teyro has approved
+    // it. This applies to admin-initiated publishes too — approval and
+    // publication are deliberately separate steps (see CourseReviewService),
+    // so an admin still can't skip straight from "unreviewed" to "live"
+    // through this call any more than a creator can.
+    if (course.reviewStatus !== 'APPROVED') {
+      throw new ForbiddenException(
+        'This course must be approved by Teyro before it can be published. Submit it for review first.',
+      );
     }
 
+    // Server-side quality gate — the UI checklist is advisory, this is enforced.
+    const errors = assessCourseReadiness(course);
     if (errors.length > 0) {
       throw new UnprocessableEntityException({
         message: 'This course is not ready to be published.',
@@ -1961,6 +1961,7 @@ export class CourseService {
     if (!trimmedTitle) throw new BadRequestException('Module title is required');
 
     const course = await this.assertOwnsCourse(userId, courseId);
+    await this.courseReview.assertEditableAndReopen(course.id);
 
     return await this.prisma.$transaction(async (tx) => {
       const count = await tx.section.count({ where: { courseId: course.id } });
@@ -1986,6 +1987,7 @@ export class CourseService {
     if (section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(section.courseId);
     if (data.title !== undefined && !data.title.trim()) {
       throw new BadRequestException('Module title is required');
     }
@@ -2005,6 +2007,7 @@ export class CourseService {
    */
   async reorderSections(userId: string, courseIdOrSlug: string, orderedIds: string[]) {
     const course = await this.assertOwnsCourse(userId, courseIdOrSlug);
+    await this.courseReview.assertEditableAndReopen(course.id);
 
     const existing = await this.prisma.section.findMany({
       where: { courseId: course.id },
@@ -2038,6 +2041,7 @@ export class CourseService {
     if (section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(section.courseId);
 
     const existing = await this.prisma.lesson.findMany({
       where: { sectionId },
@@ -2070,6 +2074,7 @@ export class CourseService {
     if (section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(section.courseId);
 
     return await this.prisma.section.delete({
       where: { id: sectionId },
@@ -2103,6 +2108,7 @@ export class CourseService {
     if (section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(section.courseId);
 
     // Use transaction to atomically count + create (prevents orderIndex races)
     return await this.prisma.$transaction(async (tx) => {
@@ -2250,6 +2256,7 @@ export class CourseService {
     if (lesson.section.course.instructorId !== userId) {
       throw new ForbiddenException('You do not own this course');
     }
+    await this.courseReview.assertEditableAndReopen(lesson.section.courseId);
 
     return await this.prisma.lesson.delete({
       where: { id: lessonId },

@@ -6,12 +6,15 @@ import { mutate } from 'swr';
 import {
   ArrowLeft,
   BookOpen,
+  CheckCircle2,
   DollarSign,
   Eye,
   EyeOff,
+  MessageSquareWarning,
   Star,
   StarOff,
   Users as UsersIcon,
+  XCircle,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import {
@@ -53,9 +56,22 @@ interface CourseDetail {
     version: number;
     createdAt: string;
     updatedAt: string;
+    reviewStatus: string;
+    submittedForReviewAt: string | null;
+    reviewedAt: string | null;
+    reviewedBy: string | null;
     instructor: { id: string; fullName: string; email: string; avatarUrl: string | null };
   };
-  content: { sectionsCount: number; lessonsCount: number; publishedLessonsCount: number };
+  content: {
+    sectionsCount: number;
+    lessonsCount: number;
+    publishedLessonsCount: number;
+    sections: {
+      id: string;
+      title: string;
+      lessons: { id: string; title: string; status: string; lessonType: string }[];
+    }[];
+  };
   enrollments: number;
   revenue: {
     netMinor: number;
@@ -70,12 +86,38 @@ interface CourseDetail {
     reason: string | null;
     createdAt: string;
   }[];
+  reviewHistory: {
+    id: string;
+    reviewerId: string | null;
+    action: string;
+    previousStatus: string;
+    newStatus: string;
+    feedback: string | null;
+    internalNote: string | null;
+    createdAt: string;
+  }[];
 }
 
-type DialogKind = 'publish' | 'unpublish' | 'feature' | 'unfeature' | null;
+type ActionDialog =
+  | 'publish'
+  | 'unpublish'
+  | 'feature'
+  | 'unfeature'
+  | 'startReview'
+  | 'approveReview'
+  | 'requestChanges'
+  | 'rejectReview'
+  | null;
 
 const money = (minor: number) =>
   `$${(minor / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const reviewTone = (status: string) => {
+  if (status === 'APPROVED') return 'good';
+  if (status === 'CHANGES_REQUESTED' || status === 'REJECTED') return 'bad';
+  if (status === 'SUBMITTED' || status === 'UNDER_REVIEW') return 'brand';
+  return 'neutral';
+};
 
 export default function AdminCourseDetailPage() {
   const params = useParams<{ id: string }>();
@@ -83,7 +125,7 @@ export default function AdminCourseDetailPage() {
   const key = `/api/admin/courses/${params.id}`;
   const { data, error, isLoading } = useAdminData<CourseDetail>(key);
 
-  const [dialog, setDialog] = useState<DialogKind>(null);
+  const [dialog, setDialog] = useState<ActionDialog>(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionDetails, setActionDetails] = useState<string[] | undefined>(undefined);
@@ -98,33 +140,62 @@ export default function AdminCourseDetailPage() {
     );
   }
 
-  const { course, content, enrollments, revenue, adminHistory } = data;
-
-  const runAction = async (action: 'publish' | 'unpublish' | 'feature' | 'unfeature') => {
-    setBusy(true);
-    setActionError(null);
-    setActionDetails(undefined);
-    try {
-      await adminMutate(`/api/admin/courses/${course.id}/${action}`, { method: 'POST' });
-      await mutate(key);
-      setDialog(null);
-    } catch (err) {
-      const e = err as Error & { status?: number; details?: string[] };
-      setActionError(
-        e.status === 400 || e.status === 422
-          ? e.message
-          : "We couldn't update this course. Please try again.",
-      );
-      setActionDetails(e.details);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const { course, content, enrollments, revenue, adminHistory, reviewHistory } = data;
 
   const closeDialog = () => {
     setDialog(null);
     setActionError(null);
     setActionDetails(undefined);
+  };
+
+  const handleError = (err: unknown) => {
+    const e = err as Error & { status?: number; details?: string[] };
+    setActionError(
+      e.status === 400 || e.status === 422 || e.status === 403
+        ? e.message
+        : "We couldn't update this course. Please try again.",
+    );
+    setActionDetails(e.details);
+  };
+
+  // Lifecycle actions with no extra input (publish/unpublish/feature/
+  // unfeature/startReview/approve) — mirrors the Users page's runAction.
+  const runAction = async (path: string) => {
+    setBusy(true);
+    setActionError(null);
+    setActionDetails(undefined);
+    try {
+      await adminMutate(`/api/admin/courses/${course.id}/${path}`, { method: 'POST' });
+      await mutate(key);
+      setDialog(null);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Review decisions that carry required text (request-changes, reject).
+  const runReviewDecision = async (
+    path: 'review/request-changes' | 'review/reject',
+    bodyKey: 'feedback' | 'reason',
+    text: string,
+  ) => {
+    setBusy(true);
+    setActionError(null);
+    setActionDetails(undefined);
+    try {
+      await adminMutate(`/api/admin/courses/${course.id}/${path}`, {
+        method: 'POST',
+        body: { [bodyKey]: text },
+      });
+      await mutate(key);
+      setDialog(null);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const ErrorBlock = () =>
@@ -140,6 +211,10 @@ export default function AdminCourseDetailPage() {
         )}
       </div>
     ) : null;
+
+  const canStartReview = course.reviewStatus === 'SUBMITTED';
+  const canDecide = course.reviewStatus === 'SUBMITTED' || course.reviewStatus === 'UNDER_REVIEW';
+  const canReject = course.reviewStatus !== 'REJECTED';
 
   return (
     <>
@@ -192,6 +267,7 @@ export default function AdminCourseDetailPage() {
               <Pill tone={course.published ? 'good' : 'warn'}>
                 {course.published ? 'Published' : 'Draft'}
               </Pill>
+              <Pill tone={reviewTone(course.reviewStatus)}>{humanize(course.reviewStatus)}</Pill>
               {course.featured && (
                 <Pill tone="brand">
                   <Star size={10} /> Featured
@@ -240,6 +316,66 @@ export default function AdminCourseDetailPage() {
         />
       </div>
 
+      {/* ── Review workspace ─────────────────────────────────────────── */}
+      <Card title="Review" icon={<MessageSquareWarning size={15} />}>
+        <div className={s.bars} style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Status</span>
+            <Pill tone={reviewTone(course.reviewStatus)}>{humanize(course.reviewStatus)}</Pill>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Submitted</span>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>
+              {relativeTime(course.submittedForReviewAt)}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Last reviewed</span>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{relativeTime(course.reviewedAt)}</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          {canStartReview && (
+            <Button variant="secondary" onClick={() => runAction('review/start')} disabled={busy}>
+              Start review
+            </Button>
+          )}
+          {canDecide && (
+            <>
+              <Button onClick={() => setDialog('approveReview')}>
+                <CheckCircle2 size={15} /> Approve
+              </Button>
+              <Button variant="secondary" onClick={() => setDialog('requestChanges')}>
+                <MessageSquareWarning size={15} /> Request changes
+              </Button>
+            </>
+          )}
+          {canReject && (
+            <Button variant="danger" onClick={() => setDialog('rejectReview')}>
+              <XCircle size={15} /> Reject
+            </Button>
+          )}
+        </div>
+
+        {reviewHistory.length === 0 ? (
+          <Empty>No review activity yet — this course has never been submitted.</Empty>
+        ) : (
+          <DataTable columns={['When', 'Action', 'Feedback', 'Admin']}>
+            {reviewHistory.map((h) => (
+              <tr key={h.id}>
+                <td className={s.mono} title={h.createdAt}>
+                  {relativeTime(h.createdAt)}
+                </td>
+                <td>{humanize(h.action)}</td>
+                <td style={{ maxWidth: 320 }}>{h.feedback || '—'}</td>
+                <td className={s.mono}>{h.reviewerId || 'system'}</td>
+              </tr>
+            ))}
+          </DataTable>
+        )}
+      </Card>
+
       <div className={s.grid}>
         <Card title="Course info" icon={<BookOpen size={15} />}>
           <div className={s.bars}>
@@ -254,7 +390,7 @@ export default function AdminCourseDetailPage() {
         </Card>
 
         <Card title="Content">
-          <div className={s.bars}>
+          <div className={s.bars} style={{ marginBottom: content.sections.length ? 16 : 0 }}>
             <DetailRow label="Modules" value={String(content.sectionsCount)} />
             <DetailRow label="Lessons" value={String(content.lessonsCount)} />
             <DetailRow
@@ -262,6 +398,33 @@ export default function AdminCourseDetailPage() {
               value={`${content.publishedLessonsCount} / ${content.lessonsCount}`}
             />
           </div>
+          {content.sections.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {content.sections.map((sec) => (
+                <div key={sec.id}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
+                    {sec.title}
+                  </div>
+                  {sec.lessons.map((l) => (
+                    <div
+                      key={l.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '4px 0 4px 12px',
+                        fontSize: 13,
+                      }}
+                    >
+                      <span>{l.title}</span>
+                      <Pill tone={l.status === 'published' ? 'good' : 'warn'}>
+                        {humanize(l.status)}
+                      </Pill>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </div>
 
@@ -276,13 +439,14 @@ export default function AdminCourseDetailPage() {
         {adminHistory.length === 0 ? (
           <Empty>No admin actions taken on this course.</Empty>
         ) : (
-          <DataTable columns={['When', 'Action', 'Admin']}>
+          <DataTable columns={['When', 'Action', 'Reason', 'Admin']}>
             {adminHistory.map((h) => (
               <tr key={h.id}>
                 <td className={s.mono} title={h.createdAt}>
                   {relativeTime(h.createdAt)}
                 </td>
                 <td>{humanize(h.action)}</td>
+                <td>{h.reason || '—'}</td>
                 <td className={s.mono}>{h.actorId}</td>
               </tr>
             ))}
@@ -296,8 +460,8 @@ export default function AdminCourseDetailPage() {
           description={
             <>
               <strong>{course.title}</strong> becomes visible in the public catalog
-              and open for enrollment. The same quality checks a creator faces
-              (at least one module, no draft lessons) apply here too.
+              and open for enrollment. Requires approval — the same quality checks
+              a creator faces (at least one module, no draft lessons) apply here too.
               <ErrorBlock />
             </>
           }
@@ -357,6 +521,65 @@ export default function AdminCourseDetailPage() {
           confirmLabel="Unfeature"
           busy={busy}
           onConfirm={() => void runAction('unfeature')}
+          onCancel={closeDialog}
+        />
+      )}
+
+      {dialog === 'approveReview' && (
+        <ConfirmDialog
+          title="Approve this course?"
+          description={
+            <>
+              This confirms <strong>{course.title}</strong> passed Teyro&apos;s review.
+              The creator (or an admin) can publish it once approved — approval alone
+              does not make it live.
+              <ErrorBlock />
+            </>
+          }
+          confirmLabel="Approve course"
+          busy={busy}
+          onConfirm={() => void runAction('review/approve')}
+          onCancel={closeDialog}
+        />
+      )}
+
+      {dialog === 'requestChanges' && (
+        <ConfirmDialog
+          title="Request changes"
+          description={
+            <>
+              Describe what needs to change before <strong>{course.title}</strong>{' '}
+              can move forward. This is shown directly to the creator.
+              <ErrorBlock />
+            </>
+          }
+          confirmLabel="Request changes"
+          requireReason
+          busy={busy}
+          onConfirm={(feedback) =>
+            feedback && void runReviewDecision('review/request-changes', 'feedback', feedback)
+          }
+          onCancel={closeDialog}
+        />
+      )}
+
+      {dialog === 'rejectReview' && (
+        <ConfirmDialog
+          title="Reject this course?"
+          description={
+            <>
+              Reserved for serious issues — policy violations, prohibited content —
+              not ordinary quality fixes (use Request changes for those). If{' '}
+              <strong>{course.title}</strong> is currently published, it comes down
+              immediately.
+              <ErrorBlock />
+            </>
+          }
+          confirmLabel="Reject course"
+          tone="danger"
+          requireReason
+          busy={busy}
+          onConfirm={(reason) => reason && void runReviewDecision('review/reject', 'reason', reason)}
           onCancel={closeDialog}
         />
       )}

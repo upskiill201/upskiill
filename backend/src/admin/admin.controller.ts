@@ -120,4 +120,48 @@ export class AdminController {
   unfeatureCourse(@GetUser() actor: AuthedUser, @Param('id') id: string) {
     return this.adminCourses.unfeature(actor.id, id);
   }
+
+  // ── Course review ────────────────────────────────────────────────────
+
+  @Post('courses/:id/review/start')
+  startCourseReview(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminCourses.startReview(actor.id, id);
+  }
+
+  @Post('courses/:id/review/request-changes')
+  requestCourseChanges(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { feedback: string; internalNote?: string },
+  ) {
+    return this.adminCourses.requestChanges(
+      actor.id,
+      id,
+      body.feedback,
+      body.internalNote,
+    );
+  }
+
+  @Post('courses/:id/review/approve')
+  approveCourseReview(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { internalNote?: string },
+  ) {
+    return this.adminCourses.approveReview(actor.id, id, body?.internalNote);
+  }
+
+  @Post('courses/:id/review/reject')
+  rejectCourseReview(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string; internalNote?: string },
+  ) {
+    return this.adminCourses.rejectReview(
+      actor.id,
+      id,
+      body.reason,
+      body.internalNote,
+    );
+  }
 }

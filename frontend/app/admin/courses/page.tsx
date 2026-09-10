@@ -35,6 +35,9 @@ interface CourseRow {
   reviewsCount: number;
   studentsCount: number;
   createdAt: string;
+  reviewStatus: string;
+  submittedForReviewAt: string | null;
+  reviewedAt: string | null;
   instructor: { id: string; fullName: string; email: string };
 }
 
@@ -47,17 +50,34 @@ interface CoursesResponse {
 }
 
 const STATUSES = ['', 'published', 'unpublished'];
+const REVIEW_STATUSES = [
+  '',
+  'SUBMITTED',
+  'UNDER_REVIEW',
+  'CHANGES_REQUESTED',
+  'APPROVED',
+  'REJECTED',
+];
 const SORTS: { value: string; label: string }[] = [
   { value: 'newest', label: 'Newest' },
   { value: 'oldest', label: 'Oldest' },
   { value: 'students', label: 'Most students' },
   { value: 'rating', label: 'Highest rated' },
+  { value: 'review', label: 'Oldest submission (review queue)' },
 ];
+
+const reviewTone = (status: string) => {
+  if (status === 'APPROVED') return 'good';
+  if (status === 'CHANGES_REQUESTED' || status === 'REJECTED') return 'bad';
+  if (status === 'SUBMITTED' || status === 'UNDER_REVIEW') return 'brand';
+  return 'neutral';
+};
 
 export default function AdminCoursesPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const [reviewStatus, setReviewStatus] = useState('');
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [page, setPage] = useState(1);
@@ -65,6 +85,7 @@ export default function AdminCoursesPage() {
   const query = new URLSearchParams({ page: String(page), pageSize: '25', sortBy });
   if (search) query.set('search', search);
   if (status) query.set('status', status);
+  if (reviewStatus) query.set('reviewStatus', reviewStatus);
   if (category) query.set('category', category);
 
   const { data, error, isLoading } = useAdminData<CoursesResponse>(
@@ -77,7 +98,7 @@ export default function AdminCoursesPage() {
     <>
       <PageHeader
         title="Courses"
-        subtitle="Every course on Teyro — search, filter, and open one for the full picture."
+        subtitle="Every course on Teyro — search, filter, and open one for the full picture, including Teyro's review queue."
       />
 
       <div style={{ marginBottom: 12 }}>
@@ -92,13 +113,26 @@ export default function AdminCoursesPage() {
       </div>
 
       <TabGroup
+        options={REVIEW_STATUSES}
+        value={reviewStatus}
+        onChange={(v) => {
+          setReviewStatus(v);
+          setPage(1);
+          // The point of filtering to a review-pending status is almost
+          // always "show me the oldest one first" — switch the sort to
+          // match rather than making the admin do it themselves.
+          if (v === 'SUBMITTED' || v === 'UNDER_REVIEW') setSortBy('review');
+        }}
+        formatLabel={(v) => (v ? humanize(v) : 'All review statuses')}
+      />
+      <TabGroup
         options={STATUSES}
         value={status}
         onChange={(v) => {
           setStatus(v);
           setPage(1);
         }}
-        formatLabel={(v) => (v ? humanize(v) : 'All statuses')}
+        formatLabel={(v) => (v ? humanize(v) : 'All catalog statuses')}
       />
 
       {data && data.categories.length > 0 && (
@@ -142,7 +176,16 @@ export default function AdminCoursesPage() {
       ) : (
         <>
           <DataTable
-            columns={['Course', 'Creator', 'Status', 'Category', 'Students', 'Rating', '']}
+            columns={[
+              'Course',
+              'Creator',
+              'Status',
+              'Review',
+              'Category',
+              'Students',
+              'Rating',
+              '',
+            ]}
           >
             {data.items.map((c) => (
               <tr
@@ -171,6 +214,14 @@ export default function AdminCoursesPage() {
                       </Pill>
                     )}
                   </div>
+                </td>
+                <td>
+                  <Pill tone={reviewTone(c.reviewStatus)}>{humanize(c.reviewStatus)}</Pill>
+                  {(c.reviewStatus === 'SUBMITTED' || c.reviewStatus === 'UNDER_REVIEW') && (
+                    <div className={s.mono} style={{ marginTop: 4 }}>
+                      {relativeTime(c.submittedForReviewAt)}
+                    </div>
+                  )}
                 </td>
                 <td>{humanize(c.category)}</td>
                 <td className={s.mono}>{c.studentsCount.toLocaleString()}</td>

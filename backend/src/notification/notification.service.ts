@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface CreateNotificationInput {
   userId: string; // recipient
@@ -9,6 +9,7 @@ export interface CreateNotificationInput {
   entityId?: string | null;
   title?: string | null;
   body?: string | null;
+  deepLink?: string | null;
 }
 
 @Injectable()
@@ -27,7 +28,7 @@ export class NotificationsService {
       // Dedupe (recipient, type, entity) — e.g. an announcement mention shouldn't double-notify
       const seen = new Set<string>();
       const unique = rows.filter((r) => {
-        const key = `${r.userId}:${r.type}:${r.entityId ?? ""}`;
+        const key = `${r.userId}:${r.type}:${r.entityId ?? ''}`;
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -42,11 +43,12 @@ export class NotificationsService {
           entityId: r.entityId ?? null,
           title: r.title ?? null,
           body: r.body ?? null,
+          deepLink: r.deepLink ?? null,
         })),
         skipDuplicates: true,
       });
     } catch (err) {
-      this.logger.error("Notification fanout failed", err as Error);
+      this.logger.error('Notification fanout failed', err as Error);
     }
   }
 
@@ -66,7 +68,7 @@ export class NotificationsService {
       this.prisma.notification.count({ where }),
       this.prisma.notification.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -99,7 +101,10 @@ export class NotificationsService {
   >(items: T[]): Promise<(T & { url: string | null })[]> {
     // Tey's rows carry a destination validated at send time.
     const needsLookup = items.filter(
-      (n) => !n.deepLink && n.entityId && (n.entityType === 'POST' || n.entityType === 'COMMENT'),
+      (n) =>
+        !n.deepLink &&
+        n.entityId &&
+        (n.entityType === 'POST' || n.entityType === 'COMMENT'),
     );
     if (needsLookup.length === 0) {
       return items.map((n) => ({ ...n, url: n.deepLink ?? null }));
@@ -140,7 +145,10 @@ export class NotificationsService {
 
     return items.map((n) => {
       if (n.deepLink) return { ...n, url: n.deepLink };
-      if (!n.entityId || (n.entityType !== 'POST' && n.entityType !== 'COMMENT')) {
+      if (
+        !n.entityId ||
+        (n.entityType !== 'POST' && n.entityType !== 'COMMENT')
+      ) {
         return { ...n, url: null };
       }
       const postId =
@@ -148,7 +156,10 @@ export class NotificationsService {
       const courseId = postId ? postToCourse.get(postId) : null;
       return {
         ...n,
-        url: postId && courseId ? `/dashboard/community/${courseId}/p/${postId}` : null,
+        url:
+          postId && courseId
+            ? `/dashboard/community/${courseId}/p/${postId}`
+            : null,
       };
     });
   }
