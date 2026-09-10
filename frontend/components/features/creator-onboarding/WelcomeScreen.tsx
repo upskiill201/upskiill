@@ -45,7 +45,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ userName, onNext }
       <div className="hidden md:flex w-full md:w-1/2 bg-gray-50 items-center justify-center p-8 lg:p-16 border-l border-gray-100">
         <div className="relative w-full max-w-2xl aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white">
           <Image
-            src="/creator-onboarding/dashboard-mockup.png"
+            src="/creator-onboarding/dashboard-mockup.webp"
             alt="Dashboard Preview"
             fill
             className="object-cover object-top"

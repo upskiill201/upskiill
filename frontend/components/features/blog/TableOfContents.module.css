@@ -1,0 +1,71 @@
+/* Sticky table of contents for post pages */
+
+.toc {
+  position: sticky;
+  top: 104px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 14px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0172fd;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemL3 {
+  padding-left: 14px;
+}
+
+.link {
+  display: block;
+  padding: 6px 10px;
+  border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #64748b;
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.link:hover {
+  color: #1f2a44;
+  background: #f8fafc;
+}
+
+.linkActive,
+.linkActive:hover {
+  color: #3d5afe;
+  background: #eef2ff;
+  border-left-color: #3d5afe;
+  font-weight: 800;
+}
+
+@media (max-width: 1024px) {
+  .toc {
+    position: static;
+  }
+}

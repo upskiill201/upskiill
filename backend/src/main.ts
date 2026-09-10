@@ -2,11 +2,51 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
+  // ─── PRODUCTION SECRET GUARD ────────────────────────────────────────────────
+  // Fail fast rather than boot with committed dev fallbacks guarding real user
+  // sessions (JWT_SECRET) or creator payout data at rest (EARNINGS_ENC_KEY).
+  const isProduction =
+    process.env.NODE_ENV === 'production' || process.env.ENVIRONMENT === 'production';
+  if (isProduction) {
+    const requiredSecrets = ['JWT_SECRET', 'EARNINGS_ENC_KEY'] as const;
+    const missing = requiredSecrets.filter((key) => !process.env[key]);
+    if (missing.length > 0) {
+      throw new Error(
+        `[Bootstrap] Missing required production secrets: ${missing.join(', ')}. ` +
+          'Refusing to start with insecure defaults.',
+      );
+    }
+  }
+
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(cookieParser());
+
+  // ─── RESPONSE COMPRESSION ──────────────────────────────────────────────────
+  // Express does not gzip by default and Render's proxy does not do it for us,
+  // so every response shipped uncompressed until now. The JSON this API returns
+  // is highly compressible: GET /courses carries up to 100 courses with full
+  // @db.Text descriptions, and the course document carries whole lesson trees.
+  //
+  // This is response-side only, so it cannot disturb the `rawBody: true` above
+  // that Stripe/Paystack signature verification depends on (that is request-side).
+  //
+  // The 1KB threshold skips tiny payloads where the gzip header would cost more
+  // than it saves. `x-no-compression` is compression's standard opt-out, kept so
+  // a future streaming/SSE endpoint can bypass buffering without code changes.
+  app.use(
+    compression({
+      threshold: 1024,
+      filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+      },
+    }),
+  );
 
   // ─── CORS ──────────────────────────────────────────────────────────────────
   // Allowed origins are set per environment via the ALLOWED_ORIGINS env var.
@@ -46,13 +86,22 @@ async function bootstrap() {
 
   // ─── VALIDATION PIPE ───────────────────────────────────────────────────────
   // Strips unknown properties, throws on unexpected fields, auto-transforms types.
+  // whitelist/forbidNonWhitelisted only affect class-validator DTOs — plain
+  // `@Body('prop')` extractions and webhook raw bodies are untouched. All
+  // student-journey payloads were swept against their DTOs before enabling
+  // this (signup/login/firebase/reset/challenge-complete/checkout/OTP/
+  // profile/community/lesson-builder); nested list entries carry client-side
+  // `id`s, which the profile DTO now accepts explicitly.
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: false,
-      forbidNonWhitelisted: false,
+      whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
+
+  // ─── GLOBAL EXCEPTION FILTER ───────────────────────────────────────────────
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // ─── HEALTH ENDPOINT ───────────────────────────────────────────────────────
   // Used by GitHub Actions to verify the backend came up cleanly after deploy.
@@ -65,11 +114,12 @@ async function bootstrap() {
     });
   });
 
-  // Render.com sets PORT dynamically; fallback to 3001 for local dev
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port, '0.0.0.0');
 
   console.log(`[Bootstrap] Environment: ${process.env.ENVIRONMENT ?? 'development'}`);
   console.log(`[Bootstrap] Allowed CORS origins: ${allowedOrigins.join(', ')}`);
+  console.log(`🚀 [Bootstrap] NestJS Backend is active and listening on http://localhost:${port}`);
 }
 
 void bootstrap();

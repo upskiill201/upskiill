@@ -1,0 +1,419 @@
+/* Course community — Skool layout.
+ *
+ * Two columns: a scrolling post column and a sticky right rail carrying the
+ * About card and the leaderboard. Below 1024px the rail becomes a drawer that
+ * slides in from the right (same pattern as the dashboard sidebar: fixed
+ * panel + scrim + Escape/scrim to close), because on a phone the rail's
+ * content is reference material, not something to scroll past to reach posts.
+ */
+
+.page {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px 64px;
+}
+
+/* ── Top bar: identity + tabs ────────────────────────────────────────────── */
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0 14px;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+}
+.identityThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-section);
+}
+.identityText {
+  min-width: 0;
+}
+.communityName {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.communityKicker {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Rail trigger — only exists below the two-column breakpoint. */
+.railTrigger {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 120ms ease;
+}
+.railTrigger:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 22px;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tabBtn {
+  position: relative;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border: 0;
+  background: transparent;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 130ms ease;
+}
+.tabBtn:hover {
+  color: var(--text-primary);
+}
+.tabActive {
+  color: var(--text-primary);
+}
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--text-primary);
+}
+
+/* ── Two-column body ─────────────────────────────────────────────────────── */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 328px;
+  gap: 24px;
+  align-items: start;
+}
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.railCol {
+  position: sticky;
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Filters ─────────────────────────────────────────────────────────────── */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chipRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+  flex: 1;
+  min-width: 0;
+}
+.chipRow::-webkit-scrollbar {
+  display: none;
+}
+.filterChip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 130ms ease, color 130ms ease, border-color 130ms ease;
+}
+.filterChip:hover {
+  border-color: var(--border-strong);
+}
+.filterChipActive {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--text-on-blue);
+}
+.sortSelect {
+  flex-shrink: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* Filter switches dim the list in place instead of blanking it to skeletons —
+   a full skeleton flash on every chip tap reads as "slow" even when it is not. */
+.listDim {
+  opacity: 0.5;
+  transition: opacity 120ms ease;
+  pointer-events: none;
+}
+
+.lessonFilter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 15px;
+  border: 1px solid var(--border-indigo);
+  border-radius: 14px;
+  background: var(--light-blue-bg);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.clearFilterBtn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  text-decoration: none;
+}
+.clearFilterBtn:hover {
+  text-decoration: underline;
+}
+
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.loadMoreBtn {
+  align-self: center;
+  margin-top: 6px;
+  padding: 11px 26px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.loadMoreBtn:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+.loadMoreBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ── Members tab ─────────────────────────────────────────────────────────── */
+
+.membersPanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.memberCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-card);
+}
+.memberInfo {
+  min-width: 0;
+  flex: 1;
+}
+.memberName {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.memberMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.creatorTag {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* ── Mobile rail drawer ──────────────────────────────────────────────────── */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.45);
+  border: 0;
+  padding: 0;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1201;
+  width: min(360px, 88vw);
+  padding: 16px 16px 48px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg-section);
+  box-shadow: -12px 0 32px rgba(15, 23, 42, 0.18);
+}
+.drawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.drawerTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.drawerClose {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.drawerRail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Breakpoints ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .railCol {
+    display: none;
+  }
+  .railTrigger {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0 12px 72px;
+  }
+  .topBar {
+    padding: 14px 0 12px;
+  }
+  .communityName {
+    font-size: 17px;
+  }
+  .identityThumb {
+    width: 36px;
+    height: 36px;
+  }
+  .railTrigger {
+    padding: 8px 11px;
+  }
+  /* The trigger keeps only its icon — the label would push the name to an
+     ellipsis on a 360px screen. */
+  .railTriggerLabel {
+    display: none;
+  }
+  .tabBtn {
+    padding: 11px 13px;
+    font-size: 14px;
+  }
+  .membersPanel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The sort control was eating nearly half the row and crushing the category
+     chips into a stub. Chips take the full width and scroll; sort drops onto
+     its own line beneath them. */
+  .controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chipRow {
+    flex: 1 0 100%;
+  }
+  .sortSelect {
+    margin-left: auto;
+    /* 16px inputs — anything smaller makes iOS Safari zoom on focus. */
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listDim {
+    transition: none;
+  }
+}

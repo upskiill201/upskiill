@@ -1,32 +1,35 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { clearClientSession } from '@/lib/user-cache';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Home,
-  PlaySquare,
-  Users,
-  BarChart2,
-  DollarSign,
-  Star,
-  Wallet,
-  FolderOpen,
-  Megaphone,
-  Settings,
-  Bell,
-  ChevronDown,
-  Plus,
-  Sparkles,
-  Rocket,
-  LogOut,
-  Menu,
-  X as CloseIcon
-} from 'lucide-react';
+  FaHouse,
+  FaGraduationCap,
+  FaUsers,
+  FaChartSimple,
+  FaSackDollar,
+  FaStar,
+  FaWallet,
+  FaFolderOpen,
+  FaBullhorn,
+  FaGear,
+  FaBell,
+  FaChevronDown,
+  FaPlus,
+  FaWandMagicSparkles,
+  FaRocket,
+  FaArrowRightFromBracket,
+  FaBars,
+  FaXmark,
+  FaLayerGroup
+} from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 import styles from './Creator.module.css';
 import { RoleSwitcher } from '@/components/ui/RoleSwitcher';
 
@@ -52,16 +55,15 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { id: 'dashboard', label: 'Dashboard', href: '/creator', icon: <Home size={18} /> },
-  { id: 'courses', label: 'Courses', href: '/creator/courses', icon: <PlaySquare size={18} /> },
-  { id: 'students', label: 'Students', href: '/creator/students', icon: <Users size={18} />, isComingSoon: true },
-  { id: 'analytics', label: 'Analytics', href: '/creator/analytics', icon: <BarChart2 size={18} /> },
-  { id: 'earnings', label: 'Earnings', href: '/creator/earnings', icon: <DollarSign size={18} />, isComingSoon: true },
-  { id: 'reviews', label: 'Reviews', href: '/creator/reviews', icon: <Star size={18} />, isComingSoon: true },
-  { id: 'payouts', label: 'Payouts', href: '/creator/payouts', icon: <Wallet size={18} />, isComingSoon: true },
-  { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FolderOpen size={18} />, isComingSoon: true },
-  { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <Megaphone size={18} />, isComingSoon: true },
-  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <Settings size={18} /> },
+  { id: 'dashboard', label: 'Dashboard', href: '/creator', icon: <FaHouse size={17} /> },
+  { id: 'courses', label: 'Courses', href: '/creator/courses', icon: <FaGraduationCap size={17} /> },
+  { id: 'students', label: 'Students', href: '/creator/students', icon: <FaUsers size={17} /> },
+  { id: 'analytics', label: 'Analytics', href: '/creator/analytics', icon: <FaChartSimple size={17} /> },
+  { id: 'earnings', label: 'Earnings', href: '/creator/earnings', icon: <FaSackDollar size={17} /> },
+  { id: 'reviews', label: 'Reviews', href: '/creator/reviews', icon: <FaStar size={17} />, isComingSoon: true },
+  { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FaFolderOpen size={17} />, isComingSoon: true },
+  { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <FaBullhorn size={17} />, isComingSoon: true },
+  { id: 'settings', label: 'Settings', href: '/creator/settings', icon: <FaGear size={17} /> },
 ];
 
 export default function CreatorLayout({ children }: { children: React.ReactNode }) {
@@ -73,14 +75,34 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   
-  const [creatorName, setCreatorName] = useState('Creator');
-  const [creatorAvatar, setCreatorAvatar] = useState('https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop&q=80');
-  const [hasStudentAccess, setHasStudentAccess] = useState(false);
-  const [hasCreatorAccess, setHasCreatorAccess] = useState(false);
+  const [creatorName, setCreatorName] = useState<string | null>(null);
+  const [creatorAvatar, setCreatorAvatar] = useState<string | null>(null);
+  const [hasStudentAccess, setHasStudentAccess] = useState<boolean>(false);
+  const [hasCreatorAccess, setHasCreatorAccess] = useState<boolean>(false);
 
   useEffect(() => {
     setIsMounted(true);
-    
+
+    // Creator auth pages (/creator/login, /creator/signup, etc.) are inside the /creator/* route
+    // tree so this layout wraps them. We MUST NOT run auth checks on those pages — doing so
+    // causes a redirect loop: layout fires /api/auth/me → 401 → redirect to /creator/login
+    // → layout fires again → infinite refresh.
+    const CREATOR_AUTH_PATHS = [
+      '/creator/login', '/creator/signup', '/creator/onboarding',
+      '/creator/forgot-password', '/creator/reset-password',
+      '/creator/verify-pending', '/creator/verify-failed',
+    ];
+    if (CREATOR_AUTH_PATHS.some((p) => pathname?.startsWith(p))) {
+      return; // Auth pages manage their own session state
+    }
+
+    // Safely hydrate cached user on client mount to prevent SSR hydration mismatch
+    const cached = getCachedUser();
+    if (cached?.fullName) setCreatorName(cached.fullName);
+    if (cached?.avatarUrl) setCreatorAvatar(cached.avatarUrl);
+    if (cached?.hasStudentAccess !== undefined) setHasStudentAccess(cached.hasStudentAccess);
+    if (cached?.hasCreatorAccess !== undefined) setHasCreatorAccess(cached.hasCreatorAccess);
+
     // Fetch live user data for sidebar
     const fetchUser = async () => {
       try {
@@ -88,9 +110,30 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
         if (res.ok) {
           const data = await res.json();
           if (data.fullName) setCreatorName(data.fullName);
-          if (data.profile?.avatarUrl) setCreatorAvatar(data.profile.avatarUrl);
-          if (data.hasStudentAccess) setHasStudentAccess(data.hasStudentAccess);
-          if (data.hasCreatorAccess) setHasCreatorAccess(data.hasCreatorAccess);
+          if (data.profile?.avatarUrl || data.avatarUrl) setCreatorAvatar(data.profile?.avatarUrl || data.avatarUrl);
+          if (data.hasStudentAccess !== undefined) setHasStudentAccess(data.hasStudentAccess);
+          if (data.hasCreatorAccess !== undefined) setHasCreatorAccess(data.hasCreatorAccess);
+          setCachedUser(data);
+
+          // STRICT ROLE-BASED GATEKEEPING (PRD AUTH-03)
+          // Pure students with no creator access should not be in the Creator Studio.
+          // Use window.location.href (hard navigation) to prevent any router-level loop.
+          if (!data.hasCreatorAccess) {
+            if (!data.hasStudentAccess) {
+              // Neither role confirmed yet — onboarding never finished.
+              // Sending this account to /dashboard would just bounce back
+              // here forever, since dashboard/layout.tsx redirects
+              // non-students back to /creator.
+              window.location.href = '/onboarding/0';
+            } else {
+              window.location.href = '/dashboard';
+            }
+            return;
+          }
+        } else if (res.status === 401) {
+          // No valid session — send to creator login
+          window.location.href = '/creator/login';
+          return;
         }
       } catch (err) {
         console.warn('Failed to fetch user data for sidebar', err);
@@ -105,12 +148,13 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [pathname]);
 
   const triggerComingSoon = (feature: string) => setComingSoonFeature(feature);
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
+    clearClientSession();
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     } catch {
@@ -138,10 +182,11 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
         <aside className={`${styles.sidebarWrapper} ${isMobileSidebarOpen ? styles.mobileSidebarOpen : ''}`}>
           <div className={styles.sidebarHeader}>
             <Link href="/creator" className={styles.logoLink} onClick={() => setIsMobileSidebarOpen(false)}>
-              <Image src="/teyro-logo-blue.png" alt="Teyro" width={110} height={32} priority className={styles.sidebarLogo} />
+              <Image src="/teyro-logo-blue.png" alt="Teyro" width={100} height={28} priority className={styles.sidebarLogo} style={{ width: 'auto', height: 'auto' }} />
+              <span className={styles.creatorBadge}>Studio</span>
             </Link>
             <button className={styles.mobileCloseBtn} onClick={() => setIsMobileSidebarOpen(false)} aria-label="Close sidebar">
-              <CloseIcon size={24} />
+              <FaXmark size={20} />
             </button>
           </div>
 
@@ -162,8 +207,13 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                     }}
                     className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                   >
-                    <span className={styles.icon}>{link.icon}</span>
-                    <span className={styles.label}>{link.label}</span>
+                    <div className={styles.navItemLeft}>
+                      <span className={styles.icon}>{link.icon}</span>
+                      <span className={styles.label}>{link.label}</span>
+                    </div>
+                    {link.isComingSoon && (
+                      <span className={styles.soonBadge}>Soon</span>
+                    )}
                   </Link>
                 );
               })}
@@ -171,7 +221,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
           </nav>
 
           {/* Role switcher — only visible to dual-role users */}
-          <div style={{ padding: '0 12px 16px' }}>
+          <div style={{ padding: '0 14px 16px' }}>
             <RoleSwitcher
               activeRole="INSTRUCTOR"
               hasStudentAccess={hasStudentAccess}
@@ -192,24 +242,26 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             <header className={styles.header}>
               <div className={styles.headerLeft}>
                 <button className={styles.hamburgerBtn} onClick={() => setIsMobileSidebarOpen(true)} aria-label="Open navigation menu">
-                  <Menu size={24} />
+                  <FaBars size={18} />
                 </button>
                 <div className={styles.pageTitleWrapper}>
-                  <BarChart2 size={20} className={styles.titleIcon} />
+                  <div className={styles.titleIconBox}>
+                    <FaLayerGroup size={17} />
+                  </div>
                   <h1 className={styles.pageTitle}>Creator Studio</h1>
                 </div>
               </div>
 
               <div className={styles.headerRight}>
-                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')}>
-                  <Plus size={16} />
-                  <span>Create New Course</span>
+                <button className={styles.headerCreateBtn} onClick={() => router.push('/creator/create')} aria-label="Create new course">
+                  <FaPlus size={11} />
+                  <span className={styles.createBtnTextDesktop}>Create Course</span>
+                  <span className={styles.createBtnTextMobile}>New</span>
                 </button>
 
                 <div className={styles.headerControls}>
                   <button className={styles.notifBtn} onClick={() => triggerComingSoon('Notifications')} aria-label="Notifications">
-                    <Bell size={20} />
-                    <span className={styles.notifBadge}>3</span>
+                    <FaBell size={15} />
                   </button>
 
                   {/* Profile Wrapper - using a div to handle outside click */}
@@ -218,11 +270,11 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                       className={styles.userProfile}
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                      <Avatar src={creatorAvatar} name={creatorName} size="sm" />
+                      <Avatar src={creatorAvatar || undefined} name={creatorName || 'Creator'} size="sm" />
                       <div className={styles.userInfo}>
                         <div className={styles.userNameRow}>
-                          <span className={styles.userName}>{creatorName}</span>
-                          <ChevronDown size={14} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
+                          <span className={styles.userName}>{creatorName || 'Creator'}</span>
+                          <FaChevronDown size={11} className={styles.userChevron} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)' }} />
                         </div>
                         <span className={styles.userRole}>Instructor</span>
                       </div>
@@ -231,10 +283,10 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
                     {isMounted && isDropdownOpen && (
                       <div className={styles.profileDropdownMenu}>
                         <Link href="/creator/settings" className={styles.profileDropdownItem} onClick={() => setIsDropdownOpen(false)}>
-                          <Settings size={16} /> Profile & Settings
+                          <FaGear size={15} /> Profile & Settings
                         </Link>
                         <button className={styles.profileDropdownLogout} onClick={handleLogout}>
-                          <LogOut size={16} /> Logout
+                          <FaArrowRightFromBracket size={15} /> Logout
                         </button>
                       </div>
                     )}
@@ -252,7 +304,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
       <Modal isOpen={!!comingSoonFeature} onClose={() => setComingSoonFeature(null)} size="md">
         <div className={styles.modalBody}>
           <div className={styles.modalIconWrapper}>
-            <Sparkles size={36} className={styles.sparkleIcon} />
+            <FaWandMagicSparkles size={32} className={styles.sparkleIcon} />
           </div>
           <h2 className={styles.modalTitle}>{comingSoonFeature} is Coming Soon!</h2>
           <p className={styles.modalDescription}>
@@ -260,7 +312,7 @@ export default function CreatorLayout({ children }: { children: React.ReactNode 
             for creators. It will be available in the next platform update — stay tuned!
           </p>
           <div className={styles.modalActions}>
-            <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<Rocket size={16} />}>
+            <Button variant="primary" onClick={() => setComingSoonFeature(null)} leftIcon={<FaRocket size={14} />}>
               Got it!
             </Button>
           </div>

@@ -64,6 +64,8 @@ function getResourceBadge(type: string) {
   }
 }
 
+const MAX_RESOURCES = 10;
+
 export function DeepenTab({ config, onChangeConfig, resources, onChangeResources, lessonId }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<ResourceItem | null>(null);
@@ -78,18 +80,96 @@ export function DeepenTab({ config, onChangeConfig, resources, onChangeResources
     });
   };
 
-  const handleAddResource = (res: ResourceItem) => {
+  /** "12.3 MB" → bytes. Returns 0 for non-size labels like "Link". */
+  const parseSizeToBytes = (size?: string): number => {
+    if (!size) return 0;
+    const match = size.match(/^([\d.]+)\s*(B|KB|MB|GB)$/i);
+    if (!match) return 0;
+    const value = parseFloat(match[1]);
+    const unit = match[2].toUpperCase();
+    const multiplier = unit === 'GB' ? 1024 ** 3 : unit === 'MB' ? 1024 ** 2 : unit === 'KB' ? 1024 : 1;
+    return Math.round(value * multiplier);
+  };
+
+  /**
+   * Resources added here go through the SAME backend endpoints as the Learn
+   * tab's resource panel, so edits and deletes actually persist. Previously
+   * this tab only mutated local state and everything was lost on reload.
+   */
+  const handleAddResource = async (res: ResourceItem) => {
     if (editingResource) {
-      onChangeResources(resources.map(r => r.id === res.id ? res : r));
-    } else {
-      onChangeResources([...resources, res]);
+      const previous = resources;
+      const updated = { ...res, id: editingResource.id };
+      onChangeResources(resources.map(r => r.id === editingResource.id ? updated : r));
+      setEditingResource(null);
+      setIsModalOpen(false);
+      try {
+        const apiRes = await fetch(`/api/lesson/${lessonId}/resources/${editingResource.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: updated.title,
+            type: updated.type,
+            storageUrl: updated.url,
+            sizeBytes: parseSizeToBytes(updated.size),
+            estimatedReadMin: parseInt(updated.time || '') || 0,
+            description: updated.description,
+            category: updated.category,
+          }),
+        });
+        if (!apiRes.ok) throw new Error(String(apiRes.status));
+      } catch (err) {
+        console.error('Failed to save resource changes', err);
+        onChangeResources(previous);
+        alert('Your resource changes could not be saved. Please try again.');
+      }
+      return;
+    }
+
+    try {
+      const apiRes = await fetch(`/api/lesson/${lessonId}/resources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: res.title,
+          type: res.type,
+          storageUrl: res.url,
+          sizeBytes: parseSizeToBytes(res.size),
+          originalName: res.title,
+          estimatedReadMin: parseInt(res.time || '') || 0,
+          description: res.description,
+          category: res.category,
+          displayOrder: resources.length,
+        }),
+      });
+      if (apiRes.ok) {
+        const created = await apiRes.json();
+        onChangeResources([...resources, { ...res, id: created.id }]);
+      } else {
+        console.error('Failed to add resource', apiRes.status);
+        alert('The resource could not be added. Please try again.');
+      }
+    } catch (err) {
+      console.error('Failed to add resource', err);
+      alert('The resource could not be added. Please check your connection and try again.');
     }
     setEditingResource(null);
     setIsModalOpen(false);
   };
 
-  const handleDeleteResource = (id: string) => {
+  const handleDeleteResource = async (id: string) => {
+    const previous = resources;
     onChangeResources(resources.filter(r => r.id !== id));
+    try {
+      const apiRes = await fetch(`/api/lesson/${lessonId}/resources/${id}`, { method: 'DELETE' });
+      if (!apiRes.ok && apiRes.status !== 404) {
+        onChangeResources(previous);
+        console.error('Failed to delete resource', apiRes.status);
+      }
+    } catch (err) {
+      onChangeResources(previous);
+      console.error('Failed to delete resource', err);
+    }
   };
 
   return (
@@ -134,7 +214,17 @@ export function DeepenTab({ config, onChangeConfig, resources, onChangeResources
               <p className={styles.sectionSub}>Add high-quality resources to help learners go deeper.</p>
             </div>
             
-            <button className={styles.addBtn} onClick={() => { setEditingResource(null); setIsModalOpen(true); }}>
+            <button
+              className={styles.addBtn}
+              onClick={() => {
+                if (resources.length >= MAX_RESOURCES) {
+                  alert(`This lesson already has the maximum of ${MAX_RESOURCES} resources.`);
+                  return;
+                }
+                setEditingResource(null);
+                setIsModalOpen(true);
+              }}
+            >
               <Plus size={14}/> Add Resource
             </button>
 

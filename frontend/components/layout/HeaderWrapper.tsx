@@ -9,18 +9,33 @@ export default function HeaderWrapper() {
   const pathname = usePathname();
 
   // Waitlist routes: show the dedicated WaitlistHeader
-  const isWaitlistRoute = pathname === '/' || pathname === '/terms' || pathname === '/privacy';
+  const isWaitlistRoute =
+    pathname === '/' ||
+    pathname === '/terms' ||
+    pathname === '/privacy' ||
+    pathname?.startsWith('/blog');
 
   // Routes that show NO header at all
   const isHiddenRoute =
+    // The install gateway and the PWA launch router are full-bleed app
+    // surfaces, not site pages — marketing chrome on either would break the
+    // "I'm entering Teyro" handoff and, on /start, push the CTA off a short
+    // phone's viewport.
+    pathname === '/start' ||
+    pathname === '/launch' ||
     pathname === '/join' ||
     pathname === '/signup' ||
     pathname === '/login' ||
     pathname === '/creator/login' ||
     pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/courses') ||
     pathname.startsWith('/learn') ||
-    pathname.startsWith('/creator');
+    pathname.startsWith('/creator') ||
+    // The Admin Center has its own shell (AdminShell) with its own sidebar
+    // and branding — the marketing header (with logged-out Login/Sign Up
+    // CTAs) has no business rendering above an internal, admin-only tool.
+    pathname.startsWith('/admin');
 
   if (isHiddenRoute) return null;
 

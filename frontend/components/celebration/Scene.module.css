@@ -1,0 +1,1329 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Celebration Engine — shared scene styles
+   Full-page dark scene takeovers (Duolingo grammar), Teyro-branded.
+   Fluid clamp() sizing from 320px up; one 320px floor query.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sceneBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(61, 90, 254, 0.16) 0%, rgba(16, 26, 46, 0) 55%),
+    #101a2e;
+  color: #ffffff;
+  overflow: hidden;
+  user-select: none;
+  padding: clamp(16px, 4vh, 36px) clamp(16px, 5vw, 40px);
+  padding-top: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-top, 0px));
+}
+
+/* Soft ambient brand glow behind the stage */
+.ambientGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 30% at 50% 38%, rgba(61, 90, 254, 0.14) 0%, transparent 70%),
+    radial-gradient(30% 22% at 50% 60%, rgba(250, 204, 21, 0.05) 0%, transparent 70%);
+}
+
+/* Skip hatch (top-left) — shown while the bottom CTA is hidden so a slow
+   server-first request or long choreography can never trap the learner */
+.skipButton {
+  position: absolute;
+  top: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-top, 0px));
+  left: clamp(16px, 5vw, 40px);
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: #b7c4d6;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.skipButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.skipButton:active {
+  transform: scale(0.92);
+}
+
+/*
+ * The scroll viewport. flex:1 1 auto + min-height:0 lets it shrink to
+ * whatever space is left once the pinned CTA below takes its share; the
+ * scene's actual content lives in .contentInner. This element must be the
+ * one that scrolls (not .sceneBackdrop) — a plain `overflow: visible` here
+ * combined with justify-content: center on oversized content would spill
+ * the excess equally above AND below this box without pushing .bottomAction
+ * down (overflow never affects sibling layout), so the headline could be
+ * clipped by the backdrop's overflow:hidden at the top while the tail end
+ * gets visually painted under the CTA at the bottom — the exact bug this
+ * replaced.
+ */
+.contentColumn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.contentColumn::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * margin: auto 0 centers this vertically inside .contentColumn exactly like
+ * the old justify-content: center did — EXCEPT auto margins clamp to 0
+ * instead of going negative. So on a short scene it still looks centered;
+ * on a scene taller than the viewport it simply sits flush at the top
+ * (nothing pushed off-screen) and the rest becomes reachable by scrolling
+ * .contentColumn, rather than overlapping .bottomAction.
+ */
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 560px;
+  margin: auto auto;
+  text-align: center;
+  /* Tightened from clamp(10,2vh,18) to claim back headroom for the bigger
+     mascot below on the busiest scenes (ClaimScene stacks headline + stat
+     pills + mascot + balances + progress bar all at once). */
+  gap: clamp(8px, 1.6vh, 14px);
+  padding-block: 4px;
+}
+
+.bottomAction {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+
+.headline {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  /* Scales down on width OR height, whichever is tighter — a landscape/short
+     viewport shrinks this even when it's plenty wide. */
+  font-size: clamp(22px, min(7.5vw, 6.5vh), 46px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.headlineAccent {
+  color: #ffc800;
+}
+
+.headlineBlue {
+  color: #6c8cff;
+}
+
+.subhead {
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(13px, min(3.6vw, 3.2vh), 17px);
+  font-weight: 600;
+  line-height: 1.4;
+  color: #b7c4d6;
+  max-width: 42ch;
+}
+
+/* ─── 3D CTA button (hard-shadow pill) ───────────────────────────────────── */
+
+.ctaButton {
+  width: 100%;
+  min-height: clamp(52px, 7vh, 62px);
+  border: none;
+  border-radius: 16px;
+  background: #3d5afe;
+  color: #ffffff;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(15px, 4vw, 17px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #2a45e0;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ctaButton:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.ctaButton:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #2a45e0;
+}
+
+.ctaButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.ctaGreen {
+  background: #22c55e;
+  box-shadow: 0 6px 0 #15803d;
+}
+
+.ctaGreen:active:not(:disabled) {
+  box-shadow: 0 2px 0 #15803d;
+}
+
+.ctaGold {
+  background: #f59e0b;
+  box-shadow: 0 6px 0 #b45309;
+}
+
+.ctaGold:active:not(:disabled) {
+  box-shadow: 0 2px 0 #b45309;
+}
+
+.ctaGhost {
+  background: transparent;
+  color: #8fa3bd;
+  box-shadow: none;
+  min-height: 44px;
+}
+
+.ctaGhost:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Stat pills (pop in one-by-one) ─────────────────────────────────────── */
+
+.statPillRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 12px);
+}
+
+.statPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.35);
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.statPillLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8fa3bd;
+}
+
+.statPillValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* ─── Balance row (deposit target) ───────────────────────────────────────── */
+
+.balanceRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 3vw, 14px);
+}
+
+.balanceIcon {
+  width: clamp(34px, min(11vw, 6vh), 54px);
+  height: clamp(34px, min(11vw, 6vh), 54px);
+  object-fit: contain;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+}
+
+.balanceValue {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(32px, min(12vw, 7.5vh), 68px);
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  min-width: 2.2ch;
+  text-align: left;
+}
+
+/* ─── XP / level progress bar ────────────────────────────────────────────── */
+
+.progressWrap {
+  width: min(100%, 340px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Duolingo-style chunky 3D "fluid" bar: a carved groove track with a raised,
+   glossy fill that has its own bevel (dark base edge + bright top highlight)
+   plus a diagonal shimmer drifting through it, like liquid moving. */
+.progressTrack {
+  position: relative;
+  width: 100%;
+  height: clamp(12px, 2.6vh, 22px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 2px auto 2px 2px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: width 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+  overflow: hidden;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 8px,
+    transparent 8px,
+    transparent 20px
+  );
+  background-size: 200% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+.progressFillBlue {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
+  box-shadow:
+    0 0 12px rgba(108, 140, 255, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@keyframes fluidDrift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -160px 0;
+  }
+}
+
+.progressCaption {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8fa3bd;
+}
+
+/* ─── Speech bubble (typewriter) ─────────────────────────────────────────── */
+
+.speechBubble {
+  position: relative;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(14px, 3.8vw, 16px);
+  font-weight: 700;
+  color: #e6edf6;
+  max-width: 34ch;
+  min-height: 1.5em;
+}
+
+.speechBubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Week calendar row ──────────────────────────────────────────────────── */
+
+.weekRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(8px, 2.6vw, 16px);
+}
+
+.weekDay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.weekDayLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8fa3bd;
+}
+
+.weekDayLabelToday {
+  color: #ffb020;
+}
+
+.weekDayCell {
+  width: clamp(30px, 9vw, 40px);
+  height: clamp(30px, 9vw, 40px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weekDayCellDone {
+  background: #0ea5e9;
+  border-color: #0284c7;
+  box-shadow: 0 3px 0 rgba(2, 132, 199, 0.55);
+}
+
+.weekDayCellToday {
+  background: #f59e0b;
+  border-color: #d97706;
+  box-shadow: 0 3px 0 rgba(180, 83, 9, 0.55);
+}
+
+.weekDayCheck {
+  color: #ffffff;
+}
+
+/* ─── Chest stage ────────────────────────────────────────────────────────── */
+
+.chestStage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: clamp(160px, 34vh, 320px);
+}
+
+.chestShadow {
+  width: clamp(90px, min(34vw, 26vh), 170px);
+  height: clamp(14px, 3vh, 24px);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(4px);
+}
+
+.chestArtWrap {
+  position: relative;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chestArt {
+  width: clamp(110px, min(42vw, 32vh), 200px);
+  height: auto;
+  max-height: clamp(110px, 32vh, 200px);
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
+}
+
+/* Golden light beam shooting up out of the chest */
+.lightBeam {
+  position: absolute;
+  bottom: 62%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(150px, 44vw, 220px);
+  height: clamp(190px, 42vh, 300px);
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg at 50% 100%,
+    transparent 0%,
+    rgba(250, 204, 21, 0.06) 12%,
+    rgba(253, 230, 138, 0.38) 32%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(253, 230, 138, 0.38) 68%,
+    rgba(250, 204, 21, 0.06) 88%,
+    transparent 100%
+  );
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+}
+
+/* ─── Rarity label ───────────────────────────────────────────────────────── */
+
+.rarityLabel {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(20px, 5.4vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rarityCommon {
+  color: #ffc800;
+}
+
+.rarityRare {
+  color: #38bdf8;
+}
+
+.rarityEpic {
+  color: #a855f7;
+}
+
+.raritySpark {
+  display: block;
+  margin-top: 2px;
+  color: #ffc800;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+}
+
+/* ─── Reward pile (drop-in gems/coins) ───────────────────────────────────── */
+
+.pileItem {
+  position: absolute;
+  will-change: transform;
+}
+
+/* ─── Quest rows ─────────────────────────────────────────────────────────── */
+
+.questRows {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.questRow {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: left;
+}
+
+.questRowHighlight {
+  border-color: rgba(250, 204, 21, 0.55);
+  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.3), 0 6px 22px rgba(250, 204, 21, 0.12);
+}
+
+.questRowTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.questRowLabel {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e6edf6;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Right-aligned cluster: reward chip + progress count */
+.questRowEnd {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.questRewardChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffc800;
+  white-space: nowrap;
+}
+
+.questRewardChip img {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+.questRowCount {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #8fa3bd;
+  white-space: nowrap;
+}
+
+.questRowCountDone {
+  color: #4ade80;
+}
+
+/* Mini progress bar inside a quest row */
+/* Same 3D groove-and-bevel treatment as .progressTrack/.barTrack above, sized
+   down for an inline per-row bar rather than a standalone hero bar. */
+.questBarTrack {
+  position: relative;
+  width: 100%;
+  height: clamp(9px, 1.8vh, 13px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.questBarFill {
+  position: relative;
+  height: 100%;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 10px rgba(74, 222, 128, 0.5),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: width 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+  overflow: hidden;
+}
+
+.questBarFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 6px,
+    transparent 6px,
+    transparent 16px
+  );
+  background-size: 160% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+.questBarFillGold {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
+  box-shadow:
+    0 0 10px rgba(251, 191, 36, 0.5),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Shine sweep across a just-completed row */
+.questShine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.16) 48%,
+    rgba(250, 204, 21, 0.22) 52%,
+    transparent 70%
+  );
+  transform: translateX(-110%);
+  animation: questShineSweep 1.1s 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes questShineSweep {
+  to {
+    transform: translateX(110%);
+  }
+}
+
+/* ─── Level badge (level-up scene) ───────────────────────────────────────── */
+
+.levelBadge {
+  position: relative;
+  width: clamp(110px, min(38vw, 30vh), 190px);
+  height: clamp(110px, min(38vw, 30vh), 190px);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 32% 26%, #3d5afe 0%, #2a45e0 62%, #1d34b8 100%);
+  border: 5px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 18px 50px rgba(61, 90, 254, 0.45),
+    inset 0 -8px 0 rgba(0, 0, 0, 0.22);
+}
+
+.levelBadgeLabel {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c3d0ff;
+}
+
+.levelBadgeValue {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(38px, min(15vw, 11vh), 76px);
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Mascot ─────────────────────────────────────────────────────────────── */
+
+/*
+ * The mascot's bounding box. This is the fix for the mascot dominating short
+ * screens: previously CelebrationMascot rendered with no sizing wrapper at
+ * all, so its image fell back to filling the width of the content column
+ * with height:auto — on a wide phone that could mean a 300px+ tall robot
+ * eating most of the vertical budget. Bounding it on BOTH vw and vh means
+ * a short (or landscape) viewport shrinks it, not just a narrow one.
+ */
+.mascotWrap {
+  position: relative;
+  width: clamp(120px, min(42vw, 34vh), 240px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascotImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.45));
+  will-change: transform;
+}
+
+/* ─── Corner balance chip (chest scene count-up) ─────────────────────────── */
+
+.cornerBalance {
+  position: absolute;
+  top: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-top, 0px));
+  right: clamp(16px, 5vw, 40px);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  z-index: 4;
+  font-variant-numeric: tabular-nums;
+}
+
+.cornerBalance img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ─── Streak flame stage ─────────────────────────────────────────────────── */
+
+.flameStage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.5vh, 12px);
+}
+
+.flameImg {
+  width: clamp(80px, min(24vw, 20vh), 132px);
+  height: clamp(80px, min(24vw, 20vh), 132px);
+  object-fit: contain;
+  filter: drop-shadow(0 0 34px rgba(255, 138, 0, 0.55)) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+}
+
+.streakCountRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(36px, min(14vw, 11vh), 76px);
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.streakDaysLabel {
+  font-size: clamp(15px, min(4.4vw, 3.6vh), 24px);
+  color: #ffb020;
+}
+
+.streakLost .flameImg {
+  filter: grayscale(1) brightness(0.55) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+}
+
+/* Inline error note (server-first claim failure) */
+.errorNote {
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fca5a5;
+  max-width: 40ch;
+}
+
+/* "Tap to open!" hint pulse */
+.tapHint {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(17px, 4.6vw, 21px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffc800;
+  animation: tapHintPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes tapHintPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.82;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .questShine {
+    animation: none;
+    opacity: 0;
+  }
+
+  .tapHint {
+    animation: none;
+  }
+
+  .progressFill {
+    transition: none;
+  }
+
+  .progressFill::after,
+  .barFill::after,
+  .questBarFill::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ─── 320px floor ────────────────────────────────────────────────────────── */
+
+@media (max-width: 320px) {
+  .sceneBackdrop {
+    padding: 12px 12px;
+  }
+
+  .skipButton {
+    top: 12px;
+    left: 12px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .headline {
+    font-size: 26px;
+  }
+
+  .subhead {
+    font-size: 13px;
+  }
+
+  .balanceValue {
+    font-size: 42px;
+  }
+
+  .ctaButton {
+    min-height: 48px;
+    font-size: 13px;
+  }
+
+  .chestArt {
+    width: 140px;
+  }
+
+  .weekRow {
+    gap: 6px;
+  }
+
+  .weekDayCell {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+/* ─── AchievementScene — badge medallion + tier ladder ─────────────────────── */
+
+.achvStage {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.achvMedal {
+  width: clamp(96px, min(30vw, 24vh), 150px);
+  height: clamp(96px, min(30vw, 24vh), 150px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.achvShine {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 48%,
+    rgba(255, 255, 255, 0.15) 56%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.achvTierRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.achvTierDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.25);
+}
+
+.achvTierDotDone {
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.achvTierDotCurrent {
+  width: 18px;
+  height: 18px;
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achvShine {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Milestone scenes — SECTION_COMPLETE / COURSE_PROGRESS / SECTION_UNLOCKED /
+   COURSE_COMPLETE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Quiet text action stacked under the primary CTA */
+.secondaryCta {
+  border: none;
+  background: transparent;
+  color: #8fa3bd;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(12px, 3.2vw, 14px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 40px;
+  transition: color 0.15s ease;
+}
+
+.secondaryCta:hover {
+  color: #ffffff;
+}
+
+.secondaryCta:active {
+  transform: scale(0.97);
+}
+
+/* ─── AnimatedProgressBar (from → to fill) ──────────────────────────────────── */
+
+/* Duolingo-style chunky 3D "fluid" bar — see .progressTrack/.progressFill
+   above for the same treatment on the ClaimScene level bar. */
+.barTrack {
+  position: relative;
+  width: min(100%, 340px);
+  height: clamp(12px, 2.6vh, 22px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 2px auto 2px 2px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 8px,
+    transparent 8px,
+    transparent 20px
+  );
+  background-size: 200% 100%;
+  animation: fluidDrift 2.4s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+.barFillGreen {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
+  box-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.barFillBlue {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
+  box-shadow:
+    0 0 12px rgba(108, 140, 255, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.barFillGold {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
+  box-shadow:
+    0 0 12px rgba(251, 191, 36, 0.55),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* One shine crossing the track right after the fill lands */
+.barShine {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 34%;
+  right: -40%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 80%
+  );
+  animation: barShineSweep 0.7s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes barShineSweep {
+  0% {
+    right: -40%;
+    opacity: 0.9;
+  }
+  100% {
+    right: 110%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barShine {
+    display: none;
+  }
+}
+
+/* ─── Glass milestone card (section stats / next-section preview) ──────────── */
+
+.milestoneCard {
+  width: min(100%, 400px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.6vh, 12px);
+  padding: clamp(16px, 3vw, 22px);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.milestoneKicker {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(10px, 2.6vw, 12px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8fa3bd;
+}
+
+.milestoneTitle {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(19px, 5vw, 24px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.milestoneBarWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.milestoneCaption {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(13px, 3.4vw, 14px);
+  font-weight: 700;
+  color: #e6edf6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small icon + text stat rows inside a card (lessons · minutes · activities) */
+.milestoneMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 18px;
+}
+
+.milestoneMetaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(13px, 3.4vw, 14px);
+  font-weight: 700;
+  color: #b7c4d6;
+}
+
+.previewDesc {
+  margin: 0;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(13px, 3.6vw, 15px);
+  font-weight: 600;
+  line-height: 1.45;
+  color: #b7c4d6;
+  max-width: 34ch;
+}
+
+/* ─── Unlock choreography (locked → flash → unlocked) ──────────────────────── */
+
+.lockStage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.lockCircle {
+  width: clamp(80px, min(24vw, 20vh), 120px);
+  height: clamp(80px, min(24vw, 20vh), 120px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.lockCircleLocked {
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  color: #8fa3bd;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.lockCircleUnlocked {
+  background: linear-gradient(160deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  color: #ffffff;
+  box-shadow:
+    0 0 0 6px rgba(34, 197, 94, 0.18),
+    0 0 28px rgba(74, 222, 128, 0.45),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+.lockStateLabel {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8fa3bd;
+}
+
+.lockStateLabelUnlocked {
+  color: #4ade80;
+}
+
+/* Pre-unlock rattle */
+@keyframes lockShake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-9deg) translateX(-3px); }
+  40% { transform: rotate(8deg) translateX(3px); }
+  60% { transform: rotate(-7deg) translateX(-2px); }
+  80% { transform: rotate(6deg) translateX(2px); }
+}
+
+/* White burst that covers the lock swap */
+.unlockFlash {
+  position: absolute;
+  inset: -30%;
+  z-index: 3;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 38%,
+    rgba(255, 255, 255, 0) 68%
+  );
+  pointer-events: none;
+}
+
+/* ─── Course-complete trophy crest ──────────────────────────────────────────── */
+
+.trophyCrest {
+  width: clamp(74px, min(22vw, 18vh), 110px);
+  height: clamp(74px, min(22vw, 18vh), 110px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+  color: #ffffff;
+  box-shadow:
+    0 0 0 8px rgba(251, 191, 36, 0.14),
+    0 0 32px rgba(245, 158, 11, 0.4),
+    inset 0 -5px 0 rgba(180, 83, 9, 0.55),
+    inset 0 3px 0 rgba(255, 255, 255, 0.35);
+}

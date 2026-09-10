@@ -16,7 +16,7 @@ const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 export interface OnboardingData {
   startedAt?: number;
   lastCompletedStep?: number;
-  draftId?: string; // Backend CreatorOnboardingDraft ID
+  draftId?: string; // Legacy backend CreatorOnboardingDraft ID — no longer minted; kept so old stored payloads parse
 
   // Step answers (keyed by step number)
   step1?: { started: true };
@@ -25,7 +25,7 @@ export interface OnboardingData {
   step4?: { audienceSize: string };
   step5?: { platforms: string[] };
   step6?: { existingContent: string[] };
-  step7?: { biggestChallenge: string };
+  step7?: { biggestChallenge: string[] };
   step8?: { teachingStyle: string };
   step9?: { viewed: boolean };
   step10?: { feature: string };
@@ -93,26 +93,6 @@ export function saveOnboardingStep(
   } catch {
     // localStorage quota exceeded — fail silently, flow continues
     console.warn('[Teyro Onboarding] Failed to save to localStorage');
-  }
-}
-
-// ─── SAVE DRAFT ID ───────────────────────────────────────────────────────────
-
-/**
- * Stores the backend draft ID returned after Step 1.
- * This ID is used to link the CreatorOnboardingDraft to the user on signup.
- */
-export function saveDraftId(id: string): void {
-  if (typeof window === 'undefined') return;
-
-  const existing = getOnboardingData();
-  try {
-    localStorage.setItem(
-      ONBOARDING_KEY,
-      JSON.stringify({ ...existing, draftId: id, startedAt: existing.startedAt ?? Date.now() })
-    );
-  } catch {
-    console.warn('[Teyro Onboarding] Failed to save draftId');
   }
 }
 

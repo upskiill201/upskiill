@@ -1,0 +1,123 @@
+/* Full notification inbox — the bell panel's "See all" destination.
+ * Deliberately reuses the panel's row component, so a row can never read one
+ * way in the dropdown and another way here. */
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px 72px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 22px 0 14px;
+}
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.subtitle {
+  margin: 3px 0 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.markAllBtn {
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.markAllBtn:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+.markAllBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.tab {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.tabActive {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--text-on-blue);
+}
+
+/* One card holding the whole list, hairlines between rows — the panel's rows
+   are borderless by design and would float without this. */
+.listCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.listCard > button + button {
+  border-top: 1px solid var(--border);
+}
+
+.loadMoreBtn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  cursor: pointer;
+}
+.loadMoreBtn:hover:not(:disabled) {
+  background: var(--bg-section);
+}
+.loadMoreBtn:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+.skeletonRow + .skeletonRow {
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 0 12px 84px;
+  }
+  .title {
+    font-size: 21px;
+  }
+  .header {
+    padding: 16px 0 12px;
+  }
+}

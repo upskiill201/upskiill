@@ -22,8 +22,8 @@ model User {
   updatedAt   DateTime  @updatedAt
 
   // WhatsApp verification (set on onboarding Step 6)
-  whatsappPhone    String?  // E.164 format, e.g. +2347012345678
-  whatsappVerified Boolean  @default(false)
+  whatsappPhone    String? // E.164 format, e.g. +2347012345678
+  whatsappVerified Boolean @default(false)
 
   // Dual-role access flags — the canonical source of truth for which profiles exist
   hasStudentAccess Boolean @default(false)
@@ -31,13 +31,104 @@ model User {
 
   profile             Profile?
   studentProfile      StudentProfile?
+  instructorProfile   InstructorProfile?
   enrollments         Enrollment[]
-  courses             Course[]                @relation("InstructorCourses")
+  courses             Course[]                  @relation("InstructorCourses")
   orders              Order[]
   reviews             Review[]
   onboardingDraft     CreatorOnboardingDraft?
   PasswordResetToken  PasswordResetToken[]
   onboardingSession   OnboardingSession?
+  accessEntitlements  CourseAccessEntitlement[]
+  courseSubscriptions CourseSubscription[]
+
+  // Social Connections — Followers & Following
+  following UserFollow[] @relation("UserFollower")
+  followers UserFollow[] @relation("UserFollowing")
+
+  // Account Security, Status & Lifecycle fields (Part 3A.2.1.2.1)
+  accountStatus       AccountStatus @default(ACTIVE)
+  emailVerifiedAt     DateTime?
+  lastLoginAt         DateTime?
+  lastActiveAt        DateTime?
+  loginCount          Int           @default(0)
+  failedLoginAttempts Int           @default(0)
+  accountLockedUntil  DateTime?
+  deletedAt           DateTime?
+
+  // Failed verify-code submissions; at >= 5 the pending code is voided (B1)
+  verifyAttempts Int @default(0)
+
+  // Persisted timezone — captured opportunistically from the client (see
+  // TimezoneInterceptor). The Tey scheduler cannot ask a browser "what time is
+  // it for you?" at 8pm, so the learner's zone has to live in the database.
+  // IANA is primary because it survives DST; the offset is a fallback for
+  // clients that can't resolve a zone name, and mirrors the existing
+  // x-timezone-offset header (same sign convention as Date.getTimezoneOffset).
+  timezone              String?
+  timezoneOffsetMinutes Int?
+
+  gemTransactions        GemTransaction[]
+  shopTransactions       ShopTransaction[]
+  userAchievements       UserAchievement[]
+  userMissions           UserMission[]
+  dailyMissions          UserDailyMission[]
+  dailyMissionSets       DailyMissionSet[]
+  rewardTransactions     RewardTransaction[]
+  spinClaims             SpinClaim[]
+  courseProgresses       UserCourseProgress[]
+  lessonProgresses       UserLessonProgress[]
+  stepProgresses         UserStepProgress[]
+  stepAttempts           UserStepAttempt[]
+  learningSessions       LearningSession[]
+  userLearningStreak     UserLearningStreak?
+  userStats              UserStats?
+  weeklyProgresses       UserWeeklyProgress[]
+  weeklySpins            WeeklySpin[]
+  learningEvents         LearningEvent[]
+  userInventories        UserInventory[]
+  shopItems              UserShopItem[]
+  shopUnlocks            UserShopUnlock[]
+  shopState              UserShopState?
+  dailyChests            DailyChest[]
+  dailyActivities        UserDailyActivity[]
+  monthlyQuests          UserMonthlyQuest[]
+  userMomentum           UserMomentum?
+  rewardLogs             RewardLog[]
+  xpEvents               XpEvent[]
+  communityMemberships   CommunityMembership[]
+  posts                  Post[]
+  comments               Comment[]
+  likes                  Like[]
+  activityFeed           ActivityFeed[]
+  viewerFriendActivities FriendActivity[]      @relation("ViewerFriendActivities")
+  actorFriendActivities  FriendActivity[]      @relation("ActorFriendActivities")
+  notifications          Notification[]
+  notificationActors     Notification[]        @relation("NotificationActor")
+  pollVotes              PollVote[]
+  courseWeeklyXp         CourseWeeklyXp[]
+  leagueMembers          LeagueMember[]
+  teyActivityEvents      TeyActivityEvent[]
+  learnerState           LearnerState?
+  teyScheduledActions    TeyScheduledAction[]
+  teyDeliveries          TeyDelivery[]
+  pushSubscriptions      PushSubscription[]
+  teyNotificationPrefs   TeyNotificationPrefs?
+
+  @@index([accountStatus, role])
+  @@index([createdAt, role])
+  @@index([lastLoginAt])
+  @@index([role])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+enum AccountStatus {
+  ACTIVE
+  PENDING_VERIFICATION
+  SUSPENDED
+  LOCKED
+  DELETED
 }
 
 model Profile {
@@ -45,18 +136,46 @@ model Profile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  headline  String?
-  bio       String? @db.Text
-  avatarUrl String?
+  username         String? @unique
+  creatorStatus    String  @default("founding_creator")
+  headline         String?
+  bio              String? @db.Text
+  about            String? @db.Text
+  avatarUrl        String?
+  coverImageUrl    String?
+  introVideoUrl    String?
+  tagline          String?
+  location         String?
+  languages        Json?
+  primaryExpertise String?
+  skills           Json?
+  teachingLevels   Json?
+  contentFormats   Json?
 
-  // Social Links
+  // Experience, Education & Certifications
+  experiences    Json?
+  education      Json?
+  certifications Json?
+
+  // Social & Professional Links
   website   String?
   linkedin  String?
+  github    String?
   twitter   String?
   youtube   String?
   instagram String?
   tiktok    String?
   facebook  String?
+  portfolio String?
+
+  // Contact & Preferences
+  contactMethod      String? @default("email")
+  businessEmail      String?
+  allowCollaboration Boolean @default(true)
+  profileVisibility  String  @default("PUBLIC")
+  privacySettings    Json?
+
+  usernameLastChangedAt DateTime?
 
   // Creator profile fields (hydrated from onboarding answers)
   niche            String? // Step 3: primary teaching category
@@ -64,7 +183,7 @@ model Profile {
   audienceSize     String? // Step 4: audience scale
   platforms        Json? // Step 5: current platforms
   weeklyHours      String? // Step 9: available time per week
-  biggestChallenge String? // Step 7: primary pain point
+  biggestChallenge Json? // Step 7: selected pain points (multi-select array from onboarding)
   teachingStyle    String? // Step 8: content/teaching approach
   launchGoal       String? // Step 12: first course launch goal
 
@@ -82,6 +201,21 @@ model Course {
   price            Float
   originalPrice    Float?
   published        Boolean @default(false)
+
+  // Admin-only homepage/explore curation flag — distinct from `published`
+  // (which is the creator's own catalog visibility toggle). Set only from
+  // the Admin Center.
+  featured Boolean @default(false)
+
+  // Course review workflow (Teyro's pre-publication gate). `published`
+  // still gates the public catalog, and publishCourse() is still the only
+  // place that ever sets it true — reviewStatus is a precondition layered
+  // in front of that existing call, not a second publishing mechanism.
+  reviewStatus         CourseReviewStatus @default(DRAFT)
+  submittedForReviewAt DateTime?
+  reviewedAt           DateTime?
+  reviewedBy           String? // admin userId of the most recent decision
+  reviewHistory        CourseReview[]
 
   // Teyro Course Transformation Engine
   category          String  @default("Uncategorized")
@@ -105,6 +239,11 @@ model Course {
 
   curriculum Json? @default("[]")
 
+  // Optimistic locking for the Course Builder's autosave, mirroring Lesson.
+  // Every creator-facing metadata write bumps this; a save carrying a stale
+  // version is rejected with 409 instead of silently overwriting newer data.
+  version Int @default(1)
+
   // Relations
   instructorId String
   instructor   User   @relation("InstructorCourses", fields: [instructorId], references: [id])
@@ -115,26 +254,113 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enrollments Enrollment[]
-  orderItems  OrderItem[]
+  enrollments          Enrollment[]
+  accessEntitlements   CourseAccessEntitlement[]
+  courseSubscriptions  CourseSubscription[]
+  orderItems           OrderItem[]
+  userCourseProgresses UserCourseProgress[]
+  community            Community?
+  posts                Post[]
+  weeklyXpRows         CourseWeeklyXp[]
+  views                CourseView[]
+
+  // Catalog reads (GET /courses) filter on `published` and sort by
+  // `createdAt` — previously a full table scan + sort on every catalog
+  // load. `instructorId` backs every "my courses" / ownership-check query.
+  @@index([published, createdAt])
+  @@index([instructorId])
+  @@index([featured])
+  // Backs the admin review queue (GET /admin/courses?reviewStatus=...),
+  // sorted oldest-submission-first by default.
+  @@index([reviewStatus, submittedForReviewAt])
 }
 
-model Section {
-  id         String   @id @default(uuid())
-  title      String
-  goal       String?  @db.Text
-  orderIndex Int      @default(0)
-  courseId   String
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons    Lesson[]
+enum CourseReviewStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum CourseReviewAction {
+  SUBMITTED
+  STARTED_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  /// System-triggered, not an admin decision: an already-approved course had
+  /// a substantive edit, so its approval no longer covers the live content.
+  REOPENED
+}
+
+/// Append-only review history — the record of every decision made about a
+/// course, in order. Never updated or deleted; a new review always adds a
+/// new row rather than overwriting the last one, so past feedback survives
+/// resubmission. Distinct from `Review` (student ratings/comments) despite
+/// the similar name — hence `reviewHistory` as the Course relation field.
+model CourseReview {
+  id       String @id @default(uuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  reviewerId String? // admin userId; null for creator submissions and system-triggered rows
+  action     CourseReviewAction
+
+  previousStatus CourseReviewStatus
+  newStatus      CourseReviewStatus
+
+  feedback     String? @db.Text // shown to the creator
+  internalNote String? @db.Text // admin-only, never returned to the creator
+
+  createdAt DateTime @default(now())
+
+  @@index([courseId, createdAt])
+  @@map("course_reviews")
+}
+
+/// Daily page-view aggregate for a course detail page. One row per
+/// (course, day), incremented on visit — powers funnel stage 1 ("viewed")
+/// and the enrollment conversion rate. Never per-user, so nothing here can
+/// identify a visitor.
+model CourseView {
+  id       String   @id @default(uuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  day      DateTime @db.Date
+  count    Int      @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([courseId, day])
+  @@index([courseId])
+  @@map("course_views")
+}
+
+model Section {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  goal        String?  @db.Text
+  orderIndex  Int      @default(0)
+  isLocked    Boolean  @default(false)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@map("course_sections")
 }
 
 model Lesson {
   id               String  @id @default(uuid())
   title            String  @db.VarChar(100)
+  description      String? @db.Text
   shortDescription String? @db.VarChar(300)
   lessonType       String  @default("video")
   orderIndex       Int     @default(0)
@@ -148,7 +374,6 @@ model Lesson {
   estimatedDurationSeconds Int       @default(0)
 
   // Block-based content architecture
-  // Stores arrays of content blocks for learn, apply, reflect, deepen phases
   contentBlocks Json? @default("{}")
 
   // Phase completion state tracking
@@ -158,12 +383,56 @@ model Lesson {
   xpReward Int @default(10)
 
   // Relations
-  sectionId String
-  section   Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  resources LessonResource[]
+  sectionId            String
+  section              Section              @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  resources            LessonResource[]
+  steps                LessonStep[]
+  userLessonProgresses UserLessonProgress[]
+  posts                Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([sectionId])
+  @@map("course_lessons")
+}
+
+model LessonStep {
+  id              String  @id @default(uuid())
+  lessonId        String
+  lesson          Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  stepType        String // 'learn' | 'apply' | 'reflect' | 'resources'
+  title           String?
+  orderIndex      Int     @default(0)
+  isRequired      Boolean @default(true)
+  unlockCondition Json?
+
+  contents           LessonStepContent[]
+  userStepProgresses UserStepProgress[]
+  userStepAttempts   UserStepAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lessonId])
+  @@index([stepType])
+  @@map("lesson_steps")
+}
+
+model LessonStepContent {
+  id            String     @id @default(uuid())
+  stepId        String
+  step          LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  contentType   String // 'video' | 'text' | 'quiz' | 'task' | 'ai_prompt' | 'file'
+  content       Json
+  orderIndex    Int        @default(0)
+  isInteractive Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stepId])
+  @@map("lesson_step_content")
 }
 
 model LessonResource {
@@ -177,9 +446,15 @@ model LessonResource {
   originalName     String?
   estimatedReadMin Int     @default(0)
   displayOrder     Int     @default(0)
+  description      String? // optional creator-written summary shown in resource lists
+  category         String? // Reference | Template | Exercise | Supplemental
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // FKs are not auto-indexed by Postgres; the owner course read does
+  // `include: { resources: true }` once per lesson.
+  @@index([lessonId])
 }
 
 model Review {
@@ -196,6 +471,9 @@ model Review {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId]) // One review per user per course
+  // The unique above leads with userId, so it cannot serve the rating
+  // rollups that filter by course.
+  @@index([courseId])
 }
 
 model Enrollment {
@@ -205,10 +483,109 @@ model Enrollment {
   progress         Int      @default(0)
   completedLessons Json?    @default("[]")
   createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   course           Course   @relation(fields: [courseId], references: [id])
   user             User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+  // courseId alone is not covered by the leading-userId unique above.
+  @@index([courseId])
+  // Satisfies the sort in getMyEnrollments (orderBy updatedAt desc), which the
+  // unique index cannot.
+  @@index([userId, updatedAt(sort: Desc)])
+}
+
+enum AccessPlan {
+  WEEKLY
+  MONTHLY
+  YEARLY
+  LIFETIME
+}
+
+enum AccessStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+model CourseAccessEntitlement {
+  id                   String       @id @default(uuid())
+  userId               String
+  courseId             String
+  plan                 AccessPlan   @default(MONTHLY)
+  status               AccessStatus @default(ACTIVE)
+  startDate            DateTime     @default(now())
+  expiresAt            DateTime
+  cancelAtPeriodEnd    Boolean      @default(false)
+  stripeSubscriptionId String?
+  stripeCustomerId     String?
+  pricePaid            Float?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId, courseId, status, expiresAt])
+  @@map("course_access_entitlements")
+}
+
+/// Idempotency ledger for provider webhooks. Stripe (and other providers)
+/// retry deliveries and legitimately fire overlapping events — without this
+/// table every replay would stack another free period onto the entitlement.
+model ProcessedWebhookEvent {
+  id         String   @id @default(uuid())
+  provider   String // STRIPE | MESOMB
+  eventId    String
+  eventType  String?
+  receivedAt DateTime @default(now())
+
+  @@unique([provider, eventId])
+  @@map("processed_webhook_events")
+}
+
+enum PaymentProviderType {
+  STRIPE
+  MESOMB
+  MANUAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+model CourseSubscription {
+  id                     String              @id @default(uuid())
+  userId                 String
+  courseId               String
+  provider               PaymentProviderType @default(STRIPE)
+  providerSubscriptionId String?
+  providerCustomerId     String?
+  plan                   AccessPlan          @default(MONTHLY)
+  status                 SubscriptionStatus  @default(ACTIVE)
+  startedAt              DateTime            @default(now())
+  currentPeriodStart     DateTime            @default(now())
+  currentPeriodEnd       DateTime
+  cancelledAt            DateTime?
+  endedAt                DateTime?
+  autoRenew              Boolean             @default(true)
+  pricePaid              Float?
+  currency               String              @default("USD")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, courseId, status])
+  @@index([provider, providerSubscriptionId])
+  @@map("course_subscriptions")
 }
 
 enum OrderStatus {
@@ -226,6 +603,8 @@ model Order {
   items       OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model OrderItem {
@@ -236,6 +615,9 @@ model OrderItem {
   course    Course   @relation(fields: [courseId], references: [id])
   price     Float // Price at the time of purchase
   createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([courseId])
 }
 
 enum Role {
@@ -278,24 +660,24 @@ model PasswordResetToken {
 }
 
 model OnboardingSession {
-  id             String    @id @default(uuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentStep    Int       @default(1)
-  completedSteps Int[]     @default([])
-  answers        Json      @default("{}")
-  onboardingComplete Boolean @default(false)
-  startedAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  completedAt    DateTime?
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStep        Int       @default(1)
+  completedSteps     Int[]     @default([])
+  answers            Json      @default("{}")
+  onboardingComplete Boolean   @default(false)
+  startedAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  completedAt        DateTime?
 
   @@map("onboarding_sessions")
 }
 
 model StudentProfile {
-  id           String    @id @default(uuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Learning progress data
   xp                 Int       @default(30) // 30 XP starter grant
@@ -306,23 +688,169 @@ model StudentProfile {
   // Lives system — lose a life on wrong Apply answer, refill 1 per 4h
   lives           Int       @default(5)
   maxLives        Int       @default(5)
-  livesLastLostAt DateTime?  // timestamp of when the last life was lost
+  livesLastLostAt DateTime? // timestamp of when the last life was lost
 
   // Streak freezes (banked freezes)
-  streakFreezeBank Int       @default(1)
+  streakFreezeBank Int @default(1)
 
   // Daily quests log
   completedQuests  Json      @default("[]")
   lastQuestResetAt DateTime?
 
+  // Achievements log — tracks which badge levels have been unlocked and claimed
+  // Format: [{ badgeId, level, claimed, unlockedAt }]
+  achievements Json @default("[]")
+
   // Daily Reward (Login Chest)
   lastRewardClaimedAt      DateTime?
   dailyRewardCyclePosition Int       @default(1)
 
+  // Gems & Coins currency & longest streak tracking
+  gems                  Int       @default(100) // 100 Gems starter grant
+  coins                 Int       @default(50) // 50 Coins starter grant
+  longestStreak         Int       @default(3)
+  lastLessonCompletedAt DateTime? // Exact timestamp when a lesson was finished
+
+  // Daily goal (XP/day) — Duolingo-style commitment level
+  // 20 Casual | 50 Regular | 100 Serious | 200 Intense
+  dailyGoalXp Int @default(20)
+
+  // Weekly league standing (Duolingo-style leaderboards). Source of truth for
+  // which tier the user joins next week; mutated only by league settlement.
+  leagueTier     LeagueTier @default(BRONZE)
+  tournamentWins Int        @default(0) // Diamond Tournament championships
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // `userId` is already `@unique` above (which Postgres backs with its own
+  // index) — the old `@@index([userId])` here was a pure duplicate that
+  // only cost write throughput. `xp` backs the stats-summary percentile
+  // (`count(*) where xp > $mine`), previously a full-table scan per read.
+  @@index([xp])
   @@map("student_profiles")
+}
+
+model GemTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // 'EARN' | 'SPEND'
+  amount    Int
+  source    String // 'LESSON' | 'DAILY_GOAL' | 'LEARNING_PATH' | 'LEVEL_UP' | 'PERFECT_LESSON' | 'SHOP' | 'CHALLENGE' | 'ONBOARDING_CHALLENGE' | 'ADMIN'
+  createdAt DateTime @default(now())
+
+  // NOTE: a PARTIAL unique index (userId WHERE source = 'ONBOARDING_CHALLENGE')
+  // enforces the one-time onboarding challenge reward. Prisma can't model
+  // partial indexes — it lives only in migration
+  // 20260825120000_add_onboarding_challenge_reward_guard.
+  @@index([userId])
+  @@map("gem_transactions")
+}
+
+model ShopTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      String // Shop registry item id (see backend/src/shop/shop.registry.ts)
+  quantity  Int      @default(1)
+  cost      Int
+  createdAt DateTime @default(now())
+
+  // Denormalised for spend analytics — which rarity/category bands actually
+  // sell. Nullable so pre-existing rows stay valid.
+  rarity   String?
+  category String?
+
+  // Retry guard. The client mints one key per purchase attempt; a replayed
+  // request hits this unique index instead of double-charging. Nullable so
+  // legacy rows (and the back-compat purchase path) remain valid.
+  idempotencyKey String? @unique
+
+  @@index([userId])
+  @@map("shop_transactions")
+}
+
+/// Everything a learner owns from the shop — consumable charges, timed boosts
+/// and cosmetics alike.
+///
+/// Deliberate exception: STREAK FREEZES are not stored here. Their canonical
+/// balance stays `StudentProfile.streakFreezeBank`, because the streak
+/// reconciliation in GamificationService/StreakService consumes that counter
+/// directly, and a second freeze balance would be a third source of truth for
+/// one number. Shop freeze purchases now mirror into `UserInventory` the same
+/// way the chest and monthly-quest grants already do, which closes the old
+/// split where a shop-bought freeze was invisible to that table.
+model UserShopItem {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Registry item id — not a foreign key, because the catalogue lives in code.
+  itemId String
+
+  /// Consumable charges / stack count. Cosmetics sit at 1.
+  quantity Int @default(0)
+
+  /// One equipped item per cosmetic slot — enforced in the service, since the
+  /// slot itself is a property of the registry item rather than a column.
+  equipped Boolean @default(false)
+
+  /// Timed boosts (XP/coin multipliers) expire; everything else is null.
+  expiresAt DateTime?
+
+  firstOwnedAt DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId, equipped])
+  @@map("user_shop_items")
+}
+
+/// Items whose learning requirement the learner has just met. Written the
+/// moment the requirement is satisfied and read by the Shop Engine, which
+/// surfaces each one as a full-page "unlocked" scene exactly once — `seenAt`
+/// is what stops it firing twice.
+model UserShopUnlock {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  itemId     String
+  unlockedAt DateTime  @default(now())
+  seenAt     DateTime?
+
+  @@unique([userId, itemId])
+  @@index([userId, seenAt])
+  @@map("user_shop_unlocks")
+}
+
+/// Per-learner shop meta: the daily-visit reward streak and which collection
+/// payouts have already been claimed.
+model UserShopState {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// YYYY-MM-DD (learner-local) of the last visit that paid a reward.
+  lastVisitDay       String?
+  /// Consecutive days visited — the visit bonus scales with it.
+  visitStreak        Int     @default(0)
+  /// Collection ids already paid out, e.g. ["SPACE"].
+  claimedCollections Json    @default("[]")
+
+  /// Permanent freeze-capacity upgrades bought (Freeze Vault).
+  freezeCapacityBonus Int @default(0)
+
+  /// When this learner's unlock state was first reconciled. Everything they
+  /// already qualified for at that moment is recorded as *already seen*, so
+  /// the Shop Engine announces only what they unlock from then on. Without
+  /// this, an existing learner's first app load after release would queue a
+  /// full-page takeover for every requirement they cleared months ago.
+  unlocksBackfilledAt DateTime?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("user_shop_state")
 }
 
 model WhatsappAuthStore {
@@ -331,4 +859,1344 @@ model WhatsappAuthStore {
   updatedAt DateTime @updatedAt
 
   @@map("whatsapp_auth_store")
+}
+
+// One-time WhatsApp verification codes (onboarding Step 6 + profile settings).
+// Keyed by normalised E.164 phone — one pending code per number.
+// `codeHash` is SHA-256(code + phone); raw codes are never persisted.
+//
+// Anonymous journeys: onboarding users verify BEFORE signing up (Google sign-in
+// happens at Step 12). A successful anonymous verify stamps `verifiedAt` instead
+// of deleting the row; when the user later syncs onboarding answers while
+// authenticated, user-onboarding.service claims the row (`claimedBy`) and binds
+// the number to the account.
+model WhatsappOtp {
+  phone           String    @id // E.164, e.g. +237671405008
+  codeHash        String
+  expiresAt       DateTime // 10-minute TTL from send
+  attempts        Int       @default(0) // wrong guesses; locked & deleted at MAX_OTP_ATTEMPTS
+  sentCount       Int       @default(0) // sends within the current hourly window
+  windowStartedAt DateTime  @default(now()) // start of the current hourly send window
+  lastSentAt      DateTime  @default(now()) // enforces the resend cooldown
+  verifiedAt      DateTime? // set when verified pre-auth (row kept for account binding)
+  claimedBy       String? // userId that bound this number, once known
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("whatsapp_otps")
+}
+
+// One-time Step 9 onboarding challenge reward, claimed BEFORE sign-up.
+// The client celebrates immediately; the payout settles when the account
+// appears (signup paths + authenticated session syncs). `tokenHash` is the
+// SHA-256 of an opaque token shown once to the browser — the raw value is
+// never stored. `settledByUserId` being UNIQUE means one settled claim per
+// account AND one settling account per claim; per-user once-only payout is
+// additionally enforced by the gem_transactions partial unique index
+// (migration 20260825120000).
+model OnboardingChallengeClaim {
+  tokenHash       String    @id
+  phone           String? // E.164 fallback reconciliation key when WhatsApp verified pre-signup
+  expiresAt       DateTime // 30-day settlement window from issue
+  settledByUserId String?   @unique
+  settledAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@map("onboarding_challenge_claims")
+}
+
+model UserFollow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("user_follows")
+}
+
+model UserAchievement {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String // 'wildfire' | 'sage' | 'champion' | 'sharpshooter' | 'explorer' | 'marathon'
+  tier          Int       @default(1)
+  unlockedAt    DateTime  @default(now())
+  // Achievements are their own reward — seenAt only tracks whether the student
+  // has viewed the unlock (celebration scene / collection) so Herald stops nudging.
+  seenAt        DateTime?
+
+  @@unique([userId, achievementId, tier])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+model UserMission {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionKey String // 'COMPLETE_LESSON' | 'MAINTAIN_STREAK' | 'LEARN_MINUTES'
+  progress   Int       @default(0)
+  target     Int       @default(1)
+  completed  Boolean   @default(false)
+  claimedAt  DateTime?
+  dateStr    String // YYYY-MM-DD local date string
+
+  @@unique([userId, missionKey, dateStr])
+  @@index([userId, dateStr])
+  @@map("user_missions")
+}
+
+model SpinClaim {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardType String // 'COINS' | 'XP' | 'FREEZE' | 'HEARTS'
+  rewardVal  Int
+  claimedAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("spin_claims")
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+model InstructorProfile {
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName          String
+  professionalHeadline String?
+  bio                  String?            @db.Text
+  avatarUrl            String?
+  coverImageUrl        String?
+  websiteUrl           String?
+  linkedinUrl          String?
+  youtubeUrl           String?
+  verificationStatus   VerificationStatus @default(PENDING)
+  profileVisibility    ProfileVisibility  @default(PUBLIC)
+  yearsOfExperience    Int?
+  expertise            Json?              @default("[]")
+  onboardingCompleted  Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([verificationStatus, profileVisibility])
+  @@index([displayName, verificationStatus])
+  @@map("instructor_profiles")
+}
+
+model UserCourseProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId           String
+  course             Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status             String    @default("not_started") // not_started, in_progress, completed, paused
+  progressPercentage Float     @default(0)
+  currentLessonId    String?
+  lastStepId         String?
+  startedAt          DateTime?
+  completedAt        DateTime?
+  lastActiveAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  // Backs the "courses completed" count on the stats-summary endpoint.
+  @@index([userId, status])
+  @@map("user_course_progress")
+}
+
+model UserLessonProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId           String
+  lesson             Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status             String    @default("locked") // locked, unlocked, in_progress, completed
+  progressPercentage Float     @default(0)
+  startedAt          DateTime?
+  completedAt        DateTime?
+  timeSpentSeconds   Int       @default(0)
+  attemptsCount      Int       @default(0)
+  lastStepId         String?
+  // Apply-phase accuracy (0–100) reported by the player at completion time.
+  // Null for lessons without an activity or completions before this existed.
+  quizScore          Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Backs the stats-summary aggregate, which filters by userId + a
+  // completedAt range (previously an unindexed range scan per request).
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([userId, completedAt])
+  @@map("user_lesson_progress")
+}
+
+model UserStepProgress {
+  id                   String     @id @default(uuid())
+  userId               String
+  user                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepId               String
+  step                 LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  status               String     @default("not_started") // not_started, in_progress, completed, failed
+  completionPercentage Float      @default(0)
+  score                Float?
+  attemptsCount        Int        @default(0)
+  timeSpentSeconds     Int        @default(0)
+  startedAt            DateTime?
+  completedAt          DateTime?
+  lastAttemptAt        DateTime?
+  isMastered           Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, stepId])
+  @@index([userId])
+  @@map("user_step_progress")
+}
+
+model UserStepAttempt {
+  id               String     @id @default(uuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepId           String
+  step             LessonStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  attemptNumber    Int        @default(1)
+  inputData        Json?
+  resultScore      Float?
+  aiFeedback       String?    @db.Text
+  isCorrect        Boolean?
+  timeSpentSeconds Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([stepId])
+  @@index([userId])
+  // Backs the achievements "first-try-correct" count
+  // (achievements.service.ts loadMetrics).
+  @@index([userId, isCorrect, attemptNumber])
+  @@map("user_step_attempts")
+}
+
+model LearningSession {
+  id               String    @id @default(uuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt        DateTime  @default(now())
+  endedAt          DateTime?
+  durationSeconds  Int?
+  lessonsCompleted Int       @default(0)
+  stepsCompleted   Int       @default(0)
+  deviceType       String? // 'mobile' | 'desktop'
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("learning_sessions")
+}
+
+model UserLearningStreak {
+  userId            String  @id
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak     Int     @default(0)
+  longestStreak     Int     @default(0)
+  lastActivityDate  String? // YYYY-MM-DD
+  streakFreezeCount Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lastActivityDate])
+  @@map("user_learning_streaks")
+}
+
+model UserStats {
+  userId           String    @id
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalXp          Int       @default(0)
+  totalCoins       Int       @default(0)
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lessonsCompleted Int       @default(0)
+  lastActivityAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_stats")
+}
+
+model UserWeeklyProgress {
+  id               String @id @default(uuid())
+  userId           String
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStartDate    String // YYYY-MM-DD (Monday)
+  lessonsCompleted Int    @default(0)
+  xpEarned         Int    @default(0)
+  daysActive       Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStartDate])
+  @@index([userId, weekStartDate])
+  @@map("user_weekly_progress")
+}
+
+/// Per-course weekly XP ledger for The Arena (course-scoped leaderboard).
+/// One row per (user, course, UTC week) — written by ArenaService on lesson
+/// completion. Weeks are fixed UTC Mondays so everyone on a course shares one
+/// board (deliberately different from UserWeeklyProgress, which is user-local).
+/// `divisionId` is reserved for future Bronze→Diamond-style split boards.
+model CourseWeeklyXp {
+  id               String  @id @default(uuid())
+  userId           String
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  divisionId       String?
+  weekStartDate    String // YYYY-MM-DD, always a Monday in UTC
+  xpEarned         Int     @default(0)
+  lessonsCompleted Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId, weekStartDate])
+  @@index([courseId, weekStartDate, xpEarned(sort: Desc)])
+  @@map("course_weekly_xp")
+}
+
+// Weekly league ladder for the global Duolingo-style leaderboard.
+// Order matters — settlement promotes/demotes by index.
+enum LeagueTier {
+  BRONZE
+  SILVER
+  GOLD
+  SAPPHIRE
+  RUBY
+  EMERALD
+  AMETHYST
+  PEARL
+  DIAMOND
+  DIAMOND_TOURNAMENT
+}
+
+/// One weekly competition group of up to 30 users within a league tier.
+/// Tournament cohorts are rows with league = DIAMOND_TOURNAMENT. Weeks are
+/// fixed UTC Mondays so every user shares one clock (like CourseWeeklyXp).
+model LeagueCohort {
+  id          String         @id @default(uuid())
+  league      LeagueTier
+  weekStart   String // YYYY-MM-DD, always a Monday in UTC
+  cohortIndex Int // sequential within (league, weekStart)
+  status      String         @default("ACTIVE") // 'ACTIVE' | 'SETTLED'
+  settledAt   DateTime?
+  members     LeagueMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([league, weekStart, cohortIndex])
+  @@index([weekStart])
+  @@map("league_cohorts")
+}
+
+/// One user's standing in one league week. `cohortId` is null for synthetic
+/// inactivity-demotion rows (user was in a league but earned no XP that week).
+/// `outcome` + `seenAt` drive the one-time settlement celebration scene.
+model LeagueMember {
+  id          String        @id @default(uuid())
+  cohortId    String?
+  cohort      LeagueCohort? @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart   String // YYYY-MM-DD Monday UTC (denormalized for unique + queries)
+  league      LeagueTier // tier the user competed in this week
+  weeklyXp    Int           @default(0)
+  xpUpdatedAt DateTime      @default(now()) // tie-break: earlier reach = higher rank
+  joinedAt    DateTime      @default(now())
+  rank        Int?
+  outcome     String? // 'PROMOTED' | 'DEMOTED' | 'STAYED' | 'CHAMPION' | 'TOURNAMENT_EXIT' | 'INACTIVE_DEMOTED'
+  seenAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+  @@index([cohortId, weeklyXp(sort: Desc)])
+  @@index([userId, weekStart(sort: Desc)])
+  @@map("league_members")
+}
+
+model LearningEvent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventType  String // 'LESSON_COMPLETED' | 'STREAK_INCREMENTED' | 'ACHIEVEMENT_UNLOCKED'
+  entityType String // 'lesson' | 'course' | 'achievement'
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([eventType])
+  @@map("learning_events")
+}
+
+model UserInventory {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemType    String // 'FREEZE' | 'BOOST' | 'CHEST'
+  quantity    Int       @default(0)
+  activeUntil DateTime? // For duration-based items like XP_BOOST
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, itemType])
+  @@index([userId])
+  @@map("user_inventory")
+}
+
+model ChestRewardPool {
+  id         String  @id @default(uuid())
+  rewardType String // 'COINS' | 'GEMS' | 'HEARTS' | 'XP_BOOST' | 'STREAK_FREEZE'
+  amountMin  Int?
+  amountMax  Int?
+  rarityTier String // 'common' | 'uncommon' | 'rare'
+  weight     Int
+  active     Boolean @default(true)
+
+  dailyChests DailyChest[]
+
+  @@map("chest_reward_pool")
+}
+
+model DailyChest {
+  id                   String           @id @default(uuid())
+  userId               String
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chestDay             String // YYYY-MM-DD in user's timezone
+  status               String           @default("LOCKED") // 'LOCKED' | 'READY_TO_OPEN' | 'OPENED'
+  unlockedAt           DateTime?
+  openedAt             DateTime?
+  rewardPoolId         String?
+  rewardPool           ChestRewardPool? @relation(fields: [rewardPoolId], references: [id])
+  rewardSnapshotType   String?
+  rewardSnapshotAmount Int?
+  createdAt            DateTime         @default(now())
+
+  @@unique([userId, chestDay])
+  @@index([userId])
+  @@map("daily_chests")
+}
+
+model UserDailyActivity {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             String // YYYY-MM-DD
+  lessonsCompleted Int      @default(0)
+  xpEarned         Int      @default(0)
+  timeSpentSeconds Int      @default(0)
+  streakExtended   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("user_daily_activity")
+}
+
+model UserMomentum {
+  userId           String   @id
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  momentumScore    Int      @default(0)
+  lastCalculatedAt DateTime @default(now())
+
+  @@map("user_momentum")
+}
+
+model RewardLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardType  String // 'XP' | 'COINS' | 'FREEZE' | 'HEARTS' | 'SPIN'
+  rewardValue Int
+  sourceType  String // 'MISSION' | 'CHEST' | 'SPIN' | 'STREAK' | 'LESSON'
+  sourceId    String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("reward_logs")
+}
+
+model XpEvent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceType String // 'LESSON' | 'MISSION' | 'REWARD' | 'CHALLENGE'
+  sourceId   String?
+  xpAmount   Int
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("xp_events")
+}
+
+model Community {
+  id          String   @id @default(uuid())
+  name        String
+  courseId    String?  @unique
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  description String?  @db.Text
+  visibility  String   @default("PUBLIC") // 'PUBLIC' | 'PRIVATE'
+  memberCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  memberships CommunityMembership[]
+  posts       Post[]
+
+  @@map("communities")
+}
+
+model CommunityMembership {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  role        String    @default("MEMBER") // 'MEMBER' | 'ADMIN'
+  joinedAt    DateTime  @default(now())
+
+  @@unique([userId, communityId])
+  @@index([userId])
+  @@index([communityId])
+  @@map("community_memberships")
+}
+
+model Post {
+  id             String     @id @default(uuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId    String?
+  community      Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  courseId       String?
+  course         Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  postType       String     @default("PROGRESS") // 'PROGRESS' | 'QUESTION' | 'ACHIEVEMENT' | 'GENERAL' | 'MILESTONE' | 'TIP' | 'WIN' | 'RESOURCE' | 'DISCUSSION' | 'POLL' | 'ANNOUNCEMENT' | 'CHALLENGE'
+  title          String? // optional headline (150 chars max, enforced in DTOs)
+  contentText    String     @db.Text
+  mediaUrl       String?
+  images         String[] // ordered image URLs uploaded direct-to-S3
+  lessonId       String? // lesson-linked discussions ("Discuss this lesson")
+  lesson         Lesson?    @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  isPinned       Boolean    @default(false) // Commons moderation — pinned posts float to top of feed page 1
+  isLocked       Boolean    @default(false) // creator locked comments
+  status         String     @default("ACTIVE") // 'ACTIVE' | 'REMOVED' (moderation soft-delete)
+  likeCount      Int        @default(0)
+  commentCount   Int        @default(0)
+  viewCount      Int        @default(0)
+  lastActivityAt DateTime   @default(now()) // bumped on comment; drives feed recency
+  editedAt       DateTime?
+  createdAt      DateTime   @default(now())
+
+  comments    Comment[]
+  pollOptions PollOption[]
+  pollVotes   PollVote[]
+  attachments PostAttachment[]
+
+  @@index([userId])
+  @@index([communityId])
+  @@index([courseId])
+  @@index([lessonId])
+  @@index([createdAt(sort: Desc)])
+  @@index([lastActivityAt(sort: Desc)])
+  @@map("posts")
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  postId      String
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId    String? // one-level threading: replies attach to a top-level comment
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentText String    @db.Text
+  status      String    @default("ACTIVE") // 'ACTIVE' | 'REMOVED'
+  likeCount   Int       @default(0)
+  editedAt    DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([postId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model PollOption {
+  id        String @id @default(uuid())
+  postId    String
+  post      Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  text      String @db.VarChar(200)
+  position  Int    @default(0)
+  voteCount Int    @default(0)
+
+  votes PollVote[]
+
+  @@index([postId])
+  @@map("poll_options")
+}
+
+model PollVote {
+  id        String     @id @default(uuid())
+  postId    String
+  post      Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  // one vote per user per poll — enforced at the DB level
+  @@unique([postId, userId])
+  @@index([optionId])
+  @@index([userId])
+  @@map("poll_votes")
+}
+
+model PostAttachment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String
+  mimeType  String?
+  sizeBytes Int?
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@map("post_attachments")
+}
+
+model Like {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String // 'POST' | 'COMMENT'
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([userId])
+  @@map("likes")
+}
+
+model ActivityFeed {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityType String // 'LESSON_COMPLETED' | 'STREAK' | 'LEVEL_UP'
+  entityType   String // 'lesson' | 'streak' | 'level'
+  entityId     String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  friendActivities FriendActivity[]
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("activity_feed")
+}
+
+model FriendActivity {
+  id           String       @id @default(uuid())
+  userId       String // Viewer
+  user         User         @relation("ViewerFriendActivities", fields: [userId], references: [id], onDelete: Cascade)
+  friendUserId String // Actor
+  friendUser   User         @relation("ActorFriendActivities", fields: [friendUserId], references: [id], onDelete: Cascade)
+  activityId   String
+  activity     ActivityFeed @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+
+  @@index([userId])
+  @@index([friendUserId])
+  @@map("friend_activity")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actorId    String? // who triggered it (liker/replier/mentioner/creator)
+  actor      User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  type       String // 'LIKE' | 'COMMENT' | 'FRIEND_ACTIVITY' | 'SYSTEM' | 'POST_LIKE' | 'COMMENT_LIKE' | 'REPLY' | 'MENTION' | 'ANNOUNCEMENT'
+  entityType String?
+  entityId   String?
+  title      String?
+  body       String?
+  isRead     Boolean  @default(false)
+  /// Where tapping this notification should take the learner. Set by Tey;
+  /// null for community rows, which resolve their own destination client-side.
+  deepLink   String?
+  createdAt  DateTime @default(now())
+
+  // Every real query filters userId + isRead together (never isRead alone —
+  // see notification.service.ts) and pages newest-first, so one composite
+  // replaces the previous two separate single-column indexes.
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}
+
+model MissionTemplate {
+  id                  String   @id @default(uuid())
+  code                String   @unique
+  title               String
+  description         String?  @db.Text
+  icon                String?
+  objectiveType       String // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE', etc.
+  defaultTarget       Int
+  defaultRewardType   String // 'XP', 'COINS', 'GEMS'
+  defaultRewardAmount Int
+  difficultyTier      String   @default("medium") // 'easy', 'medium', 'hard'
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  userMissions UserDailyMission[]
+
+  @@map("mission_templates")
+}
+
+model DailyMissionSet {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionDay  String // YYYY-MM-DD local timezone
+  generatedAt DateTime @default(now())
+  resetAt     DateTime
+
+  missions UserDailyMission[]
+
+  @@unique([userId, missionDay])
+  @@index([userId, missionDay])
+  @@map("daily_mission_sets")
+}
+
+model UserDailyMission {
+  id                String           @id @default(uuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyMissionSetId String?
+  dailyMissionSet   DailyMissionSet? @relation(fields: [dailyMissionSetId], references: [id], onDelete: Cascade)
+  templateId        String
+  template          MissionTemplate  @relation(fields: [templateId], references: [id])
+  missionDate       String // YYYY-MM-DD
+  title             String
+  objectiveType     String // 'LESSON_COUNT', 'XP_EARNED', 'STREAK_ACTIVE'
+  currentProgress   Int              @default(0)
+  targetValue       Int
+  rewardType        String // 'XP', 'COINS', 'GEMS'
+  rewardAmount      Int
+  status            String           @default("IN_PROGRESS") // 'IN_PROGRESS', 'COMPLETED', 'CLAIMED', 'EXPIRED'
+  isCompleted       Boolean          @default(false)
+  isClaimed         Boolean          @default(false)
+  completedAt       DateTime?
+  claimedAt         DateTime?
+  createdAt         DateTime         @default(now())
+
+  @@unique([userId, templateId, missionDate])
+  @@index([userId, missionDate])
+  @@map("user_daily_missions")
+}
+
+model RewardTransaction {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currency       String // 'XP', 'COINS', 'GEMS', 'HEARTS'
+  amount         Int
+  sourceType     String // 'MISSION_CLAIM', 'MYSTERY_CHEST', 'LUCKY_SPIN', etc.
+  sourceId       String?
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now())
+
+  // streak.service.ts's calendar query filters userId + currency +
+  // sourceType + a createdAt range, previously covered only by [userId]
+  // (an unindexed scan across the rest of the filter).
+  @@index([userId])
+  @@index([userId, currency, sourceType, createdAt])
+  @@map("reward_transactions")
+}
+
+model SpinWheelSegment {
+  id           String  @id @default(uuid())
+  segmentIndex Int
+  rewardType   String // 'COINS', 'XP', 'HEARTS', 'STREAK_FREEZE'
+  amountMin    Int
+  amountMax    Int
+  rarityTier   String // 'common', 'uncommon', 'rare'
+  weight       Int
+  colorKey     String
+  active       Boolean @default(true)
+
+  @@map("spin_wheel_segments")
+}
+
+model WeeklySpin {
+  id                   String    @id @default(uuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart            String // YYYY-MM-DD (Monday) local timezone
+  status               String    @default("AVAILABLE") // 'AVAILABLE' | 'SPUN'
+  spunAt               DateTime?
+  landedSegmentIndex   Int?
+  rewardSnapshotType   String?
+  rewardSnapshotAmount Int?
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@map("weekly_spins")
+}
+
+// Monthly Quest — one row per user per local month. Progress = goal-days:
+// a day counts when UserDailyActivity.xpEarned >= dailyGoalXp AND at least
+// one lesson was completed that day. goalSnapshot is append-only so a day
+// stays counted even if the user changes their dailyGoalXp tier mid-month.
+model UserMonthlyQuest {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthKey           String // 'YYYY-MM' local timezone
+  status             String   @default("ACTIVE") // 'ACTIVE' | 'COMPLETED' | 'FULLY_CLAIMED'
+  dailyGoalXpAtStart Int // dailyGoalXp snapshot at creation (informational)
+  targetDays         Int // required goal-days for 100% — fixed at creation (prorated for mid-month joiners)
+  goalDays           Int      @default(0) // denormalized count of goalSnapshot entries
+  goalSnapshot       Json     @default("[]") // append-only [{ date, xpEarned, dailyGoalXp }]
+  milestonesClaimed  Json     @default("[]") // e.g. ["M1", "M2"]; 'FINAL' appended on final claim
+  finalRewardType    String? // written at final claim — mirrors WeeklySpin.rewardSnapshotType
+  finalRewardAmount  Int?
+  badgeId            String? // e.g. 'monthly_quest_2026_08' — future badge gallery reads this
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, monthKey])
+  @@index([userId])
+  @@map("user_monthly_quests")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CREATOR EARNINGS — immutable ledger, revenue-share agreements, payouts.
+// Money rules: every amount is an INTEGER in minor units (cents). The only
+// float→int boundary is Math.round(x * 100) at the payment-service call
+// sites. Ledger rows are append-only (enforced by a DB trigger); all
+// corrections are NEW rows that reference the original via
+// relatedTransactionId. No FK relations on ledger tables by design — they
+// must survive user/course deletion (GemTransaction precedent).
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CreatorTier {
+  STANDARD
+  FOUNDING
+}
+
+enum EarningsEntryType {
+  SALE // first paid grant for a (student, course)
+  RENEWAL // subsequent period on an already-ACTIVE entitlement
+  REFUND // negative entry, proportional, matched to the original sale
+  CHARGEBACK // negative entry when a dispute opens
+  REVERSAL // positive entry restoring a won dispute
+  ADJUSTMENT // manual admin correction (either sign), reason mandatory
+}
+
+enum PayoutStatus {
+  REQUESTED
+  UNDER_REVIEW
+  PROCESSING
+  PAID
+  REJECTED
+  FAILED
+  CANCELLED
+}
+
+enum PayoutMethodType {
+  BANK
+  MOBILE_MONEY
+}
+
+/// One revenue-share agreement per period. Active = effectiveUntil NULL.
+/// New agreements close the previous row — history is never rewritten.
+model CreatorEarningsAgreement {
+  id              String      @id @default(uuid())
+  userId          String
+  tier            CreatorTier @default(STANDARD)
+  creatorSharePct Int // 70 | 80 — percent of netMinor
+  isFounding      Boolean     @default(false)
+  effectiveFrom   DateTime    @default(now())
+  effectiveUntil  DateTime?
+  notes           String?
+  createdBy       String? // admin userId when set manually
+  createdAt       DateTime    @default(now())
+
+  @@index([userId, effectiveUntil])
+  @@map("creator_earnings_agreements")
+}
+
+/// Append-only earnings ledger. creatorSharePct is SNAPSHOTTED per row so a
+/// later tier change never rewrites history. Signed amounts: credits > 0,
+/// debits < 0. teyroAmountMinor = netMinor − creatorAmountMinor always.
+model EarningsTransaction {
+  id        String  @id @default(uuid())
+  publicId  String  @unique // "ET-XXXXXXXX" support reference
+  creatorId String
+  courseId  String?
+  studentId String?
+  orderId   String?
+
+  type              EarningsEntryType
+  grossMinor        Int
+  discountMinor     Int               @default(0)
+  feeMinor          Int               @default(0) // processing fee; 0 until fee capture exists
+  netMinor          Int // gross − discount − fee
+  currency          String            @default("USD") // ledger currency (USD-only v1)
+  nativeCurrency    String? // e.g. XAF — reference only, never summed
+  nativeAmountMinor Int?
+
+  creatorSharePct    Int
+  creatorAmountMinor Int // signed
+  teyroAmountMinor   Int // signed
+
+  provider             String // STRIPE | MESOMB | MANUAL
+  providerReference    String? // pi_/in_/cs_/re_/dp_/pk ids — dedupe key
+  relatedTransactionId String? // reversal entries → original row
+  reason               String? // MANDATORY for REFUND / CHARGEBACK / ADJUSTMENT
+  occurredAt           DateTime @default(now()) // drives the clearing window
+  metadata             Json?
+
+  createdAt DateTime @default(now()) // intentionally NO @updatedAt
+
+  @@unique([provider, type, providerReference])
+  @@index([creatorId, occurredAt])
+  @@index([creatorId, type])
+  @@index([courseId])
+  @@index([orderId])
+  @@index([providerReference])
+  @@map("earnings_transactions")
+}
+
+/// Where creators get paid. FULL account details are AES-256-GCM encrypted
+/// at rest; only masked display data is ever returned by APIs.
+model CreatorPayoutMethod {
+  id                String           @id @default(uuid())
+  userId            String           @unique
+  type              PayoutMethodType
+  encryptedData     String // "v1:<keyVersion>:<iv>:<tag>:<cipher>"
+  keyVersion        Int              @default(1) // supports future key rotation
+  holderName        String?
+  maskedDisplay     String? // "Bank Acct **4821"
+  bankName          String? // display-only metadata
+  country           String?
+  receivingCurrency String?
+  isVerified        Boolean          @default(false)
+  verifiedAt        DateTime?
+  eligibilityNote   String?
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@map("creator_payout_methods")
+}
+
+/// Payout requests. Funds are RESERVED from available balance while status
+/// is REQUESTED / UNDER_REVIEW / PROCESSING. externalReference is the
+/// drop-in slot for an automated rail (Stripe Connect transfer id).
+model CreatorPayout {
+  id                String       @id @default(uuid())
+  publicId          String       @unique
+  userId            String
+  amountMinor       Int
+  currency          String       @default("USD")
+  status            PayoutStatus @default(REQUESTED)
+  methodSnapshot    Json? // frozen masked method at request time
+  requestedAt       DateTime     @default(now())
+  reviewedAt        DateTime?
+  processedAt       DateTime?
+  paidAt            DateTime?
+  closedAt          DateTime? // any terminal transition
+  reviewedBy        String? // admin userId
+  rejectionReason   String? // mandatory on REJECTED
+  failureReason     String? // mandatory on FAILED
+  cancelReason      String? // mandatory on CANCELLED
+  adminNote         String?
+  externalReference String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, requestedAt(sort: Desc)])
+  @@index([status, requestedAt(sort: Desc)])
+  @@map("creator_payouts")
+}
+
+/// Audit trail for every earnings mutation: agreement changes, payout state
+/// transitions, adjustments, refund matching failures, method updates.
+model EarningsAuditLog {
+  id         String   @id @default(uuid())
+  actorId    String? // null = system/webhook
+  actorType  String   @default("SYSTEM") // ADMIN | CREATOR | SYSTEM
+  action     String
+  entityType String // EarningsTransaction | CreatorPayout | Agreement | PayoutMethod
+  entityId   String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("earnings_audit_logs")
+}
+
+/// General Admin Center audit trail — the Phase 2+ counterpart to
+/// EarningsAuditLog, for admin mutations outside the earnings/payout system
+/// (user suspension first; course/creator/moderation actions land here too
+/// as their phases ship). No FK to User: audit history must survive the
+/// subject account being deleted, same reasoning as earnings_audit_logs.
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  actorId    String // the admin's userId — every action here is admin-initiated
+  actorType  String   @default("ADMIN")
+  action     String // e.g. ADMIN_SUSPENDED_USER
+  entityType String // e.g. User
+  entityId   String?
+  reason     String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("admin_audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tey Intelligence layer — activity events + learner state projection.
+//
+// Deliberately NOT reusing LearningEvent: that table is read by creator
+// analytics (analytics.service.ts, students.service.ts) and requires non-null
+// entityType/entityId, which app_opened / daily_goal_missed cannot supply.
+// Mixing client telemetry into it would bloat its [userId, createdAt] index
+// and risk semantic drift in creator dashboards.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TeyActivityEvent {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// See TEY_EVENT_TYPES in tey/contracts/tey-event.types.ts for the closed union.
+  eventType  String
+  /// 'SERVER' | 'CLIENT' — server-observed events are authoritative.
+  source     String  @default("SERVER")
+  entityType String?
+  entityId   String?
+  props      Json?
+
+  /// Client-supplied, stable across retries. Unique WHERE NOT NULL (partial
+  /// index lives in SQL only — Prisma cannot express it).
+  idempotencyKey String?
+
+  /// When it actually happened. Clamped server-side to [receivedAt-7d, receivedAt]
+  /// so a skewed client clock can't pin a row to the top of the index forever.
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  /// YYYY-MM-DD in the learner's own zone at the time of the event.
+  localDate  String
+
+  @@index([userId, occurredAt(sort: Desc)])
+  @@index([eventType, occurredAt(sort: Desc)])
+  @@map("tey_activity_events")
+}
+
+/// A CACHE, not a source of truth. Every column here is reproducible from
+/// StudentProfile + UserDailyActivity + StreakService. It exists so the
+/// decision engine and scheduler can read one indexed row instead of running
+/// streak reconciliation for every due action.
+model LearnerState {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Mirrored from StreakService.getStreakStats() — NEVER recomputed here.
+  streakDays         Int       @default(0)
+  longestStreak      Int       @default(0)
+  lastStreakEarnedAt DateTime?
+  freezesAvailable   Int       @default(0)
+
+  // Today, in the learner's local calendar.
+  localDate          String?
+  todayXp            Int     @default(0)
+  todayLessons       Int     @default(0)
+  dailyGoalXp        Int     @default(20)
+  todayGoalCompleted Boolean @default(false)
+
+  // This week (Monday-anchored, matching UserWeeklyProgress).
+  weeklyLessons Int @default(0)
+  weeklyXp      Int @default(0)
+
+  // Derived states — closed unions in tey/contracts/tey-state.types.ts.
+  streakState      String @default("NO_STREAK")
+  engagementState  String @default("NEW")
+  courseState      String @default("NEW")
+  performanceState String @default("STABLE")
+
+  // Where to send them back to (resolved at projection time).
+  currentCourseId     String?
+  currentSectionIndex Int?
+  currentLessonId     String?
+  courseProgressPct   Int     @default(0)
+
+  // Habit model: EWMA of the local hour at which lessons get completed.
+  usualHourLocal   Int?
+  usualHourSamples Int  @default(0)
+
+  lastActivityAt           DateTime?
+  /// Consecutive nudges sent without an open — drives tone escalation.
+  consecutiveIgnoredNudges Int       @default(0)
+
+  computedAt DateTime @default(now())
+  revision   Int      @default(0)
+
+  @@index([engagementState, lastActivityAt])
+  @@index([streakState])
+  @@map("learner_state")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tey scheduler — the due queue and the delivery ledger.
+//
+// Postgres-native. No Redis, no BullMQ: the claim is a single
+// UPDATE ... FROM (SELECT ... FOR UPDATE SKIP LOCKED), which is safe across any
+// number of Render instances and needs no extra infrastructure.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TeyScheduledAction {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// TeyReason — see contracts/tey-context.types.ts.
+  ruleId   String
+  /// 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  priority String @default("MEDIUM")
+  /// 'PENDING' | 'CLAIMED' | 'SENT' | 'SKIPPED' | 'CANCELLED' | 'FAILED'
+  status   String @default("PENDING")
+
+  dueAt     DateTime
+  /// Past this, drop rather than send late. A stale nudge is worse than none.
+  expiresAt DateTime?
+
+  /// One live instance of a rule per user per local day,
+  /// e.g. "STREAK_AT_RISK:<userId>:2026-09-05".
+  dedupeKey String @unique
+
+  /// Frozen TeyContext hint. ALWAYS revalidated against fresh state before send.
+  context Json?
+
+  attempts   Int       @default(0)
+  claimedAt  DateTime?
+  claimedBy  String?
+  lastError  String?
+  skipReason String?
+
+  deliveries TeyDelivery[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // NOTE: the hot due-queue index is PARTIAL (WHERE status = 'PENDING') and
+  // lives in SQL only — Prisma cannot express it. See the migration.
+  @@index([userId, status])
+  @@map("tey_scheduled_actions")
+}
+
+model TeyDelivery {
+  id       String              @id @default(uuid())
+  userId   String
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionId String?
+  action   TeyScheduledAction? @relation(fields: [actionId], references: [id], onDelete: SetNull)
+
+  /// 'PUSH' | 'INAPP' | 'WHATSAPP' | 'DRY_RUN'
+  channel  String
+  ruleId   String
+  priority String
+
+  title    String
+  body     String
+  deepLink String
+  /// The TeyContext actually used, kept for auditing and future analysis.
+  context  Json
+
+  /// 'TEMPLATE' | 'AI' — proves the template-first policy is holding.
+  generatedBy String @default("TEMPLATE")
+  /// 'SENT' | 'FAILED' | 'SUPPRESSED'
+  status      String @default("SENT")
+
+  sentAt      DateTime  @default(now())
+  openedAt    DateTime?
+  /// Set when the learner completed a lesson inside the attribution window.
+  convertedAt DateTime?
+
+  @@index([userId, sentAt(sort: Desc)])
+  @@index([ruleId, sentAt(sort: Desc)])
+  @@map("tey_deliveries")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Push delivery — subscriptions and per-learner notification preferences.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PushSubscription {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The endpoint IS the identity of a browser-profile pair, so it is unique
+  /// GLOBALLY, not per user: a shared device re-subscribing under a second
+  /// account must move the row rather than deliver A's nudges to B.
+  endpoint String @unique
+  p256dh   String
+  auth     String
+
+  userAgent String?
+  /// 'ios-standalone' | 'android' | 'desktop' | 'other' — instrumented because
+  /// iOS only permits push from an installed PWA, and that reachability
+  /// ceiling has to be measured rather than assumed.
+  platform  String?
+
+  isActive     Boolean   @default(true)
+  failureCount Int       @default(0)
+  lastUsedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, isActive])
+  @@map("push_subscriptions")
+}
+
+model TeyNotificationPrefs {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pushEnabled     Boolean @default(true)
+  whatsappEnabled Boolean @default(false)
+
+  // Per-category opt-outs, so a learner can keep streak saves and drop the rest.
+  streakReminders Boolean @default(true)
+  dailyReminders  Boolean @default(true)
+  milestones      Boolean @default(true)
+  reengagement    Boolean @default(true)
+
+  /// Minutes from LOCAL midnight. Defaults 21:30 -> 08:00, and the window
+  /// wraps midnight by design.
+  quietHoursStart Int @default(1290)
+  quietHoursEnd   Int @default(480)
+
+  maxPerDay     Int  @default(3)
+  /// Learner's own preferred reminder hour, overriding the inferred habit.
+  preferredHour Int?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("tey_notification_prefs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI provider configuration.
+//
+// Teyro is pre-revenue, so the model layer has to stay swappable: a free
+// Gemini tier today, something stronger later, without touching the rest of
+// Tey. API keys use the SAME AES-256-GCM envelope as creator payout methods
+// (earnings/crypto.util.ts) so there is exactly one crypto implementation to
+// audit and one production fail-fast.
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TeyAiProviderConfig {
+  id   String @id @default(uuid())
+  name String @unique
+
+  /// 'OPENAI_COMPATIBLE' | 'ANTHROPIC' | 'GEMINI'
+  kind    String
+  /// Required for OPENAI_COMPATIBLE — this one field covers OpenAI, OpenRouter,
+  /// Groq, NVIDIA, DeepSeek, Together, Ollama, LM Studio.
+  baseUrl String?
+  model   String
+
+  /// v1:<keyVersion>:<iv>:<tag>:<cipher>. NEVER returned by any endpoint.
+  encryptedApiKey String
+  keyVersion      Int    @default(1)
+  /// Last 4 characters, for display only.
+  keyTail         String
+
+  isActive   Boolean @default(false)
+  isFallback Boolean @default(false)
+
+  maxOutputTokens Int   @default(400)
+  temperature     Float @default(0.8)
+  /// Wall-clock ceiling. A hung provider must never hold a scheduler slot.
+  timeoutMs       Int   @default(8000)
+
+  inputCostPer1k  Decimal @default(0) @db.Decimal(10, 6)
+  outputCostPer1k Decimal @default(0) @db.Decimal(10, 6)
+  dailyBudgetUsd  Decimal @default(1.00) @db.Decimal(10, 2)
+
+  lastTestAt    DateTime?
+  lastTestOk    Boolean?
+  lastTestError String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@map("tey_ai_provider_configs")
+}
+
+model TeyAiUsage {
+  id String @id @default(uuid())
+
+  /// YYYY-MM-DD, UTC. Budgets are a business day, not a learner's local one.
+  day        String
+  providerId String
+  /// Null for global/proactive rollups not attributable to one learner.
+  userId     String?
+  /// 'NUDGE_COPY' | 'CONVERSATION' | 'TOOL_LOOP' | 'ADMIN_TEST'
+  purpose    String
+
+  calls        Int     @default(0)
+  inputTokens  Int     @default(0)
+  outputTokens Int     @default(0)
+  costUsd      Decimal @default(0) @db.Decimal(12, 6)
+
+  updatedAt DateTime @updatedAt
+
+  // NOTE: the real uniqueness is (day, providerId, COALESCE(userId,''), purpose)
+  // and lives in SQL — Prisma cannot express a unique index over an expression.
+  @@index([day])
+  @@index([userId, day])
+  @@map("tey_ai_usage")
 }

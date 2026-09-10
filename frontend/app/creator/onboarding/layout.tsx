@@ -1,6 +1,4 @@
 import React from 'react';
-import OnboardingProgressBar from '@/components/features/CreatorOnboarding/OnboardingProgressBar';
-import OnboardingBackgroundProvider from '@/components/features/CreatorOnboarding/OnboardingBackgroundProvider';
 
 export default function CreatorOnboardingLayout({
   children,
@@ -8,18 +6,16 @@ export default function CreatorOnboardingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <OnboardingBackgroundProvider>
-      <OnboardingProgressBar />
-      <main
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: 0,
-        }}
-      >
-        {children}
-      </main>
-    </OnboardingBackgroundProvider>
+    <div
+      style={{
+        width: '100%',
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#FFFFFF',
+      }}
+    >
+      {children}
+    </div>
   );
 }

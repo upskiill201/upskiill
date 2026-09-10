@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import styles from './Avatar.module.css';
@@ -22,6 +22,8 @@ export default function Avatar({
   online = false,
   className = '',
 }: AvatarProps) {
+  const [imgError, setImgError] = useState(false);
+
   // Get initials from name "Amara Diallo" -> "AD"
   const getInitials = (fullName: string) => {
     const parts = fullName.trim().split(/\s+/);
@@ -30,7 +32,7 @@ export default function Avatar({
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  const hasImage = Boolean(src);
+  const hasImage = Boolean(src) && !imgError;
   const initials = !hasImage && name ? getInitials(name) : '';
 
   const containerClasses = [
@@ -52,6 +54,7 @@ export default function Avatar({
             fill
             className={styles.image}
             sizes="(max-width: 768px) 100vw, 80px"
+            onError={() => setImgError(true)}
           />
         ) : initials ? (
           <span className={styles.initials}>{initials}</span>

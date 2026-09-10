@@ -1,0 +1,566 @@
+/* ════════════════════════════════════════════════════════════════════════
+   Enrollment Wizard — full-screen 4-step Duolingo-style takeover.
+   Extracted from CourseDetail.module.css; owned by components/course/
+   EnrollmentWizard.tsx only.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.fullScreenTakeover {
+  position: fixed;
+  inset: 0;
+  background: #FFFFFF;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 20px 36px;
+  overflow-y: auto;
+}
+
+.takeoverHeader {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+
+.stepProgressTrack {
+  flex: 1;
+  height: 16px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  padding: 3px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.stepProgressIndicator {
+  height: 100%;
+  background: #22C55E;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.progressShine {
+  position: absolute;
+  top: 1px;
+  left: 6px;
+  right: 6px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+}
+
+.takeoverCloseBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 1.5px solid #E2E8F0;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.takeoverCloseBtn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  transform: scale(1.06);
+}
+
+.takeoverBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 0;
+}
+
+.takeoverStepCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.takeoverMascotWrap {
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.takeoverMascotWrapSmall {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascotCelebrateBig {
+  object-fit: contain;
+  animation: gentleBounce 2.5s ease-in-out infinite;
+}
+
+.mascotRewardBig {
+  object-fit: contain;
+  animation: gentleBounce 2.5s ease-in-out infinite;
+}
+
+.mascotJourneySmall {
+  object-fit: contain;
+  animation: gentleBounce 2.5s ease-in-out infinite;
+}
+
+.takeoverTitleClean {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.takeoverSubtitle {
+  font-size: 15px;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 420px;
+}
+
+.highlightCourseName {
+  color: #0172FD;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+/* Screen 1 Course Visual Card */
+.takeoverThumbCard {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 160px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid #E2E8F0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.takeoverThumbImg {
+  object-fit: cover;
+}
+
+.thumbCardOverlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  border: 1px solid #E2E8F0;
+  border-radius: 100px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0172FD;
+}
+
+.fallbackThumbBig {
+  width: 100%;
+  max-width: 360px;
+  height: 160px;
+  background: #EFF6FF;
+  border: 2px solid #BFDBFE;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #0172FD;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Stat Chips (screen 1: lessons / XP / duration) */
+.duoScoreCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.duoScoreCardBlue {
+  background: #EFF6FF;
+  border: 2px solid #BFDBFE;
+  border-radius: 16px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.scoreCardHeaderBlue {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #0172FD;
+  text-transform: uppercase;
+}
+
+.scoreCardValueBlue {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0056C6;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.duoScoreCardYellow {
+  background: #FEF3C7;
+  border: 2px solid #FDE68A;
+  border-radius: 16px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.scoreCardHeaderYellow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #D97706;
+  text-transform: uppercase;
+}
+
+.scoreCardValueYellow {
+  font-size: 15px;
+  font-weight: 800;
+  color: #B45309;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.duoScoreCardRed {
+  background: #FEE2E2;
+  border: 2px solid #FECACA;
+  border-radius: 16px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.scoreCardHeaderRed {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #DC2626;
+  text-transform: uppercase;
+}
+
+.scoreCardValueRed {
+  font-size: 15px;
+  font-weight: 800;
+  color: #991B1B;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Serpentine Mini Path (screen 2 preview + screen 4 start card) */
+.duoSerpentinePathBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.pathNodeRowActive {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #DCFCE7;
+  border: 2px solid #86EFAC;
+  padding: 12px 16px;
+  border-radius: 16px;
+  width: 100%;
+  position: relative;
+}
+
+.nodeIconGlow {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #22C55E;
+  border-bottom: 3px solid #15803D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nodeStartBubble {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: #0172FD;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.nodeInfoBlock {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 1px;
+}
+
+.nodeInfoTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #166534;
+}
+
+.nodeInfoSub {
+  font-size: 12px;
+  color: #15803D;
+  font-weight: 600;
+}
+
+.pathConnectorLine {
+  width: 3px;
+  height: 16px;
+  background: #CBD5E1;
+  border-radius: 2px;
+}
+
+.pathNodeRowLocked {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.nodeIconLocked {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 1.5px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nodeInfoTitleLocked {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.nodeInfoSubLocked {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.pathChestRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #FFFBEB;
+  border: 1.5px solid #FDE68A;
+  padding: 12px 16px;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.chestGraphicWrap {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+
+.chestGraphicImg {
+  object-fit: contain;
+}
+
+.chestTitleText {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #92400E;
+}
+
+.chestRewardText {
+  font-size: 12px;
+  color: #B45309;
+  font-weight: 600;
+}
+
+/* Free-preview info chip (paid courses, screens 2 & 4) */
+.freePreviewChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #0056C6;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 100px;
+}
+
+/* Error card (screen 3 failure state) */
+.errorCard {
+  width: 100%;
+  max-width: 360px;
+  background: #FEF2F2;
+  border: 2px solid #FECACA;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.errorCardText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #991B1B;
+  line-height: 1.4;
+}
+
+.btnSpinner {
+  animation: btnSpin 0.8s linear infinite;
+}
+
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+.btnContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Takeover Bottom 3D Buttons */
+.takeoverBottomArea {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 12px;
+}
+
+.takeoverDuoBtn {
+  width: 100%;
+  height: 52px;
+  background: #0172FD;
+  color: #FFFFFF;
+  border: none;
+  border-bottom: 4px solid #0056C6;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(1, 114, 253, 0.25);
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.takeoverDuoBtn:hover {
+  filter: brightness(1.05);
+}
+
+.takeoverDuoBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.takeoverDuoBtnClaimed {
+  background: #22C55E !important;
+  border-bottom-color: #15803D !important;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25) !important;
+}
+
+.takeoverDuoBtnGreen {
+  width: 100%;
+  height: 52px;
+  background: #22C55E;
+  color: #FFFFFF;
+  border: none;
+  border-bottom: 4px solid #15803D;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.takeoverDuoBtnGreen:hover {
+  filter: brightness(1.05);
+}
+
+.takeoverDuoBtnGreen:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.takeoverDuoBtn:disabled,
+.takeoverDuoBtnGreen:disabled {
+  cursor: default;
+  filter: saturate(0.6) brightness(0.95);
+}

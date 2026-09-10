@@ -1,11 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CheckoutDto } from './dto/checkout.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async checkout(userId: string | null, checkoutDto: CheckoutDto) {
     const { courseIds, email, fullName } = checkoutDto;
@@ -106,6 +111,16 @@ export class OrdersService {
         totalAmount: order.totalAmount,
         status: order.status,
       };
+    }).then(async (result) => {
+      // Auto-seat the buyer in each course's community (post-transaction,
+      // fire-and-forget — a failed join never fails the order).
+      for (const courseId of courseIds) {
+        this.eventEmitter.emit(
+          'enrollment.created',
+          new EnrollmentCreatedEvent(finalUserId, courseId),
+        );
+      }
+      return result;
     });
   }
 

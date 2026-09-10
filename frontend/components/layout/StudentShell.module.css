@@ -1,0 +1,497 @@
+/* DASHBOARD LAYOUT & RESPONSIVE GRID */
+.dashboardContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F8FAFC;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* SIDEBAR STYLES */
+.sidebarWrapper {
+  width: 280px;
+  background: white;
+  border-right: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  padding: 0;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 10px 0 30px rgba(31, 42, 68, 0.015);
+}
+
+.sidebarWrapper.collapsed {
+  width: 80px;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px;
+  min-height: 80px;
+}
+
+/* Desktop sidebar bell only — on mobile the bell moves out of the drawer to
+   always-visible surfaces (sticky header, home HUD). */
+.sidebarBellSlot {
+  display: flex;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.sidebarLogo {
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+
+.compactLogo {
+  background: linear-gradient(135deg, #0172FD, #3A96FF);
+  color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 20px;
+  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.2);
+}
+
+.sidebarToggle {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #64748B;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebarToggle:hover {
+  background: #0172FD;
+  color: white;
+  border-color: #0172FD;
+}
+
+.nav {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #5C6F84;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: var(--font-jakarta), sans-serif;
+  gap: 12px;
+}
+
+.collapsed .navItem {
+  padding: 12px;
+  justify-content: center;
+}
+
+.navItem:hover {
+  background-color: #F4F8FF;
+  color: #0172FD;
+}
+
+.navItem.active {
+  background-color: #EBF3FE;
+  color: #0172FD;
+  font-weight: 700;
+}
+
+/* CUSTOM SIDEBAR MENUS ICONS DESIGN STYLES */
+.activeIconCircle {
+  background-color: #0172FD;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.25);
+}
+
+.activeHomeIcon {
+  color: white;
+  fill: white;
+}
+
+.navIcon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.bottomNavIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.label {
+  transition: opacity 0.2s;
+}
+
+.sidebarFooter {
+  padding: 16px 0;
+  border-top: 1px solid #F1F5F9;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* FOOTER CARDS */
+.footerCardsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.sidebarCard {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sidebarCard:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.sidebarCardIconBg {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.streakBg {
+  background-color: #FFF2E8;
+}
+
+.streakFlameIcon {
+  color: #FF5A00;
+}
+
+.profileAvatar {
+  border: 1.5px solid #0172FD;
+  flex-shrink: 0;
+}
+
+.sidebarCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.sidebarCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #071233;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarCardSubtitle {
+  font-size: 11px;
+  color: #64748B;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.sidebarCardChevron {
+  color: #94A3B8;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.switcherContainer {
+  padding: 0 16px;
+  width: 100%;
+}
+
+.utilityActions {
+  padding: 4px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItemCompact {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  color: #64748B;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  gap: 10px;
+}
+
+.navItemCompact:hover {
+  background-color: #F8FAFC;
+  color: #0172FD;
+}
+
+.logoutBtn:hover {
+  color: #EF4444;
+  background-color: #FEF2F2;
+}
+
+/* MAIN CONTENT CONTAINER */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  margin-left: 280px;
+}
+
+.main.expanded {
+  margin-left: 80px;
+}
+
+.content {
+  padding: 40px 32px;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.wideContent {
+  max-width: 1400px;
+}
+
+/* MOBILE HEADER STICKY BAR */
+.mobileHeader {
+  display: none;
+}
+
+.mobileToggle {
+  display: none;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 950;
+  animation: fadeIn 0.3s ease;
+}
+
+.mobileClose { display: none; }
+
+.mobileBottomNav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebarWrapper {
+    position: fixed;
+    left: -100%;
+    height: 100vh;
+    z-index: 1000;
+  }
+  
+  .sidebarWrapper.mobileOpen {
+    left: 0;
+    width: 280px;
+  }
+
+  .sidebarToggle { display: none; }
+  /* Bell is not part of the mobile menu — it lives outside the drawer */
+  .sidebarBellSlot { display: none; }
+  .mobileClose {
+    display: flex;
+    background: none;
+    border: none;
+    color: #64748B;
+    cursor: pointer;
+  }
+
+  .main { 
+    margin-left: 0 !important; 
+  }
+  
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    height: 60px;
+  }
+
+  .mobileToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #071233;
+    cursor: pointer;
+    padding: 6px;
+  }
+
+  .content {
+    padding: 16px 14px calc(84px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .mobileBottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: white;
+    border-top: 2px solid #E2E8F0;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1001;
+    box-shadow: 0 -4px 12px rgba(7, 18, 51, 0.03);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .bottomNavItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748B;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--font-jakarta), sans-serif;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    transition: color 0.15s ease;
+  }
+
+  .bottomNavItem svg {
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  .bottomNavItem:active svg {
+    transform: scale(0.9);
+  }
+
+  .activeBottomItem {
+    color: #0172FD;
+  }
+}
+
+@media (max-width: 360px) {
+  .content {
+    padding: 12px 8px 84px !important;
+  }
+  .mobileHeader {
+    padding: 8px 12px !important;
+    height: 52px !important;
+  }
+}
+
+/* Immersive mode (e.g. lesson player): hide mobile chrome, use full height */
+.immersiveContent {
+  /* Own the box EXACTLY: reset .content's min-height:100vh floor (on real
+     phones vh is the largest viewport, so the floor grows the box past the
+     visible viewport and overflow:hidden clips docked CTAs) and fall back
+     to vh for browsers without dynamic-viewport units. */
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .immersiveContent {
+    padding: 0 16px !important;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+/* COMING SOON MODAL & OTHERS */
+.modalBody { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; }
+.modalIconWrapper { width: 80px; height: 80px; background: rgba(1, 114, 253, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #0172FD; }
+.modalTitle { font-size: 20px; font-weight: 800; color: #071233; margin-bottom: 12px; }
+.modalDescription { color: #64748B; font-size: 14px; line-height: 1.6; margin-bottom: 32px; max-width: 360px; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

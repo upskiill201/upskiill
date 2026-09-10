@@ -1,12 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Lock, BookOpen } from 'lucide-react';
+import { Bot, Lock, BookOpen, Target, Check, Trophy, ChevronRight } from 'lucide-react';
+import { getLeagueMeta } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
-import { useComingSoon } from '@/app/dashboard/layout';
+import { fetcher } from '@/lib/swr';
+import { useComingSoon } from '@/components/layout/StudentShell';
 import { useGamification } from '@/context/GamificationContext';
+import { useRewardAnimation } from '@/context/RewardAnimationContext';
+import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
+import WeeklyLuckySpinCard from '@/components/dashboard/v2/WeeklyLuckySpinCard';
+import MonthlyQuestWidget from '@/components/quests/MonthlyQuestWidget';
 import styles from './RightSidebar.module.css';
 
 export interface RightSidebarProps {
@@ -28,9 +35,36 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     isEligibleForReward,
     nextRewardClaimInMs,
     claimDailyReward,
+    refresh,
   } = useGamification();
+  const { openClaimModal } = useRewardAnimation();
 
   const [countdownStr, setCountdownStr] = useState('');
+
+  // Real weekly-league standing for the sidebar card below — this used to be
+  // a static "Complete 2 more lessons to start competing!" placeholder that
+  // never reflected the real join rule (any XP joins you, not a lesson
+  // count) or the learner's actual rank. Best-effort: a failed/slow fetch
+  // just leaves the card in its loading skeleton, never blocks the sidebar.
+  //
+  // Shared SWR cache (lib/swr.ts) — a revisit to the dashboard paints the
+  // league card instantly from cache instead of re-flashing its skeleton.
+  const { data: leagueData } = useSWR<{
+    joined?: boolean;
+    league?: string;
+    myRank?: number | null;
+    standings?: unknown[];
+    cohortSize?: number;
+  }>('/api/leagues/me', fetcher);
+
+  const leagueStanding = leagueData
+    ? {
+        joined: Boolean(leagueData.joined),
+        league: leagueData.league ?? 'BRONZE',
+        myRank: leagueData.myRank ?? null,
+        cohortSize: Array.isArray(leagueData.standings) ? leagueData.standings.length : (leagueData.cohortSize ?? 0),
+      }
+    : null;
 
   useEffect(() => {
     if (isEligibleForReward || !nextRewardClaimInMs) {
@@ -59,9 +93,38 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     return () => clearInterval(interval);
   }, [isEligibleForReward, nextRewardClaimInMs]);
 
-  const handleClaimReward = async () => {
+  const handleClaimReward = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!isEligibleForReward) return;
     playHaptic('success');
-    await claimDailyReward();
+    const isDay7 = dailyRewardCyclePosition === 7;
+
+    // Full-page Celebration scene — onClaim (the real daily-reward API, which
+    // throws on failure) runs server-first inside the scene.
+    openClaimModal({
+      title: isDay7 ? '+30 COINS  +50 XP' : '+20 COINS  +10 XP',
+      subtitle: isDay7 ? 'Day 7 Mystery Chest Unlocked!' : `Day ${dailyRewardCyclePosition} Daily Reward Claimed!`,
+      // Mirrors the backend grant: 20 coins + 10 XP (30 + 50 on day 7)
+      rewards: isDay7
+        ? [
+            { currency: 'COINS', amount: 30 },
+            { currency: 'XP', amount: 50 },
+          ]
+        : [
+            { currency: 'COINS', amount: 20 },
+            { currency: 'XP', amount: 10 },
+          ],
+      skipBackendPersist: true,
+      onClaim: async () => {
+        await claimDailyReward();
+      },
+      onComplete: () => {
+        void refresh();
+      },
+    });
   };
 
   const handleLetsGo = () => {
@@ -124,6 +187,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
   return (
     <div className={styles.rightColumn}>
+      {/* LEARNING STATS (First card in sidebar) */}
+      <LearningStatsCard />
+
       {/* SECTION PROGRESS CARD (Only shown if section prop is provided) */}
       {hasSection && (
         <div className={styles.courseProgressCard}>
@@ -175,7 +241,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
           {sectionComplete && (
             <p className={styles.sectionCompleteMsg}>
-              Amazing! 🎉 You&apos;ve completed this section.
+              Amazing! You&apos;ve completed this section.
             </p>
           )}
 
@@ -193,7 +259,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         <div className={styles.messageCard}>
           <div className={styles.messageCardMascot}>
             <Image
-              src="/User onbarding Assets/Step_7_tey_verified_state.PNG"
+              src="/User onbarding Assets/Step_7_tey_verified_state.webp"
               alt="Tey"
               width={80}
               height={80}
@@ -205,7 +271,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             <span className={styles.messageHeader}>Tey&apos;s Message</span>
             <p className={styles.messageText}>
               {sectionComplete
-                ? `"Excellent work${userName ? `, ${userName}` : ''}! You've completed this section. You're one step closer to becoming a pro! 🎉"`
+                ? `"Excellent work${userName ? `, ${userName}` : ''}! You've completed this section. You're one step closer to becoming a pro!"`
                 : `"Keep going${userName ? `, ${userName}` : ''}! You're making great progress. ${sectionTotalLessons - sectionCompletedCount} more lesson${sectionTotalLessons - sectionCompletedCount !== 1 ? 's' : ''} to go!"`
               }
             </p>
@@ -219,84 +285,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </div>
       )}
 
-      {/* DAILY QUESTS CARD (section view) */}
+      {/* MONTHLY QUEST CARD (section view — live widget) */}
       {hasSection && (
-        <div className={styles.questsCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className={styles.cardHeaderWithLink}>
-            <h4 className={styles.cardSectionTitle}>Daily Quests</h4>
-          </div>
-
-          {/* Quest 1: Complete 1 Lesson */}
-          {(() => {
-            const isFinished = sectionCompletedCount >= 1;
-            const isClaimed = completedQuests.includes('daily-lesson');
-            return (
-              <div className={styles.questItem} style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '12px' }}>
-                <div className={styles.questIconWrapper}>
-                  <span>🎯</span>
-                </div>
-                <div className={styles.questContent} style={{ width: '100%' }}>
-                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Complete 1 Lesson</span>
-                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
-                      {Math.min(sectionCompletedCount, 1)} / 1
-                    </span>
-                  </div>
-                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
-                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#58cc02', width: `${isFinished ? 100 : 0}%` }} />
-                  </div>
-                  {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#58cc02' }}>Claimed! ✓</span>
-                  ) : isFinished ? (
-                    <button
-                      onClick={() => claimQuest('daily-lesson')}
-                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                    >
-                      CLAIM +20 XP
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Quest 2: Earn 10 XP */}
-          {(() => {
-            const isFinished = sectionXpEarned >= 10;
-            const isClaimed = completedQuests.includes('daily-consistent');
-            return (
-              <div className={styles.questItem}>
-                <div className={styles.questIconWrapper}>
-                  <span>💎</span>
-                </div>
-                <div className={styles.questContent} style={{ width: '100%' }}>
-                  <div className={styles.questInfoRow} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className={styles.questTitle} style={{ fontWeight: 700, fontSize: '14px', color: '#071233' }}>Earn 10 XP Today</span>
-                    <span className={styles.questProgressText} style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8' }}>
-                      {Math.min(sectionXpEarned, 10)} / 10
-                    </span>
-                  </div>
-                  <div className={styles.questProgressBar} style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', margin: '6px 0 10px', overflow: 'hidden' }}>
-                    <div className={styles.questProgressFill} style={{ height: '100%', backgroundColor: '#0172FD', width: `${Math.min((sectionXpEarned / 10) * 100, 100)}%` }} />
-                  </div>
-                  {isClaimed ? (
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: '#0172FD' }}>Claimed! ✓</span>
-                  ) : isFinished ? (
-                    <button
-                      onClick={() => claimQuest('daily-consistent')}
-                      style={{ backgroundColor: '#0172FD', border: 'none', borderBottom: '2.5px solid #0050B3', color: 'white', fontWeight: 800, fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                    >
-                      CLAIM +10 XP
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8' }}>In Progress</span>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
+        <div className={styles.questsCard} style={{ background: 'none', border: 'none' }}>
+          <MonthlyQuestWidget />
         </div>
       )}
 
@@ -328,19 +320,31 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#777777', fontFamily: 'var(--font-jakarta), sans-serif', lineHeight: '1.4' }}>
               {(() => {
                 if (isEligibleForReward) {
-                  if (dailyRewardCyclePosition === 7) return "🔥 Day 7 Mystery Chest is ready!";
+                  if (dailyRewardCyclePosition === 7) return "Day 7 Mystery Chest is ready!";
                   return "Claim your reward to build a daily habit!";
                 } else {
-                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked! 🎉";
+                  if (dailyRewardCyclePosition === 1) return "Nice job! Mystery chest unlocked!";
                   return `Next chest in ${countdownStr}`;
                 }
               })()}
             </span>
           </div>
           
-          <div style={{ width: '64px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div
+            onClick={isEligibleForReward ? handleClaimReward : undefined}
+            style={{
+              width: '64px',
+              height: '54px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              cursor: isEligibleForReward ? 'pointer' : 'default',
+              transition: 'transform 0.15s ease',
+            }}
+          >
             <Image
-              src="/Tressure box.png"
+              src="/Tressure box.webp"
               alt="Mystery Chest"
               width={64}
               height={52}
@@ -381,6 +385,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                   D{dayNum}
                 </span>
                 <div
+                  onClick={isActive ? handleClaimReward : undefined}
                   className={isDay7 && !isCompleted ? 'day7Glow' : ''}
                   style={{
                     width: isDay7 ? '32px' : '28px',
@@ -401,15 +406,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
                     fontWeight: 800,
                     fontSize: '11px',
                     boxShadow: isActive && !isDay7 ? '0 0 8px rgba(255, 138, 0, 0.6)' : 'none',
+                    cursor: isActive ? 'pointer' : 'default',
                     transition: 'all 0.2s ease'
                   }}
                 >
                   {isCompleted ? (
-                    '✓'
+                    <Check size={14} />
                   ) : isDay7 ? (
                     <div style={{ position: 'relative', width: 20, height: 18 }}>
                       <Image
-                        src="/Tressure box.png"
+                        src="/Tressure box.webp"
                         alt="Day 7 Chest"
                         fill
                         style={{ objectFit: 'contain' }}
@@ -430,8 +436,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
           className={isEligibleForReward ? styles.dailyRewardClaimBtn : styles.dailyRewardClaimBtnDisabled}
         >
           {isEligibleForReward
-            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST 🎉' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
-            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED ✓' : 'CLAIMED ✓')
+            ? (dailyRewardCyclePosition === 7 ? 'CLAIM MYSTERY CHEST' : `CLAIM DAY ${dailyRewardCyclePosition} REWARD`)
+            : (dailyRewardCyclePosition === 1 ? 'MYSTERY CHEST CLAIMED' : 'CLAIMED')
           }
         </button>
       </div>
@@ -508,8 +514,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
 
               <div className={styles.courseStatItem}>
                 <span className={styles.courseStatLabel}>Total XP Earned</span>
-                <span className={styles.courseStatVal}>
-                  💎 <strong>{totalXp} XP</strong>
+                <span className={styles.courseStatVal} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Image src="/Icons/gem.png" alt="XP" width={14} height={14} /> <strong>{totalXp} XP</strong>
                 </span>
               </div>
             </div>
@@ -540,89 +546,58 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
             onClick={handleLetsGo}
             className={styles.button3dWhite}
           >
-            Let&apos;s Go! 🚀
+            Let&apos;s Go!
           </button>
         </div>
       </div>
       )}
 
-      {/* DAILY QUESTS CARD (default) */}
+      {/* MONTHLY QUEST CARD (default — live widget) */}
       {!hasSection && (
-      <div className={styles.questsCard}>
-        <div className={styles.cardHeaderWithLink}>
-          <h4 className={styles.cardSectionTitle}>DAILY QUESTS</h4>
-          <button
-            onClick={() => triggerComingSoon('All Quests')}
-            className={styles.cardViewAllBtn}
-          >
-            View All
-          </button>
+        <div className={styles.questsCard} style={{ background: 'none', border: 'none' }}>
+          <MonthlyQuestWidget />
         </div>
-
-        <div className={styles.questItem}>
-          <div className={styles.questIconWrapper}>
-            <span>💎</span>
-          </div>
-          <div className={styles.questContent}>
-            <div className={styles.questInfoRow}>
-              <span className={styles.questTitle}>Earn 10 XP</span>
-              <span className={styles.questProgressText}>10/10</span>
-            </div>
-            <div className={styles.questProgressBar}>
-              <div className={styles.questProgressFill} style={{ width: '100%' }} />
-            </div>
-          </div>
-        </div>
-      </div>
       )}
 
-      {/* UNLOCK LEADERBOARDS CARD (default) */}
+      {/* LEADERBOARD CARD (default) — real live standing, not a static
+          placeholder. Joining is actually gated on first XP of the week
+          from any source, not a fixed lesson count, so the not-yet-joined
+          state doesn't claim one either. */}
       {!hasSection && (
-      <div className={styles.leaderboardsCard}>
-        <div className={styles.lockIconOuter}>
-          <div className={styles.lockIconInner}>
-            <Lock size={18} className={styles.lockSvg} />
-          </div>
-        </div>
-        <h4 className={styles.leaderboardCardTitle}>UNLOCK LEADERBOARDS!</h4>
-        <p className={styles.leaderboardCardDesc}>
-          Complete 2 more lessons to start competing!
-        </p>
-        <div className={styles.leaderboardProgressContainer}>
-          <div className={styles.leaderboardProgressBar}>
-            <div className={styles.leaderboardProgressBar} style={{ backgroundColor: '#F1F5F9' }}>
-              <div className={styles.leaderboardProgressFill} style={{ width: '33.3%' }} />
-            </div>
-          </div>
-          <span className={styles.leaderboardProgressText}><strong>1 / 3</strong> lessons completed</span>
-        </div>
-      </div>
+        <Link href="/dashboard/leaderboards" className={styles.leaderboardsCard} style={{ textDecoration: 'none' }}>
+          {leagueStanding?.joined ? (
+            <>
+              <div className={styles.lockIconOuter} style={{ backgroundColor: '#FFF7E0' }}>
+                <div className={styles.lockIconInner} style={{ backgroundColor: '#FFEDB8' }}>
+                  <Trophy size={18} color="#B98A00" />
+                </div>
+              </div>
+              <h4 className={styles.leaderboardCardTitle}>{getLeagueMeta(leagueStanding.league).name.toUpperCase()}</h4>
+              <p className={styles.leaderboardCardDesc}>
+                {leagueStanding.myRank
+                  ? `You're #${leagueStanding.myRank} of ${leagueStanding.cohortSize} this week`
+                  : 'Keep earning XP to climb this week'}
+              </p>
+              <span className={styles.leaderboardProgressText} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                View leaderboard <ChevronRight size={12} />
+              </span>
+            </>
+          ) : (
+            <>
+              <div className={styles.lockIconOuter}>
+                <div className={styles.lockIconInner}>
+                  <Lock size={18} className={styles.lockSvg} />
+                </div>
+              </div>
+              <h4 className={styles.leaderboardCardTitle}>JOIN THE LEADERBOARD</h4>
+              <p className={styles.leaderboardCardDesc}>Complete a lesson to enter this week&apos;s competition!</p>
+            </>
+          )}
+        </Link>
       )}
 
-      {/* DAILY REWARD CARD (default) */}
-      {!hasSection && (
-      <div className={styles.rewardCard}>
-        <span className={styles.rewardHeader}>DAILY REWARD</span>
-        <div className={styles.treasureBoxWrapper}>
-          <span className={`${styles.sparkleStar} ${styles.sparkle1}`}>✨</span>
-          <span className={`${styles.sparkleStar} ${styles.sparkle2}`}>✨</span>
-          <span className={`${styles.sparkleStar} ${styles.sparkle3}`}>✨</span>
-          <Image
-            src="/Tressure box.png"
-            alt="Treasure Box"
-            width={120}
-            height={100}
-            className={styles.treasureBoxImage}
-          />
-        </div>
-        <button
-          onClick={handleClaimReward}
-          className={styles.button3dWhiteReward}
-        >
-          Claim Reward
-        </button>
-      </div>
-      )}
+      {/* LUCKY SPIN CARD */}
+      <WeeklyLuckySpinCard />
     </div>
   );
 };

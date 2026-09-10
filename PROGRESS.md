@@ -12,6 +12,40 @@
 
 ---
 
+## 🟦 Current Work: Student Profile + Achievements — Duolingo-style Upgrade 🟡 Code Complete, Pending Visual QA (2026-08-24)
+
+> **Goal:** Make the student profile (`/dashboard/profile`) fully functional end-to-end with Duolingo-inspired achievements and a Statistics row — **without changing the page layout**. Teyro brand colors only. No schema/migration changes.
+
+### ✅ What We Accomplished
+- **Fixed the core achievements bug:** the profile fetched `/api/gamification/achievements` but read an obsolete `data.cards` shape while the backend returns `{ achievements }` (tiered badges). Result: real data *never* rendered — users always saw 3 hardcoded client-computed fallback cards. Now fully wired to the live tiered badge system (6 badges × tiers).
+- **Backend (additive):** `AchievementsService.getAchievements()` now also returns a semantic `metrics` block (`currentStreak`, `longestStreak`, `totalXp`, `lessonsCompleted`, `firstTryCorrectAnswers`, `coursesEnrolled`, `daysStudied`) so the Statistics row is fed from one call. The only other consumer (`home.service.ts`) reads `.achievements` — unaffected.
+- **Claims moved to the Celebration Engine:** collecting a reward launches the same full-page `ACHIEVEMENT` scene the Herald uses — server-first idempotent claim, correct reward labels (+XP / +Coins / +Streak Freeze), header balances sync after. Removed the fake local claim fallback + toast; failed claims stay retryable.
+- **New Statistics row:** 5 Duolingo-style stat boxes (Day Streak · Longest Streak w/ PERSONAL BEST pill · Total XP · Lessons Done · Days Studied) between the LinkedIn card and Achievements — revives previously-dead `.statsRow/.statCard` CSS.
+- **Duolingo-style badge rows:** candy medallions with inset highlight, tier pips (claimed gold / unlocked amber pulse / locked slate), progress bar to next tier, gold COMPLETED chip with shine sweep, hover lift. VIEW ALL modal now shows each badge's full tier ladder with per-tier COLLECT buttons and Lock icons.
+- **Bio line** now displays on the identity card (was editable but never shown).
+- Loading skeletons / error-with-retry / empty states everywhere; responsive tweaks at 640/480/320; `prefers-reduced-motion` guards for all new animation.
+- **Fixed a pre-existing broken test:** `getClaimableAchievements` spec relied on per-call mock queues that broke whenever the lazy unlock sync early-returned.
+
+**Files touched:**
+- `backend/src/gamification/achievements.service.ts`
+- `backend/src/gamification/achievements.service.spec.ts`
+- `frontend/app/dashboard/profile/page.tsx`
+- `frontend/app/dashboard/profile/Profile.module.css`
+
+### 📍 Current State
+- All code changes sit **uncommitted on the `staging` branch**, mixed with other pre-existing WIP modifications from earlier sessions.
+- Verification done: backend 9/9 unit tests pass · `nest build` clean · frontend `tsc --noEmit` clean on changed files · eslint 0 errors · route guard intact (401 unauthenticated).
+- Local frontend (`.env.local`) points at `localhost:3001`; backend dist was rebuilt but the running server still serves old code.
+
+### 🔜 Next Steps
+- [ ] **Restart the local backend (:3001)** so `/gamification/achievements` serves the new `metrics` field
+- [ ] **Logged-in smoke test** on `localhost:3000/dashboard/profile`: Statistics numbers correct · all 6 badges render with tier progress · claim → full-page celebration → claimed state persists after close · double-claim impossible (idempotency 409)
+- [ ] Responsive pass at 1024 / 640 / 480 / 320 widths + reduced-motion spot check
+- [ ] **Commit on a feature branch → PR to `staging`** per branching rule (never direct to main)
+- [ ] After staging deploy: verify on the staging URL, then trigger the production "Deploy — Production" GitHub Action
+
+***
+
 ## 🔄 Waitlist Strategy - Separate Project
 
 > **Note (2026-04-12):** The waitlist landing page will be built as a **separate Next.js project** in a different GitHub repo.

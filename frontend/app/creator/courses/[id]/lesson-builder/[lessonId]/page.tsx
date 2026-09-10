@@ -1,18 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones, MonitorPlay,
+  ChevronRight, ChevronLeft, ChevronDown, Check, Eye, Play, FileText, Headphones,
   UploadCloud, Sparkles, MoreVertical, Plus, ArrowRight, BookOpen, Trash2, Film, CheckCircle2,
-  Target, Award, Info, WifiOff, AlertCircle
+  Target, Award, Info, WifiOff, AlertCircle, AlertTriangle
 } from 'lucide-react';
 import styles from './LessonBuilder.module.css';
 import Skeleton from '@/components/ui/Skeleton';
 import { useS3Upload } from '@/hooks/useS3Upload';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
+import { useOrphanedMediaCleanup } from '@/hooks/useOrphanedMediaCleanup';
+import { useLinkNavigationGuard } from '@/hooks/useLinkNavigationGuard';
 import { Toast } from '@/components/ui/Toast';
 
 import dynamic from 'next/dynamic';
@@ -30,6 +33,14 @@ import { ReviewPublishTab } from './components/ReviewPublishTab';
 import { ReviewPublishSidebar } from './components/ReviewPublishSidebar';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
+
+/* Single source of truth for "is the Deepen phase filled in" — used by the
+ * progress UI, the autosave and the publish payload so they can never disagree. */
+function deepenPhaseComplete(config: { collectionTitle?: string } | null, resources: { url?: string }[]) {
+  return !!(config?.collectionTitle || '').trim()
+    && resources.length > 0
+    && resources.every(r => !!(r.url || '').trim());
+}
 
 const quillModules = {
   toolbar: [
@@ -63,6 +74,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     upload: uploadVideo,
     uploading: uploadingVideo,
     progress: videoProgress,
+    resumed: videoResumed,
     error: videoError
   } = useS3Upload();
 
@@ -73,22 +85,38 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     error: audioError
   } = useS3Upload();
 
+  /** "532s of real media" → "9" minutes for time estimates (min 1). */
+  const minutesFromSeconds = (seconds: number | null | undefined) => {
+    if (!seconds || seconds <= 0) return null;
+    return Math.max(1, Math.ceil(seconds / 60));
+  };
+
   const handleVideoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      e.target.value = ''; // allow re-picking the same file later
       try {
-        const { cloudFrontUrl } = await uploadVideo(file, lessonId);
-        setLesson((l: any) => ({ ...l, learnVideoUrl: cloudFrontUrl }));
-        await fetch(`/api/lesson/${lessonId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            learnVideoUrl: cloudFrontUrl,
-            isLearnCompleted: !!(lesson?.title && (cloudFrontUrl || lesson?.learnText || lesson?.learnAudioUrl))
-          }),
+        const { cloudFrontUrl } = await uploadVideo(file, lessonId, {
+          // Real duration read off the local file — replaces the old
+          // always-0 estimate that made lesson timings meaningless.
+          onDuration: (seconds) => {
+            const minutes = minutesFromSeconds(seconds);
+            if (minutes) setLesson((l: any) => ({ ...l, durationMinutes: minutes }));
+          },
         });
+        setLesson((l: any) => {
+          // Queue the video this one replaces for cleanup. It is only
+          // actually deleted once the new URL is saved AND the server
+          // confirms nothing still points at the old object.
+          markSuperseded(l?.learnVideoUrl);
+          return { ...l, learnVideoUrl: cloudFrontUrl };
+        });
+        // Persistence is handled by the debounced autosave (learn phase block).
       } catch (err) {
-        console.error('Video upload failed:', err);
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          console.error('Video upload failed:', err);
+          alert(`The video could not be uploaded: ${err instanceof Error ? err.message : 'please try again.'}`);
+        }
       }
     }
   };
@@ -96,26 +124,37 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const handleAudioFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      e.target.value = ''; // allow re-picking the same file later
       try {
-        const { cloudFrontUrl } = await uploadAudio(file, lessonId);
-        setLesson((l: any) => ({ ...l, learnAudioUrl: cloudFrontUrl }));
-        await fetch(`/api/lesson/${lessonId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            learnAudioUrl: cloudFrontUrl,
-            isLearnCompleted: !!(lesson?.title && (lesson?.learnVideoUrl || lesson?.learnText || cloudFrontUrl))
-          }),
+        const { cloudFrontUrl } = await uploadAudio(file, lessonId, {
+          onDuration: (seconds) => {
+            const minutes = minutesFromSeconds(seconds);
+            if (minutes) setLesson((l: any) => ({ ...l, durationMinutes: minutes }));
+          },
         });
+        setLesson((l: any) => {
+          markSuperseded(l?.learnAudioUrl);
+          return { ...l, learnAudioUrl: cloudFrontUrl };
+        });
+        // Persistence is handled by the debounced autosave (learn phase block).
       } catch (err) {
-        console.error('Audio upload failed:', err);
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          console.error('Audio upload failed:', err);
+          alert(`The audio could not be uploaded: ${err instanceof Error ? err.message : 'please try again.'}`);
+        }
       }
     }
   };
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  /** True when a save was rejected with 409 — the lesson changed elsewhere.
+   *  Blocks navigation-adjacent lies until the creator picks a side. */
+  const [conflict, setConflict] = useState(false);
+  const [resolvingConflict, setResolvingConflict] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [lesson, setLesson] = useState<any>(null);
@@ -170,8 +209,66 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     learningPathSuggestions: [],
   });
 
-  const hasInitialLoadCompleted = useRef(false);
-  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty } = useSyncQueue(lessonId as string, lesson?.version || 1);
+  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion, resyncVersion, clearLocalBackups } = useSyncQueue(lessonId as string, lesson?.version || 1);
+
+  // Media replaced during authoring is deleted only once the replacement is
+  // durably saved — and only if the server agrees nothing references it.
+  const { markSuperseded } = useOrphanedMediaCleanup(
+    lessonId as string,
+    syncStatus === 'saved' && !isDirty,
+  );
+
+  // Guard in-app link navigation while there is unsaved or in-flight work.
+  useLinkNavigationGuard(!loading && (isDirty || saving));
+
+  // ─── Browser back/forward guard (history sentinel) ───
+  // App-router popstate navigations can't be cancelled, so while there is
+  // unsaved/in-flight work a duplicate same-URL entry sits above the real
+  // one: the first Back press pops only the sentinel (no navigation) and we
+  // ask; leaving takes an explicit second Back. One silent press used to
+  // discard every unsaved edit.
+  const historyGuardRef = useRef({ armed: false, consuming: false });
+
+  useEffect(() => {
+    const guard = historyGuardRef.current;
+    const shouldArm = !loading && (isDirty || saving);
+
+    if (shouldArm && !guard.armed) {
+      window.history.pushState({ teyroLessonGuard: true }, '');
+      guard.armed = true;
+    } else if (!shouldArm && guard.armed) {
+      // Saved/clean again — consume our own sentinel entry so Back isn't a
+      // dead first press. The popstate handler recognizes this via `consuming`.
+      guard.consuming = true;
+      window.history.back();
+    }
+
+    const onPopState = () => {
+      if (guard.consuming) {
+        guard.consuming = false;
+        guard.armed = false;
+        return;
+      }
+      if (!guard.armed) return;
+
+      const leave = window.confirm(
+        'Leave without saving?\n\nYour unsaved changes will be lost.'
+      );
+      if (leave) {
+        // The pop above consumed the sentinel — go back for real.
+        guard.armed = false;
+        window.history.back();
+      } else {
+        // Stay: rebuild the sentinel we just popped.
+        window.history.pushState({ teyroLessonGuard: true }, '');
+        guard.armed = true;
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [loading, isDirty, saving]);
+
   const debouncedLesson = useDebounce(lesson, 1000);
   const debouncedMcqActivity = useDebounce(mcqActivity, 1000);
   const debouncedReflectActivity = useDebounce(reflectActivity, 1000);
@@ -179,91 +276,179 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const debouncedResources = useDebounce(resources, 1000);
   const debouncedWhatYouWillLearn = useDebounce(whatYouWillLearn, 1000);
 
-  // Track dirty state when user makes changes
+  /* ── change detection ──
+   * Snapshot of everything the builder can save. `lastSavedSnapshot` holds the
+   * serialized state as of the last successful save (initialised after load).
+   * Dirty is only raised when the live state genuinely differs from it, which
+   * prevents the phantom "save on open" that used to fire on every page load.
+   */
+  const snapshotRef = useRef('');
+  // lessonType as it exists on the server — saves only send lessonType when
+  // the creator explicitly changes it in this session (see applyLoadedLesson).
+  const loadedLessonTypeRef = useRef('video');
+  const lastSavedSnapshotRef = useRef<string | null>(null);
+  /** Set when freshly loaded server state should become the new "saved"
+   *  baseline (discard-and-reload) — consumed once by the dirty effect. */
+  const pendingBaselineRef = useRef(false);
+
+  const buildSaveSnapshot = () => JSON.stringify([
+    lesson?.title,
+    lesson?.shortDescription,
+    lesson?.learnVideoUrl,
+    lesson?.learnAudioUrl,
+    lesson?.learnText,
+    lesson?.durationMinutes,
+    contentType,
+    whatYouWillLearn,
+    mcqActivity,
+    reflectActivity,
+    deepenConfig,
+    resources,
+  ]);
+  snapshotRef.current = buildSaveSnapshot();
+
+  const markLocallySaved = (snapshot?: string) => {
+    lastSavedSnapshotRef.current = snapshot ?? snapshotRef.current;
+  };
+
+  // Track dirty state when the live state diverges from the last-saved snapshot
   useEffect(() => {
-    if (hasInitialLoadCompleted.current) {
+    if (loading) return;
+    if (pendingBaselineRef.current) {
+      // Fresh server state just replaced everything — adopt it as the new
+      // saved baseline instead of mistaking it for user changes.
+      pendingBaselineRef.current = false;
+      lastSavedSnapshotRef.current = buildSaveSnapshot();
+      return;
+    }
+    if (lastSavedSnapshotRef.current === null) {
+      // First pass after load — remember exactly what came from the server so
+      // we never mistake loaded data for user changes.
+      lastSavedSnapshotRef.current = buildSaveSnapshot();
+      return;
+    }
+    if (buildSaveSnapshot() !== lastSavedSnapshotRef.current) {
       setDirty();
     }
   }, [lesson, mcqActivity, reflectActivity, deepenConfig, resources, contentType, whatYouWillLearn, setDirty]);
+
+  /** Map a server lesson payload onto the builder's state slices. Shared by
+   *  the initial load and the conflict banner's "discard & reload" action. */
+  const applyLoadedLesson = useCallback((d: any) => {
+    setLesson(d);
+    if (d.section?.course?.title) setCourseTitle(d.section.course.title);
+    if (d.section?.title) setSectionTitle(d.section.title);
+    // Legacy rows may hold types this editor can't author (quiz, link, …).
+    // Edit them as video but remember the stored value so saves only rewrite
+    // lessonType when the creator explicitly picks a different type here.
+    const loadedType = d.lessonType || 'video';
+    loadedLessonTypeRef.current = loadedType;
+    setContentType(['video', 'text', 'audio'].includes(loadedType) ? loadedType : 'video');
+
+    if (d.resources) {
+      // DB rows use storageUrl/sizeBytes/estimatedReadMin — map them onto
+      // the builder's ResourceItem shape so reloads keep size/time metadata.
+      setResources((d.resources as any[]).map(r => ({
+        id: r.id,
+        title: r.title,
+        type: r.type,
+        url: r.storageUrl || '',
+        size: typeof r.sizeBytes === 'number' && r.sizeBytes > 0 ? `${(r.sizeBytes / (1024 * 1024)).toFixed(1)} MB` : undefined,
+        time: r.estimatedReadMin > 0 ? `${r.estimatedReadMin} min read` : undefined,
+        estimatedReadMin: r.estimatedReadMin ?? 0,
+        description: r.description,
+        category: r.category,
+      })));
+    }
+    if (d.contentBlocks) {
+      let parsedBlocks = d.contentBlocks;
+      if (typeof parsedBlocks === 'string') {
+        try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
+      }
+      d.contentBlocks = parsedBlocks; // Ensure other parts of the app use the parsed object
+
+      if (parsedBlocks?.learn) {
+        const learnBlocks = parsedBlocks.learn;
+        setLesson((l: any) => ({
+          ...l,
+          learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
+          learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
+          learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
+        }));
+        const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn')?.value;
+        setWhatYouWillLearn(Array.isArray(wylBlock) ? wylBlock : []);
+      }
+      if (parsedBlocks?.apply) {
+        const applyBlocks = parsedBlocks.apply;
+        const mcqBlock = Array.isArray(applyBlocks)
+          ? applyBlocks.find((b: any) => b.type === 'mcqActivity')?.value
+          : applyBlocks?.mcqActivity;
+        if (mcqBlock) setMcqActivity(mcqBlock);
+      }
+      if (parsedBlocks?.reflect) {
+        const reflectBlocks = parsedBlocks.reflect;
+        const reflectBlock = Array.isArray(reflectBlocks)
+          ? reflectBlocks.find((b: any) => b.type === 'reflectActivity')?.value
+          : reflectBlocks?.reflectActivity;
+        if (reflectBlock) setReflectActivity(reflectBlock);
+      }
+      if (parsedBlocks?.deepen) {
+        const deepenBlocks = parsedBlocks.deepen;
+        const deepenBlock = Array.isArray(deepenBlocks)
+          ? deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value
+          : deepenBlocks?.deepenActivity;
+        if (deepenBlock) setDeepenConfig(deepenBlock);
+      }
+    }
+  }, []);
 
   /* fetch */
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch(`/api/lesson/${lessonId}`);
-        if (res.ok) {
-          const d = await res.json();
-          setLesson(d);
-          if (d.section?.course?.title) setCourseTitle(d.section.course.title);
-          if (d.section?.title) setSectionTitle(d.section.title);
-          if (d.lessonType) setContentType(d.lessonType);
-          
-          if (d.resources) {
-            setResources(d.resources);
-          }
-          if (d.contentBlocks) {
-            let parsedBlocks = d.contentBlocks;
-            if (typeof parsedBlocks === 'string') {
-              try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) { parsedBlocks = {}; }
-            }
-            d.contentBlocks = parsedBlocks; // Ensure other parts of the app use the parsed object
-            
-            if (parsedBlocks?.learn) {
-              const learnBlocks = parsedBlocks.learn;
-              setLesson((l: any) => ({
-                ...l,
-                learnVideoUrl: learnBlocks.find((b: any) => b.type === 'videoUrl')?.value,
-                learnAudioUrl: learnBlocks.find((b: any) => b.type === 'audioUrl')?.value,
-                learnText: learnBlocks.find((b: any) => b.type === 'text')?.value,
-              }));
-              const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn')?.value;
-              setWhatYouWillLearn(Array.isArray(wylBlock) ? wylBlock : []);
-            }
-            if (parsedBlocks?.apply) {
-              const applyBlocks = parsedBlocks.apply;
-              const mcqBlock = Array.isArray(applyBlocks)
-                ? applyBlocks.find((b: any) => b.type === 'mcqActivity')?.value
-                : applyBlocks?.mcqActivity;
-              if (mcqBlock) setMcqActivity(mcqBlock);
-            }
-            if (parsedBlocks?.reflect) {
-              const reflectBlocks = parsedBlocks.reflect;
-              const reflectBlock = Array.isArray(reflectBlocks)
-                ? reflectBlocks.find((b: any) => b.type === 'reflectActivity')?.value
-                : reflectBlocks?.reflectActivity;
-              if (reflectBlock) setReflectActivity(reflectBlock);
-            }
-            if (parsedBlocks?.deepen) {
-              const deepenBlocks = parsedBlocks.deepen;
-              const deepenBlock = Array.isArray(deepenBlocks)
-                ? deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value
-                : deepenBlocks?.deepenActivity;
-              if (deepenBlock) setDeepenConfig(deepenBlock);
-            }
-          }
+        if (!res.ok) {
+          setLoadError(res.status === 404
+            ? 'This lesson could not be found. It may have been deleted.'
+            : `Could not load this lesson (error ${res.status}). Please try again.`);
+          return;
         }
-      } catch (e) { console.error(e); }
-      finally { 
-        setLoading(false); 
-        setTimeout(() => { hasInitialLoadCompleted.current = true; }, 500);
+        const d = await res.json();
+        applyLoadedLesson(d);
+      } catch (e) {
+        console.error(e);
+        setLoadError('A network error occurred while loading this lesson. Check your connection and try again.');
+      } finally {
+        setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
   /* Autosave */
   useEffect(() => {
-    if (loading || !debouncedLesson || !debouncedMcqActivity || !debouncedReflectActivity || !debouncedDeepenConfig || !hasInitialLoadCompleted.current) return;
-    
+    if (loading || !debouncedLesson || !debouncedMcqActivity || !debouncedReflectActivity || !debouncedDeepenConfig) return;
+    if (lastSavedSnapshotRef.current === null) return;
+    // Only hit the API when the settled state genuinely differs from what the
+    // server last acknowledged — prevents the phantom save that used to fire
+    // on every page load.
+    if (buildSaveSnapshot() === lastSavedSnapshotRef.current) return;
+
     const runAutosave = async () => {
+      const savedSnapshot = buildSaveSnapshot();
       const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
-      
-      await syncMetadata({
+
+      const metadataResult = await syncMetadata({
         title: debouncedLesson.title,
         shortDescription: debouncedLesson.shortDescription,
-        lessonType: contentType,
+        ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
+        // Measured media length from the latest upload (undefined → omitted)
+        ...(typeof debouncedLesson.durationMinutes === 'number' && {
+          durationMinutes: debouncedLesson.durationMinutes,
+        }),
       });
 
-      await syncPhase('learn', {
+      const learnResult = await syncPhase('learn', {
         contentBlocks: [
           { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
           { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
@@ -275,39 +460,44 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
       const isApplyCompleted = debouncedMcqActivity.questions.length > 0 &&
         debouncedMcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
-      await syncPhase('apply', {
+      const applyResult = await syncPhase('apply', {
         contentBlocks: [{ type: 'mcqActivity', value: debouncedMcqActivity }],
         isCompleted: isApplyCompleted
       });
 
-      const isReflectCompleted = debouncedReflectActivity.prompt.trim().length > 0 && 
-        (debouncedReflectActivity.type === 'open' ? (!debouncedReflectActivity.openConfig.useStarters || debouncedReflectActivity.openConfig.starters.length > 0) : 
+      const isReflectCompleted = debouncedReflectActivity.prompt.trim().length > 0 &&
+        (debouncedReflectActivity.type === 'open' ? (!debouncedReflectActivity.openConfig.useStarters || debouncedReflectActivity.openConfig.starters.length > 0) :
         (debouncedReflectActivity.guidedConfig.questions.length > 0 && debouncedReflectActivity.guidedConfig.questions.every(q => q.text.trim())));
-      await syncPhase('reflect', {
+      const reflectResult = await syncPhase('reflect', {
         contentBlocks: [{ type: 'reflectActivity', value: debouncedReflectActivity }],
         isCompleted: isReflectCompleted
       });
 
-      const isDeepenCompleted = debouncedDeepenConfig.collectionTitle.trim().length > 0 && debouncedResources.length > 0 && debouncedResources.every(r => (r.url || '').trim());
-      await syncPhase('deepen', {
+      // Deepen config (collection title/settings) persists through the phase block;
+      // the resources themselves are persisted via the dedicated resource endpoints.
+      const deepenResult = await syncPhase('deepen', {
         contentBlocks: [{ type: 'deepenActivity', value: debouncedDeepenConfig }],
-        isCompleted: isDeepenCompleted
+        isCompleted: deepenPhaseComplete(deepenConfig, debouncedResources)
       });
-      
-      // We also update the lesson resources
-      await fetch(`/api/lesson/${lessonId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resources: debouncedResources }),
-      });
+
+      if (metadataResult.ok && learnResult.ok && applyResult.ok && reflectResult.ok && deepenResult.ok) {
+        markLocallySaved(savedSnapshot);
+      }
+      // A 409 anywhere means the lesson changed underneath us — surface the
+      // conflict banner instead of pretending the autosave succeeded.
+      if ([metadataResult, learnResult, applyResult, reflectResult, deepenResult].some(r => r.conflict)) {
+        setConflict(true);
+      }
     };
 
     runAutosave();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedLesson, debouncedMcqActivity, debouncedReflectActivity, debouncedDeepenConfig, debouncedResources, contentType, loading, debouncedWhatYouWillLearn]);
 
   /**
    * buildSavePayload — constructs the full-save payload from current live state.
-   * Used by both forceManualSave and handlePublish.
+   * Used by both forceManualSave and handlePublish. Carries the current known
+   * version so the server can reject conflicting concurrent edits (409).
    */
   const buildSavePayload = () => {
     const currentLesson = lesson;
@@ -318,13 +508,14 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       (reflectActivity.type === 'open'
         ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0)
         : (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every((q: any) => q.text.trim())));
-    const isDeepenCompleted = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every((r: any) => (r.url || '').trim());
+    const isDeepenCompleted = deepenPhaseComplete(deepenConfig, resources);
 
     return {
       // Metadata
       title: currentLesson?.title || '',
       shortDescription: currentLesson?.shortDescription || '',
-      lessonType: contentType,
+      ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
+      durationMinutes: currentLesson?.durationMinutes,
       // Phase blocks
       learnBlocks: [
         { type: 'videoUrl', value: currentLesson?.learnVideoUrl || '' },
@@ -340,17 +531,19 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       isApplyCompleted,
       isReflectCompleted,
       isDeepenCompleted,
+      // Optimistic locking
+      version: getVersion(),
     };
   };
 
   /* save — ONE request, optimistic UI so creator sees result immediately */
   const forceManualSave = async (): Promise<{ ok: boolean }> => {
-    // Optimistic: show Saved immediately before backend confirms
-    setSaveSuccess(true);
+    if (!lesson) return { ok: false };
     setSaving(true);
 
     try {
       const payload = buildSavePayload();
+      const savedSnapshot = buildSaveSnapshot();
 
       const res = await fetch(`/api/lesson/${lessonId}/full-save`, {
         method: 'PATCH',
@@ -359,28 +552,88 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       });
 
       if (!res.ok) {
-        // Revert optimistic state on failure
-        setSaveSuccess(false);
-        console.error('full-save failed:', res.status);
+        if (res.status === 409) {
+          // Another session saved first. Surface the conflict and stop — the
+          // old flow adopted the server version here, which cleared isDirty
+          // and showed "Saved" while NOTHING had been written, silently
+          // disarming the close-guard and interval autosave.
+          setConflict(true);
+        } else {
+          setSyncError('Your changes could not be saved because the lesson was modified elsewhere. Review your content and save again.');
+        }
         return { ok: false };
       }
 
-      // Keep success state for 2.5s
+      const data = await res.json().catch(() => null);
+      adoptServerVersion(data?.version);   // keep granular autosave in sync + clear dirty
+      markLocallySaved(savedSnapshot);
+      setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
       return { ok: true };
     } catch (err) {
-      setSaveSuccess(false);
       console.error('forceManualSave error:', err);
+      setSyncError('A network error occurred while saving. Your changes are still in this tab — try again.');
       return { ok: false };
     } finally {
       setSaving(false);
     }
   };
 
+  /** Save, then navigate ONLY when the save actually succeeded — a failed
+   *  "Save & Exit" must leave the creator on the page with their edits. */
   const handleSave = async (redirect?: string) => {
     const result = await forceManualSave();
-    if (redirect) router.push(redirect);
+    if (result.ok && redirect) router.push(redirect);
     return result;
+  };
+
+  /**
+   * Conflict banner actions. The creator decides which version wins:
+   *  - Keep mine: adopt the server's latest counter, then explicitly save my
+   *    content over it (user-sanctioned last-write-wins).
+   *  - Discard mine: drop local edits + queued backups and reload the server
+   *    version as the new baseline.
+   */
+  const resolveConflictKeepMine = async () => {
+    if (resolvingConflict) return;
+    setResolvingConflict(true);
+    try {
+      await resyncVersion();
+      const result = await forceManualSave();
+      if (result.ok) {
+        // Stale granular backups must never replay through the offline queue.
+        clearLocalBackups();
+        setConflict(false);
+      } else {
+        setSyncError('Still could not save your changes. Copy your content somewhere safe, then try again or reload.');
+      }
+    } finally {
+      setResolvingConflict(false);
+    }
+  };
+
+  const resolveConflictDiscardMine = async () => {
+    if (!window.confirm('Discard ALL unsaved changes in this tab and load the last saved version? This cannot be undone.')) return;
+    clearLocalBackups();
+    setConflict(false);
+    setLoading(true);
+    pendingBaselineRef.current = true;
+    try {
+      const res = await fetch(`/api/lesson/${lessonId}`);
+      if (!res.ok) {
+        setLoadError(res.status === 404
+          ? 'This lesson could not be found. It may have been deleted.'
+          : `Could not reload this lesson (error ${res.status}). Please try again.`);
+        return;
+      }
+      const d = await res.json();
+      applyLoadedLesson(d);
+      adoptServerVersion(d?.version);
+    } catch {
+      setSyncError('A network error occurred while reloading. Your tab still holds the discarded state — refresh to get the saved version.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePublish = async (_options: any) => {
@@ -398,11 +651,24 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        const msg = errorData.errors?.join(' · ') || errorData.message || 'Failed to publish. Please check all required sections.';
-        setPublishError(msg);
+        if (res.status === 409) {
+          // Same conflict discipline as manual save: never silently adopt the
+          // server version here — that used to clear isDirty and show "Saved"
+          // while nothing had been written. Surface the banner instead.
+          setConflict(true);
+          setPublishError('This lesson was just changed in another tab or session. Resolve the conflict above, then publish again.');
+        } else {
+          const errorData = await res.json().catch(() => null);
+          setPublishError(errorData?.errors?.join(' · ')
+            || errorData?.message
+            || 'Failed to publish. Please check all required sections.');
+        }
         return;
       }
+
+      const data = await res.json().catch(() => null);
+      adoptServerVersion(data?.lesson?.version);
+      markLocallySaved(buildSaveSnapshot());
 
       // Success! Navigate to curriculum builder
       router.push(`/creator/builder/${courseId}?step=2`);
@@ -415,26 +681,30 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   };
 
 
-  /* Interval Autosave */
+  /* Interval Autosave — kept in a ref so the timer always saves the LATEST
+   * state, even when this effect's dependencies haven't re-registered it. */
+  const manualSaveRef = useRef(forceManualSave);
+  manualSaveRef.current = forceManualSave;
+
   useEffect(() => {
     if (!isDirty || saving) return;
     const interval = setInterval(() => {
-      forceManualSave();
+      manualSaveRef.current();
     }, 60000);
     return () => clearInterval(interval);
-  }, [isDirty, saving, debouncedLesson, contentType]);
+  }, [isDirty, saving]);
 
   /* Keyboard Shortcut for Save */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        if (isDirty && !saving) forceManualSave();
+        if (!saving) manualSaveRef.current();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isDirty, saving, debouncedLesson, contentType]);
+  }, [saving]);
 
   const videoTime = lesson?.durationMinutes || 0;
   const textWords = (lesson?.learnText || '').replace(/<[^>]*>?/gm, '').split(/\s+/).length;
@@ -452,7 +722,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     (reflectActivity.type === 'open' ? (!reflectActivity.openConfig.useStarters || reflectActivity.openConfig.starters.length > 0) : 
     (reflectActivity.guidedConfig.questions.length > 0 && reflectActivity.guidedConfig.questions.every(q => q.text.trim())));
 
-  const isDeepenComplete = deepenConfig.collectionTitle.trim().length > 0 && resources.length > 0 && resources.every(r => (r.url || r.title || '').trim());
+  const isDeepenComplete = deepenPhaseComplete(deepenConfig, resources);
 
   const completedStepsCount = [
     hasTitle && hasContent, // Learn
@@ -464,11 +734,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const progressPct = Math.round((completedStepsCount / 4) * 100);
   const isLearnComplete = hasTitle && hasContent;
 
+  // Types the product can author end-to-end today. 'interactive' was removed:
+  // the backend allowlist coerced it to 'video' on save, silently rewriting
+  // what the creator picked.
   const CONTENT_TYPES = [
     { id: 'video',       label: 'Video',            icon: <Play size={16} fill="currentColor" /> },
     { id: 'text',        label: 'Text',             icon: <FileText size={16} /> },
     { id: 'audio',       label: 'Audio',            icon: <Headphones size={16} /> },
-    { id: 'interactive', label: 'Interactive Demo', icon: <MonitorPlay size={16} /> },
   ];
 
   const FLOW_STEPS = [
@@ -476,7 +748,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: isApplyComplete ? 'Completed' : 'Not started' },
     { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: isReflectComplete ? 'Completed' : 'Not started' },
     { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: isDeepenComplete ? 'Completed' : 'Not started' },
-    { id: 'review',  num: '5', title: 'Review & Publish', sub: 'Finalize and publish', status: 'Not started' },
+    { id: 'review',  num: '5', title: 'Review',  sub: 'Finalize & publish',   status: 'Not started' },
   ];
 
   // Calculate Quality Score dynamically
@@ -516,7 +788,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </header>
-      
+
       <div className={styles.body}>
         <div className={styles.leftCol}>
           <div className={styles.tabs} style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
@@ -525,18 +797,37 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
             <Skeleton width="25%" height={60} style={{ borderRadius: 8 }} />
           </div>
-          
+
           <Skeleton height={100} style={{ marginBottom: 24, borderRadius: 12 }} />
           <div className={styles.contentSplit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
             <Skeleton height={400} style={{ borderRadius: 12 }} />
             <Skeleton height={400} style={{ borderRadius: 12 }} />
           </div>
         </div>
-        
+
         <aside className={styles.rightSidebar}>
           <Skeleton height={300} style={{ marginBottom: 24, borderRadius: 12 }} />
           <Skeleton height={400} style={{ borderRadius: 12 }} />
         </aside>
+      </div>
+    </div>
+  );
+
+  if (loadError) return (
+    <div className={styles.shell}>
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        minHeight: '60vh', gap: 16, textAlign: 'center', padding: 24,
+      }}>
+        <AlertCircle size={36} style={{ color: '#EF4444' }} />
+        <h1 style={{ fontSize: 18, fontWeight: 700, color: '#1F2A44' }}>Couldn&apos;t open the Lesson Builder</h1>
+        <p style={{ fontSize: 14, color: '#64748B', maxWidth: 420 }}>{loadError}</p>
+        <button
+          className={styles.btnPrimaryCaret}
+          onClick={() => { setLoadError(null); setLoading(true); router.refresh(); }}
+        >
+          Try again
+        </button>
       </div>
     </div>
   );
@@ -546,6 +837,36 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       {saveSuccess && (
         <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999 }}>
           <Toast message="Changes saved successfully" type="success" duration={2500} onClose={() => setSaveSuccess(false)} />
+        </div>
+      )}
+      {conflict && (
+        <div className={styles.conflictBanner} role="alert">
+          <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+          <div className={styles.conflictText}>
+            <strong>This lesson changed elsewhere.</strong>{' '}
+            Another tab or session saved a newer version while you were editing. Keep your version or load theirs.
+          </div>
+          <div className={styles.conflictActions}>
+            <button
+              className={styles.conflictBtnGhost}
+              onClick={resolveConflictDiscardMine}
+              disabled={resolvingConflict}
+            >
+              Load saved version
+            </button>
+            <button
+              className={styles.conflictBtnPrimary}
+              onClick={resolveConflictKeepMine}
+              disabled={resolvingConflict}
+            >
+              {resolvingConflict ? 'Saving…' : 'Keep my changes'}
+            </button>
+          </div>
+        </div>
+      )}
+      {syncError && (
+        <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, maxWidth: 380 }}>
+          <Toast message={syncError} type="error" duration={10000} onClose={() => setSyncError(null)} />
         </div>
       )}
 
@@ -596,10 +917,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
             </p>
           </div>
           <div className={styles.headerActions}>
-            <div className={`${styles.autoSaved} ${syncStatus === 'saving' ? styles.saving : syncStatus === 'offline' ? styles.offline : syncStatus === 'error' ? styles.error : ''}`}>
+            <div className={`${styles.autoSaved} ${syncStatus === 'saving' ? styles.saving : syncStatus === 'offline' ? styles.offline : (syncStatus === 'error' || syncStatus === 'conflict') ? styles.error : ''}`}>
               {syncStatus === 'saving' && <span className={styles.pulse}>Saving...</span>}
               {syncStatus === 'offline' && <span>Offline - Queued locally</span>}
               {syncStatus === 'error' && <span>Error saving</span>}
+              {syncStatus === 'conflict' && <span>Not saved - changed elsewhere</span>}
               {syncStatus === 'saved' && (
                 <>
                   <Check size={13} /> {lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-saved'}
@@ -673,7 +995,16 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               <div className={styles.contentSplit}>
                 {/* Left: Content card */}
                 <div className={styles.contentCard}>
-                  <div className={styles.blockLabel}>2. Add Content</div>
+                  <div className={styles.contentCardHeader}>
+                    <div className={styles.contentCardHeaderTitle}>
+                      <span className={styles.blockLabel} style={{ margin: 0 }}>2. Add Content</span>
+                      <span className={styles.contentCardTypeBadge}>
+                        {contentType === 'video' && 'Video Lesson'}
+                        {contentType === 'text' && 'Article / Reading'}
+                        {contentType === 'audio' && 'Audio Podcast'}
+                      </span>
+                    </div>
+                  </div>
 
                   {/* VIDEO TYPE */}
                   {contentType === 'video' && (
@@ -683,12 +1014,18 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                         <div className={styles.richUploadProgress}>
                           <div className={styles.richUploadProgressInner}>
                             <Film size={28} style={{ color: '#3D5AFE' }} className={styles.pulse} />
-                            <div className={styles.richUploadProgressLabel}>Uploading to AWS S3…</div>
+                            <div className={styles.richUploadProgressLabel}>
+                              {videoResumed ? 'Resuming your upload…' : 'Uploading your video…'}
+                            </div>
                             <div className={styles.richUploadBar}>
                               <div className={styles.richUploadBarFill} style={{ width: `${videoProgress}%` }} />
                             </div>
                             <div className={styles.richUploadPct}>{videoProgress}%</div>
-                            <div className={styles.richUploadSub}>Transferring directly to S3 — bypassing server · CloudFront CDN on completion</div>
+                            <div className={styles.richUploadSub}>
+                              {videoResumed
+                                ? 'We picked up where the last attempt stopped — only the missing part is being sent.'
+                                : 'Large videos upload in pieces, so a dropped connection won’t restart it. You can keep working.'}
+                            </div>
                             {videoError && <div className={styles.uploadError}>{videoError}</div>}
                           </div>
                         </div>
@@ -720,9 +1057,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                                 Replace Video
                                 <input type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoFileChange} />
                               </label>
-                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                              <button className={styles.richVideoBtnDanger} title="Remove video" onClick={() => {
                                 setLesson((l: any) => ({ ...l, learnVideoUrl: null }));
-                                await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnVideoUrl: null }) });
+                                // Persistence is handled by the debounced autosave (learn phase block).
                               }}>
                                 <Trash2 size={12} />
                               </button>
@@ -746,13 +1083,13 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
 
                   {/* TEXT TYPE */}
                   {contentType === 'text' && (
-                    <div style={{ marginTop: 10 }}>
+                    <div className={styles.textContentWrap}>
                       <ReactQuill 
                         theme="snow" 
                         value={lesson?.learnText || ''} 
                         onChange={(val) => setLesson((l: any) => ({ ...l, learnText: val }))}
                         modules={quillModules}
-                        placeholder="Write your lesson content here..."
+                        placeholder="Write the full instructional lesson content here. Support rich formatting, code blocks, bullet points, and links..."
                       />
                     </div>
                   )}
@@ -791,9 +1128,9 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                                 Replace Audio
                                 <input type="file" accept="audio/*" style={{ display: 'none' }} onChange={handleAudioFileChange} />
                               </label>
-                              <button className={styles.richVideoBtnDanger} onClick={async () => {
+                              <button className={styles.richVideoBtnDanger} title="Remove audio" onClick={() => {
                                 setLesson((l: any) => ({ ...l, learnAudioUrl: null }));
-                                await fetch(`/api/lesson/${lessonId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ learnAudioUrl: null }) });
+                                // Persistence is handled by the debounced autosave (learn phase block).
                               }}>
                                 <Trash2 size={12} />
                               </button>
@@ -815,12 +1152,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                   )}
                   
                   {/* INTERACTIVE DEMO TYPE */}
-                  {contentType === 'interactive' && (
-                    <div style={{ padding: '40px 0', textAlign: 'center', color: '#94A3B8' }}>
-                      <MonitorPlay size={32} style={{ marginBottom: 12, opacity: .4 }} />
-                      <p style={{ fontSize: 14 }}>Interactive Demo builder coming soon.</p>
-                    </div>
-                  )}
 
                 </div>
 
@@ -834,88 +1165,107 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
 
-              {/* Input row: title + desc */}
-              <div className={styles.inputRow}>
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    Lesson Title <span className={styles.inputSub}>(Shown to students)</span>
-                    <span className={styles.inputReq}>*</span>
-                  </label>
-                  <div className={styles.inputWrap}>
-                    <input
-                      className={styles.inputField}
-                      value={lesson?.title || ''}
-                      onChange={e => setLesson((l: any) => ({ ...l, title: e.target.value }))}
-                      placeholder="What is UI Design?"
-                      maxLength={100}
-                    />
-                    <span className={styles.charCount} style={{ color: (lesson?.title || '').length >= 90 ? '#EF4444' : '#CBD5E1' }}>
-                      {(lesson?.title || '').length}/100
-                    </span>
+              {/* 4. LESSON DETAILS CARD */}
+              <div className={styles.detailsCard}>
+                <div className={styles.detailsCardHeader}>
+                  <div className={styles.detailsCardTitleWrap}>
+                    <div className={styles.detailsCardBadge}>4</div>
+                    <div>
+                      <h3 className={styles.detailsCardTitle}>Lesson Details</h3>
+                      <p className={styles.detailsCardSub}>Information visible to students on the course player and syllabus.</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    Short Description <span className={styles.inputSub}>(Shown to students)</span>
-                  </label>
-                  <div style={{ marginTop: 8, position: 'relative' }}>
-                    <ReactQuill 
-                      theme="snow" 
-                      value={lesson?.shortDescription || ''} 
-                      onChange={(val) => setLesson((l: any) => ({ ...l, shortDescription: val }))}
-                      modules={quillModules}
-                      placeholder="Learn the basics of UI design and why it plays a crucial role in creating beautiful and usable digital products."
-                    />
-                    <span className={styles.charCount} style={{ 
-                      position: 'absolute', bottom: -20, right: 0, 
-                      color: (lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length >= 280 ? '#EF4444' : '#94A3B8' 
-                    }}>
-                      {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
-                    </span>
+                <div className={styles.detailsBody}>
+                  {/* Lesson Title */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>
+                        Lesson Title <span className={styles.fieldReq}>*</span>
+                      </label>
+                      <span className={styles.charCountBadge} style={{ color: (lesson?.title || '').length >= 90 ? '#EF4444' : '#64748B' }}>
+                        {(lesson?.title || '').length}/100
+                      </span>
+                    </div>
+                    <span className={styles.fieldHint}>Give this lesson a clear, engaging action-oriented name.</span>
+                    <div className={styles.inputWrap}>
+                      <input
+                        className={styles.inputField}
+                        value={lesson?.title || ''}
+                        onChange={e => setLesson((l: any) => ({ ...l, title: e.target.value }))}
+                        placeholder="e.g. Master the Core Framework & Architecture"
+                        maxLength={100}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.inputGroup} style={{ marginTop: 32 }}>
-                  <label className={styles.inputLabel}>
-                    What You&apos;ll Learn <span className={styles.inputSub}>(Add up to 5 key learning points)</span>
-                  </label>
-                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {whatYouWillLearn.map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>{idx + 1}.</span>
-                        <input
-                          className={styles.inputField}
-                          style={{ flex: 1 }}
-                          value={item}
-                          onChange={e => {
-                            const newPoints = [...whatYouWillLearn];
-                            newPoints[idx] = e.target.value;
-                            setWhatYouWillLearn(newPoints);
-                          }}
-                          placeholder={`e.g. Learn how to define your unique value`}
-                          maxLength={100}
-                        />
-                        <button
-                          className={styles.btnOutlineSquare}
-                          type="button"
-                          onClick={() => {
-                            setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== idx));
-                          }}
-                          style={{ borderColor: '#EF4444', color: '#EF4444', height: 48, width: 48, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
+                  {/* Short Description */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>Short Description</label>
+                      <span className={styles.charCountBadge} style={{ 
+                        color: (lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length >= 280 ? '#EF4444' : '#64748B' 
+                      }}>
+                        {(lesson?.shortDescription?.replace(/<[^>]*>?/gm, '') || '').length}/300
+                      </span>
+                    </div>
+                    <span className={styles.fieldHint}>Summarize what students will learn and practice in 1–2 sentences.</span>
+                    <div className={styles.editorWrap}>
+                      <ReactQuill 
+                        theme="snow" 
+                        value={lesson?.shortDescription || ''} 
+                        onChange={(val) => setLesson((l: any) => ({ ...l, shortDescription: val }))}
+                        modules={quillModules}
+                        placeholder="Explain what students will learn and practice in this lesson..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* What You'll Learn (Key Takeaways) */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>Key Takeaways / Outcomes</label>
+                      <span className={styles.charCountBadge}>{whatYouWillLearn.length}/5 points</span>
+                    </div>
+                    <span className={styles.fieldHint}>Bullet points showing what students will be able to do after completing this lesson.</span>
+                    
+                    <div className={styles.takeawaysList}>
+                      {whatYouWillLearn.map((item, idx) => (
+                        <div key={idx} className={styles.takeawayRow}>
+                          <div className={styles.takeawayNumPill}>{idx + 1}</div>
+                          <input
+                            className={styles.takeawayInput}
+                            value={item}
+                            onChange={e => {
+                              const newPoints = [...whatYouWillLearn];
+                              newPoints[idx] = e.target.value;
+                              setWhatYouWillLearn(newPoints);
+                            }}
+                            placeholder={`e.g. Understand the fundamental trade-offs in architecture decisions`}
+                            maxLength={100}
+                          />
+                          <button
+                            type="button"
+                            className={styles.takeawayDeleteBtn}
+                            onClick={() => {
+                              setWhatYouWillLearn(whatYouWillLearn.filter((_, i) => i !== idx));
+                            }}
+                            title="Remove point"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
                     {whatYouWillLearn.length < 5 && (
                       <button
-                        className={styles.btnOutline}
                         type="button"
+                        className={styles.addTakeawayBtn}
                         onClick={() => setWhatYouWillLearn([...whatYouWillLearn, ''])}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'fit-content', marginTop: 4 }}
                       >
-                        <Plus size={14} /> Add Learning Point ({whatYouWillLearn.length}/5)
+                        <Plus size={15} /> Add Key Takeaway ({whatYouWillLearn.length}/5)
                       </button>
                     )}
                   </div>
@@ -1077,8 +1427,8 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       <footer className={styles.footer}>
         <div className={styles.footerLeft}>
           <div className={styles.footerTextGroup}>
-            <div className={styles.footerFlowLabel}>Lesson Builder Flow</div>
-            <div style={{ fontSize: 11.5, color: '#94A3B8' }}>Build each step to create a complete learning experience.</div>
+            <div className={styles.footerFlowLabel}>Lesson Flow</div>
+            <div className={styles.footerFlowSub}>5-step interactive curriculum</div>
           </div>
           <div className={styles.footerFlow}>
             {FLOW_STEPS.map((s, i) => (
@@ -1116,7 +1466,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         <div className={styles.footerRight}>
           <div className={styles.saveStatusWrapper}>
             {syncStatus === 'offline' && <span className={styles.statusError}><WifiOff size={12}/> Offline</span>}
-            {syncStatus === 'error' && <span className={styles.statusError}><AlertCircle size={12}/> Save failed</span>}
+            {(syncStatus === 'error' || syncStatus === 'conflict') && <span className={styles.statusError}><AlertCircle size={12}/> Save failed</span>}
             {syncStatus === 'saving' && <span className={styles.statusSaving}>Saving...</span>}
             {syncStatus === 'saved' && isDirty && <span className={styles.statusDirty}><span className={styles.amberDot} /> Unsaved changes</span>}
             {syncStatus === 'saved' && !isDirty && lastSavedAt && <span className={styles.statusSaved}><Check size={12}/> Saved</span>}
@@ -1150,8 +1500,11 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
               className={styles.btnNextStep}
               disabled={(!isLearnComplete && currentTab === 'learn') || saving}
               onClick={async () => {
-                // Always save current live state before navigating
-                await forceManualSave();
+                // Always save current live state before navigating — but
+                // advance ONLY when it actually saved, never strand the
+                // creator on a later phase with unsaved edits behind them.
+                const result = await forceManualSave();
+                if (!result.ok) return;
                 if (currentTab === 'learn') setCurrentTab('apply');
                 else if (currentTab === 'apply') setCurrentTab('reflect');
                 else if (currentTab === 'reflect') setCurrentTab('deepen');

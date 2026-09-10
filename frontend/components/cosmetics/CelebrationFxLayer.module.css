@@ -1,0 +1,85 @@
+/*
+ * Celebration effect particles. Purely decorative and never interactive —
+ * pointer-events stay off so the scene's CTA is always reachable underneath.
+ */
+
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  top: -6%;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+/* Per-effect character, off one shared fall animation. */
+.shape_orbit {
+  border-radius: 999px;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.shape_sweep {
+  border-radius: 0;
+}
+
+.shape_flicker {
+  border-radius: 999px;
+  animation-name: fallFlicker;
+}
+
+.shape_pulse {
+  border-radius: 3px;
+}
+
+@keyframes fall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), 108vh, 0) rotate(420deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fallFlicker {
+  0% {
+    transform: translate3d(0, -10vh, 0) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(calc(var(--drift, 0px) / 2), 50vh, 0) scale(1.4);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), 108vh, 0) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* The component already returns null under reduced motion; this is the
+   belt-and-braces stop in case it is ever rendered another way. */
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    display: none;
+  }
+}

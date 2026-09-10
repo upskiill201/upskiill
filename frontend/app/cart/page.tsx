@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, Trash2, Shield, RotateCcw, Zap } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { playHaptic } from '@/lib/haptics';
 
 import styles from './CartPage.module.css';
 
@@ -49,7 +50,7 @@ export default function CartPage() {
       <div className={styles.wrapper}>
         {/* Header */}
         <div className={styles.header}>
-          <Link href="/courses" className={styles.backLink}>
+          <Link href="/courses" onClick={() => playHaptic('light')} className={styles.backLink}>
             <ArrowLeft size={16} /> Back to Courses
           </Link>
           <div className={styles.titleRow}>

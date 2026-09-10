@@ -1,0 +1,48 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* Compact mode (narrow drawer / mobile): tighter gutters */
+.compact {
+  gap: 4px;
+}
+
+/* ─── Pill variant (candy-3D, like the shop coin balance card) ─── */
+.pillBar {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+/* ─── MOBILE: flat Duolingo-style HUD row, no border / background / shadow ─── */
+@media (max-width: 768px) {
+  .bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    background: transparent;
+    padding: 0;
+    overflow: visible;
+    position: relative;
+    z-index: 100;
+  }
+}
+
+@media (max-width: 340px) {
+  .bar {
+    gap: 2px;
+  }
+}

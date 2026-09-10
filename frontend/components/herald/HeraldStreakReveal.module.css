@@ -1,0 +1,272 @@
+/* HeraldStreakReveal.module.css - True Fullscreen Duolingo Experience */
+
+.fullscreenBackdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(16px, 4vh, 36px) clamp(16px, 5vw, 40px);
+  overflow-y: auto;
+  user-select: none;
+}
+
+.ambientRadialGlow {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(85vw, 650px);
+  height: min(85vw, 650px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 138, 0, 0.1) 0%, rgba(1, 114, 253, 0.04) 50%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Center Stage Content */
+.centerStage {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 5;
+  margin: auto 0;
+}
+
+/* Speech Bubble at Top (Duolingo Image 5 style) */
+.speechBubble {
+  position: relative;
+  background: #1E293B;
+  border: 2px solid #334155;
+  border-radius: 18px;
+  padding: 14px 22px;
+  max-width: 360px;
+  font-size: clamp(15px, 2.5vw, 17px);
+  font-weight: 700;
+  color: #F8FAFC;
+  line-height: 1.35;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.speechBubbleArrow {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  background: #1E293B;
+  border-right: 2px solid #334155;
+  border-bottom: 2px solid #334155;
+}
+
+/* Mascot & Flame Center Graphic */
+.mascotGraphicWrapper {
+  position: relative;
+  width: clamp(160px, 28vw, 220px);
+  height: clamp(150px, 26vw, 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.flameBackdrop {
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  z-index: 1;
+  filter: drop-shadow(0 8px 24px rgba(255, 138, 0, 0.45));
+}
+
+.mascotFront {
+  position: absolute;
+  bottom: 0;
+  width: 65%;
+  height: 65%;
+  z-index: 2;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+}
+
+/* Big Streak Counter Display */
+.streakCountNumber {
+  font-size: clamp(72px, 18vw, 110px);
+  font-weight: 900;
+  color: #FF8A00;
+  line-height: 0.95;
+  margin: 4px 0 0;
+  font-family: var(--font-jakarta), 'Inter', sans-serif;
+  letter-spacing: -0.04em;
+  text-shadow: 0 6px 0 rgba(255, 138, 0, 0.15);
+}
+
+.streakCountLabel {
+  font-size: clamp(22px, 5.5vw, 32px);
+  font-weight: 900;
+  color: #FF8A00;
+  letter-spacing: -0.01em;
+  margin: 2px 0 24px;
+  font-family: var(--font-jakarta), 'Inter', sans-serif;
+}
+
+/* 7-Day Weekly Calendar Tracker */
+.weekRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 14px);
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dayLabel {
+  font-size: clamp(12px, 2.2vw, 14px);
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.dayLabelActive {
+  color: #FF8A00;
+}
+
+.dayCircleCompleted {
+  width: clamp(36px, 7vw, 46px);
+  height: clamp(36px, 7vw, 46px);
+  border-radius: 50%;
+  background: #FF8A00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1E293B;
+  box-shadow: 0 4px 0 #D97706;
+}
+
+.dayCircleToday {
+  width: clamp(36px, 7vw, 46px);
+  height: clamp(36px, 7vw, 46px);
+  border-radius: 50%;
+  background: #FF8A00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1E293B;
+  box-shadow: 0 4px 0 #D97706, 0 0 16px rgba(255, 138, 0, 0.5);
+  animation: todayGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes todayGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); box-shadow: 0 4px 0 #D97706, 0 0 24px rgba(255, 138, 0, 0.7); }
+}
+
+.dayCirclePending {
+  width: clamp(36px, 7vw, 46px);
+  height: clamp(36px, 7vw, 46px);
+  border-radius: 50%;
+  background: #E2E8F0;
+  border: 2px solid #CBD5E1;
+}
+
+/* Bottom Action Row (Share + Committed Button) */
+.bottomActionContainer {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.shareIconBtn {
+  width: clamp(52px, 7vh, 62px);
+  height: clamp(52px, 7vh, 62px);
+  border-radius: 16px;
+  background: #F1F5F9;
+  border: 2px solid #E2E8F0;
+  color: #0172FD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #CBD5E1;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  flex-shrink: 0;
+}
+
+.shareIconBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #CBD5E1;
+}
+
+.committedBtn3D {
+  flex: 1;
+  height: clamp(52px, 7vh, 62px);
+  background-color: #0172FD;
+  color: #FFFFFF;
+  font-size: clamp(16px, 2.4vw, 19px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 6px 0 #0057C2, 0 14px 28px rgba(1, 114, 253, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  outline: none;
+}
+
+.committedBtn3D:hover {
+  background-color: #1980FD;
+}
+
+.committedBtn3D:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #0057C2;
+}
+
+/* Narrow screens < 320px */
+@media (max-width: 320px) {
+  .fullscreenBackdrop {
+    padding: 12px 10px;
+  }
+  .speechBubble {
+    font-size: 13px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  .streakCountNumber {
+    font-size: 58px;
+  }
+  .streakCountLabel {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  .weekRow {
+    gap: 5px;
+  }
+  .committedBtn3D {
+    height: 48px;
+    font-size: 14px;
+  }
+}

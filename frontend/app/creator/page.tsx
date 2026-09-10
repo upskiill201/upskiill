@@ -2,312 +2,428 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Users, BookOpen, PlaySquare, DollarSign, Star, 
-  Calendar, ChevronDown, CheckCircle, Upload, Tag,
-  MoreVertical, ArrowRight
-} from 'lucide-react';
+  FaArrowRight,
+  FaBookOpen,
+  FaWandMagicSparkles,
+  FaLayerGroup,
+  FaPlus,
+  FaChartSimple,
+  FaWallet,
+  FaUsers,
+  FaCircleCheck,
+  FaPlay,
+  FaLightbulb,
+  FaGear,
+  FaCompass,
+  FaGraduationCap
+} from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './Creator.module.css';
+import { useRouter } from 'next/navigation';
+import styles from './CreatorDashboard.module.css';
 
-// Mock Data
-const STATS = [
-  { id: 1, title: 'Total Students', value: '2,487', trend: '+ 18.6%', trendText: 'vs Apr 18 - May 17', icon: <Users size={20} className={styles.iconBlue} />, bg: styles.bgBlue },
-  { id: 2, title: 'Active Courses', value: '7', subText: '2 in draft', icon: <BookOpen size={20} className={styles.iconGreen} />, bg: styles.bgGreen },
-  { id: 3, title: 'Total Enrollments', value: '3,248', trend: '+ 21.4%', trendText: 'vs Apr 18 - May 17', icon: <PlaySquare size={20} className={styles.iconPurple} />, bg: styles.bgPurple },
-  { id: 4, title: 'Total Earnings', value: '$8,942', trend: '+ 24.7%', trendText: 'vs Apr 18 - May 17', icon: <DollarSign size={20} className={styles.iconOrange} />, bg: styles.bgOrange },
-  { id: 5, title: 'Avg Rating', value: '4.8 / 5', subText: 'From 312 reviews', icon: <Star size={20} className={styles.iconRed} />, bg: styles.bgRed },
-];
-
-const COURSES = [
-  { id: 1, name: 'Content Creation Mastery', updated: 'Jun 10, 2025', status: 'Published', students: '1,245', enrollments: '1,682', earnings: '$4,682', rating: '4.8', color: '#1E3A8A' },
-  { id: 2, name: 'YouTube Growth Blueprint', updated: 'Jun 5, 2025', status: 'Published', students: '932', enrollments: '1,214', earnings: '$3,214', rating: '4.7', color: '#B91C1C' },
-  { id: 3, name: 'Freelance UI/UX Design', updated: 'May 28, 2025', status: 'Draft', students: '—', enrollments: '—', earnings: '—', rating: '—', color: '#6D28D9' },
-];
-
-const TODO = [
-  { id: 1, title: 'Complete lesson: Storytelling 101', course: 'Content Creation Mastery', icon: <CheckCircle size={18} className={styles.iconBlue} />, bg: styles.bgBlueLight },
-  { id: 2, title: 'Upload video for Lesson 4', course: 'YouTube Growth Blueprint', icon: <Upload size={18} className={styles.iconPurple} />, bg: styles.bgPurpleLight },
-  { id: 3, title: 'Set course price', course: 'Freelance UI/UX Design', icon: <Tag size={18} className={styles.iconOrange} />, bg: styles.bgOrangeLight },
-];
-
-const ACTIVITY = [
-  { id: 1, user: 'Sarah Johnson', action: 'left a 5-star review', course: 'Content Creation Mastery', time: '2h ago', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&q=80' },
-  { id: 2, user: 'New enrollment', action: 'in', course: 'YouTube Growth Blueprint', time: '3h ago', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop&q=80' },
-  { id: 3, user: 'Payout of $1,250', action: 'completed', course: 'to your bank account', time: '1d ago', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&q=80' },
-];
+import { getCachedUser, setCachedUser } from '@/lib/user-cache';
 
 export default function CreatorDashboard() {
+  const router = useRouter();
   const [profileData, setProfileData] = useState<any>(null);
+  const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cachedFirstName, setCachedFirstName] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const cached = getCachedUser();
+    if (cached?.fullName) {
+      setCachedFirstName(cached.fullName.split(' ')[0]);
+    }
+
+    const fetchDashboardData = async () => {
       try {
-        const res = await fetch('/api/profile');
-        if (res.ok) {
-          const data = await res.json();
+        const [profileRes, coursesRes] = await Promise.all([
+          fetch('/api/profile'),
+          fetch('/api/courses/instructor/me', { credentials: 'include' })
+        ]);
+
+        if (profileRes.ok) {
+          const data = await profileRes.json();
           setProfileData(data);
+          if (data?.fullName) setCachedUser(data);
+        }
+
+        if (coursesRes.ok) {
+          const coursesData = await coursesRes.json();
+          if (Array.isArray(coursesData)) {
+            setCourses(coursesData);
+          }
         }
       } catch (err) {
-        console.error('Failed to load profile for dashboard banner', err);
+        console.error('Failed to load creator dashboard data', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
+    fetchDashboardData();
   }, []);
 
-  const needsSetup = !loading && profileData && !profileData.profile?.bio;
-  const firstName = profileData?.fullName?.split(' ')[0] || 'Alex';
+  const firstName = profileData?.fullName?.split(' ')[0] || cachedFirstName;
+  const hasCourses = courses.length > 0;
+  
+  // Sort courses by most recently modified
+  const sortedCourses = [...courses].sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime());
+  const latestCourse = sortedCourses[0];
+
+  const publishedCount = courses.filter(c => c.published).length;
+  const draftCount = courses.filter(c => !c.published).length;
+  const totalEnrollments = courses.reduce((acc, c) => acc + (c._count?.enrollments || 0), 0);
+
+  if (loading) {
+    return (
+      <div className={styles.container} style={{ opacity: 0.6 }}>
+        <div style={{ height: '36px', width: '280px', background: '#E2E8F0', borderRadius: '12px', marginBottom: '24px' }} />
+        <div style={{ height: '220px', width: '100%', background: '#E2E8F0', borderRadius: '24px' }} />
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.dashboardLayout}>
+    <div className={styles.container}>
       
-      {/* ─── COMPLETION BANNER ─── */}
-      {needsSetup && (
-        <div style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 100%)', border: '1.5px solid #C7D2FE', borderRadius: '16px', padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1e1b4b' }}>Finish setting up your studio</h3>
-            <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#6B7280' }}>Your profile is incomplete. Add your bio and social links to get discovered by learners.</p>
-          </div>
-          <Link href="/creator/settings" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#4F46E5', color: 'white', fontSize: '14px', fontWeight: 600, borderRadius: '10px', textDecoration: 'none' }}>
-            Complete Profile <ArrowRight size={14} />
-          </Link>
+      {/* ─── TOP HEADER ROW ─── */}
+      <div className={styles.topHeaderRow}>
+        <div className={styles.welcomeBanner}>
+          <h2 className={styles.welcomeTitle}>
+            Welcome back{firstName ? `, ${firstName}` : ''}
+          </h2>
+          <p className={styles.welcomeSubtitle}>
+            {!hasCourses 
+              ? "You're one of our first founding creators shaping Teyro." 
+              : "Here's an overview of your course catalog and student growth."}
+          </p>
         </div>
-      )}
 
-      {/* ─── HEADER AREA ─── */}
-      <div className={styles.welcomeSection}>
-        <div>
-          <h2 className={styles.welcomeTitle}>Welcome back, {firstName}! 👋</h2>
-          <p className={styles.welcomeSub}>Here&apos;s what&apos;s happening with your courses today.</p>
+        {/* ─── CREATOR STAT PILLS ─── */}
+        <div className={styles.statsRow}>
+          <div className={styles.statItem}>
+            <div className={styles.statIconBox}>
+              <FaBookOpen size={16} color="#0172FD" />
+            </div>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{courses.length}</span>
+              <span className={styles.statLabel}>Courses</span>
+            </div>
+          </div>
+
+          <div className={styles.statItem}>
+            <div className={styles.statIconBox}>
+              <FaCircleCheck size={16} color="#10B981" />
+            </div>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{publishedCount}</span>
+              <span className={styles.statLabel}>Published</span>
+            </div>
+          </div>
+
+          <div className={styles.statItem}>
+            <div className={styles.statIconBox}>
+              <FaUsers size={16} color="#8B5CF6" />
+            </div>
+            <div className={styles.statText}>
+              <span className={styles.statVal}>{totalEnrollments}</span>
+              <span className={styles.statLabel}>Students</span>
+            </div>
+          </div>
         </div>
-        
-        <button className={styles.dateSelector}>
-          <Calendar size={16} />
-          <span>May 18 - Jun 16, 2025</span>
-          <ChevronDown size={16} />
-        </button>
       </div>
 
-      {/* ─── STATS ROW ─── */}
-      <div className={styles.statsGrid}>
-        {STATS.map(stat => (
-          <div key={stat.id} className={styles.statCard}>
-            <div className={styles.statHeader}>
-              <div className={`${styles.statIconBox} ${stat.bg}`}>
-                {stat.icon}
+      {/* ─── MAIN TWO-COLUMN DASHBOARD GRID ─── */}
+      <div className={styles.dashboardGrid}>
+        
+        {/* LEFT / MAIN COLUMN */}
+        <div className={styles.mainColumn}>
+          
+          {/* 1. DUOLINGO-STYLE FOCUS CARD */}
+          {!hasCourses ? (
+            <div className={styles.focusCard}>
+              <div className={styles.focusCardLeft}>
+                <div>
+                  <span className={styles.focusBadge}>
+                    <FaWandMagicSparkles size={11} />
+                    Get Started
+                  </span>
+                  <h3 className={styles.focusCourseTitle}>Create your first course</h3>
+                  <p className={styles.focusCourseDesc}>
+                    Share your knowledge and start building your audience with our step-by-step creator studio.
+                  </p>
+                </div>
+                
+                <button 
+                  onClick={() => router.push('/creator/create')}
+                  className={styles.button3dWhite}
+                >
+                  <span>Launch Creator Wizard</span>
+                  <span className={styles.buttonIconCircle}>
+                    <FaArrowRight size={13} />
+                  </span>
+                </button>
               </div>
-              <span className={styles.statTitle}>{stat.title}</span>
+
+              {/* Mascot Bubble & Graphic */}
+              <div className={styles.focusCardRight}>
+                <div className={styles.mascotBubble}>
+                  <span>Let&apos;s build your first interactive course!</span>
+                  <div className={styles.mascotBubbleTail} />
+                </div>
+                <div className={styles.focusMascotImageWrapper}>
+                  <Image 
+                    src="/dashboard tey.webp" 
+                    alt="Tey Mascot" 
+                    width={130} 
+                    height={130} 
+                    priority
+                    className={styles.focusMascotImage}
+                  />
+                </div>
+              </div>
             </div>
-            <div className={styles.statBody}>
-              <span className={styles.statValue}>{stat.value}</span>
+          ) : (
+            <div className={styles.focusCard}>
+              <div className={styles.focusCardLeft}>
+                <div>
+                  <span className={styles.focusBadge}>
+                    <FaLayerGroup size={11} />
+                    {latestCourse.published ? 'Published Course' : 'Current Draft'}
+                  </span>
+                  <h3 className={styles.focusCourseTitle}>{latestCourse.title}</h3>
+                  <p className={styles.focusCourseDesc}>
+                    {latestCourse.shortDescription || 'Continue refining your curriculum modules and interactive practice cards.'}
+                  </p>
+                </div>
+                
+                <button 
+                  onClick={() => router.push(`/creator/builder/${latestCourse.id}`)}
+                  className={styles.button3dWhite}
+                >
+                  <span>{latestCourse.published ? 'Manage Curriculum' : 'Continue Building'}</span>
+                  <span className={styles.buttonIconCircle}>
+                    <FaArrowRight size={13} />
+                  </span>
+                </button>
+              </div>
+
+              {/* Mascot Bubble & Graphic */}
+              <div className={styles.focusCardRight}>
+                <div className={styles.mascotBubble}>
+                  <span>Keep up the momentum! Finish your draft.</span>
+                  <div className={styles.mascotBubbleTail} />
+                </div>
+                <div className={styles.focusMascotImageWrapper}>
+                  <Image 
+                    src="/dashboard tey.webp" 
+                    alt="Tey Mascot" 
+                    width={130} 
+                    height={130} 
+                    priority
+                    className={styles.focusMascotImage}
+                  />
+                </div>
+              </div>
             </div>
-            <div className={styles.statFooter}>
-              {stat.trend ? (
-                <>
-                  <span className={styles.trendUp}>{stat.trend}</span>
-                  <span className={styles.trendText}>{stat.trendText}</span>
-                </>
+          )}
+
+          {/* 2. YOUR COURSES SECTION (CHUNKY DUOLINGO UNIT CARDS) */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionTitleGroup}>
+                <FaBookOpen size={16} color="#0172FD" />
+                <h3 className={styles.sectionTitle}>Your Courses</h3>
+              </div>
+              {courses.length > 0 && (
+                <button 
+                  onClick={() => router.push('/creator/courses')}
+                  className={styles.viewAllBtn}
+                >
+                  View All ({courses.length})
+                </button>
+              )}
+            </div>
+
+            <div className={styles.courseList}>
+              {courses.length === 0 ? (
+                <div style={{
+                  background: '#FFFFFF',
+                  border: '2px dashed #CBD5E1',
+                  borderRadius: '20px',
+                  padding: '36px 24px',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <div style={{
+                    width: '52px',
+                    height: '52px',
+                    borderRadius: '16px',
+                    background: '#EFF6FF',
+                    border: '2px solid #BFDBFE',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#0172FD'
+                  }}>
+                    <FaGraduationCap size={24} />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>
+                      No courses created yet
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#64748B', maxWidth: '340px' }}>
+                      Publish micro-lessons and interactive quizzes to start growing your student audience.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => router.push('/creator/create')}
+                    className={styles.button3dEdit}
+                    style={{ marginTop: '8px' }}
+                  >
+                    <FaPlus size={13} />
+                    <span>Create Your First Course</span>
+                  </button>
+                </div>
               ) : (
-                <span className={styles.trendText}>{stat.subText}</span>
+                courses.map((course) => (
+                  <div key={course.id} className={styles.courseCard}>
+                    <div className={styles.courseCardLeft}>
+                      <div className={styles.courseIconBox}>
+                        <FaGraduationCap size={20} />
+                      </div>
+                      <div className={styles.courseInfo}>
+                        <h4 className={styles.courseTitle}>{course.title}</h4>
+                        <div className={styles.courseMetaRow}>
+                          {course.published ? (
+                            <span className={styles.statusPillPublished}>
+                              <FaCircleCheck size={11} /> Published
+                            </span>
+                          ) : (
+                            <span className={styles.statusPillDraft}>
+                              <FaLayerGroup size={11} /> Draft
+                            </span>
+                          )}
+                          <span>•</span>
+                          <span>{course._count?.enrollments || 0} Students enrolled</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => router.push(`/creator/builder/${course.id}`)}
+                      className={styles.button3dEdit}
+                    >
+                      <span>Edit Course</span>
+                      <FaArrowRight size={13} />
+                    </button>
+                  </div>
+                ))
               )}
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* ─── MAIN TWO-COLUMN LAYOUT ─── */}
-      <div className={styles.mainColumns}>
-        
-        {/* LEFT COLUMN: Chart + Table */}
-        <div className={styles.leftCol}>
+        </div>
+
+        {/* RIGHT / SIDEBAR COLUMN */}
+        <div className={styles.sideColumn}>
           
-          {/* Overview Chart (Mocked SVG for accurate design representation) */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Overview</h3>
-              <button className={styles.dropdownBtn}>
-                Last 30 days <ChevronDown size={14} />
-              </button>
+          {/* 1. STUDIO QUICK ACTIONS */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarCardHeader}>
+              <h4 className={styles.sidebarCardTitle}>
+                <FaWandMagicSparkles size={14} color="#0172FD" />
+                Quick Actions
+              </h4>
             </div>
-            <div className={styles.chartLegend}>
-              <div className={styles.legendItem}>
-                <span className={styles.dotBlue}></span> Enrollments
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.dotLightBlue}></span> Earnings
-              </div>
-            </div>
-            
-            <div className={styles.chartArea}>
-              <svg width="100%" height="250" viewBox="0 0 800 250" preserveAspectRatio="none">
-                {/* Grid Lines */}
-                {[0, 50, 100, 150, 200].map(y => (
-                  <g key={y}>
-                    <line x1="0" y1={y} x2="800" y2={y} stroke="#F1F5F9" strokeWidth="1" />
-                    <text x="-10" y={y + 4} fontSize="11" fill="#94A3B8" textAnchor="end">
-                      {y === 0 ? '$1.25K' : y === 50 ? '$1K' : y === 100 ? '$750' : y === 150 ? '$500' : y === 200 ? '$250' : ''}
-                    </text>
-                  </g>
-                ))}
-                
-                {/* Gradient Fill under Main Line */}
-                <defs>
-                  <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgba(37, 99, 235, 0.2)" />
-                    <stop offset="100%" stopColor="rgba(37, 99, 235, 0)" />
-                  </linearGradient>
-                </defs>
-                <path d="M 0 200 L 40 100 L 100 80 L 150 110 L 200 100 L 250 130 L 300 120 L 350 90 L 400 100 L 450 70 L 500 50 L 550 120 L 600 140 L 650 170 L 700 130 L 750 60 L 800 120 L 800 250 L 0 250 Z" fill="url(#blueGradient)" />
-                
-                {/* Earnings Line (Light Blue) */}
-                <path d="M 0 220 L 40 170 L 100 180 L 150 190 L 200 170 L 250 150 L 300 170 L 350 160 L 400 160 L 450 150 L 500 120 L 550 140 L 600 170 L 650 200 L 700 180 L 750 130 L 800 160" fill="none" stroke="#93C5FD" strokeWidth="2" />
-                
-                {/* Enrollments Line (Main Blue) */}
-                <path d="M 0 200 L 40 100 L 100 80 L 150 110 L 200 100 L 250 130 L 300 120 L 350 90 L 400 100 L 450 70 L 500 50 L 550 120 L 600 140 L 650 170 L 700 130 L 750 60 L 800 120" fill="none" stroke="#2563EB" strokeWidth="3" />
-                
-                {/* Data Points */}
-                {[
-                  [40, 100], [100, 80], [150, 110], [200, 100], [250, 130], 
-                  [300, 120], [350, 90], [400, 100], [450, 70], [500, 50], 
-                  [550, 120], [600, 140], [650, 170], [700, 130], [750, 60]
-                ].map((point, i) => (
-                  <circle key={i} cx={point[0]} cy={point[1]} r="4" fill="white" stroke="#2563EB" strokeWidth="2" />
-                ))}
-                
-                {/* X Axis Labels */}
-                <g fill="#94A3B8" fontSize="11" textAnchor="middle">
-                  <text x="40" y="240">May 18</text>
-                  <text x="200" y="240">May 23</text>
-                  <text x="350" y="240">May 28</text>
-                  <text x="500" y="240">Jun 2</text>
-                  <text x="650" y="240">Jun 7</text>
-                  <text x="800" y="240">Jun 12</text>
-                </g>
-              </svg>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link href="/creator/create" className={styles.quickActionItem}>
+                <div className={styles.quickActionLeft}>
+                  <FaPlus size={14} color="#0172FD" />
+                  <span>New Course</span>
+                </div>
+                <FaArrowRight size={12} color="#94A3B8" />
+              </Link>
+
+              <Link href="/creator/settings" className={styles.quickActionItem}>
+                <div className={styles.quickActionLeft}>
+                  <FaGear size={14} color="#64748B" />
+                  <span>Creator Profile & Bio</span>
+                </div>
+                <FaArrowRight size={12} color="#94A3B8" />
+              </Link>
+
+              <Link href="/courses" className={styles.quickActionItem}>
+                <div className={styles.quickActionLeft}>
+                  <FaCompass size={14} color="#10B981" />
+                  <span>Explore Catalog</span>
+                </div>
+                <FaArrowRight size={12} color="#94A3B8" />
+              </Link>
             </div>
           </div>
 
-          {/* Your Courses Table */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Your Courses</h3>
-              <button className={styles.linkBtn}>View All Courses</button>
+          {/* 2. CREATOR BEST PRACTICES TIP CARD */}
+          <div className={styles.tipsCard}>
+            <div className={styles.tipsHeader}>
+              <FaLightbulb size={16} />
+              <span>Creator Tip</span>
             </div>
-            
-            <div className={styles.tableWrapper}>
-              <table className={styles.courseTable}>
-                <thead>
-                  <tr>
-                    <th>Course</th>
-                    <th>Status</th>
-                    <th>Students</th>
-                    <th>Enrollments</th>
-                    <th>Earnings</th>
-                    <th>Rating</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COURSES.map(course => (
-                    <tr key={course.id}>
-                      <td>
-                        <div className={styles.courseCell}>
-                          <div className={styles.courseThumbnail} style={{ backgroundColor: course.color }}>
-                            <span className={styles.courseInitials}>
-                              {course.name.split(' ').map(w => w[0]).join('').substring(0, 2)}
-                            </span>
-                          </div>
-                          <div className={styles.courseMeta}>
-                            <span className={styles.courseName}>{course.name}</span>
-                            <span className={styles.courseDate}>Updated {course.updated}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`${styles.statusBadge} ${course.status === 'Published' ? styles.statusPub : styles.statusDraft}`}>
-                          {course.status}
-                        </span>
-                      </td>
-                      <td>{course.students}</td>
-                      <td>{course.enrollments}</td>
-                      <td>{course.earnings}</td>
-                      <td>
-                        {course.rating !== '—' ? (
-                          <div className={styles.ratingCell}>
-                            {course.rating} <Star size={12} fill="#F59E0B" color="#F59E0B" />
-                          </div>
-                        ) : '—'}
-                      </td>
-                      <td>
-                        <button className={styles.moreBtn}><MoreVertical size={16} /></button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <p className={styles.tipsText}>
+              Keep lessons under 5 minutes with 2-3 interactive practice cards for the highest completion and retention rates.
+            </p>
+          </div>
+
+          {/* 3. STUDIO ROADMAP (WHAT'S COMING) */}
+          <div className={styles.sidebarCard}>
+            <div className={styles.sidebarCardHeader}>
+              <h4 className={styles.sidebarCardTitle}>
+                <FaWandMagicSparkles size={14} color="#9333EA" />
+                Coming Soon
+              </h4>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div className={styles.roadmapItem}>
+                <div className={styles.roadmapIconBox}>
+                  <FaChartSimple size={16} />
+                </div>
+                <div className={styles.roadmapContent}>
+                  <h5 className={styles.roadmapTitle}>Advanced Analytics</h5>
+                  <span className={styles.roadmapSub}>Retention & drop-off metrics</span>
+                </div>
+              </div>
+
+              <div className={styles.roadmapItem}>
+                <div className={styles.roadmapIconBox}>
+                  <FaWallet size={16} />
+                </div>
+                <div className={styles.roadmapContent}>
+                  <h5 className={styles.roadmapTitle}>Instant Payouts</h5>
+                  <span className={styles.roadmapSub}>Direct bank & Stripe transfer</span>
+                </div>
+              </div>
+
+              <div className={styles.roadmapItem}>
+                <div className={styles.roadmapIconBox}>
+                  <FaUsers size={16} />
+                </div>
+                <div className={styles.roadmapContent}>
+                  <h5 className={styles.roadmapTitle}>Student Community</h5>
+                  <span className={styles.roadmapSub}>Q&A discussion boards</span>
+                </div>
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* RIGHT COLUMN: To-do + Activity */}
-        <div className={styles.rightCol}>
-          
-          {/* To-do List */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div className={styles.titleWithBadge}>
-                <h3 className={styles.cardTitle}>To-do List</h3>
-                <span className={styles.badge}>3</span>
-              </div>
-            </div>
-            
-            <div className={styles.todoList}>
-              {TODO.map(item => (
-                <div key={item.id} className={styles.todoItem}>
-                  <div className={`${styles.todoIconBox} ${item.bg}`}>
-                    {item.icon}
-                  </div>
-                  <div className={styles.todoContent}>
-                    <span className={styles.todoTitle}>{item.title}</span>
-                    <span className={styles.todoCourse}>In &quot;{item.course}&quot;</span>
-                  </div>
-                  <ChevronDown size={14} className={styles.todoArrow} style={{ transform: 'rotate(-90deg)' }} />
-                </div>
-              ))}
-            </div>
-            
-            <button className={styles.linkBtn} style={{ marginTop: '16px' }}>View All Tasks <ChevronDown size={14} style={{ transform: 'rotate(-90deg)', marginLeft: '4px' }} /></button>
-          </div>
-
-          {/* Recent Activity */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Recent Activity</h3>
-            </div>
-            
-            <div className={styles.activityList}>
-              {ACTIVITY.map(item => (
-                <div key={item.id} className={styles.activityItem}>
-                  <Image src={item.avatar} alt={item.user} width={32} height={32} className={styles.activityAvatar} />
-                  <div className={styles.activityContent}>
-                    <p className={styles.activityText}>
-                      <span className={styles.activityUser}>{item.user}</span> {item.action}
-                    </p>
-                    <p className={styles.activityCourse}>{item.course}</p>
-                  </div>
-                  <span className={styles.activityTime}>{item.time}</span>
-                </div>
-              ))}
-            </div>
-            
-            <button className={styles.linkBtn} style={{ marginTop: '16px' }}>View All Activity <ChevronDown size={14} style={{ transform: 'rotate(-90deg)', marginLeft: '4px' }} /></button>
-          </div>
-
-        </div>
       </div>
     </div>
   );

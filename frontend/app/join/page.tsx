@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { usePostHog } from 'posthog-js/react';
+import { captureEvent, identifyUser } from '@/lib/analytics';
 import Script from 'next/script';
 
 export default function JoinWaitlistPage() {
-  const posthog = usePostHog();
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
@@ -19,12 +18,12 @@ export default function JoinWaitlistPage() {
               (f: any) => f.type === 'INPUT_EMAIL' || f.label?.toLowerCase().includes('email')
             );
             
-            if (emailField && emailField.value && posthog) {
-              posthog.identify(emailField.value, { email: emailField.value });
+            if (emailField && emailField.value) {
+              identifyUser(emailField.value, { email: emailField.value });
             }
             
-            posthog?.capture('waitlist_joined', { 
-              formId: data.formId 
+            captureEvent('waitlist_joined', {
+              formId: data.formId,
             });
           }
         }
@@ -35,7 +34,8 @@ export default function JoinWaitlistPage() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [posthog]);
+    // captureEvent/identifyUser are module-level and stable — nothing to depend on.
+  }, []);
 
   return (
     <div style={{ margin: 0, height: '100vh', overflow: 'hidden', position: 'relative', width: '100%' }}>

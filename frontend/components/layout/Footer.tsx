@@ -21,7 +21,7 @@ export default function Footer() {
               alt="Teyro Logo"
               width={220}
               height={66}
-              style={{ width: 'auto', height: '56px', objectFit: 'contain' }}
+              style={{ width: 'auto', aspectRatio: '220 / 66', height: '56px', objectFit: 'contain' }}
             />
           </Link>
           <p className={styles.description}>
@@ -66,7 +66,7 @@ export default function Footer() {
           <ul>
             <li><Link href="/about">About us</Link></li>
             <li><Link href="/careers">Careers</Link></li>
-            <li><Link href="/community">Community Forums</Link></li>
+            <li><Link href="/dashboard/feed">Community Feed</Link></li>
             <li><Link href="/blog">Blog & News</Link></li>
             <li><Link href="/investors">Investors</Link></li>
           </ul>

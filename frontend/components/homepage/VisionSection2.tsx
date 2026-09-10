@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Image from 'next/image';
 import { Flame, Brain, Users } from 'lucide-react';
@@ -9,6 +9,11 @@ import { SpeechBubble } from '../onboarding/SpeechBubble';
 
 export default function VisionSection2() {
   const mascotRef = useRef<HTMLDivElement>(null);
+  // Decorative float below, gated on visibility: framer-motion drives these
+  // from JS every frame, and the marketing page ran eight concurrently for as
+  // long as it was open — continuous CPU for motion nobody is looking at.
+  // Invisible by definition, since you cannot see an animation you scrolled past.
+  const mascotInView = useInView(mascotRef, { margin: '200px 0px 200px 0px' });
 
   const teyQuote = [
     `<strong>If you skip today, your streak timer starts... ⏰</strong>`,
@@ -46,7 +51,7 @@ export default function VisionSection2() {
           >
             <motion.div 
               animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 4.8, repeat: mascotInView ? Infinity : 0, ease: "easeInOut" }}
               className="relative w-[95%] h-[95%] z-10 flex items-center justify-center"
             >
               <Image 
@@ -54,7 +59,7 @@ export default function VisionSection2() {
                 alt="Thinking Tey Mascot" 
                 fill 
                 className="object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.06)]"
-                unoptimized
+                sizes="(max-width: 768px) 90vw, 40vw"
               />
             </motion.div>
           </div>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
@@ -14,6 +14,16 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
+
+// NOTE: Baloo_2 (--font-celebration) is declared in app/(app)/layout.tsx, not
+// here. It is used only by Celebration Engine scenes and the quests page, all
+// of which live inside that group — loading it at the root meant serving three
+// weights on /, /blog, /terms and /login, where a celebration cannot render.
+
+export const viewport: Viewport = {
+  themeColor: '#3D5AFE',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   // ── Base URL (required for Next.js to resolve relative OG/canonical URLs) ──
@@ -120,25 +130,52 @@ export const metadata: Metadata = {
     icon: [
       { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
-      { url: '/favicon.png', sizes: '192x192', type: 'image/png' },
+      { url: '/Icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: [
-      { url: '/favicon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     shortcut: '/favicon.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Teyro',
+  },
+  manifest: '/manifest.webmanifest',
 };
 
 
-const fontAwesomeLink = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css';
-
+import { SWRProvider } from "../components/providers/SWRProvider";
+import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerRegistrar";
+import { TeyPushNavigation } from "../components/providers/TeyPushProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
-import { IntercomProvider } from "../components/providers/IntercomProvider";
-import { GamificationProvider } from "../context/GamificationContext";
-import { AudioProvider } from "../context/AudioContext";
-import BackgroundMusicManager from "../components/audio/BackgroundMusicManager";
 
+/**
+ * Root layout — deliberately light.
+ *
+ * The entire authenticated student runtime (Gamification, Celebration, Herald,
+ * Streak, ShopEngine, RewardAnimation, Audio, the four watchers and the two
+ * engines) used to live here, which meant every visitor to the landing page,
+ * the blog and the legal pages downloaded and booted it, and fired a handful of
+ * authenticated requests that could only ever 401. It now lives in
+ * app/(app)/layout.tsx, scoped to the routes that actually consume it.
+ *
+ * What stays here, and why:
+ *  - ServiceWorkerRegistrar — PWA install has to work from the landing page.
+ *  - SWRProvider — small, and NotificationBell/AdminUI need it outside (app).
+ *  - CartProvider — Header and CourseCard call useCart, which THROWS without a
+ *    provider, and both render on public routes.
+ *  - PostHogProvider — removing it from marketing would delete the top of the
+ *    acquisition funnel.
+ *  - TeyPushNavigation — a notification tap must route from whatever page the
+ *    learner happens to have open. Its authenticated other half (TeyPushSync)
+ *    moved into (app).
+ *  - HeaderWrapper / FooterWrapper — these already switch on pathname and
+ *    render the right chrome (or none) per route; leaving them here keeps that
+ *    behaviour byte-identical rather than re-deriving it per group.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -146,26 +183,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
-      <head>
-        <link rel="stylesheet" href={fontAwesomeLink} />
-      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <PostHogProvider>
-          <IntercomProvider>
+        <ServiceWorkerRegistrar />
+        <TeyPushNavigation />
+        <SWRProvider>
+          <PostHogProvider>
             <CartProvider>
-              <AudioProvider>
-                <BackgroundMusicManager />
-                <GamificationProvider>
-                  <HeaderWrapper />
-                  <main className="flex-1" style={{ overflow: 'visible' }}>
-                    {children}
-                  </main>
-                  <FooterWrapper />
-                </GamificationProvider>
-              </AudioProvider>
+              <HeaderWrapper />
+              <main className="flex-1" style={{ overflow: 'visible' }}>
+                {children}
+              </main>
+              <FooterWrapper />
             </CartProvider>
-          </IntercomProvider>
-        </PostHogProvider>
+          </PostHogProvider>
+        </SWRProvider>
       </body>
     </html>
   );

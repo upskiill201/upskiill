@@ -27,7 +27,7 @@ export function MatchCard({
   shake = false
 }: MatchCardProps) {
   return (
-    <div className="relative w-[18vw] h-[18vw] max-w-[80px] max-h-[80px] sm:w-20 sm:h-20 select-none">
+    <div className="relative w-[14.5vw] h-[14.5vw] max-w-[70px] max-h-[70px] sm:w-20 sm:h-20 select-none">
       {!isMatched ? (
         <motion.div
           drag
@@ -46,9 +46,9 @@ export function MatchCard({
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute inset-0 bg-white border border-slate-100 rounded-[1.2rem] shadow-[0_8px_20px_rgba(0,0,0,0.06)] flex items-center justify-center cursor-grab active:cursor-grabbing z-30"
+          className="absolute inset-0 bg-white border border-slate-100 rounded-[1rem] md:rounded-[1.2rem] shadow-[0_8px_20px_rgba(0,0,0,0.06)] flex items-center justify-center cursor-grab active:cursor-grabbing z-30"
         >
-          <div className="w-14 h-14 relative pointer-events-none">
+          <div className="w-[9vw] h-[9vw] max-w-[44px] max-h-[44px] sm:w-14 sm:h-14 relative pointer-events-none">
             <Image src={img} alt={label} fill className="object-contain" />
           </div>
           <div className="absolute bottom-1 right-1 w-4.5 h-4.5 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center opacity-85 shadow-sm">
@@ -57,8 +57,8 @@ export function MatchCard({
         </motion.div>
       ) : (
         // Locked matched state placeholder
-        <div className="absolute inset-0 bg-slate-100/40 border border-dashed border-slate-200 rounded-[1.2rem] flex items-center justify-center z-10">
-          <Check className="w-6 h-6 text-slate-300 stroke-[3.5]" />
+        <div className="absolute inset-0 bg-slate-100/40 border border-dashed border-slate-200 rounded-[1rem] md:rounded-[1.2rem] flex items-center justify-center z-10">
+          <Check className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300 stroke-[3.5]" />
         </div>
       )}
     </div>

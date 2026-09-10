@@ -1,0 +1,277 @@
+/* Notification bell + panel.
+ * The panel is a real inbox preview: actor face, a coloured type chip, the
+ * sentence, and the target's own words underneath — not a list of "Someone
+ * did something" lines. */
+
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.bellBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 130ms ease, color 130ms ease;
+}
+.bellBtn:hover {
+  background: var(--bg-section);
+  color: var(--text-primary);
+}
+.badgeCount {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--error-red);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+
+.panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1400;
+  width: 380px;
+  max-width: calc(100vw - 24px);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px rgba(31, 42, 68, 0.18);
+  overflow: hidden;
+}
+.panelLeft {
+  right: auto;
+  left: 0;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px 10px;
+}
+.panelTitle {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.markAllBtn {
+  border: 0;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 7px;
+}
+.markAllBtn:hover {
+  background: var(--light-blue-bg);
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.tabActive {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--text-on-blue);
+}
+
+.list {
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Day separator — "Today" / "Earlier". A flat list of 20 rows all reading
+   "2d ago" is impossible to scan. */
+.groupLabel {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 16px 6px;
+  background: var(--bg-card);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.item:hover {
+  background: var(--bg-section);
+}
+.itemUnread {
+  background: var(--light-blue-bg);
+}
+.itemUnread:hover {
+  background: #e4eaff;
+}
+
+/* Actor face with the type chip pinned to its corner. */
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.typeChip {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 999px;
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+.chipLike { background: #ec4899; }
+.chipComment { background: var(--brand-blue); }
+.chipMention { background: var(--brand-purple); }
+.chipAnnouncement { background: var(--warning); }
+.chipTey { background: #f97316; }
+.chipDefault { background: var(--text-muted); }
+
+.itemBody {
+  min-width: 0;
+  flex: 1;
+}
+.itemTitleLine {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+.itemActor {
+  font-weight: 800;
+}
+.itemText {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.itemTime {
+  display: block;
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.unreadDot {
+  flex-shrink: 0;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand-blue);
+}
+
+.emptyPanel {
+  padding: 34px 22px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  color: var(--text-muted);
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 16px;
+}
+
+.panelFooter {
+  display: block;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  text-align: center;
+  text-decoration: none;
+}
+.panelFooter:hover {
+  background: var(--bg-section);
+}
+
+/* On a phone the dropdown becomes a bottom sheet — a 380px popover anchored
+   to a 40px button in the corner of a 360px screen is unusable. */
+@media (max-width: 560px) {
+  .panel {
+    position: fixed;
+    top: auto;
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
+    width: auto;
+    max-width: none;
+    border-radius: 18px;
+  }
+  .list {
+    max-height: 62vh;
+  }
+}

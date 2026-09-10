@@ -37,13 +37,17 @@ export function AddResourceModal({ lessonId, onClose, onAddResource, initialReso
   
   const [selectedType, setSelectedType] = useState<ResourceType | null>(initialMode === 'replace' ? null : initType);
   const [fileData, setFileData] = useState<{ name: string; size: string; url: string } | null>(initFile);
-  
+
   // Form State
   const [title, setTitle] = useState(initialResource?.title || '');
   const [timeEstimate, setTimeEstimate] = useState(initialResource?.time || '5 min read');
   const [description, setDescription] = useState(initialResource?.description || '');
   const [category, setCategory] = useState(initialResource?.category || 'Reference');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Once the creator edits the title by hand, stop auto-filling it
+  // (e.g. while typing a link URL, which used to rewrite the field every keystroke)
+  const titleManuallyEdited = useRef(false);
 
   // Focus trap & animation in
   useEffect(() => {
@@ -102,14 +106,16 @@ export function AddResourceModal({ lessonId, onClose, onAddResource, initialReso
 
   const handleFileComplete = (data: { name: string; size: string; url: string }) => {
     setFileData(data);
-    
-    // Auto-fill title logic
+
+    // Auto-fill title logic (skipped once the creator has typed their own)
     // e.g. "ui_design_basics_cheatsheet.pdf" -> "Ui Design Basics Cheatsheet"
-    let cleanTitle = data.name.split('.').slice(0, -1).join('.') || data.name;
-    if (selectedType === 'link') cleanTitle = data.name; // Keep URL as title for now if link
-    cleanTitle = cleanTitle.replace(/[-_]/g, ' ');
-    cleanTitle = cleanTitle.replace(/\b\w/g, l => l.toUpperCase());
-    setTitle(cleanTitle.substring(0, 100)); // limit
+    if (!titleManuallyEdited.current) {
+      let cleanTitle = data.name.split('.').slice(0, -1).join('.') || data.name;
+      if (selectedType === 'link') cleanTitle = data.name; // Keep URL as title for now if link
+      cleanTitle = cleanTitle.replace(/[-_]/g, ' ');
+      cleanTitle = cleanTitle.replace(/\b\w/g, l => l.toUpperCase());
+      setTitle(cleanTitle.substring(0, 100)); // limit
+    }
 
     // Auto-calc time estimate (mock logic)
     if (selectedType === 'link') setTimeEstimate('2 min read');
@@ -187,8 +193,9 @@ export function AddResourceModal({ lessonId, onClose, onAddResource, initialReso
             {selectedType && (
               <div>
                 <h3 className={styles.sectionTitle}>2. Upload File</h3>
-                <FileUploadZone 
-                  type={selectedType} 
+                <FileUploadZone
+                  type={selectedType}
+                  lessonId={lessonId}
                   onFileComplete={handleFileComplete}
                   onFileCleared={() => { setFileData(null); setTitle(''); }}
                 />
@@ -205,11 +212,11 @@ export function AddResourceModal({ lessonId, onClose, onAddResource, initialReso
                       Resource Title <span style={{color: '#EF4444'}}>*</span>
                       <span className={styles.charCount}>{title.length}/100</span>
                     </div>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       className={styles.input}
                       value={title}
-                      onChange={(e) => setTitle(e.target.value.substring(0, 100))}
+                      onChange={(e) => { titleManuallyEdited.current = true; setTitle(e.target.value.substring(0, 100)); }}
                     />
                   </div>
                   <div className={styles.formGroup}>

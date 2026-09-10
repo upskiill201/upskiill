@@ -12,6 +12,7 @@
   --brand-blue-hover: #2D4AEE;
   --soft-blue:      #6C8CFF;
   --light-blue-bg:  #EEF2FF;
+  --gradient-brand: linear-gradient(135deg, #3D5AFE 0%, #6352FF 100%);
 
   /* Scribe-Inspired Design System */
   --brand-indigo:   #6352FF;
@@ -40,11 +41,6 @@
   --warning:        #F59E0B;
 }
 
-html {
-  scroll-behavior: smooth;
-  overflow-x: clip; /* Fixes horizontal scroll without breaking position: sticky */
-}
-
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
@@ -54,7 +50,17 @@ body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: clip; /* Fixes horizontal scroll without breaking position: sticky */
+  /* Fixes horizontal scroll without breaking position: sticky. Only set here,
+     not on <html> too — setting overflow-x on both forces each element's
+     overflow-y to auto-compute independently (CSS overflow pairing rule),
+     turning html and body into two separate nested scroll containers instead
+     of body's overflow propagating to the single document viewport scroller.
+     That split broke wheel/trackpad scrolling on desktop while the native
+     scrollbar (bound to the outer html container) still worked. */
+  overflow-x: clip;
+  /* Stops iOS Safari's native rubber-band bounce from competing with the
+     student pages' own pull-to-refresh gesture (components/ui/PullToRefresh). */
+  overscroll-behavior-y: contain;
   width: 100%;
   max-width: 100%;
 }

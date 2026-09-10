@@ -1,0 +1,1433 @@
+/* Duolingo Student UI, Sapphire Blue Focus Card, Real Creator Sidebar & Full-Screen Celebration */
+
+.discoveryWrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 12px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ─── TOP HEADER ROW (BACK LINK + LIVE STATS) ─── */
+.topHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748B;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  transition: all 0.15s ease;
+}
+
+.backLink:hover {
+  color: #0172FD;
+  border-color: #BFDBFE;
+  background: #EFF6FF;
+}
+
+/* ─── LOADING STATE ─── */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  gap: 18px;
+  text-align: center;
+}
+
+.duoSpinner {
+  width: 52px;
+  height: 52px;
+  border: 5px solid #E2E8F0;
+  border-top-color: #0172FD;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.loadingText {
+  font-size: 16px;
+  font-weight: 800;
+  color: #64748B;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.mascotBounce {
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.notFoundHeading {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.notFoundSub {
+  font-size: 15px;
+  color: #64748B;
+  max-width: 440px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.duoButtonGreen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 28px;
+  background: #22C55E;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 12px;
+  border-bottom: 4px solid #15803D;
+  text-decoration: none;
+}
+
+/* ─── 2-COLUMN MAIN GRID ─── */
+.duoMainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.leftContentCol {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─── 1. VIBRANT SAPPHIRE BLUE COURSE INFO FOCUS CARD ─── */
+.blueFocusHeroCard {
+  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
+  border-radius: 22px;
+  padding: clamp(18px, 4vw, 30px) clamp(16px, 4vw, 34px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 24px);
+  box-shadow: 0 12px 36px rgba(1, 114, 253, 0.25);
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.blueHeroTop {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pillRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryPillLight {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+.levelPillLight {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+.xpPillGold {
+  background: #FEF3C7;
+  color: #D97706;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.pricePillAmber {
+  background: #FEF3C7;
+  color: #B45309;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.freeCoursePill {
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.blueFocusTitle {
+  font-size: clamp(21px, 5.5vw, 30px);
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.5px;
+  word-break: break-word;
+}
+
+.blueFocusDescription {
+  font-size: clamp(13px, 3vw, 15px);
+  color: #E0E7FF;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.blueSpecsRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
+}
+
+.blueSpecItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.blueActionArea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.duoActionBtnGreen {
+  width: 100%;
+  min-height: 56px;
+  height: auto;
+  padding: 10px 12px;
+  background: #22C55E;
+  color: #FFFFFF;
+  border: none;
+  border-bottom: 5px solid #15803D;
+  border-radius: 16px;
+  font-size: clamp(13px, 3.6vw, 16.5px);
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.duoActionBtnGreen:hover {
+  filter: brightness(1.06);
+}
+
+.duoActionBtnGreen:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.blueActionSub {
+  font-size: 13px;
+  font-weight: 600;
+  color: #DBEAFE;
+  text-align: center;
+}
+
+.btnContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btnSpinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* Mascot Dialogue Strip Inside Blue Card */
+.blueMascotStrip {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  padding: clamp(12px, 3vw, 16px) clamp(14px, 3vw, 20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.speechBubbleWhite {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.speechBubbleTitle {
+  display: block;
+  font-size: 13.5px;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.speechBubbleBody {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.speechArrowWhite {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  background: #FFFFFF;
+}
+
+.mascotSmallWrap {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mascotImgBounce {
+  object-fit: contain;
+  animation: gentleBounce 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+/* ─── 2. WHAT YOU'LL ACHIEVE (BEFORE SECTIONS) ─── */
+.achievementsBlock {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: clamp(16px, 4vw, 24px) clamp(14px, 4vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  min-width: 0;
+}
+
+.blockHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.achievementsHeading {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px;
+}
+
+.achievementsSub {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.xpBonusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #D97706;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  padding: 6px 12px;
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+
+.achievementsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.achieveCard {
+  background: #F0FDF4;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.achieveCheckCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #22C55E;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.achieveOutcomeText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #166534;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ─── 3. COURSE JOURNEY / SECTIONS ROADMAP ─── */
+.roadmapBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.roadmapHeading {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px;
+}
+
+.roadmapSub {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.unitsCountBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0172FD;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  padding: 6px 12px;
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+
+.unitsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.unitContainer {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.unitBanner {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #FFFFFF;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.unitBannerActive {
+  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
+}
+
+.unitBannerNext {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+}
+
+.unitBannerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.unitNumberTag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+}
+
+.unitBannerTitle {
+  font-size: clamp(15px, 4vw, 17px);
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+.unitToggleBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.unitToggleBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.unitLessonsCount {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.unitPath {
+  display: flex;
+  flex-direction: column;
+}
+
+.pathNodeRow {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.pathNodeRow:hover {
+  background: #F8FAFC;
+}
+
+/* Guest view — curriculum is a read-only preview, nothing is clickable */
+.pathNodeRowStatic,
+.pathNodeRowStatic:hover {
+  cursor: default;
+  background: transparent;
+}
+
+.nodeLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.nodeCircle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #EFF6FF;
+  border: 2px solid #BFDBFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.pathNodeRow:hover .nodeCircle {
+  transform: scale(1.08);
+  background: #0172FD;
+}
+
+.pathNodeRow:hover .nodeCircle svg {
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+/* Static rows must not react to hover */
+.pathNodeRowStatic:hover .nodeCircle {
+  transform: none;
+  background: #EFF6FF;
+}
+
+.pathNodeRowStatic:hover .nodeCircle svg {
+  fill: #0172FD !important;
+  color: #0172FD !important;
+}
+
+.nodeCircleLocked {
+  background: #F1F5F9;
+  border-color: #E2E8F0;
+}
+
+.nodeText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nodeTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  overflow-wrap: break-word;
+}
+
+.nodeMeta {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.nodeRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.nodeRewardBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0172FD;
+  background: #EFF6FF;
+  padding: 4px 9px;
+  border-radius: 100px;
+}
+
+.nodeStartBtn {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Real free-preview tag — first two lessons of a paid course (server rule) */
+.freePreviewTag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #16A34A;
+  background: #DCFCE7;
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nodeLockedLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  white-space: nowrap;
+}
+
+.chestNodeRow {
+  padding: 14px 18px;
+  background: #FFFBEB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.chestLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chestImgWrap {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  animation: gentleBounce 2.5s ease-in-out infinite;
+}
+
+.chestImg {
+  object-fit: contain;
+}
+
+.chestTitle {
+  font-size: 13px;
+  font-weight: 800;
+  color: #92400E;
+}
+
+.chestMeta {
+  font-size: 12px;
+  color: #B45309;
+  font-weight: 600;
+}
+
+.chestBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #92400E;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* ─── RIGHT SIDEBAR: COURSE SPECS & REAL CREATOR PROFILE CARD ─── */
+.rightSidebarCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sideQuestCard {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+}
+
+.sideThumbnailWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0F172A;
+}
+
+.sideThumbnailImg {
+  object-fit: cover;
+}
+
+.sideThumbOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.fallbackThumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #EFF6FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sideCardBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sideCourseTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.sideCourseDesc {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.specsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #F1F5F9;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.specRowItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.specIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.specTextCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.specLabel {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.specValue {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.sideCtaButton {
+  width: 100%;
+  height: 48px;
+  background: #22C55E;
+  color: #FFFFFF;
+  border: none;
+  border-bottom: 3.5px solid #15803D;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.sideCtaButton:hover {
+  filter: brightness(1.05);
+}
+
+.sideCtaButton:active {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px;
+}
+
+/* ─── DEDICATED REAL CREATOR PROFILE CARD ON SIDEBAR ─── */
+.creatorProfileCard {
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+}
+
+.creatorCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.creatorInfoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creatorTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.creatorCardName {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.creatorHandle {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.creatorRoleBadge {
+  font-size: 11px;
+  color: #0172FD;
+  font-weight: 700;
+}
+
+.creatorBioText {
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.creatorStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 8px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.creatorStatBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creatorStatVal {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.creatorStatLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.viewCreatorProfileBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 42px;
+  background: #EFF6FF;
+  color: #0172FD;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.viewCreatorProfileBtn:hover {
+  background: #DBEAFE;
+  border-color: #93C5FD;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .duoMainGrid {
+    grid-template-columns: 1fr;
+  }
+  .achievementsGrid {
+    grid-template-columns: 1fr;
+  }
+  .blueMascotStrip {
+    flex-direction: column;
+    text-align: center;
+  }
+  .speechArrowWhite {
+    display: none;
+  }
+  .blueSpecsRow {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topHeaderRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 4px 0 8px;
+  }
+
+  .blueFocusHeroCard {
+    padding: 22px 20px;
+  }
+
+  .blueFocusTitle {
+    font-size: 24px;
+  }
+
+  .unitBannerTitle {
+    font-size: 16px;
+  }
+
+  .sideThumbnailWrap,
+  .fallbackThumb {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 640px) {
+  .discoveryWrapper {
+    padding: 8px 10px 48px;
+    gap: 18px;
+  }
+
+  .mascotSmallWrap {
+    width: 64px;
+    height: 64px;
+  }
+
+  .speechBubbleWhite {
+    padding: 12px 14px;
+  }
+
+  .roadmapHeading,
+  .achievementsHeading {
+    font-size: 18px;
+  }
+
+  .unitBanner {
+    padding: 12px 14px;
+  }
+
+  .unitLessonsCount {
+    display: none;
+  }
+
+  .pathNodeRow {
+    padding: 12px 14px;
+  }
+
+  .nodeCircle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nodeRight {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+    padding-left: 48px;
+    box-sizing: border-box;
+  }
+
+  .chestNodeRow {
+    padding: 14px;
+  }
+
+  .chestTitle {
+    font-size: 12.5px;
+  }
+
+  .chestMeta {
+    font-size: 11px;
+  }
+
+  .creatorCardHeader {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .blueFocusHeroCard {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .blueFocusTitle {
+    font-size: 21px;
+  }
+
+  .blueFocusDescription {
+    font-size: 14px;
+  }
+
+  .blueSpecsRow {
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .blueSpecItem {
+    font-size: 12px;
+  }
+
+  .duoActionBtnGreen {
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    padding: 10px 8px;
+  }
+
+  .pillRow {
+    gap: 6px;
+  }
+
+  .categoryPillLight,
+  .levelPillLight,
+  .xpPillGold,
+  .pricePillAmber,
+  .freeCoursePill {
+    font-size: 10.5px;
+    padding: 4px 10px;
+  }
+
+  .achievementsBlock,
+  .creatorProfileCard {
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  .sideCardBody {
+    padding: 16px;
+  }
+
+  .unitContainer {
+    border-radius: 14px;
+  }
+
+  .nodeTitle {
+    font-size: 13px;
+  }
+
+  .nodeMeta {
+    font-size: 11px;
+  }
+
+  .chestImgWrap {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ─── SUB-360px: iPhone SE / small Android / narrow foldables ─── */
+@media (max-width: 360px) {
+  .discoveryWrapper {
+    padding: 6px 8px 40px;
+    gap: 14px;
+  }
+
+  .blueFocusHeroCard {
+    padding: 14px 12px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
+  .blueFocusTitle {
+    font-size: 18px;
+  }
+
+  .pillRow {
+    gap: 5px;
+  }
+
+  .categoryPillLight,
+  .levelPillLight,
+  .xpPillGold,
+  .pricePillAmber,
+  .freeCoursePill {
+    font-size: 9.5px;
+    padding: 3px 8px;
+    gap: 4px;
+  }
+
+  .blueSpecsRow {
+    gap: 8px;
+  }
+
+  .blueSpecItem {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .duoActionBtnGreen {
+    font-size: 11.5px;
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .blueActionSub {
+    font-size: 11px;
+  }
+
+  .mascotSmallWrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .speechBubbleTitle {
+    font-size: 12px;
+  }
+
+  .speechBubbleBody {
+    font-size: 11.5px;
+  }
+
+  .achievementsBlock,
+  .creatorProfileCard,
+  .sideQuestCard {
+    border-radius: 14px;
+  }
+
+  .achievementsBlock {
+    padding: 14px 12px;
+  }
+
+  .achieveCard {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .achieveOutcomeText {
+    font-size: 12px;
+  }
+
+  .roadmapHeading,
+  .achievementsHeading {
+    font-size: 16.5px;
+  }
+
+  .roadmapSub,
+  .achievementsSub {
+    font-size: 12px;
+  }
+
+  .unitsCountBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .unitBanner {
+    padding: 10px 12px;
+  }
+
+  .unitNumberTag {
+    font-size: 10px;
+  }
+
+  .unitBannerTitle {
+    font-size: 14px;
+  }
+
+  .unitToggleBtn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .pathNodeRow {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .nodeLeft {
+    flex: 1 1 100%;
+    gap: 10px;
+  }
+
+  .nodeCircle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .nodeTitle {
+    font-size: 12.5px;
+  }
+
+  .nodeMeta {
+    font-size: 10.5px;
+  }
+
+  .nodeRight {
+    padding-left: 40px;
+    gap: 8px;
+  }
+
+  .nodeRewardBadge,
+  .freePreviewTag,
+  .nodeLockedLabel {
+    font-size: 10px;
+    padding: 3px 7px;
+  }
+
+  .nodeStartBtn {
+    font-size: 11px;
+  }
+
+  .chestNodeRow {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .chestImgWrap {
+    width: 28px;
+    height: 28px;
+  }
+
+  .chestTitle {
+    font-size: 11.5px;
+  }
+
+  .chestMeta {
+    font-size: 10px;
+  }
+
+  .chestBadge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+  }
+
+  .sideCardBody {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .sideCourseTitle {
+    font-size: 15px;
+  }
+
+  .sideCourseDesc {
+    font-size: 12px;
+  }
+
+  .specLabel {
+    font-size: 10px;
+  }
+
+  .specValue {
+    font-size: 11px;
+  }
+
+  .sideCtaButton {
+    font-size: 12.5px;
+    height: 44px;
+  }
+
+  .creatorProfileCard {
+    padding: 14px 12px;
+    gap: 12px;
+  }
+
+  .creatorCardName {
+    font-size: 14px;
+  }
+
+  .creatorBioText {
+    font-size: 11.5px;
+  }
+
+  .creatorStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    padding: 8px 6px;
+  }
+
+  .creatorStatVal {
+    font-size: 12px;
+  }
+
+  .creatorStatLabel {
+    font-size: 9px;
+  }
+
+  .viewCreatorProfileBtn {
+    font-size: 12px;
+    height: 40px;
+  }
+
+  .backLink {
+    font-size: 12.5px;
+    padding: 6px 10px;
+  }
+}

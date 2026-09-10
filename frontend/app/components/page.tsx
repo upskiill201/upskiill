@@ -585,7 +585,7 @@ export default function ComponentsPreviewPage() {
               <CategoryCard 
                 name="Generative AI"
                 icon={Cpu}
-                image="/homepage/cat-generative-ai.png"
+                image="/homepage/cat-generative-ai.webp"
                 courseCount={480}
                 studentCount={210000}
                 href="/courses?cat=ai"
@@ -594,7 +594,7 @@ export default function ComponentsPreviewPage() {
               <CategoryCard 
                 name="Data Science"
                 icon={Database}
-                image="/homepage/cat-data-science.png"
+                image="/homepage/cat-data-science.webp"
                 courseCount={840}
                 studentCount={125000}
                 href="/courses?cat=data-science"
@@ -603,7 +603,7 @@ export default function ComponentsPreviewPage() {
               <CategoryCard 
                 name="IT Certifications"
                 icon={ShieldCheck}
-                image="/homepage/cat-it-certs.png"
+                image="/homepage/cat-it-certs.webp"
                 courseCount={310}
                 studentCount={45000}
                 href="/courses?cat=it-certs"
@@ -612,7 +612,7 @@ export default function ComponentsPreviewPage() {
               <CategoryCard 
                 name="UI Design"
                 icon={Palette}
-                image="/homepage/cat-ui-design.png"
+                image="/homepage/cat-ui-design.webp"
                 courseCount={620}
                 studentCount={89000}
                 href="/courses?cat=ui-design"
@@ -621,7 +621,7 @@ export default function ComponentsPreviewPage() {
               <CategoryCard 
                 name="Development"
                 icon={Code}
-                image="/homepage/cat-prompt-eng.png" /* Reusing prompt eng for generic dev */
+                image="/homepage/cat-prompt-eng.webp" /* Reusing prompt eng for generic dev */
                 courseCount={1245}
                 studentCount={340000}
                 href="/courses?cat=development"

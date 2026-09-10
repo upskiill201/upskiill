@@ -1,0 +1,200 @@
+/* MDX article prose styling — applied as a wrapper class around <MDXRemote>.
+   Hand-rolled (no typography plugin installed): Jakarta headings, Inter body,
+   brand-blue links, Teyro-surface tables/callouts. */
+
+.prose {
+  color: #334155;
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+/* ── Paragraphs & inline ───────────────────────────────────────────── */
+
+.prose p {
+  margin: 0 0 1.4em;
+}
+
+.prose a {
+  color: #3d5afe;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(61, 90, 254, 0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.prose a:hover {
+  text-decoration-color: #3d5afe;
+}
+
+.prose strong {
+  font-weight: 800;
+  color: #1f2a44;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────── */
+
+.prose h2,
+.prose h3 {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  line-height: 1.3;
+  scroll-margin-top: 96px; /* clear the fixed header on anchor jumps */
+}
+
+.prose h2 {
+  font-size: 1.65rem;
+  color: #1f2a44;
+  margin: 2.2em 0 0.8em;
+  letter-spacing: -0.01em;
+}
+
+.prose h3 {
+  font-size: 1.22rem;
+  color: #1f2a44;
+  margin: 1.8em 0 0.6em;
+}
+
+.prose h2 + h3 {
+  margin-top: 1.2em;
+}
+
+/* ── Lists ─────────────────────────────────────────────────────────── */
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.4em;
+  padding-left: 1.6em;
+}
+
+.prose ul {
+  list-style: none;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1.15em;
+  top: 0.72em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #3d5afe;
+}
+
+.prose ol > li::marker {
+  color: #3d5afe;
+  font-weight: 800;
+}
+
+.prose li {
+  margin-bottom: 0.55em;
+  padding-left: 0.2em;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.55em;
+}
+
+/* ── Blockquote callout ────────────────────────────────────────────── */
+
+.prose blockquote {
+  margin: 1.8em 0;
+  padding: 18px 24px;
+  border-left: 4px solid #3d5afe;
+  border-radius: 0 14px 14px 0;
+  background: #eef2ff;
+  color: #374151;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Code ──────────────────────────────────────────────────────────── */
+
+.prose code {
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+  font-size: 0.86em;
+}
+
+.prose :not(pre) > code {
+  background: #eef2ff;
+  color: #3d5afe;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.prose pre {
+  margin: 1.8em 0;
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: #0f172a;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  padding: 0;
+}
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+
+.prose table {
+  width: 100%;
+  margin: 1.8em 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.prose thead th {
+  background: #f1f5f9;
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.prose tbody td {
+  padding: 12px 16px;
+  border-top: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.prose tbody tr:first-child td {
+  border-top: none;
+}
+
+/* ── Media & rules ─────────────────────────────────────────────────── */
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin: 1.8em 0;
+}
+
+.prose hr {
+  margin: 2.5em 0;
+  border: none;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #e2e8f0 20%, #e2e8f0 80%, transparent);
+}

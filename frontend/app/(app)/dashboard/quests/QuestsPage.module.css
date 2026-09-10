@@ -1,0 +1,972 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #64748B;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 4px 8px 4px 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.backLink:hover {
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  color: #101A2E;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #94A3B8;
+}
+
+/* ── Hero card — celebration-scene navy, ambient brand glow ───────────────── */
+
+.heroCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(61, 90, 254, 0.22) 0%, rgba(16, 26, 46, 0) 55%),
+    #101a2e;
+  border: none;
+  box-shadow:
+    0 10px 30px rgba(16, 26, 46, 0.35),
+    inset 0 2px 0 rgba(255, 255, 255, 0.06);
+  padding: clamp(20px, 3vw, 30px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #FFFFFF;
+}
+
+/* Ambient gold + blue glows behind the stage (matches Scene.module.css) */
+.heroAmbient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 32% at 78% 20%, rgba(61, 90, 254, 0.16) 0%, transparent 70%),
+    radial-gradient(30% 24% at 18% 85%, rgba(250, 204, 21, 0.07) 0%, transparent 70%);
+}
+
+/* Champion month repaints the hero in Duolingo's trophy amber */
+.heroChampion {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(245, 158, 11, 0.25) 0%, rgba(69, 39, 3, 0) 60%),
+    #452603;
+}
+
+.heroChampion .heroAmbient {
+  background:
+    radial-gradient(42% 32% at 78% 20%, rgba(253, 230, 138, 0.14) 0%, transparent 70%),
+    radial-gradient(30% 24% at 18% 85%, rgba(250, 204, 21, 0.08) 0%, transparent 70%);
+}
+
+/* ── Hero top row ─────────────────────────────────────────────────────────── */
+
+.heroTopRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heroEyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #8FA3BD;
+  text-transform: uppercase;
+}
+
+.heroChampion .heroEyebrow {
+  color: #FDE68A;
+}
+
+.heroTitle {
+  margin: 4px 0 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.heroChips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.countdownChip,
+.championChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  padding: 6px 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.countdownChip {
+  color: #FFD966;
+  background: rgba(255, 200, 0, 0.1);
+  border: 1px solid rgba(255, 200, 0, 0.35);
+}
+
+.championChip {
+  color: #FEF3C7;
+  background: linear-gradient(180deg, rgba(253, 230, 138, 0.22), rgba(217, 119, 6, 0.18));
+  border: 1px solid rgba(253, 230, 138, 0.55);
+}
+
+/* ── Fraction row + Tey ───────────────────────────────────────────────────── */
+
+.heroBodyRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heroFractionRow {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.heroFraction {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(44px, 7vw, 58px);
+  font-weight: 800;
+  color: #FFC800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.heroFractionDivider,
+.heroFractionTarget {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(22px, 3.6vw, 28px);
+  font-weight: 700;
+  color: #8FA3BD;
+  line-height: 1;
+}
+
+.heroFractionUnit {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #B7C4D6;
+  margin-left: 2px;
+}
+
+.heroPct {
+  margin-left: auto;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #E6EDF6;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+/* Tey anchors the hero — same mascot art as the Celebration Engine */
+.teyAnchor {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: clamp(84px, 13vw, 116px);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.teyImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .teyImg {
+    animation: teyBob 3s ease-in-out infinite;
+  }
+}
+
+@keyframes teyBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── Goal-days track (chunky 3D nodes at each milestone threshold) ────────── */
+
+.trackZone {
+  position: relative;
+  z-index: 1;
+  padding: 6px 4px 30px; /* bottom clears the node labels */
+}
+
+.trackBase {
+  position: relative;
+  height: 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.trackFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #FFDD55 0%, #FFC800 100%);
+  transition: width 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.trackFill::after {
+  /* gloss highlight on the fill — chunky candy-bar look */
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.trackFillEnd {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #FFF3C4 0%, #FFD54A 55%, #FFC800 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 -3px 0 rgba(184, 134, 11, 0.45);
+}
+
+.trackFillEnd::after {
+  content: '';
+  position: absolute;
+  left: 26%;
+  top: 18%;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.trackFillEndDone {
+  background: radial-gradient(circle at 32% 28%, #BBF7D0 0%, #4ADE80 55%, #22C55E 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 -3px 0 rgba(21, 128, 61, 0.5);
+}
+
+.trackFillEndDone::after {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.node {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: #1B2740;
+  border: none;
+  color: #66788F;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.nodeLabel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8FA3BD;
+  white-space: nowrap;
+}
+
+/* Claimable = golden chest moment: raised coin node + halo pulse */
+.nodeClaimable {
+  background: radial-gradient(circle at 32% 28%, #FFE38A 0%, #FFD54A 52%, #FFC800 100%);
+  color: #8A5B00;
+  box-shadow:
+    0 4px 0 #C98A00,
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    0 6px 16px rgba(255, 200, 0, 0.35);
+  animation: nodePulse 1.6s ease-in-out infinite;
+}
+
+/* Claimed = dimmed chest + green check medallion pinned top-right */
+.nodeClaimed {
+  background: #14213A;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.nodeCheck {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  width: 16px;
+  height: 16px;
+  padding: 2.5px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 0 #15803D;
+}
+
+@keyframes nodePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.09); }
+}
+
+/* ── Explainer strip — goal-day definition, speech-bubble grammar ─────────── */
+
+.explainerStrip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.explainerIcon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #FFC800;
+}
+
+.explainerText {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #B7C4D6;
+  line-height: 1.5;
+}
+
+.explainerText strong {
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+/* ── Milestone cards (light cards on navy, 3D press buttons) ──────────────── */
+
+.milestoneGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.milestoneCard {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #0F172A;
+  box-shadow: 0 4px 0 rgba(11, 23, 42, 0.35);
+}
+
+.milestoneFinal {
+  background: linear-gradient(180deg, #FFFDF5 0%, #FEF3C7 100%);
+  box-shadow: 0 4px 0 rgba(146, 64, 14, 0.4);
+}
+
+.milestoneClaimable {
+  outline: 3px solid #FFC800;
+  outline-offset: 2px;
+}
+
+.milestoneClaimed {
+  opacity: 0.82;
+}
+
+.milestoneHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.milestoneLabel {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.milestoneReward {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #92400E;
+  background: #FEF3C7;
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.milestoneDesc {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748B;
+  line-height: 1.4;
+  min-height: 29px;
+}
+
+/* Chunky segmented bar — one segment per required day */
+.milestoneBarTrack {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+}
+
+.milestoneSeg {
+  flex: 1 1 0;
+  border-radius: 3px;
+  background: #EEF2FF;
+  box-shadow: inset 0 1.5px 2.5px rgba(79, 70, 229, 0.18);
+}
+
+.milestoneSegOn {
+  background: linear-gradient(180deg, #818CF8 0%, #6366F1 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.milestoneFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 30px;
+}
+
+.milestoneCount {
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748B;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.claimBtn {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  background: linear-gradient(180deg, #FFC800 0%, #F59E0B 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #B45309;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.claimBtn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.claimBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #B45309;
+}
+
+.claimedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #15803D;
+  background: #DCFCE7;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.lockedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94A3B8;
+  background: #F1F5F9;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+/* ── Goal-day calendar strip ──────────────────────────────────────────────── */
+
+.calendarSection {
+  display: block;
+}
+
+.calendarCard {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.calMonthRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.calMonthLabel {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.calLegend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+.legendDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.legendDotGoal {
+  background: #3D5AFE;
+}
+
+.legendDotMiss {
+  background: #E2E8F0;
+  border: 1px solid #CBD5E1;
+}
+
+.legendDotFuture {
+  background: #FFFFFF;
+  border: 1.5px dashed #CBD5E1;
+}
+
+.calWeekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.calWeekday {
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calCellWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.calDayNum {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #CBD5E1;
+  line-height: 1;
+}
+
+/* Day cell — rounded square, Duolingo calendar style */
+.calCell {
+  width: 100%;
+  max-width: 40px;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.calCellGoal {
+  background: linear-gradient(180deg, #5C8AFF 0%, #3D5AFE 100%);
+  color: #FFFFFF;
+  box-shadow: 0 3px 0 #2A45E0;
+}
+
+.calCellToday {
+  background: #FFFFFF;
+  color: #94A3B8;
+  border: 2px dashed #CBD5E1;
+  box-shadow: none;
+}
+
+.calCellTodayIsGoal {
+  background: linear-gradient(180deg, #FFDD55 0%, #FFC800 100%);
+  color: #8A5B00;
+  border: none;
+  box-shadow: 0 3px 0 #C98A00;
+  animation: calTodayPulse 1.6s ease-in-out infinite;
+}
+
+.calCellPastMiss {
+  background: #F1F5F9;
+  color: #CBD5E1;
+  border: none;
+  box-shadow: inset 0 1.5px 3px rgba(15, 23, 42, 0.08);
+}
+
+.calCellFuture {
+  background: #FFFFFF;
+  color: #CBD5E1;
+  border: 1.5px dashed #E2E8F0;
+  box-shadow: none;
+}
+
+.calCellEmpty {
+  visibility: hidden;
+}
+
+@keyframes calTodayPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* ── History ──────────────────────────────────────────────────────────────── */
+
+.historySection {
+  display: block;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.04);
+}
+
+.historyRowChampion {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 70%);
+}
+
+.historyMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.historyMonth {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  color: #0F172A;
+}
+
+.historySub {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.historySide {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.historyBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #92400E;
+  background: linear-gradient(180deg, #FEF3C7 0%, #FDE68A 100%);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.historyReward {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #334155;
+  background: #F1F5F9;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.historyEmpty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 14px;
+  padding: 16px 14px;
+}
+
+.historyEmptyIcon {
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.historyEmptyText {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+/* ── Loading skeleton / error ─────────────────────────────────────────────── */
+
+.loadingWrap {
+  display: block;
+}
+
+.skeletonHero {
+  min-height: 360px;
+}
+
+.skeleton {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+.skTitle { height: 22px; width: 42%; }
+.skFraction { height: 52px; width: 36%; }
+.skTrack { height: 14px; width: 100%; }
+.skStrip { height: 40px; width: 100%; }
+
+.skGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.skCard {
+  height: 118px;
+}
+
+@keyframes skeletonShimmer {
+  0% { opacity: 0.55; }
+  50% { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+
+.errorCard {
+  background: #FFFFFF;
+  border: 1px solid #FECACA;
+  border-radius: 16px;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.errorTitle {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.errorText {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.retryBtn {
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  background: linear-gradient(180deg, #3D5AFE 0%, #2D4AEE 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2A45E0;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.retryBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #2A45E0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .page {
+    padding: 16px 12px 80px; /* clears the mobile bottom nav bar */
+    gap: 20px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .milestoneGrid,
+  .skGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .milestoneDesc {
+    min-height: 0;
+  }
+
+  .calGrid,
+  .calWeekdayRow {
+    gap: 4px;
+  }
+
+  .calDayNum {
+    display: none;
+  }
+}

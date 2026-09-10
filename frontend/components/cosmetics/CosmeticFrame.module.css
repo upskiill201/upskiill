@@ -1,0 +1,83 @@
+.frame {
+  position: relative;
+  display: inline-flex;
+  border-radius: 999px;
+  line-height: 0;
+  box-shadow: 0 3px 12px rgba(31, 42, 68, 0.18);
+}
+
+/* The inner ring keeps the avatar's own background from bleeding into the
+   gradient, so a transparent PNG still reads as framed. */
+.inner {
+  display: inline-flex;
+  border-radius: 999px;
+  background: var(--bg-card);
+  padding: 2px;
+  line-height: 0;
+}
+
+.motion_pulse {
+  animation: framePulse 3.2s ease-in-out infinite;
+}
+
+.motion_orbit {
+  animation: frameSpin 9s linear infinite;
+}
+
+/* Counter-rotate so only the ring turns, never the face inside it. */
+.motion_orbit .inner {
+  animation: frameSpinReverse 9s linear infinite;
+}
+
+.motion_flicker {
+  animation: frameFlicker 2.4s ease-in-out infinite;
+}
+
+.motion_sweep {
+  animation: framePulse 4s ease-in-out infinite;
+}
+
+@keyframes framePulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes frameSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes frameSpinReverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes frameFlicker {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  45% {
+    filter: brightness(1.16);
+  }
+  70% {
+    filter: brightness(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion_pulse,
+  .motion_orbit,
+  .motion_orbit .inner,
+  .motion_flicker,
+  .motion_sweep {
+    animation: none;
+  }
+}

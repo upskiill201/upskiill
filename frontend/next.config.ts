@@ -5,8 +5,58 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // Required for next-mdx-remote under Turbopack (blog MDX pipeline)
+  transpilePackages: ['next-mdx-remote'],
+  // Guarantee the blog OG-image fonts ship with the server bundle
+  outputFileTracingIncludes: {
+    '/blog': ['./app/blog/_fonts/**'],
+    '/blog/[slug]': ['./app/blog/_fonts/**'],
+  },
+  // Tree-shakes per-icon imports from these packages instead of pulling the
+  // whole barrel file into every route's bundle. lucide-react (218 import
+  // sites) and react-icons/fa (26) are the two approved icon libraries
+  // (see frontend/CLAUDE.md); framer-motion ships on every route via the
+  // root layout's provider tree, so its submodule imports benefit too.
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'react-icons', 'framer-motion'],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
+  env: {
+    // Versions the service worker. public/sw.js is a static file and cannot
+    // read env at runtime, so the registrar appends this as `?v=` — a
+    // byte-different script URL is a different worker, which is what makes a
+    // deploy install a new SW and drop the previous build's caches. Without it
+    // the version was a hardcoded constant that no build step touched, so the
+    // static cache accumulated every build's chunks and served them
+    // cache-first forever.
+    NEXT_PUBLIC_BUILD_ID:
+      process.env.VERCEL_GIT_COMMIT_SHA ??
+      process.env.NEXT_PUBLIC_BUILD_ID ??
+      'dev',
+  },
   images: {
+    // AVIF/WebP first — the browser picks whichever it supports; falls
+    // back to the original format for anything that supports neither.
+    formats: ['image/avif', 'image/webp'],
+    // First-party SVG icon assets (e.g. /Icons/snowflake.svg for the
+    // streak-freeze celebration currency) must be servable through next/image.
+    // All SVGs under /public are repo-authored — no user-uploaded SVGs.
+    dangerouslyAllowSVG: true,
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
@@ -21,9 +71,9 @@ const nextConfig: NextConfig = {
         hostname: 'iobdpmczxikgocvfzouo.supabase.co',
       },
       {
-        // AWS CloudFront CDN — course thumbnails + lesson videos/audio
+        // Cloudflare R2 public dev URL — course thumbnails + lesson videos/audio
         protocol: 'https',
-        hostname: 'dhnydb8s9j6i4.cloudfront.net',
+        hostname: 'pub-d1eea6d3cd36417ea274a8c49e11c316.r2.dev',
       },
     ],
   },
@@ -36,20 +86,20 @@ const nextConfig: NextConfig = {
       // beforeFiles: run before filesystem check — nothing here
       beforeFiles: [],
 
-      // afterFiles: run AFTER filesystem is checked.
-      // Next.js will serve any existing app/api/* route handlers (like /api/upload/presign)
-      // BEFORE reaching these rewrites, so local API routes are always safe.
-      afterFiles: [
+      // afterFiles: run AFTER static filesystem check but BEFORE dynamic
+      // routes. Must stay empty: an `/api/:path*` catch-all here would
+      // shadow every dynamic app/api/**/[param] route handler.
+      afterFiles: [],
+
+      // fallback: run after ALL filesystem routes (static AND dynamic).
+      // Anything that wasn't handled locally proxies through to NestJS,
+      // e.g. legacy /api/social/* paths with no local route handler.
+      fallback: [
         {
-          // Proxy all /api/* calls to NestJS backend EXCEPT our local Next.js API routes
-          // (Next.js serves /api/upload/* from the filesystem first — these rewrites never fire for them)
+          // Proxy remaining /api/* calls to the NestJS backend.
           source: '/api/:path*',
           destination: `${backendUrl}/:path*`,
         },
-      ],
-
-      // fallback: run after dynamic routes
-      fallback: [
         {
           source: "/ingest/static/:path*",
           destination: "https://us-assets.i.posthog.com/static/:path*",
@@ -64,18 +114,6 @@ const nextConfig: NextConfig = {
         },
       ],
     };
-  },
-  async headers() {
-    return [
-      {
-        source: '/assets/sounds/:path*',
-        headers: [
-          { key: 'Content-Type', value: 'audio/mpeg' },
-          { key: 'Content-Disposition', value: 'inline' },
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
-    ];
   },
 };
 

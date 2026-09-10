@@ -1,0 +1,134 @@
+/* ─── Flat base (Duolingo homescreen style): bare icon + bold number, no chrome ─── */
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.12s ease;
+  flex-shrink: 0;
+}
+
+.pillBtn:hover {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.pillBtn:active {
+  background: rgba(15, 23, 42, 0.09);
+  transform: none;
+}
+
+/* ─── Candy-3D variant (opt-in only, e.g. shop coin balance card) ─── */
+/* The stat-increment glow (streak going up) is driven imperatively via
+   Framer's animation controls on the button's boxShadow in StatPill.tsx,
+   not a CSS class — reduced-motion is handled there by skipping the
+   .start() call entirely. */
+
+.candy.pillBtn {
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  box-shadow: 0 2px 0 0 #CBD5E1;
+  transition: all 0.12s ease;
+}
+
+.candy.pillBtn:hover {
+  background: #FFFFFF;
+  filter: brightness(1.03);
+}
+
+.candy.pillBtn:active {
+  transform: translateY(2px);
+  box-shadow: none !important;
+}
+
+/* Individual Gamified 3D Borders & Colors (candy variant only) */
+.candy.pill_streak {
+  border-color: #FED7AA;
+  background: #FFF7ED;
+  box-shadow: 0 2.5px 0 0 #FDBA74;
+}
+
+.candy.pill_coin {
+  border-color: #FDE047;
+  background: #FEFCE8;
+  box-shadow: 0 2.5px 0 0 #FACC15;
+}
+
+.candy.pill_gem {
+  border-color: #BFDBFE;
+  background: #EFF6FF;
+  box-shadow: 0 2.5px 0 0 #93C5FD;
+}
+
+.candy.pill_lives {
+  border-color: #FECDD3;
+  background: #FFF1F2;
+  box-shadow: 0 2.5px 0 0 #FDA4AF;
+}
+
+.candy.pill_level {
+  border-color: #DDD6FE;
+  background: #FAF5FF;
+  box-shadow: 0 2.5px 0 0 #C4B5FD;
+}
+
+/* ─── Compact mode (narrow drawer) ─── */
+.pillBtnCompact {
+  gap: 6px;
+  padding: 4px 6px;
+}
+
+.iconWrapper {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: var(--font-jakarta), sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ─── MOBILE RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .pillBtn {
+    gap: 5px;
+    padding: 4px 6px;
+  }
+
+  .iconWrapper {
+    width: 22px;
+    height: 22px;
+  }
+
+  .statValue {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 340px) {
+  .pillBtn {
+    gap: 4px;
+    padding: 3px 4px;
+  }
+
+  .iconWrapper {
+    width: 19px;
+    height: 19px;
+  }
+
+  .statValue {
+    font-size: 12.5px;
+  }
+}

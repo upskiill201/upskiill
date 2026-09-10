@@ -1,0 +1,86 @@
+/* PollBlock — Duolingo skin: choice buttons sit on 3D shadows and press down;
+   results fill with an animated tinted bar. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.optionBtn {
+  padding: 11px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--bg-card);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.optionBtn:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+  background: var(--light-blue-bg);
+}
+.optionBtn:disabled { opacity: 0.6; cursor: wait; }
+
+/* Results */
+.resultRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-section);
+  overflow: hidden;
+  cursor: default;
+  font-size: 14px;
+}
+.resultMine { border-color: var(--brand-blue); }
+
+.resultBar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, rgba(61, 90, 254, 0.18), rgba(108, 140, 255, 0.14));
+  z-index: 0;
+  transition: width 350ms ease;
+}
+
+.resultLabel {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.resultPct {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.error {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #dc2626;
+}

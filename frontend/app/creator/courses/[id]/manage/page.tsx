@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Plus, Check, Settings, Loader2, BookOpen, Wrench, Library } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
+import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
 import styles from './Studio.module.css';
 
 // Rule: All fetch calls use /api/ so Next.js proxy forwards the httpOnly session cookie correctly.
@@ -96,26 +97,36 @@ function IntendedLearnersPanel({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = useCallback(async () => {
     setIsSaving(true);
+    setSaveError(null);
     try {
-      await fetch(`/api/courses/${courseId}`, {
+      // The Course model stores these as `outcomes` and `requirements` —
+      // the payload used to send `whatYouWillLearn`/`targetAudience`, which
+      // the backend silently dropped, so learning goals were never saved.
+      const res = await fetch(`/api/courses/${courseId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          whatYouWillLearn: learningGoals.filter(x => x.trim()),
+          outcomes: learningGoals.filter(x => x.trim()),
           requirements: requirements.filter(x => x.trim()),
-          targetAudience: targetAudience.filter(x => x.trim()),
         }),
       });
+      if (!res.ok) {
+        setSaveError('Your changes could not be saved. Please try again.');
+        return;
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setSaveError('A network error occurred. Please check your connection and try again.');
     } finally {
       setIsSaving(false);
     }
-  }, [courseId, learningGoals, requirements, targetAudience]);
+  }, [courseId, learningGoals, requirements]);
 
   return (
     <div className={styles.panel}>
@@ -164,7 +175,14 @@ function IntendedLearnersPanel({
           placeholder="Example: Beginner Python developers curious about data science"
           maxLength={160}
         />
+        <p className={styles.formHint}>
+          Note: the &ldquo;who is this course for&rdquo; description isn&apos;t shown on your landing page yet — learning objectives and requirements are.
+        </p>
       </div>
+
+      {saveError && (
+        <p style={{ color: '#DC2626', fontSize: 13, margin: '8px 0 0' }}>{saveError}</p>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8 }}>
         <Button id="global-save-btn" variant="primary" loading={isSaving} onClick={save} disabled={isSaving}>
@@ -240,6 +258,125 @@ function CourseStructurePanel() {
   );
 }
 
+function PricingPanel({
+  courseId,
+  initialPrice,
+}: {
+  courseId: string;
+  initialPrice: number;
+}) {
+  const [price, setPrice] = useState<number>(initialPrice || 0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const ladder = calculateCoursePricingLadder(price);
+
+  const save = async () => {
+    setIsSaving(true);
+    try {
+      // PATCH /courses/:id/draft doesn't exist on the backend — the price was
+      // never persisted even though the UI showed "Saved". The course PATCH is
+      // the real endpoint.
+      const res = await fetch(`/api/courses/${courseId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ price }),
+      });
+      if (!res.ok) {
+        alert('Your price could not be saved. Please try again.');
+        return;
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error('Failed to save price', err);
+      alert('A network error occurred while saving your price.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div>
+          <h1 className={styles.sectionTitle}>Course Pricing</h1>
+          <p className={styles.sectionSubtitle}>
+            Set your course base value. Teyro automatically generates time-based learner subscriptions (Weekly, Monthly, Yearly).
+          </p>
+        </div>
+        <Button variant="primary" onClick={save} disabled={isSaving}>
+          {isSaving ? <Loader2 size={16} className="animate-spin" /> : saved ? <Check size={16} /> : null}
+          {saved ? 'Saved' : 'Save'}
+        </Button>
+      </div>
+
+      <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', maxWidth: '600px', marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+          Course Base Value (USD)
+        </label>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+          <span style={{ position: 'absolute', left: 16, fontSize: 18, color: '#94A3B8', fontWeight: 600 }}>$</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            className={styles.fieldInput}
+            style={{ paddingLeft: '36px', fontSize: '18px', fontWeight: 700 }}
+            value={price || ''}
+            placeholder="30"
+            onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+          />
+        </div>
+
+        {/* Live Calculation Table */}
+        <div style={{ background: '#F8FAFC', borderRadius: '12px', padding: '16px', border: '1px solid #E2E8F0' }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+            Generated Learner Access Plans
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #EEF2F6' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#1E293B' }}>7 Days (Weekly)</div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>Convenience access</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>{ladder.weekly.formattedPrice}</div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #EEF2F6' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#16A34A', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>30 Days (Monthly)</span>
+                  <span style={{ fontSize: '9.5px', background: '#DCFCE7', color: '#15803D', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>⭐ POPULAR</span>
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>30% discount vs weekly</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#16A34A' }}>{ladder.monthly.formattedPrice}</div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#D97706', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>365 Days (Yearly)</span>
+                  <span style={{ fontSize: '9.5px', background: '#FEF3C7', color: '#B45309', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>🏆 BEST VALUE</span>
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#64748B' }}>Best deal for committed learners</div>
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#D97706' }}>{ladder.yearly.formattedPrice}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '14px', fontSize: '12px', color: '#2563EB', background: 'rgba(59, 130, 246, 0.05)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(59, 130, 246, 0.15)' }}>
+          💡 Longer plans are automatically discounted to encourage longer learning commitments.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ComingSoonPanel({ title }: { title: string }) {
   return (
     <div className={styles.panel}>
@@ -255,6 +392,167 @@ function ComingSoonPanel({ title }: { title: string }) {
   );
 }
 
+// ─── REVIEW STATUS BANNER ───
+// Distinct from the PUBLISHED/DRAFT badge in the top bar (catalog
+// visibility) — this reflects Teyro's review workflow, a separate axis.
+// A course can be Approved but still Unpublished, or Published while a
+// later edit has quietly reopened it to Draft (see course-review.service).
+const REVIEW_LABELS: Record<string, string> = {
+  DRAFT: 'Draft',
+  SUBMITTED: 'Submitted for review',
+  UNDER_REVIEW: 'Under review',
+  CHANGES_REQUESTED: 'Changes required',
+  APPROVED: 'Approved',
+  REJECTED: 'Rejected',
+};
+
+const REVIEW_COLORS: Record<string, string> = {
+  DRAFT: '#64748B',
+  SUBMITTED: '#0172FD',
+  UNDER_REVIEW: '#0172FD',
+  CHANGES_REQUESTED: '#DC2626',
+  APPROVED: '#059669',
+  REJECTED: '#DC2626',
+};
+
+interface ReviewHistoryRow {
+  action: string;
+  feedback: string | null;
+  createdAt: string;
+}
+
+function ReviewStatusBanner({
+  courseId,
+  reviewStatus,
+  onSubmitted,
+}: {
+  courseId: string;
+  reviewStatus: string;
+  onSubmitted: () => void;
+}) {
+  const [history, setHistory] = useState<ReviewHistoryRow[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/courses/${courseId}/review`, { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setHistory(data.history || []);
+      })
+      .catch(() => {
+        // Non-critical — the status label above still comes from /draft.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [courseId, reviewStatus]);
+
+  const latestFeedback = history.find((h) => h.feedback);
+  const canSubmit = ['DRAFT', 'CHANGES_REQUESTED', 'REJECTED'].includes(reviewStatus);
+  const isActivelyReviewed = reviewStatus === 'SUBMITTED' || reviewStatus === 'UNDER_REVIEW';
+
+  const submit = async () => {
+    setSubmitting(true);
+    setError(null);
+    setErrorDetails([]);
+    try {
+      const res = await fetch(`/api/courses/${courseId}/submit-for-review`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setError(body?.message || "We couldn't submit this course for review. Please try again.");
+        setErrorDetails(Array.isArray(body?.errors) ? body.errors : []);
+        return;
+      }
+      onSubmitted();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        margin: '16px 24px 0',
+        padding: '16px 20px',
+        borderRadius: 14,
+        border: `1.5px solid ${REVIEW_COLORS[reviewStatus] || '#E2E8F0'}33`,
+        background: `${REVIEW_COLORS[reviewStatus] || '#94A3B8'}0D`,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 800,
+            letterSpacing: '0.02em',
+            color: REVIEW_COLORS[reviewStatus] || '#64748B',
+            textTransform: 'uppercase',
+          }}
+        >
+          Review status: {REVIEW_LABELS[reviewStatus] || reviewStatus}
+        </span>
+      </div>
+
+      {isActivelyReviewed && (
+        <p style={{ fontSize: 13, color: '#475569', margin: '8px 0 0' }}>
+          Our team is reviewing this course. Substantive edits are locked until the review is
+          complete — you&apos;ll be notified as soon as there&apos;s a decision.
+        </p>
+      )}
+
+      {reviewStatus === 'APPROVED' && (
+        <p style={{ fontSize: 13, color: '#475569', margin: '8px 0 0' }}>
+          This course passed Teyro&apos;s review and is ready to publish. Editing it again will
+          require a fresh review before it can go live.
+        </p>
+      )}
+
+      {(reviewStatus === 'CHANGES_REQUESTED' || reviewStatus === 'REJECTED') &&
+        latestFeedback?.feedback && (
+          <div style={{ marginTop: 10, padding: '10px 12px', background: '#FFF', borderRadius: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', marginBottom: 4 }}>
+              Feedback from Teyro
+            </div>
+            <p style={{ fontSize: 13, color: '#1E293B', margin: 0, lineHeight: 1.5 }}>
+              {latestFeedback.feedback}
+            </p>
+          </div>
+        )}
+
+      {error && (
+        <div style={{ marginTop: 10, fontSize: 13, color: '#DC2626' }}>
+          {error}
+          {errorDetails.length > 0 && (
+            <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+              {errorDetails.map((d, i) => (
+                <li key={i}>{d}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {canSubmit && (
+        <div style={{ marginTop: 12 }}>
+          <Button variant="primary" onClick={submit} disabled={submitting}>
+            {submitting
+              ? 'Submitting…'
+              : reviewStatus === 'DRAFT'
+                ? 'Submit for review'
+                : 'Resubmit for review'}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN STUDIO PAGE ───
 export default function CourseStudio({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
@@ -266,34 +564,81 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
     whatYouWillLearn: string[];
     requirements: string[];
     targetAudience: string[];
+    price?: number;
+    published?: boolean;
+    reviewStatus?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
+      setLoading(true);
+      setLoadError(false);
       try {
         const res = await fetch(`/api/courses/${courseId}/draft`, {
           credentials: 'include',
         });
-        if (res.ok) {
+        if (!cancelled && res.ok) {
           const data = await res.json();
+          // DB stores objectives as `outcomes`; fall back for older payloads.
+          const objectives = Array.isArray(data.outcomes)
+            ? data.outcomes
+            : Array.isArray(data.whatYouWillLearn)
+              ? data.whatYouWillLearn
+              : [];
           setCourse({
             title: data.title || 'Untitled Course',
-            whatYouWillLearn: Array.isArray(data.whatYouWillLearn) ? data.whatYouWillLearn : [],
+            whatYouWillLearn: objectives,
             requirements: Array.isArray(data.requirements) ? data.requirements : [],
             targetAudience: Array.isArray(data.targetAudience) ? data.targetAudience : [],
+            price: typeof data.price === 'number' ? data.price : 0,
+            published: !!data.published,
+            reviewStatus: typeof data.reviewStatus === 'string' ? data.reviewStatus : 'DRAFT',
           });
+        } else if (!cancelled) {
+          setLoadError(true);
         }
       } catch (err) {
         console.error('Failed to load course', err);
+        if (!cancelled) setLoadError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
-  }, [courseId]);
+    return () => { cancelled = true; };
+  }, [courseId, reloadTick]);
 
   const renderPanel = () => {
+    if (loadError) {
+      // A failed load used to leave this page on a permanent skeleton.
+      return (
+        <div className={styles.panel}>
+          <h2 style={{ marginBottom: 8 }}>We couldn&apos;t load this course</h2>
+          <p style={{ color: '#64748b', marginBottom: 16 }}>
+            Check your connection and try again. Your saved work is safe.
+          </p>
+          <button
+            type="button"
+            onClick={() => setReloadTick(t => t + 1)}
+            style={{
+              background: 'var(--brand-blue, #0172FD)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 10,
+              padding: '10px 20px',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
     if (loading || !course) {
       return (
         <div className={styles.panel}>
@@ -309,6 +654,8 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
         return <IntendedLearnersPanel courseId={courseId} initialData={course} />;
       case 'course-structure':
         return <CourseStructurePanel />;
+      case 'pricing':
+        return <PricingPanel courseId={courseId} initialPrice={course.price || 0} />;
       default:
         return (
           <ComingSoonPanel
@@ -353,8 +700,9 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           </Link>
           <span className={styles.topBarDivider}>|</span>
           <span className={styles.courseTitle}>{course?.title || 'Loading...'}</span>
-          <span className={styles.draftBadge}>DRAFT</span>
-          <span className={styles.videoInfo}>0min of video content uploaded</span>
+          {course && (
+            <span className={styles.draftBadge}>{course.published ? 'PUBLISHED' : 'DRAFT'}</span>
+          )}
         </div>
         <div className={styles.topBarRight}>
           <Button variant="secondary" onClick={() => document.getElementById('global-save-btn')?.click()}>
@@ -363,6 +711,14 @@ export default function CourseStudio({ params }: { params: Promise<{ id: string 
           <Settings size={20} color="#9ca3af" style={{ cursor: 'pointer' }} />
         </div>
       </header>
+
+      {course?.reviewStatus && (
+        <ReviewStatusBanner
+          courseId={courseId}
+          reviewStatus={course.reviewStatus}
+          onSubmitted={() => setReloadTick((t) => t + 1)}
+        />
+      )}
 
       {/* ─── BODY ─── */}
       <div className={styles.studioBody}>

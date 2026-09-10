@@ -1,0 +1,385 @@
+/* Skool-style summary card.
+ *
+ * The card is a *preview*, not the post: title + two clamped lines + who is
+ * already talking in it. Everything else (full body, media, poll, comments)
+ * lives on the detail page. That is what makes a Skool feed skimmable — you
+ * read ten cards in the time one expanded post would take.
+ *
+ * Tokens only, per docs/08-color-system.md — no raw hex outside the tinted
+ * category badges, which are defined once in community.module.css.
+ */
+
+/* Flat by design. The rest of Teyro sits on a hard 3D bottom shadow, but a
+   dense column of post cards with that treatment reads as noise — every card
+   competing to be a button. Hairline border, soft shadow on hover only. */
+.card {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 10px rgba(31, 42, 68, 0.06);
+}
+.card:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+/* Pinned banner — a full-bleed amber strip across the card's top edge,
+   exactly the Skool treatment. */
+.pinnedBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -16px -18px 14px;
+  padding: 9px 18px;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #f2dcae;
+  background: #fdf2d4;
+  color: #92660a;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.pinnedBar span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+.authorBlock {
+  min-width: 0;
+  flex: 1;
+}
+.authorName {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+/* "1h ago in Wins" — the category is the only emphasised part, and it filters. */
+.categoryLink {
+  color: var(--text-secondary);
+  font-weight: 700;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
+.categoryLink:hover {
+  color: var(--brand-blue);
+  text-decoration: underline;
+}
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--warning);
+  font-weight: 700;
+}
+.lockTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Community chip — feed only, where a card needs to say where it came from. */
+.originChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 190px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-section);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.originThumb {
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.menuWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.iconBtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.iconBtn:hover {
+  background: var(--bg-section);
+  color: var(--text-secondary);
+}
+.menu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 20;
+  min-width: 168px;
+  padding: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(31, 42, 68, 0.14);
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.menuItem:hover {
+  background: var(--bg-section);
+}
+.menuItemDanger {
+  color: var(--error-red);
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.bodyRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 11px;
+}
+.bodyText {
+  min-width: 0;
+  flex: 1;
+}
+.title {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text-primary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+/* Untitled posts lead with the body, so it takes the title's weight. */
+.excerpt {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.excerptLead {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+.excerpt :global(p) {
+  margin: 0;
+  display: inline;
+}
+
+/* Square preview thumbnail on the right — Skool's layout exactly. */
+.thumb {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--bg-section);
+}
+
+.lessonTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Poll and attachment presence are announced, not rendered — the card stays
+   a preview and the detail page does the interactive work. */
+.inlineHints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  min-height: 32px;
+}
+.statBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.statBtn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.statBtnLiked {
+  border-color: var(--brand-blue);
+  background: var(--light-blue-bg);
+  color: var(--brand-blue);
+}
+
+/* Facepile of who is already in the thread — the real "is this alive?" cue. */
+.facepile {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.facepile > * {
+  margin-left: -8px;
+  box-shadow: 0 0 0 2px var(--bg-card);
+  border-radius: 999px;
+}
+.facepile > *:first-child {
+  margin-left: 0;
+}
+.newComment {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  white-space: nowrap;
+}
+.footerSpacer {
+  margin-left: auto;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+.skeletonCard {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.skeletonCol {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+  padding-top: 3px;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .pinnedBar {
+    margin: -14px -14px 12px;
+    padding: 8px 14px;
+  }
+  .title {
+    font-size: 16.5px;
+  }
+  .excerpt {
+    font-size: 14px;
+  }
+  .thumb {
+    width: 72px;
+    height: 72px;
+  }
+  .bodyRow {
+    gap: 12px;
+  }
+  /* The "new comment" line is the first thing to go — the facepile already
+     carries the signal and the row must never wrap into two lines. */
+  .newComment {
+    display: none;
+  }
+  .originChip {
+    max-width: 140px;
+  }
+}

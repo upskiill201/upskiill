@@ -1,11 +1,15 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import soundManager, { CategoryVolumes } from '@/lib/audio/soundManager';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import soundManager, { AUDIO_SETTINGS_STORAGE_KEY, CategoryVolumes } from '@/lib/audio/soundManager';
 import { SoundId, SoundConfig } from '@/lib/audio/soundRegistry';
 import { AppAudioEvent, emitAudioEvent } from '@/lib/audio/audioEvents';
 
-const STORAGE_KEY = 'teyro_audio_settings_v1';
+// Re-exported from soundManager rather than declared here, so the surfaces
+// outside this provider that hydrate the same preferences (see
+// hydrateSoundPreferences — /start is the first) cannot drift onto a
+// different key.
+const STORAGE_KEY = AUDIO_SETTINGS_STORAGE_KEY;
 
 export interface AudioContextType {
   isMuted: boolean;
@@ -150,27 +154,50 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return success;
   }, [saveSettings]);
 
+  // PERF: memoized. An inline object literal here produced a new context
+  // value on every render of this provider, which re-renders every consumer
+  // beneath it whether or not the underlying state actually changed.
+  const value = useMemo(
+    () => ({
+      isMuted,
+      isSfxEnabled,
+      isMusicEnabled,
+      volumes,
+      registry,
+      toggleMute,
+      setSfxEnabled,
+      setMusicEnabled,
+      setVolume,
+      updateSoundConfig,
+      play,
+      emitEvent,
+      stopAll,
+      resetToDefault,
+      exportConfigJson,
+      importConfigJson,
+    }),
+    [
+    isMuted,
+    isSfxEnabled,
+    isMusicEnabled,
+    volumes,
+    registry,
+    toggleMute,
+    setSfxEnabled,
+    setMusicEnabled,
+    setVolume,
+    updateSoundConfig,
+    play,
+    emitEvent,
+    stopAll,
+    resetToDefault,
+    exportConfigJson,
+    importConfigJson,
+    ]
+  );
+
   return (
-    <AudioContext.Provider
-      value={{
-        isMuted,
-        isSfxEnabled,
-        isMusicEnabled,
-        volumes,
-        registry,
-        toggleMute,
-        setSfxEnabled,
-        setMusicEnabled,
-        setVolume,
-        updateSoundConfig,
-        play,
-        emitEvent,
-        stopAll,
-        resetToDefault,
-        exportConfigJson,
-        importConfigJson,
-      }}
-    >
+    <AudioContext.Provider value={value}>
       {children}
     </AudioContext.Provider>
   );
