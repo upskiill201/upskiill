@@ -537,7 +537,7 @@ model CourseAccessEntitlement {
 /// table every replay would stack another free period onto the entitlement.
 model ProcessedWebhookEvent {
   id         String   @id @default(uuid())
-  provider   String // STRIPE | MESOMB
+  provider   String // STRIPE | MESOMB | WHATSAPP_META
   eventId    String
   eventType  String?
   receivedAt DateTime @default(now())
@@ -2058,13 +2058,19 @@ model TeyDelivery {
   /// 'SENT' | 'FAILED' | 'SUPPRESSED'
   status      String @default("SENT")
 
+  /// Provider-side message id (e.g. Meta's `wamid...`). Webhook delivery
+  /// status callbacks are matched back to this row by this field.
+  providerMessageId String?
+
   sentAt      DateTime  @default(now())
+  deliveredAt DateTime?
   openedAt    DateTime?
   /// Set when the learner completed a lesson inside the attribution window.
   convertedAt DateTime?
 
   @@index([userId, sentAt(sort: Desc)])
   @@index([ruleId, sentAt(sort: Desc)])
+  @@index([providerMessageId])
   @@map("tey_deliveries")
 }
 
@@ -2124,6 +2130,22 @@ model TeyNotificationPrefs {
   updatedAt DateTime @updatedAt
 
   @@map("tey_notification_prefs")
+}
+
+/// Store-only inbox for inbound Meta WhatsApp messages. No processing, no
+/// auto-reply — conversational Tey is future work. `userId` is a best-effort
+/// convenience lookup at write time, not required for the row to be valid.
+model WhatsappInboundMessage {
+  id          String   @id @default(uuid())
+  fromPhone   String
+  waMessageId String   @unique
+  userId      String?
+  body        String?
+  rawPayload  Json
+  receivedAt  DateTime @default(now())
+
+  @@index([fromPhone, receivedAt(sort: Desc)])
+  @@map("whatsapp_inbound_messages")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
