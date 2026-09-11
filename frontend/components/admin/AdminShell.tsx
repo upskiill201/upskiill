@@ -16,6 +16,7 @@ import {
   Settings,
   ShieldAlert,
   ShoppingBag,
+  Smartphone,
   Sparkles,
   Tag,
   Timer,
@@ -66,6 +67,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: '/admin/deliveries', label: 'Deliveries', icon: Send },
       { href: '/admin/queue', label: 'Queue', icon: Timer },
       { href: '/admin/health', label: 'Health', icon: Activity },
+      { href: '/admin/whatsapp', label: 'WhatsApp', icon: Smartphone },
     ],
   },
 ];

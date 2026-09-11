@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -75,6 +74,14 @@ export class WhatsappController {
   @Header('Content-Type', 'text/html')
   async getQrPage() {
     return this.whatsappService.getQrPageHtml();
+  }
+
+  /** JSON counterpart to qr-page, for the admin-center WhatsApp panel. */
+  @Get('qr-data')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  async getQrData() {
+    return this.whatsappService.getQrData();
   }
 
   @Get('reset')
