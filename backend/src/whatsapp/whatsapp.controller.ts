@@ -1,12 +1,27 @@
-import { Body, Controller, Get, Header, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  Headers,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
+import type { Request, Response } from 'express';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { OptionalJwtAuthGuard } from '../auth/guard/optional-jwt-auth.guard';
 import { WhatsappService } from './whatsapp.service';
+import { WhatsappWebhookService } from './whatsapp-webhook.service';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 
@@ -24,7 +39,10 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
  */
 @Controller('whatsapp')
 export class WhatsappController {
-  constructor(private readonly whatsappService: WhatsappService) {}
+  constructor(
+    private readonly whatsappService: WhatsappService,
+    private readonly webhookService: WhatsappWebhookService,
+  ) {}
 
   /** OTP delivery is the abuse magnet — tightened per-IP on top of per-phone DB limits. */
   @Post('send-otp')
@@ -64,5 +82,41 @@ export class WhatsappController {
   @Roles(Role.ADMIN)
   async resetConnection() {
     return this.whatsappService.resetConnection();
+  }
+
+  // ─── Meta Cloud API webhook ─────────────────────────────────────────────────
+  // Public: Meta can't authenticate as a Teyro user. GET is Meta's one-time
+  // verification handshake; POST is signature-gated instead of guarded.
+
+  @Get('webhook')
+  handleWebhookVerification(
+    @Query('hub.mode') mode: string,
+    @Query('hub.verify_token') verifyToken: string,
+    @Query('hub.challenge') challenge: string,
+    @Res() res: Response,
+  ) {
+    const expected = process.env.META_WHATSAPP_WEBHOOK_VERIFY_TOKEN;
+    if (mode === 'subscribe' && expected && verifyToken === expected) {
+      res.status(200).send(challenge);
+      return;
+    }
+    res.status(403).send('Forbidden');
+  }
+
+  @Post('webhook')
+  @HttpCode(200)
+  async handleWebhookEvent(
+    @Req() req: Request & { rawBody?: Buffer },
+    @Headers('x-hub-signature-256') signature: string | undefined,
+  ) {
+    // The HMAC must verify against the EXACT bytes Meta signed — rawBody:
+    // true (main.ts) keeps them on req.rawBody while req.body is parsed.
+    const rawBody = req.rawBody ?? Buffer.from(JSON.stringify(req.body));
+    this.webhookService.verifySignature(rawBody, signature);
+
+    if (req.body) {
+      await this.webhookService.handleWebhookPayload(req.body);
+    }
+    return { received: true };
   }
 }

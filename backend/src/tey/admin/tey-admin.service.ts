@@ -45,16 +45,18 @@ export class TeyAdminService {
         by: ['engagementState'],
         _count: { _all: true },
       }),
+      // channel: 'PUSH' — WhatsApp sends are a supplementary row per nudge,
+      // not a replacement; counting them here would double-count sends.
       this.prisma.teyDelivery.groupBy({
         by: ['status'],
-        where: { sentAt: { gte: since } },
+        where: { sentAt: { gte: since }, channel: 'PUSH' },
         _count: { _all: true },
       }),
       this.prisma.teyDelivery.count({
-        where: { sentAt: { gte: since }, openedAt: { not: null } },
+        where: { sentAt: { gte: since }, channel: 'PUSH', openedAt: { not: null } },
       }),
       this.prisma.teyDelivery.count({
-        where: { sentAt: { gte: since }, convertedAt: { not: null } },
+        where: { sentAt: { gte: since }, channel: 'PUSH', convertedAt: { not: null } },
       }),
       // Reachability by platform. iOS only permits push from an installed PWA,
       // so this is the number that says how big that ceiling actually is.
@@ -115,14 +117,15 @@ export class TeyAdminService {
         where: { createdAt: { gte: since } },
         _count: { _all: true },
       }),
+      // channel: 'PUSH' — same double-counting guard as overview().
       this.prisma.teyDelivery.groupBy({
         by: ['ruleId', 'status'],
-        where: { sentAt: { gte: since } },
+        where: { sentAt: { gte: since }, channel: 'PUSH' },
         _count: { _all: true },
       }),
       this.prisma.teyDelivery.groupBy({
         by: ['ruleId'],
-        where: { sentAt: { gte: since }, openedAt: { not: null } },
+        where: { sentAt: { gte: since }, channel: 'PUSH', openedAt: { not: null } },
         _count: { _all: true },
       }),
     ]);

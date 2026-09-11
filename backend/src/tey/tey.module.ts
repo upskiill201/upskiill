@@ -3,6 +3,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from '../prisma/prisma.module';
 import { StreakModule } from '../streak/streak.module';
 import { NotificationModule } from '../notification/notification.module';
+import { WhatsappModule } from '../whatsapp/whatsapp.module';
 import { TeyActivityController } from './activity/tey-activity.controller';
 import { TeyActivityService } from './activity/tey-activity.service';
 import { TeyListener } from './listeners/tey.listener';
@@ -45,6 +46,7 @@ import { TeyController } from './tey.controller';
     PrismaModule,
     StreakModule,
     NotificationModule,
+    WhatsappModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [

@@ -21,6 +21,8 @@ import * as crypto from 'crypto';
 import * as qrcodeTerminal from 'qrcode-terminal';
 import * as QRCode from 'qrcode';
 import { normalisePhone, maskPhone } from './phone.util';
+import { MetaWhatsAppService } from './meta/meta-whatsapp.service';
+import { MetaWhatsAppError } from './meta/meta-whatsapp.types';
 
 // ─── OTP policy constants ────────────────────────────────────────────────────
 const OTP_TTL_MS = 10 * 60 * 1000; // code validity
@@ -42,13 +44,29 @@ export class WhatsappService implements OnModuleInit {
   private reconnectTimer: NodeJS.Timeout | null = null;
   private initAttempts = 0;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private meta: MetaWhatsAppService,
+  ) {}
 
   private get isEnabled(): boolean {
     return process.env.ENABLE_WHATSAPP === 'true';
   }
 
+  /** 'meta' | 'baileys' (default). Production stays on Baileys until flipped. */
+  private get provider(): 'meta' | 'baileys' {
+    return process.env.WHATSAPP_PROVIDER?.toLowerCase() === 'meta'
+      ? 'meta'
+      : 'baileys';
+  }
+
   async onModuleInit() {
+    if (this.provider === 'meta') {
+      this.logger.log(
+        '[WhatsApp] WHATSAPP_PROVIDER=meta — skipping Baileys socket init.',
+      );
+      return;
+    }
     if (!this.isEnabled) {
       this.logger.warn(
         '[WhatsApp] Baileys service is DISABLED (set ENABLE_WHATSAPP=true in env to activate). Dev Mode active.',
@@ -518,28 +536,17 @@ export class WhatsappService implements OnModuleInit {
     });
 
     // ── Delivery ──
-    if (this.isEnabled && this.sock && this.isConnected) {
-      const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
-      const message = this.buildOtpMessage(code);
-      try {
-        await this.withTimeout(
-          this.sock.sendMessage(jid, { text: message }),
-          SEND_TIMEOUT_MS,
-          'sendMessage',
-        );
-        this.logger.log(
-          `[WhatsApp Baileys] OTP sent to ${maskPhone(phone)} ✅`,
-        );
-      } catch (err: any) {
-        // Never lie about delivery — the code stays valid in the DB so the
-        // user can retry the send once the socket recovers.
-        this.logger.error(
-          `[WhatsApp Baileys] Failed to send message to ${maskPhone(phone)}: ${err?.message}`,
-        );
-        throw new ServiceUnavailableException(
-          "We couldn't reach WhatsApp just now. Please tap Resend in a minute.",
-        );
-      }
+    // WHATSAPP_PROVIDER selects Meta Cloud API or the existing Baileys
+    // socket; whichever isn't selected is never touched. Both branches keep
+    // the code valid in the DB on failure so a retry can succeed once the
+    // provider recovers — never lie about delivery.
+    const usingMeta = this.provider === 'meta' && this.meta.isEnabled;
+    const delivering = usingMeta || this.isEnabled;
+
+    if (usingMeta) {
+      await this.deliverViaMeta(phone, code);
+    } else if (this.isEnabled && this.sock && this.isConnected) {
+      await this.deliverViaBaileys(phone, code);
     } else if (this.isEnabled) {
       // Enabled but disconnected — previously this path leaked the code in the
       // API response, which was a full verification bypass.
@@ -550,17 +557,16 @@ export class WhatsappService implements OnModuleInit {
         "Tey's WhatsApp link is offline right now. Please try again in a few minutes.",
       );
     } else {
-      // Dev Mode — service intentionally disabled.
+      // Dev Mode — no provider enabled.
       this.logger.warn(
         `[WhatsApp Dev Mode] OTP for ${maskPhone(phone)} is: 🔑 ${code} 🔑`,
       );
     }
 
-    const exposeDevOtp =
-      !this.isEnabled && process.env.EXPOSE_DEV_OTP === 'true';
+    const exposeDevOtp = !delivering && process.env.EXPOSE_DEV_OTP === 'true';
     return {
       success: true,
-      message: this.isEnabled
+      message: delivering
         ? 'OTP sent to your WhatsApp number!'
         : 'OTP generated (Dev Mode — delivery disabled).',
       ...(exposeDevOtp ? { devCode: code } : {}),
@@ -692,6 +698,61 @@ export class WhatsappService implements OnModuleInit {
       message: 'WhatsApp number verified successfully.',
       phone,
     };
+  }
+
+  // ─── Delivery providers ─────────────────────────────────────────────────────
+
+  /** Pure extraction of the pre-existing Baileys send — no behaviour change. */
+  private async deliverViaBaileys(phone: string, code: string): Promise<void> {
+    const jid = `${phone.replace('+', '')}@s.whatsapp.net`;
+    const message = this.buildOtpMessage(code);
+    try {
+      await this.withTimeout(
+        this.sock!.sendMessage(jid, { text: message }),
+        SEND_TIMEOUT_MS,
+        'sendMessage',
+      );
+      this.logger.log(`[WhatsApp Baileys] OTP sent to ${maskPhone(phone)} ✅`);
+    } catch (err: any) {
+      this.logger.error(
+        `[WhatsApp Baileys] Failed to send message to ${maskPhone(phone)}: ${err?.message}`,
+      );
+      throw new ServiceUnavailableException(
+        "We couldn't reach WhatsApp just now. Please tap Resend in a minute.",
+      );
+    }
+  }
+
+  /** Meta WhatsApp Cloud API OTP delivery via a pre-approved Authentication template. */
+  private async deliverViaMeta(phone: string, code: string): Promise<void> {
+    const templateName = process.env.META_WHATSAPP_OTP_TEMPLATE_NAME;
+    const languageCode =
+      process.env.META_WHATSAPP_OTP_TEMPLATE_LANGUAGE || 'en_US';
+
+    if (!templateName) {
+      this.logger.error(
+        '[Meta WhatsApp] META_WHATSAPP_OTP_TEMPLATE_NAME is not configured.',
+      );
+      throw new ServiceUnavailableException(
+        "We couldn't reach WhatsApp just now. Please tap Resend in a minute.",
+      );
+    }
+
+    try {
+      await this.meta.sendTemplateMessage(phone, templateName, languageCode, [
+        code,
+      ]);
+    } catch (err) {
+      const kind = err instanceof MetaWhatsAppError ? err.kind : 'UNKNOWN';
+      this.logger.error(
+        `[Meta WhatsApp] Failed to send OTP to ${maskPhone(phone)} (${kind}): ${(err as Error).message}`,
+      );
+      // Never lie about delivery — the code stays valid in the DB so the
+      // user can retry once Meta recovers.
+      throw new ServiceUnavailableException(
+        "We couldn't reach WhatsApp just now. Please tap Resend in a minute.",
+      );
+    }
   }
 
   // ─── Private Helpers ────────────────────────────────────────────────────────

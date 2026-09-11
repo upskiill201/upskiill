@@ -54,8 +54,6 @@ export class TeyDeliveryService {
     private readonly policy: TeyPolicyService,
     private readonly push: PushChannel,
     private readonly inApp: InAppChannel,
-    // Registered but never selected — the interface is the point. See the
-    // ban-risk note in whatsapp.channel.ts before wiring it up.
     private readonly whatsapp: WhatsAppChannel,
     private readonly ai: TeyAiService,
   ) {}
@@ -121,6 +119,7 @@ export class TeyDeliveryService {
           status: result.status === 'NO_TARGET' ? 'SUPPRESSED' : 'FAILED',
         },
       });
+      await this.maybeSendWhatsApp(userId, ctx, message, deepLink, actionId, generatedBy);
       return {
         sent: false,
         skipReason:
@@ -129,7 +128,101 @@ export class TeyDeliveryService {
       };
     }
 
+    await this.maybeSendWhatsApp(userId, ctx, message, deepLink, actionId, generatedBy);
+
     return { sent: true, deliveryId: delivery.id };
+  }
+
+  /**
+   * Supplementary channel: never a replacement for Push, and never a
+   * duplicate of every push notification — only the handful of situations
+   * `shouldAlsoSendWhatsApp` names. Writes its own `TeyDelivery` row
+   * (channel: 'WHATSAPP') so per-channel send counts stay real; the primary
+   * PUSH row above remains the canonical "this nudge fired" record admin
+   * aggregates key off (see tey-admin.service.ts's channel: 'PUSH' filters).
+   *
+   * Wrapped so a WhatsApp failure can never affect the Push outcome already
+   * returned above — mirrors the unconditional-and-swallowed InAppChannel
+   * send just above it.
+   */
+  private async maybeSendWhatsApp(
+    userId: string,
+    ctx: TeyContext,
+    message: { title: string; body: string },
+    deepLink: string,
+    actionId: string | undefined,
+    generatedBy: 'TEMPLATE' | 'AI',
+  ): Promise<void> {
+    if (!this.shouldAlsoSendWhatsApp(ctx)) return;
+
+    try {
+      const prefs = await this.prisma.teyNotificationPrefs.findUnique({
+        where: { userId },
+        select: { whatsappEnabled: true },
+      });
+      if (!prefs?.whatsappEnabled) return;
+      if (!(await this.whatsapp.isAvailableFor(userId))) return;
+
+      const waDelivery = await this.prisma.teyDelivery.create({
+        data: {
+          userId,
+          actionId: actionId ?? null,
+          channel: 'WHATSAPP',
+          ruleId: ctx.reason,
+          priority: ctx.urgency,
+          title: message.title,
+          body: message.body,
+          deepLink,
+          context: ctx as unknown as Prisma.InputJsonValue,
+          generatedBy,
+          status: 'SENT',
+        },
+        select: { id: true },
+      });
+
+      const waResult = await this.whatsapp.send(
+        userId,
+        {
+          title: message.title,
+          body: message.body,
+          deepLink,
+          tag: tagFor(ctx.reason),
+          deliveryId: waDelivery.id,
+        },
+        ctx,
+      );
+
+      await this.prisma.teyDelivery.update({
+        where: { id: waDelivery.id },
+        data: {
+          status:
+            waResult.status === 'SENT'
+              ? 'SENT'
+              : waResult.status === 'NO_TARGET'
+                ? 'SUPPRESSED'
+                : 'FAILED',
+          ...(waResult.providerMessageId
+            ? { providerMessageId: waResult.providerMessageId }
+            : {}),
+        },
+      });
+    } catch (err) {
+      this.logger.error('WhatsApp delivery failed', err as Error);
+    }
+  }
+
+  /**
+   * The confirmed trigger set: CRITICAL urgency, an about-to-expire streak, or
+   * a win-back nudge for someone who's gone quiet — situations where push
+   * alone risks going unseen. Everything else stays push-only; WhatsApp must
+   * never become a duplicate of every push notification.
+   */
+  private shouldAlsoSendWhatsApp(ctx: TeyContext): boolean {
+    return (
+      ctx.urgency === 'CRITICAL' ||
+      ctx.reason === 'STREAK_CRITICAL' ||
+      ctx.reason === 'INACTIVE_RETURN'
+    );
   }
 
   /**
