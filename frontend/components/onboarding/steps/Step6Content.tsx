@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowRight, Lock, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowRight, Lock, CheckCircle2, XCircle, Star } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
@@ -31,6 +31,34 @@ interface SavedStep6Answer {
   verified?: boolean;
 }
 
+interface ConfettiParticle {
+  id: number;
+  type: 'star' | 'circle' | 'ribbon';
+  color: string;
+  x: number;
+  y: number;
+  size: number;
+  delay: number;
+  rotation: number;
+}
+
+/** Same confetti-pop pattern as Step 10's completion celebration, scaled down
+ * for this step's compact single-column card instead of a full split hero. */
+const VERIFIED_CONFETTI: ConfettiParticle[] = [
+  { id: 1, type: 'star', color: '#0172FD', x: -70, y: -60, size: 18, delay: 0.05, rotation: 12 },
+  { id: 2, type: 'ribbon', color: '#3A96FF', x: -110, y: -20, size: 22, delay: 0.12, rotation: -45 },
+  { id: 3, type: 'circle', color: '#0050B3', x: -50, y: 10, size: 12, delay: 0.18, rotation: 15 },
+  { id: 4, type: 'star', color: '#E0F2FE', x: -90, y: -90, size: 16, delay: 0.02, rotation: -20 },
+  { id: 5, type: 'ribbon', color: '#0172FD', x: 90, y: -90, size: 20, delay: 0.2, rotation: 35 },
+  { id: 6, type: 'circle', color: '#3A96FF', x: 60, y: 10, size: 10, delay: 0.1, rotation: -10 },
+  { id: 7, type: 'star', color: '#3A96FF', x: 70, y: -60, size: 20, delay: 0.08, rotation: 45 },
+  { id: 8, type: 'ribbon', color: '#0172FD', x: 110, y: -20, size: 24, delay: 0.15, rotation: -30 },
+  { id: 9, type: 'circle', color: '#E0F2FE', x: 0, y: -110, size: 10, delay: 0.03, rotation: 10 },
+  { id: 10, type: 'star', color: '#0050B3', x: 40, y: -100, size: 14, delay: 0.22, rotation: 25 },
+  { id: 11, type: 'ribbon', color: '#3A96FF', x: -40, y: -100, size: 20, delay: 0.19, rotation: -15 },
+  { id: 12, type: 'circle', color: '#0172FD', x: 30, y: 20, size: 12, delay: 0.07, rotation: 40 },
+];
+
 interface Step6ContentProps {
   onNext: () => void;
 }
@@ -47,6 +75,7 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [countdown, setCountdown] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
   /**
    * Dev convenience: the backend echoes the OTP only when EXPOSE_DEV_OTP is
    * enabled (local/dev builds). Rendered as a chip so testers don't need a
@@ -163,10 +192,16 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
         const data = await res.json();
         if (data.success) {
           playWinSound();
+          // Vibration only — playWinSound already covers the audio side, so
+          // skip the haptic engine's own success chime to avoid double audio.
+          playHaptic('teyroCelebration', false);
           // Persist E.164 exactly as the server normalised it + verified flag,
           // so revisiting this step hydrates straight to the done state.
           saveAnswer({ whatsappNumber: data.phone ?? phoneNumber, verified: true });
           setStage('verified');
+          // Slight delay so the confetti pops just after the card springs in,
+          // rather than competing with it — same choreography as Step 10.
+          setTimeout(() => setShowConfetti(true), 200);
           return;
         }
       }
@@ -409,14 +444,52 @@ export default function Step6Content({ onNext }: Step6ContentProps) {
             animate={{ opacity: 1, y: 0 }}
             className="w-full flex flex-col items-center gap-4"
           >
-            <div className="w-full flex items-center gap-3 rounded-[1.25rem] bg-white border-2 border-[#0172FD]/30 px-4 py-3 shadow-sm">
-              <CheckCircle2 className="w-5 h-5 text-[#0172FD] shrink-0" />
-              <div>
-                <p className="text-[#071233] font-extrabold text-sm">WhatsApp connected</p>
-                <p className="text-slate-400 font-medium text-xs">{phoneNumber}</p>
+            <div className="relative w-full flex flex-col items-center gap-3 rounded-[1.5rem] bg-gradient-to-b from-[#F0F7FF] to-white border-2 border-[#0172FD]/30 px-5 py-6 shadow-sm overflow-visible">
+              {/* Confetti burst — fires once, just after the card springs in */}
+              <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+                {VERIFIED_CONFETTI.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ scale: 0.1, opacity: 0, x: 0, y: 0 }}
+                    animate={
+                      showConfetti
+                        ? { scale: 1, opacity: [1, 1, 0], x: `${p.x}px`, y: `${p.y}px`, rotate: p.rotation }
+                        : { scale: 0.1, opacity: 0, x: 0, y: 0 }
+                    }
+                    transition={{ type: 'spring', stiffness: 200, damping: 16, delay: p.delay, mass: 0.6 }}
+                    className="absolute flex items-center justify-center"
+                  >
+                    {p.type === 'star' && <Star className="w-4 h-4" style={{ color: p.color, fill: p.color }} />}
+                    {p.type === 'circle' && (
+                      <div className="rounded-full" style={{ width: p.size * 0.8, height: p.size * 0.8, backgroundColor: p.color }} />
+                    )}
+                    {p.type === 'ribbon' && (
+                      <svg width={p.size} height={p.size} viewBox="0 0 24 24" fill="none" stroke={p.color} strokeWidth="3">
+                        <path d="M4 12c4-6 8-6 12 0s8 6 12 0" />
+                      </svg>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 14, delay: 0.05 }}
+                className="relative z-10 w-14 h-14 rounded-full bg-[#0172FD] flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(1,114,253,0.5)]"
+              >
+                <CheckCircle2 className="w-8 h-8 text-white" strokeWidth={2.5} />
+              </motion.div>
+
+              <div className="relative z-10 text-center">
+                <p className="text-[#071233] font-[900] text-lg" style={{ fontFamily: 'var(--font-jakarta)' }}>
+                  You&apos;re connected!
+                </p>
+                <p className="text-slate-400 font-medium text-xs mt-0.5">{phoneNumber}</p>
               </div>
             </div>
             <motion.button
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.94 }}
               onClick={onNext}
               className="relative w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-[#0172FD] text-white font-bold text-lg cursor-pointer"
