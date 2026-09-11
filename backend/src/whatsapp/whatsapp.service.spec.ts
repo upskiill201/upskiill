@@ -8,6 +8,8 @@ import * as crypto from 'crypto';
 import { WhatsappService } from './whatsapp.service';
 import { normalisePhone, maskPhone } from './phone.util';
 import { PrismaService } from '../prisma/prisma.service';
+import { MetaWhatsAppService } from './meta/meta-whatsapp.service';
+import { MetaWhatsAppError } from './meta/meta-whatsapp.types';
 
 // Baileys ships ESM-only — jest's CJS runtime can't parse it, and none of these
 // specs exercise socket behaviour, so stub the whole module surface we import.
@@ -58,6 +60,7 @@ describe('phone.util', () => {
 
 describe('WhatsappService', () => {
   let service: WhatsappService;
+  let meta: { sendTemplateMessage: jest.Mock; isEnabled: boolean };
   let prisma: {
     whatsappOtp: {
       findUnique: jest.Mock;
@@ -108,10 +111,16 @@ describe('WhatsappService', () => {
       },
     };
 
+    meta = {
+      sendTemplateMessage: jest.fn().mockResolvedValue({ providerMessageId: 'wamid.TEST' }),
+      isEnabled: false,
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WhatsappService,
         { provide: PrismaService, useValue: prisma },
+        { provide: MetaWhatsAppService, useValue: meta },
       ],
     }).compile();
 
@@ -232,6 +241,106 @@ describe('WhatsappService', () => {
       });
       // The code must still be stored so a retry-after-recovery can succeed…
       expect(prisma.whatsappOtp.upsert).toHaveBeenCalled();
+    });
+
+    it('defaults to Baileys when WHATSAPP_PROVIDER is unset (regression: production behaviour unchanged)', async () => {
+      prisma.whatsappOtp.findUnique.mockResolvedValue(null);
+
+      await withEnv(
+        { WHATSAPP_PROVIDER: undefined, ENABLE_WHATSAPP: undefined, EXPOSE_DEV_OTP: 'true' },
+        async () => {
+          const res = await service.sendOtp('user-1', PHONE);
+          expect(res.devCode).toBeDefined();
+          expect(meta.sendTemplateMessage).not.toHaveBeenCalled();
+        },
+      );
+    });
+
+    it('delivers via Meta when WHATSAPP_PROVIDER=meta and Meta is enabled', async () => {
+      prisma.whatsappOtp.findUnique.mockResolvedValue(null);
+      meta.isEnabled = true;
+
+      await withEnv(
+        {
+          WHATSAPP_PROVIDER: 'meta',
+          META_WHATSAPP_OTP_TEMPLATE_NAME: 'otp_code',
+          META_WHATSAPP_OTP_TEMPLATE_LANGUAGE: 'en_US',
+          ENABLE_WHATSAPP: undefined,
+        },
+        async () => {
+          const res = await service.sendOtp('user-1', PHONE);
+          expect(res.success).toBe(true);
+          expect(res.message).toBe('OTP sent to your WhatsApp number!');
+          expect(meta.sendTemplateMessage).toHaveBeenCalledWith(
+            PHONE,
+            'otp_code',
+            'en_US',
+            [expect.stringMatching(/^\d{6}$/)],
+          );
+        },
+      );
+    });
+
+    it('fails honestly when WHATSAPP_PROVIDER=meta but the template env var is missing', async () => {
+      prisma.whatsappOtp.findUnique.mockResolvedValue(null);
+      meta.isEnabled = true;
+
+      await withEnv(
+        {
+          WHATSAPP_PROVIDER: 'meta',
+          META_WHATSAPP_OTP_TEMPLATE_NAME: undefined,
+          ENABLE_WHATSAPP: undefined,
+        },
+        async () => {
+          await expect(service.sendOtp('user-1', PHONE)).rejects.toThrow(
+            ServiceUnavailableException,
+          );
+          expect(meta.sendTemplateMessage).not.toHaveBeenCalled();
+        },
+      );
+      // Code stays valid in the DB for a retry, same contract as Baileys.
+      expect(prisma.whatsappOtp.upsert).toHaveBeenCalled();
+    });
+
+    it('fails honestly when Meta rejects the send, without leaking the code', async () => {
+      prisma.whatsappOtp.findUnique.mockResolvedValue(null);
+      meta.isEnabled = true;
+      meta.sendTemplateMessage.mockRejectedValue(
+        new MetaWhatsAppError('down', 'SERVER', 500),
+      );
+
+      await withEnv(
+        {
+          WHATSAPP_PROVIDER: 'meta',
+          META_WHATSAPP_OTP_TEMPLATE_NAME: 'otp_code',
+          ENABLE_WHATSAPP: undefined,
+          EXPOSE_DEV_OTP: 'true',
+        },
+        async () => {
+          await expect(service.sendOtp('user-1', PHONE)).rejects.toThrow(
+            ServiceUnavailableException,
+          );
+        },
+      );
+      expect(prisma.whatsappOtp.upsert).toHaveBeenCalled();
+    });
+
+    it('falls back to Dev Mode when WHATSAPP_PROVIDER=meta but Meta is not enabled', async () => {
+      prisma.whatsappOtp.findUnique.mockResolvedValue(null);
+      meta.isEnabled = false;
+
+      await withEnv(
+        {
+          WHATSAPP_PROVIDER: 'meta',
+          ENABLE_WHATSAPP: undefined,
+          EXPOSE_DEV_OTP: 'true',
+        },
+        async () => {
+          const res = await service.sendOtp('user-1', PHONE);
+          expect(res.devCode).toBeDefined();
+          expect(meta.sendTemplateMessage).not.toHaveBeenCalled();
+        },
+      );
     });
   });
 
