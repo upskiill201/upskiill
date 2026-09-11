@@ -1,0 +1,173 @@
+---
+title: "How to Do a Voiceover for Video: Audio Editing Masterclass"
+description: "Learn how to do a voiceover for video, record voiceovers over pictures, remove silence and wind noise, and merge high-fidelity audio with video."
+publishedDate: "2026-09-11"
+updatedDate: "2026-09-11"
+category: skill-building
+tags:
+  - how to do a voice over
+  - how to add a voiceover to a video
+  - remove silence from audio
+  - remove wind noise from video
+  - video audio editing
+authorSlug: teyro-team
+draft: false
+cta:
+  title: "Master High-Value Creator Skills in 15 Min/Day"
+  text: "Level up your audio engineering, voiceover production, and sound design habits with interactive quests on Teyro."
+  href: /onboarding/0
+  label: "Start Learning for Free"
+faq:
+  - question: "How do you record and add a voiceover to a video?"
+    answer: "To add a voiceover, write a bulleted script timed to your video sequence, connect a cardioid USB/XLR microphone, tap the microphone record icon in your editing timeline (Audacity, Premiere, CapCut, or DaVinci Resolve), record your narration while watching playback, and normalize dialogue peaks to -6dB to -12dB."
+  - question: "How do I remove silence and dead pauses from audio automatically?"
+    answer: "Use audio cleanup tools or NLE features like Premiere Pro's 'Text-Based Editing / Delete Pauses', CapCut's 'Auto-Cut Silence', or Audacity's 'Truncate Silence' effect, setting pause thresholds to 0.5 seconds with -35dB silence detection."
+  - question: "How can I remove wind noise from outdoor video recordings?"
+    answer: "Apply a High-Pass Filter (Low-Cut Filter) at 80Hz–120Hz to eliminate low-frequency rumble, followed by AI Noise Reduction or Spectral Repair to isolate vocal frequencies and suppress chaotic wind buffeting."
+  - question: "How do you play music while recording video on an iPhone or Android?"
+    answer: "On iPhone, open Spotify/Apple Music, start playback, open the native Camera app, stay in 'Photo' mode, and drag the shutter button to the right (QuickTake) to record video without pausing your background music."
+---
+
+Audio quality represents 50% of the viewer experience in video production. In fact, research shows that viewers will tolerate low 720p resolution video, but will immediately abandon content with muffled, echoey, or wind-blasted voiceovers.
+
+Whether you are narrating a video essay, recording a voice over picture tutorial, or editing TikTok storytimes, mastering crisp vocal delivery and sound engineering separates amateurs from professional producers. Instead of spending thousands on sound engineering diplomas, gamified micro-learning platforms like [Teyro](/onboarding/0) help you master microphone technique, audio compression, and noise removal through 15-minute structured daily practice.
+
+In this comprehensive guide, you will learn how to do a voiceover, eliminate wind noise and dead air silences, and merge studio-grade audio seamlessly with your video timeline.
+
+---
+
+## Direct Answer: Voiceover & Audio Production at a Glance (40–60 Word Summary)
+
+To do a professional voiceover for video, record with a directional microphone placed 4–6 inches from your mouth at a 45-degree angle, utilize pop filters to eliminate plosives, and apply a 4-step audio chain: noise suppression, dynamic compression, subtractive EQ, and peak normalization to -12 dB.
+
+| Audio Step | Primary Tool / Plugin | Target Parameter Setting | Impact on Voiceover |
+| :--- | :--- | :--- | :--- |
+| **1. Noise Cleanup** | High-Pass Filter + De-Noise | Cut below 80Hz; 20-30% Spectral Denoise | Eliminates AC hum, computer fans, and rumble |
+| **2. Silence Trimming**| Truncate Silence / Auto-Cut | Trim gaps > 0.4s to 0.15s | Keeps pacing fast and energetic |
+| **3. Vocal EQ** | Parametric Equalizer | +2dB at 3kHz (Clarity); -3dB at 400Hz (Boxiness)| Adds warmth, crisp presence, and intelligibility |
+| **4. Dynamics / Compression**| Audio Compressor | 3:1 Ratio; -18dB Threshold; Fast Release | Smooths loud yells and quiet whispers |
+| **5. Normalization** | Loudness Normalizer (LUFS) | -14 LUFS (YouTube) / -16 LUFS (Social) | Broadcast-standard loudness across all devices |
+
+---
+
+## Step-by-Step: How to Record and Add a Voiceover to Video
+
+Follow this standard recording workflow across mobile or desktop editors:
+
+```
+[Script Timing & Rehearsal]
+             │
+             ▼
+[Microphone Acoustic Setup (4-6 Inches, 45° Angle)]
+             │
+             ▼
+[Arm Timeline Audio Track & Press Record (Count-in 3-2-1)]
+             │
+             ▼
+[Record Voiceover in Sync with Timeline Video Playhead]
+             │
+             ▼
+[Apply Vocal Chain: EQ -> De-Esser -> Compressor -> Limiter]
+             │
+             ▼
+[Auto-Duck Background Music Under Spoken Dialogue]
+```
+
+### 1. Acoustic Preparation and Microphone Technique
+- **Prevent Echo:** You do not need an expensive sound booth. Record in a closet surrounded by hanging clothes, or place a blanket behind your microphone to absorb room reflections.
+- **The Golden Distance:** Position your mouth 4 to 6 inches away from the mic capsule. Angle the microphone slightly toward the corner of your mouth (45 degrees) so explosive bursts of air from "P" and "B" sounds (plosives) bypass the capsule.
+
+### 2. Recording Direct to Timeline
+1. Import your finished video edit onto Video Track 1.
+2. Arm **Audio Track 2 (A2)** by clicking the **Microphone** icon.
+3. Enable a 3-second countdown preroll.
+4. Speak naturally at an energetic conversational volume while watching video cues on the preview monitor.
+5. If you stumble on a line, pause for 2 seconds, clap your hands (creating a high visual audio waveform peak for easy trimming), and re-read the sentence.
+
+---
+
+## How to Remove Silence and Wind Noise from Audio
+
+Dead pauses and outdoor wind interference destroy viewer engagement. Here is how to eliminate them efficiently:
+
+```
+Raw Audio with Dead Pauses:
+───[Words]───[   0.8s Silence   ]───[Words]───[   1.2s Silence   ]───[Words]───
+                       │ (Auto-Cut Silence Applied)
+                       ▼
+Fast, High-Retention Audio Stream:
+───[Words]──[0.15s]──[Words]──[0.15s]──[Words]───
+```
+
+### Method 1: How to Remove Silence from Audio Automatically
+- **In Premiere Pro:** Open the **Text** panel -> Switch to **Transcript** -> Click the **Filter** icon -> Select **Pauses** -> Click **Delete All -> Delete Pauses**.
+- **In CapCut / Mobile:** Tap on your audio clip, select **Split**, tap **Delete Silence**, and adjust the threshold slider.
+- **In Audacity (Free Open-Source):** Select all audio -> **Effect -> Special -> Truncate Silence**. Set minimum duration to `0.4 seconds` and truncate down to `0.15 seconds`.
+
+### Method 2: How to Remove Wind Noise from Video Recordings
+Wind causes chaotic, low-frequency sound bursts (20Hz to 120Hz) that distort microphone diaphragms:
+1. **Apply High-Pass (Low-Cut) Filter:** Set the cutoff frequency to `100 Hz – 120 Hz`. This instantly removes deep wind rumble without affecting human vocal tones.
+2. **AI Voice Isolation:** Enable **Voice Isolation** (in DaVinci Resolve or CapCut) or **Enhanced Speech** (in Adobe Premiere). AI neural networks isolate speech harmonics and delete non-harmonic wind noise with astonishing accuracy.
+
+---
+
+## How to Do a Voice Over Picture and Edit Photos with Songs
+
+Creating narrated photo slideshows, educational explainers, and memorial video tributes requires precise synchronization between still images and music tracks:
+
+```
+Audio-Visual Layering for Photo Narrations:
+┌─────────────────────────────────────────────────────────┐
+│ Track V1: [Photo 1 (4s)] ── [Photo 2 (3s)] ── [Photo 3] │
+├─────────────────────────────────────────────────────────┤
+│ Track A1: [Voiceover Narration Explaining Photos]       │ (-12dB Peak)
+├─────────────────────────────────────────────────────────┤
+│ Track A2: [Background Song / MP3 Track (Ducked)]        │ (-24dB Peak)
+└─────────────────────────────────────────────────────────┘
+```
+
+### Step-by-Step Workflow:
+1. **Arrange Photos:** Place your still images sequentially along the timeline. Set default photo duration between 3 to 5 seconds per slide.
+2. **Add Ambient Song / MP3:** Drag your background music onto Audio Track 2. Set the overall volume to `-24 dB` so it creates emotion without overpowering speech.
+3. **Auto-Ducking:** Enable audio ducking. When your voiceover speaks on Track 1, the music automatically drops by 12dB; when you pause, the music swells smoothly.
+
+---
+
+## How to Play Music While Recording Video on iPhone & Android
+
+Content creators often want background music playing from their phone speakers while simultaneously recording a TikTok or workout reel without the music automatically cutting off.
+
+### The Smartphone Hack:
+- **iPhone (QuickTake Method):** Start your song in Apple Music or Spotify. Open the native **Camera** app on **Photo** mode. Press and hold the shutter button, then slide your finger to the right lock icon. Video recording begins while your background music continues playing through the speakers uninterrupted.
+- **Android (Samsung / Pixel):** Open your camera settings and enable **Separate App Sound** or use third-party apps like Open Camera to bypass the default music-pause trigger.
+
+For advanced editing masterclasses, review our guide to [retention editing techniques](/blog/retention-editing-masterclass).
+
+---
+
+## Duolingo-Style Roadmap: Master Voiceover Audio in 15 Minutes a Day
+
+Turn audio engineering into an intuitive creative superpower:
+
+```
+[Level 1: Novice Audio Producer (0–500 XP)]
+       │  • Day 1-7: Microphone acoustics, gain staging, and pop filtering
+       │  • Day 8-14: Basic voiceover recording and timeline alignment
+       ▼
+[Level 2: Builder Audio Producer (500–1500 XP)]
+       │  • Day 15-21: Subtractive EQ, high-pass filtering, and wind cleanup
+       │  • Day 22-30: Auto-silence trimming, dynamic compression, and music ducking
+       ▼
+[Level 3: Sound Design Pro (1500+ XP)]
+          • Day 31+: Multi-track SFX layering, loudness LUFS mastering & spatial audio
+```
+
+Practice audio production and digital media skills daily on [Teyro](/onboarding/0) to accelerate your creative career.
+
+---
+
+## The Bottom Line
+
+A compelling voiceover paired with pristine, wind-free audio transforms good videos into great ones. By adopting proper microphone placement, trimming dead air silences, and mastering basic EQ and compression, you ensure every word you speak resonates with your audience.
+
+Ready to build high-demand creator skills? Start your daily streak on [Teyro](/onboarding/0) today and level up 15 minutes at a time.
