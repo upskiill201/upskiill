@@ -355,6 +355,30 @@ export class WhatsappService implements OnModuleInit {
     };
   }
 
+  /**
+   * JSON counterpart to `getQrPageHtml` — renders the same QR as a data URL
+   * so an admin-center page can poll and display it directly, instead of
+   * requiring a raw-HTML fetch with a manually-attached bearer token.
+   */
+  async getQrData(): Promise<{
+    enabled: boolean;
+    isConnected: boolean;
+    hasQrCode: boolean;
+    qrDataUrl: string | null;
+  }> {
+    const qrDataUrl =
+      !this.isConnected && this.qrCodeStr
+        ? await QRCode.toDataURL(this.qrCodeStr, { width: 300, margin: 2 })
+        : null;
+
+    return {
+      enabled: this.isEnabled,
+      isConnected: this.isConnected,
+      hasQrCode: !!this.qrCodeStr,
+      qrDataUrl,
+    };
+  }
+
   /** Generates a self-contained HTML page rendering the QR Code image for web scanning */
   async getQrPageHtml(): Promise<string> {
     if (this.isConnected) {
