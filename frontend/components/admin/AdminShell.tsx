@@ -57,6 +57,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/admin/users', label: 'Users', icon: Users },
       { href: '/admin/courses', label: 'Courses', icon: BookOpen },
+      { href: '/admin/creators', label: 'Creators', icon: UserCheck },
     ],
   },
   {
@@ -73,10 +74,7 @@ const NAV_GROUPS: NavGroup[] = [
 const COMING_SOON: ComingSoonGroup[] = [
   {
     label: 'Platform',
-    items: [
-      { label: 'Creators', icon: UserCheck },
-      { label: 'Moderation', icon: ShieldAlert },
-    ],
+    items: [{ label: 'Moderation', icon: ShieldAlert }],
   },
   {
     label: 'Money',

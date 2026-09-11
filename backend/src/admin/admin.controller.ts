@@ -18,6 +18,10 @@ import {
   AdminCoursesService,
   type ListCoursesQuery,
 } from './admin-courses.service';
+import {
+  AdminCreatorsService,
+  type ListCreatorsQuery,
+} from './admin-creators.service';
 
 interface AuthedUser {
   id: string;
@@ -43,6 +47,7 @@ export class AdminController {
     private readonly admin: AdminService,
     private readonly adminUsers: AdminUsersService,
     private readonly adminCourses: AdminCoursesService,
+    private readonly adminCreators: AdminCreatorsService,
   ) {}
 
   @Get('summary')
@@ -163,5 +168,43 @@ export class AdminController {
       body.reason,
       body.internalNote,
     );
+  }
+
+  // ── Creators ─────────────────────────────────────────────────────────
+  // Suspend/unsuspend a creator reuses POST /admin/users/:id/suspend directly
+  // — there is no separate creator-suspend endpoint, by design (see
+  // admin-creators.service.ts header comment).
+
+  @Get('creators/summary')
+  creatorsSummary() {
+    return this.adminCreators.summary();
+  }
+
+  @Get('creators')
+  listCreators(@Query() query: ListCreatorsQuery) {
+    return this.adminCreators.list(query);
+  }
+
+  @Get('creators/:id')
+  creatorDetail(@Param('id') id: string) {
+    return this.adminCreators.detail(id);
+  }
+
+  @Post('creators/:id/verify')
+  verifyCreator(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return this.adminCreators.verify(actor.id, id, body?.reason);
+  }
+
+  @Post('creators/:id/unverify')
+  unverifyCreator(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return this.adminCreators.unverify(actor.id, id, body?.reason);
   }
 }
