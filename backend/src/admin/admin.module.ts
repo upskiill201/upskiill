@@ -8,14 +8,18 @@ import { AdminService } from './admin.service';
 import { AdminUsersService } from './admin-users.service';
 import { AdminCoursesService } from './admin-courses.service';
 import { AdminCreatorsService } from './admin-creators.service';
+import { AdminPaymentsService } from './admin-payments.service';
+import { AdminPayoutsService } from './admin-payouts.service';
 
 @Module({
   // CourseModule is imported (not reimplemented) so publish/unpublish reuse
   // CourseService's existing quality-gate validation, CourseReviewModule so
   // review decisions reuse CourseReviewService, and EarningsModule so the
-  // creators Earnings tab reuses EarningsService#getAdminCreatorLedger
-  // instead of re-deriving financial totals — see admin-courses.service.ts
-  // and admin-creators.service.ts.
+  // creators Earnings tab and the Payments/Payouts modules all reuse
+  // EarningsService (getAdminCreatorLedger, transitionPayout,
+  // revealPayoutDetails) instead of re-deriving financial logic — see
+  // admin-courses.service.ts, admin-creators.service.ts,
+  // admin-payments.service.ts, admin-payouts.service.ts.
   imports: [PrismaModule, CourseModule, CourseReviewModule, EarningsModule],
   controllers: [AdminController],
   providers: [
@@ -23,6 +27,8 @@ import { AdminCreatorsService } from './admin-creators.service';
     AdminUsersService,
     AdminCoursesService,
     AdminCreatorsService,
+    AdminPaymentsService,
+    AdminPayoutsService,
   ],
 })
 export class AdminModule {}
