@@ -173,10 +173,15 @@ export function resolveInstallMethod(opts: {
   if (canPromptInstall) return 'native-prompt';
 
   if (platform === 'ios') {
-    // Third-party iOS browsers run WebKit but do not expose Add to Home Screen
-    // in a way that produces a real standalone PWA, so the honest answer is
-    // "open this in Safari", not a guide they cannot follow.
-    return browser === 'safari' ? 'ios-share-sheet' : 'switch-browser';
+    // Chrome on iOS is Safari/WebKit underneath and can Add to Home Screen
+    // too — the menu path just differs (Share sits behind Chrome's own Share
+    // icon, not tucked in a "•••" menu the way Safari's is). Both get a real,
+    // walkable guide. Other third-party iOS browsers (Firefox, Edge) run
+    // WebKit but we have no verified menu path for them, so the honest answer
+    // there is still "open this in Safari or Chrome" rather than a guide they
+    // cannot follow.
+    if (browser === 'safari' || browser === 'chrome') return 'ios-share-sheet';
+    return 'switch-browser';
   }
 
   if (platform === 'android') {
