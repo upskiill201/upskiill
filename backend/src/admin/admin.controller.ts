@@ -22,6 +22,15 @@ import {
   AdminCreatorsService,
   type ListCreatorsQuery,
 } from './admin-creators.service';
+import {
+  AdminPaymentsService,
+  type ListTransactionsQuery,
+  type PaymentsOverviewQuery,
+} from './admin-payments.service';
+import {
+  AdminPayoutsService,
+  type ListPayoutsQuery,
+} from './admin-payouts.service';
 
 interface AuthedUser {
   id: string;
@@ -48,6 +57,8 @@ export class AdminController {
     private readonly adminUsers: AdminUsersService,
     private readonly adminCourses: AdminCoursesService,
     private readonly adminCreators: AdminCreatorsService,
+    private readonly adminPayments: AdminPaymentsService,
+    private readonly adminPayouts: AdminPayoutsService,
   ) {}
 
   @Get('summary')
@@ -206,5 +217,94 @@ export class AdminController {
     @Body() body: { reason?: string },
   ) {
     return this.adminCreators.unverify(actor.id, id, body?.reason);
+  }
+
+  // ── Payments ─────────────────────────────────────────────────────────
+  // Read-only: no refund action exists here on purpose — see
+  // admin-payments.service.ts header comment.
+
+  @Get('payments/overview')
+  paymentsOverview(@Query() query: PaymentsOverviewQuery) {
+    return this.adminPayments.overview(query);
+  }
+
+  @Get('payments/transactions')
+  listTransactions(@Query() query: ListTransactionsQuery) {
+    return this.adminPayments.list(query);
+  }
+
+  @Get('payments/transactions/:id')
+  transactionDetail(@Param('id') id: string) {
+    return this.adminPayments.detail(id);
+  }
+
+  // ── Payouts ──────────────────────────────────────────────────────────
+  // Every mutation below is a thin pass-through to
+  // EarningsService#transitionPayout — see admin-payouts.service.ts.
+
+  @Get('payouts/overview')
+  payoutsOverview() {
+    return this.adminPayouts.overview();
+  }
+
+  @Get('payouts')
+  listPayouts(@Query() query: ListPayoutsQuery) {
+    return this.adminPayouts.list(query);
+  }
+
+  @Get('payouts/:id')
+  payoutDetail(@Param('id') id: string) {
+    return this.adminPayouts.detail(id);
+  }
+
+  @Post('payouts/:id/review')
+  reviewPayout(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.review(actor.id, id);
+  }
+
+  @Post('payouts/:id/approve')
+  approvePayout(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.approve(actor.id, id);
+  }
+
+  @Post('payouts/:id/reject')
+  rejectPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.reject(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/mark-paid')
+  markPayoutPaid(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { externalReference?: string },
+  ) {
+    return this.adminPayouts.markPaid(actor.id, id, body?.externalReference);
+  }
+
+  @Post('payouts/:id/fail')
+  failPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.fail(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/cancel')
+  cancelPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.cancel(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/reveal-method')
+  revealPayoutMethod(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.revealMethod(actor.id, id);
   }
 }

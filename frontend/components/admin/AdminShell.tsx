@@ -61,6 +61,13 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: 'Money',
+    items: [
+      { href: '/admin/payments', label: 'Payments', icon: CreditCard },
+      { href: '/admin/payouts', label: 'Payouts', icon: Wallet },
+    ],
+  },
+  {
     label: 'Tey',
     items: [
       { href: '/admin/rules', label: 'Rules', icon: Sparkles },
@@ -75,13 +82,6 @@ const COMING_SOON: ComingSoonGroup[] = [
   {
     label: 'Platform',
     items: [{ label: 'Moderation', icon: ShieldAlert }],
-  },
-  {
-    label: 'Money',
-    items: [
-      { label: 'Payments', icon: CreditCard },
-      { label: 'Payouts', icon: Wallet },
-    ],
   },
   {
     label: 'Economy',
