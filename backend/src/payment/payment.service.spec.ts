@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
+import { CouponsService } from '../coupons/coupons.service';
 import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 describe('PaymentService', () => {
@@ -65,6 +66,18 @@ describe('PaymentService', () => {
         {
           provide: EventEmitter2,
           useValue: { emit: jest.fn() },
+        },
+        // subscribeCourse() re-validates a coupon via CouponsService.quote()
+        // when a couponCode is supplied — none of the existing tests supply
+        // one, so this mock is never exercised, just needed to resolve DI.
+        {
+          provide: CouponsService,
+          useValue: {
+            quote: jest.fn(),
+            claimRedemptionSlot: jest.fn(),
+            findRedemptionByReference: jest.fn().mockResolvedValue(null),
+            recordRedemptionSnapshot: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -183,6 +196,15 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
         { provide: MesombProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
         { provide: EarningsService, useValue: { recordSaleInTx: jest.fn(), recordStripeRefund: jest.fn(), recordDisputeOpened: jest.fn(), recordDisputeWon: jest.fn(), auditSystem: jest.fn() } },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        {
+          provide: CouponsService,
+          useValue: {
+            quote: jest.fn(),
+            claimRedemptionSlot: jest.fn(),
+            findRedemptionByReference: jest.fn().mockResolvedValue(null),
+            recordRedemptionSnapshot: jest.fn(),
+          },
+        },
       ],
     }).compile();
     service = module.get<PaymentService>(PaymentService);

@@ -22,7 +22,8 @@ import {
   FaArrowRightFromBracket,
   FaBars,
   FaXmark,
-  FaLayerGroup
+  FaLayerGroup,
+  FaTags
 } from 'react-icons/fa6';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -60,6 +61,7 @@ const NAV_LINKS: NavLink[] = [
   { id: 'students', label: 'Students', href: '/creator/students', icon: <FaUsers size={17} /> },
   { id: 'analytics', label: 'Analytics', href: '/creator/analytics', icon: <FaChartSimple size={17} /> },
   { id: 'earnings', label: 'Earnings', href: '/creator/earnings', icon: <FaSackDollar size={17} /> },
+  { id: 'coupons', label: 'Coupons', href: '/creator/coupons', icon: <FaTags size={17} /> },
   { id: 'reviews', label: 'Reviews', href: '/creator/reviews', icon: <FaStar size={17} />, isComingSoon: true },
   { id: 'resources', label: 'Resources', href: '/creator/resources', icon: <FaFolderOpen size={17} />, isComingSoon: true },
   { id: 'announcements', label: 'Announcements', href: '/creator/announcements', icon: <FaBullhorn size={17} />, isComingSoon: true },

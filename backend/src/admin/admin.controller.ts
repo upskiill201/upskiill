@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -31,6 +32,10 @@ import {
   AdminPayoutsService,
   type ListPayoutsQuery,
 } from './admin-payouts.service';
+import {
+  AdminCouponsService,
+  type ListCouponsQuery,
+} from './admin-coupons.service';
 
 interface AuthedUser {
   id: string;
@@ -59,6 +64,7 @@ export class AdminController {
     private readonly adminCreators: AdminCreatorsService,
     private readonly adminPayments: AdminPaymentsService,
     private readonly adminPayouts: AdminPayoutsService,
+    private readonly adminCoupons: AdminCouponsService,
   ) {}
 
   @Get('summary')
@@ -306,5 +312,61 @@ export class AdminController {
   @Post('payouts/:id/reveal-method')
   revealPayoutMethod(@GetUser() actor: AuthedUser, @Param('id') id: string) {
     return this.adminPayouts.revealMethod(actor.id, id);
+  }
+
+  // ── Coupons & Discounts ──────────────────────────────────────────────
+
+  @Get('coupons')
+  listCoupons(@Query() query: ListCouponsQuery) {
+    return this.adminCoupons.list(query);
+  }
+
+  @Get('coupons/analytics')
+  couponAnalytics() {
+    return this.adminCoupons.analytics();
+  }
+
+  @Get('coupons/:id')
+  couponDetail(@Param('id') id: string) {
+    return this.adminCoupons.detail(id);
+  }
+
+  @Post('coupons/:id/disable')
+  disableCoupon(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminCoupons.disable(actor.id, id, body.reason);
+  }
+
+  @Post('coupons/:id/pause')
+  pauseCoupon(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminCoupons.pause(actor.id, id);
+  }
+
+  @Post('coupons/:id/archive')
+  archiveCoupon(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminCoupons.archive(actor.id, id);
+  }
+
+  @Get('settings/coupons')
+  getCouponSettings() {
+    return this.adminCoupons.getSettings();
+  }
+
+  @Patch('settings/coupons')
+  updateCouponSettings(
+    @GetUser() actor: AuthedUser,
+    @Body()
+    body: {
+      couponsEnabled?: boolean;
+      maxDiscountPercent?: number;
+      maxActiveCouponsPerCreator?: number;
+      allowFixedAmountDiscounts?: boolean;
+      allowUnlimitedRedemptions?: boolean;
+    },
+  ) {
+    return this.adminCoupons.updateSettings(actor.id, body);
   }
 }

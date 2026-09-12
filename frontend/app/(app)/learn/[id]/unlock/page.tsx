@@ -233,6 +233,7 @@ export default function LearnUnlockPage() {
             country: fields.country,
             successUrl: `${base}?payment=success&returnTo=${encodeURIComponent(returnTo)}`,
             cancelUrl: `${base}?payment=cancelled&returnTo=${encodeURIComponent(returnTo)}`,
+            couponCode: fields.couponCode,
           }),
         });
 
@@ -392,6 +393,7 @@ export default function LearnUnlockPage() {
             )}
             {scene === 'plans' && (
               <ScenePlans
+                courseId={course?.id || courseId}
                 basePrice={course?.price}
                 submitting={isSubscribing}
                 errorMsg={subscribeError}

@@ -66,6 +66,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/admin/payments', label: 'Payments', icon: CreditCard },
       { href: '/admin/payouts', label: 'Payouts', icon: Wallet },
+      { href: '/admin/coupons', label: 'Coupons', icon: Tag },
     ],
   },
   {
@@ -97,7 +98,6 @@ const COMING_SOON: ComingSoonGroup[] = [
     items: [
       { label: 'Analytics', icon: BarChart3 },
       { label: 'Content', icon: FileText },
-      { label: 'Promotions', icon: Tag },
     ],
   },
   {
