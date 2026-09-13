@@ -369,6 +369,29 @@ export class PaymentService {
         }
       : undefined;
 
+    // A coupon can legitimately discount a plan to $0 (a 100%-off coupon) —
+    // neither Stripe nor MeSomb can process a zero-amount charge, so grant
+    // access directly instead of routing through a provider at all.
+    if (couponContext && actualPrice === 0) {
+      await this.grantCourseAccess(
+        userId,
+        courseId,
+        plan,
+        0,
+        undefined,
+        undefined,
+        'MANUAL',
+        undefined,
+        couponContext,
+      );
+      return {
+        success: true,
+        provider: 'FREE',
+        status: 'ACTIVE',
+        message: 'Coupon applied — this course is free! You are enrolled.',
+      };
+    }
+
     // 1. Delegate to the appropriate payment provider
     if (provider === 'MESOMB') {
       const result = await this.mesombProvider.createSubscription({
@@ -580,10 +603,17 @@ export class PaymentService {
       // order, so a payment can never commit without its ledger row.
       // SALE vs RENEWAL follows the same predicate as the extension branch
       // above: an already-ACTIVE entitlement being extended is a renewal.
-      if (pricePaid !== undefined && pricePaid > 0) {
+      // A coupon-driven $0 grant (couponContext present, pricePaid === 0)
+      // still needs its redemption slot claimed and snapshot recorded here —
+      // otherwise a free coupon's maxRedemptions/audit trail would silently
+      // never update. A plain zero-price grant with no coupon (shouldn't
+      // happen, but is not this method's business to assume) still skips.
+      if (pricePaid !== undefined && (pricePaid > 0 || couponContext)) {
         const wasActiveRenewal =
           !!existing && existing.status === 'ACTIVE' && existing.expiresAt > now;
-        const ledgerProvider = provider === 'MESOMB' ? 'MESOMB' : 'STRIPE';
+        // provider already carries the real rail (STRIPE/MESOMB/MANUAL) —
+        // no need to collapse MANUAL into STRIPE here.
+        const ledgerProvider = provider;
         const providerReference =
           earningsRef?.providerReference ||
           `${provider === 'MESOMB' ? 'mesomb' : 'grant'}_${order?.id ?? Date.now()}`;
