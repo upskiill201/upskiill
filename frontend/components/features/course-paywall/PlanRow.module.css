@@ -133,3 +133,24 @@
   font-weight: 600;
   color: var(--text-muted, #94a3b8);
 }
+
+/* ── Coupon-discounted price — the original is struck through, never
+   removed, so the discount always reads as a discount off something. ── */
+.priceOriginal {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+  text-decoration: line-through;
+}
+
+.priceDiscounted {
+  color: #16a34a;
+}
+
+.couponAppliedChip {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #16a34a;
+  text-transform: uppercase;
+}

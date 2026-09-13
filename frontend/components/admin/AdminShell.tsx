@@ -16,6 +16,7 @@ import {
   Settings,
   ShieldAlert,
   ShoppingBag,
+  Smartphone,
   Sparkles,
   Tag,
   Timer,
@@ -57,6 +58,15 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/admin/users', label: 'Users', icon: Users },
       { href: '/admin/courses', label: 'Courses', icon: BookOpen },
+      { href: '/admin/creators', label: 'Creators', icon: UserCheck },
+    ],
+  },
+  {
+    label: 'Money',
+    items: [
+      { href: '/admin/payments', label: 'Payments', icon: CreditCard },
+      { href: '/admin/payouts', label: 'Payouts', icon: Wallet },
+      { href: '/admin/coupons', label: 'Coupons', icon: Tag },
     ],
   },
   {
@@ -66,6 +76,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: '/admin/deliveries', label: 'Deliveries', icon: Send },
       { href: '/admin/queue', label: 'Queue', icon: Timer },
       { href: '/admin/health', label: 'Health', icon: Activity },
+      { href: '/admin/whatsapp', label: 'WhatsApp', icon: Smartphone },
     ],
   },
 ];
@@ -73,17 +84,7 @@ const NAV_GROUPS: NavGroup[] = [
 const COMING_SOON: ComingSoonGroup[] = [
   {
     label: 'Platform',
-    items: [
-      { label: 'Creators', icon: UserCheck },
-      { label: 'Moderation', icon: ShieldAlert },
-    ],
-  },
-  {
-    label: 'Money',
-    items: [
-      { label: 'Payments', icon: CreditCard },
-      { label: 'Payouts', icon: Wallet },
-    ],
+    items: [{ label: 'Moderation', icon: ShieldAlert }],
   },
   {
     label: 'Economy',
@@ -97,7 +98,6 @@ const COMING_SOON: ComingSoonGroup[] = [
     items: [
       { label: 'Analytics', icon: BarChart3 },
       { label: 'Content', icon: FileText },
-      { label: 'Promotions', icon: Tag },
     ],
   },
   {

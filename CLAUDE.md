@@ -14,7 +14,7 @@ It is an AI-powered gamified learning platform that makes mastering real-world s
 - **Full Vision & Mission:** See [`docs/00-vision-and-mission.md`](docs/00-vision-and-mission.md) — the Teyro Vision School summary (why Teyro exists, the two-sided learner/creator model, monetization, culture, and long-term vision). Read it for context beyond code-level decisions.
 - **Live URLs:**
   - Production Frontend: https://teyro.app (Vercel)
-  - Production Backend: https://upskiill-backend.onrender.com (Render)
+  - Production Backend: https://teyro-backend.onrender.com (Render)
   - GitHub: https://github.com/upskiill201/upskiill
 
 ---

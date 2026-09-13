@@ -209,7 +209,14 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     learningPathSuggestions: [],
   });
 
-  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion, resyncVersion, clearLocalBackups } = useSyncQueue(lessonId as string, lesson?.version || 1);
+  const { isOnline, syncStatus, lastSavedAt, isDirty, syncMetadata, syncPhase, setDirty, adoptServerVersion, getVersion, resyncVersion, clearLocalBackups, flushQueue, getLocalBackupTimestamp, withSaveLock, fetchWithTimeout } = useSyncQueue(lessonId as string, lesson?.version || 1);
+
+  /** Unsynced edits found in localStorage on load — e.g. the tab crashed or
+   *  lost network before autosave could flush them to the server. Offering
+   *  to restore them (instead of silently doing nothing, which is what
+   *  happened before) is what fixes "I refreshed and my work was gone." */
+  const [recoverableDraftAt, setRecoverableDraftAt] = useState<number | null>(null);
+  const [recovering, setRecovering] = useState(false);
 
   // Media replaced during authoring is deleted only once the replacement is
   // durably saved — and only if the server agrees nothing references it.
@@ -415,6 +422,10 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         }
         const d = await res.json();
         applyLoadedLesson(d);
+        // Surface any edits left behind by a crashed tab / dropped network
+        // instead of silently ignoring them (previous behavior).
+        const backupAt = getLocalBackupTimestamp();
+        if (backupAt) setRecoverableDraftAt(backupAt);
       } catch (e) {
         console.error(e);
         setLoadError('A network error occurred while loading this lesson. Check your connection and try again.');
@@ -425,68 +436,112 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
+  /** Replay the local backups onto the server via the granular endpoints,
+   *  then reload so the builder reflects the merged, now-persisted state. */
+  const restoreLocalDraft = async () => {
+    setRecovering(true);
+    try {
+      await flushQueue();
+      const res = await fetch(`/api/lesson/${lessonId}`);
+      if (res.ok) {
+        const d = await res.json();
+        pendingBaselineRef.current = true;
+        applyLoadedLesson(d);
+        adoptServerVersion(d?.version);
+      }
+      setRecoverableDraftAt(null);
+    } catch {
+      setSyncError('Could not restore your unsaved draft. It is still kept locally — try again.');
+    } finally {
+      setRecovering(false);
+    }
+  };
+
+  const discardLocalDraft = () => {
+    if (!window.confirm('Discard the unsaved changes found from your last session? This cannot be undone.')) return;
+    clearLocalBackups();
+    setRecoverableDraftAt(null);
+  };
+
   /* Autosave */
+  // Guards against two overlapping runAutosave() calls: each debounce settle
+  // re-fires this effect, and typing again mid-save used to let a second
+  // 5-request autosave chain start before the first finished.
+  const autosaveInFlightRef = useRef(false);
+
   useEffect(() => {
     if (loading || !debouncedLesson || !debouncedMcqActivity || !debouncedReflectActivity || !debouncedDeepenConfig) return;
     if (lastSavedSnapshotRef.current === null) return;
+    // A conflict banner is already up — don't keep auto-firing more requests
+    // with the same stale version while the creator hasn't resolved it yet.
+    if (conflict) return;
+    if (autosaveInFlightRef.current) return;
     // Only hit the API when the settled state genuinely differs from what the
     // server last acknowledged — prevents the phantom save that used to fire
     // on every page load.
     if (buildSaveSnapshot() === lastSavedSnapshotRef.current) return;
 
     const runAutosave = async () => {
-      const savedSnapshot = buildSaveSnapshot();
-      const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
+      autosaveInFlightRef.current = true;
+      try {
+        const savedSnapshot = buildSaveSnapshot();
+        const isLearnCompleted = !!(debouncedLesson.title && (debouncedLesson.learnVideoUrl || debouncedLesson.learnText || debouncedLesson.learnAudioUrl));
 
-      const metadataResult = await syncMetadata({
-        title: debouncedLesson.title,
-        shortDescription: debouncedLesson.shortDescription,
-        ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
-        // Measured media length from the latest upload (undefined → omitted)
-        ...(typeof debouncedLesson.durationMinutes === 'number' && {
-          durationMinutes: debouncedLesson.durationMinutes,
-        }),
-      });
+        const metadataResult = await syncMetadata({
+          title: debouncedLesson.title,
+          shortDescription: debouncedLesson.shortDescription,
+          ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
+          // Measured media length from the latest upload (undefined → omitted)
+          ...(typeof debouncedLesson.durationMinutes === 'number' && {
+            durationMinutes: debouncedLesson.durationMinutes,
+          }),
+        });
+        // Stop the chain the moment one call hits a real conflict — the
+        // version is now behind, so every remaining call would just 409 too
+        // and pile more noise onto the same banner.
+        if (metadataResult.conflict) { setConflict(true); return; }
 
-      const learnResult = await syncPhase('learn', {
-        contentBlocks: [
-          { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
-          { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
-          { type: 'text', value: debouncedLesson.learnText },
-          { type: 'whatYouWillLearn', value: debouncedWhatYouWillLearn },
-        ],
-        isCompleted: isLearnCompleted
-      });
+        const learnResult = await syncPhase('learn', {
+          contentBlocks: [
+            { type: 'videoUrl', value: debouncedLesson.learnVideoUrl },
+            { type: 'audioUrl', value: debouncedLesson.learnAudioUrl },
+            { type: 'text', value: debouncedLesson.learnText },
+            { type: 'whatYouWillLearn', value: debouncedWhatYouWillLearn },
+          ],
+          isCompleted: isLearnCompleted
+        });
+        if (learnResult.conflict) { setConflict(true); return; }
 
-      const isApplyCompleted = debouncedMcqActivity.questions.length > 0 &&
-        debouncedMcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
-      const applyResult = await syncPhase('apply', {
-        contentBlocks: [{ type: 'mcqActivity', value: debouncedMcqActivity }],
-        isCompleted: isApplyCompleted
-      });
+        const isApplyCompleted = debouncedMcqActivity.questions.length > 0 &&
+          debouncedMcqActivity.questions.every(q => q.questionText.trim() && q.correctOptionId && q.options.length >= 2);
+        const applyResult = await syncPhase('apply', {
+          contentBlocks: [{ type: 'mcqActivity', value: debouncedMcqActivity }],
+          isCompleted: isApplyCompleted
+        });
+        if (applyResult.conflict) { setConflict(true); return; }
 
-      const isReflectCompleted = debouncedReflectActivity.prompt.trim().length > 0 &&
-        (debouncedReflectActivity.type === 'open' ? (!debouncedReflectActivity.openConfig.useStarters || debouncedReflectActivity.openConfig.starters.length > 0) :
-        (debouncedReflectActivity.guidedConfig.questions.length > 0 && debouncedReflectActivity.guidedConfig.questions.every(q => q.text.trim())));
-      const reflectResult = await syncPhase('reflect', {
-        contentBlocks: [{ type: 'reflectActivity', value: debouncedReflectActivity }],
-        isCompleted: isReflectCompleted
-      });
+        const isReflectCompleted = debouncedReflectActivity.prompt.trim().length > 0 &&
+          (debouncedReflectActivity.type === 'open' ? (!debouncedReflectActivity.openConfig.useStarters || debouncedReflectActivity.openConfig.starters.length > 0) :
+          (debouncedReflectActivity.guidedConfig.questions.length > 0 && debouncedReflectActivity.guidedConfig.questions.every(q => q.text.trim())));
+        const reflectResult = await syncPhase('reflect', {
+          contentBlocks: [{ type: 'reflectActivity', value: debouncedReflectActivity }],
+          isCompleted: isReflectCompleted
+        });
+        if (reflectResult.conflict) { setConflict(true); return; }
 
-      // Deepen config (collection title/settings) persists through the phase block;
-      // the resources themselves are persisted via the dedicated resource endpoints.
-      const deepenResult = await syncPhase('deepen', {
-        contentBlocks: [{ type: 'deepenActivity', value: debouncedDeepenConfig }],
-        isCompleted: deepenPhaseComplete(deepenConfig, debouncedResources)
-      });
+        // Deepen config (collection title/settings) persists through the phase block;
+        // the resources themselves are persisted via the dedicated resource endpoints.
+        const deepenResult = await syncPhase('deepen', {
+          contentBlocks: [{ type: 'deepenActivity', value: debouncedDeepenConfig }],
+          isCompleted: deepenPhaseComplete(deepenConfig, debouncedResources)
+        });
+        if (deepenResult.conflict) { setConflict(true); return; }
 
-      if (metadataResult.ok && learnResult.ok && applyResult.ok && reflectResult.ok && deepenResult.ok) {
-        markLocallySaved(savedSnapshot);
-      }
-      // A 409 anywhere means the lesson changed underneath us — surface the
-      // conflict banner instead of pretending the autosave succeeded.
-      if ([metadataResult, learnResult, applyResult, reflectResult, deepenResult].some(r => r.conflict)) {
-        setConflict(true);
+        if (metadataResult.ok && learnResult.ok && applyResult.ok && reflectResult.ok && deepenResult.ok) {
+          markLocallySaved(savedSnapshot);
+        }
+      } finally {
+        autosaveInFlightRef.current = false;
       }
     };
 
@@ -536,47 +591,71 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     };
   };
 
-  /* save — ONE request, optimistic UI so creator sees result immediately */
-  const forceManualSave = async (): Promise<{ ok: boolean }> => {
+  /**
+   * save — ONE request, optimistic UI so creator sees result immediately.
+   *
+   * Runs through `withSaveLock`, the SAME queue the granular autosave uses.
+   * Previously this fired a raw, unlocked `fetch` while autosave's own
+   * metadata/phase calls could be mid-flight — two requests racing on the
+   * same version counter, so one would legitimately 409 the other even
+   * though nobody else had touched the lesson. That self-collision is what
+   * produced the "saved elsewhere" banner for a single creator working
+   * alone, and it could re-trigger indefinitely since the 60s interval
+   * autosave kept retrying with the same stale version. Sharing the lock
+   * makes every save (autosave or manual) execute strictly one-at-a-time.
+   */
+  const forceManualSave = async (bypassConflictGuard = false): Promise<{ ok: boolean }> => {
     if (!lesson) return { ok: false };
+    // A conflict is already on screen — only the banner's own explicit
+    // "keep mine" / "discard mine" actions (which pass bypassConflictGuard)
+    // may save until it's resolved. Otherwise every retry (interval timer,
+    // Ctrl+S, another Save click) just re-fires the same losing request and
+    // re-shows the same banner.
+    if (conflict && !bypassConflictGuard) return { ok: false };
     setSaving(true);
 
+    let ok = false;
     try {
-      const payload = buildSavePayload();
-      const savedSnapshot = buildSaveSnapshot();
+      await withSaveLock(async () => {
+        const payload = buildSavePayload();
+        const savedSnapshot = buildSaveSnapshot();
 
-      const res = await fetch(`/api/lesson/${lessonId}/full-save`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+        const res = await fetchWithTimeout(`/api/lesson/${lessonId}/full-save`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
 
-      if (!res.ok) {
-        if (res.status === 409) {
-          // Another session saved first. Surface the conflict and stop — the
-          // old flow adopted the server version here, which cleared isDirty
-          // and showed "Saved" while NOTHING had been written, silently
-          // disarming the close-guard and interval autosave.
-          setConflict(true);
-        } else {
-          setSyncError('Your changes could not be saved because the lesson was modified elsewhere. Review your content and save again.');
+        if (!res.ok) {
+          if (res.status === 409) {
+            // Another session saved first. Surface the conflict and stop — the
+            // old flow adopted the server version here, which cleared isDirty
+            // and showed "Saved" while NOTHING had been written, silently
+            // disarming the close-guard and interval autosave.
+            setConflict(true);
+          } else {
+            setSyncError('Your changes could not be saved because the lesson was modified elsewhere. Review your content and save again.');
+          }
+          return;
         }
-        return { ok: false };
-      }
 
-      const data = await res.json().catch(() => null);
-      adoptServerVersion(data?.version);   // keep granular autosave in sync + clear dirty
-      markLocallySaved(savedSnapshot);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2500);
-      return { ok: true };
+        const data = await res.json().catch(() => null);
+        adoptServerVersion(data?.version);   // keep granular autosave in sync + clear dirty
+        markLocallySaved(savedSnapshot);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 2500);
+        ok = true;
+      });
     } catch (err) {
       console.error('forceManualSave error:', err);
-      setSyncError('A network error occurred while saving. Your changes are still in this tab — try again.');
-      return { ok: false };
+      const timedOut = err instanceof DOMException && err.name === 'AbortError';
+      setSyncError(timedOut
+        ? 'Saving is taking too long and was cancelled. Your changes are still in this tab — try again.'
+        : 'A network error occurred while saving. Your changes are still in this tab — try again.');
     } finally {
       setSaving(false);
     }
+    return { ok };
   };
 
   /** Save, then navigate ONLY when the save actually succeeded — a failed
@@ -599,7 +678,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     setResolvingConflict(true);
     try {
       await resyncVersion();
-      const result = await forceManualSave();
+      const result = await forceManualSave(true);
       if (result.ok) {
         // Stale granular backups must never replay through the offline queue.
         clearLocalBackups();
@@ -637,44 +716,55 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   };
 
   const handlePublish = async (_options: any) => {
+    if (conflict) {
+      setPublishError('This lesson was changed elsewhere. Resolve the conflict above, then publish again.');
+      return;
+    }
     setIsPublishing(true);
     setPublishError(null);
 
     try {
-      const payload = buildSavePayload();
+      // Same lock as every other save path — a concurrent autosave call
+      // must not race the publish request over the version counter.
+      await withSaveLock(async () => {
+        const payload = buildSavePayload();
 
-      // Single request: save + publish atomically
-      const res = await fetch(`/api/lesson/${lessonId}/full-save-publish`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+        // Single request: save + publish atomically
+        const res = await fetchWithTimeout(`/api/lesson/${lessonId}/full-save-publish`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
 
-      if (!res.ok) {
-        if (res.status === 409) {
-          // Same conflict discipline as manual save: never silently adopt the
-          // server version here — that used to clear isDirty and show "Saved"
-          // while nothing had been written. Surface the banner instead.
-          setConflict(true);
-          setPublishError('This lesson was just changed in another tab or session. Resolve the conflict above, then publish again.');
-        } else {
-          const errorData = await res.json().catch(() => null);
-          setPublishError(errorData?.errors?.join(' · ')
-            || errorData?.message
-            || 'Failed to publish. Please check all required sections.');
+        if (!res.ok) {
+          if (res.status === 409) {
+            // Same conflict discipline as manual save: never silently adopt the
+            // server version here — that used to clear isDirty and show "Saved"
+            // while nothing had been written. Surface the banner instead.
+            setConflict(true);
+            setPublishError('This lesson was just changed in another tab or session. Resolve the conflict above, then publish again.');
+          } else {
+            const errorData = await res.json().catch(() => null);
+            setPublishError(errorData?.errors?.join(' · ')
+              || errorData?.message
+              || 'Failed to publish. Please check all required sections.');
+          }
+          return;
         }
-        return;
-      }
 
-      const data = await res.json().catch(() => null);
-      adoptServerVersion(data?.lesson?.version);
-      markLocallySaved(buildSaveSnapshot());
+        const data = await res.json().catch(() => null);
+        adoptServerVersion(data?.lesson?.version);
+        markLocallySaved(buildSaveSnapshot());
 
-      // Success! Navigate to curriculum builder
-      router.push(`/creator/builder/${courseId}?step=2`);
+        // Success! Navigate to curriculum builder
+        router.push(`/creator/builder/${courseId}?step=2`);
+      });
     } catch (err) {
       console.error('Publish error:', err);
-      setPublishError('A network error occurred. Please check your connection and try again.');
+      const timedOut = err instanceof DOMException && err.name === 'AbortError';
+      setPublishError(timedOut
+        ? 'Publishing is taking too long and was cancelled. Please try again.'
+        : 'A network error occurred. Please check your connection and try again.');
     } finally {
       setIsPublishing(false);
     }
@@ -687,24 +777,27 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   manualSaveRef.current = forceManualSave;
 
   useEffect(() => {
-    if (!isDirty || saving) return;
+    // Never auto-retry while a conflict banner is up — same stale version,
+    // same 409, forever, which is exactly the "waited minutes, still not
+    // saving" complaint. The creator must resolve it first.
+    if (!isDirty || saving || conflict) return;
     const interval = setInterval(() => {
       manualSaveRef.current();
     }, 60000);
     return () => clearInterval(interval);
-  }, [isDirty, saving]);
+  }, [isDirty, saving, conflict]);
 
   /* Keyboard Shortcut for Save */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        if (!saving) manualSaveRef.current();
+        if (!saving && !conflict) manualSaveRef.current();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [saving]);
+  }, [saving, conflict]);
 
   const videoTime = lesson?.durationMinutes || 0;
   const textWords = (lesson?.learnText || '').replace(/<[^>]*>?/gm, '').split(/\s+/).length;
@@ -837,6 +930,31 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       {saveSuccess && (
         <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999 }}>
           <Toast message="Changes saved successfully" type="success" duration={2500} onClose={() => setSaveSuccess(false)} />
+        </div>
+      )}
+      {recoverableDraftAt && !conflict && (
+        <div className={styles.conflictBanner} role="alert">
+          <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+          <div className={styles.conflictText}>
+            <strong>Unsaved changes found from your last session.</strong>{' '}
+            Edits from {new Date(recoverableDraftAt).toLocaleString()} never made it to the server. Restore them or discard.
+          </div>
+          <div className={styles.conflictActions}>
+            <button
+              className={styles.conflictBtnGhost}
+              onClick={discardLocalDraft}
+              disabled={recovering}
+            >
+              Discard
+            </button>
+            <button
+              className={styles.conflictBtnPrimary}
+              onClick={restoreLocalDraft}
+              disabled={recovering}
+            >
+              {recovering ? 'Restoring…' : 'Restore my draft'}
+            </button>
+          </div>
         </div>
       )}
       {conflict && (

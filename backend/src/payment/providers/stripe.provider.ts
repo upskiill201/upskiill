@@ -33,6 +33,8 @@ export class StripeProvider implements IPaymentProvider {
         customerEmail,
         successUrl,
         cancelUrl,
+        couponId,
+        couponDiscountUsd,
       } = input;
 
       const intervalMap = {
@@ -119,6 +121,10 @@ export class StripeProvider implements IPaymentProvider {
           userId,
           courseId,
           plan,
+          // Round-trips through the webhook exactly like the fields above —
+          // this is how a coupon-discounted checkout survives to
+          // dispatchStripeEvent()'s checkout.session.completed handler.
+          ...(couponId ? { couponId, couponDiscountUsd: String(couponDiscountUsd ?? 0) } : {}),
         },
       });
 

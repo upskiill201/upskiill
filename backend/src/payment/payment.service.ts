@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
+import { CouponsService, CouponQuoteValid } from '../coupons/coupons.service';
 import { calculateCoursePricingLadder } from '../course/pricing-engine';
 import { resolveReturnUrl } from './return-url.util';
 import {
@@ -25,6 +26,15 @@ type StripeEvent = {
   };
 };
 
+/** Carried from subscribeCourse()'s re-validated quote through to
+ *  grantCourseAccess(), across both the synchronous MeSomb path
+ *  (grantCourseAccessWithRetry) and the Stripe/MeSomb webhook paths. */
+export interface CouponContext {
+  couponId: string;
+  originalPriceUsd: number;
+  discountAmountUsd: number;
+}
+
 @Injectable()
 export class PaymentService {
   private stripe: any;
@@ -35,6 +45,7 @@ export class PaymentService {
     private stripeProvider: StripeProvider,
     private mesombProvider: MesombProvider,
     private earnings: EarningsService,
+    private coupons: CouponsService,
     private eventEmitter: EventEmitter2,
   ) {
     this.stripe = new StripeSDK(
@@ -83,6 +94,7 @@ export class PaymentService {
     price: number,
     subscriptionId: string | undefined,
     provider: 'MESOMB',
+    couponContext?: CouponContext,
   ) {
     const backoffs = [0, 300, 900];
     let lastErr: unknown;
@@ -99,6 +111,8 @@ export class PaymentService {
           subscriptionId,
           undefined,
           provider,
+          undefined,
+          couponContext,
         );
       } catch (err) {
         lastErr = err;
@@ -268,6 +282,7 @@ export class PaymentService {
       country?: string;
       successUrl?: string;
       cancelUrl?: string;
+      couponCode?: string;
     },
     isAdmin = false,
   ) {
@@ -331,7 +346,51 @@ export class PaymentService {
         : plan === 'YEARLY'
           ? ladder.yearly
           : ladder.monthly;
-    const actualPrice = planData.price;
+    let actualPrice = planData.price;
+
+    // Coupon re-validated HERE, at charge time — never trust an earlier
+    // /coupons/validate call. Renewals never reach this method with a coupon
+    // (dispatchStripeEvent's invoice.payment_succeeded branch never passes
+    // one), which is what makes "first payment only" true by omission.
+    let couponQuote: CouponQuoteValid | undefined;
+    if (extra?.couponCode) {
+      const quote = await this.coupons.quote({ courseId, plan, code: extra.couponCode });
+      if (!quote.valid) {
+        throw new BadRequestException(`Coupon error: ${quote.reason}`);
+      }
+      couponQuote = quote;
+      actualPrice = quote.finalPriceUsd;
+    }
+    const couponContext: CouponContext | undefined = couponQuote
+      ? {
+          couponId: couponQuote.couponId,
+          originalPriceUsd: couponQuote.originalPriceUsd,
+          discountAmountUsd: couponQuote.discountAmountUsd,
+        }
+      : undefined;
+
+    // A coupon can legitimately discount a plan to $0 (a 100%-off coupon) —
+    // neither Stripe nor MeSomb can process a zero-amount charge, so grant
+    // access directly instead of routing through a provider at all.
+    if (couponContext && actualPrice === 0) {
+      await this.grantCourseAccess(
+        userId,
+        courseId,
+        plan,
+        0,
+        undefined,
+        undefined,
+        'MANUAL',
+        undefined,
+        couponContext,
+      );
+      return {
+        success: true,
+        provider: 'FREE',
+        status: 'ACTIVE',
+        message: 'Coupon applied — this course is free! You are enrolled.',
+      };
+    }
 
     // 1. Delegate to the appropriate payment provider
     if (provider === 'MESOMB') {
@@ -345,6 +404,8 @@ export class PaymentService {
         phone: extra?.phone,
         service: extra?.service,
         country: extra?.country,
+        couponId: couponContext?.couponId,
+        couponDiscountUsd: couponContext?.discountAmountUsd,
       });
 
       if (result.status === 'ACTIVE') {
@@ -353,6 +414,11 @@ export class PaymentService {
         // failure must never read as "payment failed" to the learner. Retry
         // briefly; if it still fails, fail LOUDLY with an honest message
         // (the webhook remains a backstop when MeSomb retries SUCCESS).
+        //
+        // This is the synchronous confirmation path — it never touches a
+        // webhook, so couponContext must be passed straight through here
+        // rather than relying on it surviving in the MeSomb `reference` JSON
+        // (that mechanism only matters for the PENDING/webhook-confirmed path).
         try {
           await this.grantCourseAccessWithRetry(
             userId,
@@ -361,6 +427,7 @@ export class PaymentService {
             actualPrice,
             result.subscriptionId,
             'MESOMB',
+            couponContext,
           );
         } catch (grantErr) {
           this.logger.error(
@@ -391,6 +458,7 @@ export class PaymentService {
       // its safe default.
       successUrl: resolveReturnUrl(extra?.successUrl),
       cancelUrl: resolveReturnUrl(extra?.cancelUrl),
+      couponId: couponContext?.couponId,
     });
 
     // result.status is PENDING until the checkout completes and the webhook
@@ -414,6 +482,7 @@ export class PaymentService {
       nativeCurrency?: string;
       nativeAmountMinor?: number;
     },
+    couponContext?: CouponContext,
   ) {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
@@ -534,23 +603,72 @@ export class PaymentService {
       // order, so a payment can never commit without its ledger row.
       // SALE vs RENEWAL follows the same predicate as the extension branch
       // above: an already-ACTIVE entitlement being extended is a renewal.
-      if (pricePaid !== undefined && pricePaid > 0) {
+      // A coupon-driven $0 grant (couponContext present, pricePaid === 0)
+      // still needs its redemption slot claimed and snapshot recorded here —
+      // otherwise a free coupon's maxRedemptions/audit trail would silently
+      // never update. A plain zero-price grant with no coupon (shouldn't
+      // happen, but is not this method's business to assume) still skips.
+      if (pricePaid !== undefined && (pricePaid > 0 || couponContext)) {
         const wasActiveRenewal =
           !!existing && existing.status === 'ACTIVE' && existing.expiresAt > now;
-        await this.earnings.recordSaleInTx(tx, {
+        // provider already carries the real rail (STRIPE/MESOMB/MANUAL) —
+        // no need to collapse MANUAL into STRIPE here.
+        const ledgerProvider = provider;
+        const providerReference =
+          earningsRef?.providerReference ||
+          `${provider === 'MESOMB' ? 'mesomb' : 'grant'}_${order?.id ?? Date.now()}`;
+
+        // Coupon slot is claimed BEFORE the ledger write — grossMinor and
+        // discountMinor below depend on whether the claim actually succeeded,
+        // not the other way round. A duplicate webhook delivery for the same
+        // charge is checked first so a retry can never double-decrement the
+        // usage limit (layered idempotency, same spirit as claimWebhookEvent
+        // + recordSaleInTx's own P2002 guard).
+        let couponClaimed = false;
+        if (couponContext) {
+          const already = await this.coupons.findRedemptionByReference(
+            tx,
+            ledgerProvider,
+            providerReference,
+          );
+          couponClaimed = !already && (await this.coupons.claimRedemptionSlot(tx, couponContext.couponId));
+        }
+
+        const grossMinor = couponClaimed
+          ? Math.round(couponContext!.originalPriceUsd * 100)
+          : Math.round(pricePaid * 100);
+        const discountMinor = couponClaimed ? Math.round(couponContext!.discountAmountUsd * 100) : 0;
+
+        const sale = await this.earnings.recordSaleInTx(tx, {
           creatorId: course.instructorId,
           courseId,
           studentId: userId,
           orderId: order?.id,
-          grossMinor: Math.round(pricePaid * 100),
+          grossMinor,
+          discountMinor,
           type: wasActiveRenewal ? 'RENEWAL' : 'SALE',
-          provider: provider === 'MESOMB' ? 'MESOMB' : 'STRIPE',
-          providerReference:
-            earningsRef?.providerReference ||
-            `${provider === 'MESOMB' ? 'mesomb' : 'grant'}_${order?.id ?? Date.now()}`,
+          provider: ledgerProvider,
+          providerReference,
           nativeCurrency: earningsRef?.nativeCurrency,
           nativeAmountMinor: earningsRef?.nativeAmountMinor,
         });
+
+        if (couponClaimed) {
+          await this.coupons.recordRedemptionSnapshot(tx, {
+            couponId: couponContext!.couponId,
+            userId,
+            courseId,
+            plan: plan as AccessPlan,
+            originalPriceUsd: couponContext!.originalPriceUsd,
+            discountAmountUsd: couponContext!.discountAmountUsd,
+            finalPriceUsd: pricePaid,
+            creatorSharePct: sale.creatorSharePct,
+            provider: ledgerProvider,
+            providerReference,
+            orderId: order?.id,
+            earningsTransactionId: sale.earningsTransactionId,
+          });
+        }
       }
 
       return {
@@ -772,6 +890,17 @@ export class PaymentService {
         // Refund matching prefers the payment_intent, then the invoice id.
         const providerReference =
           obj.payment_intent || obj.invoice || `cs_${obj.id}`;
+        // meta.couponId round-trips through Stripe Checkout Session metadata
+        // (set in StripeProvider.createSubscription) — amountTotal here is
+        // already the discounted charge, so the pre-discount price is simply
+        // amountTotal + the discount that was applied.
+        const couponContext: CouponContext | undefined = meta.couponId
+          ? {
+              couponId: meta.couponId,
+              discountAmountUsd: Number(meta.couponDiscountUsd || 0),
+              originalPriceUsd: amountTotal + Number(meta.couponDiscountUsd || 0),
+            }
+          : undefined;
         await this.grantCourseAccess(
           meta.userId,
           meta.courseId,
@@ -781,6 +910,7 @@ export class PaymentService {
           obj.customer,
           'STRIPE',
           { providerReference },
+          couponContext,
         );
       }
     }
@@ -1023,6 +1153,16 @@ export class PaymentService {
           // snapshots were embedded in the reference. The raw native amount
           // travels alongside untouched.
           const amount = nativeAmountMinor / (hasRateSnapshot ? Number(parsed.rate) : 600) || 0;
+          // couponId/couponDiscountUsd survive here for the PENDING/webhook
+          // confirmation path only — the synchronous ACTIVE path in
+          // subscribeCourse() threads couponContext straight through instead.
+          const couponContext: CouponContext | undefined = parsed.couponId
+            ? {
+                couponId: parsed.couponId,
+                discountAmountUsd: Number(parsed.couponDiscountUsd || 0),
+                originalPriceUsd: amount + Number(parsed.couponDiscountUsd || 0),
+              }
+            : undefined;
           await this.grantCourseAccess(
             parsed.userId,
             parsed.courseId,
@@ -1036,6 +1176,7 @@ export class PaymentService {
               nativeCurrency,
               nativeAmountMinor,
             },
+            couponContext,
           );
         } else if (parsed.userId && parsed.courseIds) {
           const { courses, totalAmount } = await this.getCoursesTotal(

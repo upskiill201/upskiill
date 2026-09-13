@@ -25,6 +25,22 @@ import {
 import { Stars, timeAgo } from '@/components/creator/analytics/bits';
 import styles from './Courses.module.css';
 
+/** Course descriptions are authored as rich text (HTML) but this card only
+ *  needs a plain-text preview — rendering the raw string showed the literal
+ *  markup (e.g. "<div>Learn the principles...") instead of the text. */
+function stripHtmlToText(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 interface Course {
   id: string;
   title: string;
@@ -426,7 +442,7 @@ export default function CreatorCoursesPage() {
                 <div className={styles.cardBody}>
                   <h3 className={styles.courseTitle}>{course.title}</h3>
                   {course.description && (
-                    <p className={styles.courseDescription}>{course.description}</p>
+                    <p className={styles.courseDescription}>{stripHtmlToText(course.description)}</p>
                   )}
 
                   {/* For Drafts: Readiness Progress & Missing Items */}

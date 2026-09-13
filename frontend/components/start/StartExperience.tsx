@@ -39,7 +39,7 @@ import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { resolveAppEntry, type AppEntry } from '@/lib/pwa/entry';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
 import { hasDismissedTooOften, saveInstallFlowState } from '@/lib/pwa/installFlow';
-import { browserLabel, isIpad } from '@/lib/pwa/platform';
+import { browserLabel } from '@/lib/pwa/platform';
 import { playHaptic } from '@/lib/haptics';
 import { emitAudioEvent } from '@/lib/audio/audioEvents';
 import { playLevelUpFanfare, playSparkle } from '@/lib/audio/celebrationAudio';
@@ -385,7 +385,7 @@ export default function StartExperience() {
 
             {phase === 'ios' && (
               <IosInstallGuide
-                device={isIpad() ? 'ipad' : 'iphone'}
+                browser={install.browser === 'chrome' ? 'chrome' : 'safari'}
                 onCompleted={reportManualInstall}
                 onSkip={enterApp}
               />
@@ -590,14 +590,15 @@ function InstalledPanel({
           <p className="text-left text-[0.95rem] font-[600] text-[#071233] leading-snug">
             {verified ? (
               <>
-                I&apos;m on your Home Screen now. Open me from there — that&apos;s the real Teyro,
-                and it&apos;s where your reminders will land.
+                I&apos;m installed — this icon is now an app on your Home Screen. Open me from
+                there from now on, that&apos;s the real Teyro, and it&apos;s where your reminders
+                will land.
               </>
             ) : (
               <>
-                Look for this icon on your Home Screen and open me from there — that&apos;s the real
-                Teyro, and it&apos;s where your reminders will land. Didn&apos;t work? Start here and
-                we&apos;ll sort it out later.
+                Look for this icon on your Home Screen — that means Teyro installed. Open me from
+                there from now on, that&apos;s the real Teyro, and it&apos;s where your reminders
+                will land. Didn&apos;t work? Start here and we&apos;ll sort it out later.
               </>
             )}
           </p>

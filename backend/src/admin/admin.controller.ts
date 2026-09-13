@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -18,6 +19,23 @@ import {
   AdminCoursesService,
   type ListCoursesQuery,
 } from './admin-courses.service';
+import {
+  AdminCreatorsService,
+  type ListCreatorsQuery,
+} from './admin-creators.service';
+import {
+  AdminPaymentsService,
+  type ListTransactionsQuery,
+  type PaymentsOverviewQuery,
+} from './admin-payments.service';
+import {
+  AdminPayoutsService,
+  type ListPayoutsQuery,
+} from './admin-payouts.service';
+import {
+  AdminCouponsService,
+  type ListCouponsQuery,
+} from './admin-coupons.service';
 
 interface AuthedUser {
   id: string;
@@ -43,6 +61,10 @@ export class AdminController {
     private readonly admin: AdminService,
     private readonly adminUsers: AdminUsersService,
     private readonly adminCourses: AdminCoursesService,
+    private readonly adminCreators: AdminCreatorsService,
+    private readonly adminPayments: AdminPaymentsService,
+    private readonly adminPayouts: AdminPayoutsService,
+    private readonly adminCoupons: AdminCouponsService,
   ) {}
 
   @Get('summary')
@@ -163,5 +185,189 @@ export class AdminController {
       body.reason,
       body.internalNote,
     );
+  }
+
+  // ── Creators ─────────────────────────────────────────────────────────
+  // Suspend/unsuspend a creator reuses POST /admin/users/:id/suspend directly
+  // — there is no separate creator-suspend endpoint, by design (see
+  // admin-creators.service.ts header comment).
+
+  @Get('creators/summary')
+  creatorsSummary() {
+    return this.adminCreators.summary();
+  }
+
+  @Get('creators')
+  listCreators(@Query() query: ListCreatorsQuery) {
+    return this.adminCreators.list(query);
+  }
+
+  @Get('creators/:id')
+  creatorDetail(@Param('id') id: string) {
+    return this.adminCreators.detail(id);
+  }
+
+  @Post('creators/:id/verify')
+  verifyCreator(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return this.adminCreators.verify(actor.id, id, body?.reason);
+  }
+
+  @Post('creators/:id/unverify')
+  unverifyCreator(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return this.adminCreators.unverify(actor.id, id, body?.reason);
+  }
+
+  // ── Payments ─────────────────────────────────────────────────────────
+  // Read-only: no refund action exists here on purpose — see
+  // admin-payments.service.ts header comment.
+
+  @Get('payments/overview')
+  paymentsOverview(@Query() query: PaymentsOverviewQuery) {
+    return this.adminPayments.overview(query);
+  }
+
+  @Get('payments/transactions')
+  listTransactions(@Query() query: ListTransactionsQuery) {
+    return this.adminPayments.list(query);
+  }
+
+  @Get('payments/transactions/:id')
+  transactionDetail(@Param('id') id: string) {
+    return this.adminPayments.detail(id);
+  }
+
+  // ── Payouts ──────────────────────────────────────────────────────────
+  // Every mutation below is a thin pass-through to
+  // EarningsService#transitionPayout — see admin-payouts.service.ts.
+
+  @Get('payouts/overview')
+  payoutsOverview() {
+    return this.adminPayouts.overview();
+  }
+
+  @Get('payouts')
+  listPayouts(@Query() query: ListPayoutsQuery) {
+    return this.adminPayouts.list(query);
+  }
+
+  @Get('payouts/:id')
+  payoutDetail(@Param('id') id: string) {
+    return this.adminPayouts.detail(id);
+  }
+
+  @Post('payouts/:id/review')
+  reviewPayout(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.review(actor.id, id);
+  }
+
+  @Post('payouts/:id/approve')
+  approvePayout(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.approve(actor.id, id);
+  }
+
+  @Post('payouts/:id/reject')
+  rejectPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.reject(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/mark-paid')
+  markPayoutPaid(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { externalReference?: string },
+  ) {
+    return this.adminPayouts.markPaid(actor.id, id, body?.externalReference);
+  }
+
+  @Post('payouts/:id/fail')
+  failPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.fail(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/cancel')
+  cancelPayout(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminPayouts.cancel(actor.id, id, body.reason);
+  }
+
+  @Post('payouts/:id/reveal-method')
+  revealPayoutMethod(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminPayouts.revealMethod(actor.id, id);
+  }
+
+  // ── Coupons & Discounts ──────────────────────────────────────────────
+
+  @Get('coupons')
+  listCoupons(@Query() query: ListCouponsQuery) {
+    return this.adminCoupons.list(query);
+  }
+
+  @Get('coupons/analytics')
+  couponAnalytics() {
+    return this.adminCoupons.analytics();
+  }
+
+  @Get('coupons/:id')
+  couponDetail(@Param('id') id: string) {
+    return this.adminCoupons.detail(id);
+  }
+
+  @Post('coupons/:id/disable')
+  disableCoupon(
+    @GetUser() actor: AuthedUser,
+    @Param('id') id: string,
+    @Body() body: { reason: string },
+  ) {
+    return this.adminCoupons.disable(actor.id, id, body.reason);
+  }
+
+  @Post('coupons/:id/pause')
+  pauseCoupon(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminCoupons.pause(actor.id, id);
+  }
+
+  @Post('coupons/:id/archive')
+  archiveCoupon(@GetUser() actor: AuthedUser, @Param('id') id: string) {
+    return this.adminCoupons.archive(actor.id, id);
+  }
+
+  @Get('settings/coupons')
+  getCouponSettings() {
+    return this.adminCoupons.getSettings();
+  }
+
+  @Patch('settings/coupons')
+  updateCouponSettings(
+    @GetUser() actor: AuthedUser,
+    @Body()
+    body: {
+      couponsEnabled?: boolean;
+      maxDiscountPercent?: number;
+      maxActiveCouponsPerCreator?: number;
+      allowFixedAmountDiscounts?: boolean;
+      allowUnlimitedRedemptions?: boolean;
+      allowFreeCoupons?: boolean;
+    },
+  ) {
+    return this.adminCoupons.updateSettings(actor.id, body);
   }
 }

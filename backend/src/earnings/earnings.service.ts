@@ -199,7 +199,7 @@ export class EarningsService {
       nativeAmountMinor?: number;
       discountMinor?: number;
     },
-  ): Promise<void> {
+  ): Promise<{ creatorSharePct: number; earningsTransactionId?: string }> {
     if (!input.providerReference) {
       // NULL would bypass the dedupe unique constraint — never allow it.
       throw new Error('recordSaleInTx requires a providerReference');
@@ -213,7 +213,7 @@ export class EarningsService {
     const teyroAmountMinor = netMinor - creatorAmountMinor;
 
     try {
-      await tx.earningsTransaction.create({
+      const created = await tx.earningsTransaction.create({
         data: {
           publicId: generatePublicId('ET'),
           creatorId: input.creatorId,
@@ -235,12 +235,13 @@ export class EarningsService {
           providerReference: input.providerReference,
         },
       });
+      return { creatorSharePct: agreement.creatorSharePct, earningsTransactionId: created.id };
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === 'P2002' // duplicate — already recorded
       ) {
-        return;
+        return { creatorSharePct: agreement.creatorSharePct };
       }
       throw e;
     }

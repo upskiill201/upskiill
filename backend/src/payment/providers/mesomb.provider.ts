@@ -91,7 +91,7 @@ export class MesombProvider implements IPaymentProvider {
   async createSubscription(
     input: CreateSubscriptionInput,
   ): Promise<SubscriptionResult> {
-    const { userId, courseId, plan, price, phone } = input;
+    const { userId, courseId, plan, price, phone, couponId, couponDiscountUsd } = input;
 
     if (!phone) {
       throw new BadRequestException('Phone number is required for Mobile Money payments');
@@ -159,12 +159,18 @@ export class MesombProvider implements IPaymentProvider {
       const nonce = RandomGenerator.nonce();
       // The rate snapshot lets the webhook convert the settled native amount
       // back to USD exactly as charged (no FX drift between collect+settle).
+      // couponId/discount ride along here so the webhook confirmation path
+      // (PENDING result, settled later) can still thread coupon context into
+      // grantCourseAccess() — the synchronous ACTIVE path below doesn't need
+      // this since subscribeCourse() passes couponContext straight through
+      // to grantCourseAccessWithRetry() in that case instead.
       const reference = JSON.stringify({
         userId,
         courseId,
         plan,
         ccy: currency,
         rate: rateUsed,
+        ...(couponId ? { couponId, couponDiscountUsd: couponDiscountUsd ?? 0 } : {}),
       });
 
       const response = await this.mesombClient.makeCollect({

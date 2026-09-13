@@ -32,6 +32,7 @@ import { NotificationModule } from './notification/notification.module';
 import { LeagueModule } from './league/league.module';
 import { TeyModule } from './tey/tey.module';
 import { AdminModule } from './admin/admin.module';
+import { CouponsModule } from './coupons/coupons.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { AdminModule } from './admin/admin.module';
     LeagueModule,
     TeyModule,
     AdminModule,
+    CouponsModule,
   ],
   controllers: [AppController],
   providers: [

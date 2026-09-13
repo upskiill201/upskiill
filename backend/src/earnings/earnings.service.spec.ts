@@ -85,6 +85,11 @@ describe('EarningsService — split engine', () => {
     const { svc } = makeService();
     const { tx } = makeTx(true);
 
+    // Still resolves (doesn't throw) on a duplicate, and still reports the
+    // creator's share % — callers (e.g. coupon redemption) need that even
+    // when the ledger row itself was already written by an earlier delivery.
+    // No earningsTransactionId comes back for a duplicate, since nothing new
+    // was created.
     await expect(
       svc.recordSaleInTx(tx as never, {
         creatorId: 'c',
@@ -93,7 +98,7 @@ describe('EarningsService — split engine', () => {
         provider: 'STRIPE',
         providerReference: 'pi_dup',
       }),
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual({ creatorSharePct: expect.any(Number) });
   });
 
   it('refuses to write without a provider reference', async () => {

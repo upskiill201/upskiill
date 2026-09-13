@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -35,6 +35,7 @@ import { normalizeMomoPhone } from '@/lib/momo-phone';
 import { formatLocalFromUsd } from '@/lib/fx-rates';
 import CountryOperatorPicker from './CountryOperatorPicker';
 import PhoneField from './PhoneField';
+import CouponField, { COUPON_REASON_COPY, type CouponQuoteValid } from './CouponField';
 import styles from './unlock.module.css';
 
 export type PaymentProvider = 'STRIPE' | 'MESOMB';
@@ -45,9 +46,15 @@ export interface SubscribeFields {
   service?: string;
   phone?: string;
   country?: string;
+  /** Set only when a coupon has been validated for the selected plan. The
+   *  backend re-validates and recomputes the price itself — this is never
+   *  trusted as the charge amount. */
+  couponCode?: string;
 }
 
 interface ScenePlansProps {
+  /** Needed to re-validate a coupon against THIS course on every plan switch. */
+  courseId?: string;
   /** Course base value in USD from the API — never guessed client-side. */
   basePrice?: number;
   submitting: boolean;
@@ -63,6 +70,7 @@ interface ScenePlansProps {
  * benefit carousel is disabled here (motion competes with input).
  */
 export default function ScenePlans({
+  courseId,
   basePrice,
   submitting,
   errorMsg,
@@ -78,6 +86,69 @@ export default function ScenePlans({
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
+  // ── Coupon ────────────────────────────────────────────────────────────
+  const [couponExpanded, setCouponExpanded] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponQuote, setCouponQuote] = useState<CouponQuoteValid | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
+
+  const validateCoupon = useCallback(
+    async (code: string, plan: AccessPlanType) => {
+      if (!code.trim() || !courseId) return;
+      setCouponChecking(true);
+      try {
+        const res = await fetch('/api/coupons/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ courseId, plan, code: code.trim() }),
+        });
+        const data = await res.json();
+        if (data?.valid) {
+          setCouponQuote(data);
+          setCouponError(null);
+        } else {
+          setCouponQuote(null);
+          setCouponError(
+            COUPON_REASON_COPY[data?.reason] ?? "This coupon isn't valid for the selected plan.",
+          );
+        }
+      } catch {
+        setCouponQuote(null);
+        setCouponError('Could not check that code — try again.');
+      } finally {
+        setCouponChecking(false);
+      }
+    },
+    [courseId],
+  );
+
+  const applyCoupon = () => {
+    playHaptic('light');
+    void validateCoupon(couponCode, selectedPlan);
+  };
+
+  const removeCoupon = () => {
+    setCouponCode('');
+    setCouponQuote(null);
+    setCouponError(null);
+    setCouponExpanded(false);
+  };
+
+  // Plan-switch revalidation: a coupon valid for Monthly must not silently
+  // keep discounting once the learner switches to Yearly. Clear immediately
+  // (not just on the async response) so the old discount never lingers on
+  // screen while the new check is in flight.
+  useEffect(() => {
+    if (!couponCode) return;
+    setCouponQuote(null);
+    void validateCoupon(couponCode, selectedPlan);
+    // Only the plan is a meaningful re-trigger here — validateCoupon itself
+    // is stable per courseId and couponCode changes are handled by applyCoupon.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPlan]);
+
   const ladder = useMemo(
     () => calculateCoursePricingLadder(typeof basePrice === 'number' ? basePrice : 0),
     [basePrice],
@@ -90,6 +161,13 @@ export default function ScenePlans({
       : selectedPlan === 'YEARLY'
         ? ladder.yearly
         : ladder.monthly;
+
+  // Defensive: only trust the quote if it was computed for the plan
+  // currently selected — by construction the revalidation effect above keeps
+  // these in sync, but a quote for a stale plan must never render a discount.
+  const activeCouponQuote =
+    couponQuote && couponQuote.appliedPlan === selectedPlan ? couponQuote : null;
+  const effectivePrice = activeCouponQuote ? activeCouponQuote.finalPriceUsd : currentPlan.price;
 
   const countryMeta = useMemo(
     () => countries.find((c) => c.code === countryCode) ?? countries[0],
@@ -111,11 +189,15 @@ export default function ScenePlans({
     if (service) setOperatorCode(service);
   };
 
+  // A coupon can discount a plan all the way to $0 — no payment method is
+  // needed at all in that case, so the rail/MoMo section is skipped entirely.
+  const isFree = activeCouponQuote?.finalPriceUsd === 0;
+
   const handleSubmit = () => {
     if (submitting || !priceKnown) return;
 
     let nationalPhone: string | undefined;
-    if (provider === 'MESOMB') {
+    if (!isFree && provider === 'MESOMB') {
       const result = normalizeMomoPhone(phone, countryMeta);
       if (!result.ok) {
         setPhoneError(result.error ?? 'Enter a valid Mobile Money number.');
@@ -130,23 +212,27 @@ export default function ScenePlans({
     onSubmit({
       plan: selectedPlan,
       provider,
-      ...(provider === 'MESOMB'
+      ...(!isFree && provider === 'MESOMB'
         ? {
             service: operatorCode,
             phone: nationalPhone,
             country: countryMeta?.code,
           }
         : {}),
+      // subscribeCourse() re-validates this server-side at charge time —
+      // never trusts this earlier /coupons/validate response.
+      ...(activeCouponQuote ? { couponCode } : {}),
     });
   };
 
-  const isMomo = provider === 'MESOMB';
-  const priceLabel =
-    currentPlan.price > 0 ? `$${currentPlan.price.toFixed(2)}` : 'Free';
+  const isMomo = !isFree && provider === 'MESOMB';
+  const priceLabel = effectivePrice > 0 ? `$${effectivePrice.toFixed(2)}` : 'Free';
   const ctaLabel = submitting
     ? 'Unlocking…'
     : priceKnown
-      ? `Unlock Course (${priceLabel})`
+      ? isFree
+        ? 'Enroll for Free'
+        : `Unlock Course (${priceLabel})`
       : 'Unlock Course';
 
   return (
@@ -198,6 +284,9 @@ export default function ScenePlans({
                 setSelectedPlan('MONTHLY');
               }}
               badge={{ icon: Star, text: 'Most popular' }}
+              discountedPrice={
+                activeCouponQuote && selectedPlan === 'MONTHLY' ? activeCouponQuote.finalPriceUsd : undefined
+              }
             />
             <PlanRow
               plan={ladder.yearly}
@@ -207,6 +296,9 @@ export default function ScenePlans({
                 setSelectedPlan('YEARLY');
               }}
               badge={{ icon: Crown, text: 'Best value' }}
+              discountedPrice={
+                activeCouponQuote && selectedPlan === 'YEARLY' ? activeCouponQuote.finalPriceUsd : undefined
+              }
             />
             <PlanRow
               plan={ladder.weekly}
@@ -215,30 +307,51 @@ export default function ScenePlans({
                 playHaptic('light');
                 setSelectedPlan('WEEKLY');
               }}
+              discountedPrice={
+                activeCouponQuote && selectedPlan === 'WEEKLY' ? activeCouponQuote.finalPriceUsd : undefined
+              }
             />
           </div>
 
-          {/* PAYMENT RAIL SEGMENTED CONTROL */}
-          <div className={styles.railGroup} role="group" aria-label="Payment method">
-            <button
-              type="button"
-              className={`${styles.segmentBtn} ${!isMomo ? styles.segmentBtnActive : ''}`}
-              aria-pressed={!isMomo}
-              onClick={() => selectRail('STRIPE')}
-            >
-              <FaCreditCard size={12} />
-              <span>Card · Stripe</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.segmentBtn} ${isMomo ? styles.segmentBtnActive : ''}`}
-              aria-pressed={isMomo}
-              onClick={() => selectRail('MESOMB')}
-            >
-              <FaMobileAlt size={12} />
-              <span>Mobile Money</span>
-            </button>
-          </div>
+          {/* COUPON CODE */}
+          {courseId && (
+            <CouponField
+              expanded={couponExpanded}
+              onExpand={() => setCouponExpanded(true)}
+              code={couponCode}
+              onCodeChange={setCouponCode}
+              quote={activeCouponQuote}
+              error={couponError}
+              checking={couponChecking}
+              onApply={applyCoupon}
+              onRemove={removeCoupon}
+            />
+          )}
+
+          {/* PAYMENT RAIL SEGMENTED CONTROL — a fully free coupon needs no
+              payment method at all, so this whole rail is skipped. */}
+          {!isFree && (
+            <div className={styles.railGroup} role="group" aria-label="Payment method">
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${!isMomo ? styles.segmentBtnActive : ''}`}
+                aria-pressed={!isMomo}
+                onClick={() => selectRail('STRIPE')}
+              >
+                <FaCreditCard size={12} />
+                <span>Card · Stripe</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${isMomo ? styles.segmentBtnActive : ''}`}
+                aria-pressed={isMomo}
+                onClick={() => selectRail('MESOMB')}
+              >
+                <FaMobileAlt size={12} />
+                <span>Mobile Money</span>
+              </button>
+            </div>
+          )}
 
           {/* MOMO DETAILS */}
           {isMomo && countryMeta && (
@@ -270,9 +383,7 @@ export default function ScenePlans({
               />
               <p className={styles.localNotice}>
                 Amount:{' '}
-                <strong>
-                  {formatLocalFromUsd(currentPlan.price, countryMeta.currency)}
-                </strong>{' '}
+                <strong>{formatLocalFromUsd(effectivePrice, countryMeta.currency)}</strong>{' '}
                 · I&apos;ll send a prompt to your phone to approve.
               </p>
             </div>
@@ -331,23 +442,31 @@ export default function ScenePlans({
           </span>
         </div>
 
-        {/* PAYMENT LOGOS */}
-        <div className={styles.logoChips} aria-label="Accepted payment methods">
-          <span className={styles.logoBadge}><FaCcVisa size={20} /></span>
-          <span className={styles.logoBadge}><FaCcMastercard size={20} /></span>
-          <span className={styles.logoBadge}><FaCcApplePay size={20} /></span>
-          <span className={styles.logoBadge}><FaGooglePay size={20} /></span>
-          <span className={styles.textChip}>MoMo</span>
-          <span className={styles.textChip}>Orange</span>
-        </div>
+        {/* PAYMENT LOGOS — no payment method involved for a free coupon. */}
+        {!isFree && (
+          <div className={styles.logoChips} aria-label="Accepted payment methods">
+            <span className={styles.logoBadge}><FaCcVisa size={20} /></span>
+            <span className={styles.logoBadge}><FaCcMastercard size={20} /></span>
+            <span className={styles.logoBadge}><FaCcApplePay size={20} /></span>
+            <span className={styles.logoBadge}><FaGooglePay size={20} /></span>
+            <span className={styles.textChip}>MoMo</span>
+            <span className={styles.textChip}>Orange</span>
+          </div>
+        )}
 
         <p className={styles.billingNotice}>
           <CircleCheck size={11} />
           <span>
-            Recurring billing until you cancel.{' '}
-            <Link href="/terms" target="_blank" className={styles.refundLink}>
-              Refund policy
-            </Link>
+            {isFree ? (
+              'No payment required — enjoy the course!'
+            ) : (
+              <>
+                Recurring billing until you cancel.{' '}
+                <Link href="/terms" target="_blank" className={styles.refundLink}>
+                  Refund policy
+                </Link>
+              </>
+            )}
           </span>
         </p>
       </footer>

@@ -5,11 +5,15 @@ import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { PrismaService } from '../prisma/prisma.service';
 import { EarningsModule } from '../earnings/earnings.module';
+import { CouponsModule } from '../coupons/coupons.module';
 
 @Module({
   // EarningsService is injected so every grantCourseAccess / mintEnrollment
   // writes its ledger row INSIDE the same transaction as the payment.
-  imports: [EarningsModule],
+  // CouponsService is injected for the quote()/finalizeRedemption() calls in
+  // subscribeCourse()/grantCourseAccess() — CouponsModule must never import
+  // PaymentModule back (DI cycle), same rule as EarningsModule.
+  imports: [EarningsModule, CouponsModule],
   controllers: [PaymentController],
   providers: [PaymentService, StripeProvider, MesombProvider, PrismaService],
   exports: [PaymentService, StripeProvider, MesombProvider],

@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
+import { CouponsService } from '../coupons/coupons.service';
 import { BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 describe('PaymentService', () => {
@@ -65,6 +66,18 @@ describe('PaymentService', () => {
         {
           provide: EventEmitter2,
           useValue: { emit: jest.fn() },
+        },
+        // subscribeCourse() re-validates a coupon via CouponsService.quote()
+        // when a couponCode is supplied — none of the existing tests supply
+        // one, so this mock is never exercised, just needed to resolve DI.
+        {
+          provide: CouponsService,
+          useValue: {
+            quote: jest.fn(),
+            claimRedemptionSlot: jest.fn(),
+            findRedemptionByReference: jest.fn().mockResolvedValue(null),
+            recordRedemptionSnapshot: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -147,6 +160,94 @@ describe('PaymentService', () => {
   });
 });
 
+describe('PaymentService — free (100%) coupon bypass', () => {
+  let service: PaymentService;
+  let prismaMock: any;
+  let couponsMock: any;
+  let stripeProviderMock: any;
+  let mesombMock: any;
+
+  beforeEach(async () => {
+    process.env.MESOMB_APP_KEY = 'test_mesomb_app_key';
+    prismaMock = {
+      course: { findUnique: jest.fn() },
+      user: { findUnique: jest.fn() },
+    };
+    couponsMock = {
+      quote: jest.fn(),
+      claimRedemptionSlot: jest.fn(),
+      findRedemptionByReference: jest.fn().mockResolvedValue(null),
+      recordRedemptionSnapshot: jest.fn(),
+    };
+    stripeProviderMock = { createSubscription: jest.fn() };
+    mesombMock = { createSubscription: jest.fn() };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PaymentService,
+        { provide: PrismaService, useValue: prismaMock },
+        { provide: StripeProvider, useValue: stripeProviderMock },
+        { provide: MesombProvider, useValue: mesombMock },
+        { provide: EarningsService, useValue: { recordSaleInTx: jest.fn() } },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: CouponsService, useValue: couponsMock },
+      ],
+    }).compile();
+
+    service = module.get<PaymentService>(PaymentService);
+  });
+
+  afterEach(() => {
+    delete process.env.MESOMB_APP_KEY;
+    jest.clearAllMocks();
+  });
+
+  it('grants access directly, without calling either payment provider, when a coupon zeroes the price', async () => {
+    prismaMock.course.findUnique.mockResolvedValue({
+      id: 'course-1',
+      title: 'Course',
+      price: 100,
+      published: true,
+      instructorId: 'creator-1',
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'a@b.com', fullName: 'A B' });
+    couponsMock.quote.mockResolvedValue({
+      valid: true,
+      couponId: 'coupon-1',
+      discountAmountUsd: 28,
+      originalPriceUsd: 28,
+      finalPriceUsd: 0,
+      currency: 'USD',
+      appliedPlan: 'MONTHLY',
+      discountType: 'PERCENTAGE',
+      discountValue: 100,
+      couponCode: 'FREE100',
+    });
+    (service as any).grantCourseAccess = jest.fn().mockResolvedValue({});
+
+    const result = await service.subscribeCourse('user-1', 'course-1', 'MONTHLY', 'STRIPE', {
+      couponCode: 'FREE100',
+    });
+
+    expect(result).toEqual(
+      expect.objectContaining({ success: true, provider: 'FREE', status: 'ACTIVE' }),
+    );
+    expect(stripeProviderMock.createSubscription).not.toHaveBeenCalled();
+    expect(mesombMock.createSubscription).not.toHaveBeenCalled();
+    expect((service as any).grantCourseAccess).toHaveBeenCalledWith(
+      'user-1',
+      'course-1',
+      'MONTHLY',
+      0,
+      undefined,
+      undefined,
+      'MANUAL',
+      undefined,
+      { couponId: 'coupon-1', originalPriceUsd: 28, discountAmountUsd: 28 },
+    );
+  });
+});
+
 describe('PaymentService — MeSomb webhook signature verification', () => {
   let service: PaymentService;
 
@@ -183,6 +284,15 @@ describe('PaymentService — MeSomb webhook signature verification', () => {
         { provide: MesombProvider, useValue: { createSubscription: jest.fn(), cancelSubscription: jest.fn() } },
         { provide: EarningsService, useValue: { recordSaleInTx: jest.fn(), recordStripeRefund: jest.fn(), recordDisputeOpened: jest.fn(), recordDisputeWon: jest.fn(), auditSystem: jest.fn() } },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        {
+          provide: CouponsService,
+          useValue: {
+            quote: jest.fn(),
+            claimRedemptionSlot: jest.fn(),
+            findRedemptionByReference: jest.fn().mockResolvedValue(null),
+            recordRedemptionSnapshot: jest.fn(),
+          },
+        },
       ],
     }).compile();
     service = module.get<PaymentService>(PaymentService);

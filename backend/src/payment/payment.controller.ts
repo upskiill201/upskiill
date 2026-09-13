@@ -33,6 +33,7 @@ export class PaymentController {
     // charge amount always comes from the server-side pricing ladder.
     @Body('successUrl') successUrl?: string,
     @Body('cancelUrl') cancelUrl?: string,
+    @Body('couponCode') couponCode?: string,
   ) {
     if (!courseId) {
       throw new BadRequestException('Course ID is required');
@@ -58,6 +59,7 @@ export class PaymentController {
         country,
         successUrl,
         cancelUrl,
+        couponCode,
       },
       isAdmin,
     );

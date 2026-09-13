@@ -11,6 +11,11 @@ export interface CreateSubscriptionInput {
   country?: string;
   successUrl?: string;
   cancelUrl?: string;
+  /** Set only when a coupon was applied and re-validated server-side in
+   *  subscribeCourse(). `price` above is already the discounted amount —
+   *  these ride along only so the redemption can survive to the webhook. */
+  couponId?: string;
+  couponDiscountUsd?: number;
 }
 
 export interface SubscriptionResult {
