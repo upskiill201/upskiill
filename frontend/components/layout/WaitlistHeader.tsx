@@ -16,9 +16,11 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: 'Features', anchor: '#features' },
-  { label: 'Solutions', anchor: '#solutions' },
-  { label: 'Marketplace', anchor: '#marketplace' },
+  { label: 'How it works', anchor: '#how-it-works' },
+  { label: 'Rewards', anchor: '#rewards' },
+  { label: 'Leagues', anchor: '#leagues' },
+  { label: 'Community', anchor: '#community' },
+  { label: 'Teach', anchor: '#teach' },
   { label: 'Blog', href: '/blog' },
   { label: 'FAQ', anchor: '#faq' },
 ];
@@ -28,6 +30,7 @@ export default function WaitlistHeader() {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
 
   // Track scroll to toggle glassmorphism
   useEffect(() => {
@@ -36,6 +39,35 @@ export default function WaitlistHeader() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Scroll-spy: highlight whichever section is currently in view, so the
+  // nav reflects where on the page you actually are, not just a static list.
+  useEffect(() => {
+    if (pathname !== '/') {
+      setActiveAnchor(null);
+      return;
+    }
+    const anchors = NAV_LINKS.filter((l) => l.anchor).map((l) => l.anchor!);
+    const sections = anchors
+      .map((a) => document.querySelector(a))
+      .filter((el): el is Element => Boolean(el));
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        // Prefer the one closest to the top of the viewport, matching the
+        // section the visitor is actually reading rather than one merely
+        // peeking into view at the bottom edge.
+        const top = visible.reduce((best, e) => (e.boundingClientRect.top < best.boundingClientRect.top ? e : best));
+        setActiveAnchor('#' + top.target.id);
+      },
+      { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [pathname]);
 
   // Close mobile nav on route change
   useEffect(() => {
@@ -72,19 +104,15 @@ export default function WaitlistHeader() {
     }
   }, [pathname, router]);
 
-  const goToJoin = useCallback(() => {
-    setMobileOpen(false);
-    router.push('/join');
-  }, [router]);
-
   /**
    * "Login" is the application-entry CTA, not a waitlist-conversion one — it
    * goes to the install gateway, which hands a returning learner to
    * /onboarding/0 (sign-in) and a new one to install-then-onboard.
    *
-   * "Get Started" deliberately still goes to /join: that is the waitlist
-   * conversion path while Teyro is pre-launch, and repointing it would quietly
-   * turn off the top of the acquisition funnel.
+   * "Get Started" goes to the same place. It used to point at the /join
+   * waitlist, which was correct while Teyro was pre-launch; now that the
+   * homepage sells the live product, sending the header CTA to a waitlist
+   * form would contradict every button on the page.
    */
   const goToStart = useCallback(() => {
     setMobileOpen(false);
@@ -123,7 +151,7 @@ export default function WaitlistHeader() {
               ) : (
                 <button
                   key={link.label}
-                  className={styles.navLink}
+                  className={`${styles.navLink} ${activeAnchor === link.anchor ? styles.navLinkActive : ''}`}
                   onClick={() => handleNavClick(link.anchor ?? '')}
                   type="button"
                 >
@@ -144,7 +172,7 @@ export default function WaitlistHeader() {
             </button>
             <button
               className={styles.getStartedBtn}
-              onClick={goToJoin}
+              onClick={goToStart}
               type="button"
             >
               Get Started
@@ -236,7 +264,7 @@ export default function WaitlistHeader() {
               </button>
               <button
                 className={styles.mobileGetStartedBtn}
-                onClick={goToJoin}
+                onClick={goToStart}
                 type="button"
               >
                 Get Started

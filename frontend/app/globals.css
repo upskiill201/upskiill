@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+/* ── Marketing surface tokens (Tailwind v4 @theme) ───────────────────────────
+   Registers the homepage palette as real Tailwind utilities (bg-brand,
+   text-ink, bg-band …) so marketing sections stop hardcoding hex, per the
+   no-hardcoded-hex rule in frontend/CLAUDE.md.
+
+   These deliberately track the SHIPPED product blue (#0172FD) used by /start
+   and the student app — not the older #3D5AFE in docs/08-color-system.md. The
+   two had drifted; the marketing surface follows what users actually see. */
+@theme {
+  --color-ink:         #071233;
+  --color-ink-soft:    #47567A;
+  --color-brand:       #0172FD;
+  --color-brand-dark:  #0060D9;
+  --color-brand-deep:  #0050B3;
+  --color-band:        #F1F6FF;
+
+  --radius-card:  20px;
+  --radius-btn:   14px;
+
+  --shadow-lift:  0 12px 32px rgba(7, 18, 51, 0.08);
+}
+
 :root {
   /* Backgrounds */
   --bg-page:        #FFFFFF;
@@ -79,7 +101,49 @@ button {
   font-family: inherit;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* @layer base, not a bare rule: an unlayered CSS rule always beats every
+   Tailwind utility class regardless of specificity or source order (that's
+   how CSS cascade layers work — @import "tailwindcss" expands to named
+   layers, and any rule outside all of them outranks every one of them). Left
+   bare, this "a { color: inherit }" silently overrode every text-white /
+   text-brand / etc. utility ever put on a <Link>, which is exactly what was
+   flattening the hero and final-CTA buttons' text to the inherited body
+   color. Inside @layer base it still wins over nothing (a plain anchor with
+   no color utility keeps inheriting, same as before) but a utility class in
+   the (later) utilities layer now correctly overrides it. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* ── Homepage skill strip marquee ────────────────────────────────────────────
+   CSS-only so no JS drives the loop. The track renders the chip list twice and
+   travels -50%, which lands the second copy exactly where the first started. */
+@keyframes teyro-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.teyro-marquee {
+  animation: teyro-marquee-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+.teyro-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teyro-marquee {
+    animation: none;
+    /* Without the travel the duplicated half is just clutter. */
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+  }
+  .teyro-marquee > :nth-child(n + 10) {
+    display: none;
+  }
 }
