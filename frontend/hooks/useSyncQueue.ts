@@ -66,6 +66,14 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     }
   };
 
+  // Single lock shared by EVERY save path that touches this lesson — granular
+  // autosave (syncMetadata/syncPhase) AND the manual full-save/publish button
+  // handlers in the page. Without this, autosave and "Save & Exit" used to
+  // fire concurrent requests against the same version counter, so one would
+  // legitimately 409 the other even though no other session touched the
+  // lesson — that self-collision was the "saved elsewhere" banner firing on
+  // a single creator working alone. Serializing everything through one lock
+  // makes that class of false-positive conflict impossible.
   const syncLock = useRef<Promise<void>>(Promise.resolve());
 
   const executeWithLock = async (fn: () => Promise<void>) => {
@@ -82,12 +90,23 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     }
   };
 
+  /** 20s cap on any save request. A hung request used to leave `syncStatus`
+   *  stuck on "saving" forever (the awaiting `fetch` never resolves, so the
+   *  `finally` that clears it never runs) — this guarantees it always
+   *  settles into an error state the creator can see and retry. */
+  const SAVE_TIMEOUT_MS = 20000;
+  const fetchWithTimeout = (input: string, init?: RequestInit) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), SAVE_TIMEOUT_MS);
+    return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
+  };
+
   /** Re-sync the version from the server after a conflict. Updates ONLY the
    *  version counter — never touches dirty/status — so callers can retry an
    *  explicit, user-sanctioned save without disarming any guards. */
   const resyncVersion = async (): Promise<number | null> => {
     try {
-      const latest = await fetch(`/api/lesson/${lessonId}`);
+      const latest = await fetchWithTimeout(`/api/lesson/${lessonId}`);
       if (latest.ok) {
         const latestData = await latest.json();
         versionRef.current = latestData.version || versionRef.current;
@@ -130,7 +149,7 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     let conflict = false;
     await executeWithLock(async () => {
       try {
-        const res = await fetch(`/api/lesson/${lessonId}/metadata`, {
+        const res = await fetchWithTimeout(`/api/lesson/${lessonId}/metadata`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...data, version: versionRef.current }),
@@ -182,7 +201,7 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     let conflict = false;
     await executeWithLock(async () => {
       try {
-        const res = await fetch(`/api/lesson/${lessonId}/phases/${phase}`, {
+        const res = await fetchWithTimeout(`/api/lesson/${lessonId}/phases/${phase}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...data, version: versionRef.current }),
@@ -266,6 +285,27 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
+  /** Most recent timestamp among this lesson's pending local backups, or
+   *  null if there are none. Used on mount to offer draft recovery instead
+   *  of silently discarding unsynced edits from a crashed tab / dead network
+   *  that never got flushed (previously `flushQueue` only ran on the
+   *  browser's `online` event, never on page load). */
+  const getLocalBackupTimestamp = useCallback((): number | null => {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(`lesson_${lessonId}_`));
+      let latest: number | null = null;
+      for (const key of keys) {
+        const entry = JSON.parse(localStorage.getItem(key) || 'null');
+        if (entry?.timestamp && (latest === null || entry.timestamp > latest)) {
+          latest = entry.timestamp;
+        }
+      }
+      return latest;
+    } catch {
+      return null;
+    }
+  }, [lessonId]);
+
   /** Drop every pending offline backup for this lesson — used after an
    *  explicit "discard my changes" decision, never automatically. */
   const clearLocalBackups = useCallback(() => {
@@ -290,5 +330,12 @@ export function useSyncQueue(lessonId: string, initialVersion: number = 1) {
     getVersion: useCallback(() => versionRef.current, []),
     resyncVersion,
     clearLocalBackups,
+    flushQueue,
+    getLocalBackupTimestamp,
+    // Exposed so the manual "Save"/"Save & Exit"/"Publish" handlers can run
+    // through the SAME serialization + timeout as granular autosave instead
+    // of firing a second, uncoordinated request against the same version.
+    withSaveLock: executeWithLock,
+    fetchWithTimeout,
   };
 }
