@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Settings as SettingsIcon } from 'lucide-react';
 import {
   Button,
   DataTable,
@@ -84,10 +85,18 @@ export default function AdminCouponsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Coupons & Discounts"
-        subtitle="Every promotional code created by any creator on Teyro — search, filter, and moderate."
-      />
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+        <PageHeader
+          title="Coupons & Discounts"
+          subtitle="Every promotional code created by any creator on Teyro — search, filter, and moderate."
+        />
+        <Link href="/admin/coupons/settings">
+          <Button variant="secondary" size="sm">
+            <SettingsIcon size={13} />
+            Platform settings
+          </Button>
+        </Link>
+      </div>
 
       <div style={{ marginBottom: 12 }}>
         <SearchInput
