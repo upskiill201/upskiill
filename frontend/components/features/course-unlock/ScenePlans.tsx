@@ -189,11 +189,15 @@ export default function ScenePlans({
     if (service) setOperatorCode(service);
   };
 
+  // A coupon can discount a plan all the way to $0 — no payment method is
+  // needed at all in that case, so the rail/MoMo section is skipped entirely.
+  const isFree = activeCouponQuote?.finalPriceUsd === 0;
+
   const handleSubmit = () => {
     if (submitting || !priceKnown) return;
 
     let nationalPhone: string | undefined;
-    if (provider === 'MESOMB') {
+    if (!isFree && provider === 'MESOMB') {
       const result = normalizeMomoPhone(phone, countryMeta);
       if (!result.ok) {
         setPhoneError(result.error ?? 'Enter a valid Mobile Money number.');
@@ -208,7 +212,7 @@ export default function ScenePlans({
     onSubmit({
       plan: selectedPlan,
       provider,
-      ...(provider === 'MESOMB'
+      ...(!isFree && provider === 'MESOMB'
         ? {
             service: operatorCode,
             phone: nationalPhone,
@@ -221,12 +225,14 @@ export default function ScenePlans({
     });
   };
 
-  const isMomo = provider === 'MESOMB';
+  const isMomo = !isFree && provider === 'MESOMB';
   const priceLabel = effectivePrice > 0 ? `$${effectivePrice.toFixed(2)}` : 'Free';
   const ctaLabel = submitting
     ? 'Unlocking…'
     : priceKnown
-      ? `Unlock Course (${priceLabel})`
+      ? isFree
+        ? 'Enroll for Free'
+        : `Unlock Course (${priceLabel})`
       : 'Unlock Course';
 
   return (
@@ -322,27 +328,30 @@ export default function ScenePlans({
             />
           )}
 
-          {/* PAYMENT RAIL SEGMENTED CONTROL */}
-          <div className={styles.railGroup} role="group" aria-label="Payment method">
-            <button
-              type="button"
-              className={`${styles.segmentBtn} ${!isMomo ? styles.segmentBtnActive : ''}`}
-              aria-pressed={!isMomo}
-              onClick={() => selectRail('STRIPE')}
-            >
-              <FaCreditCard size={12} />
-              <span>Card · Stripe</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.segmentBtn} ${isMomo ? styles.segmentBtnActive : ''}`}
-              aria-pressed={isMomo}
-              onClick={() => selectRail('MESOMB')}
-            >
-              <FaMobileAlt size={12} />
-              <span>Mobile Money</span>
-            </button>
-          </div>
+          {/* PAYMENT RAIL SEGMENTED CONTROL — a fully free coupon needs no
+              payment method at all, so this whole rail is skipped. */}
+          {!isFree && (
+            <div className={styles.railGroup} role="group" aria-label="Payment method">
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${!isMomo ? styles.segmentBtnActive : ''}`}
+                aria-pressed={!isMomo}
+                onClick={() => selectRail('STRIPE')}
+              >
+                <FaCreditCard size={12} />
+                <span>Card · Stripe</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${isMomo ? styles.segmentBtnActive : ''}`}
+                aria-pressed={isMomo}
+                onClick={() => selectRail('MESOMB')}
+              >
+                <FaMobileAlt size={12} />
+                <span>Mobile Money</span>
+              </button>
+            </div>
+          )}
 
           {/* MOMO DETAILS */}
           {isMomo && countryMeta && (
@@ -433,23 +442,31 @@ export default function ScenePlans({
           </span>
         </div>
 
-        {/* PAYMENT LOGOS */}
-        <div className={styles.logoChips} aria-label="Accepted payment methods">
-          <span className={styles.logoBadge}><FaCcVisa size={20} /></span>
-          <span className={styles.logoBadge}><FaCcMastercard size={20} /></span>
-          <span className={styles.logoBadge}><FaCcApplePay size={20} /></span>
-          <span className={styles.logoBadge}><FaGooglePay size={20} /></span>
-          <span className={styles.textChip}>MoMo</span>
-          <span className={styles.textChip}>Orange</span>
-        </div>
+        {/* PAYMENT LOGOS — no payment method involved for a free coupon. */}
+        {!isFree && (
+          <div className={styles.logoChips} aria-label="Accepted payment methods">
+            <span className={styles.logoBadge}><FaCcVisa size={20} /></span>
+            <span className={styles.logoBadge}><FaCcMastercard size={20} /></span>
+            <span className={styles.logoBadge}><FaCcApplePay size={20} /></span>
+            <span className={styles.logoBadge}><FaGooglePay size={20} /></span>
+            <span className={styles.textChip}>MoMo</span>
+            <span className={styles.textChip}>Orange</span>
+          </div>
+        )}
 
         <p className={styles.billingNotice}>
           <CircleCheck size={11} />
           <span>
-            Recurring billing until you cancel.{' '}
-            <Link href="/terms" target="_blank" className={styles.refundLink}>
-              Refund policy
-            </Link>
+            {isFree ? (
+              'No payment required — enjoy the course!'
+            ) : (
+              <>
+                Recurring billing until you cancel.{' '}
+                <Link href="/terms" target="_blank" className={styles.refundLink}>
+                  Refund policy
+                </Link>
+              </>
+            )}
           </span>
         </p>
       </footer>

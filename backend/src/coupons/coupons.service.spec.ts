@@ -14,6 +14,7 @@ const DEFAULT_SETTINGS = {
   maxActiveCouponsPerCreator: 20,
   allowFixedAmountDiscounts: true,
   allowUnlimitedRedemptions: true,
+  allowFreeCoupons: false,
 };
 
 const mockPrisma = {
@@ -203,6 +204,16 @@ describe('CouponsService', () => {
       expect(result).toEqual({ valid: false, reason: 'BELOW_MINIMUM_CHARGE' });
     });
 
+    it('is exempt from the maxDiscountPercent clamp at exactly 100% (fully free)', async () => {
+      mockPrisma.coupon.findUnique.mockResolvedValue(activeCoupon({ discountValue: 100 }));
+      const result = await service.quote({ courseId: 'course-1', plan: 'MONTHLY', code: 'SAVE20' });
+      expect(result.valid).toBe(true);
+      if (result.valid) {
+        expect(result.finalPriceUsd).toBe(0);
+        expect(result.discountAmountUsd).toBeCloseTo(result.originalPriceUsd, 2);
+      }
+    });
+
     it('rejects when coupons are globally disabled', async () => {
       mockPrisma.platformSettings.findUnique.mockResolvedValue({
         ...DEFAULT_SETTINGS,
@@ -236,6 +247,57 @@ describe('CouponsService', () => {
     });
 
     it('rejects a percentage discount above the platform max', async () => {
+      mockPrisma.coupon.count.mockResolvedValue(0);
+      mockPrisma.course.count.mockResolvedValue(1);
+      await expect(
+        service.create('creator-1', {
+          code: 'HUGE',
+          discountType: 'PERCENTAGE',
+          discountValue: 95,
+          courseIds: ['course-1'],
+          plans: ['MONTHLY'],
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects a 100% coupon when the platform has not opted into free coupons', async () => {
+      mockPrisma.coupon.count.mockResolvedValue(0);
+      mockPrisma.course.count.mockResolvedValue(1);
+      await expect(
+        service.create('creator-1', {
+          code: 'FREE100',
+          discountType: 'PERCENTAGE',
+          discountValue: 100,
+          courseIds: ['course-1'],
+          plans: ['MONTHLY'],
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('allows a 100% coupon once the platform opts into free coupons', async () => {
+      mockPrisma.platformSettings.findUnique.mockResolvedValue({
+        ...DEFAULT_SETTINGS,
+        allowFreeCoupons: true,
+      });
+      mockPrisma.coupon.count.mockResolvedValue(0);
+      mockPrisma.course.count.mockResolvedValue(1);
+      mockPrisma.coupon.create.mockResolvedValue(activeCoupon({ discountValue: 100 }));
+      await expect(
+        service.create('creator-1', {
+          code: 'FREE100',
+          discountType: 'PERCENTAGE',
+          discountValue: 100,
+          courseIds: ['course-1'],
+          plans: ['MONTHLY'],
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it('still rejects a non-100% discount above the platform max even with free coupons allowed', async () => {
+      mockPrisma.platformSettings.findUnique.mockResolvedValue({
+        ...DEFAULT_SETTINGS,
+        allowFreeCoupons: true,
+      });
       mockPrisma.coupon.count.mockResolvedValue(0);
       mockPrisma.course.count.mockResolvedValue(1);
       await expect(

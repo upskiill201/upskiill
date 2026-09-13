@@ -233,6 +233,7 @@ export class AdminCouponsService {
       maxActiveCouponsPerCreator?: number;
       allowFixedAmountDiscounts?: boolean;
       allowUnlimitedRedemptions?: boolean;
+      allowFreeCoupons?: boolean;
     },
   ) {
     if (

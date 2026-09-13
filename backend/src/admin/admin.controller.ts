@@ -365,6 +365,7 @@ export class AdminController {
       maxActiveCouponsPerCreator?: number;
       allowFixedAmountDiscounts?: boolean;
       allowUnlimitedRedemptions?: boolean;
+      allowFreeCoupons?: boolean;
     },
   ) {
     return this.adminCoupons.updateSettings(actor.id, body);

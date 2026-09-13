@@ -165,6 +165,24 @@ export class CouponsService {
     }
   }
 
+  /** A PERCENTAGE coupon at exactly 100 (fully free) is the one value allowed
+   *  to exceed maxDiscountPercent — and only when the platform has opted in.
+   *  Every other percentage is still capped normally. */
+  private assertPercentAllowed(
+    discountType: CouponDiscountType,
+    discountValue: number,
+    settings: { maxDiscountPercent: number; allowFreeCoupons: boolean },
+  ) {
+    if (discountType !== 'PERCENTAGE' || discountValue <= settings.maxDiscountPercent) return;
+    const isFullyFree = discountValue === 100;
+    if (isFullyFree && settings.allowFreeCoupons) return;
+    throw new BadRequestException(
+      isFullyFree
+        ? 'Free (100%) coupons are not currently allowed on Teyro'
+        : `Discount cannot exceed ${settings.maxDiscountPercent}%`,
+    );
+  }
+
   async create(creatorId: string, input: CreateCouponInput) {
     const settings = await this.getPlatformSettings();
     if (!settings.couponsEnabled) {
@@ -190,11 +208,7 @@ export class CouponsService {
     }
 
     this.validateDiscountShape(input.discountType, input.discountValue);
-    if (input.discountType === 'PERCENTAGE' && input.discountValue > settings.maxDiscountPercent) {
-      throw new BadRequestException(
-        `Discount cannot exceed ${settings.maxDiscountPercent}%`,
-      );
-    }
+    this.assertPercentAllowed(input.discountType, input.discountValue, settings);
 
     const code = normalizeCode(input.code);
     if (!/^[A-Z0-9-]{3,32}$/.test(code)) {
@@ -319,9 +333,7 @@ export class CouponsService {
       const nextValue = patch.discountValue ?? coupon.discountValue;
       this.validateDiscountShape(nextType, nextValue);
       const settings = await this.getPlatformSettings();
-      if (nextType === 'PERCENTAGE' && nextValue > settings.maxDiscountPercent) {
-        throw new BadRequestException(`Discount cannot exceed ${settings.maxDiscountPercent}%`);
-      }
+      this.assertPercentAllowed(nextType, nextValue, settings);
     }
 
     if (patch.courseIds) await this.assertOwnsCourses(creatorId, patch.courseIds);
@@ -447,9 +459,13 @@ export class CouponsService {
 
     // Clamp: max discount % (fixed amounts are converted to an effective
     // percent-of-basePrice and capped the same way), and never below $0.
+    // A coupon already created at exactly 100% (fully free — only possible
+    // when it passed assertPercentAllowed's allowFreeCoupons gate at create
+    // time) is exempt from the maxDiscountPercent clamp here.
     let discountAmountUsd: number;
     if (coupon.discountType === 'PERCENTAGE') {
-      const pct = Math.min(coupon.discountValue, settings.maxDiscountPercent);
+      const pct =
+        coupon.discountValue === 100 ? 100 : Math.min(coupon.discountValue, settings.maxDiscountPercent);
       discountAmountUsd = (basePrice * pct) / 100;
     } else {
       const maxByPct = (basePrice * settings.maxDiscountPercent) / 100;
@@ -461,8 +477,11 @@ export class CouponsService {
 
     // Reject rather than silently cap — a capped discount would make the
     // displayed price diverge unpredictably from a simple formula, and both
-    // providers already enforce their own hard minimums downstream.
-    if (finalPriceUsd < MIN_CHARGE_USD) {
+    // providers already enforce their own hard minimums downstream. A fully
+    // free (finalPriceUsd === 0) coupon is exempt — it never reaches a
+    // payment provider at all, so MIN_CHARGE_USD (their minimum chargeable
+    // amount) doesn't apply to it.
+    if (finalPriceUsd > 0 && finalPriceUsd < MIN_CHARGE_USD) {
       return { valid: false, reason: 'BELOW_MINIMUM_CHARGE' };
     }
 

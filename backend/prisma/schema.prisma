@@ -2373,6 +2373,10 @@ model PlatformSettings {
   maxActiveCouponsPerCreator Int     @default(20)
   allowFixedAmountDiscounts  Boolean @default(true)
   allowUnlimitedRedemptions  Boolean @default(true)
+  // Lets a PERCENTAGE coupon's discountValue be exactly 100 (fully free),
+  // bypassing maxDiscountPercent for that one exact value only — every other
+  // percentage is still capped normally. Off by default; an admin opts in.
+  allowFreeCoupons           Boolean @default(false)
 
   updatedAt        DateTime @updatedAt
   updatedByAdminId String?
