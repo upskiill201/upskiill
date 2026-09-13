@@ -77,6 +77,29 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  /**
+   * Retired URLs.
+   *
+   * /join was the Tally waitlist, the conversion path while Teyro was
+   * pre-launch. The product is live now, so the form is gone — but the URL is
+   * out in social bios, emails and ads, so it redirects instead of 404ing.
+   *
+   * This lives in config rather than as a page calling redirect(): by the time
+   * a page body throws, the root layout has already begun streaming, so Next
+   * can only finish the response as a 200 carrying a client-side redirect.
+   * A config redirect answers with a real 308 before any render, which is what
+   * search engines need to move the URL's link equity to /start.
+   */
+  async redirects() {
+    return [
+      {
+        source: '/join',
+        destination: '/start',
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://upskiill-backend.onrender.com';
 

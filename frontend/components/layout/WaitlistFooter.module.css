@@ -50,7 +50,7 @@
 
 .linksWrapper {
   display: flex;
-  gap: 100px;
+  gap: 64px;
   flex-wrap: wrap;
 }
 
