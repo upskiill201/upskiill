@@ -27,16 +27,31 @@ export default function WaitlistFooter() {
               />
             </Link>
             <p className={styles.tagline}>
-              Personalised AI-Powered Learning That Actually Works.
+              The fun, and effective way to learn and build skills.
             </p>
           </div>
 
           <div className={styles.linksWrapper}>
+            {/* "/#anchor" (not bare "#anchor") so these still work from any
+                other route — Next.js Link navigates home and the browser
+                jumps to the hash, instead of trying to scroll a section that
+                doesn't exist on the current page. */}
             <div className={styles.linkCol}>
               <h4>Product</h4>
               <ul>
-                <li><Link href="#features">Features</Link></li>
-                <li><Link href="#faq">FAQs</Link></li>
+                <li><Link href="/#how-it-works">How it works</Link></li>
+                <li><Link href="/#rewards">Rewards</Link></li>
+                <li><Link href="/#leagues">Leagues</Link></li>
+                <li><Link href="/#community">Community</Link></li>
+                <li><Link href="/#faq">FAQs</Link></li>
+              </ul>
+            </div>
+
+            <div className={styles.linkCol}>
+              <h4>Creators</h4>
+              <ul>
+                <li><Link href="/teach">Teach on Teyro</Link></li>
+                <li><Link href="/creator/onboarding">Become a Creator</Link></li>
                 <li><Link href="/blog">Blog</Link></li>
               </ul>
             </div>

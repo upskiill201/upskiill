@@ -30,9 +30,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://teyro.app'),
 
   // ── Primary SEO ──
-  title: 'Teyro. Personalize learning for everyone',
+  // Describes what actually ships. The previous copy called Teyro an
+  // "AI-personalized learning platform"; AI is Phase Two and disarmed, so that
+  // was promising a product nobody could use yet.
+  title: 'Teyro — The fun, and effective way to learn and build skills',
   description:
-    'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
+    'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
 
   // ── Keywords ──
   keywords: [
@@ -41,7 +44,7 @@ export const metadata: Metadata = {
     'Teyro platform', 'Teyro app', 'what is Teyro', 'Teyro learning', 'Teyro edtech',
     // Core product
     'online learning platform', 'skill learning platform', 'learn skills online',
-    'edtech platform', 'AI learning platform', 'project-based learning platform',
+    'edtech platform', 'gamified learning app', 'project-based learning platform',
     // Problem-based (high conversion)
     'online learning not working', 'why online courses fail', 'low course completion rates',
     'tired of online courses', 'ineffective online learning', 'problems with Udemy courses',
@@ -50,15 +53,14 @@ export const metadata: Metadata = {
     'learn skills faster', 'build real skills', 'job-ready skills online',
     'project-based learning', 'learn by doing', 'practical skill learning',
     'structured learning programs', 'stay consistent learning',
-    'skill development platform', 'mentorship learning platform',
-    // AI + Modern learning
-    'AI-powered learning', 'AI learning assistant', 'personalized learning platform',
-    'adaptive learning system', 'smart learning platform', 'AI education platform',
-    // Waitlist / pre-launch
-    'Teyro waitlist', 'Teyro.app waitlist', 'join Teyro early', 'Teyro early access',
-    'join learning platform waitlist', 'early access learning platform',
-    'upcoming edtech platform', 'new online learning platform',
-    'beta access learning app', 'sign up for early access learning platform',
+    'skill development platform', 'personalized learning platform',
+    // How it actually works — the shipped mechanics
+    'learning app with streaks', 'earn XP learning', 'learning leaderboards',
+    'weekly leagues learning app', 'daily learning habit app',
+    'learning app rewards', 'short lessons app', 'learn and practice app',
+    'installable learning app', 'offline learning app',
+    // Creator side
+    'create and sell courses', 'sell courses online', 'course creator platform',
     // Comparison / positioning
     'Duolingo for learning skills', 'Duolingo for coding', 'Duolingo for skill learning',
     'Duolingo for professional skills', 'Duolingo but for skills',
@@ -75,11 +77,11 @@ export const metadata: Metadata = {
     // Long-tail high-intent
     'best platform to learn skills online', 'how to learn skills faster online',
     'platforms better than Udemy', 'project-based learning platforms online',
-    'how to stay consistent learning online', 'online learning with mentorship',
+    'how to stay consistent learning online',
     'platforms that help you build real skills',
     'is there a Duolingo for learning skills', 'apps like Duolingo for coding or skills',
     'how to learn skills daily like Duolingo', 'best gamified learning platforms for skills',
-    'how to stay consistent learning online', 'platforms that help you build skills not just watch',
+    'platforms that help you build skills not just watch',
   ],
 
   // ── Open Graph (social sharing) ──
@@ -87,16 +89,16 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro. Personalize learning for everyone',
+    title: 'Teyro — The fun, and effective way to learn and build skills',
     description:
-      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
+      'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
     locale: 'en_US',
     images: [
       {
         url: '/teyro-og.png',
         width: 1200,
         height: 630,
-        alt: 'Teyro. Personalize learning for everyone',
+        alt: 'Teyro — learn practical skills in short lessons',
       },
     ],
   },
@@ -105,9 +107,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro. Personalize learning for everyone',
+    title: 'Teyro — The fun, and effective way to learn and build skills',
     description:
-      'Teyro is an AI-personalized learning platform designed to help you learn effectively and achieve better results.',
+      'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
     images: ['/teyro-og.png'],
   },
 
