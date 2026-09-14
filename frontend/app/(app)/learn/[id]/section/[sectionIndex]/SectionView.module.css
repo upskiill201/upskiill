@@ -2257,12 +2257,23 @@
   background-color: #E2E8F0;
 }
 
+/* Non-scrolling top block: title + video/audio player. Stays fixed while
+   .learnContentScroll below it scrolls independently. */
+.learnFixedTop {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+
 .learnContentScroll {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   padding: 0 16px 24px;
 }
 
@@ -2274,8 +2285,11 @@
 }
 
 @media (max-width: 768px) {
+  .learnFixedTop {
+    padding: 0;
+  }
   .learnContentScroll {
-    padding: 0 0 140px 0; /* Add bottom padding so fixed footer doesn't hide content */
+    padding: 0 16px 24px;
   }
   .learnHeader {
     padding: 0 16px;
@@ -2298,27 +2312,53 @@
   line-height: 1.2;
 }
 
-/* Video Player */
+/* Video Player — treated as the lesson's primary content, so it gets a
+   generous, capped width rather than shrinking to fit alongside other content. */
 .videoPlayerWrap {
   position: relative;
-  width: 95%;
+  width: 100%;
+  max-width: 960px;
   aspect-ratio: 16 / 9;
   border-radius: 20px;
   overflow: hidden;
   background-color: #000;
-  margin-bottom: 32px;
-  flex-shrink: 1;
-  min-height: 0;
+  margin: 0 auto 32px;
+  flex-shrink: 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  margin-left: auto;
-  margin-right: auto;
 }
 
 @media (max-width: 768px) {
   .videoPlayerWrap {
     width: 100%;
     border-radius: 0;
+    margin-bottom: 24px;
   }
+}
+
+/* Long lesson description — rendered between the video and resources. */
+.learnDescriptionSection {
+  margin-bottom: 32px;
+}
+
+.learnDescriptionHeading {
+  font-size: 16px;
+  font-weight: 800;
+  color: #071233;
+  margin: 0 0 12px;
+}
+
+.learnDescriptionBody {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.learnDescriptionBody p {
+  margin: 0 0 16px;
+}
+
+.learnDescriptionBody p:last-child {
+  margin-bottom: 0;
 }
 
 .videoPlayOverlay {

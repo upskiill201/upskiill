@@ -1866,48 +1866,65 @@ function SectionViewContent({
               {lessonPhase === 'learn' && (
                 <>
                   <LearnProgressBar progress={learnProgress} />
+                  <div className={styles.learnFixedTop}>
+                    <PhaseHeader eyebrow="Let's learn" title={activeLesson.title} />
+
+                    {videoUrl ? (
+                      <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
+                        <video
+                          ref={learnVideoRef}
+                          src={videoUrl}
+                          controls
+                          controlsList="nodownload"
+                          onEnded={() => setVideoEnded(true)}
+                          onError={() => setVideoEnded(true)}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                      </div>
+                    ) : learnAudioUrl ? (
+                      <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', flexDirection: 'column', gap: 16, padding: 24 }}>
+                        <Image src="/Icons/headphones.png" width={64} height={64} alt="Audio lesson" />
+                        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                        <audio
+                          src={learnAudioUrl}
+                          controls
+                          onEnded={() => setVideoEnded(true)}
+                          onError={() => setVideoEnded(true)}
+                          style={{ width: '100%', maxWidth: 480 }}
+                        />
+                      </div>
+                    ) : !learnTextHtml ? (
+                      <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F5F9', boxShadow: 'none', border: '2px dashed #E2E8F0' }}>
+                        <div style={{ textAlign: 'center', color: '#64748B' }}>
+                          <Info size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
+                          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No lesson content yet</h3>
+                          <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached media or reading material to this lesson yet.</p>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+
                   <div className={styles.learnContentScroll} ref={learnScrollRef}>
-                <PhaseHeader eyebrow="Let's learn" title={activeLesson.title} />
-
-                {videoUrl ? (
-                  <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
-                    <video
-                      ref={learnVideoRef}
-                      src={videoUrl}
-                      controls
-                      controlsList="nodownload"
-                      onEnded={() => setVideoEnded(true)}
-                      onError={() => setVideoEnded(true)}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  </div>
-                ) : learnAudioUrl ? (
-                  <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', flexDirection: 'column', gap: 16, padding: 24 }}>
-                    <Image src="/Icons/headphones.png" width={64} height={64} alt="Audio lesson" />
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                    <audio
-                      src={learnAudioUrl}
-                      controls
-                      onEnded={() => setVideoEnded(true)}
-                      onError={() => setVideoEnded(true)}
-                      style={{ width: '100%', maxWidth: 480 }}
-                    />
-                  </div>
-                ) : !learnTextHtml ? (
-                  <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F5F9', boxShadow: 'none', border: '2px dashed #E2E8F0' }}>
-                    <div style={{ textAlign: 'center', color: '#64748B' }}>
-                      <Info size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No lesson content yet</h3>
-                      <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached media or reading material to this lesson yet.</p>
-                    </div>
-                  </div>
-                ) : null}
-
                 {learnTextHtml && (
                   <div
                     className={styles.learnArticleBody}
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(learnTextHtml) }}
                   />
+                )}
+
+                {/* Long lesson description — distinct from the short card/search
+                    summary; gives learners context before Apply. */}
+                {activeLesson?.description && (
+                  <div className={styles.learnDescriptionSection}>
+                    <h4 className={styles.learnDescriptionHeading}>Lesson description</h4>
+                    <div className={styles.learnDescriptionBody}>
+                      {activeLesson.description
+                        .split(/\n\s*\n/)
+                        .map((para: string, i: number) => para.trim() && (
+                          <p key={i}>{para}</p>
+                        ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Resources Section */}
