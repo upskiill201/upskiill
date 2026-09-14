@@ -1,52 +1,40 @@
 /**
  * Tey's in-lesson coach bubble.
  *
- * Floats above the content rather than sitting in the flow — a line that
- * reflowed the page every time Tey spoke would be worse than no line at all.
+ * Portalled to document.body (see TeyLessonCoach.tsx) and centered on the
+ * viewport — it used to be bottom-docked, which put it directly on top of
+ * the Apply phase's CHECK ANSWER / CONTINUE button (also bottom-anchored on
+ * mobile). Centering keeps it clear of any phase's primary action button.
  * Pointer events stay on so the learner can dismiss it by tapping.
  */
 
 .coach {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 60;
 
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 auto;
-  max-width: 560px;
+  width: min(90vw, 420px);
   padding: 12px 16px 12px 12px;
   box-sizing: border-box;
 
   background-color: var(--bg-card);
   border: 2px solid var(--phase-accent, var(--border));
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(31, 42, 68, 0.12);
+  box-shadow: 0 12px 32px rgba(31, 42, 68, 0.18);
   cursor: pointer;
 }
 
-/* Used outside LessonShell (no `--phase-accent` ancestor to anchor to, and no
-   scoped container to position relative to) — the section map's node-unlock
-   moment. Same visual language, pinned to the viewport instead, with a warm
-   gold border tying it to the unlock glow rather than a generic grey one. */
+/* Used outside LessonShell (no `--phase-accent` ancestor to inherit) — the
+   section map's node-unlock moment. Same centered positioning as `.coach`,
+   just a warm gold border tying it to the unlock glow rather than a generic
+   grey one. */
 .coachFixed {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
-  margin: 0 auto;
   border-color: #EAB308;
-}
-
-@media (max-width: 768px) {
-  .coachFixed {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-  }
 }
 
 .avatar {
@@ -74,9 +62,7 @@
 
 @media (max-width: 768px) {
   .coach {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    width: min(92vw, 380px);
     padding: 10px 12px 10px 10px;
     gap: 8px;
   }

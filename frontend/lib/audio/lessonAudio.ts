@@ -25,7 +25,8 @@
  * answers climb it) so the association compounds instead of competing.
  */
 
-import { PENTATONIC, getBus, scheduleNoise, scheduleTone, shouldPlay } from './synth';
+import { PENTATONIC, getBus, scheduleNoise, scheduleSparkleDust, scheduleTone, shouldPlay } from './synth';
+import { getComboTier } from '../lesson/comboTier';
 
 /** The four phase-advance notes, in order. Indexed by `PHASE_ORDER`. */
 const LADDER = [
@@ -90,31 +91,63 @@ export function playPhaseUnlock(stepIndex: number) {
 
 // ─── Apply feedback ─────────────────────────────────────────────────────────
 
+// Tier 5 (combo 6+) rotates between two light variations so a long run
+// doesn't play the exact same sound over and over. Module-level so the "last
+// pick" persists across calls without threading state through the caller.
+let lastTier5Variant = -1;
+function pickTier5Variant(): 0 | 1 {
+  const next = lastTier5Variant === 0 ? 1 : lastTier5Variant === 1 ? 0 : Math.round(Math.random());
+  lastTier5Variant = next;
+  return next as 0 | 1;
+}
+
 /**
- * A correct answer, pitched by how many you have got right in a row.
+ * A correct answer, pitched by how many you have got right in a row and
+ * layered by tier (see `getComboTier` — 1 calm, 5 capped-but-varied).
  *
  * The old behaviour played one fixed arpeggio for every correct answer
  * forever, which is a fixed reinforcement schedule — it stops registering
  * fast. Climbing the ladder instead makes the fourth correct answer sound
- * different from the first, which is the whole point.
+ * different from the first, which is the whole point. Layering additional
+ * harmony notes per tier (rather than just pitch) is what keeps tier 4-5
+ * from just sounding "the same note, but higher."
  *
  * @param combo 1-based count of consecutive correct answers.
  */
 export function playComboCorrect(combo: number) {
   const bus = getBus();
-  if (!bus) return;
+  if (!bus || !shouldPlay('comboCorrect')) return;
 
-  // Cap the climb so a long run never gets shrill.
+  const tier = getComboTier(combo);
+
+  // Cap the climb so a long run never gets shrill — same clamp as before.
   const step = Math.max(0, Math.min(combo - 1, PENTATONIC.length - 1));
   const freq = PENTATONIC[step];
 
-  scheduleTone(bus, { freq, dur: 0.2, type: 'triangle', gain: 0.16 });
+  // Tier 1: root + octave shimmer. The calm baseline, unchanged.
+  const rootGain = tier >= 4 ? 0.18 : 0.16;
+  scheduleTone(bus, { freq, dur: 0.2, type: 'triangle', gain: rootGain });
   scheduleTone(bus, { freq: freq * 2, at: 0.02, dur: 0.12, type: 'sine', gain: 0.055 });
 
-  // From the third in a row the sound gains a third above it — the run itself
-  // becomes audible, not just the individual answer.
-  if (combo >= 3) {
+  // Tier 2: a quiet high tail on top — "you're getting it," still subtle.
+  if (tier === 2) {
+    scheduleTone(bus, { freq: freq * 2.5, at: 0.05, dur: 0.1, type: 'sine', gain: 0.04 });
+  }
+
+  // Tier 3+: a third above turns the run itself audible, not just the answer.
+  if (tier >= 3) {
     scheduleTone(bus, { freq: freq * 1.26, at: 0.07, dur: 0.2, type: 'triangle', gain: 0.09 });
+  }
+
+  // Tier 4+: add a fifth above for a fuller chord — "strong momentum."
+  if (tier >= 4) {
+    scheduleTone(bus, { freq: freq * 1.5, at: 0.09, dur: 0.22, type: 'triangle', gain: 0.08 });
+  }
+
+  // Tier 5: capped intensity, rotated texture so back-to-back answers on a
+  // long run don't sound identical — alternates a sparkle tail on/off.
+  if (tier === 5 && pickTier5Variant() === 0) {
+    scheduleSparkleDust(bus, 0.12);
   }
 }
 
@@ -131,6 +164,19 @@ export function playAnswerWrong() {
   if (!bus || !shouldPlay('answerWrong')) return;
   scheduleTone(bus, { freq: 392, dur: 0.14, type: 'sine', gain: 0.1 });
   scheduleTone(bus, { freq: 329.63, at: 0.1, dur: 0.2, type: 'sine', gain: 0.085 });
+}
+
+/**
+ * Tey's coach bubble appearing. A quick, bright single blip — not the ladder
+ * (that's reserved for phase/combo progress), just a light "pop" so the
+ * bubble's entrance is felt as well as seen. Nudged by `tone` so it doesn't
+ * contradict the mascot's own entrance motion (cheer/nudge/neutral).
+ */
+export function playTeyPopIn(tone: 'neutral' | 'cheer' | 'nudge' = 'neutral') {
+  const bus = getBus();
+  if (!bus || !shouldPlay('teyPopIn')) return;
+  const freq = tone === 'cheer' ? PENTATONIC[4] : tone === 'nudge' ? PENTATONIC[1] : PENTATONIC[2];
+  scheduleTone(bus, { freq, dur: 0.12, type: 'sine', gain: 0.1, slideTo: freq * 1.15 });
 }
 
 // ─── Progress / gating ──────────────────────────────────────────────────────
