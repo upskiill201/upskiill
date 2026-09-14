@@ -13,6 +13,7 @@ export default function HeaderWrapper() {
     pathname === '/' ||
     pathname === '/terms' ||
     pathname === '/privacy' ||
+    pathname === '/teach' ||
     pathname?.startsWith('/blog');
 
   // Routes that show NO header at all

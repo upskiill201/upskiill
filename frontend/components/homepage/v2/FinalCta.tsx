@@ -2,109 +2,112 @@
 
 /**
  * FinalCta — closing section, built to match Coddy's own: a white band, a
- * short "Learn ___ with {brand}" headline, a plain outlined button, then a
- * blue wave banner with the mascot standing in the valley and real reward
- * icons floating around it (not Coddy's icons re-skinned — our own treasure
- * chest, XP gem, coin, streak flame and a Fitness skill icon from
- * onboarding, since Teyro teaches more than one thing).
+ * short "Learn ___ with {brand}" headline, a tactile pill button, then a
+ * blue wave banner with the mascot standing in the valley and reward icons
+ * arranged along the wave's shoulders (our own treasure chest, XP gems,
+ * streak flame, a Fitness skill icon from onboarding, and a completed-
+ * lesson checkmark — not Coddy's icons re-skinned, since Teyro teaches
+ * more than one thing).
  *
- * The wave's curve geometry lives inside the SAME capped-width box as the
- * mascot/icon cluster (STAGE_WIDTH), not spread across the full viewport.
- * An earlier version put the curve in viewport-wide coordinates while the
- * cluster stayed capped — on a wide screen the two hill peaks then landed
- * far outside the visible cluster, so what showed around the mascot was
- * just a random middle fragment of the curve, reading as one lopsided
- * slope instead of a valley. A plain flat rectangle sits behind the capped
- * curve, at the same height as the curve's flat left/right edges, so full-
- * bleed blue still reaches both sides of the screen without redrawing the
- * hills out there.
+ * The wave is a single full-bleed SVG (viewBox 0 0 1000 300, symmetric
+ * around x=500, preserveAspectRatio="none") rather than a capped-width
+ * curve glued to flat side rectangles. An earlier version split those two
+ * pieces, and on a wide screen the curve's shoulders landed outside the
+ * capped stage, cutting the S-curve off before it returned to full height.
+ * A single full-bleed path has no seam to misalign at any viewport width.
+ * The icon/mascot cluster still lives in a capped-width stage centered
+ * over the same curve so it always lines up with the trough.
+ *
+ * The banner sits OUTSIDE the `items-center` flex column that centers the
+ * heading/button, as a plain block-level sibling — not nested inside it.
+ * The classic `left-1/2 -translate-x-1/2 w-screen` full-bleed trick relies
+ * on the element's flow ("static") position starting flush with its
+ * container's left edge; `align-items: center` on a flex parent instead
+ * centers an overflowing child ahead of that offset, which silently
+ * shifted the whole banner left of true center on any viewport wider than
+ * Band's 1100px column — the right shoulder of the curve then never
+ * reached the viewport's right edge, reading as the wave "cutting off."
  */
 
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
+import TactileButton from './TactileButton';
 
 const STAGE_WIDTH = 720;
-const STAGE_HEIGHT = 300;
-// Height of the curve's flat edges, as a fraction of STAGE_HEIGHT — the flat
-// full-bleed rectangle behind the stage starts at this same height so the
-// two pieces line up with no visible seam.
-const EDGE_HEIGHT_PCT = 20;
 
-export default function FinalCta() {
+// Wave geometry, in the SVG's own 0–300 unit space (independent of
+// on-screen pixels — preserveAspectRatio="none" stretches it to fill the
+// banner at any width/height). Symmetric around x=500: every control/anchor
+// point left of center has a mirrored twin on the right, so both shoulders
+// curve back up to full height with matching radii.
+const WAVE_PATH =
+  'M0,60 C160,60 220,180 400,205 C460,215 540,215 600,205 C780,180 840,60 1000,60 L1000,300 L0,300 Z';
+
+// Distance from the wave banner's bottom edge up to the trough's deepest
+// point (205 of 300 units → (300-205)/300), as a percentage. Used to plant
+// the mascot's feet on that line instead of the container's flat bottom.
+const TROUGH_FROM_BOTTOM_PCT = 24;
+
+interface FinalCtaProps {
+  headline?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+export default function FinalCta({
+  headline = 'Learn New Skills with Teyro',
+  ctaLabel = 'GET STARTED',
+  ctaHref = '/start',
+}: FinalCtaProps) {
   return (
-    <div className="flex flex-col items-center text-center">
-      <h2
-        className="text-[clamp(2rem,5vw,3.25rem)] font-extrabold leading-[1.15] tracking-tight text-ink"
-        style={{ fontFamily: 'var(--font-celebration)' }}
-      >
-        Learn New Skills with Teyro
-      </h2>
+    <div className="text-center">
+      <div className="flex flex-col items-center">
+        <h2
+          className="text-[clamp(2rem,5vw,3.25rem)] font-extrabold leading-[1.15] tracking-tight text-ink"
+          style={{ fontFamily: 'var(--font-celebration)' }}
+        >
+          {headline}
+        </h2>
 
-      <Link
-        href="/start"
-        className="mt-7 flex h-14 items-center justify-center rounded-2xl border border-slate-300 bg-white px-9 text-base font-extrabold tracking-wide text-brand transition-colors hover:bg-slate-50"
-      >
-        GET STARTED
-      </Link>
+        <TactileButton href={ctaHref} className="mt-7">
+          {ctaLabel}
+        </TactileButton>
+      </div>
 
-      {/* Full-bleed wave banner — breaks out of Band's centered max-width. */}
+      {/* Full-bleed wave banner — breaks out of Band's centered max-width. Must
+          stay outside the flex column above; see the file-level comment. */}
       <div className="relative left-1/2 mt-16 h-[300px] w-screen -translate-x-1/2 overflow-hidden md:h-[380px]">
-        {/* Flat fill for the margins OUTSIDE the capped stage only — width
-            collapses to 0 on screens narrower than the stage, where the
-            stage itself is already full-bleed and handles its own edges.
-            (An earlier version made this span the full container width,
-            which covered the stage too — since both pieces are the same
-            blue, that silently erased the curve, leaving a flat rectangle
-            with no visible wave at all.) */}
-        <div
-          className="absolute left-0 bottom-0"
-          style={{ top: `${EDGE_HEIGHT_PCT}%`, width: `max(0px, calc((100% - ${STAGE_WIDTH}px) / 2))`, backgroundColor: '#0172FD' }}
-        />
-        <div
-          className="absolute right-0 bottom-0"
-          style={{ top: `${EDGE_HEIGHT_PCT}%`, width: `max(0px, calc((100% - ${STAGE_WIDTH}px) / 2))`, backgroundColor: '#0172FD' }}
-        />
+        <svg
+          viewBox="0 0 1000 300"
+          preserveAspectRatio="none"
+          className="absolute inset-0 h-full w-full"
+          aria-hidden
+        >
+          <path d={WAVE_PATH} style={{ fill: 'var(--color-brand-dark)' }} />
+        </svg>
 
-        {/* Capped-width stage — the curve and the cluster share this box,
-            so the hills always sit right where the mascot/icons are. */}
-        <div className="absolute inset-0 mx-auto w-full max-w-[720px]">
-          <svg
-            viewBox={`0 0 ${STAGE_WIDTH} ${STAGE_HEIGHT}`}
-            preserveAspectRatio="none"
-            className="absolute inset-0 h-full w-full"
-            aria-hidden
-          >
-            <path
-              d={`M0,${STAGE_HEIGHT * 0.2} C 130,${STAGE_HEIGHT * 0.2} 190,${STAGE_HEIGHT * 0.42} 290,${STAGE_HEIGHT * 0.48} C 340,${STAGE_HEIGHT * 0.51} 380,${STAGE_HEIGHT * 0.51} 430,${STAGE_HEIGHT * 0.48} C 530,${STAGE_HEIGHT * 0.42} 590,${STAGE_HEIGHT * 0.2} ${STAGE_WIDTH},${STAGE_HEIGHT * 0.2} L${STAGE_WIDTH},${STAGE_HEIGHT} L0,${STAGE_HEIGHT} Z`}
-              fill="#0172FD"
-            />
-          </svg>
-
-          {/* Treasure chest, upper-left hill */}
-          <div className="absolute left-[10%] top-[26%] h-16 w-16 md:h-20 md:w-20">
+        {/* Capped-width stage — icons and the mascot share this box, centered
+            over the same curve, so they always land on the trough. */}
+        <div className="absolute inset-0 mx-auto w-full" style={{ maxWidth: STAGE_WIDTH }}>
+          {/* Left shoulder: treasure chest + gem pair, climbing toward the peak */}
+          <div className="absolute left-[9%] top-[20%] h-20 w-20 md:h-28 md:w-28">
             <Image src="/Tressure box.webp" alt="" fill className="object-contain" />
           </div>
-
-          {/* XP gems + coin, drifting up toward the chest */}
-          <div className="absolute left-[24%] top-[44%] h-7 w-7 rotate-[-8deg] md:h-9 md:w-9">
+          <div className="absolute left-[23%] top-[42%] h-12 w-12 rotate-[-8deg] md:h-16 md:w-16">
             <Image src="/Icons/gem.png" alt="" fill className="object-contain" />
           </div>
-          <div className="absolute left-[17%] top-[58%] h-6 w-6 rotate-[10deg] md:h-7 md:w-7">
+          <div className="absolute left-[16%] top-[58%] h-12 w-12 rotate-[10deg] md:h-16 md:w-16">
             <Image src="/Icons/gem.png" alt="" fill className="object-contain" />
           </div>
-          <div className="absolute left-[29%] top-[66%] h-7 w-7 rotate-[4deg] md:h-8 md:w-8">
-            <Image src="/Icons/Coin.png" alt="" fill className="object-contain" />
-          </div>
 
-          {/* Streak flame, above and clear of the mascot's bounding box */}
-          <div className="absolute left-[58%] top-[12%] h-10 w-10 md:h-14 md:w-14">
+          {/* Streak flame, near the peak, clear of the mascot's raised arm */}
+          <div className="absolute left-[53%] top-[6%] h-12 w-12 md:h-16 md:w-16">
             <Image src="/Icons/burn.png" alt="" fill className="object-contain" />
           </div>
 
-          {/* Fitness skill icon, upper-right hill (Teyro teaches more than code) */}
-          <div className="absolute right-[12%] top-[20%] h-16 w-16 md:h-20 md:w-20">
+          {/* Right shoulder, mirroring the left: fitness icon + checkmark badge */}
+          <div className="absolute right-[9%] top-[20%] h-20 w-20 md:h-28 md:w-28">
             <Image
               src="/User onbarding Assets/Step 2 icons/Fitness_3d_icon.webp"
               alt=""
@@ -112,17 +115,19 @@ export default function FinalCta() {
               className="object-contain"
             />
           </div>
-
-          {/* Completed-lesson badge, lower-right */}
           <div
-            className="absolute right-[8%] top-[56%] flex h-12 w-12 items-center justify-center rounded-2xl md:h-16 md:w-16"
+            className="absolute right-[10%] top-[52%] flex h-12 w-12 items-center justify-center rounded-2xl md:h-16 md:w-16"
             style={{ backgroundColor: '#58cc02', boxShadow: '0 5px 0 #46a302' }}
           >
             <Check size={26} strokeWidth={4} color="white" />
           </div>
 
-          {/* Tey, standing in the valley */}
-          <div className="absolute bottom-0 left-1/2 h-[210px] w-[210px] -translate-x-1/2 md:h-[270px] md:w-[270px]">
+          {/* Tey, feet planted on the trough's deepest point rather than the
+              stage's flat bottom edge — see TROUGH_FROM_BOTTOM_PCT above. */}
+          <div
+            className="absolute left-1/2 h-[210px] w-[210px] -translate-x-1/2 md:h-[270px] md:w-[270px]"
+            style={{ bottom: `${TROUGH_FROM_BOTTOM_PCT}%`, zIndex: 1 }}
+          >
             <Image src="/dashboard tey.webp" alt="Tey, the Teyro mascot" fill sizes="270px" className="object-contain" priority={false} />
           </div>
         </div>

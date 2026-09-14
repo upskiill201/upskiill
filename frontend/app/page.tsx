@@ -160,7 +160,7 @@ export default function Home() {
         <Faq />
       </Band>
 
-      <Band tone="white">
+      <Band tone="white" flushBottom>
         <FinalCta />
       </Band>
     </main>

@@ -12,6 +12,7 @@ export default function FooterWrapper() {
     pathname === '/' ||
     pathname === '/terms' ||
     pathname === '/privacy' ||
+    pathname === '/teach' ||
     pathname?.startsWith('/blog');
 
   if (

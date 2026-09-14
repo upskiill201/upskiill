@@ -20,7 +20,7 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Rewards', anchor: '#rewards' },
   { label: 'Leagues', anchor: '#leagues' },
   { label: 'Community', anchor: '#community' },
-  { label: 'Teach', anchor: '#teach' },
+  { label: 'Teach', href: '/teach' },
   { label: 'Blog', href: '/blog' },
   { label: 'FAQ', anchor: '#faq' },
 ];

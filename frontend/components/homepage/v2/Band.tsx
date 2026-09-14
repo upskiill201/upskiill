@@ -31,6 +31,14 @@ interface BandProps {
   id?: string;
   /** Tighter vertical rhythm — used by the skill strip. */
   compact?: boolean;
+  /**
+   * Drops the bottom padding, keeping the top. For a section whose content
+   * ends in its own full-bleed visual (a wave banner, a color block) that's
+   * meant to run flush into whatever comes next — e.g. FinalCta's wave
+   * sitting directly on top of the footer instead of leaving a white strip
+   * between them.
+   */
+  flushBottom?: boolean;
   className?: string;
 }
 
@@ -39,6 +47,7 @@ export default function Band({
   tone = 'white',
   id,
   compact = false,
+  flushBottom = false,
   className = '',
 }: BandProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,7 +56,12 @@ export default function Band({
   // view is what makes long marketing pages feel restless.
   const inView = useInView(ref, { once: true, margin: '-80px 0px -80px 0px' });
 
-  const pad = compact ? 'py-10 md:py-12' : 'py-24 md:py-32';
+  // The `md:pb-0` is required alongside the base `pb-0` — Tailwind emits
+  // responsive variants after base utilities, so `md:py-32`'s bottom side
+  // would otherwise win back over a bare `pb-0` at the md breakpoint.
+  const pad = compact
+    ? flushBottom ? 'py-10 md:py-12 pb-0 md:pb-0' : 'py-10 md:py-12'
+    : flushBottom ? 'py-24 md:py-32 pb-0 md:pb-0' : 'py-24 md:py-32';
 
   return (
     <section id={id} className={`w-full ${TONE[tone]} ${pad} ${className}`}>
