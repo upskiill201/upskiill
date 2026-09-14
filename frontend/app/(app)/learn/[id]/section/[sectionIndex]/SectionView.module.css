@@ -2669,6 +2669,16 @@
   white-space: nowrap;
 }
 
+/* Tier 4-5 (4+ in a row) — a warmer fill and a soft glow, same pill, slightly
+   more presence for a stronger run. Capped here: tier 5 doesn't get a
+   further-still variant, it just repeats this one with a confetti burst
+   alongside it (see the Apply JSX). */
+.comboPillStrong {
+  background-color: #FDE68A;
+  border-color: #D97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
 /* Review mode's "try it again with nothing at stake" button — was an inline
    style block. Same amber family as .comboPill above. */
 .tryAgainForFunBtn {

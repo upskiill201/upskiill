@@ -18,6 +18,7 @@ import { useCourseDetail, useCourseProgress, useCourseAccess } from '@/hooks/use
 import { buildUnlockHref } from '@/lib/return-to';
 import { fireConfetti } from '@/lib/confetti';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
+import { getComboTier } from '@/lib/lesson/comboTier';
 import {
   playAnswerWrong,
   playButtonUnlock,
@@ -44,7 +45,6 @@ import LearnProgressBar, { useLearnProgress } from '@/components/learn/LearnProg
 import WordCountBadge from '@/components/learn/WordCountBadge';
 import { SpeechBubble } from '@/components/onboarding/SpeechBubble';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation } from '@/context/RewardAnimationContext';
 import { CURRENCY_ICONS } from '@/components/celebration/currency';
 import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
 import DOMPurify from 'dompurify';
@@ -353,11 +353,6 @@ function SectionViewContent({
   // Use global gamification context for live XP, streak, and lives
   const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
   const { celebrate, closeAll: closeCelebrations } = useCelebration();
-  // Purely visual: this only flies a particle at the pill and fires a DOM
-  // event a dashboard card uses to refetch its own stats — it never mutates
-  // the XP balance itself. The number stays exactly what applyLessonReward
-  // sets on completion; this is a preview of it, not an early payout.
-  const { triggerRewardAnimation } = useRewardAnimation();
   const reducedMotion = useReducedMotion();
   const params = useParams();
   const router = useRouter();
@@ -690,7 +685,7 @@ function SectionViewContent({
       .catch(() => setRetryCharges(0));
   }, [livesCount, lessonPhase, retryCharges]);
 
-  const handleCheckAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCheckAnswer = () => {
     if (selectedOptionIndex === null) return;
     playHaptic('medium');
     setIsAnswerChecked(true);
@@ -708,16 +703,17 @@ function SectionViewContent({
       playComboCorrect(combo);
       if (combo >= 3) sayTey(pickComboLine(combo), 'cheer');
 
-      // A preview flight toward the XP pill, not a payout: triggerRewardAnimation
-      // only flies a particle and pops the pill, it never touches the stored XP
-      // balance (that stays exactly what applyLessonReward sets on completion —
-      // see GamificationContext). Intensifies slightly with the combo so a run
-      // feels like it is building toward something, without implying a false
-      // per-question XP value we don't actually know client-side.
-      triggerRewardAnimation({
-        originElement: e.currentTarget,
-        rewards: [{ currency: 'XP', amount: Math.min(3 + combo, 8) }],
-      });
+      // Tier 5 (6+ in a row) gets one capped, low-particle confetti burst —
+      // same helper the map's node-unlock uses. Doesn't scale further with
+      // combo, and stays quick so it never competes with the CONTINUE button.
+      if (getComboTier(combo) === 5) {
+        fireConfetti({
+          particleCount: 22,
+          spread: 55,
+          origin: { y: 0.75 },
+          colors: ['#58CC02', '#0172FD', '#EAB308'],
+        });
+      }
     } else {
       const brokenStreak = applyComboRef.current;
       applyComboRef.current = 0;
@@ -2008,12 +2004,14 @@ function SectionViewContent({
                 <div className={styles.applyHeaderRow}>
                   <span className={styles.applyBadge}>QUESTION {currentQuestionIndex + 1} OF {applyQuestions.length}</span>
                   {/* The run becomes visible from three, which is where it
-                      starts to feel like something worth protecting. */}
+                      starts to feel like something worth protecting. From
+                      tier 4 (4-5 in a row) the pill gets a stronger modifier
+                      class — same element, slightly more emphasis. */}
                   <AnimatePresence>
                     {applyCombo >= 3 && (
                       <motion.span
                         key={applyCombo}
-                        className={styles.comboPill}
+                        className={`${styles.comboPill} ${getComboTier(applyCombo) >= 4 ? styles.comboPillStrong : ''}`}
                         initial={{ opacity: 0, scale: 0.7, y: -6 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8 }}
@@ -2088,7 +2086,12 @@ function SectionViewContent({
                           <motion.div
                             className={isAnswerCorrect ? styles.celebrationIconCircleCorrect : styles.celebrationIconCircleWrong}
                             initial={{ scale: 0.3 }}
-                            animate={{ scale: 1 }}
+                            animate={{
+                              // Tier 4-5 (4+ in a row) gets a small overshoot
+                              // pulse instead of just settling at 1 — a
+                              // slightly stronger beat for a stronger run.
+                              scale: isAnswerCorrect && getComboTier(applyCombo) >= 4 ? [0.3, 1.18, 1] : 1,
+                            }}
                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                           >
                             {isAnswerCorrect ? <Check size={20} strokeWidth={4} /> : <X size={20} strokeWidth={4} />}

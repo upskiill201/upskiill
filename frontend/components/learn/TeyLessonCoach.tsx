@@ -18,11 +18,24 @@
  * overridable from outside. Dropping it onto the light lesson player looked
  * wrong. The Tey asset and the voice pattern are the parts worth reusing here;
  * the presentation is not.
+ *
+ * ── Why this portals to document.body ─────────────────────────────────────
+ * It used to be `position: absolute`/`fixed` bottom-anchored inside the
+ * lesson shell — which put it directly on top of the Apply phase's CHECK
+ * ANSWER / CONTINUE button, since both were pinned to the same bottom strip.
+ * Centering it on the viewport only works reliably if nothing between here
+ * and `<body>` has a CSS transform (any ancestor transform turns a
+ * `position: fixed` descendant into one positioned relative to that
+ * ancestor instead) — portalling straight to `document.body`, the same
+ * pattern `CelebrationEngine.tsx` uses, sidesteps that entirely rather than
+ * relying on no ancestor ever animating.
  */
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { playTeyPopIn } from '@/lib/audio/lessonAudio';
 import styles from './TeyCoach.module.css';
 
 /** How long a line stays up before it tucks itself away. */
@@ -55,6 +68,11 @@ export default function TeyLessonCoach({
 }: TeyLessonCoachProps) {
   const reducedMotion = useReducedMotion();
 
+  // Portals can only render once mounted client-side (document.body doesn't
+  // exist during SSR) — same gate CelebrationEngine.tsx uses.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Visibility is derived, not stored: a line is up unless its token has been
   // dismissed. Keeping it out of an effect avoids a cascading render on every
   // message change, and means the timer is the only thing the effect owns.
@@ -63,8 +81,10 @@ export default function TeyLessonCoach({
 
   useEffect(() => {
     if (!message) return;
+    playTeyPopIn(tone);
     const timer = setTimeout(() => setDismissedToken(token), DISMISS_MS);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message, token]);
 
   const entrance =
@@ -74,17 +94,19 @@ export default function TeyLessonCoach({
         ? { x: [0, -4, 4, 0] }
         : { y: [0, -5, 0] };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {visible && message && (
         <motion.div
           className={`${styles.coach} ${variant === 'fixed' ? styles.coachFixed : ''}`}
           role="status"
           aria-live="polite"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.94 }}
-          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.96 }}
-          transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
+          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
+          transition={{ type: 'spring', stiffness: 380, damping: 24 }}
           onClick={() => setDismissedToken(token)}
         >
           <motion.div
@@ -103,6 +125,7 @@ export default function TeyLessonCoach({
           <p className={styles.bubble}>{message}</p>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
