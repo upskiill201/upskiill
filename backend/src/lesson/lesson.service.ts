@@ -277,6 +277,9 @@ export class LessonService {
         ...(data.shortDescription !== undefined && {
           shortDescription: data.shortDescription,
         }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
         ...(data.lessonType !== undefined && { lessonType: data.lessonType }),
         ...(data.durationMinutes !== undefined && {
           durationMinutes: Math.max(
@@ -345,6 +348,9 @@ export class LessonService {
         ...(saveData.title !== undefined && { title: saveData.title }),
         ...(saveData.shortDescription !== undefined && {
           shortDescription: saveData.shortDescription,
+        }),
+        ...(saveData.description !== undefined && {
+          description: saveData.description,
         }),
         ...(saveData.lessonType !== undefined && {
           lessonType: saveData.lessonType,

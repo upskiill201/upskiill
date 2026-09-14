@@ -301,6 +301,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const buildSaveSnapshot = () => JSON.stringify([
     lesson?.title,
     lesson?.shortDescription,
+    lesson?.description,
     lesson?.learnVideoUrl,
     lesson?.learnAudioUrl,
     lesson?.learnText,
@@ -490,6 +491,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         const metadataResult = await syncMetadata({
           title: debouncedLesson.title,
           shortDescription: debouncedLesson.shortDescription,
+          description: debouncedLesson.description,
           ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
           // Measured media length from the latest upload (undefined → omitted)
           ...(typeof debouncedLesson.durationMinutes === 'number' && {
@@ -569,6 +571,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       // Metadata
       title: currentLesson?.title || '',
       shortDescription: currentLesson?.shortDescription || '',
+      description: currentLesson?.description || '',
       ...(contentType !== loadedLessonTypeRef.current ? { lessonType: contentType } : {}),
       durationMinutes: currentLesson?.durationMinutes,
       // Phase blocks
@@ -1336,6 +1339,27 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                         onChange={(val) => setLesson((l: any) => ({ ...l, shortDescription: val }))}
                         modules={quillModules}
                         placeholder="Explain what students will learn and practice in this lesson..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Lesson Description (long-form) */}
+                  <div className={styles.fieldBlock}>
+                    <div className={styles.fieldLabelRow}>
+                      <label className={styles.fieldLabel}>Lesson Description</label>
+                      <span className={styles.charCountBadge}>
+                        {(lesson?.description || '').length} characters
+                      </span>
+                    </div>
+                    <span className={styles.fieldHint}>
+                      The detailed description students will see below the lesson video — use this to give context, explain what they&apos;re learning, and prepare them for Apply. Supports multiple paragraphs.
+                    </span>
+                    <div className={styles.inputWrap}>
+                      <textarea
+                        className={styles.textareaField}
+                        value={lesson?.description || ''}
+                        onChange={e => setLesson((l: any) => ({ ...l, description: e.target.value }))}
+                        placeholder="Give students a fuller picture of what this lesson covers, why it matters, and what they'll be able to do afterward..."
                       />
                     </div>
                   </div>

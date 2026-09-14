@@ -3,6 +3,9 @@ import { IsString, IsNumber, IsBoolean, IsOptional, IsArray } from 'class-valida
 export class UpdateLessonMetadataDto {
   @IsOptional() @IsString() title?: string;
   @IsOptional() @IsString() shortDescription?: string;
+  // Long-form lesson description, rendered below the video on the student
+  // Learn step (distinct from the 300-char shortDescription used in cards/search).
+  @IsOptional() @IsString() description?: string;
   @IsOptional() @IsString() lessonType?: string;
   // Real media length (minutes), measured from the uploaded file client-side.
   // Feeds lesson time estimates instead of always reading 0.
@@ -55,6 +58,7 @@ export class FullSaveLessonDto {
   // Metadata
   @IsOptional() @IsString() title?: string;
   @IsOptional() @IsString() shortDescription?: string;
+  @IsOptional() @IsString() description?: string;
   @IsOptional() @IsString() lessonType?: string;
   /** Real media length in minutes, measured from the uploaded file. */
   @IsOptional() @IsNumber() durationMinutes?: number;
