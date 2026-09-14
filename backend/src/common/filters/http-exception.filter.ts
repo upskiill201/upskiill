@@ -16,6 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let errorCode = 'INTERNAL_SERVER_ERROR';
     let message = 'An unexpected error occurred.';
+    let extraFields: Record<string, unknown> = {};
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -30,6 +31,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         if (Array.isArray(message)) {
           message = message.join(', ');
         }
+        // Services throw extra context alongside message/code (e.g. requiresVerification,
+        // email, canLink, isVerified) — callers across the app read these at the top
+        // level of the response, so they must survive the envelope, not just message/code.
+        const { message: _m, error: _e, code: _c, statusCode: _s, ...rest } = obj;
+        extraFields = rest;
       }
     } else if (exception instanceof Error) {
       message = exception.message;
@@ -41,6 +47,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         code: errorCode,
         message,
       },
+      ...extraFields,
     });
   }
 

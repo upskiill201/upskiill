@@ -219,8 +219,8 @@ export default function Header() {
                 </div>
               ) : (
                 <div className={styles.mobileAuthRow}>
-                  <Link href="/login" className={styles.loginBtn}>Login</Link>
-                  <Link href="/signup" className={styles.signupBtn}>Sign Up</Link>
+                  <Link href={pathname === '/teach' ? "/creator/login" : "/login"} className={styles.loginBtn} onClick={() => setIsMobileNavOpen(false)}>Login</Link>
+                  <Link href={pathname === '/teach' ? "/creator/signup" : "/signup"} className={styles.signupBtn} onClick={() => setIsMobileNavOpen(false)}>Sign Up</Link>
                 </div>
               )}
 
