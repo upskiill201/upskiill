@@ -6,21 +6,36 @@
  * the Apply phase's CHECK ANSWER / CONTINUE button (also bottom-anchored on
  * mobile). Centering keeps it clear of any phase's primary action button.
  * Pointer events stay on so the learner can dismiss it by tapping.
+ *
+ * Centering is done with flexbox on `.coachOverlay`, not `transform:
+ * translate(-50%,-50%)` on `.coach` itself — Framer Motion writes its own
+ * inline `transform` onto `.coach` for the scale animation, and an inline
+ * style always wins over a class's `transform`, which silently dropped the
+ * translate-based centering (the box's top-left corner ended up pinned to
+ * the viewport center instead of its middle — invisible on a wide desktop
+ * screen, but pushed the box off the right edge on a narrow phone screen).
  */
 
-.coach {
+.coachOverlay {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
 
+.coach {
   display: flex;
   align-items: center;
   gap: 12px;
   width: min(90vw, 420px);
   padding: 12px 16px 12px 12px;
   box-sizing: border-box;
+  pointer-events: auto;
 
   background-color: var(--bg-card);
   border: 2px solid var(--phase-accent, var(--border));

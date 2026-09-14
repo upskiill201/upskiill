@@ -97,35 +97,42 @@ export default function TeyLessonCoach({
   if (!mounted) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {visible && message && (
-        <motion.div
-          className={`${styles.coach} ${variant === 'fixed' ? styles.coachFixed : ''}`}
-          role="status"
-          aria-live="polite"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
-          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
-          transition={{ type: 'spring', stiffness: 380, damping: 24 }}
-          onClick={() => setDismissedToken(token)}
-        >
+    // Centering lives here (flexbox), not as a transform on the animated
+    // bubble below — see the comment on `.coach` in TeyCoach.module.css for
+    // why a transform-based center broke on mobile. This wrapper itself is
+    // pointer-events: none so it never blocks clicks elsewhere on screen;
+    // only the bubble re-enables pointer events on itself.
+    <div className={styles.coachOverlay}>
+      <AnimatePresence>
+        {visible && message && (
           <motion.div
-            className={styles.avatar}
-            animate={reducedMotion ? {} : entrance}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
+            className={`${styles.coach} ${variant === 'fixed' ? styles.coachFixed : ''}`}
+            role="status"
+            aria-live="polite"
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+            onClick={() => setDismissedToken(token)}
           >
-            <Image
-              src="/lesson Player/Hi there tey.webp"
-              alt="Tey"
-              width={56}
-              height={56}
-              className={styles.avatarImg}
-            />
+            <motion.div
+              className={styles.avatar}
+              animate={reducedMotion ? {} : entrance}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+            >
+              <Image
+                src="/lesson Player/Hi there tey.webp"
+                alt="Tey"
+                width={56}
+                height={56}
+                className={styles.avatarImg}
+              />
+            </motion.div>
+            <p className={styles.bubble}>{message}</p>
           </motion.div>
-          <p className={styles.bubble}>{message}</p>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+        )}
+      </AnimatePresence>
+    </div>,
     document.body
   );
 }
