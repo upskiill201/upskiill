@@ -8,7 +8,9 @@ import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { FaGraduationCap, FaChalkboardTeacher, FaStar } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import Button from '@/components/ui/Button';
-import { signInWithGoogle } from '@/lib/firebase';
+import { signInWithGoogle, auth } from '@/lib/firebase';
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
+import { extractErrorMessage } from '@/lib/apiError';
 import styles from './InstructorAuth.module.css';
 
 // Using Suspense boundary to cleanly fetch search params without blocking
@@ -60,8 +62,26 @@ function AuthContent() {
           window.location.href = `/creator/verify-pending?email=${encodeURIComponent(data.email || email)}`;
           return;
         }
-        const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
-        throw new Error(errMsg || `${mode === 'signup' ? 'Signup' : 'Login'} failed`);
+
+        // If this email only has a Google sign-in on file, a password will
+        // never match (the account's real password is a random secret it was
+        // created with) — tell the user to use Google instead of "incorrect
+        // credentials" or, worse, letting them lock the account out via retries.
+        if (mode === 'login') {
+          try {
+            const methods = await fetchSignInMethodsForEmail(auth, email);
+            if (methods.includes('google.com') && !methods.includes('password')) {
+              throw new Error('This account uses Google Sign-In. Click "Continue with Google" below to log in.');
+            }
+          } catch (lookupErr) {
+            if (lookupErr instanceof Error && lookupErr.message.startsWith('This account uses Google')) {
+              throw lookupErr;
+            }
+            // Firebase lookup itself failing shouldn't block showing the real backend error.
+          }
+        }
+
+        throw new Error(extractErrorMessage(data, res.status) || `${mode === 'signup' ? 'Signup' : 'Login'} failed`);
       }
 
       if (mode === 'signup' && data.requiresVerification) {
@@ -97,7 +117,7 @@ function AuthContent() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || 'Social authentication failed');
+        throw new Error(extractErrorMessage(data, res.status) || 'Social authentication failed');
       }
 
       window.location.href = data.hasBothRoles ? '/role-select' : '/creator';
