@@ -7,13 +7,14 @@ const nextConfig: NextConfig = {
   },
   // Required for next-mdx-remote under Turbopack (blog MDX pipeline)
   transpilePackages: ['next-mdx-remote'],
-  // Guarantee the OG-image fonts ship with the server bundle. /teach's
-  // opengraph-image reuses the blog's committed Plus Jakarta Sans TTFs
-  // rather than duplicating font files for a second route.
+  // Guarantee the OG-image fonts ship with the server bundle. /teach's and
+  // the homepage's opengraph-image both reuse the blog's committed Plus
+  // Jakarta Sans TTFs rather than duplicating font files per route.
   outputFileTracingIncludes: {
     '/blog': ['./app/blog/_fonts/**'],
     '/blog/[slug]': ['./app/blog/_fonts/**'],
     '/teach': ['./app/blog/_fonts/**'],
+    '/': ['./app/blog/_fonts/**', './app/_og-assets/**'],
   },
   // Tree-shakes per-icon imports from these packages instead of pulling the
   // whole barrel file into every route's bundle. lucide-react (218 import
