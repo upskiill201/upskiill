@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
+import ReviewStatusBanner from '@/components/creator/ReviewStatusBanner';
 import { useCourseDraft } from './useCourseDraft';
 import CurriculumBuilder from './CurriculumBuilderMain';
 import { InactiveStepModal } from './CurriculumBuilder';
@@ -30,7 +31,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
   // Loading, creation, saving, optimistic locking and navigation protection
   // all live in useCourseDraft — this component only renders the form.
-  const { data, updateField, loading, saving, autosave, saveDraft } =
+  const { data, updateField, loading, saving, autosave, saveDraft, reviewStatus, refetchReviewStatus } =
     useCourseDraft(courseId, isNew, () => refreshCurriculumRef.current?.());
   // Status of curriculum (module/lesson) writes, which are their own
   // request path — kept separate from the course-metadata autosave so the two
@@ -311,6 +312,19 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
       {/* ─── MAIN CONTENT ─── */}
       <main className={styles.mainContent}>
+
+        {/* Course-level review feedback — visible across every step so a
+            creator doesn't have to leave the builder to see why a course was
+            sent back. Only meaningful once the course exists and has a
+            review history. */}
+        {!isNew && reviewStatus && (
+          <ReviewStatusBanner
+            courseId={courseId}
+            reviewStatus={reviewStatus}
+            onSubmitted={() => void refetchReviewStatus()}
+            style={{ margin: '0 0 24px' }}
+          />
+        )}
 
         {/* ═══ STEP 4: PREVIEW & PUBLISH ═══ */}
         {activeStep === 4 && (
