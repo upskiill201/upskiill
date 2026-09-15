@@ -176,8 +176,8 @@ export function DeepenTab({ config, onChangeConfig, resources, onChangeResources
     <div className={styles.container}>
       <div className={styles.headingArea}>
         <div>
-          <h2 className={styles.title}>4. DEEPEN — Provide More Resources</h2>
-          <p className={styles.desc}>Give learners resources to explore, practice and master this topic further.</p>
+          <h2 className={styles.title}>4. DEEPEN — Provide More Resources <span className={styles.opt}>(Optional)</span></h2>
+          <p className={styles.desc}>Give learners resources to explore, practice and master this topic further. This whole step can be skipped — a lesson publishes fine with no resources.</p>
         </div>
         <span className={styles.learnMore}>Learn more</span>
       </div>
@@ -188,8 +188,8 @@ export function DeepenTab({ config, onChangeConfig, resources, onChangeResources
           {/* Section 1: Title */}
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>1. Resource Collection Title <span className={styles.req}>*</span></h3>
-              <p className={styles.sectionSub}>Give this resource collection a title.</p>
+              <h3 className={styles.sectionTitle}>1. Resource Collection Title <span className={styles.opt}>(Optional)</span></h3>
+              <p className={styles.sectionSub}>Only needed if you add resources below — give this collection a title.</p>
             </div>
             
             <div className={styles.inputWrap}>
@@ -210,8 +210,8 @@ export function DeepenTab({ config, onChangeConfig, resources, onChangeResources
           {/* Section 2: Resources */}
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>2. Add Learning Resources</h3>
-              <p className={styles.sectionSub}>Add high-quality resources to help learners go deeper.</p>
+              <h3 className={styles.sectionTitle}>2. Add Learning Resources <span className={styles.opt}>(Optional)</span></h3>
+              <p className={styles.sectionSub}>Add high-quality resources to help learners go deeper, if you have any.</p>
             </div>
             
             <button
