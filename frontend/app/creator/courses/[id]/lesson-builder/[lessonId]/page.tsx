@@ -17,7 +17,6 @@ import { useSyncQueue } from '@/hooks/useSyncQueue';
 import { useOrphanedMediaCleanup } from '@/hooks/useOrphanedMediaCleanup';
 import { useLinkNavigationGuard } from '@/hooks/useLinkNavigationGuard';
 import { Toast } from '@/components/ui/Toast';
-import ReviewStatusBanner from '@/components/creator/ReviewStatusBanner';
 
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
@@ -161,10 +160,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
   const [lesson, setLesson] = useState<any>(null);
   const [courseTitle, setCourseTitle] = useState('Course');
   const [sectionTitle, setSectionTitle] = useState('Section');
-  // The lesson endpoint doesn't carry the course's review status (it only
-  // selects id/title for `section.course`), so this is a small dedicated
-  // fetch rather than a duplicate of data already in scope on this page.
-  const [courseReviewStatus, setCourseReviewStatus] = useState<string | undefined>(undefined);
 
   const [currentTab, setCurrentTab] = useState('learn');
   const [contentType, setContentType] = useState('video');
@@ -414,24 +409,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
       }
     }
   }, []);
-
-  /** Re-fetches just the course's review status — used after a successful
-   *  submit-for-review so the banner reflects the new state immediately. */
-  const refetchCourseReviewStatus = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/courses/${courseId}/draft`, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof data.reviewStatus === 'string') setCourseReviewStatus(data.reviewStatus);
-      }
-    } catch (err) {
-      console.error('Failed to load course review status', err);
-    }
-  }, [courseId]);
-
-  useEffect(() => {
-    refetchCourseReviewStatus();
-  }, [refetchCourseReviewStatus]);
 
   /* fetch */
   useEffect(() => {
@@ -866,7 +843,7 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
     { id: 'learn',   num: '1', title: 'Learn',   sub: 'Teach the concept',    status: isLearnComplete ? 'Completed' : 'Current step' },
     { id: 'apply',   num: '2', title: 'Apply',   sub: 'Engage with practice', status: isApplyComplete ? 'Completed' : 'Not started' },
     { id: 'reflect', num: '3', title: 'Reflect', sub: 'Reinforce learning',   status: isReflectComplete ? 'Completed' : 'Not started' },
-    { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Provide more resources', status: isDeepenComplete ? 'Completed' : 'Not started' },
+    { id: 'deepen',  num: '4', title: 'Deepen',  sub: 'Optional — extra resources', status: isDeepenComplete ? 'Completed' : 'Optional' },
     { id: 'review',  num: '5', title: 'Review',  sub: 'Finalize & publish',   status: 'Not started' },
   ];
 
@@ -1012,18 +989,6 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
         <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 9999, maxWidth: 380 }}>
           <Toast message={syncError} type="error" duration={10000} onClose={() => setSyncError(null)} />
         </div>
-      )}
-
-      {/* Course-level review feedback still applies while editing any lesson
-          in this course — visible here so a creator doesn't have to leave the
-          Lesson Builder to see why the course was sent back. */}
-      {courseReviewStatus && (
-        <ReviewStatusBanner
-          courseId={courseId}
-          reviewStatus={courseReviewStatus}
-          onSubmitted={() => void refetchCourseReviewStatus()}
-          style={{ margin: '0 0 16px' }}
-        />
       )}
 
       {/* ── HEADER ── */}
@@ -1624,13 +1589,15 @@ export default function LessonBuilderPage({ params }: { params: Promise<{ id: st
                       (s.id === 'learn' && isLearnComplete) ||
                       (s.id === 'apply' && isApplyComplete) ||
                       (s.id === 'reflect' && isReflectComplete) ||
-                      (s.id === 'deepen' && isDeepenComplete)
+                      (s.id === 'deepen' && isDeepenComplete) ||
+                      s.id === 'deepen'
                         ? '' : styles.pending
                     }`}>
                       {s.id === 'learn' && isLearnComplete ? 'Completed' :
                        s.id === 'apply' && isApplyComplete ? 'Completed' :
                        s.id === 'reflect' && isReflectComplete ? 'Completed' :
                        s.id === 'deepen' && isDeepenComplete ? 'Completed' :
+                       s.id === 'deepen' ? 'Optional' :
                        s.id === currentTab ? 'In progress' : 'Not started'}
                     </span>
                   </div>
