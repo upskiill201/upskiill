@@ -61,10 +61,10 @@ export default function AdminLessonReviewPage() {
 
   const nav = useMemo(() => {
     if (!data) return null;
-    const sections = data.content.sections;
+    const sections = data.content?.sections ?? [];
     const flat: { sectionIndex: number; section: AdminSectionRow; lesson: AdminLessonRow }[] = [];
     sections.forEach((section, sectionIndex) => {
-      section.lessons.forEach((lesson) => flat.push({ sectionIndex, section, lesson }));
+      (section.lessons ?? []).forEach((lesson) => flat.push({ sectionIndex, section, lesson }));
     });
     const idx = flat.findIndex((row) => row.lesson.id === lessonId);
     if (idx === -1) return { flat, idx: -1, current: null, prev: null, next: null };
@@ -138,7 +138,7 @@ export default function AdminLessonReviewPage() {
             padding: 0,
           }}
         >
-          <ArrowLeft size={14} /> Back to {data.course.title}
+          <ArrowLeft size={14} /> Back to {data.course?.title ?? 'course'}
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
