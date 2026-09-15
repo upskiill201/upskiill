@@ -419,6 +419,28 @@ describe('AuthService', () => {
       // Both access flags now set → canonical destination is the role picker
       expect((result as any).redirectTo).toBe('/role-select');
     });
+
+    it('should never downgrade an ADMIN to INSTRUCTOR when logging in via the instructor portal', async () => {
+      const adminUser = { ...activeUser, role: 'ADMIN', hasCreatorAccess: false };
+      const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
+      const mockToken = 'mocked_jwt_token';
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(adminUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (prisma.user.update as jest.Mock).mockResolvedValue({ ...adminUser, hasCreatorAccess: true });
+      (jwt.signAsync as jest.Mock).mockResolvedValue(mockToken);
+
+      const result = await service.login(dtoWithRole);
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: adminUser.id },
+        data: { hasCreatorAccess: true },
+      });
+      expect(prisma.user.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ role: 'INSTRUCTOR' }) }),
+      );
+      expect(result.user.role).toBe('ADMIN');
+    });
   });
 
   describe('verifyCode', () => {
@@ -624,6 +646,38 @@ describe('AuthService', () => {
       });
       expect(result.user.role).toBe('INSTRUCTOR');
       expect((result as any).hasBothRoles).toBe(true);
+    });
+
+    it('should never downgrade an ADMIN to INSTRUCTOR via Firebase sign-in', async () => {
+      const decodedToken = { email: 'admin@example.com', email_verified: true, picture: 'avatar.png' };
+      const mockUser = {
+        id: '1',
+        email: decodedToken.email,
+        fullName: 'Admin User',
+        role: 'ADMIN',
+        hasStudentAccess: true,
+        hasCreatorAccess: false,
+      };
+      const updatedUser = { ...mockUser, hasCreatorAccess: true };
+      const mockToken = 'mocked_jwt_token';
+
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (prisma.user.findUnique as jest.Mock)
+        .mockResolvedValueOnce(mockUser)
+        .mockResolvedValue(updatedUser);
+      (prisma.user.update as jest.Mock).mockResolvedValue(updatedUser);
+      (jwt.signAsync as jest.Mock).mockResolvedValue(mockToken);
+
+      const result = await service.firebaseSignIn(idToken, 'INSTRUCTOR');
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+        data: { hasCreatorAccess: true },
+      });
+      expect(prisma.user.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ role: 'INSTRUCTOR' }) }),
+      );
+      expect(result.user.role).toBe('ADMIN');
     });
 
     it('should throw UnauthorizedException if no email in token', async () => {

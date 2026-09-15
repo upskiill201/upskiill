@@ -52,6 +52,7 @@ export class AuthService {
       // "account exists" from "no account" on paths that throw anyway (B9).
       const wantsInstructorUpgrade =
         requestedRole === 'INSTRUCTOR' &&
+        existing.role !== Role.ADMIN &&
         (!existing.hasCreatorAccess || existing.role !== 'INSTRUCTOR');
       const wantsStudentLink = requestedRole === 'STUDENT' && !existing.hasStudentAccess;
 
@@ -415,11 +416,18 @@ export class AuthService {
       throw new ForbiddenException('Incorrect credentials');
     }
 
-    // Upgrade account to INSTRUCTOR if logged in via instructor portal
-    if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR') {
+    // Upgrade account to INSTRUCTOR if logged in via instructor portal —
+    // never for an ADMIN, whose role already supersedes INSTRUCTOR and must
+    // never be silently overwritten by a creator-portal login.
+    if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR' && user.role !== Role.ADMIN) {
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
+      });
+    } else if (dto.role === 'INSTRUCTOR' && user.role === Role.ADMIN && !user.hasCreatorAccess) {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: { hasCreatorAccess: true },
       });
     }
 
@@ -682,12 +690,21 @@ export class AuthService {
           },
         });
       } else {
-        // User exists — update role and access flags as needed
+        // User exists — update role and access flags as needed. Never
+        // downgrade an ADMIN to INSTRUCTOR just because they signed in
+        // through a creator-facing path — ADMIN already supersedes it.
         const updates: any = {};
-        if (isInstructor && user.role !== 'INSTRUCTOR') {
+        if (isInstructor && user.role !== 'INSTRUCTOR' && user.role !== Role.ADMIN) {
           updates.role = 'INSTRUCTOR';
           updates.hasCreatorAccess = true;
           // Ensure creator Profile row exists
+          await this.prisma.profile.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id, avatarUrl: decodedToken.picture || null },
+            update: {},
+          });
+        } else if (isInstructor && user.role === Role.ADMIN && !user.hasCreatorAccess) {
+          updates.hasCreatorAccess = true;
           await this.prisma.profile.upsert({
             where: { userId: user.id },
             create: { userId: user.id, avatarUrl: decodedToken.picture || null },
