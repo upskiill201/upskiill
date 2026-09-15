@@ -609,7 +609,12 @@ export class CourseService {
    * is part of the free preview. Everyone else gets 403 — the full catalog
    * response no longer carries paid content for the client to "hide".
    */
-  async getStudentLesson(userId: string, idOrSlug: string, lessonId: string) {
+  async getStudentLesson(
+    userId: string,
+    idOrSlug: string,
+    lessonId: string,
+    isAdmin = false,
+  ) {
     const course = await this.prisma.course.findFirst({
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
@@ -618,10 +623,10 @@ export class CourseService {
     });
     if (!course) throw new NotFoundException('Course not found');
 
-    const isAdmin = false; // student endpoint never exposes drafts to admins' students
     const isOwner = course.instructorId === userId;
+    const isPrivileged = isOwner || isAdmin;
 
-    if (!course.published && !isOwner) {
+    if (!course.published && !isPrivileged) {
       throw new NotFoundException('Course not found');
     }
 
@@ -633,8 +638,9 @@ export class CourseService {
       include: { resources: { orderBy: { displayOrder: 'asc' } } },
     });
 
-    // Draft lessons stay invisible to students even inside published courses
-    if (!lesson || (!isOwner && lesson.status !== 'published')) {
+    // Draft lessons stay invisible to students (and to nobody but the
+    // owner/admin) even inside published courses
+    if (!lesson || (!isPrivileged && lesson.status !== 'published')) {
       throw new NotFoundException('Lesson not found in this course');
     }
 
@@ -642,7 +648,7 @@ export class CourseService {
     const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
     const isFreePreview = globalIndex > -1 && (globalIndex < 2 || lesson.isFreePreview);
 
-    let hasAccess = isOwner || course.price === 0 || isFreePreview;
+    let hasAccess = isPrivileged || course.price === 0 || isFreePreview;
     if (!hasAccess && userId) {
       hasAccess = !!(await this.getActiveEntitlement(userId, course.id));
     }

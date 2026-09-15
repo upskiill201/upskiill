@@ -123,6 +123,14 @@ export class AdminController {
     return this.adminCourses.detail(id);
   }
 
+  @Get('courses/:courseId/lessons/:lessonId')
+  courseLessonContent(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+  ) {
+    return this.adminCourses.getLessonContent(courseId, lessonId);
+  }
+
   @Post('courses/:id/publish')
   publishCourse(@GetUser() actor: AuthedUser, @Param('id') id: string) {
     return this.adminCourses.publish(actor.id, id);

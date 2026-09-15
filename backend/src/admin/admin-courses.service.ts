@@ -3,10 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CourseReviewStatus, Prisma } from '@prisma/client';
+import { CourseReviewAction, CourseReviewStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseService } from '../course/course.service';
 import { CourseReviewService } from '../course-review/course-review.service';
+import { assessCourseReadiness } from '../course/course-readiness.util';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 25;
@@ -188,6 +189,7 @@ export class AdminCoursesService {
 
     const { sections, ...courseFields } = course;
     const lessons = sections.flatMap((s) => s.lessons);
+    const readiness = { issues: assessCourseReadiness({ sections }) };
 
     const [enrollments, revenue, adminHistory, reviewHistory] =
       await Promise.all([
@@ -227,7 +229,40 @@ export class AdminCoursesService {
       },
       adminHistory,
       reviewHistory,
+      submissionCount: reviewHistory.filter(
+        (r) => r.action === CourseReviewAction.SUBMITTED,
+      ).length,
+      readiness,
     };
+  }
+
+  /**
+   * Real lesson content (contentBlocks, resources) for the admin review
+   * viewer — same payload shape as the student lesson endpoint, but with
+   * the ownership/entitlement paywall bypassed (CourseService#getStudentLesson
+   * isAdmin=true), mirroring the enrollInCourse/publishCourse isAdmin pattern
+   * used elsewhere in this file.
+   *
+   * lessonId is validated against courseId here (not left to CourseService)
+   * so an admin can't probe arbitrary lesson ids across courses and get a
+   * confusing error shape — a mismatch reads as a plain 404, same as "not
+   * found".
+   */
+  async getLessonContent(courseId: string, lessonId: string) {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: { id: lessonId, section: { courseId } },
+      select: { id: true },
+    });
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found in this course');
+    }
+
+    return this.courseService.getStudentLesson(
+      '',
+      courseId,
+      lessonId,
+      true,
+    );
   }
 
   async publish(actorId: string, id: string) {

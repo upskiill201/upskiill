@@ -424,10 +424,14 @@ export function Modal({
   title,
   onClose,
   children,
+  size = 'default',
 }: {
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  /** 'wide' gives dialogs that need room for a real paragraph (course review
+   *  feedback) more width than the default confirm-dialog panel. */
+  size?: 'default' | 'wide';
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -444,7 +448,7 @@ export function Modal({
       role="presentation"
     >
       <div
-        className={styles.modalPanel}
+        className={`${styles.modalPanel} ${size === 'wide' ? styles.modalPanelWide : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="admin-modal-title"
@@ -507,6 +511,71 @@ export function ConfirmDialog({
         <Button
           variant={tone === 'danger' ? 'danger' : 'primary'}
           onClick={() => onConfirm(requireReason ? reason.trim() : undefined)}
+          disabled={!canConfirm || busy}
+        >
+          {busy ? 'Working…' : confirmLabel}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+/**
+ * Dedicated feedback editor for course review decisions ("Request changes" /
+ * "Reject") — deliberately NOT built on ConfirmDialog, which is shared with
+ * refund/payout flows elsewhere and stays a plain 3-row reason field for
+ * those. Course review feedback is read by a creator trying to fix real
+ * problems, so it gets a full-size textarea, a live character count, and a
+ * placeholder nudging toward specifics — plus a minimum length so "fix it"
+ * can't be submitted as the entire review.
+ */
+export function CourseReviewDecisionDialog({
+  title,
+  description,
+  confirmLabel = 'Submit',
+  tone = 'default',
+  busy = false,
+  minLength = 10,
+  placeholder = 'Be specific — which lesson, section, or field needs to change and why.',
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  description: React.ReactNode;
+  confirmLabel?: string;
+  tone?: 'default' | 'danger';
+  busy?: boolean;
+  /** Confirm stays disabled until the trimmed text exceeds this length —
+   *  guards against low-effort feedback like "fix it" without being a real
+   *  word-count requirement. */
+  minLength?: number;
+  placeholder?: string;
+  onConfirm: (text: string) => void;
+  onCancel: () => void;
+}) {
+  const [text, setText] = useState('');
+  const trimmed = text.trim();
+  const canConfirm = trimmed.length > minLength;
+
+  return (
+    <Modal title={title} onClose={onCancel} size="wide">
+      <div className={styles.modalBody}>{description}</div>
+      <textarea
+        className={`${styles.modalReason} ${styles.modalReasonLarge}`}
+        placeholder={placeholder}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={11}
+        autoFocus
+      />
+      <div className={styles.modalCharCount}>{text.length} characters</div>
+      <div className={styles.modalActions}>
+        <Button variant="secondary" onClick={onCancel} disabled={busy}>
+          Cancel
+        </Button>
+        <Button
+          variant={tone === 'danger' ? 'danger' : 'primary'}
+          onClick={() => onConfirm(trimmed)}
           disabled={!canConfirm || busy}
         >
           {busy ? 'Working…' : confirmLabel}

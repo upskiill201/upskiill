@@ -331,6 +331,29 @@
   border-color: var(--brand-blue);
 }
 
+/* Wider panel for dialogs that need room for a real paragraph of feedback
+   (course review request-changes/reject) rather than a one-line reason. */
+.modalPanelWide {
+  max-width: 560px;
+}
+
+/* Larger, more comfortable textarea for the same case — 10-12 visible rows,
+   generous line-height/padding so writing real feedback doesn't feel like
+   typing into a search box. */
+.modalReasonLarge {
+  min-height: 220px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.modalCharCount {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;

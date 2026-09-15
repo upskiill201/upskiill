@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import {
+  AlertTriangle,
   ArrowLeft,
   BookOpen,
   CheckCircle2,
@@ -17,10 +18,13 @@ import {
   XCircle,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import { Toast } from '@/components/ui/Toast';
 import {
+  Banner,
   Button,
   Card,
   ConfirmDialog,
+  CourseReviewDecisionDialog,
   DataTable,
   Empty,
   ErrorState,
@@ -96,6 +100,10 @@ interface CourseDetail {
     internalNote: string | null;
     createdAt: string;
   }[];
+  /** Count of `SUBMITTED` review-history rows — > 1 means a resubmission. */
+  submissionCount: number;
+  /** `assessCourseReadiness` output — warnings only, never blocks an action. */
+  readiness: { issues: string[] };
 }
 
 type ActionDialog =
@@ -129,6 +137,7 @@ export default function AdminCourseDetailPage() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionDetails, setActionDetails] = useState<string[] | undefined>(undefined);
+  const [toast, setToast] = useState<{ message: string; key: number } | null>(null);
 
   if (error) return <ErrorState error={error as Error} />;
   if (isLoading || !data) {
@@ -140,7 +149,7 @@ export default function AdminCourseDetailPage() {
     );
   }
 
-  const { course, content, enrollments, revenue, adminHistory, reviewHistory } = data;
+  const { course, content, enrollments, revenue, adminHistory, reviewHistory, submissionCount, readiness } = data;
 
   const closeDialog = () => {
     setDialog(null);
@@ -160,7 +169,8 @@ export default function AdminCourseDetailPage() {
 
   // Lifecycle actions with no extra input (publish/unpublish/feature/
   // unfeature/startReview/approve) — mirrors the Users page's runAction.
-  const runAction = async (path: string) => {
+  // `successMessage`, when given, surfaces a toast once the mutation lands.
+  const runAction = async (path: string, successMessage?: string) => {
     setBusy(true);
     setActionError(null);
     setActionDetails(undefined);
@@ -168,6 +178,7 @@ export default function AdminCourseDetailPage() {
       await adminMutate(`/api/admin/courses/${course.id}/${path}`, { method: 'POST' });
       await mutate(key);
       setDialog(null);
+      if (successMessage) setToast({ message: successMessage, key: Date.now() });
     } catch (err) {
       handleError(err);
     } finally {
@@ -180,6 +191,7 @@ export default function AdminCourseDetailPage() {
     path: 'review/request-changes' | 'review/reject',
     bodyKey: 'feedback' | 'reason',
     text: string,
+    successMessage: string,
   ) => {
     setBusy(true);
     setActionError(null);
@@ -191,6 +203,7 @@ export default function AdminCourseDetailPage() {
       });
       await mutate(key);
       setDialog(null);
+      setToast({ message: successMessage, key: Date.now() });
     } catch (err) {
       handleError(err);
     } finally {
@@ -268,6 +281,7 @@ export default function AdminCourseDetailPage() {
                 {course.published ? 'Published' : 'Draft'}
               </Pill>
               <Pill tone={reviewTone(course.reviewStatus)}>{humanize(course.reviewStatus)}</Pill>
+              {submissionCount > 1 && <Pill tone="neutral">Resubmission #{submissionCount}</Pill>}
               {course.featured && (
                 <Pill tone="brand">
                   <Star size={10} /> Featured
@@ -335,6 +349,22 @@ export default function AdminCourseDetailPage() {
           </div>
         </div>
 
+        {readiness.issues.length > 0 && (
+          <Banner tone="warn">
+            <AlertTriangle size={16} style={{ flexShrink: 0, color: 'var(--warning)' }} />
+            <div>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>
+                Readiness warnings — review still requires human judgment
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {readiness.issues.map((issue, i) => (
+                  <li key={i}>{issue}</li>
+                ))}
+              </ul>
+            </div>
+          </Banner>
+        )}
+
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
           {canStartReview && (
             <Button variant="secondary" onClick={() => runAction('review/start')} disabled={busy}>
@@ -378,7 +408,7 @@ export default function AdminCourseDetailPage() {
 
       <div className={s.grid}>
         <Card title="Course info" icon={<BookOpen size={15} />}>
-          <div className={s.bars}>
+          <div className={s.bars} style={{ marginBottom: 16 }}>
             <DetailRow label="Category" value={humanize(course.category)} />
             <DetailRow label="Level" value={course.level} />
             <DetailRow label="Language" value={course.language} />
@@ -387,6 +417,28 @@ export default function AdminCourseDetailPage() {
             <DetailRow label="Updated" value={relativeTime(course.updatedAt)} />
             <DetailRow label="Version" value={String(course.version)} />
           </div>
+          {course.description && (
+            <div>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Description</span>
+              <div
+                style={{
+                  marginTop: 6,
+                  padding: 12,
+                  borderRadius: 12,
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-section)',
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  color: 'var(--text-primary)',
+                  maxHeight: 240,
+                  overflowY: 'auto',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {course.description}
+              </div>
+            </div>
+          )}
         </Card>
 
         <Card title="Content">
@@ -406,20 +458,33 @@ export default function AdminCourseDetailPage() {
                     {sec.title}
                   </div>
                   {sec.lessons.map((l) => (
-                    <div
+                    <button
                       key={l.id}
+                      type="button"
+                      onClick={() => router.push(`/admin/courses/${course.id}/review/${l.id}`)}
+                      title="Review this lesson's content"
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%',
                         padding: '4px 0 4px 12px',
                         fontSize: 13,
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        color: 'var(--text-primary)',
+                        borderRadius: 8,
                       }}
                     >
-                      <span>{l.title}</span>
+                      <span style={{ textDecoration: 'underline', textDecorationColor: 'transparent' }}>
+                        {l.title}
+                      </span>
                       <Pill tone={l.status === 'published' ? 'good' : 'warn'}>
                         {humanize(l.status)}
                       </Pill>
-                    </div>
+                    </button>
                   ))}
                 </div>
               ))}
@@ -538,13 +603,13 @@ export default function AdminCourseDetailPage() {
           }
           confirmLabel="Approve course"
           busy={busy}
-          onConfirm={() => void runAction('review/approve')}
+          onConfirm={() => void runAction('review/approve', 'Course approved')}
           onCancel={closeDialog}
         />
       )}
 
       {dialog === 'requestChanges' && (
-        <ConfirmDialog
+        <CourseReviewDecisionDialog
           title="Request changes"
           description={
             <>
@@ -554,17 +619,16 @@ export default function AdminCourseDetailPage() {
             </>
           }
           confirmLabel="Request changes"
-          requireReason
           busy={busy}
           onConfirm={(feedback) =>
-            feedback && void runReviewDecision('review/request-changes', 'feedback', feedback)
+            void runReviewDecision('review/request-changes', 'feedback', feedback, 'Changes requested')
           }
           onCancel={closeDialog}
         />
       )}
 
       {dialog === 'rejectReview' && (
-        <ConfirmDialog
+        <CourseReviewDecisionDialog
           title="Reject this course?"
           description={
             <>
@@ -577,10 +641,19 @@ export default function AdminCourseDetailPage() {
           }
           confirmLabel="Reject course"
           tone="danger"
-          requireReason
           busy={busy}
-          onConfirm={(reason) => reason && void runReviewDecision('review/reject', 'reason', reason)}
+          onConfirm={(reason) => void runReviewDecision('review/reject', 'reason', reason, 'Course rejected')}
           onCancel={closeDialog}
+        />
+      )}
+
+      {toast && (
+        <Toast
+          key={toast.key}
+          message={toast.message}
+          type="success"
+          duration={3000}
+          onClose={() => setToast(null)}
         />
       )}
     </>

@@ -335,20 +335,41 @@ function SectionSidebar({
 }
 
 /* ─── SECTION VIEW CONTENT ───────────────────────────────────────── */
-interface SectionViewContentProps {
+export interface SectionViewContentProps {
   course: any;
   section: any;
   sectionIndex: number;
   completedLessons: string[];
   setCompletedLessons: React.Dispatch<React.SetStateAction<string[]>>;
+  /**
+   * Admin-only read-only lesson viewer (course review). When true:
+   *  - lesson content is fetched from the admin endpoint instead of the
+   *    student one (`openLesson`),
+   *  - every mutating call site (complete-lesson, loseLife, refill/power-ups,
+   *    the celebration chain, `window.dispatchEvent`, chest localStorage
+   *    writes) is a no-op — "finishing" a lesson is pure navigation,
+   *  - the out-of-lives/paywall UI never renders (not applicable to an admin).
+   * Student-facing behaviour is untouched when this is false/absent.
+   */
+  adminReviewMode?: boolean;
+  /** Lesson id to auto-open (via the admin endpoint) on mount in review mode. */
+  reviewLessonId?: string;
+  /** Review mode only: replaces every "close the lesson"/"back to map" action. */
+  onReviewClose?: () => void;
+  /** Review mode only: called instead of the student paywall/toast flow when the admin lesson fetch fails. */
+  onReviewLoadError?: (message: string) => void;
 }
 
-function SectionViewContent({
+export function SectionViewContent({
   course,
   section,
   sectionIndex,
   completedLessons,
   setCompletedLessons,
+  adminReviewMode = false,
+  reviewLessonId,
+  onReviewClose,
+  onReviewLoadError,
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
   const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
@@ -721,7 +742,7 @@ function SectionViewContent({
       playAnswerWrong();
       sayTey(pickWrongAnswerLine(brokenStreak), 'nudge');
     }
-    if (!correct && !isReviewMode) {
+    if (!correct && !isReviewMode && !adminReviewMode) {
       applyWrongCountRef.current += 1;
       // A Perfect Lesson Protection charge may absorb this instead of costing
       // a heart. The server decides (it holds the charge count); we only
@@ -887,6 +908,16 @@ function SectionViewContent({
 
   const handleDeepenFinish = async () => {
     if (isCompletingLesson) return;
+    // Admin review: no server write, no payout, no celebration chain — just
+    // the UI act of leaving the lesson. Everything below this guard (the
+    // complete-lesson POST, XP/coin/streak celebration scenes, the
+    // window.dispatchEvent lesson:completed/mission signals, and the
+    // section-chest localStorage writes) must never run for a reviewing admin.
+    if (adminReviewMode) {
+      playHaptic('success', false);
+      onReviewClose?.();
+      return;
+    }
     setIsCompletingLesson(true);
     setFinishError(null);
     // The last rung of the ladder. Finishing is not a phase change, so
@@ -1414,21 +1445,33 @@ function SectionViewContent({
   };
 
   const [startingLesson, setStartingLesson] = useState(false);
+  const [reviewLoadError, setReviewLoadError] = useState<string | null>(null);
 
   /**
-   * Opens a lesson by fetching its FULL content from the guarded student
-   * endpoint. The catalog response no longer carries paid lesson content, so
-   * the server is the single source of truth for the paywall: 403 here means
-   * "this lesson is locked" and we route to the full-page unlock experience.
+   * Opens a lesson by fetching its FULL content. In review mode this hits the
+   * admin lesson-content endpoint (`isAdmin` bypass, same response shape) so
+   * an admin never touches the student paywall path; otherwise it fetches
+   * from the guarded student endpoint. The catalog response no longer
+   * carries paid lesson content, so the server is the single source of truth
+   * for the paywall: 403 here means "this lesson is locked" and we route to
+   * the full-page unlock experience (student mode only).
    */
   const openLesson = async (lessonId: string) => {
     if (startingLesson) return;
     setStartingLesson(true);
+    if (adminReviewMode) setReviewLoadError(null);
     try {
-      const res = await fetch(`/api/courses/${course?.id || params.id}/lessons/${lessonId}`, {
-        credentials: 'include',
-      });
+      const endpoint = adminReviewMode
+        ? `/api/admin/courses/${course?.id || params.id}/lessons/${lessonId}`
+        : `/api/courses/${course?.id || params.id}/lessons/${lessonId}`;
+      const res = await fetch(endpoint, { credentials: 'include' });
       if (res.status === 403) {
+        if (adminReviewMode) {
+          const msg = 'This lesson could not be loaded (access denied).';
+          setReviewLoadError(msg);
+          onReviewLoadError?.(msg);
+          return;
+        }
         playHaptic('light');
         router.push(
           buildUnlockHref(
@@ -1439,6 +1482,12 @@ function SectionViewContent({
         return;
       }
       if (!res.ok) {
+        if (adminReviewMode) {
+          const msg = 'This lesson could not be loaded.';
+          setReviewLoadError(msg);
+          onReviewLoadError?.(msg);
+          return;
+        }
         triggerComingSoon('This lesson could not be loaded');
         return;
       }
@@ -1453,11 +1502,25 @@ function SectionViewContent({
       setLessonPhase('start');
     } catch (err) {
       console.error('Failed to load lesson:', err);
+      if (adminReviewMode) {
+        const msg = 'Could not reach the lesson — check your connection';
+        setReviewLoadError(msg);
+        onReviewLoadError?.(msg);
+        return;
+      }
       triggerComingSoon('Could not reach the lesson — check your connection');
     } finally {
       setStartingLesson(false);
     }
   };
+
+  // Review mode auto-opens the requested lesson on mount instead of waiting
+  // for a map-node tap (the map is never rendered in review mode).
+  useEffect(() => {
+    if (!adminReviewMode || !reviewLessonId || activeLesson) return;
+    void openLesson(reviewLessonId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminReviewMode, reviewLessonId]);
 
   const handleStartAction = (item: any) => {
     playHaptic('medium');
@@ -1488,7 +1551,9 @@ function SectionViewContent({
   const [chestClaimed, setChestClaimed] = useState(false);
   const chestSectionId = section?.id as string | undefined;
   useEffect(() => {
-    if (!chestSectionId) return;
+    // Unreachable in review mode (the map that renders chest nodes never
+    // shows), guarded anyway so this never touches localStorage for an admin.
+    if (!chestSectionId || adminReviewMode) return;
     try {
       if (localStorage.getItem(`teyro_section_chest_opened_${chestSectionId}`)) {
         setChestClaimed(true);
@@ -1499,6 +1564,7 @@ function SectionViewContent({
   }, [chestSectionId]);
 
   const handleOpenChest = () => {
+    if (adminReviewMode) return;
     let stash: Record<string, unknown> | null = null;
     try {
       const raw = chestSectionId
@@ -1531,6 +1597,54 @@ function SectionViewContent({
     } catch {}
     setChestClaimed(true);
   };
+
+  // Review mode never renders the map (there is nothing to navigate to
+  // besides the one lesson it was opened for) — while that lesson is still
+  // loading, show a plain loader instead of a flash of paywall/map UI.
+  if (adminReviewMode && !activeLesson) {
+    if (reviewLoadError) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+            minHeight: 400,
+            textAlign: 'center',
+            padding: 24,
+          }}
+        >
+          <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--error-red, #B91C1C)', margin: 0 }}>
+            {reviewLoadError}
+          </p>
+          {onReviewClose && (
+            <button
+              type="button"
+              onClick={onReviewClose}
+              style={{
+                border: 'none',
+                borderRadius: 10,
+                padding: '10px 20px',
+                background: '#3D5AFE',
+                color: '#fff',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Back to course
+            </button>
+          )}
+        </div>
+      );
+    }
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+        <TeyroBrandedLoader />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -1579,8 +1693,10 @@ function SectionViewContent({
         </div>
       )}
 
-      {/* Out-of-lives overlay — blocks Apply phase when lives are 0 */}
-      {livesCount === 0 && lessonPhase === 'apply' && (
+      {/* Out-of-lives overlay — blocks Apply phase when lives are 0. Not
+          applicable to an admin reviewing content: hearts are never at risk
+          in review mode, so this never renders there. */}
+      {!adminReviewMode && livesCount === 0 && lessonPhase === 'apply' && (
         <div className={styles.outOfLivesOverlay}>
           <div className={styles.outOfLivesCard}>
             <Image src="/Icons/heart.png" width={72} height={72} alt="No lives" priority />
@@ -1656,8 +1772,8 @@ function SectionViewContent({
               {/* Duolingo Green Header matching design */}
               <div className={styles.duolingoHeader}>
                 <div className={styles.headerLeft}>
-                  <button 
-                    onClick={() => { playHaptic('light'); setActiveLesson(null); }} 
+                  <button
+                    onClick={() => { playHaptic('light'); if (adminReviewMode) { onReviewClose?.(); } else { setActiveLesson(null); } }}
                     className={styles.headerBackBtn}
                     style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
                   >
@@ -1850,7 +1966,7 @@ function SectionViewContent({
           ) : (
             <LessonShell
               phase={lessonPhase}
-              onClose={() => { playHaptic('medium'); setActiveLesson(null); setLessonPhase('start'); }}
+              onClose={() => { playHaptic('medium'); if (adminReviewMode) { onReviewClose?.(); } else { setActiveLesson(null); setLessonPhase('start'); } }}
               // Keeps the legacy hook alive: `.mainColumn`/`.grid` use
               // `:has(.lessonLearnContainer)` to detect "the player is showing"
               // and stretch themselves accordingly. LessonShell renders its own

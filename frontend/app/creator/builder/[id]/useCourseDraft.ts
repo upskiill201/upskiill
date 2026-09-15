@@ -28,6 +28,14 @@ export interface UseCourseDraftResult {
   /** Explicit save. Resolves true only when the data is actually persisted,
    *  so navigation can depend on it. */
   saveDraft: () => Promise<boolean>;
+  /** Teyro review-workflow status (DRAFT/SUBMITTED/.../APPROVED/REJECTED).
+   *  Kept separate from `data` (CourseDraft) so it's never accidentally sent
+   *  back in a course-metadata PATCH body. */
+  reviewStatus: string | undefined;
+  /** Re-fetches just the review status — used after a successful
+   *  submit-for-review so the builder's banner reflects the new state
+   *  without a full page reload. */
+  refetchReviewStatus: () => Promise<void>;
 }
 
 /** Maps a server course row onto the form shape, filling sensible defaults. */
@@ -67,6 +75,7 @@ export function useCourseDraft(
   const [saving, setSaving] = useState(false);
   const [data, setData] = useState<CourseDraft>(EMPTY_DRAFT);
   const [courseVersion, setCourseVersion] = useState<number | undefined>(undefined);
+  const [reviewStatus, setReviewStatus] = useState<string | undefined>(undefined);
 
   /** Latches the id of a course created from the 'new' route, so this hook can
    *  never create a second one for the same session. */
@@ -104,6 +113,7 @@ export function useCourseDraft(
           // Seed the optimistic-lock token so the first autosave carries the
           // version this data was actually read at.
           if (typeof fetched.version === 'number') setCourseVersion(fetched.version);
+          if (typeof fetched.reviewStatus === 'string') setReviewStatus(fetched.reviewStatus);
         }
         await onLoadedRef.current?.();
       } catch (err) {
@@ -190,5 +200,18 @@ export function useCourseDraft(
     }
   }, [isNew, data, router, autosave, courseVersion]);
 
-  return { data, setData, updateField, loading, saving, autosave, saveDraft };
+  const refetchReviewStatus = useCallback(async () => {
+    if (isNew) return;
+    try {
+      const res = await fetch(`/api/courses/${courseId}/draft`, { credentials: 'include' });
+      if (res.ok) {
+        const fetched = await res.json();
+        if (typeof fetched.reviewStatus === 'string') setReviewStatus(fetched.reviewStatus);
+      }
+    } catch (err) {
+      console.error('Failed to refresh review status', err);
+    }
+  }, [courseId, isNew]);
+
+  return { data, setData, updateField, loading, saving, autosave, saveDraft, reviewStatus, refetchReviewStatus };
 }

@@ -45,6 +45,29 @@ export const useComingSoon = () => {
   return context;
 };
 
+/**
+ * Bare context provider for consumers that need `useComingSoon()` without the
+ * rest of StudentShell's student nav/chrome (e.g. the admin course-review
+ * lesson viewer, which reuses the learner lesson player read-only outside the
+ * dashboard sidebar/bottom-nav). Purely additive — StudentShell itself still
+ * provides its own instance of this context exactly as before.
+ */
+export function ComingSoonProvider({
+  children,
+  onTrigger,
+}: {
+  children: React.ReactNode;
+  /** Defaults to a no-op — callers outside the student shell rarely want the
+   *  "Coming Soon" modal, just a way to swallow the call safely. */
+  onTrigger?: (feature: string) => void;
+}) {
+  return (
+    <ComingSoonContext.Provider value={{ triggerComingSoon: onTrigger ?? (() => {}) }}>
+      {children}
+    </ComingSoonContext.Provider>
+  );
+}
+
 // ─── MOBILE MENU CONTEXT ───
 // Lets pages embedded in the layout (e.g. the headerless student homescreen)
 // open the sidebar drawer from their own inline menu triggers.

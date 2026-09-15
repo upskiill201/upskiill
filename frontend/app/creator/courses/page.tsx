@@ -23,6 +23,7 @@ import {
   FaPlay
 } from 'react-icons/fa6';
 import { Stars, timeAgo } from '@/components/creator/analytics/bits';
+import { useSubmitForReview } from '@/lib/hooks/useSubmitForReview';
 import styles from './Courses.module.css';
 
 /** Course descriptions are authored as rich text (HTML) but this card only
@@ -102,6 +103,10 @@ export default function CreatorCoursesPage() {
   const [sortBy, setSortBy] = useState<'UPDATED' | 'CREATED' | 'LEARNERS' | 'RATING' | 'AZ'>('UPDATED');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  // Shared with the manage-page/builder review banners so the
+  // submit-for-review request and its error handling can't drift between
+  // entry points — see lib/hooks/useSubmitForReview.
+  const { submit: submitCourseForReview } = useSubmitForReview();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -178,13 +183,25 @@ export default function CreatorCoursesPage() {
 
     const reviewFirst = needsReview(course);
     const verb = course.published ? 'unpublish' : reviewFirst ? 'submit for review' : 'publish';
-    const endpoint = course.published
-      ? `/api/courses/${course.id}/unpublish`
-      : reviewFirst
-        ? `/api/courses/${course.id}/submit-for-review`
-        : `/api/courses/${course.id}/publish`;
 
     try {
+      // Submit-for-review goes through the shared hook (also used by the
+      // manage-page/builder banners) so the request + error shape can't
+      // drift between entry points.
+      if (!course.published && reviewFirst) {
+        const result = await submitCourseForReview(course.id);
+        if (result.ok) {
+          await fetchCourses();
+        } else {
+          alert([result.message || `Failed to ${verb} course.`, ...(result.errorDetails || [])].join('\n'));
+        }
+        return;
+      }
+
+      const endpoint = course.published
+        ? `/api/courses/${course.id}/unpublish`
+        : `/api/courses/${course.id}/publish`;
+
       const res = await fetch(endpoint, {
         method: 'POST',
         credentials: 'include',
