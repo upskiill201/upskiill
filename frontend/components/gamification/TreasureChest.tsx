@@ -43,8 +43,18 @@ import {
 import { toRiveRewardType, type TeyroRewardType } from '../celebration/currency';
 
 const DEV = process.env.NODE_ENV === 'development';
+/** `?chestDebug=1` opts into diagnostics on ANY build, including staging's
+ * production build — NODE_ENV alone is useless there since `next build`
+ * is always 'production', so every dev-gated log/overlay was silently
+ * inert on staging the whole time this was being debugged. Read once per
+ * module load (SSR-safe guard); a query param never changes without a
+ * full navigation anyway. */
+const CHEST_DEBUG =
+  DEV ||
+  (typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('chestDebug') === '1');
 function devLog(...args: unknown[]) {
-  if (DEV) console.debug('[TreasureChest]', ...args);
+  if (CHEST_DEBUG) console.debug('[TreasureChest]', ...args);
 }
 
 export type TreasureChestHandle = {
@@ -106,6 +116,38 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
   ref
 ) {
   const [failed, setFailed] = useState(false);
+  /** On-screen readout for `?chestDebug=1` — production builds have no
+   * console access on a phone, so this needs to be visible on the chest
+   * itself, not just logged. */
+  const [debugInfo, setDebugInfo] = useState<{
+    smNames: string[];
+    smInputs: string[];
+    chestVMFound: boolean;
+    namedInstanceBound: boolean;
+    autoBound: boolean;
+    rewordsFound: boolean;
+    enumValues: string[];
+    lastSet: string | null;
+    lastReadback: string | null;
+    lastApplied: boolean | null;
+    resetFiredAt: number | null;
+    revealFiredAt: number | null;
+    lastError: string | null;
+  }>({
+    smNames: [],
+    smInputs: [],
+    chestVMFound: false,
+    namedInstanceBound: false,
+    autoBound: false,
+    rewordsFound: false,
+    enumValues: [],
+    lastSet: null,
+    lastReadback: null,
+    lastApplied: null,
+    resetFiredAt: null,
+    revealFiredAt: null,
+    lastError: null,
+  });
   const startedRef = useRef(false);
   const revealedRef = useRef(false);
   const tapIndexRef = useRef(0);
@@ -140,6 +182,7 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
     onLoadError: (e) => {
       devLog('LOAD ERROR', e);
       setFailed(true);
+      if (CHEST_DEBUG) setDebugInfo((d) => ({ ...d, lastError: `LOAD ERROR: ${String(e)}` }));
       onErrorRef.current?.(new Error('Failed to load treasure_chest.riv'));
     },
   });
@@ -160,6 +203,9 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
     });
     if (names.length === 0) {
       devLog('WARNING: no state machine found on this artboard — click/reset will do nothing.');
+      if (CHEST_DEBUG) {
+        queueMicrotask(() => setDebugInfo((d) => ({ ...d, smNames: [], lastError: 'NO STATE MACHINE FOUND' })));
+      }
       return;
     }
     rive.stop();
@@ -176,6 +222,9 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
       });
     });
     devLog('state machine inputs', inputSummary);
+    if (CHEST_DEBUG) {
+      queueMicrotask(() => setDebugInfo((d) => ({ ...d, smNames: names, smInputs: inputSummary })));
+    }
   }, [rive]);
 
   // Bind the TChest view model explicitly by name (verified against the
@@ -201,12 +250,24 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
 
   useEffect(() => {
     if (!rive) return;
-    devLog('viewModel resolution', {
+    const info = {
       chestViewModelFound: !!chestViewModel,
       namedInstanceBound: !!namedVmi,
       autoBoundFallback: !!rive.viewModelInstance,
       rewordsVmiFound: !!rewordsVmi,
-    });
+    };
+    devLog('viewModel resolution', info);
+    if (CHEST_DEBUG) {
+      queueMicrotask(() =>
+        setDebugInfo((d) => ({
+          ...d,
+          chestVMFound: info.chestViewModelFound,
+          namedInstanceBound: info.namedInstanceBound,
+          autoBound: info.autoBoundFallback,
+          rewordsFound: info.rewordsVmiFound,
+        }))
+      );
+    }
   }, [rive, chestViewModel, namedVmi, rewordsVmi]);
 
   // Hook into the nested `rewardType` enum directly on `rewordsVmi`
@@ -255,6 +316,11 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
       }
       const readback = nestedRewardTypeEnum.value ?? pathRewardTypeEnum.value ?? null;
       devLog('applyRewardType ->', riveValue, { applied, readback });
+      if (CHEST_DEBUG) {
+        queueMicrotask(() =>
+          setDebugInfo((d) => ({ ...d, lastSet: riveValue, lastReadback: readback, lastApplied: applied }))
+        );
+      }
       return applied;
     },
     [nestedRewardTypeEnum, rewordsVmi, pathRewardTypeEnum, vmi]
@@ -262,7 +328,9 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
 
   useEffect(() => {
     if (!rewordsVmi && !vmi) return;
-    devLog('rewardType enum bound values:', nestedRewardTypeEnum.values.length ? nestedRewardTypeEnum.values : pathRewardTypeEnum.values);
+    const values = nestedRewardTypeEnum.values.length ? nestedRewardTypeEnum.values : pathRewardTypeEnum.values;
+    devLog('rewardType enum bound values:', values);
+    if (CHEST_DEBUG) queueMicrotask(() => setDebugInfo((d) => ({ ...d, enumValues: values })));
   }, [rewordsVmi, vmi, nestedRewardTypeEnum.values, pathRewardTypeEnum.values]);
 
   const clickTrigger = useViewModelInstanceTrigger('click', vmi);
@@ -270,6 +338,10 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
   useViewModelInstanceTrigger('rewardReveal', vmi, {
     onTrigger: () => {
       devLog('rewardReveal trigger fired from Rive');
+      if (CHEST_DEBUG) {
+        const firedAt = Date.now();
+        queueMicrotask(() => setDebugInfo((d) => ({ ...d, revealFiredAt: firedAt })));
+      }
       if (revealedRef.current) return;
       revealedRef.current = true;
       onRewardReveal?.();
@@ -290,6 +362,10 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
     if (!vmi || didResetRef.current) return;
     didResetRef.current = true;
     devLog('firing reset on mount — clean slate for this chest');
+    if (CHEST_DEBUG) {
+      const firedAt = Date.now();
+      queueMicrotask(() => setDebugInfo((d) => ({ ...d, resetFiredAt: firedAt })));
+    }
     resetTrigger.trigger();
   }, [vmi, resetTrigger]);
 
@@ -392,6 +468,39 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
         }}
       />
 
+      {CHEST_DEBUG && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 4,
+            left: 4,
+            zIndex: 20,
+            pointerEvents: 'none',
+            background: 'rgba(0,0,0,0.82)',
+            color: '#7CFFB2',
+            font: '10px/1.5 monospace',
+            padding: '6px 8px',
+            borderRadius: 6,
+            textAlign: 'left',
+            maxWidth: 280,
+          }}
+        >
+          <div>rive: {rive ? 'loaded' : 'loading…'} · failed: {String(failed)}</div>
+          <div>SM: {debugInfo.smNames.join(', ') || '(none)'}</div>
+          <div style={{ color: '#FFD479' }}>SM inputs: {debugInfo.smInputs.join(', ') || '(none)'}</div>
+          <div>
+            chestVM: {String(debugInfo.chestVMFound)} · named: {String(debugInfo.namedInstanceBound)} · autoBound: {String(debugInfo.autoBound)} · rewords: {String(debugInfo.rewordsFound)}
+          </div>
+          <div style={{ color: '#9ecbff' }}>enum: {debugInfo.enumValues.join(', ') || '(none)'}</div>
+          <div>set: {debugInfo.lastSet ?? '—'} · applied: {String(debugInfo.lastApplied)}</div>
+          <div style={{ color: debugInfo.lastReadback === debugInfo.lastSet ? '#7CFFB2' : '#FF8A8A' }}>
+            readback: {debugInfo.lastReadback ?? '—'}
+          </div>
+          <div>reset fired: {debugInfo.resetFiredAt ? new Date(debugInfo.resetFiredAt).toLocaleTimeString() : 'never'}</div>
+          <div>reveal fired: {debugInfo.revealFiredAt ? new Date(debugInfo.revealFiredAt).toLocaleTimeString() : 'never'}</div>
+          {debugInfo.lastError && <div style={{ color: '#FF8A8A' }}>ERROR: {debugInfo.lastError}</div>}
+        </div>
+      )}
     </div>
   );
 });
