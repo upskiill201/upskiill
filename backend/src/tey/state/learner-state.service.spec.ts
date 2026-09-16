@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../../prisma/prisma.service';
 import { StreakService } from '../../streak/streak.service';
+import { TeyActivityService } from '../activity/tey-activity.service';
 import { LearnerStateService } from './learner-state.service';
 
 const streakStats = (over: Partial<Record<string, unknown>> = {}) => ({
@@ -20,10 +21,12 @@ const streakStats = (over: Partial<Record<string, unknown>> = {}) => ({
 describe('LearnerStateService', () => {
   let service: LearnerStateService;
   let streak: { getStreakStats: jest.Mock };
+  let activity: { findOpenLessonStart: jest.Mock };
   let prisma: any;
 
   beforeEach(async () => {
     streak = { getStreakStats: jest.fn().mockResolvedValue(streakStats()) };
+    activity = { findOpenLessonStart: jest.fn().mockResolvedValue(null) };
 
     prisma = {
       user: {
@@ -59,6 +62,7 @@ describe('LearnerStateService', () => {
         LearnerStateService,
         { provide: PrismaService, useValue: prisma },
         { provide: StreakService, useValue: streak },
+        { provide: TeyActivityService, useValue: activity },
       ],
     }).compile();
 

@@ -145,7 +145,7 @@ export class TeyPolicyService {
         reengagement: true,
         quietHoursStart: 1290,
         quietHoursEnd: 480,
-        maxPerDay: 3,
+        maxPerDay: 4,
         preferredHour: null,
         updatedAt: new Date(),
       }

@@ -93,4 +93,46 @@ export class TeyActivityService {
     });
     return rows.map((r) => r.occurredAt);
   }
+
+  /**
+   * The most recent lesson opened today (client `lesson_started`) with no
+   * later completion of anything since. Feeds LESSON_ABANDONED.
+   *
+   * `lesson_completed` (server-recorded, see TeyListener) does not carry an
+   * entityId today, so this cannot match the exact lesson finished — instead
+   * it treats ANY completion after the open as "not stalled": if the learner
+   * moved on and finished something else, nagging about the specific lesson
+   * they first opened is not worth the precision it would cost to track.
+   */
+  async findOpenLessonStart(
+    userId: string,
+    localDate: string,
+  ): Promise<{ lessonId: string; startedAt: Date } | null> {
+    const lastStarted = await this.prisma.teyActivityEvent.findFirst({
+      where: {
+        userId,
+        eventType: 'lesson_started',
+        localDate,
+        entityId: { not: null },
+      },
+      orderBy: { occurredAt: 'desc' },
+      select: { entityId: true, occurredAt: true },
+    });
+    if (!lastStarted?.entityId) return null;
+
+    const completedSince = await this.prisma.teyActivityEvent.findFirst({
+      where: {
+        userId,
+        eventType: 'lesson_completed',
+        occurredAt: { gt: lastStarted.occurredAt },
+      },
+      select: { id: true },
+    });
+    if (completedSince) return null;
+
+    return {
+      lessonId: lastStarted.entityId,
+      startedAt: lastStarted.occurredAt,
+    };
+  }
 }

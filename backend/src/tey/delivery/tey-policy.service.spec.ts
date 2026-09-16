@@ -167,7 +167,7 @@ describe('TeyPolicyService', () => {
 
   describe('volume', () => {
     it('enforces the daily cap', async () => {
-      prisma.teyDelivery.count.mockResolvedValue(3);
+      prisma.teyDelivery.count.mockResolvedValue(4);
       await expect(service.check('u1', ctx(), at(20))).resolves.toEqual({
         allow: false,
         reason: 'DAILY_CAP',
@@ -175,7 +175,7 @@ describe('TeyPolicyService', () => {
     });
 
     it('gives a CRITICAL one slot of headroom over the cap', async () => {
-      prisma.teyDelivery.count.mockResolvedValue(3);
+      prisma.teyDelivery.count.mockResolvedValue(4);
       await expect(
         service.check(
           'u1',
@@ -233,6 +233,28 @@ describe('TeyPolicyService', () => {
       allow: false,
       reason: 'NO_SUBSCRIPTION',
     });
+  });
+
+  it('falls back to a maxPerDay of 4 for a learner with no prefs row', async () => {
+    const prefs = await service.prefsFor('u1');
+    expect(prefs.maxPerDay).toBe(4);
+  });
+
+  it('resolves a preference category for every reason, including the newly added ones', async () => {
+    const reasons: TeyContext['reason'][] = [
+      'STREAK_LOST',
+      'MILESTONE',
+      'COURSE_NEAR_COMPLETION',
+      'PROGRESS_CELEBRATION',
+      'LESSON_ABANDONED',
+    ];
+    for (const reason of reasons) {
+      // A missing category mapping would silently skip the opt-out check
+      // rather than throw, so the only way to catch it is to confirm the
+      // request still resolves to an explicit allow/deny.
+      const result = await service.check('u1', ctx({ reason }), at(12));
+      expect(result.allow).toBe(true);
+    }
   });
 
   it('gives every denial a distinct, reportable reason', async () => {

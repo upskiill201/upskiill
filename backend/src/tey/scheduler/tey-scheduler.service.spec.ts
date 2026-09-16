@@ -14,6 +14,7 @@ const learner = (
   streakDays: 12,
   longestStreak: 30,
   lastStreakEarnedAt: new Date('2026-09-03T18:00:00Z'),
+  lastStreakEarnedDate: '2026-09-03',
   freezesAvailable: 0,
   localDate: '2026-09-04',
   todayXp: 0,
@@ -36,6 +37,8 @@ const learner = (
   lastActivityAt: new Date('2026-09-03T18:00:00Z'),
   daysSinceLastActivity: 1,
   consecutiveIgnoredNudges: 0,
+  openLessonId: null,
+  openLessonStartedAt: null,
   ...over,
 });
 

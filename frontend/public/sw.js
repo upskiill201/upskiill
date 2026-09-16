@@ -286,6 +286,13 @@ self.addEventListener('push', (event) => {
       // three copies of the same nudge on the lock screen.
       tag: data.tag || 'tey',
       renotify: true,
+      // The only genuinely controllable "alert" lever Web Push has — there is
+      // no cross-browser way to attach a custom sound file to a notification,
+      // on any browser, today. Default OS/browser sound already plays unless
+      // something external (Do Not Disturb, a silenced site permission) is
+      // suppressing it. Deliberately NOT setting `silent` here — leaving it
+      // unset is what lets that default sound through.
+      vibrate: [200, 100, 200],
       data: {
         url: data.url || '/dashboard',
         deliveryId: data.deliveryId,

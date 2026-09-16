@@ -400,3 +400,10 @@ Provider credentials are **not** env vars — they are configured at
 `/admin` and encrypted at rest. `scripts/seed-tey-ai.ts` seeds a Gemini
 provider from `GEMINI_API_KEY`, inactive, for an operator to enable after
 testing the connection.
+
+`scripts/seed-tey-ai-codecraft.ts` does the same for
+[CodeCraft](https://codecraftapi.com) (`CODECRAFT_API_KEY`, optional
+`CODECRAFT_MODEL`) — a fully OpenAI-compatible aggregator, so it needs no new
+adapter, just a `kind: 'OPENAI_COMPATIBLE'` row pointed at CodeCraft's
+`baseUrl`. Both env vars are seed-time-only: read once by the script, then
+encrypted into the database. Neither is ever read at runtime.

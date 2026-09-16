@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   Activity,
   BarChart3,
+  Bot,
   BookOpen,
   CreditCard,
   FileText,
@@ -73,6 +74,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: 'Tey',
     items: [
       { href: '/admin/rules', label: 'Rules', icon: Sparkles },
+      { href: '/admin/ai', label: 'AI', icon: Bot },
       { href: '/admin/deliveries', label: 'Deliveries', icon: Send },
       { href: '/admin/queue', label: 'Queue', icon: Timer },
       { href: '/admin/health', label: 'Health', icon: Activity },
