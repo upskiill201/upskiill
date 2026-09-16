@@ -207,7 +207,13 @@ export class TeyAiAdminController {
         system,
         dto.prompt ??
           'Write the notification now. Reply with JSON only: {"title": "...", "body": "..."}',
-        { maxOutputTokens: 400 },
+        // TeyAiService.complete()'s own default (8000ms) is sized for the
+        // connection test's trivial "reply OK" — a real generation from a
+        // larger model routinely needs longer. An admin running this from
+        // the playground is willingly waiting, unlike the real delivery
+        // path, so it's safe to give it the same ceiling a provider's own
+        // `timeoutMs` field allows (up to 30s).
+        { maxOutputTokens: 400, timeoutMs: 20_000 },
       );
 
       return {
