@@ -172,7 +172,12 @@ function HeraldBanner({ notification, onDismiss }: HeraldBannerProps) {
     if (notification.type === 'CHEST') {
       // Real chest reveal — the scene fetches today's chest, opens it
       // server-first, and choreographs the physical reward drop.
-      celebrate({ kind: 'CHEST' });
+      // dedupeKey shared with every other Daily Chest entry point (the
+      // dashboard card, JourneyPathMap) so a rapid double-tap or two
+      // producers both firing can never queue two CHEST scenes for the
+      // same chest — that plays out as the reveal scene restarting right
+      // after it finishes.
+      celebrate({ kind: 'CHEST', dedupeKey: 'daily-chest' });
     } else if (notification.type === 'SPIN') {
       setActiveOverlay('SPIN');
     } else if (notification.type === 'ACHIEVEMENT') {

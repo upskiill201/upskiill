@@ -176,7 +176,11 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     openedRef.current = true;
     setPhase('opening');
     playChestCreak();
-    playHaptic('medium');
+    // playAudio:false — playHaptic fires its own separate audio event by
+    // default (a different system from celebrationAudio.ts); we already
+    // have a bespoke creak sound for this exact moment, so only take the
+    // vibration channel here to avoid two competing sounds on one tap.
+    playHaptic('medium', false);
 
     (async () => {
       try {
@@ -238,7 +242,11 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     if (phase !== 'ready' || enterSoundPlayedRef.current) return;
     enterSoundPlayedRef.current = true;
     playChestAppear();
-    const timer = setTimeout(() => playRarityStamp(result?.rarityTier === 'rare'), 260);
+    playHaptic('soft', false); // gentle arrival tap, vibration only — playChestAppear is the sound
+    const timer = setTimeout(() => {
+      playRarityStamp(result?.rarityTier === 'rare');
+      playHaptic(result?.rarityTier === 'rare' ? 'success' : 'selection', false);
+    }, 260);
     return () => clearTimeout(timer);
   }, [phase, result?.rarityTier]);
 
@@ -248,6 +256,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     if (phase !== 'error' || errorSoundPlayedRef.current) return;
     errorSoundPlayedRef.current = true;
     playChestError();
+    playHaptic('warning', false); // vibration only — playChestError is the sound
   }, [phase]);
 
   /** Every tap actually forwarded to Rive (including the first) — escalating
@@ -256,7 +265,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
   const handleTap = (tapIndex: number) => {
     setTapCount(tapIndex);
     playChestShake(tapIndex);
-    playHaptic(tapIndex >= 3 ? 'medium' : 'light');
+    playHaptic(tapIndex >= 3 ? 'medium' : 'light', false); // vibration only — playChestShake is the sound
     if (!reducedMotion) {
       void shakeControls.start({
         x: [0, -5, 5, -3, 3, 0],
@@ -278,7 +287,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     // bursting out) → reward-type flourish (what it actually is). The
     // per-item chimes from RewardPile land on top of this as they drop.
     playChestRevealFanfare();
-    playHaptic('teyroCelebration');
+    playHaptic('teyroCelebration', false); // vibration only — the fanfare + rush + flourish are the sound layer
     revealTimersRef.current.push(
       setTimeout(() => playRewardRush(), 160),
       setTimeout(() => playRewardTypeFlourish(r.currency), 300)
@@ -346,15 +355,18 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
    * is now stale — refresh it on the way out so the learner's coins are
    * correct even though they skipped the animation. */
   const handleSkip = () => {
-    playHaptic('light'); // carries the UI click sound through soundManager
+    // No bespoke sound for skip — leave playAudio on so playHaptic's own
+    // BUTTON_SECONDARY_CLICK event is the only sound for this action.
+    playHaptic('light');
     if (openedRef.current && !revealedRef.current) void refreshGamification();
     onAdvance();
   };
 
   /** CONTINUE press — confirm sound + haptic so the exit is as tactile as
-   * the rest of the interaction. */
+   * the rest of the interaction. No bespoke sound here either, so this
+   * stays on playHaptic's default BUTTON_PRIMARY_CLICK event. */
   const handleContinue = () => {
-    playHaptic('medium'); // routes BUTTON_PRIMARY_CLICK through soundManager
+    playHaptic('medium');
     onAdvance();
   };
 
@@ -435,7 +447,10 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
             count={pileCount}
             startDelay={reducedMotion ? 0 : 220}
             onItemLand={(i) => {
-              if (!reducedMotion) playGemChime(i);
+              if (!reducedMotion) {
+                playGemChime(i);
+                playHaptic('selection', false); // subtle per-item tick, vibration only
+              }
             }}
           />
         )}
