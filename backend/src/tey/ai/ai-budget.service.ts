@@ -168,6 +168,12 @@ export class AiBudgetService {
     const todayRows = rows.filter((r) => r.day === this.today());
 
     return {
+      // The master switch is an env var by design (same reasoning as
+      // TEY_DELIVERY_ENABLED/TEY_SCHEDULER_ENABLED — see tey/README.md), so it
+      // can't be flipped from this DB-backed admin UI. Surfaced here read-only
+      // so the AI settings page can explain why a fully-configured, active
+      // provider still isn't writing any copy.
+      aiEnabled: process.env.TEY_AI_ENABLED === 'true',
       limits: this.limits,
       today: {
         calls: todayRows.reduce((n, r) => n + (r._sum.calls ?? 0), 0),

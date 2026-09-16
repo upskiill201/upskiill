@@ -1,8 +1,13 @@
 import type { TeyReason } from '../../contracts/tey-context.types';
+import { CourseNearCompletionRule } from './course-near-completion.rule';
 import { DailyGoalIncompleteRule } from './daily-goal-incomplete.rule';
 import { InactiveReturnRule } from './inactive-return.rule';
+import { LessonAbandonedRule } from './lesson-abandoned.rule';
+import { MilestoneRule } from './milestone.rule';
+import { ProgressCelebrationRule } from './progress-celebration.rule';
 import { StreakAtRiskRule } from './streak-at-risk.rule';
 import { StreakCriticalRule } from './streak-critical.rule';
+import { StreakLostRule } from './streak-lost.rule';
 import type { TeyRule } from './rule.types';
 
 /**
@@ -19,8 +24,13 @@ import type { TeyRule } from './rule.types';
 export const TEY_RULES: readonly TeyRule[] = [
   StreakCriticalRule,
   StreakAtRiskRule,
-  InactiveReturnRule,
+  MilestoneRule,
+  CourseNearCompletionRule,
   DailyGoalIncompleteRule,
+  ProgressCelebrationRule,
+  InactiveReturnRule,
+  StreakLostRule,
+  LessonAbandonedRule,
 ];
 
 export const TEY_RULES_BY_ID: ReadonlyMap<TeyReason, TeyRule> = new Map(

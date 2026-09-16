@@ -10,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
 import { GetUser } from '../auth/decorator/get-user.decorator';
+import { buildGreeting } from './state/greeting.util';
 import { LearnerStateService } from './state/learner-state.service';
 import { TeyTimezoneService } from './state/timezone.service';
 import { TeySchedulerService } from './scheduler/tey-scheduler.service';
@@ -62,7 +63,7 @@ export class TeyController {
     // app open quietly puts them back on the schedule.
     void this.scheduler.planFor(user.id, state).catch(() => undefined);
 
-    return { state };
+    return { state, greeting: buildGreeting(state) };
   }
 
   /** Explicit timezone capture, used on app boot. */

@@ -32,6 +32,19 @@ export const TEY_THRESHOLDS = Object.freeze({
   /** Weekly XP goal, mirroring ProgressService.WEEKLY_XP_TARGET. */
   weeklyXpTarget: 300,
 
+  /** Streak lengths that count as a milestone worth celebrating. An explicit
+   *  allowlist rather than a modulo, so it stays reviewable. */
+  milestoneStreakDays: Object.freeze([
+    3, 7, 14, 30, 50, 100, 150, 200, 250, 300, 365,
+  ]),
+
+  /** Minutes a lesson can sit open with no completion before it counts as
+   *  abandoned. Long enough that someone still reading isn't flagged. */
+  lessonAbandonedMinutes: 25,
+  /** Past this many minutes, an abandoned lesson is stale rather than worth
+   *  mentioning today. */
+  lessonAbandonedStaleMinutes: 360,
+
   /** Habit model: EWMA weight for each new observation, and the sample cap
    *  beyond which the estimate is considered settled. */
   usualHourAlpha: 0.3,

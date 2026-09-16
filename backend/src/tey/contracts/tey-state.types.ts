@@ -64,6 +64,10 @@ export interface LearnerStateSnapshot {
   streakDays: number;
   longestStreak: number;
   lastStreakEarnedAt: Date | null;
+  /** Same instant as lastStreakEarnedAt, as a YYYY-MM-DD string — precomputed
+   *  here so rules can build a dedupe key without touching the Date field
+   *  themselves (see learner-state.service.spec.ts's streak-math guard). */
+  lastStreakEarnedDate: string | null;
   freezesAvailable: number;
 
   localDate: string;
@@ -92,4 +96,9 @@ export interface LearnerStateSnapshot {
   lastActivityAt: Date | null;
   daysSinceLastActivity: number | null;
   consecutiveIgnoredNudges: number;
+
+  /** A lesson opened today with no later server-confirmed completion for it.
+   *  Null once it's finished (or once the local day rolls over). */
+  openLessonId: string | null;
+  openLessonStartedAt: Date | null;
 }

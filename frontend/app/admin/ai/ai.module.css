@@ -1,0 +1,180 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.textInput,
+.selectInput,
+.numberInput {
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.textInput:focus,
+.selectInput:focus,
+.numberInput:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+}
+
+.numberInput {
+  width: 92px;
+  text-align: right;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.fieldHint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.formFooter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.savedNote {
+  font-size: 12.5px;
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+.errorNote {
+  font-size: 12.5px;
+  color: var(--error-red);
+  font-weight: 600;
+}
+
+/* Provider list */
+.providerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.providerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.providerRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.providerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 180px;
+}
+
+.providerName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.providerMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: ui-monospace, monospace;
+}
+
+.providerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Primary / Fallback / Off segmented control */
+.roleGroup {
+  display: flex;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.roleBtn {
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.roleBtn:disabled {
+  cursor: default;
+}
+
+.roleBtnPrimaryActive {
+  background: var(--success-green);
+  color: white;
+}
+
+.roleBtnFallbackActive {
+  background: var(--warning);
+  color: white;
+}
+
+.testResultGood {
+  font-size: 12px;
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+.testResultBad {
+  font-size: 12px;
+  color: var(--error-red);
+  font-weight: 600;
+}
+
+.toggleAdvanced {
+  background: none;
+  border: none;
+  color: var(--brand-blue);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}

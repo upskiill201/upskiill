@@ -1981,6 +1981,11 @@ model LearnerState {
   /// Consecutive nudges sent without an open — drives tone escalation.
   consecutiveIgnoredNudges Int       @default(0)
 
+  /// A lesson opened today with no later server-confirmed completion for it.
+  /// Feeds LESSON_ABANDONED. Null once finished or once the local day rolls.
+  openLessonId        String?
+  openLessonStartedAt DateTime?
+
   computedAt DateTime @default(now())
   revision   Int      @default(0)
 
@@ -2125,7 +2130,7 @@ model TeyNotificationPrefs {
   quietHoursStart Int @default(1290)
   quietHoursEnd   Int @default(480)
 
-  maxPerDay     Int  @default(3)
+  maxPerDay     Int  @default(4)
   /// Learner's own preferred reminder hour, overriding the inferred habit.
   preferredHour Int?
 

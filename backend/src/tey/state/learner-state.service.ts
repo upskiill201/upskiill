@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { StreakService } from '../../streak/streak.service';
+import { TeyActivityService } from '../activity/tey-activity.service';
 import {
   DEFAULT_DAILY_GOAL_XP,
   qualifiesForDailyGoal,
@@ -50,6 +51,8 @@ interface LearnerStateRow {
   usualHourSamples: number;
   lastActivityAt: Date | null;
   consecutiveIgnoredNudges: number;
+  openLessonId: string | null;
+  openLessonStartedAt: Date | null;
   computedAt: Date;
   revision: number;
 }
@@ -82,6 +85,7 @@ export class LearnerStateService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly streakService: StreakService,
+    private readonly activityService: TeyActivityService,
   ) {}
 
   /**
@@ -103,29 +107,31 @@ export class LearnerStateService {
     );
 
     const weekStart = mondayOf(now.date);
-    const [profile, today, week, existing, stats] = await Promise.all([
-      this.prisma.studentProfile.findUnique({
-        where: { userId },
-        select: {
-          dailyGoalXp: true,
-          lastLessonCompletedAt: true,
-          lastActiveAt: true,
-        },
-      }),
-      this.prisma.userDailyActivity.findUnique({
-        where: { userId_date: { userId, date: now.date } },
-        select: { xpEarned: true, lessonsCompleted: true },
-      }),
-      this.prisma.userWeeklyProgress.findUnique({
-        where: { userId_weekStartDate: { userId, weekStartDate: weekStart } },
-        select: { xpEarned: true, lessonsCompleted: true },
-      }),
-      this.prisma.learnerState.findUnique({ where: { userId } }),
-      this.prisma.userStats.findUnique({
-        where: { userId },
-        select: { lessonsCompleted: true, lastActivityAt: true },
-      }),
-    ]);
+    const [profile, today, week, existing, stats, openLesson] =
+      await Promise.all([
+        this.prisma.studentProfile.findUnique({
+          where: { userId },
+          select: {
+            dailyGoalXp: true,
+            lastLessonCompletedAt: true,
+            lastActiveAt: true,
+          },
+        }),
+        this.prisma.userDailyActivity.findUnique({
+          where: { userId_date: { userId, date: now.date } },
+          select: { xpEarned: true, lessonsCompleted: true },
+        }),
+        this.prisma.userWeeklyProgress.findUnique({
+          where: { userId_weekStartDate: { userId, weekStartDate: weekStart } },
+          select: { xpEarned: true, lessonsCompleted: true },
+        }),
+        this.prisma.learnerState.findUnique({ where: { userId } }),
+        this.prisma.userStats.findUnique({
+          where: { userId },
+          select: { lessonsCompleted: true, lastActivityAt: true },
+        }),
+        this.activityService.findOpenLessonStart(userId, now.date),
+      ]);
 
     const dailyGoalXp = profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL_XP;
     const todayGoalCompleted = qualifiesForDailyGoal(today, dailyGoalXp);
@@ -165,6 +171,7 @@ export class LearnerStateService {
       lastStreakEarnedAt: streak.lastStreakDate
         ? new Date(`${streak.lastStreakDate}T00:00:00Z`)
         : null,
+      lastStreakEarnedDate: streak.lastStreakDate ?? null,
       freezesAvailable: streak.freezesAvailable,
 
       localDate: now.date,
@@ -208,6 +215,9 @@ export class LearnerStateService {
       lastActivityAt,
       daysSinceLastActivity,
       consecutiveIgnoredNudges: existing?.consecutiveIgnoredNudges ?? 0,
+
+      openLessonId: openLesson?.lessonId ?? null,
+      openLessonStartedAt: openLesson?.startedAt ?? null,
     };
 
     await this.persist(snapshot, target.sectionIndex);
@@ -383,6 +393,8 @@ export class LearnerStateService {
       usualHourLocal: s.usualHourLocal,
       usualHourSamples: s.usualHourSamples,
       lastActivityAt: s.lastActivityAt,
+      openLessonId: s.openLessonId,
+      openLessonStartedAt: s.openLessonStartedAt,
       computedAt: new Date(),
     };
 
@@ -428,6 +440,9 @@ export class LearnerStateService {
       streakDays: row.streakDays,
       longestStreak: row.longestStreak,
       lastStreakEarnedAt: row.lastStreakEarnedAt,
+      lastStreakEarnedDate: row.lastStreakEarnedAt
+        ? row.lastStreakEarnedAt.toISOString().slice(0, 10)
+        : null,
       freezesAvailable: row.freezesAvailable,
       localDate: row.localDate ?? now.date,
       todayXp: row.todayXp,
@@ -449,6 +464,8 @@ export class LearnerStateService {
       courseProgressPct: row.courseProgressPct,
       usualHourLocal: row.usualHourLocal,
       usualHourSamples: row.usualHourSamples,
+      openLessonId: row.openLessonId,
+      openLessonStartedAt: row.openLessonStartedAt,
       lastActivityAt: row.lastActivityAt,
       daysSinceLastActivity: row.lastActivityAt
         ? Math.max(

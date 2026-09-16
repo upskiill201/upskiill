@@ -18,6 +18,7 @@ const learner = (
   streakDays: 12,
   longestStreak: 30,
   lastStreakEarnedAt: new Date('2026-09-03T18:00:00Z'),
+  lastStreakEarnedDate: '2026-09-03',
   freezesAvailable: 0,
   localDate: '2026-09-04',
   todayXp: 0,
@@ -40,6 +41,8 @@ const learner = (
   lastActivityAt: new Date('2026-09-03T18:00:00Z'),
   daysSinceLastActivity: 1,
   consecutiveIgnoredNudges: 0,
+  openLessonId: null,
+  openLessonStartedAt: null,
   ...over,
 });
 
@@ -200,6 +203,142 @@ describe('TeyDecisionService', () => {
       // A broken rule must not silence every other nudge.
       expect(() => service.evaluate(learner(), now(12))).not.toThrow();
       spy.mockRestore();
+    });
+  });
+
+  describe('MILESTONE', () => {
+    it('fires when a completed day lands on a round streak number', () => {
+      const plans = ids(
+        learner({ streakDays: 7, todayGoalCompleted: true }),
+        now(12),
+      );
+      expect(plans).toContain('MILESTONE');
+    });
+
+    it('does not fire on a streak length that is not a milestone', () => {
+      const plans = ids(
+        learner({ streakDays: 8, todayGoalCompleted: true }),
+        now(12),
+      );
+      expect(plans).not.toContain('MILESTONE');
+    });
+
+    it('does not fire before today is actually done', () => {
+      const plans = ids(
+        learner({ streakDays: 7, todayGoalCompleted: false }),
+        now(12),
+      );
+      expect(plans).not.toContain('MILESTONE');
+    });
+  });
+
+  describe('PROGRESS_CELEBRATION', () => {
+    it('fires once weekly XP crosses the target', () => {
+      const plans = ids(learner({ weeklyXp: 300 }), now(12));
+      expect(plans).toContain('PROGRESS_CELEBRATION');
+    });
+
+    it('does not fire under the target', () => {
+      const plans = ids(learner({ weeklyXp: 299 }), now(12));
+      expect(plans).not.toContain('PROGRESS_CELEBRATION');
+    });
+  });
+
+  describe('COURSE_NEAR_COMPLETION', () => {
+    it('fires when the course is near done and today is not', () => {
+      const plans = ids(
+        learner({ courseState: 'NEAR_COMPLETION', todayGoalCompleted: false }),
+        now(12),
+      );
+      expect(plans).toContain('COURSE_NEAR_COMPLETION');
+    });
+
+    it('stops once today is done', () => {
+      const plans = ids(
+        learner({ courseState: 'NEAR_COMPLETION', todayGoalCompleted: true }),
+        now(12),
+      );
+      expect(plans).not.toContain('COURSE_NEAR_COMPLETION');
+    });
+
+    it('can co-plan alongside a streak reason on the same evening', () => {
+      // Deliberate: the policy layer's minimum gap and per-rule cooldowns are
+      // what keep both from actually landing the same day, not mutual
+      // exclusion at the rule level.
+      const plans = ids(
+        learner({
+          streakDays: 12,
+          courseState: 'NEAR_COMPLETION',
+          todayGoalCompleted: false,
+        }),
+        now(12),
+      );
+      expect(plans).toContain('STREAK_AT_RISK');
+      expect(plans).toContain('COURSE_NEAR_COMPLETION');
+    });
+  });
+
+  describe('STREAK_LOST', () => {
+    it('fires once the streak state has gone LOST', () => {
+      const plans = ids(
+        learner({ streakDays: 0, streakState: 'STREAK_LOST' }),
+        now(12),
+      );
+      expect(plans).toContain('STREAK_LOST');
+    });
+
+    it('does not fire while a streak is still active', () => {
+      const plans = ids(
+        learner({ streakDays: 12, streakState: 'STREAK_AT_RISK' }),
+        now(12),
+      );
+      expect(plans).not.toContain('STREAK_LOST');
+    });
+  });
+
+  describe('LESSON_ABANDONED', () => {
+    it('fires once a lesson has sat open past the stall threshold', () => {
+      const plans = ids(
+        learner({
+          todayGoalCompleted: false,
+          openLessonId: 'l9',
+          openLessonStartedAt: new Date('2026-09-04T10:30:00Z'),
+        }),
+        now(12),
+      );
+      expect(plans).toContain('LESSON_ABANDONED');
+    });
+
+    it('does not fire before the stall threshold', () => {
+      const plans = ids(
+        learner({
+          todayGoalCompleted: false,
+          openLessonId: 'l9',
+          openLessonStartedAt: new Date('2026-09-04T10:50:00Z'),
+        }),
+        now(12),
+      );
+      expect(plans).not.toContain('LESSON_ABANDONED');
+    });
+
+    it('does not fire once today is already done', () => {
+      const plans = ids(
+        learner({
+          todayGoalCompleted: true,
+          openLessonId: 'l9',
+          openLessonStartedAt: new Date('2026-09-04T10:30:00Z'),
+        }),
+        now(12),
+      );
+      expect(plans).not.toContain('LESSON_ABANDONED');
+    });
+
+    it('does not fire once nothing is open', () => {
+      const plans = ids(
+        learner({ todayGoalCompleted: false, openLessonId: null }),
+        now(12),
+      );
+      expect(plans).not.toContain('LESSON_ABANDONED');
     });
   });
 

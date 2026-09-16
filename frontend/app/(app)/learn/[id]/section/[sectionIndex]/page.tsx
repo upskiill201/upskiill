@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare, Shield } from 'lucide-react';
 import { fetchInventory, usePowerUp } from '@/lib/shop/api';
+import { track } from '@/lib/tey-track';
 import { playHaptic } from '@/lib/haptics';
 import StudentShell, { useComingSoon } from '@/components/layout/StudentShell';
 import Skeleton from '@/components/ui/Skeleton';
@@ -1500,6 +1501,12 @@ export function SectionViewContent({
       setGuidedAnswers([]);
       setActiveLesson(fullLesson);
       setLessonPhase('start');
+      // Feeds Tey's LESSON_ABANDONED rule — a lesson opened with no later
+      // completion. Skipped in admin review: that's an instructor reading
+      // content, not a learner's activity signal.
+      if (!adminReviewMode) {
+        track('lesson_started', { entityType: 'lesson', entityId: lessonId });
+      }
     } catch (err) {
       console.error('Failed to load lesson:', err);
       if (adminReviewMode) {

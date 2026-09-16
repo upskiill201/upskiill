@@ -2,6 +2,7 @@ import { Baloo_2 } from "next/font/google";
 
 import { TeyActivityProvider } from "../../components/providers/TeyActivityProvider";
 import { TeyPushSync } from "../../components/providers/TeyPushProvider";
+import TeyWelcomeBanner from "../../components/tey/TeyWelcomeBanner";
 import { GamificationProvider } from "../../context/GamificationContext";
 import { RewardAnimationProvider } from "../../context/RewardAnimationContext";
 import { HeraldProvider } from "../../context/HeraldContext";
@@ -81,6 +82,7 @@ export default function AppGroupLayout({
     <div className={`${baloo2.variable} contents`}>
       <TeyActivityProvider />
       <TeyPushSync />
+      <TeyWelcomeBanner />
       <AudioProvider>
         <BackgroundMusicManager />
         {/* Celebration Engine sits high in this tree so any layer

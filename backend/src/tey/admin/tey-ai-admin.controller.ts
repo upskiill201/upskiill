@@ -23,7 +23,10 @@ import {
 } from 'class-validator';
 import { Roles } from '../../auth/decorator/roles.decorator';
 import { RolesGuard } from '../../auth/guard/roles.guard';
-import { AI_PROVIDER_KINDS } from '../ai/ai-provider.interface';
+import {
+  AI_PROVIDER_KINDS,
+  type AiProvider,
+} from '../ai/ai-provider.interface';
 import { AiBudgetService } from '../ai/ai-budget.service';
 import { AiConfigService } from '../ai/ai-config.service';
 import { TeyAiService } from '../ai/tey-ai.service';
@@ -44,16 +47,36 @@ class ProviderDto {
   @IsOptional() @IsBoolean() isActive?: boolean;
   @IsOptional() @IsBoolean() isFallback?: boolean;
 
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(16) @Max(4096)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(16)
+  @Max(4096)
   maxOutputTokens?: number;
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) @Max(2)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(2)
   temperature?: number;
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(1000) @Max(30000)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1000)
+  @Max(30000)
   timeoutMs?: number;
 
   @IsOptional() @Type(() => Number) @IsNumber() @Min(0) inputCostPer1k?: number;
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) outputCostPer1k?: number;
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) @Max(100)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  outputCostPer1k?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(100)
   dailyBudgetUsd?: number;
 }
 
@@ -61,6 +84,10 @@ class PlaygroundDto {
   @IsString() @MaxLength(64) reason!: string;
   @IsOptional() @IsString() @MaxLength(64) tone?: string;
   @IsOptional() @IsString() @MaxLength(2000) prompt?: string;
+  /** Test a specific provider regardless of its Primary/Fallback/Off role —
+   *  lets an admin compare models without touching which one is actually
+   *  live. Omit to use whichever is currently active, matching real delivery. */
+  @IsOptional() @IsString() providerId?: string;
 }
 
 /**
@@ -150,8 +177,21 @@ export class TeyAiAdminController {
     );
     const ctx = preview.context;
 
-    const { primary, fallback } = await this.config.resolve();
-    const provider = primary ?? fallback;
+    let provider: AiProvider | null;
+    try {
+      if (dto.providerId) {
+        provider = await this.config.buildById(dto.providerId);
+      } else {
+        const { primary, fallback } = await this.config.resolve();
+        provider = primary ?? fallback;
+      }
+    } catch (err) {
+      return {
+        ok: false,
+        error: (err as Error).message,
+        template: { title: preview.title, body: preview.body },
+      };
+    }
     if (!provider) {
       return {
         ok: false,
