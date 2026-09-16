@@ -13,7 +13,7 @@ import type { LeagueTier } from '@/lib/leagues';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type CelebrationCurrency = 'COINS' | 'XP' | 'HEARTS' | 'STREAK' | 'FREEZE';
+export type CelebrationCurrency = 'COINS' | 'XP' | 'HEARTS' | 'STREAK' | 'FREEZE' | 'BOOST';
 
 export interface CelebrationReward {
   currency: CelebrationCurrency;
@@ -111,8 +111,17 @@ export type CelebrationScene =
     }
   | {
       kind: 'CHEST';
-      /** When omitted the scene fetches /chest/today itself. */
+      /** Daily Chest path: when omitted (and `claim` is not given) the scene
+       * fetches/opens /chest/today itself. */
       chestId?: string;
+      /** Generic path for any other chest-worthy reward (quest milestones,
+       * achievements, course rewards, etc.) — mirrors CLAIM's `claim`
+       * pattern: called server-first when the learner taps the chest, and
+       * the resolved reward drives the Rive reveal. Takes priority over
+       * `chestId` when both are given. */
+      claim?: () => Promise<{ type: string; amount: number; rarityTier?: string }>;
+      /** Analytics/debugging only — which feature opened this chest. */
+      source?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }

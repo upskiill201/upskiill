@@ -58,10 +58,18 @@ export default function MysteryChestCard() {
       kind: 'CHEST',
       chestId: chestState.chestId,
       onComplete: () => {
+        // Optimistic — the common path is "they tapped and opened it".
         setLocalOverride({ status: 'OPENED' });
         setIsRevealing(false);
         void refresh();
-        void refetchChest();
+        // ...but the scene can also be dismissed without ever tapping the
+        // chest, in which case nothing was claimed and it's still
+        // READY_TO_OPEN server-side. Let the server correct us, or the card
+        // would sit on a permanent local "OPENED" override for the rest of
+        // the session and lock the learner out of an unopened chest.
+        void refetchChest().then((fresh) => {
+          if (fresh && fresh.status !== 'OPENED') setLocalOverride(null);
+        });
       },
     });
   };

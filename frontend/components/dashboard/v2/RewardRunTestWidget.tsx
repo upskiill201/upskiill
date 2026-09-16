@@ -424,6 +424,11 @@ export default function RewardRunTestWidget() {
         </div>
       </div>
 
+      {/* Treasure Chest reward-type buttons now live in TreasureChestBench,
+          rendered separately by the dashboard — it has its own env flag so
+          staging can show the chest bench without exposing the real-reward
+          triggers in this widget. */}
+
       {/* CELEBRATION ENGINE SCENE BENCH */}
       <div style={{ marginTop: 20, paddingTop: 16, borderTop: '2px dashed #E2E8F0', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>

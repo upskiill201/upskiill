@@ -85,6 +85,8 @@
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* Top clearance so headline and subhead never collide with absolute skip (X) and balance badge */
+  padding-top: clamp(40px, 6.5vh, 58px);
 }
 
 .contentColumn::-webkit-scrollbar {
@@ -467,21 +469,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: clamp(4px, 1vh, 8px);
   width: 100%;
-  min-height: clamp(160px, 34vh, 320px);
 }
 
 .chestShadow {
-  width: clamp(90px, min(34vw, 26vh), 170px);
+  width: clamp(130px, min(48vw, 32vh), 210px);
   height: clamp(14px, 3vh, 24px);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.45);
   filter: blur(4px);
+  margin-top: -10px;
+  transition: opacity 0.3s ease;
 }
 
 .chestArtWrap {
   position: relative;
+  width: clamp(260px, min(82vw, 38vh), 380px);
+  height: clamp(260px, min(82vw, 38vh), 380px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -493,6 +505,29 @@
   max-height: clamp(110px, 32vh, 200px);
   object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
+}
+
+.chestIdleSparkle {
+  position: absolute;
+  color: #ffd54d;
+  font-size: 20px;
+  pointer-events: none;
+  animation: chestIdleSparkle 1.7s ease-in-out infinite;
+}
+
+@keyframes chestIdleSparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 /* Golden light beam shooting up out of the chest */
@@ -887,6 +922,41 @@
   }
 }
 
+/* ─── Tap progress pips (bottom, Duolingo-style "you're building momentum") */
+
+.tapProgressRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tapProgressPip {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.tapProgressPipFilled {
+  background: #ffc800;
+  transform: scale(1.2);
+  animation: tapProgressPipPop 0.3s ease-out;
+}
+
+@keyframes tapProgressPipPop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -896,6 +966,10 @@
   }
 
   .tapHint {
+    animation: none;
+  }
+
+  .tapProgressPipFilled {
     animation: none;
   }
 

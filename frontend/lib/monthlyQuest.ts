@@ -163,15 +163,19 @@ export function buildQuestRows(quest: MonthlyQuest, highlightId?: QuestMilestone
 
 /**
  * Full claim sequence for a milestone: QUEST recap scene (rows slide in, the
- * claimed milestone shines) → server-first CLAIM deposit scene. Mirrors
- * TodaysMissionsCard.handleClaim's grammar.
+ * claimed milestone shines) → server-first Treasure Chest reveal. Mirrors
+ * TodaysMissionsCard.handleClaim's grammar; the chest's `claim` mirrors the
+ * old CLAIM scene's `claim` pattern — server-first, failures degrade to the
+ * scene's error state instead of celebrating an unpersisted reward.
  */
 export function buildMilestoneClaimScenes(
   quest: MonthlyQuest,
   milestone: QuestMilestone,
 ): CelebrationScene[] {
-  const currency = milestoneCurrency(milestone.reward);
   const isFinal = milestone.kind === 'FINAL';
+  // QuestMilestone.reward.type is 'COINS' | 'FREEZE' — normalize to the
+  // backend's raw reward-type spelling the chest's currency helpers expect.
+  const rawRewardType = milestone.reward.type === 'FREEZE' ? 'STREAK_FREEZE' : 'COINS';
 
   return [
     {
@@ -184,22 +188,11 @@ export function buildMilestoneClaimScenes(
       onComplete: () => window.dispatchEvent(new Event(QUEST_REFRESH_EVENT)),
     },
     {
-      kind: 'CLAIM',
-      title: `+${milestone.reward.amount} ${currency === 'FREEZE' ? 'STREAK FREEZE' : 'COINS'}`,
-      subtitle: isFinal
-        ? `${quest.monthLabel} Quest complete! Badge earned.`
-        : `${quest.monthLabel} Quest: ${milestone.label} unlocked!`,
-      rewards: [{ currency, amount: milestone.reward.amount }],
+      kind: 'CHEST',
+      source: 'monthly_quest',
       claim: async () => {
-        // Server-first: failures propagate — the scene degrades to an error
-        // state instead of celebrating an unpersisted reward.
         const data = await claimMilestoneApi(milestone.id);
-        const balances: Partial<Record<CelebrationCurrency, number>> = {};
-        if (typeof data?.userBalances?.coins === 'number') balances.COINS = data.userBalances.coins;
-        if (typeof data?.userBalances?.streakFreezeBank === 'number') {
-          balances.FREEZE = data.userBalances.streakFreezeBank;
-        }
-        return balances;
+        return { type: rawRewardType, amount: data.claimedReward.amount };
       },
       onComplete: () => window.dispatchEvent(new Event(QUEST_REFRESH_EVENT)),
       dedupeKey: `mq-claim:${quest.monthKey}:${milestone.id}`,
