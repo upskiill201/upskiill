@@ -28,6 +28,13 @@ export default function MysteryChestCard() {
   const { data, mutate: refetchChest } = useSWR<ChestToday>('/api/chest/today', fetcher);
   const [localOverride, setLocalOverride] = useState<{ status: string; chestId?: string } | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
+  // Synchronous guard against a fast double-tap: `isRevealing` (state) only
+  // updates on the next render, so two taps in the same event-loop tick can
+  // both pass the `isRevealing` check below before either commit — queueing
+  // two CHEST scenes for the same chest. That plays out as the whole reveal
+  // scene restarting right after finishing (the second scene hits the
+  // "already opened" replay path). A ref is read/written immediately.
+  const claimInFlightRef = useRef(false);
   const chestRef = useRef<HTMLDivElement>(null);
   // SWR's localStorage-seeded cache (lib/swr.ts) can populate `data` with a
   // stale chest status on the very first client render, before hydration —
@@ -51,17 +58,31 @@ export default function MysteryChestCard() {
   // Full-page Celebration Engine reveal — the scene opens the chest
   // server-first and choreographs shake → beam → reward pile.
   const handleClaim = () => {
-    if (chestState.status !== 'READY_TO_OPEN' || isRevealing || !chestState.chestId) return;
+    if (chestState.status !== 'READY_TO_OPEN' || isRevealing || !chestState.chestId || claimInFlightRef.current) return;
+    claimInFlightRef.current = true;
     playHaptic('medium');
     setIsRevealing(true);
     celebrate({
       kind: 'CHEST',
       chestId: chestState.chestId,
+      // Hard backstop: shared across every entry point that can open the
+      // Daily Chest (this card, the Herald banner, JourneyPathMap) — only
+      // one can ever be queued in a session, regardless of which fired.
+      dedupeKey: 'daily-chest',
       onComplete: () => {
+        // Optimistic — the common path is "they tapped and opened it".
+        claimInFlightRef.current = false;
         setLocalOverride({ status: 'OPENED' });
         setIsRevealing(false);
         void refresh();
-        void refetchChest();
+        // ...but the scene can also be dismissed without ever tapping the
+        // chest, in which case nothing was claimed and it's still
+        // READY_TO_OPEN server-side. Let the server correct us, or the card
+        // would sit on a permanent local "OPENED" override for the rest of
+        // the session and lock the learner out of an unopened chest.
+        void refetchChest().then((fresh) => {
+          if (fresh && fresh.status !== 'OPENED') setLocalOverride(null);
+        });
       },
     });
   };

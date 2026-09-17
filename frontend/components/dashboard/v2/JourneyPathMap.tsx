@@ -76,8 +76,11 @@ export default function JourneyPathMap({
     playHaptic('medium');
 
     if (node.type === 'reward') {
-      // Milestone Gift Chest — full-page Celebration Engine reveal
-      celebrate({ kind: 'CHEST' });
+      // Milestone Gift Chest — self-fetches /chest/today, same underlying
+      // resource as the dashboard card and Herald banner (one Daily Chest
+      // per user per day server-side). Shared dedupeKey so this can't queue
+      // a second CHEST scene alongside one already surfaced this session.
+      celebrate({ kind: 'CHEST', dedupeKey: 'daily-chest' });
       return;
     }
 

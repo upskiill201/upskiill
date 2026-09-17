@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bot, Eye, Gauge, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Bot, Eye, Gauge, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
 import {
   Banner,
   Button,
@@ -86,7 +86,7 @@ export default function AdminAiPage() {
 
   // Quick add: CodeCraft
   const [ccKey, setCcKey] = useState('');
-  const [ccModel, setCcModel] = useState(CODECRAFT_DEFAULT_MODEL);
+  const [ccModel, setCcModel] = useState('');
   const [ccBusy, setCcBusy] = useState(false);
   const [ccError, setCcError] = useState<string | null>(null);
   const [ccTestResult, setCcTestResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -98,6 +98,11 @@ export default function AdminAiPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ProviderView | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Inline model editing on an existing provider
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editModel, setEditModel] = useState('');
+  const [editError, setEditError] = useState<string | null>(null);
 
   // AI playground
   const [pgReason, setPgReason] = useState<string>(AI_ELIGIBLE_REASONS[0]);
@@ -170,6 +175,37 @@ export default function AdminAiPage() {
         ...prev,
         [id]: { ok: false, message: e instanceof Error ? e.message : 'Connection failed' },
       }));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  function startEditModel(p: ProviderView) {
+    setEditingId(p.id);
+    setEditModel(p.model);
+    setEditError(null);
+  }
+
+  async function saveModel(id: string) {
+    const model = editModel.trim();
+    if (!model) {
+      setEditError('Model cannot be empty.');
+      return;
+    }
+    setBusyId(id);
+    setEditError(null);
+    try {
+      await adminMutate(`/api/tey/admin/ai/providers/${id}`, {
+        method: 'PATCH',
+        // apiKey deliberately omitted — the backend keeps the stored key
+        // when it's not resent, so changing the model never means re-pasting
+        // the secret.
+        body: { model },
+      });
+      await mutateProviders();
+      setEditingId(null);
+    } catch (e) {
+      setEditError(e instanceof Error ? e.message : 'Could not save the model');
     } finally {
       setBusyId(null);
     }
@@ -365,11 +401,13 @@ export default function AdminAiPage() {
               <input
                 type="text"
                 className={styles.textInput}
+                placeholder={CODECRAFT_DEFAULT_MODEL}
                 value={ccModel}
                 onChange={(e) => setCcModel(e.target.value)}
               />
               <span className={styles.fieldHint}>
-                Any model id CodeCraft supports — this default is a solid start.
+                Leave blank to use {CODECRAFT_DEFAULT_MODEL}, or type any model
+                id CodeCraft supports. You can change this later too.
               </span>
             </div>
             <Button onClick={() => void quickAddCodeCraft()} disabled={ccBusy}>
@@ -406,9 +444,50 @@ export default function AdminAiPage() {
                   <div key={p.id} className={styles.providerRow}>
                     <div className={styles.providerInfo}>
                       <span className={styles.providerName}>{p.name}</span>
-                      <span className={styles.providerMeta}>
-                        {p.kind} · {p.model} · key {p.apiKeyMasked}
-                      </span>
+                      {editingId === p.id ? (
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
+                          <input
+                            type="text"
+                            autoFocus
+                            className={styles.textInput}
+                            style={{ padding: '4px 8px', fontSize: 12.5 }}
+                            value={editModel}
+                            onChange={(e) => setEditModel(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') void saveModel(p.id);
+                              if (e.key === 'Escape') setEditingId(null);
+                            }}
+                          />
+                          <Button size="sm" onClick={() => void saveModel(p.id)} disabled={busyId === p.id}>
+                            {busyId === p.id ? 'Saving…' : 'Save'}
+                          </Button>
+                          <Button size="sm" variant="secondary" onClick={() => setEditingId(null)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className={styles.providerMeta}>
+                          {p.kind} · {p.model} · key {p.apiKeyMasked}{' '}
+                          <button
+                            type="button"
+                            aria-label={`Edit model for ${p.name}`}
+                            onClick={() => startEditModel(p)}
+                            style={{
+                              border: 'none',
+                              background: 'none',
+                              color: 'var(--brand-blue)',
+                              cursor: 'pointer',
+                              padding: 2,
+                              verticalAlign: -2,
+                            }}
+                          >
+                            <Pencil size={12} />
+                          </button>
+                        </span>
+                      )}
+                      {editingId === p.id && editError && (
+                        <span className={styles.errorNote}>{editError}</span>
+                      )}
                       {p.lastTestAt && (
                         <span
                           className={p.lastTestOk ? styles.testResultGood : styles.testResultBad}

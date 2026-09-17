@@ -38,6 +38,14 @@ const RewardRunTestWidget = dynamic(
   { ssr: false },
 );
 
+// Treasure Chest scene bench. Separate from the widget above so it can be
+// enabled in staging (NEXT_PUBLIC_SHOW_CHEST_BENCH) without exposing that
+// widget's real-reward triggers. Self-guards and renders null when unset.
+const TreasureChestBench = dynamic(
+  () => import('@/components/dashboard/v2/TreasureChestBench'),
+  { ssr: false },
+);
+
 export default function DashboardPage() {
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
@@ -197,6 +205,9 @@ export default function DashboardPage() {
           {/* 9. DEV TEST BENCH (Collapsible) */}
 
           {process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' && <RewardRunTestWidget />}
+
+          {(process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true' ||
+            process.env.NEXT_PUBLIC_ENVIRONMENT === 'development') && <TreasureChestBench />}
 
         </div>
 

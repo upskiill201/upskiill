@@ -1,56 +1,39 @@
 'use client';
 
 /**
- * ChestArt — the treasure chest visual for the ChestScene.
+ * ChestArt — the treasure chest visual for ChestScene.
  *
- * RIVE SLOT: our animators are producing the Teyro treasure-box Rive file.
- * When it lands: install @rive-app/react-canvas, drop the .riv into /public,
- * and replace the body of this component with a <RiveComponent> driven by a
- * state machine input (idle / shake / burst). Until then we render the static
- * PNG and the scene choreography (shake → beam → dissolve) provides the motion.
- * Keeping this isolated means no scene code changes when Rive arrives.
+ * Thin adapter only: all Rive logic lives in the universal
+ * `components/gamification/TreasureChest.tsx`, which every chest-worthy
+ * reward across Teyro renders (not just this scene). Keeping this file as a
+ * pass-through preserves ChestScene's existing import and prop naming.
  */
 
 import React, { forwardRef } from 'react';
-import Image from 'next/image';
+import TreasureChest, {
+  TreasureChestHandle,
+  TreasureChestProps,
+} from '../gamification/TreasureChest';
 import styles from './Scene.module.css';
 
-export type ChestVisualState = 'closed' | 'shaking' | 'opening' | 'open';
+export type { TreasureChestHandle as ChestArtHandle };
 
-interface ChestArtProps {
-  state: ChestVisualState;
-  /** GSAP/framer target — the scene animates this wrapper. */
+interface ChestArtProps extends Omit<TreasureChestProps, 'className' | 'style'> {
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
 }
 
-const ChestArt = forwardRef<HTMLDivElement, ChestArtProps>(function ChestArt(
-  { state, className, style, onClick },
+const ChestArt = forwardRef<TreasureChestHandle, ChestArtProps>(function ChestArt(
+  { className, style, ...treasureChestProps },
   ref
 ) {
   return (
-    <div
+    <TreasureChest
       ref={ref}
+      {...treasureChestProps}
       className={[styles.chestArtWrap, className].filter(Boolean).join(' ') || undefined}
       style={style}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      aria-label={onClick ? 'Open chest' : undefined}
-    >
-      <Image
-        src="/Tressure box.webp"
-        alt="Teyro treasure chest"
-        width={200}
-        height={180}
-        className={styles.chestArt}
-        style={{
-          opacity: state === 'open' ? 0 : 1,
-          transition: 'opacity 0.25s ease',
-        }}
-        priority
-      />
-    </div>
+    />
   );
 });
 
