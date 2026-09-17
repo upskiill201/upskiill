@@ -92,6 +92,21 @@ class SoundManager {
 
     if (this.ctx.state === 'suspended') {
       void this.ctx.resume();
+      // iOS Safari can silently drop nodes scheduled before an async
+      // resume() actually settles — this is the standard iOS WebAudio
+      // unlock: play a near-silent buffer SYNCHRONOUSLY, in the same
+      // gesture, which forces iOS to unlock immediately rather than
+      // leaving every sound scheduled in this same tap silently dropped.
+      try {
+        const unlockBuffer = this.ctx.createBuffer(1, 1, this.ctx.sampleRate);
+        const unlockSource = this.ctx.createBufferSource();
+        unlockSource.buffer = unlockBuffer;
+        unlockSource.connect(this.ctx.destination);
+        unlockSource.start(0);
+      } catch {
+        // Best-effort unlock — a failure here must never break audio for
+        // browsers that didn't need it in the first place.
+      }
     }
 
     return this.ctx;
