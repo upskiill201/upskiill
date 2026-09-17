@@ -23,6 +23,7 @@ import { Baloo_2 } from 'next/font/google';
 import Band from '@/components/homepage/v2/Band';
 import SplitSection from '@/components/homepage/v2/SplitSection';
 import Hero from '@/components/homepage/v2/Hero';
+import LaunchBadges from '@/components/homepage/v2/LaunchBadges';
 import SkillStrip from '@/components/homepage/v2/SkillStrip';
 import Faq from '@/components/homepage/v2/Faq';
 import FinalCta from '@/components/homepage/v2/FinalCta';
@@ -64,6 +65,8 @@ export default function Home() {
       </noscript>
 
       <Hero />
+
+      <LaunchBadges />
 
       <SkillStrip />
 

@@ -83,28 +83,6 @@ export default function Hero() {
               Install on Android
             </Link>
           </div>
-
-          {/* Maidensail launch badge — wrapped in a white pill for contrast
-              against the blue hero field, since the badge SVG isn't designed
-              for a dark background. Plain <img>, not next/image: this is a
-              verification badge from an external directory, and its exact
-              <a>/<img> markup (including rel="dofollow") is what their
-              crawler checks for. */}
-          <div className="mt-6">
-            <a
-              href="https://maidensail.com/startup/teyro"
-              target="_blank"
-              rel="dofollow noopener noreferrer"
-              className="inline-flex items-center rounded-xl bg-white px-3 py-2 shadow-lift ring-1 ring-black/4 transition-transform hover:scale-[1.03]"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://maidensail.com/badge/teyro.svg"
-                alt="Featured on Maidensail"
-                height={44}
-              />
-            </a>
-          </div>
         </motion.div>
 
         <motion.div
