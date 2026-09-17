@@ -44,6 +44,37 @@
   color: #64748b;
 }
 
+.intro {
+  max-width: 720px;
+  margin-top: 24px;
+}
+
+.intro p {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #475569;
+}
+
+.intro p:last-child {
+  margin-bottom: 0;
+}
+
+.intro strong {
+  color: #1f2a44;
+  font-weight: 700;
+}
+
+.intro a {
+  color: #0172fd;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.intro a:hover {
+  text-decoration: underline;
+}
+
 /* ── Featured hero ─────────────────────────────────────────────────── */
 
 .hero {
