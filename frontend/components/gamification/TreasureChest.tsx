@@ -177,6 +177,16 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
     // resolved any other way can land on a detached copy that never
     // reaches the animation (which is why every reward rendered as coins).
     autoBind: true,
+    // We drive the chest entirely through explicit triggers (click/reset),
+    // not Rive's own built-in canvas interactivity — so its internal
+    // pointer/touch Listeners (hitBox/hover/swipe, baked into the .riv)
+    // are pure overhead we don't want. Worse: on iOS Safari specifically,
+    // if anything in a touch's path calls preventDefault() (which canvas
+    // gesture listeners commonly do), iOS refuses to synthesize the
+    // subsequent click event at all — silently breaking our own onClick
+    // handler on the wrapping div. Disabling Rive's listeners removes that
+    // interference entirely, on every platform, not just iOS.
+    shouldDisableRiveListeners: true,
     layout,
     onLoad: () => onLoadRef.current?.(),
     onLoadError: (e) => {
