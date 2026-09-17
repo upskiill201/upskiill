@@ -1,0 +1,20 @@
+# Teyro
+
+> Teyro is Duolingo for people who want to learn, build practical skills, and still play — a gamified, AI-personalized micro-learning platform that turns 15 minutes a day into real, demonstrable skills in coding, AI, business, and communication.
+
+Teyro replaces long, passive video courses with short daily quests built on a 4-phase pedagogy — Learn, Apply, Reflect, Deepen — plus streaks, XP, and levels that make learning a habit rather than a chore. Most online courses go unfinished (industry-wide completion rates sit around 10–15%); Teyro is built specifically to fix that.
+
+## Product
+
+- [Teyro Home](https://teyro.app): What Teyro is, who it's for, and how the gamified learning model works.
+- [Start Learning Free](https://teyro.app/onboarding/0): Create a free account and begin a 15-minute daily skill path.
+- [Course Catalog](https://teyro.app/explore): Browse available skill tracks across coding, AI, business, and communication.
+
+## Blog
+
+- [Teyro Blog](https://teyro.app/blog): Evidence-based study techniques, memory science, productivity guides, and honest comparisons of learning platforms (Udemy, Coursera, DataCamp, Pluralsight, and more), all tied back to how Teyro applies the research in 15-minute daily lessons.
+
+## Notes
+
+- Teyro is in active development; new skill tracks and blog guides ship regularly. This file is refreshed when major pages are added.
+- For questions about citing or crawling Teyro's content, see [robots.txt](https://teyro.app/robots.txt).

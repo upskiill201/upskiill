@@ -28,8 +28,27 @@ export default function BlogIndexPage() {
 
   const featuredCategory = featured ? getCategoryOrThrow(featured.frontmatter.category) : null;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Teyro Blog — Learning Science, Study Tips & Skill Building',
+    url: 'https://teyro.app/blog',
+    description:
+      'Evidence-based study techniques, memory science and productivity guides — plus how Teyro turns them into bite-sized, gamified lessons that make learning stick.',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Teyro',
+      url: 'https://teyro.app',
+    },
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className={styles.container}>
         {/* ── Header ── */}
         <header className={styles.header}>
@@ -39,6 +58,35 @@ export default function BlogIndexPage() {
             Learning science made practical — study techniques, focus strategies and skill-building
             guides, backed by the research behind Teyro&apos;s bite-sized lessons.
           </p>
+          <div className={styles.intro}>
+            <p>
+              This is where Teyro breaks down the research behind how people actually learn, and
+              turns it into guides you can use the same day you read them. Every article here
+              starts from a real question — how spaced repetition works, whether a Udemy
+              certificate means anything to an employer, how to build a study habit that survives
+              a busy week — and answers it with evidence instead of generic advice, because vague
+              tips are easy to write and hard to act on.
+            </p>
+            <p>
+              The posts are organized into six practical areas: <strong>study techniques</strong>{' '}
+              like active recall and spaced repetition, <strong>language learning</strong>{' '}
+              strategies for building real fluency, <strong>productivity and focus</strong> habits
+              for people learning alongside a full life, <strong>AI and learning</strong> guides on
+              what personalized, AI-driven lessons actually do well, <strong>exam prep</strong>{' '}
+              tactics for high-stakes tests, and <strong>skill-building</strong> guides on turning
+              online courses into a portfolio that gets you hired. You will also find honest,
+              head-to-head comparisons of platforms like Udemy, Coursera, DataCamp and Pluralsight,
+              so you can decide where to spend your time and money before you commit either.
+            </p>
+            <p>
+              Every guide ties back to the same underlying idea Teyro is built on: short, daily,
+              gamified practice beats long, passive video sessions for almost everyone. If you want
+              to put that into practice rather than just read about it,{' '}
+              <Link href="/onboarding/0">Teyro</Link> turns these study techniques into 15-minute
+              daily lessons with streaks and XP, so the habit — not just the knowledge — actually
+              sticks.
+            </p>
+          </div>
         </header>
 
         {/* ── Featured hero (latest post) ── */}

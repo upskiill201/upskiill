@@ -28,11 +28,10 @@ Allow: /*.jpeg$
 Disallow: /
 
 # ── Google AI (Gemini / AI Overviews / AI training) ────────
+# Governs Gemini training + AI Overviews grounding only — has no
+# effect on ordinary Googlebot search indexing above.
 User-agent: Google-Extended
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 # ── Bing / Microsoft Search ────────────────────────────────
 User-agent: Bingbot
@@ -86,31 +85,31 @@ Allow: /blog
 Allow: /sitemap.xml
 Disallow: /
 
-# ── OpenAI — ChatGPT Browse & GPT plugins ──────────────────
+# ── OpenAI — training crawler ───────────────────────────────
 User-agent: GPTBot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
+# ── OpenAI — ChatGPT live browse/citation bots ──────────────
+# These fetch a page on-demand while answering a live user query and
+# link back to it — distinct from GPTBot's training crawl. They need
+# the full site, not just /blog, so ChatGPT can cite whatever page a
+# user actually asked about.
 User-agent: ChatGPT-User
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 User-agent: OAI-SearchBot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
-# ── Anthropic — Claude AI ──────────────────────────────────
+# ── Anthropic — Claude training crawler ─────────────────────
 User-agent: ClaudeBot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
+
+# ── Anthropic — Claude live browse/citation bots ────────────
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
 
 User-agent: Claude-Web
 Allow: /$
@@ -124,19 +123,17 @@ Allow: /blog
 Allow: /sitemap.xml
 Disallow: /
 
-# ── Perplexity AI ──────────────────────────────────────────
+# ── Perplexity AI — training crawler ────────────────────────
 User-agent: PerplexityBot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
+
+# ── Perplexity AI — live browse/citation bot ────────────────
+User-agent: Perplexity-User
+Allow: /
 
 # ── Meta AI (Llama) ────────────────────────────────────────
 User-agent: Meta-ExternalAgent
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 User-agent: Meta-ExternalFetcher
 Allow: /$
@@ -146,10 +143,7 @@ Disallow: /
 
 # ── Amazon Alexa / Amazonbot ───────────────────────────────
 User-agent: Amazonbot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 # ── Apple (Siri / Spotlight) ───────────────────────────────
 User-agent: Applebot
@@ -159,10 +153,7 @@ Allow: /sitemap.xml
 Disallow: /
 
 User-agent: Applebot-Extended
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 # ── Cohere AI ──────────────────────────────────────────────
 User-agent: cohere-ai
@@ -187,17 +178,11 @@ Disallow: /
 
 # ── Common Crawl (powers many AI training datasets) ────────
 User-agent: CCBot
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 # ── ByteDance / TikTok AI ──────────────────────────────────
 User-agent: Bytespider
-Allow: /$
-Allow: /blog
-Allow: /sitemap.xml
-Disallow: /
+Allow: /
 
 # ── All other bots — app routes stay blocked, /blog stays open
 User-agent: *
