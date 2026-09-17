@@ -43,15 +43,23 @@ import {
 import { toRiveRewardType, type TeyroRewardType } from '../celebration/currency';
 
 const DEV = process.env.NODE_ENV === 'development';
-/** `?chestDebug=1` opts into diagnostics on ANY build, including staging's
- * production build — NODE_ENV alone is useless there since `next build`
- * is always 'production', so every dev-gated log/overlay was silently
- * inert on staging the whole time this was being debugged. Read once per
- * module load (SSR-safe guard); a query param never changes without a
- * full navigation anyway. */
+/** `?chestDebug=1` opts into diagnostics on any build where testing is
+ * already explicitly enabled — NODE_ENV alone is useless for this since
+ * `next build` is always 'production' on every deployed environment
+ * (staging included), so every dev-gated log/overlay was silently inert
+ * on staging the whole time this was being debugged.
+ *
+ * Gated on NEXT_PUBLIC_SHOW_CHEST_BENCH (already the "this environment
+ * has chest testing turned on" flag, set on staging, never on
+ * production) rather than the query param alone — a bare query param
+ * would make this work for any visitor on production too, not just
+ * staging. Read once per module load (SSR-safe guard); neither value
+ * changes without a full navigation anyway. */
+const CHEST_TESTING_ENABLED = process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true';
 const CHEST_DEBUG =
   DEV ||
-  (typeof window !== 'undefined' &&
+  (CHEST_TESTING_ENABLED &&
+    typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('chestDebug') === '1');
 function devLog(...args: unknown[]) {
   if (CHEST_DEBUG) console.debug('[TreasureChest]', ...args);
