@@ -80,6 +80,58 @@ class ProviderDto {
   dailyBudgetUsd?: number;
 }
 
+/**
+ * PATCH is a partial update (e.g. the admin UI's "edit model" flow sends only
+ * `{ model }`), unlike POST which creates a full row — so every field here is
+ * optional, whereas ProviderDto requires name/kind/model for create. Without
+ * this split, the global `forbidNonWhitelisted` ValidationPipe 400s any PATCH
+ * that omits name/kind, even though AiConfigService.update() already treats
+ * its input as a Partial<UpsertProviderInput>.
+ */
+class UpdateProviderDto {
+  @IsOptional() @IsString() @MaxLength(64) name?: string;
+  @IsOptional() @IsIn(AI_PROVIDER_KINDS as unknown as string[]) kind?: string;
+  @IsOptional() @IsString() @MaxLength(128) model?: string;
+
+  @IsOptional() @IsString() @MaxLength(512) baseUrl?: string;
+  @IsOptional() @IsString() @MaxLength(512) apiKey?: string;
+
+  @IsOptional() @IsBoolean() isActive?: boolean;
+  @IsOptional() @IsBoolean() isFallback?: boolean;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(16)
+  @Max(4096)
+  maxOutputTokens?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(2)
+  temperature?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1000)
+  @Max(30000)
+  timeoutMs?: number;
+
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) inputCostPer1k?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  outputCostPer1k?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  dailyBudgetUsd?: number;
+}
+
 class PlaygroundDto {
   @IsString() @MaxLength(64) reason!: string;
   @IsOptional() @IsString() @MaxLength(64) tone?: string;
@@ -123,7 +175,7 @@ export class TeyAiAdminController {
   }
 
   @Patch('providers/:id')
-  update(@Param('id') id: string, @Body() dto: ProviderDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateProviderDto) {
     return this.config.update(id, dto as never);
   }
 
@@ -144,7 +196,10 @@ export class TeyAiAdminController {
         provider,
         'You are a connection test. Reply with exactly: OK',
         'Reply with OK.',
-        { maxOutputTokens: 16, timeoutMs: 8000 },
+        // 8s was too tight for a real first call to some models (distinct
+        // from an instant 4xx rejection) — matches the playground's own 20s
+        // ceiling below, for the same reason.
+        { maxOutputTokens: 16, timeoutMs: 20_000 },
       );
 
       await this.config.recordTest(id, true);

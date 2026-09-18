@@ -9,6 +9,7 @@ import {
   BookOpen,
   CreditCard,
   FileText,
+  FolderInput,
   Gauge,
   HeartPulse,
   History,
@@ -59,6 +60,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/admin/users', label: 'Users', icon: Users },
       { href: '/admin/courses', label: 'Courses', icon: BookOpen },
+      { href: '/admin/courses/import', label: 'Import Course', icon: FolderInput },
       { href: '/admin/creators', label: 'Creators', icon: UserCheck },
     ],
   },
