@@ -73,7 +73,6 @@ describe('GoogleDriveController', () => {
     it('redirects with the error Google sent when the admin declines consent', async () => {
       const res = fakeResponse();
       await controller.callback(
-        user,
         res as unknown as Response,
         undefined,
         undefined,
@@ -88,7 +87,6 @@ describe('GoogleDriveController', () => {
     it('redirects with missing_code_or_state when Google omits either param', async () => {
       const res = fakeResponse();
       await controller.callback(
-        user,
         res as unknown as Response,
         undefined,
         validState(),
@@ -102,7 +100,6 @@ describe('GoogleDriveController', () => {
     it('redirects with invalid_state when the state cannot be decrypted (tampered or garbage)', async () => {
       const res = fakeResponse();
       await controller.callback(
-        user,
         res as unknown as Response,
         'auth-code',
         'not-a-real-token',
@@ -114,24 +111,10 @@ describe('GoogleDriveController', () => {
       expect(googleDrive.handleCallback).not.toHaveBeenCalled();
     });
 
-    it('redirects with state_mismatch when the state belongs to a different user', async () => {
-      const res = fakeResponse();
-      const state = encryptJson({
-        userId: 'someone-else',
-        iat: Date.now(),
-      }).encryptedData;
-      await controller.callback(
-        user,
-        res as unknown as Response,
-        'auth-code',
-        state,
-        undefined,
-      );
-      expect(res.redirect).toHaveBeenCalledWith(
-        'https://staging.teyro.app/admin/courses/import?driveError=state_mismatch',
-      );
-      expect(googleDrive.handleCallback).not.toHaveBeenCalled();
-    });
+    // No more "state_mismatch" case — there is no separate cookie-derived
+    // user to mismatch against any more. See the callback() doc comment:
+    // identity now comes entirely from the encrypted `state`, since a
+    // cookie-based guard can never work on this cross-origin redirect.
 
     it('redirects with state_expired when the consent screen was left open too long', async () => {
       const res = fakeResponse();
@@ -140,7 +123,6 @@ describe('GoogleDriveController', () => {
         iat: Date.now() - 11 * 60 * 1000,
       }).encryptedData;
       await controller.callback(
-        user,
         res as unknown as Response,
         'auth-code',
         state,
@@ -159,7 +141,6 @@ describe('GoogleDriveController', () => {
       });
 
       await controller.callback(
-        user,
         res as unknown as Response,
         'auth-code',
         validState(),
@@ -182,7 +163,6 @@ describe('GoogleDriveController', () => {
       );
 
       await controller.callback(
-        user,
         res as unknown as Response,
         'auth-code',
         validState(),
@@ -201,7 +181,6 @@ describe('GoogleDriveController', () => {
       );
 
       await controller.callback(
-        user,
         res as unknown as Response,
         'auth-code',
         validState(),

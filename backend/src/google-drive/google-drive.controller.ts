@@ -34,16 +34,20 @@ const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes — a consent screen left ope
  * Admin-only Google Drive connect flow + read-only folder browsing for the
  * AI Course Importer. Never creates, edits, or publishes any course content
  * — see ../course-creation for that.
+ *
+ * The guard is applied per-method rather than at the class level so that
+ * `callback` (the one route below that Google itself redirects the browser
+ * to) can be exempted — see its own doc comment for why it must be.
  */
 @Controller('admin/google-drive')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.ADMIN)
 export class GoogleDriveController {
   private readonly logger = new Logger(GoogleDriveController.name);
 
   constructor(private readonly googleDrive: GoogleDriveService) {}
 
   @Get('status')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   getStatus(@GetUser() user: AuthedUser) {
     return this.googleDrive.getStatus(user.id);
   }
@@ -55,6 +59,8 @@ export class GoogleDriveController {
    * decryption fails outright if the value was altered in transit.
    */
   @Get('connect')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   connect(@GetUser() user: AuthedUser, @Res() res: Response) {
     const statePayload: OAuthState = { userId: user.id, iat: Date.now() };
     const { encryptedData } = encryptJson(statePayload);
@@ -62,10 +68,20 @@ export class GoogleDriveController {
     res.redirect(url);
   }
 
-  /** Google redirects the admin's own browser here after consent. */
+  /**
+   * Google redirects the admin's own browser here after consent — a
+   * cross-origin top-level navigation straight to this backend's own
+   * domain, not through the frontend. The frontend's login cookie was never
+   * set for this domain, so it can never be present here; a cookie-based
+   * guard on this route cannot ever succeed in a deployed environment (only
+   * "worked" locally because frontend/backend shared the `localhost`
+   * hostname). Identity here comes entirely from `state` instead — it was
+   * minted by `connect()` above (which IS guarded), is tamper-evident, and
+   * expires after `STATE_TTL_MS`, which is the standard way an OAuth
+   * callback proves who started the flow without a session cookie.
+   */
   @Get('callback')
   async callback(
-    @GetUser() user: AuthedUser,
     @Res() res: Response,
     @Query('code') code?: string,
     @Query('state') state?: string,
@@ -87,17 +103,15 @@ export class GoogleDriveController {
     } catch {
       return redirectTo({ driveError: 'invalid_state' });
     }
-    if (statePayload.userId !== user.id)
-      return redirectTo({ driveError: 'state_mismatch' });
     if (Date.now() - statePayload.iat > STATE_TTL_MS)
       return redirectTo({ driveError: 'state_expired' });
 
     try {
-      await this.googleDrive.handleCallback(user.id, code);
+      await this.googleDrive.handleCallback(statePayload.userId, code);
       return redirectTo({ driveConnected: '1' });
     } catch (err) {
       this.logger.error(
-        `Drive OAuth callback failed for user ${user.id}: ${(err as Error).message}`,
+        `Drive OAuth callback failed for user ${statePayload.userId}: ${(err as Error).message}`,
       );
       // Only our own explicitly-thrown, already user-safe message is passed
       // through — anything unexpected gets a generic code, per CLAUDE.md's
@@ -109,6 +123,8 @@ export class GoogleDriveController {
   }
 
   @Post('disconnect')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   async disconnect(@GetUser() user: AuthedUser) {
     await this.googleDrive.disconnect(user.id);
     return { ok: true };
@@ -116,6 +132,8 @@ export class GoogleDriveController {
 
   /** One level of folder children, for the folder-browser UI. */
   @Get('folders')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   listChildren(
     @GetUser() user: AuthedUser,
     @Query('parentId') parentId?: string,
@@ -125,6 +143,8 @@ export class GoogleDriveController {
 
   /** Deterministic recursive summary of a selected course folder. */
   @Get('folders/:id/preview')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   getFolderPreview(@GetUser() user: AuthedUser, @Param('id') id: string) {
     return this.googleDrive.getFolderPreview(user.id, id);
   }
