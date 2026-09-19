@@ -1,26 +1,20 @@
 // Landing page content model — for /alternatives/[slug] routes.
-// Dedicated competitor comparison/alternative pages, separate from blog content.
+// Dedicated competitor comparison/alternative pages.
 
-export interface LandingFaqItem {
-  question: string;
-  answer: string;
-}
-
-export interface LandingCtaOverride {
-  title?: string;
-  text?: string;
-  href?: string;
-  label?: string;
+export interface LandingJsonLd {
+  '@context'?: string;
+  '@graph'?: Array<Record<string, unknown>>;
+  [key: string]: unknown;
 }
 
 export interface LandingFrontmatter {
   title: string;
-  description: string;
-  publishedDate: string;
-  updatedDate?: string;
-  draft?: boolean;
-  cta?: LandingCtaOverride;
-  faq?: LandingFaqItem[];
+  slug: string;
+  meta_description: string;
+  word_count: number;
+  reading_time: number;
+  keyword: string;
+  json_ld: string | LandingJsonLd;
 }
 
 export interface LandingPage {
