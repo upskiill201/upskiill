@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AiConfigService } from '../tey/ai/ai-config.service';
 import { AiBudgetService } from '../tey/ai/ai-budget.service';
 import { parseStructured } from '../tey/ai/structured-output';
@@ -27,6 +27,8 @@ export interface LessonGenerationInput {
 
 @Injectable()
 export class LessonContentGenerationService {
+  private readonly logger = new Logger(LessonContentGenerationService.name);
+
   constructor(
     private readonly aiConfig: AiConfigService,
     private readonly budget: AiBudgetService,
@@ -83,6 +85,14 @@ export class LessonContentGenerationService {
 
     const parsed = parseStructured(result.text, AiLessonContentSchema);
     if (!parsed.ok) {
+      // Visibility into what a provider actually sent, not just that it
+      // failed — a schema mismatch is meaningless to debug from the reason
+      // code alone, and this has already surfaced real behavior
+      // differences between providers (e.g. Gemini's native responseSchema
+      // vs. an OpenAI-compatible provider's much looser json_object mode).
+      this.logger.warn(
+        `Lesson generation schema mismatch (${parsed.reason}) from ${resolved.provider.kind}/${resolved.provider.model}. Raw response: ${(result.text ?? '').slice(0, 2000)}`,
+      );
       throw new Error(`AI returned invalid lesson content (${parsed.reason}).`);
     }
 
