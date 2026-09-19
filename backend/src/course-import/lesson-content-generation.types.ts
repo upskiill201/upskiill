@@ -61,21 +61,42 @@ export type AiLessonContent = z.infer<typeof AiLessonContentSchema>;
 /** Hand-written JSON Schema alongside the Zod schema above (not auto-derived
  *  — same split TeyAiService's NUDGE_SCHEMA/NudgeCopySchema uses), since
  *  GeminiAdapter#toGeminiSchema needs a plain JSON-Schema object to send as
- *  responseSchema, not a Zod type. */
+ *  responseSchema, not a Zod type.
+ *
+ *  Every bound here (minLength/maxLength/minItems/maxItems) must mirror the
+ *  Zod schema's own min()/max() calls exactly — this is the only copy of
+ *  those numbers a model actually reads. Confirmed live: without
+ *  `maxItems: 5` here, Groq had no reason not to return 6 whatYouWillLearn
+ *  items, which then failed our own stricter Zod validation on a field
+ *  the model was never told had a limit. A `type`-only schema tells a
+ *  provider "produce valid JSON," not "produce JSON that will pass our
+ *  validation" — those aren't the same ask. */
 export const AI_LESSON_CONTENT_JSON_SCHEMA = {
   type: 'object',
   properties: {
-    description: { type: 'string' },
-    whatYouWillLearn: { type: 'array', items: { type: 'string' } },
+    description: { type: 'string', minLength: 20, maxLength: 1000 },
+    whatYouWillLearn: {
+      type: 'array',
+      items: { type: 'string', minLength: 3, maxLength: 150 },
+      minItems: 2,
+      maxItems: 5,
+    },
     applyQuestions: {
       type: 'array',
+      minItems: 1,
+      maxItems: 3,
       items: {
         type: 'object',
         properties: {
-          questionText: { type: 'string' },
-          options: { type: 'array', items: { type: 'string' } },
-          correctOptionIndex: { type: 'integer' },
-          explanation: { type: 'string' },
+          questionText: { type: 'string', minLength: 5, maxLength: 300 },
+          options: {
+            type: 'array',
+            items: { type: 'string', minLength: 1, maxLength: 150 },
+            minItems: 2,
+            maxItems: 4,
+          },
+          correctOptionIndex: { type: 'integer', minimum: 0 },
+          explanation: { type: 'string', minLength: 5, maxLength: 300 },
         },
         required: [
           'questionText',
@@ -85,9 +106,9 @@ export const AI_LESSON_CONTENT_JSON_SCHEMA = {
         ],
       },
     },
-    reflectPrompt: { type: 'string' },
-    deepenTitle: { type: 'string' },
-    deepenSummary: { type: 'string' },
+    reflectPrompt: { type: 'string', minLength: 10, maxLength: 400 },
+    deepenTitle: { type: 'string', minLength: 3, maxLength: 100 },
+    deepenSummary: { type: 'string', minLength: 10, maxLength: 400 },
   },
   required: [
     'description',
