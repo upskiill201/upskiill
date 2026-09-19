@@ -47,7 +47,7 @@ export default function Hero() {
             className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.05] tracking-tight text-white"
             style={{ fontFamily: 'var(--font-celebration)' }}
           >
-            The fun, and effective way to learn and build skills
+            The fun and effective way to learn anything
           </h1>
 
           <p className="mt-7 max-w-[38ch] text-lg leading-relaxed text-white/80 md:text-xl">
