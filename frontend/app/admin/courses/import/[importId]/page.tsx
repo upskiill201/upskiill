@@ -74,7 +74,14 @@ interface CourseImportSummary {
   createdCourseId: string | null;
 }
 
+// Statuses where "Process now"/"Cancel import" make sense to show.
 const ACTIVE_STATUSES = new Set(['CREATED', 'PROCESSING_FILES', 'TRANSCRIBING', 'GENERATING_CONTENT']);
+// Statuses where the page needs to keep polling. Deliberately wider than
+// ACTIVE_STATUSES: transcription already runs against files in
+// READY_FOR_GENERATION (before "Analyze course structure" is even clicked),
+// so polling must not stop there or progress silently goes invisible until
+// a manual refresh — but that status doesn't need the process/cancel buttons.
+const POLLING_STATUSES = new Set([...ACTIVE_STATUSES, 'READY_FOR_GENERATION']);
 
 const IMPORT_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | 'brand'> = {
   CREATED: 'brand',
@@ -143,7 +150,7 @@ export default function CourseImportProgressPage() {
     // background job whose progress the admin is actively watching. Stops
     // once the import reaches a terminal state, unlike every other admin
     // dashboard's deliberately-no-polling default (see AdminUI#useAdminData).
-    refreshInterval: (data) => (data && ACTIVE_STATUSES.has(data.status) ? 3000 : 0),
+    refreshInterval: (data) => (data && POLLING_STATUSES.has(data.status) ? 3000 : 0),
   });
 
   useEffect(() => {
