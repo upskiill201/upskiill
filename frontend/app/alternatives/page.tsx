@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowRight, Zap, Trophy } from 'lucide-react';
+import { ArrowRight, Zap, Trophy, Shield } from 'lucide-react';
 import { getAllLandingPages } from '@/lib/landing/posts';
-import { buildCanonical, SITE_URL } from '@/lib/blog/site';
+import { buildCanonical } from '@/lib/blog/site';
 import JsonLd from '@/components/features/blog/JsonLd';
 import styles from './LandingHub.module.css';
 
@@ -11,10 +11,8 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Teyro vs Competitors — The Better Way to Learn Skills',
   description:
-    'Honest comparison of Teyro against Duolingo, Skillshare, Udemy, Coursera, and Khan Academy. See why learners switch to Teyro for daily skill building.',
-  alternates: {
-    canonical: '/alternatives',
-  },
+    'Honest comparison of Teyro against Duolingo, Skillshare, Khan Academy, Udemy, and Coursera. See why learners switch to Teyro for daily skill building.',
+  alternates: { canonical: '/alternatives' },
 };
 
 export default function AlternativesHubPage() {
@@ -24,13 +22,13 @@ export default function AlternativesHubPage() {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Teyro vs Competitors',
-    url: 'https://teyro.app/alternatives',
+    url: buildCanonical('/alternatives'),
     description:
-      'Honest comparison of Teyro against Duolingo, Skillshare, Udemy, Coursera, and Khan Academy. See why learners switch to Teyro for daily skill building.',
+      'Honest comparison of Teyro against Duolingo, Skillshare, Khan Academy, Udemy, and Coursera. See why learners switch to Teyro for daily skill building.',
     isPartOf: {
       '@type': 'WebSite',
       name: 'Teyro',
-      url: 'https://teyro.app',
+      url: buildCanonical('/'),
     },
   };
 
@@ -42,25 +40,28 @@ export default function AlternativesHubPage() {
         <header className={styles.hero}>
           <div className={styles.heroContent}>
             <span className={styles.kicker}>Compare</span>
-            <h1 className={styles.title}>The Better Way to Learn Skills</h1>
+            <h1 className={styles.title}>
+              The Best Learning Platform Alternatives
+            </h1>
             <p className={styles.subtitle}>
-              Honest comparisons between Teyro and the most popular learning
-              platforms. No spin — just what actually matters for building real,
-              practical skills with a daily habit that sticks.
+              Honest, in-depth comparisons of Teyro against the most popular
+              learning platforms. No spin — just what actually determines
+              outcomes: completion rate, daily consistency, and whether the
+              format produces applied skill.
             </p>
             <div className={styles.heroStats}>
               <div className={styles.stat}>
-                <Trophy size={28} strokeWidth={2} />
+                <Shield size={28} strokeWidth={2} />
                 <span className={styles.statValue}>5</span>
                 <span className={styles.statLabel}>Platforms Compared</span>
               </div>
               <div className={styles.stat}>
-                <Shield size={28} strokeWidth={2} />
+                <Zap size={28} strokeWidth={2} />
                 <span className={styles.statValue}>15 min</span>
                 <span className={styles.statLabel}>Daily Sessions</span>
               </div>
               <div className={styles.stat}>
-                <Zap size={28} strokeWidth={2} />
+                <Trophy size={28} strokeWidth={2} />
                 <span className={styles.statValue}>0</span>
                 <span className={styles.statLabel}>Courses to Buy</span>
               </div>
@@ -71,15 +72,15 @@ export default function AlternativesHubPage() {
         {/* ── Intro ── */}
         <section className={styles.intro}>
           <p>
-            Most learning platforms sell you access. Teyro builds your ability.
-            The comparisons below focus on what actually determines outcomes:
-            completion rate, daily consistency, and whether the format produces
-            applied skill — not just knowledge.
+            Most learning platforms sell you access. Teyro builds your
+            ability. The comparisons below focus on what actually determines
+            outcomes: completion rate, daily consistency, and whether the
+            format produces applied skill — not just knowledge.
           </p>
           <p>
-            Every comparison is written honestly, including where the competitor
-            genuinely excels. If you&apos;re considering switching, start here to
-            find the comparison that matters to you.
+            Every comparison is written honestly, including where the
+            competitor genuinely excels. If you&apos;re considering switching,
+            start here to find the comparison that matters to you.
           </p>
         </section>
 
@@ -96,10 +97,21 @@ export default function AlternativesHubPage() {
                 className={styles.card}
               >
                 <div className={styles.cardContent}>
-                  <h3 className={styles.cardTitle}>{page.frontmatter.title}</h3>
+                  <h3 className={styles.cardTitle}>
+                    {page.frontmatter.title}
+                  </h3>
                   <p className={styles.cardDescription}>
-                    {page.frontmatter.description}
+                    {page.frontmatter.meta_description}
                   </p>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardMetaItem}>
+                      {page.frontmatter.reading_time} min read
+                    </span>
+                    <span className={styles.cardMetaDot}>·</span>
+                    <span className={styles.cardMetaItem}>
+                      {page.frontmatter.word_count.toLocaleString()} words
+                    </span>
+                  </div>
                   <span className={styles.cardCta}>
                     Read comparison
                     <ArrowRight size={14} strokeWidth={3} />
@@ -118,8 +130,8 @@ export default function AlternativesHubPage() {
               <h3>Built for completion</h3>
               <p>
                 Most platforms sell access and hope you finish. Teyro&apos;s
-                daily missions and streaks are engineered to make you complete —
-                not just enroll.
+                daily missions and streaks are engineered to make you
+                complete — not just enroll.
               </p>
             </div>
             <div className={styles.whyCard}>
@@ -132,8 +144,9 @@ export default function AlternativesHubPage() {
             <div className={styles.whyCard}>
               <h3>Practical skills first</h3>
               <p>
-                Every skill track is designed around applied practice — coding,
-                business, AI, communication — not theory you&apos;ll forget.
+                Every skill track is designed around applied practice —
+                coding, business, AI, communication — not theory you&apos;ll
+                forget.
               </p>
             </div>
             <div className={styles.whyCard}>
@@ -162,5 +175,3 @@ export default function AlternativesHubPage() {
     </div>
   );
 }
-
-

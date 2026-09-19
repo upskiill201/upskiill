@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
@@ -9,11 +8,9 @@ import {
   getAllLandingSlugs,
   getLandingBySlug,
 } from '@/lib/landing/posts';
-import { buildCanonical, formatDate, SITE_URL } from '@/lib/blog/site';
 import { FaqItem } from '@/lib/blog/types';
 import JsonLd from '@/components/features/blog/JsonLd';
 import CtaBlock from '@/components/features/blog/CtaBlock';
-import FaqAccordion from '@/components/features/blog/FaqAccordion';
 import styles from './LandingPage.module.css';
 
 export const revalidate = 3600;
@@ -34,24 +31,14 @@ export async function generateMetadata({
   const page = getLandingBySlug(slug);
   if (!page) return {};
 
-  const { title, description, updatedDate, publishedDate } = page.frontmatter;
+  const { title, meta_description, reading_time } = page.frontmatter;
 
   return {
     title,
-    description,
-    alternates: { canonical: `/alternatives/${slug}` },
-    openGraph: {
-      type: 'website',
-      url: `/alternatives/${slug}`,
-      title,
-      description,
-      publishedTime: publishedDate,
-      modifiedTime: updatedDate ?? publishedDate,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
+    description: meta_description,
+    other: {
+      'word-count': String(page.frontmatter.word_count),
+      'reading-time': `${reading_time} min read`,
     },
   };
 }
@@ -63,59 +50,50 @@ export default async function AlternativesLandingPage({
   const page = getLandingBySlug(slug);
   if (!page) notFound();
 
-  const { frontmatter: fm } = page;
-  const canonical = buildCanonical(`/alternatives/${slug}`);
+  const { frontmatter: fm, content } = page;
 
-  const faqSchema =
-    fm.faq && fm.faq.length > 0
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: fm.faq.map((item: FaqItem) => ({
-            '@type': 'Question',
-            name: item.question,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: item.answer,
-            },
-          })),
-        }
-      : null;
+  // Parse JSON-LD for structured data injection
+  let jsonLdData: Record<string, unknown>[] = [];
+  if (fm.json_ld) {
+    try {
+      const parsed =
+        typeof fm.json_ld === 'string' ? JSON.parse(fm.json_ld) : fm.json_ld;
+      if (Array.isArray(parsed)) {
+        jsonLdData = parsed;
+      } else {
+        jsonLdData = [{ parsed }];
+      }
+    } catch {
+      console.warn(`[landing] Failed to parse JSON-LD for "${slug}"`);
+    }
+  }
+
+  // Extract FAQ from content's H3 "FAQ" section for schema (fallback)
+  const faqItems: FaqItem[] = extractFaqFromContent(content);
 
   return (
     <div className={styles.page}>
-      <JsonLd
-        data={
-          faqSchema
-            ? [{ '@context': 'https://schema.org', '@type': 'WebPage', '@id': canonical }, faqSchema]
-            : [{ '@context': 'https://schema.org', '@type': 'WebPage', '@id': canonical }]
-        }
-      />
+      {jsonLdData.length > 0 && <JsonLd data={jsonLdData} />}
       <div className={styles.container}>
         <article className={styles.article}>
-          {/* ── Header ── */}
-          <header className={styles.header}>
+          {/* ── Hero ── */}
+          <header className={styles.hero}>
             <h1 className={styles.title}>{fm.title}</h1>
-            <div className={styles.metaRow}>
-              <span className={styles.metaItem}>
-                <time dateTime={fm.publishedDate}>
-                  {formatDate(fm.publishedDate)}
-                </time>
+            <div className={styles.heroMeta}>
+              <span className={styles.heroStat}>{fm.reading_time} min read</span>
+              <span className={styles.heroStatDot}>·</span>
+              <span className={styles.heroStat}>
+                {fm.word_count.toLocaleString()} words
               </span>
-              {fm.updatedDate && fm.updatedDate !== fm.publishedDate && (
-                <span className={styles.metaItem}>
-                  Updated <time dateTime={fm.updatedDate}>
-                    {formatDate(fm.updatedDate)}
-                  </time>
-                </span>
-              )}
+              <span className={styles.heroStatDot}>·</span>
+              <span className={styles.heroStat}>{fm.keyword}</span>
             </div>
           </header>
 
           {/* ── Body ── */}
           <div className={styles.body}>
             <MDXRemote
-              source={page.content}
+              source={content}
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],
@@ -125,46 +103,39 @@ export default async function AlternativesLandingPage({
             />
           </div>
 
-          {/* ── FAQ (accordion + FAQPage schema) ── */}
-          {fm.faq && fm.faq.length > 0 && (
-            <FaqAccordion items={fm.faq} />
-          )}
-
           {/* ── CTA ── */}
-          <CtaBlock cta={fm.cta} />
+          <CtaBlock
+            cta={{
+              title: 'Start Your Free Learning Streak',
+              text: 'Join thousands of learners building real skills with daily 15-minute missions.',
+              href: '/onboarding/0',
+              label: 'Start Free',
+            }}
+          />
         </article>
-
-        {/* ── All Comparisons ── */}
-        <aside className={styles.sidebar} aria-labelledby="all-comparisons">
-          <h2 id="all-comparisons" className={styles.sidebarHeading}>
-            All Comparisons
-          </h2>
-          <nav className={styles.sidebarNav}>
-            <Link href="/alternatives/duolingo-alternative" className={styles.sidebarLink}>
-              Duolingo Alternative
-            </Link>
-            <Link href="/alternatives/skillshare-alternative" className={styles.sidebarLink}>
-              Skillshare Alternative
-            </Link>
-            <Link href="/alternatives/khan-academy-alternative" className={styles.sidebarLink}>
-              Khan Academy Alternative
-            </Link>
-            <Link href="/alternatives/udemy-alternative" className={styles.sidebarLink}>
-              Udemy Alternative
-            </Link>
-            <Link href="/alternatives/coursera-alternative" className={styles.sidebarLink}>
-              Coursera Alternative
-            </Link>
-          </nav>
-
-          <div className={styles.sidebarCta}>
-            <ExternalLink href="/onboarding/0" className={styles.sidebarCtaLink}>
-              <span>Start your free Teyro streak</span>
-              <ArrowRight size={14} strokeWidth={3} />
-            </ExternalLink>
-          </div>
-        </aside>
       </div>
     </div>
   );
+}
+
+function extractFaqFromContent(content: string): FaqItem[] {
+  const faqSection = content.match(/## (Frequently Asked Questions|FAQ)[\s\S]*$/i);
+  if (!faqSection) return [];
+
+  const faqItems: FaqItem[] = [];
+  const qaRegex = /###\s+(What|How|Why|When|Who|Which|Is|Are|Can|Do|Does|Should|Will|Would|Could|Can you|How does|How long|How to|Where|Why does|What is|What are|What should|Where can|Where to|Why is)\s+[^\n]+/g;
+  let match;
+  while ((match = qaRegex.exec(faqSection[0])) !== null) {
+    const question = match[0].replace(/^###\s+/, '').trim();
+    // Find answer: text between this ### and next ### or end
+    const afterMatch = faqSection[0].slice(match.index + match[0].length);
+    const nextH = afterMatch.match(/^[\s\S]*?(?=###\s|\n##\s|\z)/);
+    const answer = nextMatch
+      ? nextMatch[0].replace(/^[\s\n]+/, '').trim()
+      : '';
+    if (question && answer) {
+      faqItems.push({ question, answer });
+    }
+  }
+  return faqItems;
 }
