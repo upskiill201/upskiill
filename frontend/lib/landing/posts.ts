@@ -14,7 +14,7 @@ const FrontmatterSchema = z.object({
   word_count: z.number().int().positive(),
   reading_time: z.number().int().positive(),
   keyword: z.string().min(1),
-  json_ld: z.union([z.string(), z.record(z.unknown())]),
+  json_ld: z.union([z.string(), z.record(z.string(), z.unknown())]),
 });
 
 function loadLandingPageFromFile(fileName: string): LandingPage | null {

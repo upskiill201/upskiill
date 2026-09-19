@@ -16,7 +16,7 @@ const FrontmatterSchema = z.object({
   reading_time: z.number().int().positive(),
   icon: z.string().min(1),
   color: z.string().min(1),
-  json_ld: z.union([z.string(), z.record(z.unknown())]).optional(),
+  json_ld: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
 });
 
 function loadFeaturePageFromFile(fileName: string): FeaturePage | null {
