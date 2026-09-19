@@ -7,6 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
+import { CourseCreationModule } from './course-creation/course-creation.module';
+import { GoogleDriveModule } from './google-drive/google-drive.module';
+import { CourseImportModule } from './course-import/course-import.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 import { ProfileModule } from './profile/profile.module';
@@ -47,6 +50,9 @@ import { CouponsModule } from './coupons/coupons.module';
     AuthModule,
     CourseModule,
     LessonModule,
+    CourseCreationModule,
+    GoogleDriveModule,
+    CourseImportModule,
     OrdersModule,
     PaymentModule,
     ProfileModule,

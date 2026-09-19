@@ -115,6 +115,8 @@ model User {
   teyDeliveries          TeyDelivery[]
   pushSubscriptions      PushSubscription[]
   teyNotificationPrefs   TeyNotificationPrefs?
+  googleDriveConnection  GoogleDriveConnection?
+  courseImports          CourseImport[]
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -2228,6 +2230,260 @@ model TeyAiUsage {
   @@index([day])
   @@index([userId, day])
   @@map("tey_ai_usage")
+}
+
+// ─── AI Course Importer — Google Drive connection ──────────────────────
+// One connection per admin (today, only the founder connects). Deliberately
+// scoped per-user rather than a single global row so multi-creator import
+// access (spec's stated later phase) needs no migration when it lands.
+model GoogleDriveConnection {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The Google account's own email, for "Connected as x@gmail.com" display —
+  /// not used for auth; the refresh token is the actual credential.
+  googleAccountEmail String
+
+  /// v1:<keyVersion>:<iv>:<tag>:<cipher> — encryptJson({refreshToken}) via the
+  /// same AES-256-GCM envelope earnings/crypto.util.ts already uses for
+  /// payout details and Tey AI provider keys. NEVER returned by any endpoint.
+  encryptedRefreshToken String
+  keyVersion            Int    @default(1)
+
+  /// Cached short-lived access token, so an API call doesn't always have to
+  /// round-trip Google's token endpoint first. Refreshed on demand when
+  /// expired; never the credential of record (the refresh token is).
+  accessToken          String?
+  accessTokenExpiresAt DateTime?
+
+  /// Space-separated OAuth scopes actually granted.
+  scope String
+
+  connectedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("google_drive_connections")
+}
+
+// ─── AI Course Importer — import jobs ───────────────────────────────────
+// Deliberately Postgres-native (no Redis/BullMQ — the backend has neither
+// today). Mirrors TeyScheduledAction's claim pattern: a cron tick runs
+// `UPDATE ... FROM (SELECT ... FOR UPDATE SKIP LOCKED)` over CourseImportFile
+// rows, so multiple Render instances (or a manual trigger endpoint, since
+// Render's free tier sleeps and kills in-process cron — same reason Tey's
+// scheduler has one) can claim disjoint batches safely with no leader
+// election. See course-import/course-import-processor.service.ts.
+enum CourseImportStatus {
+  CREATED
+  PROCESSING_FILES
+  READY_FOR_GENERATION
+  /// Video transcription running (Phase 4).
+  TRANSCRIBING
+  /// Structure decided, per-lesson AI content generation running (Phase 4).
+  GENERATING_CONTENT
+  /// Every lesson has content (or a recorded failure) — ready for an admin
+  /// to review, and for Phase 5 to hand this off to CourseCreationService.
+  READY_FOR_REVIEW
+  /// CourseCreationService has built the real Course/Section/Lesson tree —
+  /// see CourseImport.createdCourseId. Terminal; this import is done.
+  COURSE_CREATED
+  FAILED
+  CANCELLED
+}
+
+enum CourseImportFileStatus {
+  PENDING
+  CLAIMED
+  UPLOADED
+  FAILED
+  SKIPPED
+}
+
+/// Independent of CourseImportFileStatus — a file can be UPLOADED while its
+/// transcript is still PENDING. NOT_APPLICABLE covers every non-video file;
+/// document/slide text extraction is a known gap, not modeled here yet.
+enum TranscriptStatus {
+  NOT_APPLICABLE
+  PENDING
+  CLAIMED
+  TRANSCRIBED
+  FAILED
+}
+
+enum LessonGenerationStatus {
+  PENDING
+  CLAIMED
+  GENERATED
+  FAILED
+}
+
+model CourseImport {
+  id String @id @default(uuid())
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  sourceDriveFolderId   String
+  sourceDriveFolderName String
+
+  status CourseImportStatus @default(CREATED)
+  /// Set only on total failure (e.g. the folder walk itself errored) — a
+  /// partial run with some failed files stays out of this field; see each
+  /// CourseImportFile.error instead, and spec §36 (partial failure).
+  error  String?
+
+  files   CourseImportFile[]
+  modules CourseImportModule[]
+
+  /// Set once Phase 5 (CourseCreationService) builds the real course tree.
+  /// Plain string, not a Prisma relation — the importer stays a caller of
+  /// the course module's public API, never coupled to its relation graph.
+  createdCourseId String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  // An admin's own current/recent imports — the list this feeds is always
+  // scoped to createdById first.
+  @@index([createdById, createdAt])
+  @@map("course_imports")
+}
+
+model CourseImportFile {
+  id String @id @default(uuid())
+
+  importId String
+  import   CourseImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  driveFileId   String
+  driveFileName String
+  mimeType      String
+  /// 'video' | 'document' | 'presentation' | 'image' | 'other' — mirrors
+  /// GoogleDriveService's DriveFileCategory; 'other' rows are created as
+  /// SKIPPED immediately, never attempted.
+  category      String
+  sizeBytes     BigInt?
+  durationMs    BigInt?
+  /// Position in GoogleDriveService#listAllFiles's natural-sort order —
+  /// CourseStructureAnalysisService's only signal for which document/resource
+  /// follows which video (e.g. "01 Intro.mp4" then "01 Intro - slides.pdf").
+  /// Explicit rather than relying on createdAt/insertion order, which a
+  /// batched nested create does not reliably preserve.
+  orderIndex    Int     @default(0)
+
+  status CourseImportFileStatus @default(PENDING)
+  /// Populated once UPLOADED — the R2 object key and its public URL. Phase 5
+  /// (AI -> Course Creation) reads storageUrl straight into a lesson's
+  /// contentBlocks/LessonResource; the object is uploaded exactly once and
+  /// never moved.
+  storageKey String?
+  storageUrl String?
+
+  error    String?
+  attempts Int     @default(0)
+
+  /// Claim bookkeeping — same fields/semantics as TeyScheduledAction so a
+  /// crashed instance's in-flight claim is reapable the same way.
+  claimedAt DateTime?
+  claimedBy String?
+
+  /// Populated for video files once transcribed (Gemini File API). This is
+  /// the primary signal fed into lesson content generation — the AI is never
+  /// asked to invent what a lesson teaches, only to work from this text.
+  transcript          String?           @db.Text
+  transcriptLanguage  String?
+  transcriptStatus    TranscriptStatus  @default(NOT_APPLICABLE)
+  transcriptError     String?
+  transcriptAttempts  Int               @default(0)
+  transcriptClaimedAt DateTime?
+  transcriptClaimedBy String?
+
+  lessonsAsPrimary CourseImportLesson[] @relation("lessonsAsPrimary")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One row per Drive file per import — a retried createImport() call for
+  // the same folder must never mint duplicate file rows (spec §17/§25).
+  @@unique([importId, driveFileId])
+  @@index([status, claimedAt])
+  @@index([transcriptStatus, transcriptClaimedAt])
+  @@map("course_import_files")
+}
+
+/// A single module for now — Phase 3's folder walk flattens Drive
+/// subfolders, so there is no subfolder signal to split on yet. One module
+/// holding every lesson matches exactly the flat, sequentially-numbered
+/// course structure this was built and tested against (see spec's "no
+/// subfolders" case). Multi-module inference is a real gap, not silently
+/// pretended away — see CourseStructureAnalysisService's doc comment.
+model CourseImportModule {
+  id String @id @default(uuid())
+
+  importId String
+  import   CourseImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  title      String
+  orderIndex Int    @default(0)
+
+  lessons CourseImportLesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([importId, orderIndex])
+  @@map("course_import_modules")
+}
+
+model CourseImportLesson {
+  id String @id @default(uuid())
+
+  moduleId String
+  module   CourseImportModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  title      String
+  orderIndex Int    @default(0)
+
+  /// The video this lesson is built from. Nullable in principle (a
+  /// document-only lesson), though today's deterministic grouping always
+  /// sets one.
+  primaryFileId String?
+  primaryFile   CourseImportFile? @relation("lessonsAsPrimary", fields: [primaryFileId], references: [id])
+
+  /// CourseImportFile ids for documents/resources attached to this lesson
+  /// (e.g. a PDF that immediately follows this video in Drive's ordering).
+  resourceFileIds Json @default("[]")
+
+  status LessonGenerationStatus @default(PENDING)
+  error  String?
+
+  /// Same claim bookkeeping shape as CourseImportFile/TeyScheduledAction.
+  attempts  Int       @default(0)
+  claimedAt DateTime?
+  claimedBy String?
+
+  /// Real Teyro block shapes — the exact arrays CourseCreationService's
+  /// LessonContentInput expects (see course-creation/course-creation.types.ts),
+  /// so Phase 5 can hand these straight to attachLessonContent() unchanged.
+  description   String?  @db.Text
+  learnBlocks   Json?
+  applyBlocks   Json?
+  reflectBlocks Json?
+  deepenBlocks  Json?
+
+  /// Which file(s) this lesson's generated content was actually built from —
+  /// spec §42 (source traceability). Internal only, never shown to learners.
+  generatedFromFileIds Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([moduleId, orderIndex])
+  @@index([status, claimedAt])
+  @@map("course_import_lessons")
 }
 
 // ─── Coupons & Discounts ─────────────────────────────────────────────────

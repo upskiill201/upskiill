@@ -88,6 +88,7 @@ import { TeyController } from './tey.controller';
     TeyPolicyService,
     TeyAiService,
     AiConfigService,
+    AiBudgetService,
   ],
 })
 export class TeyModule {}

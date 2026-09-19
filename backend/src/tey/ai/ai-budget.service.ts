@@ -6,7 +6,12 @@ export type BudgetDecision =
   | { allow: true }
   | { allow: false; reason: string };
 
-export type AiPurpose = 'NUDGE_COPY' | 'CONVERSATION' | 'TOOL_LOOP' | 'ADMIN_TEST';
+export type AiPurpose =
+  | 'NUDGE_COPY'
+  | 'CONVERSATION'
+  | 'TOOL_LOOP'
+  | 'ADMIN_TEST'
+  | 'COURSE_IMPORT';
 
 const num = (raw: string | undefined, fallback: number) => {
   const parsed = Number(raw);
@@ -37,6 +42,17 @@ export class AiBudgetService {
       globalDailyUsd: num(process.env.TEY_AI_DAILY_BUDGET_USD, 2),
       perUserCallsPerDay: num(process.env.TEY_AI_MAX_CALLS_PER_USER_DAY, 20),
       proactivePerDay: num(process.env.TEY_AI_MAX_PROACTIVE_DAY, 200),
+    };
+  }
+
+  /** Separate from `limits` — the course importer is a different feature
+   *  with a different cost shape (a handful of expensive calls per course,
+   *  not many cheap nudges) and must never be gated by `TEY_AI_ENABLED`,
+   *  which is specifically the Tey nudge system's kill switch. */
+  private get courseImportLimits() {
+    return {
+      dailyUsd: num(process.env.COURSE_IMPORT_AI_DAILY_BUDGET_USD, 5),
+      maxCallsPerDay: num(process.env.COURSE_IMPORT_AI_MAX_CALLS_PER_DAY, 200),
     };
   }
 
@@ -87,6 +103,36 @@ export class AiBudgetService {
 
     if (perUser && (perUser._sum.calls ?? 0) >= limits.perUserCallsPerDay) {
       return { allow: false, reason: 'PER_USER_CAP' };
+    }
+
+    return { allow: true };
+  }
+
+  /**
+   * Same guardrail idea as `check()`, deliberately separate: this covers the
+   * AI Course Importer's transcription + lesson-generation calls, which have
+   * their own env-configured caps and — unlike `check()` — are never gated
+   * by `TEY_AI_ENABLED` (that switch is scoped to the Tey nudge system, not
+   * this feature; the importer has run against Gemini/Groq all session with
+   * that switch off, and must keep working that way).
+   */
+  async checkCourseImport(): Promise<BudgetDecision> {
+    const day = this.today();
+    const limits = this.courseImportLimits;
+
+    const spendRows = await this.prisma.teyAiUsage.aggregate({
+      where: { day, purpose: 'COURSE_IMPORT' },
+      _sum: { costUsd: true, calls: true },
+    });
+
+    const spend = Number(spendRows._sum.costUsd ?? 0);
+    if (spend >= limits.dailyUsd) {
+      return { allow: false, reason: 'COURSE_IMPORT_BUDGET' };
+    }
+
+    const calls = spendRows._sum.calls ?? 0;
+    if (calls >= limits.maxCallsPerDay) {
+      return { allow: false, reason: 'COURSE_IMPORT_CALL_CAP' };
     }
 
     return { allow: true };

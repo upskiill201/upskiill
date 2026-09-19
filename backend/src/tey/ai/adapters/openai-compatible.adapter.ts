@@ -52,20 +52,29 @@ export class OpenAiCompatibleAdapter implements AiProvider {
   }
 
   async complete(req: AiCompletionRequest): Promise<AiCompletionResult> {
+    // json_object rather than json_schema: strict schema mode is not supported
+    // by most of the OpenAI-compatible fleet, and we validate the result
+    // ourselves anyway (structured-output.ts). But json_object mode only
+    // guarantees *valid JSON syntax* — unlike Gemini's native responseSchema,
+    // it enforces no field names at all, so a model left to invent its own
+    // shape reliably will (confirmed live: Groq returned {Learn, Apply,
+    // Reflect, Deepen} instead of our schema's actual field names, with
+    // otherwise perfectly good content). The schema has to be spelled out in
+    // the text itself, since that's the only thing this mode actually reads.
+    const systemContent = req.jsonSchema
+      ? `${req.system}\n\nRespond with ONLY a JSON object matching exactly this schema (these exact field names, no others, no wrapper object):\n${JSON.stringify(req.jsonSchema)}`
+      : req.system;
+
     const body: Record<string, unknown> = {
       model: this.model,
       messages: [
-        { role: 'system', content: req.system },
+        { role: 'system', content: systemContent },
         ...req.messages.map((m) => ({ role: m.role, content: m.content })),
       ],
       max_tokens: req.maxOutputTokens,
       ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
     };
 
-    // json_object rather than json_schema: strict schema mode is not supported
-    // by most of the OpenAI-compatible fleet, and we validate the result
-    // ourselves anyway (structured-output.ts). Asking for something a provider
-    // silently ignores is worse than asking for less.
     if (req.jsonSchema) {
       body.response_format = { type: 'json_object' };
     }

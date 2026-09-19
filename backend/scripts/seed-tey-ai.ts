@@ -31,7 +31,11 @@ async function main() {
     create: {
       name: 'gemini-default',
       kind: 'GEMINI',
-      model: 'gemini-2.0-flash',
+      // gemini-2.0-flash was retired — Google's own 404 for it points here.
+      // The `update` branch below deliberately never touches this field, so
+      // re-running this script on an existing row won't clobber a model an
+      // admin has since corrected from /admin.
+      model: 'gemini-3.6-flash',
       encryptedApiKey: encryptedData,
       keyVersion,
       keyTail: apiKey.slice(-4),

@@ -1,0 +1,332 @@
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import {
+  GoogleDriveService,
+  isGoogleNativeFormat,
+} from '../google-drive/google-drive.service';
+import { DriveFile } from '../google-drive/google-drive.types';
+import { R2StorageService } from '../storage/r2-storage.service';
+import { CourseImportSummary } from './course-import.types';
+import { buildObjectKey } from './course-import-processor.service';
+import {
+  CourseImportWithFilesAndModules,
+  WITH_FILES_AND_MODULES,
+  toCourseImportSummary,
+} from './course-import-summary.util';
+
+/** Mirrors frontend/lib/uploadS3Server.ts's per-type caps — a file over this
+ *  is marked SKIPPED at creation rather than attempted and failing later. */
+const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
+const MAX_OTHER_BYTES = 100 * 1024 * 1024; // 100MB
+
+const ACTIVE_STATUSES = ['CREATED', 'PROCESSING_FILES'] as const;
+
+@Injectable()
+export class CourseImportService {
+  private readonly logger = new Logger(CourseImportService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly googleDrive: GoogleDriveService,
+    private readonly r2: R2StorageService,
+  ) {}
+
+  /**
+   * Enumerates the selected Drive folder and creates one CourseImport +
+   * one CourseImportFile per file found, in a single nested create (same
+   * atomic-tree pattern CourseService#duplicateCourse uses) — never a course
+   * tree half-created because file N's row failed mid-loop.
+   *
+   * Idempotent: retrying against the same folder while an import is still
+   * active returns that existing import rather than minting a duplicate
+   * (spec §17/§25) — the file-level `@@unique([importId, driveFileId])`
+   * additionally makes even a raced double-create harmless.
+   */
+  async createImport(
+    userId: string,
+    driveFolderId: string,
+  ): Promise<CourseImportSummary> {
+    const existing = await this.prisma.courseImport.findFirst({
+      where: {
+        createdById: userId,
+        sourceDriveFolderId: driveFolderId,
+        status: { in: [...ACTIVE_STATUSES] },
+      },
+      include: WITH_FILES_AND_MODULES,
+      orderBy: { createdAt: 'desc' },
+    });
+    if (existing) return toCourseImportSummary(existing);
+
+    const folderMeta = await this.googleDrive.getFileMetadata(
+      userId,
+      driveFolderId,
+    );
+    if (folderMeta.mimeType !== 'application/vnd.google-apps.folder') {
+      throw new BadRequestException(
+        'The selected item is not a Google Drive folder.',
+      );
+    }
+
+    const files = await this.googleDrive.listAllFiles(userId, driveFolderId);
+
+    const created = await this.prisma.courseImport.create({
+      data: {
+        createdById: userId,
+        sourceDriveFolderId: driveFolderId,
+        sourceDriveFolderName: folderMeta.name,
+        status: 'CREATED',
+        startedAt: new Date(),
+        files: {
+          create: files.map((file, index) => buildFileRow(file, index)),
+        },
+      },
+      include: WITH_FILES_AND_MODULES,
+    });
+
+    return toCourseImportSummary(created);
+  }
+
+  async listImports(userId: string): Promise<CourseImportSummary[]> {
+    const imports = await this.prisma.courseImport.findMany({
+      where: { createdById: userId },
+      include: WITH_FILES_AND_MODULES,
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+    return imports.map((row) => toCourseImportSummary(row));
+  }
+
+  async getImport(
+    userId: string,
+    importId: string,
+  ): Promise<CourseImportSummary> {
+    return toCourseImportSummary(await this.findOwned(userId, importId));
+  }
+
+  async retryFile(
+    userId: string,
+    importId: string,
+    fileId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+    const file = found.files.find((f) => f.id === fileId);
+    if (!file) throw new NotFoundException('File not found on this import.');
+    if (file.status !== 'FAILED') {
+      throw new BadRequestException('Only failed files can be retried.');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.courseImportFile.update({
+        where: { id: fileId },
+        data: {
+          status: 'PENDING',
+          error: null,
+          claimedAt: null,
+          claimedBy: null,
+          attempts: 0,
+        },
+      }),
+      ...(found.status === 'FAILED'
+        ? [
+            this.prisma.courseImport.update({
+              where: { id: importId },
+              data: { status: 'PROCESSING_FILES', completedAt: null },
+            }),
+          ]
+        : []),
+    ]);
+
+    return this.getImport(userId, importId);
+  }
+
+  /** Also doubles as "regenerate": a GENERATED lesson can be sent back
+   *  through the AI (e.g. the admin doesn't like the tone/content), not
+   *  just a FAILED one. Blocked once the import has already produced a real
+   *  course (`COURSE_CREATED`) — regenerating here wouldn't touch the real
+   *  Lesson row CourseCreationService already wrote, which would silently
+   *  desync the import's content from what learners actually see. */
+  async retryLesson(
+    userId: string,
+    importId: string,
+    lessonId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+    if (found.status === 'COURSE_CREATED') {
+      throw new BadRequestException(
+        'A course was already created from this import — edit the lesson directly in Course Builder instead.',
+      );
+    }
+    const lesson = found.modules
+      .flatMap((m) => m.lessons)
+      .find((l) => l.id === lessonId);
+    if (!lesson)
+      throw new NotFoundException('Lesson not found on this import.');
+    if (lesson.status !== 'FAILED' && lesson.status !== 'GENERATED') {
+      throw new BadRequestException(
+        'Only a failed or already-generated lesson can be retried.',
+      );
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.courseImportLesson.update({
+        where: { id: lessonId },
+        data: {
+          status: 'PENDING',
+          error: null,
+          claimedAt: null,
+          claimedBy: null,
+          attempts: 0,
+        },
+      }),
+      // A retry after every lesson finished (some failed) had already moved
+      // the import to READY_FOR_REVIEW — reopen it so the generation
+      // processor picks this lesson back up.
+      ...(found.status === 'READY_FOR_REVIEW'
+        ? [
+            this.prisma.courseImport.update({
+              where: { id: importId },
+              data: { status: 'GENERATING_CONTENT', completedAt: null },
+            }),
+          ]
+        : []),
+    ]);
+
+    return this.getImport(userId, importId);
+  }
+
+  /** Separate from retryFile: a file can be UPLOADED (fine) while its
+   *  transcript specifically FAILED after exhausting its auto-retries — that
+   *  needs its own reset, not the upload-status retry path. */
+  async retryTranscription(
+    userId: string,
+    importId: string,
+    fileId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+    const file = found.files.find((f) => f.id === fileId);
+    if (!file) throw new NotFoundException('File not found on this import.');
+    if (file.transcriptStatus !== 'FAILED') {
+      throw new BadRequestException(
+        'Only a failed transcript can be retried.',
+      );
+    }
+
+    await this.prisma.courseImportFile.update({
+      where: { id: fileId },
+      data: {
+        transcriptStatus: 'PENDING',
+        transcriptError: null,
+        transcriptClaimedAt: null,
+        transcriptClaimedBy: null,
+        transcriptAttempts: 0,
+      },
+    });
+
+    return this.getImport(userId, importId);
+  }
+
+  async cancelImport(
+    userId: string,
+    importId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+    if (
+      found.status !== 'CANCELLED' &&
+      found.status !== 'READY_FOR_GENERATION'
+    ) {
+      await this.prisma.courseImport.update({
+        where: { id: importId },
+        data: { status: 'CANCELLED', completedAt: new Date() },
+      });
+      // Best-effort R2 cleanup — a cancelled import's already-uploaded
+      // videos/resources would otherwise sit in storage forever accruing
+      // cost, unlike an *aborted* multipart upload (R2's own 7-day rule
+      // already handles that case; see teyro-upload-resume-tradeoff).
+      // Fire-and-forget: cancellation must succeed even if storage is down.
+      this.cleanUpUploadedFiles(found).catch((err: unknown) => {
+        this.logger.error(
+          `R2 cleanup failed for cancelled import ${importId}`,
+          err as Error,
+        );
+      });
+    }
+    return this.getImport(userId, importId);
+  }
+
+  private async cleanUpUploadedFiles(
+    found: CourseImportWithFilesAndModules,
+  ): Promise<void> {
+    const uploaded = found.files.filter(
+      (f) => f.status === 'UPLOADED' && f.storageUrl,
+    );
+    await Promise.all(
+      uploaded.map(async (f) => {
+        try {
+          await this.r2.deleteObject(
+            buildObjectKey(f.importId, f.driveFileId, f.driveFileName),
+          );
+        } catch (err) {
+          this.logger.warn(
+            `Could not delete R2 object for file ${f.id}: ${(err as Error).message}`,
+          );
+        }
+      }),
+    );
+  }
+
+  private async findOwned(
+    userId: string,
+    importId: string,
+  ): Promise<CourseImportWithFilesAndModules> {
+    const found = await this.prisma.courseImport.findFirst({
+      where: { id: importId, createdById: userId },
+      include: WITH_FILES_AND_MODULES,
+    });
+    if (!found) throw new NotFoundException('Import not found.');
+    return found;
+  }
+}
+
+function buildFileRow(file: DriveFile, orderIndex: number) {
+  const isNative = isGoogleNativeFormat(file.mimeType);
+  const sizeCap = file.category === 'video' ? MAX_VIDEO_BYTES : MAX_OTHER_BYTES;
+  const tooLarge =
+    typeof file.sizeBytes === 'number' && file.sizeBytes > sizeCap;
+  const unsupportedCategory = file.category === 'other';
+  const skip = unsupportedCategory || isNative || tooLarge;
+
+  const error = !skip
+    ? null
+    : isNative
+      ? "Native Google file — exporting it isn't supported yet."
+      : tooLarge
+        ? `File exceeds the ${file.category === 'video' ? '2GB' : '100MB'} limit Teyro can import today.`
+        : 'Unsupported file type.';
+
+  return {
+    driveFileId: file.id,
+    driveFileName: file.name,
+    mimeType: file.mimeType,
+    category: file.category,
+    orderIndex,
+    sizeBytes:
+      file.sizeBytes !== undefined ? BigInt(Math.round(file.sizeBytes)) : null,
+    durationMs:
+      file.durationMs !== undefined
+        ? BigInt(Math.round(file.durationMs))
+        : null,
+    status: skip ? ('SKIPPED' as const) : ('PENDING' as const),
+    error,
+    // Only real, importable video files ever need a transcript. A skipped
+    // "video-category" file (too large, say) has nothing to transcribe.
+    transcriptStatus:
+      !skip && file.category === 'video'
+        ? ('PENDING' as const)
+        : ('NOT_APPLICABLE' as const),
+  };
+}

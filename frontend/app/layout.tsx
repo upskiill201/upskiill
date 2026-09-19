@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   // Describes what actually ships. The previous copy called Teyro an
   // "AI-personalized learning platform"; AI is Phase Two and disarmed, so that
   // was promising a product nobody could use yet.
-  title: 'Teyro — The fun, and effective way to learn and build skills',
+  title: 'Teyro — The fun and effective way to learn anything',
   description:
-    'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+    'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
 
   // ── Keywords ──
   keywords: [
@@ -89,9 +89,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — The fun, and effective way to learn and build skills',
+    title: 'Teyro — The fun and effective way to learn anything',
     description:
-      'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+      'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
     locale: 'en_US',
     images: [
       {
@@ -107,9 +107,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — The fun, and effective way to learn and build skills',
+    title: 'Teyro — The fun and effective way to learn anything',
     description:
-      'The fun, and effective way to learn and build skills. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+      'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
     images: ['/teyro-og.png'],
   },
 

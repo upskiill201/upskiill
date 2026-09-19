@@ -10,5 +10,9 @@ import { CourseReviewModule } from '../course-review/course-review.module';
   imports: [PrismaModule, CourseReviewModule],
   controllers: [LessonController],
   providers: [LessonService],
+  // CourseCreationService (course-creation module) composes LessonService's
+  // content-save/publish/resource methods alongside CourseService's — needs
+  // this exported the same way CourseModule already exports CourseService.
+  exports: [LessonService],
 })
 export class LessonModule {}

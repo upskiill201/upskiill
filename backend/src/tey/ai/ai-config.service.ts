@@ -1,6 +1,10 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { decryptJson, encryptJson, maskAccount } from '../../earnings/crypto.util';
+import {
+  decryptJson,
+  encryptJson,
+  maskAccount,
+} from '../../earnings/crypto.util';
 import {
   AI_PROVIDER_KINDS,
   AiProvider,
@@ -51,11 +55,21 @@ export interface ProviderView {
 /** Adapter cache TTL — avoids decrypting a key on every single call. */
 const CACHE_TTL_MS = 60_000;
 
+/** The dedicated provider row course-import lesson generation reads from —
+ *  by name, not kind, so an admin can point it at whichever text model is
+ *  actually reliable (Gemini, Groq, anything OPENAI_COMPATIBLE) without a
+ *  code change. See resolveForCourseImport()'s doc comment for why this is
+ *  never the shared resolve() primary/fallback pair. */
+const COURSE_IMPORT_PROVIDER_NAME = 'course-import-generation';
+
 @Injectable()
 export class AiConfigService {
   private readonly logger = new Logger(AiConfigService.name);
-  private cache: { at: number; primary: AiProvider | null; fallback: AiProvider | null } | null =
-    null;
+  private cache: {
+    at: number;
+    primary: AiProvider | null;
+    fallback: AiProvider | null;
+  } | null = null;
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -137,7 +151,10 @@ export class AiConfigService {
     return AiConfigService.toView(row);
   }
 
-  async update(id: string, input: Partial<UpsertProviderInput>): Promise<ProviderView> {
+  async update(
+    id: string,
+    input: Partial<UpsertProviderInput>,
+  ): Promise<ProviderView> {
     this.validate(input, false);
 
     // Omitting apiKey keeps the stored one, so an admin editing a temperature
@@ -150,7 +167,7 @@ export class AiConfigService {
           return {
             encryptedApiKey: encryptedData,
             keyVersion,
-            keyTail: input.apiKey!.slice(-4),
+            keyTail: input.apiKey.slice(-4),
           };
         })()
       : {};
@@ -205,7 +222,10 @@ export class AiConfigService {
    * Resolves the active primary and fallback adapters, cached briefly so a
    * burst of calls does not decrypt the key each time.
    */
-  async resolve(): Promise<{ primary: AiProvider | null; fallback: AiProvider | null }> {
+  async resolve(): Promise<{
+    primary: AiProvider | null;
+    fallback: AiProvider | null;
+  }> {
     if (this.cache && Date.now() - this.cache.at < CACHE_TTL_MS) {
       return { primary: this.cache.primary, fallback: this.cache.fallback };
     }
@@ -236,6 +256,76 @@ export class AiConfigService {
     return { primary, fallback };
   }
 
+  /**
+   * Raw Gemini credentials for the one caller that cannot go through the
+   * `AiProvider.complete()` text-completion interface: transcription. The
+   * Gemini File API (upload + poll + multimodal generateContent) is a
+   * different wire shape entirely, so it can't reuse GeminiAdapter — but it
+   * still shouldn't touch the ciphertext or duplicate key storage. Never
+   * expose this through any controller; it hands back a plaintext key.
+   */
+  async resolveRawGeminiCredentials(): Promise<{
+    apiKey: string;
+    baseUrl: string;
+    model: string;
+    providerId: string;
+    inputCostPer1k: number;
+    outputCostPer1k: number;
+  } | null> {
+    const row = await this.prisma.teyAiProviderConfig.findFirst({
+      where: { isActive: true, kind: 'GEMINI' },
+    });
+    if (!row) return null;
+    const { apiKey } = decryptJson<{ apiKey: string }>(row.encryptedApiKey);
+    return {
+      apiKey,
+      baseUrl: row.baseUrl || 'https://generativelanguage.googleapis.com',
+      model: row.model,
+      providerId: row.id,
+      inputCostPer1k: Number(row.inputCostPer1k),
+      outputCostPer1k: Number(row.outputCostPer1k),
+    };
+  }
+
+  /**
+   * The provider for course-import lesson generation — deliberately NOT
+   * `resolve()`. That generic primary/fallback pair is shared with the live
+   * Tey nudge system; a bulk course-import run picking up whatever's
+   * "primary" there would compete with real nudge traffic for the same
+   * provider's rate limit and `dailyBudgetUsd`. This always targets the
+   * provider row named `COURSE_IMPORT_PROVIDER_NAME` specifically — a
+   * dedicated, isolated provider that never overlaps with whatever's
+   * configured for nudges, and (unlike `resolveRawGeminiCredentials()`,
+   * which is pinned to Gemini because only Gemini can watch video) it isn't
+   * pinned to any one `kind` — an admin can point it at Groq, Gemini,
+   * anything OPENAI_COMPATIBLE, whichever is actually reliable that week.
+   */
+  async resolveForCourseImport(): Promise<{
+    provider: AiProvider;
+    providerId: string;
+    inputCostPer1k: number;
+    outputCostPer1k: number;
+  } | null> {
+    const row = await this.prisma.teyAiProviderConfig.findFirst({
+      where: { isActive: true, name: COURSE_IMPORT_PROVIDER_NAME },
+    });
+    if (!row) return null;
+    try {
+      return {
+        provider: this.build(row),
+        providerId: row.id,
+        inputCostPer1k: Number(row.inputCostPer1k),
+        outputCostPer1k: Number(row.outputCostPer1k),
+      };
+    } catch (err) {
+      this.logger.error(
+        `Could not build course-import AI provider "${row.name}"`,
+        err as Error,
+      );
+      return null;
+    }
+  }
+
   /** Also called by tests and by any write, so config edits take effect at once. */
   invalidate(): void {
     this.cache = null;
@@ -264,7 +354,10 @@ export class AiConfigService {
     }
   }
 
-  private validate(input: Partial<UpsertProviderInput>, isCreate: boolean): void {
+  private validate(
+    input: Partial<UpsertProviderInput>,
+    isCreate: boolean,
+  ): void {
     if (isCreate && !input.apiKey) {
       throw new BadRequestException('apiKey is required');
     }
@@ -278,7 +371,10 @@ export class AiConfigService {
         'baseUrl is required for an OpenAI-compatible provider',
       );
     }
-    if (input.temperature !== undefined && (input.temperature < 0 || input.temperature > 2)) {
+    if (
+      input.temperature !== undefined &&
+      (input.temperature < 0 || input.temperature > 2)
+    ) {
       throw new BadRequestException('temperature must be between 0 and 2');
     }
     // Bounded so a typo cannot turn one config change into a large bill.
@@ -286,7 +382,9 @@ export class AiConfigService {
       input.maxOutputTokens !== undefined &&
       (input.maxOutputTokens < 16 || input.maxOutputTokens > 4096)
     ) {
-      throw new BadRequestException('maxOutputTokens must be between 16 and 4096');
+      throw new BadRequestException(
+        'maxOutputTokens must be between 16 and 4096',
+      );
     }
     if (
       input.timeoutMs !== undefined &&
