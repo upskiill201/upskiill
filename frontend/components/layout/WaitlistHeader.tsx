@@ -17,9 +17,12 @@ interface NavLink {
 
 const NAV_LINKS: NavLink[] = [
   { label: 'How it works', anchor: '#how-it-works' },
+  { label: 'Features', href: '/features' },
   { label: 'Rewards', anchor: '#rewards' },
   { label: 'Leagues', anchor: '#leagues' },
   { label: 'Community', anchor: '#community' },
+  { label: 'Use Cases', href: '/for' },
+  { label: 'Compare', href: '/alternatives' },
   { label: 'Teach', href: '/teach' },
   { label: 'Blog', href: '/blog' },
   { label: 'FAQ', anchor: '#faq' },
