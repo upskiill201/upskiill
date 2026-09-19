@@ -3,12 +3,10 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
-import { ArrowRight, ExternalLink } from 'lucide-react';
 import {
   getAllLandingSlugs,
   getLandingBySlug,
 } from '@/lib/landing/posts';
-import { FaqItem } from '@/lib/blog/types';
 import JsonLd from '@/components/features/blog/JsonLd';
 import CtaBlock from '@/components/features/blog/CtaBlock';
 import styles from './LandingPage.module.css';
@@ -31,13 +29,14 @@ export async function generateMetadata({
   const page = getLandingBySlug(slug);
   if (!page) return {};
 
-  const { title, meta_description, reading_time } = page.frontmatter;
+  const { title, meta_description, reading_time, word_count, keyword } =
+    page.frontmatter;
 
   return {
     title,
     description: meta_description,
     other: {
-      'word-count': String(page.frontmatter.word_count),
+      'word-count': String(word_count),
       'reading-time': `${reading_time} min read`,
     },
   };
@@ -52,7 +51,6 @@ export default async function AlternativesLandingPage({
 
   const { frontmatter: fm, content } = page;
 
-  // Parse JSON-LD for structured data injection
   let jsonLdData: Record<string, unknown>[] = [];
   if (fm.json_ld) {
     try {
@@ -68,15 +66,11 @@ export default async function AlternativesLandingPage({
     }
   }
 
-  // Extract FAQ from content's H3 "FAQ" section for schema (fallback)
-  const faqItems: FaqItem[] = extractFaqFromContent(content);
-
   return (
     <div className={styles.page}>
       {jsonLdData.length > 0 && <JsonLd data={jsonLdData} />}
       <div className={styles.container}>
         <article className={styles.article}>
-          {/* ── Hero ── */}
           <header className={styles.hero}>
             <h1 className={styles.title}>{fm.title}</h1>
             <div className={styles.heroMeta}>
@@ -90,7 +84,6 @@ export default async function AlternativesLandingPage({
             </div>
           </header>
 
-          {/* ── Body ── */}
           <div className={styles.body}>
             <MDXRemote
               source={content}
@@ -103,7 +96,6 @@ export default async function AlternativesLandingPage({
             />
           </div>
 
-          {/* ── CTA ── */}
           <CtaBlock
             cta={{
               title: 'Start Your Free Learning Streak',
@@ -116,26 +108,4 @@ export default async function AlternativesLandingPage({
       </div>
     </div>
   );
-}
-
-function extractFaqFromContent(content: string): FaqItem[] {
-  const faqSection = content.match(/## (Frequently Asked Questions|FAQ)[\s\S]*$/i);
-  if (!faqSection) return [];
-
-  const faqItems: FaqItem[] = [];
-  const qaRegex = /###\s+(What|How|Why|When|Who|Which|Is|Are|Can|Do|Does|Should|Will|Would|Could|Can you|How does|How long|How to|Where|Why does|What is|What are|What should|Where can|Where to|Why is)\s+[^\n]+/g;
-  let match;
-  while ((match = qaRegex.exec(faqSection[0])) !== null) {
-    const question = match[0].replace(/^###\s+/, '').trim();
-    // Find answer: text between this ### and next ### or end
-    const afterMatch = faqSection[0].slice(match.index + match[0].length);
-    const nextH = afterMatch.match(/^[\s\S]*?(?=###\s|\n##\s|\z)/);
-    const answer = nextMatch
-      ? nextMatch[0].replace(/^[\s\n]+/, '').trim()
-      : '';
-    if (question && answer) {
-      faqItems.push({ question, answer });
-    }
-  }
-  return faqItems;
 }
