@@ -378,39 +378,47 @@ export default function CourseImportProgressPage() {
       )}
 
       {courseImport.status === 'READY_FOR_REVIEW' && (
-        <Card title="Create course">
-          <p className={styles.fieldHint} style={{ marginBottom: 12 }}>
-            Builds a real draft course from every lesson above that finished
-            generating (lessons that failed are skipped, not blocking). The
-            course lands in Course Builder as a normal DRAFT — nothing is
-            published or submitted for review automatically.
-          </p>
-          {createCourseError && <Banner tone="warn">{createCourseError}</Banner>}
-          <div className={styles.formGrid}>
-            <div className={styles.field}>
-              <span className={styles.fieldLabel}>Course title</span>
-              <input
-                type="text"
-                className={styles.textInput}
-                value={courseTitle}
-                onChange={(e) => setCourseTitle(e.target.value)}
-              />
+        lessons.some((l) => l.status === 'GENERATED') ? (
+          <Card title="Create course">
+            <p className={styles.fieldHint} style={{ marginBottom: 12 }}>
+              Builds a real draft course from every lesson above that finished
+              generating (lessons that failed are skipped, not blocking). The
+              course lands in Course Builder as a normal DRAFT — nothing is
+              published or submitted for review automatically.
+            </p>
+            {createCourseError && <Banner tone="warn">{createCourseError}</Banner>}
+            <div className={styles.formGrid}>
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>Course title</span>
+                <input
+                  type="text"
+                  className={styles.textInput}
+                  value={courseTitle}
+                  onChange={(e) => setCourseTitle(e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>Category</span>
+                <input
+                  type="text"
+                  className={styles.textInput}
+                  placeholder="e.g. Animation"
+                  value={courseCategory}
+                  onChange={(e) => setCourseCategory(e.target.value)}
+                />
+              </div>
+              <Button onClick={() => void createCourse()} disabled={creatingCourse}>
+                {creatingCourse ? 'Creating…' : 'Create course'}
+              </Button>
             </div>
-            <div className={styles.field}>
-              <span className={styles.fieldLabel}>Category</span>
-              <input
-                type="text"
-                className={styles.textInput}
-                placeholder="e.g. Animation"
-                value={courseCategory}
-                onChange={(e) => setCourseCategory(e.target.value)}
-              />
-            </div>
-            <Button onClick={() => void createCourse()} disabled={creatingCourse}>
-              {creatingCourse ? 'Creating…' : 'Create course'}
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        ) : (
+          <Banner tone="warn">
+            Every lesson above failed to generate — there&apos;s nothing to build a
+            course from yet. Retry the failed lessons above; the option to
+            create a course will appear once at least one succeeds.
+          </Banner>
+        )
       )}
 
       {courseImport.status === 'COURSE_CREATED' && courseImport.createdCourseId && (
