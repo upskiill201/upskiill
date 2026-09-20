@@ -35,7 +35,6 @@ export default function ForHubPage() {
 
         {/* Hero */}
         <header className={styles.hero}>
-          <div className={styles.heroOwl}>ðŸŽ“</div>
           <span className={styles.kicker}>Who is Teyro for?</span>
           <h1 className={styles.title}>Learning That Fits Your Goals</h1>
           <p className={styles.subtitle}>
@@ -79,7 +78,6 @@ export default function ForHubPage() {
 
         {/* CTA */}
         <section className={styles.ctaSection}>
-          <div className={styles.ctaOwl}>â­</div>
           <h2 className={styles.ctaTitle}>Your first mission is waiting</h2>
           <p className={styles.ctaText}>
             15 minutes. Real skill. Zero cost to start.

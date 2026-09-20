@@ -33,15 +33,30 @@
   color: rgba(61, 90, 254, 0.55);
 }
 
-.mascot {
+.shapeCircleLg {
   position: absolute;
-  right: -12px;
-  bottom: -18px;
-  width: 58%;
-  height: 82%;
-  background-image: url('/dashboard tey.webp');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: bottom right;
-  opacity: 0.9;
+  right: -20%;
+  bottom: -35%;
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(61, 90, 254, 0.1), rgba(61, 90, 254, 0.01) 70%);
+}
+
+.shapeCircleSm {
+  display: none;
+}
+
+.shapeBadge {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #3d5afe;
+  box-shadow: 0 2px 10px -2px rgba(31, 42, 68, 0.18);
 }

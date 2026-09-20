@@ -103,7 +103,6 @@ export default async function FeatureDetailPage({ params }: FeaturePageProps) {
 
         {/* CTA */}
         <section className={styles.ctaSection}>
-          <div className={styles.ctaEmoji}>ðŸš€</div>
           <h2 className={styles.ctaTitle}>Try {fm.keyword} today</h2>
           <p className={styles.ctaText}>
             Join thousands of learners building real skills with daily 15-minute missions.
