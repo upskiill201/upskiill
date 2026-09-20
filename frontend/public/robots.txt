@@ -1,6 +1,7 @@
 # =============================================================
 # robots.txt — Teyro (https://teyro.app)
 # Strategy: Homepage (/) and the SEO blog (/blog) are public.
+# SEO landing pages (/features, /for, /alternatives) are public.
 # App pages (dashboard/courses/learn/creator/onboarding) are blocked.
 # =============================================================
 
@@ -8,6 +9,9 @@
 User-agent: Googlebot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -16,9 +20,12 @@ Allow: /*.svg$
 Allow: /*.jpeg$
 Disallow: /
 
-# ── Google Image Search ────────────────────────────────────
+# ── Google Image Search ────────────────────────────
 User-agent: Googlebot-Image
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -33,10 +40,13 @@ Disallow: /
 User-agent: Google-Extended
 Allow: /
 
-# ── Bing / Microsoft Search ────────────────────────────────
+# ── Bing / Microsoft Search ────────────────────────
 User-agent: Bingbot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -45,17 +55,23 @@ Allow: /*.svg$
 Allow: /*.jpeg$
 Disallow: /
 
-# ── Bing Image Search ──────────────────────────────────────
+# ── Bing Image Search ──────────────────────────────
 User-agent: msnbot-media
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
-# ── DuckDuckGo ─────────────────────────────────────────────
+# ── DuckDuckGo ─────────────────────────────────────
 User-agent: DuckDuckBot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -64,28 +80,37 @@ Allow: /*.svg$
 Allow: /*.jpeg$
 Disallow: /
 
-# ── Yahoo / Slurp ──────────────────────────────────────────
+# ── Yahoo / Slurp ──────────────────────────────────
 User-agent: Slurp
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
-# ── Yandex ─────────────────────────────────────────────────
+# ── Yandex ─────────────────────────────────────────
 User-agent: YandexBot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
-# ── Baidu ──────────────────────────────────────────────────
+# ── Baidu ──────────────────────────────────────────
 User-agent: Baiduspider
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
-# ── OpenAI — training crawler ───────────────────────────────
+# ── OpenAI — training crawler ───────────────────────
 User-agent: GPTBot
 Allow: /
 
@@ -100,7 +125,7 @@ Allow: /
 User-agent: OAI-SearchBot
 Allow: /
 
-# ── Anthropic — Claude training crawler ─────────────────────
+# ── Anthropic — Claude training crawler ─────────────
 User-agent: ClaudeBot
 Allow: /
 
@@ -114,12 +139,18 @@ Allow: /
 User-agent: Claude-Web
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
 User-agent: anthropic-ai
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -131,13 +162,16 @@ Allow: /
 User-agent: Perplexity-User
 Allow: /
 
-# ── Meta AI (Llama) ────────────────────────────────────────
+# ── Meta AI (Llama) ────────────────────────────────
 User-agent: Meta-ExternalAgent
 Allow: /
 
 User-agent: Meta-ExternalFetcher
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -149,6 +183,9 @@ Allow: /
 User-agent: Applebot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -159,6 +196,9 @@ Allow: /
 User-agent: cohere-ai
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -166,6 +206,9 @@ Disallow: /
 User-agent: YouBot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -173,6 +216,9 @@ Disallow: /
 User-agent: Diffbot
 Allow: /$
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
@@ -184,9 +230,12 @@ Allow: /
 User-agent: Bytespider
 Allow: /
 
-# ── All other bots — app routes stay blocked, /blog stays open
+# ── All other bots — app routes stay blocked, SEO pages stay open
 User-agent: *
 Allow: /blog
+Allow: /features
+Allow: /for
+Allow: /alternatives
 Allow: /sitemap.xml
 Disallow: /
 
