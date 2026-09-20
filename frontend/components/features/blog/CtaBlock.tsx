@@ -24,7 +24,6 @@ export default function CtaBlock({ cta }: CtaBlockProps) {
 
   return (
     <aside className={styles.block} aria-label="Call to action">
-      <span className={styles.mascot} aria-hidden="true" />
       <div className={styles.content}>
         <p className={styles.kicker}>Ready when you are</p>
         <h2 className={styles.title}>{title}</h2>

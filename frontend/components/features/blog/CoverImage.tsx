@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { BookOpen } from 'lucide-react';
 import styles from './CoverImage.module.css';
 
 interface CoverImageProps {
@@ -33,7 +34,7 @@ export default function CoverImage({ src, alt, slug = '', title, priority = fals
     );
   }
 
-  // Branded fallback: soft gradient + Tey mascot + blueprint grid, so posts
+  // Branded fallback: soft gradient + blueprint grid + playful shapes, so posts
   // without custom covers still look designed (never a broken image).
   const index = GRADIENTS.length
     ? Math.abs([...slug].reduce((acc, ch) => acc + ch.charCodeAt(0), 0)) % GRADIENTS.length
@@ -47,7 +48,11 @@ export default function CoverImage({ src, alt, slug = '', title, priority = fals
       aria-label={title}
     >
       <span className={styles.wordmark}>Teyro</span>
-      <span className={styles.mascot} aria-hidden="true" />
+      <span className={styles.shapeCircleLg} aria-hidden="true" />
+      <span className={styles.shapeCircleSm} aria-hidden="true" />
+      <span className={styles.shapeBadge} aria-hidden="true">
+        <BookOpen size={22} strokeWidth={2.5} />
+      </span>
     </div>
   );
 }

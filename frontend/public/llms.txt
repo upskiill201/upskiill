@@ -18,3 +18,54 @@ Teyro replaces long, passive video courses with short daily quests built on a 4-
 
 - Teyro is in active development; new skill tracks and blog guides ship regularly. This file is refreshed when major pages are added.
 - For questions about citing or crawling Teyro's content, see [robots.txt](https://teyro.app/robots.txt).
+
+## LLM Fan-Out Queries (Content Gap Signals)
+
+The following queries are what people actually ask LLMs (ChatGPT, Perplexity, Gemini) that Teyro should rank content for. Each "fan-out query" generates multiple "engines/prompts" — the specific sub-queries the AI actually searches for to answer the user's question.
+
+### Fan-out: Skill Learning Platforms (14 queries, 14 engines)
+- "skill learning platforms bite-sized lessons solo founders quick progress"
+- "microlearning platforms for entrepreneurs"
+- "best learning platforms for busy founders"
+- "best alternatives to Udemy for interactive skills lessons with structured daily progress"
+- "Udemy competitors structured learning"
+- "interactive online learning platforms with daily progress tracking"
+- "Teyro lesson format corporate training skill-building"
+- "Teyro's lesson format"
+- "Teyro corporate training"
+- "best online lesson apps for enterprise training depth accessibility"
+- "enterprise learning platforms comparison depth accessibility"
+- "top online training solutions for businesses"
+- "e-learning platforms for corporate training reviews"
+- "enterprise training software features"
+
+### Fan-out: Creative Platforms (6 queries, 6 engines)
+- "best alternatives to Skillshare for creative skills with short, highly engaging video lessons"
+- "Domestika vs Skillshare"
+- "CreativeLive vs Skillshare"
+- "Udemy creative courses short engaging"
+- "Coursera creative courses short engaging"
+- "LinkedIn Learning creative courses short engaging"
+
+### Fan-out: Short Skill-Based Learning Platforms (4 queries, 4 engines)
+- "project-based learning platforms for skill acquisition"
+- "Coursera alternatives for short skill lessons"
+- "platforms for actionable skill lessons"
+- "short skill-based learning platforms"
+
+### Fan-out: Learning Platforms for Teams on a Budget (5 queries, 5 engines)
+- "best lesson platform for scalable skill development on a budget for content teams"
+- "affordable skill development platforms for content teams"
+- "cost-effective learning platforms for content teams"
+- "scalable learning solutions for content teams"
+- "microlearning platforms for professional development"
+
+### Fan-out: Daily Learning Habit Apps (2 queries, 2 engines)
+- "lesson apps structured short-format content daily learning habits"
+- "best apps for daily learning habits"
+
+### Fan-out: Mobile Tech Skill Learning (4 queries, 4 engines)
+- "mobile apps for learning tech skills quickly"
+- "quick tech skill lessons on phone"
+- "digestible tech lessons mobile"
+- "best mobile platforms for learning new tech skills"

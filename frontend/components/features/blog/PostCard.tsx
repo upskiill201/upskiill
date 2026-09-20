@@ -16,8 +16,14 @@ interface PostCardProps {
 export default function PostCard({ post, priority = false }: PostCardProps) {
   const category = getCategory(post.categorySlug);
 
+  const accent = category?.accentColor ?? '#3D5AFE';
+
   return (
-    <Link href={`/blog/${post.slug}`} className={styles.card}>
+    <Link
+      href={`/blog/${post.slug}`}
+      className={styles.card}
+      style={{ '--accent': accent } as React.CSSProperties}
+    >
       <div className={styles.cover}>
         <CoverImage
           src={post.coverImage}
@@ -29,10 +35,7 @@ export default function PostCard({ post, priority = false }: PostCardProps) {
         {category && (
           <span
             className={styles.categoryPill}
-            style={{
-              background: `${category.accentColor}14`,
-              color: category.accentColor,
-            }}
+            style={{ background: category.accentColor }}
           >
             {category.shortLabel}
           </span>

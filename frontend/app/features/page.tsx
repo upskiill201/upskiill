@@ -51,7 +51,6 @@ export default function FeaturesHubPage() {
       <div className={styles.container}>
         {/* Hero */}
         <header className={styles.hero}>
-          <div className={styles.heroOwl}>ðŸ¦‰</div>
           <span className={styles.kicker}>Features</span>
           <h1 className={styles.title}>
             Everything Built to Make Learning Stick
@@ -101,7 +100,6 @@ export default function FeaturesHubPage() {
 
         {/* CTA */}
         <section className={styles.ctaSection}>
-          <div className={styles.ctaOwl}>ðŸŽ¯</div>
           <h2 className={styles.ctaTitle}>Ready to experience all of this?</h2>
           <p className={styles.ctaText}>
             Start your first 15-minute mission today â€” free, no credit card.

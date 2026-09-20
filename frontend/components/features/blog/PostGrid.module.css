@@ -1,3 +1,5 @@
+/* Post grid — simple grid layout, shared with blog post pages */
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
