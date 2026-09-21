@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AiConfigService } from '../tey/ai/ai-config.service';
 import { AiBudgetService } from '../tey/ai/ai-budget.service';
 import { parseStructured } from '../tey/ai/structured-output';
+import { CourseImportError } from './course-import-error';
 import {
   AI_LESSON_CONTENT_JSON_SCHEMA,
   AiLessonContentSchema,
@@ -36,7 +37,8 @@ export class LessonContentGenerationService {
 
   async generate(input: LessonGenerationInput): Promise<GeneratedLessonBlocks> {
     if (!input.transcript || input.transcript.trim().length < 20) {
-      throw new Error(
+      throw new CourseImportError(
+        'NO_TRANSCRIPT',
         'No usable transcript for this lesson yet — refusing to generate content without a source to ground it in.',
       );
     }
@@ -46,7 +48,8 @@ export class LessonContentGenerationService {
     // for why this is separate from the Tey nudge system's own budget check.
     const decision = await this.budget.checkCourseImport();
     if (!decision.allow) {
-      throw new Error(
+      throw new CourseImportError(
+        'AI_BUDGET_EXCEEDED',
         `Course-import AI budget reached for today (${decision.reason}) — raise COURSE_IMPORT_AI_DAILY_BUDGET_USD/COURSE_IMPORT_AI_MAX_CALLS_PER_DAY or wait until tomorrow.`,
       );
     }
@@ -55,8 +58,22 @@ export class LessonContentGenerationService {
     // live Tey nudge system. See resolveForCourseImport()'s doc comment.
     const resolved = await this.aiConfig.resolveForCourseImport();
     if (!resolved) {
-      throw new Error(
+      throw new CourseImportError(
+        'PROVIDER_NOT_CONFIGURED',
         'No active Gemini provider configured for course import — activate the Gemini row on /admin/ai first.',
+      );
+    }
+
+    // Truncation is silent from the admin's side — the lesson still
+    // generates, just only from the opening of a long video. Logged so a
+    // quality drop on a long lesson is traceable rather than mysterious.
+    // Typical lesson transcripts run a few thousand characters, so this
+    // should be rare; if it starts firing regularly, the fix is to
+    // summarize the transcript rather than raise the cap and pay for a
+    // much larger prompt on every lesson.
+    if (input.transcript!.length > MAX_TRANSCRIPT_CHARS) {
+      this.logger.warn(
+        `Transcript for "${input.lessonTitle}" is ${input.transcript!.length} chars — truncating to ${MAX_TRANSCRIPT_CHARS} for generation. Content is based on the opening portion only.`,
       );
     }
 
@@ -93,7 +110,14 @@ export class LessonContentGenerationService {
       this.logger.warn(
         `Lesson generation schema mismatch (${parsed.reason}) from ${resolved.provider.kind}/${resolved.provider.model}. Raw response: ${(result.text ?? '').slice(0, 2000)}`,
       );
-      throw new Error(`AI returned invalid lesson content (${parsed.reason}).`);
+      // SCHEMA_MISMATCH means we got JSON but the wrong shape (e.g. too few
+      // Apply questions); the others mean we never got usable JSON at all.
+      throw new CourseImportError(
+        parsed.reason.startsWith('SCHEMA_MISMATCH')
+          ? 'AI_SCHEMA_INVALID'
+          : 'AI_INVALID_JSON',
+        `AI returned invalid lesson content (${parsed.reason}).`,
+      );
     }
 
     return mapToLessonBlocks(parsed.value, input.videoUrl);

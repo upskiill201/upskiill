@@ -7,8 +7,15 @@ export interface CourseImportFileSummary {
   status: string;
   storageUrl: string | null;
   error: string | null;
+  /** CourseImportErrorCode — lets the UI explain the failure and decide
+   *  whether to offer a retry, instead of printing the raw message. */
+  errorCode: string | null;
   transcriptStatus: string;
   transcriptError: string | null;
+  transcriptErrorCode: string | null;
+  /** False when the failure is terminal (bad config, missing object) and a
+   *  retry cannot help until something changes. */
+  transcriptRetryable: boolean;
   /** Presence only — the full transcript can be tens of thousands of
    *  characters and isn't needed just to render a status list. */
   hasTranscript: boolean;
@@ -30,6 +37,12 @@ export interface CourseImportLessonSummary {
   primaryFileId: string | null;
   status: string;
   error: string | null;
+  errorCode: string | null;
+  retryable: boolean;
+  /** True once this lesson has been written into the real course. Drives the
+   *  "N finished lessons can be added now" affordance, and is what stops a
+   *  second add from duplicating it. */
+  addedToCourse: boolean;
   description: string | null;
   learnBlocks: unknown[] | null;
   applyBlocks: unknown[] | null;
@@ -52,6 +65,12 @@ export interface CourseImportSummary {
   error: string | null;
   createdAt: string;
   updatedAt: string;
+  /** True between an admin asking to pause and the in-flight operation
+   *  actually finishing — the UI says "stopping..." rather than "paused",
+   *  because a 200MB download is allowed to complete instead of being
+   *  killed and wasted. */
+  pausePending: boolean;
+  pausedAt: string | null;
   counts: CourseImportCounts;
   files: CourseImportFileSummary[];
   modules: CourseImportModuleSummary[];

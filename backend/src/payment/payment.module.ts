@@ -3,7 +3,6 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { StripeProvider } from './providers/stripe.provider';
 import { MesombProvider } from './providers/mesomb.provider';
-import { PrismaService } from '../prisma/prisma.service';
 import { EarningsModule } from '../earnings/earnings.module';
 import { CouponsModule } from '../coupons/coupons.module';
 
@@ -15,7 +14,9 @@ import { CouponsModule } from '../coupons/coupons.module';
   // PaymentModule back (DI cycle), same rule as EarningsModule.
   imports: [EarningsModule, CouponsModule],
   controllers: [PaymentController],
-  providers: [PaymentService, StripeProvider, MesombProvider, PrismaService],
+  // PrismaService deliberately NOT listed — PrismaModule is @Global, so
+  // declaring it here would create a second client with its own pool.
+  providers: [PaymentService, StripeProvider, MesombProvider],
   exports: [PaymentService, StripeProvider, MesombProvider],
 })
 export class PaymentModule {}

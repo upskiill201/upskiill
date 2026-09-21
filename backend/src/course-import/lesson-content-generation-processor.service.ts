@@ -3,6 +3,10 @@ import { Cron } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LessonContentGenerationService } from './lesson-content-generation.service';
+import {
+  CourseImportError,
+  toCourseImportError,
+} from './course-import-error';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -115,7 +119,10 @@ export class LessonContentGenerationProcessorService {
           continue;
         }
         if (!lesson.primaryFile?.storageUrl) {
-          throw new Error("This lesson's video has no storage URL yet.");
+          throw new CourseImportError(
+            'FILE_NOT_UPLOADED',
+            "This lesson's video has no storage URL yet.",
+          );
         }
 
         const resourceFileIds =
@@ -140,6 +147,10 @@ export class LessonContentGenerationProcessorService {
           data: {
             status: 'GENERATED',
             error: null,
+            // Cleared too, or a lesson that failed once and then succeeded
+            // on retry keeps a stale code and the admin UI reports an error
+            // on a lesson that is actually fine.
+            errorCode: null,
             description: generated.description,
             learnBlocks: generated.learnBlocks as Prisma.InputJsonValue,
             applyBlocks: generated.applyBlocks as Prisma.InputJsonValue,
@@ -155,20 +166,26 @@ export class LessonContentGenerationProcessorService {
         });
         summary.generated += 1;
       } catch (err) {
+        const failure = toCourseImportError(err);
         this.logger.error(
-          `Lesson generation failed for lesson ${lesson.id} (${lesson.title})`,
-          err as Error,
+          `Lesson generation failed for lesson ${lesson.id} (${lesson.title}) [${failure.code}]`,
+          failure,
         );
         // attempts was already incremented by claimBatch's UPDATE — retry
         // automatically (transient provider overload/rate-limit is common
         // and shouldn't need a manual click) until MAX_AUTO_ATTEMPTS is hit,
         // matching the cap claimBatch's WHERE clause already enforces.
-        const willRetry = lesson.attempts < MAX_AUTO_ATTEMPTS;
+        // Terminal codes (no transcript, no provider configured, budget
+        // spent) skip the remaining attempts — none of them can resolve
+        // without a human changing something first.
+        const willRetry =
+          failure.retryable && lesson.attempts < MAX_AUTO_ATTEMPTS;
         await this.prisma.courseImportLesson.update({
           where: { id: lesson.id },
           data: {
             status: willRetry ? 'PENDING' : 'FAILED',
-            error: (err as Error).message.slice(0, 500),
+            errorCode: failure.code,
+            error: failure.message.slice(0, 500),
             claimedAt: null,
             claimedBy: null,
           },
@@ -206,11 +223,20 @@ export class LessonContentGenerationProcessorService {
             JOIN "course_import_files" f ON f."id" = l2."primaryFileId"
            WHERE l2."status" = 'PENDING'
              AND f."transcriptStatus" = 'TRANSCRIBED'
-             AND ci."status" = 'GENERATING_CONTENT'
+             -- COURSE_CREATED keeps generating lessons for later batches
+             -- after a first partial course exists; PAUSED is excluded so a
+             -- paused import stops claiming new lessons.
+             AND ci."status" IN ('GENERATING_CONTENT', 'COURSE_CREATED')
              AND l2."attempts" < ${MAX_AUTO_ATTEMPTS}
              AND l2."updatedAt" < NOW() - (l2."attempts" * ${RETRY_BACKOFF_MINUTES} * INTERVAL '1 minute')
              ${importFilter}
-           ORDER BY l2."orderIndex"
+           -- createdAt first so two concurrent imports queue behind each
+           -- other instead of interleaving lesson-by-lesson (ordering by
+           -- orderIndex alone would run every import's lesson 0 before any
+           -- import's lesson 1, so neither course finishes first). Lessons
+           -- within one import share a createdAt from their createMany, so
+           -- orderIndex still decides their order.
+           ORDER BY l2."createdAt", l2."orderIndex"
            LIMIT ${limit}
              FOR UPDATE SKIP LOCKED
         ) d

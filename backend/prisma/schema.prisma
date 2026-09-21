@@ -2286,8 +2286,14 @@ enum CourseImportStatus {
   /// to review, and for Phase 5 to hand this off to CourseCreationService.
   READY_FOR_REVIEW
   /// CourseCreationService has built the real Course/Section/Lesson tree —
-  /// see CourseImport.createdCourseId. Terminal; this import is done.
+  /// see CourseImport.createdCourseId. NOT terminal: a large course is
+  /// imported in batches, so later-generated lessons are appended into this
+  /// same course (see CourseImportLesson.createdLessonId).
   COURSE_CREATED
+  /// Admin stopped the import. Distinct from CANCELLED: nothing is deleted
+  /// and every completed upload/transcript/lesson is kept, so resuming
+  /// continues from the last checkpoint rather than starting over.
+  PAUSED
   FAILED
   CANCELLED
 }
@@ -2341,6 +2347,21 @@ model CourseImport {
   /// the course module's public API, never coupled to its relation graph.
   createdCourseId String?
 
+  /// Set the moment an admin asks to pause. The processors stop claiming new
+  /// work for this import immediately, but a heavy operation already in
+  /// flight (a 200MB download, an ffmpeg run) is allowed to finish and
+  /// persist its result rather than being killed — so "pause requested" and
+  /// "actually paused" are genuinely different states and the UI says which.
+  /// Cleared on resume.
+  pauseRequestedAt DateTime?
+  /// Set once no work for this import is in flight any more. status is
+  /// PAUSED from the pause request onward; this timestamp is what makes
+  /// "stopping..." vs "stopped" honest.
+  pausedAt         DateTime?
+  /// The status to return to on resume. Lets a pause be a true suspend of
+  /// whatever stage was running instead of guessing the stage afterwards.
+  statusBeforePause CourseImportStatus?
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   startedAt   DateTime?
@@ -2374,6 +2395,15 @@ model CourseImportFile {
   /// batched nested create does not reliably preserve.
   orderIndex    Int     @default(0)
 
+  /// The immediate first-level subfolder (directly under the selected course
+  /// root) this file lives under, if any — GoogleDriveService#walkFolder's
+  /// only structural signal for course sections. Null for a file sitting
+  /// directly in the course root (no section folder), or nested deeper than
+  /// one level (attributed to its nearest first-level ancestor instead, not
+  /// its own name). CourseStructureAnalysisService groups lessons by this.
+  sectionFolderId   String?
+  sectionFolderName String?
+
   status CourseImportFileStatus @default(PENDING)
   /// Populated once UPLOADED — the R2 object key and its public URL. Phase 5
   /// (AI -> Course Creation) reads storageUrl straight into a lesson's
@@ -2383,6 +2413,11 @@ model CourseImportFile {
   storageUrl String?
 
   error    String?
+  /// Machine-readable companion to `error` (CourseImportErrorCode). Drives
+  /// the retry decision — a terminal code stops burning retry attempts —
+  /// and lets the admin UI explain a failure instead of printing an
+  /// exception string.
+  errorCode String?
   attempts Int     @default(0)
 
   /// Claim bookkeeping — same fields/semantics as TeyScheduledAction so a
@@ -2397,6 +2432,7 @@ model CourseImportFile {
   transcriptLanguage  String?
   transcriptStatus    TranscriptStatus  @default(NOT_APPLICABLE)
   transcriptError     String?
+  transcriptErrorCode String?
   transcriptAttempts  Int               @default(0)
   transcriptClaimedAt DateTime?
   transcriptClaimedBy String?
@@ -2429,6 +2465,11 @@ model CourseImportModule {
   title      String
   orderIndex Int    @default(0)
 
+  /// The real Section this module maps to once the course exists. A later
+  /// batch appends into this section by id rather than by matching on title
+  /// — a renamed section would otherwise silently fork into a duplicate.
+  createdSectionId String?
+
   lessons CourseImportLesson[]
 
   createdAt DateTime @default(now())
@@ -2459,6 +2500,17 @@ model CourseImportLesson {
 
   status LessonGenerationStatus @default(PENDING)
   error  String?
+  /// CourseImportErrorCode — see CourseImportFile.errorCode.
+  errorCode String?
+
+  /// The real Lesson this import lesson was written to, once it has been
+  /// added to the course. This is what makes incremental import safe: a
+  /// later batch skips anything already carrying an id here, so re-running
+  /// the append can never produce a duplicate lesson in the live course.
+  /// Plain string rather than a relation, matching CourseImport.createdCourseId.
+  createdLessonId String?
+  /// When this lesson was written into the real course.
+  addedToCourseAt DateTime?
 
   /// Same claim bookkeeping shape as CourseImportFile/TeyScheduledAction.
   attempts  Int       @default(0)

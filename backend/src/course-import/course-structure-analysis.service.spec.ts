@@ -149,6 +149,95 @@ describe('CourseStructureAnalysisService', () => {
     });
   });
 
+  it('groups files by sectionFolderId into separate modules, scoping resource attachment to each section', async () => {
+    prisma.courseImport.findFirst.mockResolvedValue({
+      status: 'READY_FOR_GENERATION',
+      sourceDriveFolderName: 'Full Course',
+      modules: [],
+      files: [
+        file({
+          id: 'vid-1',
+          driveFileName: '01 Intro.mp4',
+          category: 'video',
+          orderIndex: 0,
+          sectionFolderId: 'sec-a',
+          sectionFolderName: 'Section A',
+        }),
+        // Trailing resource of section A — must NOT leak into section B.
+        file({
+          id: 'doc-1',
+          driveFileName: '01 Intro - slides.pdf',
+          category: 'document',
+          orderIndex: 1,
+          sectionFolderId: 'sec-a',
+          sectionFolderName: 'Section A',
+        }),
+        file({
+          id: 'vid-2',
+          driveFileName: '01 Hooks.mp4',
+          category: 'video',
+          orderIndex: 2,
+          sectionFolderId: 'sec-b',
+          sectionFolderName: 'Section B',
+        }),
+        // Trailing resource of section B, attaches to vid-2.
+        file({
+          id: 'doc-2',
+          driveFileName: '01 Hooks - slides.pdf',
+          category: 'document',
+          orderIndex: 3,
+          sectionFolderId: 'sec-b',
+          sectionFolderName: 'Section B',
+        }),
+      ],
+    });
+    prisma.courseImportModule.create
+      .mockResolvedValueOnce({ id: 'module-a' })
+      .mockResolvedValueOnce({ id: 'module-b' });
+    prisma.courseImport.findFirstOrThrow.mockResolvedValue({
+      id: importId,
+      sourceDriveFolderId: 'drive-1',
+      sourceDriveFolderName: 'Full Course',
+      status: 'GENERATING_CONTENT',
+      error: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      files: [],
+      modules: [],
+    });
+
+    await service.analyze(userId, importId);
+
+    expect(prisma.courseImportModule.create).toHaveBeenNthCalledWith(1, {
+      data: { importId, title: 'Section A', orderIndex: 0 },
+    });
+    expect(prisma.courseImportModule.create).toHaveBeenNthCalledWith(2, {
+      data: { importId, title: 'Section B', orderIndex: 1 },
+    });
+    expect(prisma.courseImportLesson.createMany).toHaveBeenNthCalledWith(1, {
+      data: [
+        {
+          moduleId: 'module-a',
+          title: 'Intro',
+          orderIndex: 0,
+          primaryFileId: 'vid-1',
+          resourceFileIds: ['doc-1'],
+        },
+      ],
+    });
+    expect(prisma.courseImportLesson.createMany).toHaveBeenNthCalledWith(2, {
+      data: [
+        {
+          moduleId: 'module-b',
+          title: 'Hooks',
+          orderIndex: 0,
+          primaryFileId: 'vid-2',
+          resourceFileIds: ['doc-2'],
+        },
+      ],
+    });
+  });
+
   it('refuses to re-analyze an import that already has modules', async () => {
     prisma.courseImport.findFirst.mockResolvedValue({
       status: 'READY_FOR_GENERATION',

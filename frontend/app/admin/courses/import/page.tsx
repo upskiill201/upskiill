@@ -142,7 +142,15 @@ export default function ImportCoursePage() {
   const [startingImport, setStartingImport] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
 
-  const { data: recentImports } = useAdminData<CourseImportSummary[]>('/api/admin/course-imports');
+  // Error and loading are deliberately kept, not discarded: rendering this
+  // list only when `data` is truthy makes a failed request look exactly like
+  // "you have no imports", which is the worst possible lie to tell someone
+  // whose import is running right now.
+  const {
+    data: recentImports,
+    error: recentImportsError,
+    isLoading: recentImportsLoading,
+  } = useAdminData<CourseImportSummary[]>('/api/admin/course-imports');
 
   const {
     data: children,
@@ -223,7 +231,11 @@ export default function ImportCoursePage() {
     }
   };
 
-  if (statusError) return <ErrorState error={statusError as Error} />;
+  // Only fatal when there is nothing to show. The database behind this drops
+  // connections briefly, and a blip on the Drive-status poll used to blank
+  // this entire page — including the list of imports that are running
+  // perfectly well on the server.
+  if (statusError && !status) return <ErrorState error={statusError as Error} />;
 
   return (
     <>
@@ -364,10 +376,19 @@ export default function ImportCoursePage() {
         </Card>
       )}
 
-      {recentImports && recentImports.length > 0 && (
+      {/* Always rendered once there is anything to say — including "we could
+          not load these", which previously showed as an absent section. */}
+      {(recentImportsLoading || recentImportsError || (recentImports?.length ?? 0) > 0) && (
         <Card title="Recent imports">
+          {recentImportsError && (
+            <Banner tone="warn">
+              Could not load your imports just now — retrying. Any import
+              already running is unaffected; this is only the list.
+            </Banner>
+          )}
+          {recentImportsLoading && !recentImports && <Loading />}
           <ul className={styles.fileList}>
-            {recentImports.map((imp) => (
+            {(recentImports ?? []).map((imp) => (
               <li key={imp.id} className={styles.fileRow}>
                 <span className={styles.fileName}>{imp.sourceDriveFolderName}</span>
                 <Pill tone={IMPORT_STATUS_TONE[imp.status] ?? 'neutral'}>{imp.status}</Pill>

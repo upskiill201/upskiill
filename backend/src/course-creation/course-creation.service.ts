@@ -179,7 +179,11 @@ export class CourseCreationService {
     return { courseId: course.id, status: 'created', sections };
   }
 
-  private async createModuleWithLessons(
+  /** Public so an incremental import can add one more section to a course
+   *  that already exists, instead of only ever building a whole tree at
+   *  once. Same code path as the initial build — there is deliberately no
+   *  second "append" implementation to drift from this one. */
+  async createModuleWithLessons(
     userId: string,
     courseId: string,
     user: AuthenticatedUser,
@@ -224,7 +228,9 @@ export class CourseCreationService {
     };
   }
 
-  private async createLessonWithContent(
+  /** Public for the same reason as createModuleWithLessons: a later import
+   *  batch adds lessons into a section that already exists. */
+  async createLessonWithContent(
     userId: string,
     sectionId: string,
     user: AuthenticatedUser,

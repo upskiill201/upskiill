@@ -12,6 +12,7 @@ import { StorageModule } from '../storage/storage.module';
 import { TranscriptionModule } from '../transcription/transcription.module';
 import { TeyModule } from '../tey/tey.module';
 import { CourseCreationModule } from '../course-creation/course-creation.module';
+import { HeavyTransferLockModule } from './heavy-transfer-lock.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CourseCreationModule } from '../course-creation/course-creation.module'
     TranscriptionModule,
     TeyModule,
     CourseCreationModule,
+    HeavyTransferLockModule,
   ],
   controllers: [CourseImportController],
   providers: [

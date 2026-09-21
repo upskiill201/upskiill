@@ -15,6 +15,19 @@ import {
   adminMutate,
 } from '@/components/admin/AdminUI';
 import styles from './page.module.css';
+import {
+  type StageState,
+  computeStages,
+  currentActivity,
+  overallPercent,
+} from './importProgress';
+
+const STAGE_ICON: Record<StageState, string> = {
+  done: '✓',
+  active: '●',
+  waiting: '○',
+  failed: '!',
+};
 
 interface CourseImportFileSummary {
   id: string;
@@ -25,8 +38,13 @@ interface CourseImportFileSummary {
   status: string;
   storageUrl: string | null;
   error: string | null;
+  errorCode: string | null;
   transcriptStatus: string;
   transcriptError: string | null;
+  transcriptErrorCode: string | null;
+  /** False when the failure is terminal — retrying cannot help until
+   *  something (config, the source file) actually changes. */
+  transcriptRetryable: boolean;
   hasTranscript: boolean;
 }
 
@@ -46,6 +64,10 @@ interface CourseImportLessonSummary {
   primaryFileId: string | null;
   status: string;
   error: string | null;
+  errorCode: string | null;
+  retryable: boolean;
+  /** Already written into the real course — a second add skips it. */
+  addedToCourse: boolean;
   description: string | null;
   learnBlocks: unknown[] | null;
   applyBlocks: unknown[] | null;
@@ -68,6 +90,9 @@ interface CourseImportSummary {
   error: string | null;
   createdAt: string;
   updatedAt: string;
+  /** True between asking to pause and the in-flight operation finishing. */
+  pausePending: boolean;
+  pausedAt: string | null;
   counts: CourseImportCounts;
   files: CourseImportFileSummary[];
   modules: CourseImportModuleSummary[];
@@ -81,7 +106,17 @@ const ACTIVE_STATUSES = new Set(['CREATED', 'PROCESSING_FILES', 'TRANSCRIBING', 
 // READY_FOR_GENERATION (before "Analyze course structure" is even clicked),
 // so polling must not stop there or progress silently goes invisible until
 // a manual refresh — but that status doesn't need the process/cancel buttons.
-const POLLING_STATUSES = new Set([...ACTIVE_STATUSES, 'READY_FOR_GENERATION']);
+// COURSE_CREATED is included because a large course is imported in batches:
+// the remaining files keep uploading and transcribing after the first batch
+// has already produced a course, so this page must keep polling and still
+// offer Pause/Process now.
+const POLLING_STATUSES = new Set([
+  ...ACTIVE_STATUSES,
+  'READY_FOR_GENERATION',
+  'COURSE_CREATED',
+]);
+/** Statuses where pausing means something — mirrors the backend's own list. */
+const PAUSABLE_STATUSES = new Set([...POLLING_STATUSES]);
 
 const IMPORT_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | 'brand'> = {
   CREATED: 'brand',
@@ -91,6 +126,7 @@ const IMPORT_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | '
   GENERATING_CONTENT: 'brand',
   READY_FOR_REVIEW: 'good',
   COURSE_CREATED: 'good',
+  PAUSED: 'warn',
   FAILED: 'bad',
   CANCELLED: 'neutral',
 };
@@ -102,6 +138,45 @@ const FILE_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | 'br
   FAILED: 'bad',
   SKIPPED: 'warn',
 };
+
+/** Plain-English rendering of the backend's CourseImportErrorCode. The raw
+ *  message is still shown underneath — this line is what tells the admin
+ *  whether the problem is theirs to fix or just bad luck worth retrying. */
+const ERROR_CODE_EXPLANATION: Record<string, string> = {
+  DRIVE_AUTH_FAILED: 'Google Drive access expired — reconnect Drive.',
+  DRIVE_PERMISSION_DENIED: "Google Drive refused access to this file — check the file's sharing settings.",
+  DRIVE_FILE_NOT_FOUND: 'This file no longer exists in Google Drive.',
+  DRIVE_RATE_LIMIT: 'Google Drive rate limit — this retries on its own.',
+  DRIVE_DOWNLOAD_FAILED: 'Downloading from Google Drive failed — this retries on its own.',
+  STORAGE_UPLOAD_FAILED: 'Uploading to storage failed — this retries on its own.',
+  STORAGE_DOWNLOAD_FAILED: 'Reading the file back from storage failed — this retries on its own.',
+  STORAGE_OBJECT_NOT_FOUND: 'The stored file is missing — re-upload this file.',
+  STORAGE_TIMEOUT: 'Storage timed out — this retries on its own.',
+  FFMPEG_FAILED: 'Audio could not be extracted — the video file may be corrupt.',
+  FFMPEG_TIMEOUT: 'Audio extraction took too long — this retries on its own.',
+  FFMPEG_NOT_FOUND: 'The audio tool is missing on the server — this needs a deploy fix.',
+  AUDIO_CHUNK_TOO_LARGE: "This video's audio is too dense to split automatically.",
+  TRANSCRIPTION_RATE_LIMIT: 'Speech-to-text rate limit — this retries on its own.',
+  TRANSCRIPTION_PROVIDER_ERROR: 'Speech-to-text provider had an error — this retries on its own.',
+  TRANSCRIPTION_TIMEOUT: 'Speech-to-text timed out — this retries on its own.',
+  TRANSCRIPTION_EMPTY: 'No speech was found in this video.',
+  AI_RATE_LIMIT: 'AI provider rate limit — this retries on its own.',
+  AI_PROVIDER_ERROR: 'AI provider had an error — this retries on its own.',
+  AI_TIMEOUT: 'The AI request timed out — this retries on its own.',
+  AI_INVALID_JSON: "The AI's response could not be read — regenerating usually fixes this.",
+  AI_SCHEMA_INVALID: "The AI's response did not match the required lesson format — regenerating usually fixes this.",
+  AI_BUDGET_EXCEEDED: "Today's AI budget is spent — raise the limit or wait until tomorrow.",
+  PROVIDER_NOT_CONFIGURED: 'No AI provider is configured — set one up under Admin → AI.',
+  NO_TRANSCRIPT: 'This lesson has no transcript to generate from yet.',
+  FILE_NOT_UPLOADED: 'This file has not finished uploading yet.',
+  UNKNOWN: 'Unexpected error — retrying may help.',
+};
+
+function explainError(code: string | null): string | null {
+  if (!code) return null;
+  return ERROR_CODE_EXPLANATION[code] ?? null;
+}
+
 
 const TRANSCRIPT_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | 'brand'> = {
   NOT_APPLICABLE: 'neutral',
@@ -144,6 +219,9 @@ export default function CourseImportProgressPage() {
   const [courseCategory, setCourseCategory] = useState('');
   const [creatingCourse, setCreatingCourse] = useState(false);
   const [createCourseError, setCreateCourseError] = useState<string | null>(null);
+  /** Which action is mid-flight, so its button disables and cannot be
+   *  double-submitted on a slow connection. */
+  const [busyAction, setBusyAction] = useState<'pause' | 'resume' | null>(null);
 
   const { data: courseImport, error, mutate } = useSWR<CourseImportSummary>(path, adminFetcher, {
     // This is the one admin page that genuinely needs polling — an active
@@ -151,6 +229,16 @@ export default function CourseImportProgressPage() {
     // once the import reaches a terminal state, unlike every other admin
     // dashboard's deliberately-no-polling default (see AdminUI#useAdminData).
     refreshInterval: (data) => (data && POLLING_STATUSES.has(data.status) ? 3000 : 0),
+    // The database this reads through drops connections briefly and often.
+    // Without an explicit retry the first blip ends the polling loop and the
+    // page sits on a dead error until someone reloads by hand.
+    shouldRetryOnError: true,
+    errorRetryInterval: 4000,
+    // Unbounded on purpose: an import runs for hours, and giving up after a
+    // few attempts would strand the page exactly when it is least convenient.
+    errorRetryCount: undefined,
+    // A failed refresh must not wipe the last good state we already have.
+    keepPreviousData: true,
   });
 
   useEffect(() => {
@@ -161,13 +249,37 @@ export default function CourseImportProgressPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseImport?.id]);
 
-  if (error) return <ErrorState error={error as Error} />;
+  // Only a first-load failure is fatal. Once we have data, a failed refresh
+  // is shown as a banner over the last known state instead of replacing the
+  // page — an import that is running fine should not look broken because one
+  // poll happened to land during a brief database blip.
+  if (error && !courseImport) return <ErrorState error={error as Error} />;
   if (!courseImport) return <Loading />;
 
   const { counts } = courseImport;
-  const donePercent = counts.total === 0 ? 0 : Math.round(((counts.uploaded + counts.failed + counts.skipped) / counts.total) * 100);
+  const stages = computeStages(courseImport);
+  const donePercent = overallPercent(stages);
+  const activity = currentActivity(courseImport);
   const isActive = ACTIVE_STATUSES.has(courseImport.status);
+  const stillRunning = POLLING_STATUSES.has(courseImport.status);
+  const isPaused = courseImport.status === 'PAUSED';
+  const canPause = PAUSABLE_STATUSES.has(courseImport.status);
   const lessons = courseImport.modules.flatMap((m) => m.lessons);
+  const lessonsInCourse = lessons.filter((l) => l.addedToCourse).length;
+  // Generated but not yet written into the course — the batch the admin can
+  // add right now without waiting for the rest of the import.
+  const lessonsAwaitingCourse = lessons.filter(
+    (l) => l.status === 'GENERATED' && !l.addedToCourse,
+  ).length;
+  // Counted per file, not per stage: a file still waiting to upload usually
+  // also still needs transcribing, and adding those together would report
+  // more remaining work than there are files.
+  const remainingToImport = courseImport.files.filter((f) => {
+    const uploadPending = f.status === 'PENDING' || f.status === 'CLAIMED';
+    const transcriptPending =
+      f.transcriptStatus === 'PENDING' || f.transcriptStatus === 'CLAIMED';
+    return uploadPending || transcriptPending;
+  }).length;
 
   const processNow = async () => {
     await adminMutate(`${path}/process`, { method: 'POST' });
@@ -177,6 +289,26 @@ export default function CourseImportProgressPage() {
   const cancelImport = async () => {
     await adminMutate(`${path}/cancel`, { method: 'POST' });
     await mutate();
+  };
+
+  const pauseImport = async () => {
+    setBusyAction('pause');
+    try {
+      await adminMutate(`${path}/pause`, { method: 'POST' });
+      await mutate();
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const resumeImport = async () => {
+    setBusyAction('resume');
+    try {
+      await adminMutate(`${path}/resume`, { method: 'POST' });
+      await mutate();
+    } finally {
+      setBusyAction(null);
+    }
   };
 
   const retryFile = async (fileId: string) => {
@@ -230,7 +362,7 @@ export default function CourseImportProgressPage() {
         <div className={styles.headerRow}>
           <Pill tone={IMPORT_STATUS_TONE[courseImport.status] ?? 'neutral'}>{courseImport.status}</Pill>
           <span>
-            {counts.uploaded}/{counts.total} uploaded
+            {donePercent}% complete
             {counts.failed > 0 && ` · ${counts.failed} failed`}
             {counts.skipped > 0 && ` · ${counts.skipped} skipped`}
           </span>
@@ -240,6 +372,53 @@ export default function CourseImportProgressPage() {
           <div className={styles.progressFill} style={{ width: `${donePercent}%` }} />
         </div>
 
+        <ol className={styles.stageList}>
+          {stages.map((stage) => (
+            <li key={stage.key} className={styles.stageRow} data-state={stage.state}>
+              <span className={styles.stageIcon} aria-hidden="true">
+                {STAGE_ICON[stage.state]}
+              </span>
+              <span className={styles.stageLabel}>{stage.label}</span>
+              {stage.detail && <span className={styles.stageDetail}>{stage.detail}</span>}
+            </li>
+          ))}
+        </ol>
+
+        {activity && (
+          <p className={styles.activityLine}>
+            <span className={styles.activitySpinner} aria-hidden="true" />
+            {activity}
+          </p>
+        )}
+
+        {/* Stale-but-visible beats blank-and-broken: the numbers below are the
+            last good read, and the page is already retrying. */}
+        {error && (
+          <Banner tone="warn">
+            Lost contact with the server — retrying. The progress shown is the
+            last known state, and the import itself keeps running on the
+            server regardless of this page.
+          </Banner>
+        )}
+
+        {isPaused && (
+          <Banner tone={courseImport.pausePending ? 'warn' : 'info'}>
+            {courseImport.pausePending
+              ? 'Pausing — finishing the file that was already in progress, then stopping. Nothing already completed is lost.'
+              : 'Paused. Everything imported so far is saved. Resuming continues from where it stopped rather than starting over.'}
+          </Banner>
+        )}
+
+        {/* A big course runs for hours. Without this, the natural assumption
+            is that navigating away cancels it. */}
+        {stillRunning && !isPaused && (
+          <p className={styles.reassurance}>
+            This runs on the server — you can close this tab and come back any time.
+            Progress is saved as it goes, and an interrupted import picks up where it
+            left off rather than starting over.
+          </p>
+        )}
+
         {courseImport.error && <Banner tone="warn">{courseImport.error}</Banner>}
 
         <div className={styles.actionsRow}>
@@ -247,6 +426,26 @@ export default function CourseImportProgressPage() {
             <Button size="sm" onClick={() => void analyze()}>
               Analyze course structure
             </Button>
+          )}
+          {isPaused ? (
+            <Button
+              size="sm"
+              disabled={busyAction !== null}
+              onClick={() => void resumeImport()}
+            >
+              {busyAction === 'resume' ? 'Resuming…' : 'Resume import'}
+            </Button>
+          ) : (
+            canPause && (
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={busyAction !== null}
+                onClick={() => void pauseImport()}
+              >
+                {busyAction === 'pause' ? 'Pausing…' : 'Pause import'}
+              </Button>
+            )
           )}
           {isActive && (
             <>
@@ -282,7 +481,17 @@ export default function CourseImportProgressPage() {
                   )}
                 </td>
                 <td className={styles.errorCell} title={file.error ?? file.transcriptError ?? undefined}>
-                  {file.error ?? file.transcriptError ?? ''}
+                  {(() => {
+                    const raw = file.error ?? file.transcriptError ?? '';
+                    const explanation = explainError(file.errorCode ?? file.transcriptErrorCode);
+                    if (!raw && !explanation) return '';
+                    return (
+                      <>
+                        {explanation && <div className={styles.errorExplanation}>{explanation}</div>}
+                        {raw && <div className={styles.errorDetail}>{raw}</div>}
+                      </>
+                    );
+                  })()}
                 </td>
                 <td>
                   {file.status === 'FAILED' && (
@@ -290,11 +499,18 @@ export default function CourseImportProgressPage() {
                       Retry
                     </Button>
                   )}
-                  {file.status !== 'FAILED' && file.transcriptStatus === 'FAILED' && (
-                    <Button variant="secondary" size="sm" onClick={() => void retryTranscription(file.id)}>
-                      Retry transcript
-                    </Button>
-                  )}
+                  {/* A terminal transcript failure (missing object, no provider
+                      configured) cannot be fixed by retrying, so offering the
+                      button would just waste the admin's time. */}
+                  {file.status !== 'FAILED' &&
+                    file.transcriptStatus === 'FAILED' &&
+                    (file.transcriptRetryable ? (
+                      <Button variant="secondary" size="sm" onClick={() => void retryTranscription(file.id)}>
+                        Retry transcript
+                      </Button>
+                    ) : (
+                      <span className={styles.errorDetail}>Needs a fix before retrying</span>
+                    ))}
                 </td>
               </tr>
             ))}
@@ -323,7 +539,10 @@ export default function CourseImportProgressPage() {
                         <Pill tone={LESSON_STATUS_TONE[lesson.status] ?? 'neutral'}>{lesson.status}</Pill>
                       </td>
                       <td className={styles.errorCell} title={lesson.error ?? undefined}>
-                        {lesson.error ?? ''}
+                        {explainError(lesson.errorCode) && (
+                          <div className={styles.errorExplanation}>{explainError(lesson.errorCode)}</div>
+                        )}
+                        {lesson.error && <div className={styles.errorDetail}>{lesson.error}</div>}
                       </td>
                       <td>
                         {lesson.status === 'GENERATED' && (
@@ -421,14 +640,43 @@ export default function CourseImportProgressPage() {
         )
       )}
 
-      {courseImport.status === 'COURSE_CREATED' && courseImport.createdCourseId && (
-        <Card title="Course created">
+      {courseImport.createdCourseId && (
+        <Card title="Course">
           <p className={styles.fieldHint} style={{ marginBottom: 12 }}>
-            The draft course is ready for review in Course Builder.
+            {lessonsAwaitingCourse > 0
+              ? `${lessonsInCourse} lesson${lessonsInCourse === 1 ? '' : 's'} are in the course. ${lessonsAwaitingCourse} more ${lessonsAwaitingCourse === 1 ? 'has' : 'have'} finished generating and can be added now — the rest will be ready as the import continues.`
+              : remainingToImport > 0
+                ? `${lessonsInCourse} lesson${lessonsInCourse === 1 ? '' : 's'} are in the course. The import is still working through ${remainingToImport} more file${remainingToImport === 1 ? '' : 's'}; add them once they finish.`
+                : 'Every lesson from this import is in the course. Review and publish it through Course Builder.'}
           </p>
-          <Button onClick={() => router.push(`/admin/courses/${courseImport.createdCourseId}`)}>
-            Open course
-          </Button>
+          <div className={styles.actionsRow}>
+            <Button onClick={() => router.push(`/admin/courses/${courseImport.createdCourseId}`)}>
+              Open in Course Builder
+            </Button>
+            {lessonsAwaitingCourse > 0 && (
+              <Button
+                variant="secondary"
+                disabled={creatingCourse}
+                onClick={() => void createCourse()}
+              >
+                {creatingCourse
+                  ? 'Adding…'
+                  : `Add ${lessonsAwaitingCourse} finished lesson${lessonsAwaitingCourse === 1 ? '' : 's'}`}
+              </Button>
+            )}
+          </div>
+          {createCourseError && <Banner tone="warn">{createCourseError}</Banner>}
+          {/* Adding content to an approved course sends it back for
+              re-approval by design. Saying so up front stops it looking like
+              the import broke the course's review state. */}
+          {lessonsAwaitingCourse > 0 && (
+            <p className={styles.fieldHint} style={{ marginTop: 12 }}>
+              New lessons are added as drafts, so learners will not see them
+              until you publish them. If the course is already approved,
+              adding content returns it to draft for re-approval — anything
+              already published stays live.
+            </p>
+          )}
         </Card>
       )}
     </>

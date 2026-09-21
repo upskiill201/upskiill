@@ -3,6 +3,8 @@ import { CourseImportProcessorService } from './course-import-processor.service'
 import { PrismaService } from '../prisma/prisma.service';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
+import { HeavyTransferLockService } from './heavy-transfer-lock.service';
+import { CourseImportError } from './course-import-error';
 
 interface UpdateCall {
   where: { id: string };
@@ -33,6 +35,7 @@ describe('CourseImportProcessorService', () => {
   };
   let googleDrive: { downloadFile: jest.Mock };
   let r2: { uploadStream: jest.Mock };
+  let heavyTransferLock: HeavyTransferLockService;
 
   beforeEach(async () => {
     prisma = {
@@ -54,10 +57,12 @@ describe('CourseImportProcessorService', () => {
         { provide: PrismaService, useValue: prisma },
         { provide: GoogleDriveService, useValue: googleDrive },
         { provide: R2StorageService, useValue: r2 },
+        HeavyTransferLockService,
       ],
     }).compile();
 
     service = module.get(CourseImportProcessorService);
+    heavyTransferLock = module.get(HeavyTransferLockService);
   });
 
   it('does nothing beyond reaping when nothing is claimable', async () => {
@@ -67,6 +72,16 @@ describe('CourseImportProcessorService', () => {
 
     expect(summary).toEqual({ claimed: 0, uploaded: 0, failed: 0 });
     expect(prisma.courseImportFile.findMany).not.toHaveBeenCalled();
+  });
+
+  it('skips the tick entirely (no claim) when the heavy-transfer lock is already held', async () => {
+    // e.g. TranscriptionProcessorService currently holds it.
+    heavyTransferLock.tryAcquire();
+
+    const summary = await service.tick();
+
+    expect(summary).toEqual({ claimed: 0, uploaded: 0, failed: 0 });
+    expect(prisma.$queryRaw).not.toHaveBeenCalled();
   });
 
   it('downloads from Drive and streams to R2, marking the file UPLOADED and recomputing the import status', async () => {
@@ -134,6 +149,9 @@ describe('CourseImportProcessorService', () => {
         driveFileId: 'vid-1',
         driveFileName: 'a.mp4',
         mimeType: 'video/mp4',
+        // Already at the retry cap, so this failure is genuinely terminal
+        // rather than passing only because `attempts` happened to be absent.
+        attempts: 3,
         import: { createdById: 'user-1', status: 'PROCESSING_FILES' },
       },
       {
@@ -142,6 +160,7 @@ describe('CourseImportProcessorService', () => {
         driveFileId: 'vid-2',
         driveFileName: 'b.mp4',
         mimeType: 'video/mp4',
+        attempts: 1,
         import: { createdById: 'user-1', status: 'PROCESSING_FILES' },
       },
     ]);
@@ -205,5 +224,115 @@ describe('CourseImportProcessorService', () => {
     // recomputeImportStatus must never override a CANCELLED import.
     expect(prisma.courseImportFile.groupBy).not.toHaveBeenCalled();
     expect(prisma.courseImport.update).not.toHaveBeenCalled();
+  });
+
+  describe('transfer resilience', () => {
+    function claimOneFile(attempts = 0) {
+      prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }]);
+      prisma.courseImportFile.findMany.mockResolvedValue([
+        {
+          id: 'row-1',
+          importId: 'import-1',
+          driveFileId: 'vid-1',
+          driveFileName: 'a.mp4',
+          mimeType: 'video/mp4',
+          attempts,
+          import: { createdById: 'user-1', status: 'PROCESSING_FILES' },
+        },
+      ]);
+      prisma.courseImportFile.groupBy.mockResolvedValue([
+        { status: 'PENDING', _count: 1 },
+      ]);
+      prisma.courseImport.findUnique.mockResolvedValue({
+        status: 'PROCESSING_FILES',
+      });
+    }
+
+    // The failure this guards against deadlocked the whole importer: a
+    // stalled transfer never settles, so the `finally` that releases the
+    // heavy-transfer lock never runs and nothing is ever claimed again.
+    // The DB reaper cannot rescue it, because the lock is in process memory.
+    it('gives up on a transfer that stops making progress instead of hanging forever', async () => {
+      jest.useFakeTimers();
+      try {
+        claimOneFile(0);
+        // A download that never settles, exactly like a half-open socket.
+        googleDrive.downloadFile.mockReturnValue(new Promise(() => {}));
+
+        const tick = service.tick();
+        await jest.advanceTimersByTimeAsync(31 * 60 * 1000);
+        const summary = await tick;
+
+        expect(summary.failed).toBe(1);
+        const update = updateCallsFor(prisma.courseImportFile.update).find(
+          (c) => c.where.id === 'row-1',
+        );
+        expect(update?.data).toMatchObject({ errorCode: 'STORAGE_TIMEOUT' });
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('releases the heavy-transfer lock after a stalled transfer, so the next tick can work', async () => {
+      jest.useFakeTimers();
+      try {
+        claimOneFile(0);
+        googleDrive.downloadFile.mockReturnValue(new Promise(() => {}));
+
+        const tick = service.tick();
+        await jest.advanceTimersByTimeAsync(31 * 60 * 1000);
+        await tick;
+
+        // Free again — a held lock here is what "importer stops forever"
+        // actually looks like in production.
+        expect(heavyTransferLock.tryAcquire()).toBe(true);
+        heavyTransferLock.release();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('retries a transient transfer failure rather than stranding the file', async () => {
+      claimOneFile(1); // retries still available
+      googleDrive.downloadFile.mockRejectedValue(new Error('socket hang up'));
+
+      await service.tick();
+
+      const update = updateCallsFor(prisma.courseImportFile.update).find(
+        (c) => c.where.id === 'row-1',
+      );
+      // PENDING, not FAILED: an overnight import must survive a 3am blip
+      // without waiting for someone to click Retry in the morning.
+      expect(update?.data).toMatchObject({ status: 'PENDING' });
+    });
+
+    it('stops retrying once the attempt cap is reached', async () => {
+      claimOneFile(3);
+      googleDrive.downloadFile.mockRejectedValue(new Error('socket hang up'));
+
+      await service.tick();
+
+      const update = updateCallsFor(prisma.courseImportFile.update).find(
+        (c) => c.where.id === 'row-1',
+      );
+      expect(update?.data).toMatchObject({ status: 'FAILED' });
+    });
+
+    it('does not retry a failure that cannot succeed on another attempt', async () => {
+      claimOneFile(0);
+      googleDrive.downloadFile.mockRejectedValue(
+        new CourseImportError('DRIVE_FILE_NOT_FOUND', 'gone from Drive'),
+      );
+
+      await service.tick();
+
+      const update = updateCallsFor(prisma.courseImportFile.update).find(
+        (c) => c.where.id === 'row-1',
+      );
+      expect(update?.data).toMatchObject({
+        status: 'FAILED',
+        errorCode: 'DRIVE_FILE_NOT_FOUND',
+      });
+    });
   });
 });

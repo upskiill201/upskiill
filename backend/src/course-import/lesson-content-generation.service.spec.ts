@@ -2,6 +2,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LessonContentGenerationService } from './lesson-content-generation.service';
 import { AiConfigService } from '../tey/ai/ai-config.service';
 import { AiBudgetService } from '../tey/ai/ai-budget.service';
+import {
+  AI_LESSON_CONTENT_JSON_SCHEMA,
+  APPLY_QUESTIONS_MAX,
+  APPLY_QUESTIONS_MIN,
+  COURSE_GENERATION_SYSTEM_PROMPT,
+} from './lesson-content-generation.types';
+
+function buildApplyQuestions(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    questionText: `Which opener creates the most tension in example ${i + 1}?`,
+    options: [
+      'Hi everyone, today we will talk about pricing',
+      'I lost $10,000 pricing this wrong.',
+    ],
+    correctOptionIndex: 1,
+    explanation: 'Specific stakes create tension in the first second.',
+  }));
+}
 
 const validAiOutput = {
   description:
@@ -10,17 +28,7 @@ const validAiOutput = {
     'Write a scroll-stopping hook',
     'Avoid the 3 most common openers',
   ],
-  applyQuestions: [
-    {
-      questionText: 'Which opener creates the most tension?',
-      options: [
-        'Hi everyone, today we will talk about pricing',
-        'I lost $10,000 pricing this wrong.',
-      ],
-      correctOptionIndex: 1,
-      explanation: 'Specific stakes create tension in the first second.',
-    },
-  ],
+  applyQuestions: buildApplyQuestions(APPLY_QUESTIONS_MIN),
   reflectPrompt: 'Write a hook for your next video using what you learned.',
   deepenTitle: 'Hook templates',
   deepenSummary: '10 proven openers you can adapt to your own videos.',
@@ -226,5 +234,140 @@ describe('LessonContentGenerationService', () => {
         resourceNames: [],
       }),
     ).rejects.toThrow('AI returned invalid lesson content');
+  });
+
+  // Hard product rule (spec §79): an Apply step carries 5-15 questions.
+  // Enforced at the schema layer rather than by truncating the model's
+  // output — silently dropping questions would drop real teaching content.
+  describe(`Apply question count (${APPLY_QUESTIONS_MIN}-${APPLY_QUESTIONS_MAX})`, () => {
+    function respondWith(questionCount: number) {
+      provider.complete.mockResolvedValue({
+        text: JSON.stringify({
+          ...validAiOutput,
+          applyQuestions: buildApplyQuestions(questionCount),
+        }),
+        toolCalls: [],
+        usage: { inputTokens: 1, outputTokens: 1 },
+        model: 'x',
+        finishReason: 'stop',
+      });
+    }
+
+    const generate = () =>
+      service.generate({
+        courseTitle: 'Course',
+        lessonTitle: 'Lesson',
+        videoUrl: 'https://cdn.example/v.mp4',
+        transcript: 'A'.repeat(50),
+        resourceNames: [],
+      });
+
+    it(`rejects ${APPLY_QUESTIONS_MIN - 1} questions (below the minimum)`, async () => {
+      respondWith(APPLY_QUESTIONS_MIN - 1);
+      await expect(generate()).rejects.toThrow(
+        'AI returned invalid lesson content',
+      );
+    });
+
+    it(`accepts exactly ${APPLY_QUESTIONS_MIN} questions`, async () => {
+      respondWith(APPLY_QUESTIONS_MIN);
+      const result = await generate();
+      expect(
+        (result.applyBlocks[0] as { value: { questions: unknown[] } }).value
+          .questions,
+      ).toHaveLength(APPLY_QUESTIONS_MIN);
+    });
+
+    it(`accepts exactly ${APPLY_QUESTIONS_MAX} questions`, async () => {
+      respondWith(APPLY_QUESTIONS_MAX);
+      const result = await generate();
+      expect(
+        (result.applyBlocks[0] as { value: { questions: unknown[] } }).value
+          .questions,
+      ).toHaveLength(APPLY_QUESTIONS_MAX);
+    });
+
+    it(`rejects ${APPLY_QUESTIONS_MAX + 1} questions (above the maximum)`, async () => {
+      respondWith(APPLY_QUESTIONS_MAX + 1);
+      await expect(generate()).rejects.toThrow(
+        'AI returned invalid lesson content',
+      );
+    });
+
+    it('tells the model the bounds in the prompt, not just in our validator', () => {
+      expect(COURSE_GENERATION_SYSTEM_PROMPT).toContain(
+        `between ${APPLY_QUESTIONS_MIN} and ${APPLY_QUESTIONS_MAX} Apply`,
+      );
+      expect(AI_LESSON_CONTENT_JSON_SCHEMA.properties.applyQuestions).toEqual(
+        expect.objectContaining({
+          minItems: APPLY_QUESTIONS_MIN,
+          maxItems: APPLY_QUESTIONS_MAX,
+        }),
+      );
+    });
+  });
+
+  // Same rule as the array bounds below, and learned the harder way: the
+  // first version of that test only checked arrays, so string limits were
+  // never covered — and a live run then failed with
+  // SCHEMA_MISMATCH:reflectPrompt because the model wrote past its
+  // 400-character cap, which the schema stated and the prompt did not.
+  it('states every bounded string limit in the prompt, not just the schema', () => {
+    const boundedStrings = Object.entries(
+      AI_LESSON_CONTENT_JSON_SCHEMA.properties,
+    ).filter(
+      ([, schema]) =>
+        (schema as { type?: string }).type === 'string' &&
+        (schema as { maxLength?: number }).maxLength !== undefined,
+    );
+
+    expect(boundedStrings.length).toBeGreaterThan(0);
+
+    const unstated = boundedStrings
+      .filter(([field, schema]) => {
+        const { minLength, maxLength } = schema as {
+          minLength: number;
+          maxLength: number;
+        };
+        return !COURSE_GENERATION_SYSTEM_PROMPT.includes(
+          `${field} ${minLength}-${maxLength} characters`,
+        );
+      })
+      .map(([field]) => field);
+
+    expect(unstated).toEqual([]);
+  });
+
+  // A JSON-Schema bound alone does not hold: an OpenAI-compatible provider
+  // in json_object mode treats it as a hint. Both array fields have now
+  // been violated in live runs for exactly this reason (whatYouWillLearn
+  // returned 6 against maxItems: 5), so every bounded array must also state
+  // its limit in prose. This guards the next field somebody adds.
+  it('states every bounded array limit in the prompt, not just the schema', () => {
+    const boundedArrays = Object.entries(
+      AI_LESSON_CONTENT_JSON_SCHEMA.properties,
+    ).filter(
+      ([, schema]) =>
+        (schema as { type?: string }).type === 'array' &&
+        (schema as { maxItems?: number }).maxItems !== undefined,
+    );
+
+    expect(boundedArrays.length).toBeGreaterThan(0);
+
+    // Collected rather than asserted one-by-one so a failure names the
+    // offending field instead of just printing "expected true".
+    const unstated = boundedArrays
+      .filter(([, schema]) => {
+        const { minItems, maxItems } = schema as {
+          minItems: number;
+          maxItems: number;
+        };
+        return !COURSE_GENERATION_SYSTEM_PROMPT.includes(
+          `between ${minItems} and ${maxItems}`,
+        );
+      })
+      .map(([field]) => field);
+
+    expect(unstated).toEqual([]);
   });
 });

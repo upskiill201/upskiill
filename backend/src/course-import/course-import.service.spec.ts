@@ -40,9 +40,11 @@ describe('CourseImportService', () => {
       },
       courseImportFile: {
         update: jest.fn(),
+        count: jest.fn().mockResolvedValue(0),
       },
       courseImportLesson: {
         update: jest.fn(),
+        count: jest.fn().mockResolvedValue(0),
       },
       $transaction: jest.fn((ops: unknown[]) =>
         Promise.all(ops as Promise<unknown>[]),
@@ -579,6 +581,148 @@ describe('CourseImportService', () => {
       await service.cancelImport(userId, 'import-1');
 
       expect(prisma.courseImport.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('pauseImport / resumeImport', () => {
+    function importRow(overrides: Record<string, unknown> = {}) {
+      return {
+        id: 'import-1',
+        createdById: userId,
+        status: 'PROCESSING_FILES',
+        statusBeforePause: null,
+        pauseRequestedAt: null,
+        pausedAt: null,
+        files: [],
+        modules: [],
+        sourceDriveFolderId: folderId,
+        sourceDriveFolderName: 'x',
+        error: null,
+        createdCourseId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...overrides,
+      };
+    }
+
+    it('stops new work being claimed and remembers the stage to return to', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({ status: 'TRANSCRIBING' }),
+      );
+
+      await service.pauseImport(userId, 'import-1');
+
+      expect(prisma.courseImport.update).toHaveBeenCalledWith({
+        where: { id: 'import-1' },
+        data: expect.objectContaining({
+          status: 'PAUSED',
+          statusBeforePause: 'TRANSCRIBING',
+          pauseRequestedAt: expect.any(Date),
+          // Not paused yet — an in-flight download is allowed to finish.
+          pausedAt: null,
+        }),
+      });
+    });
+
+    it('does not mark the pause settled while a file is still in flight', async () => {
+      prisma.courseImport.findUnique = jest.fn().mockResolvedValue({
+        status: 'PAUSED',
+        pauseRequestedAt: new Date(),
+        pausedAt: null,
+      });
+      prisma.courseImportFile.count.mockResolvedValue(1);
+
+      await service.reconcilePauseState('import-1');
+
+      expect(prisma.courseImport.update).not.toHaveBeenCalled();
+    });
+
+    it('settles the pause once nothing is claimed any more', async () => {
+      prisma.courseImport.findUnique = jest.fn().mockResolvedValue({
+        status: 'PAUSED',
+        pauseRequestedAt: new Date(),
+        pausedAt: null,
+      });
+      prisma.courseImportFile.count.mockResolvedValue(0);
+      prisma.courseImportLesson.count.mockResolvedValue(0);
+
+      await service.reconcilePauseState('import-1');
+
+      expect(prisma.courseImport.update).toHaveBeenCalledWith({
+        where: { id: 'import-1' },
+        data: { pausedAt: expect.any(Date) },
+      });
+    });
+
+    it('returns to the exact stage that was running before the pause', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({
+          status: 'PAUSED',
+          statusBeforePause: 'GENERATING_CONTENT',
+          pauseRequestedAt: new Date(),
+          pausedAt: new Date(),
+        }),
+      );
+
+      await service.resumeImport(userId, 'import-1');
+
+      expect(prisma.courseImport.update).toHaveBeenCalledWith({
+        where: { id: 'import-1' },
+        data: {
+          status: 'GENERATING_CONTENT',
+          statusBeforePause: null,
+          pauseRequestedAt: null,
+          pausedAt: null,
+        },
+      });
+    });
+
+    it('is idempotent — pausing twice does not overwrite the remembered stage', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({ status: 'PAUSED', statusBeforePause: 'TRANSCRIBING' }),
+      );
+
+      await service.pauseImport(userId, 'import-1');
+
+      expect(prisma.courseImport.update).not.toHaveBeenCalled();
+    });
+
+    it('is idempotent — resuming a running import does nothing', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({ status: 'PROCESSING_FILES' }),
+      );
+
+      await service.resumeImport(userId, 'import-1');
+
+      expect(prisma.courseImport.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses to pause an import that has no work left', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({ status: 'CANCELLED' }),
+      );
+
+      await expect(service.pauseImport(userId, 'import-1')).rejects.toThrow(
+        'no remaining work to pause',
+      );
+    });
+
+    // A course built from a first batch is still importing the rest, so it
+    // has to stay pausable.
+    it('can pause an import that has already produced a course', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        importRow({ status: 'COURSE_CREATED', createdCourseId: 'course-1' }),
+      );
+
+      await service.pauseImport(userId, 'import-1');
+
+      expect(prisma.courseImport.update).toHaveBeenCalledWith({
+        where: { id: 'import-1' },
+        data: expect.objectContaining({
+          status: 'PAUSED',
+          statusBeforePause: 'COURSE_CREATED',
+        }),
+      });
     });
   });
 });

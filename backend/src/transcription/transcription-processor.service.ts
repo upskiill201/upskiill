@@ -2,7 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { GeminiTranscriptionService } from './gemini-transcription.service';
+import { GroqWhisperTranscriptionService } from './groq-whisper-transcription.service';
+import {
+  CourseImportError,
+  toCourseImportError,
+} from '../course-import/course-import-error';
+import { HeavyTransferLockService } from '../course-import/heavy-transfer-lock.service';
 
 /** One at a time — a transcription round-trips a whole video download PLUS
  *  a re-upload to Gemini, easily minutes for a large file. Keeping this at 1
@@ -27,10 +32,14 @@ export interface TranscriptionTickSummary {
 }
 
 /**
- * Transcribes UPLOADED video files via Gemini (see GeminiTranscriptionService).
- * Same Postgres claim-queue pattern as CourseImportProcessorService and
- * TeyScheduledAction — no Redis, safe across multiple instances, resumable
- * after a crash via the stale-claim reaper.
+ * Transcribes UPLOADED video files via Groq's Whisper endpoint (audio-only
+ * — see GroqWhisperTranscriptionService's doc comment for why this replaced
+ * Gemini's native video understanding: free-tier Gemini couldn't sustain a
+ * real 40+ video course without repeated "model overloaded" failures, and
+ * paying for Gemini wasn't an option pre-launch). Same Postgres claim-queue
+ * pattern as CourseImportProcessorService and TeyScheduledAction — no
+ * Redis, safe across multiple instances, resumable after a crash via the
+ * stale-claim reaper.
  */
 @Injectable()
 export class TranscriptionProcessorService {
@@ -40,7 +49,8 @@ export class TranscriptionProcessorService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly transcription: GeminiTranscriptionService,
+    private readonly transcription: GroqWhisperTranscriptionService,
+    private readonly heavyTransferLock: HeavyTransferLockService,
   ) {}
 
   private get enabled(): boolean {
@@ -75,6 +85,24 @@ export class TranscriptionProcessorService {
       );
     }
 
+    // Shared with CourseImportProcessorService — never let an upload and a
+    // transcription (both large file streams) run at once. See
+    // HeavyTransferLockService's doc comment.
+    if (!this.heavyTransferLock.tryAcquire()) {
+      return { claimed: 0, transcribed: 0, failed: 0 };
+    }
+
+    try {
+      return await this.claimAndTranscribe(limit, importId);
+    } finally {
+      this.heavyTransferLock.release();
+    }
+  }
+
+  private async claimAndTranscribe(
+    limit: number,
+    importId?: string,
+  ): Promise<TranscriptionTickSummary> {
     const claimedIds = await this.claimBatch(limit, importId);
     const summary: TranscriptionTickSummary = {
       claimed: claimedIds.length,
@@ -103,7 +131,8 @@ export class TranscriptionProcessorService {
           continue;
         }
         if (!file.storageUrl) {
-          throw new Error(
+          throw new CourseImportError(
+            'FILE_NOT_UPLOADED',
             'File has no storage URL yet — it must finish uploading before it can be transcribed.',
           );
         }
@@ -115,26 +144,33 @@ export class TranscriptionProcessorService {
             transcriptStatus: 'TRANSCRIBED',
             transcript: text,
             transcriptError: null,
+            transcriptErrorCode: null,
             transcriptClaimedAt: null,
             transcriptClaimedBy: null,
           },
         });
         summary.transcribed += 1;
       } catch (err) {
+        const failure = toCourseImportError(err);
         this.logger.error(
-          `Transcription failed for file ${file.id} (${file.driveFileName})`,
-          err as Error,
+          `Transcription failed for file ${file.id} (${file.driveFileName}) [${failure.code}]`,
+          failure,
         );
         // transcriptAttempts was already incremented by claimBatch's UPDATE —
         // retry automatically (transient provider overload/rate-limit is
         // common and shouldn't need a manual click) until MAX_AUTO_ATTEMPTS,
         // matching the cap claimBatch's WHERE clause already enforces.
-        const willRetry = file.transcriptAttempts < MAX_AUTO_ATTEMPTS;
+        // A non-retryable failure short-circuits that budget: re-running a
+        // missing R2 object or an unconfigured provider two more times only
+        // delays the admin seeing a failure they have to act on themselves.
+        const willRetry =
+          failure.retryable && file.transcriptAttempts < MAX_AUTO_ATTEMPTS;
         await this.prisma.courseImportFile.update({
           where: { id: file.id },
           data: {
             transcriptStatus: willRetry ? 'PENDING' : 'FAILED',
-            transcriptError: (err as Error).message.slice(0, 500),
+            transcriptErrorCode: failure.code,
+            transcriptError: failure.message.slice(0, 500),
             transcriptClaimedAt: null,
             transcriptClaimedBy: null,
           },
@@ -166,7 +202,16 @@ export class TranscriptionProcessorService {
             JOIN "course_imports" ci ON ci."id" = f2."importId"
            WHERE f2."transcriptStatus" = 'PENDING'
              AND f2."status" = 'UPLOADED'
-             AND ci."status" IN ('CREATED', 'PROCESSING_FILES', 'READY_FOR_GENERATION', 'TRANSCRIBING', 'GENERATING_CONTENT')
+             -- Deliberately NOT PROCESSING_FILES: transcription for an
+             -- import only starts once every one of its files has finished
+             -- uploading (the import only leaves PROCESSING_FILES once
+             -- nothing is left PENDING/CLAIMED there — see
+             -- CourseImportProcessorService#recomputeImportStatus). Upload
+             -- fully, then transcribe — not interleaved per file.
+             -- COURSE_CREATED keeps later batches transcribing after a
+             -- first partial course has been built; PAUSED is excluded so a
+             -- paused import stops claiming new videos.
+             AND ci."status" IN ('READY_FOR_GENERATION', 'TRANSCRIBING', 'GENERATING_CONTENT', 'COURSE_CREATED')
              AND f2."transcriptAttempts" < ${MAX_AUTO_ATTEMPTS}
              AND f2."updatedAt" < NOW() - (f2."transcriptAttempts" * ${RETRY_BACKOFF_MINUTES} * INTERVAL '1 minute')
              ${importFilter}

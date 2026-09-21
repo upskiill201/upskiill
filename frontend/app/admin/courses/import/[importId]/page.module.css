@@ -21,6 +21,104 @@
   transition: width 0.3s ease;
 }
 
+.stageList {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stageRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* State is carried by the icon and the weight/colour of the label, never by
+   colour alone — the same stage list has to be readable in grayscale. */
+.stageRow[data-state='done'] {
+  color: var(--text-secondary);
+}
+
+.stageRow[data-state='active'] {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stageRow[data-state='failed'] {
+  color: var(--error-red);
+}
+
+.stageIcon {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.stageRow[data-state='done'] .stageIcon {
+  color: var(--success-green);
+}
+
+.stageRow[data-state='active'] .stageIcon {
+  color: var(--brand-blue);
+}
+
+.stageLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.stageDetail {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.activityLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.activitySpinner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-blue);
+  border-top-color: transparent;
+  animation: importSpin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes importSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activitySpinner {
+    animation: none;
+  }
+}
+
+.reassurance {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
 .actionsRow {
   display: flex;
   gap: 8px;
@@ -52,6 +150,23 @@
   color: var(--error-red);
   font-size: 12px;
   max-width: 280px;
+}
+
+/* What went wrong, in words the admin can act on. */
+.errorExplanation {
+  color: var(--error-red);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* The raw provider/exception text, kept for debugging but visually
+   subordinate to the explanation above it. */
+.errorDetail {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 2px;
+  word-break: break-word;
 }
 
 .lessonDetailCell {

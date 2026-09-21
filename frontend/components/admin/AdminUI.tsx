@@ -6,7 +6,13 @@ import styles from './AdminUI.module.css';
 
 /** All admin reads go through the same cookie-authenticated fetcher. */
 export const adminFetcher = async (url: string) => {
-  const res = await fetch(url, { credentials: 'include' });
+  // `no-store` because these responses carry an ETag but no Cache-Control.
+  // With a validator and no explicit policy the browser is free to apply
+  // heuristic caching, which is why admin pages could show stale data on a
+  // normal reload and only tell the truth after a hard refresh. This data is
+  // authenticated, per-user and changes constantly — it should never be
+  // served from a cache.
+  const res = await fetch(url, { credentials: 'include', cache: 'no-store' });
   if (!res.ok) {
     const err = new Error(`Request failed (${res.status})`) as Error & {
       status?: number;
@@ -28,6 +34,15 @@ export function useAdminData<T>(path: string | null) {
   return useSWR<T>(path, adminFetcher, {
     revalidateOnFocus: true,
     dedupingInterval: 15_000,
+    // A 5xx here is usually the database dropping a connection for a few
+    // seconds rather than anything the admin did, and it resolves on its
+    // own. Retrying quietly beats showing an error for something that will
+    // be fine by the time they finish reading it. A 4xx (unauthorised, not
+    // found) is a real answer, so it is not retried.
+    shouldRetryOnError: (err: Error & { status?: number }) =>
+      !err.status || err.status >= 500,
+    errorRetryInterval: 4000,
+    keepPreviousData: true,
   });
 }
 
@@ -60,9 +75,18 @@ export async function adminMutate<T = unknown>(
       const body = (await res.json()) as {
         message?: string | string[];
         errors?: string[];
+        // The app's global exception filter wraps failures as
+        // { success: false, error: { code, message } }, which is NOT Nest's
+        // default shape. Reading only the top-level `message` meant every
+        // admin mutation error fell back to a bare "Request failed (400)"
+        // and threw away the server's actual explanation — e.g. "Every
+        // lesson that has finished generating is already in the course",
+        // which is the difference between a confusing failure and an answer.
+        error?: { code?: string; message?: string | string[] };
       };
-      if (Array.isArray(body.message)) message = body.message.join(', ');
-      else if (body.message) message = body.message;
+      const raw = body.error?.message ?? body.message;
+      if (Array.isArray(raw)) message = raw.join(', ');
+      else if (raw) message = raw;
       if (Array.isArray(body.errors)) details = body.errors;
     } catch {
       // Non-JSON error body — keep the generic message.
