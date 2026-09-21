@@ -33,6 +33,7 @@ import { LeagueModule } from './league/league.module';
 import { TeyModule } from './tey/tey.module';
 import { AdminModule } from './admin/admin.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { CouponsModule } from './coupons/coupons.module';
     TeyModule,
     AdminModule,
     CouponsModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [

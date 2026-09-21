@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LeagueService } from './league.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -59,7 +60,9 @@ describe('League ladder mechanics', () => {
         outcome: 'CHAMPION',
         newTier: 'DIAMOND',
       });
-      expect(resolveOutcome('DIAMOND_TOURNAMENT', 3, 30).outcome).toBe('CHAMPION');
+      expect(resolveOutcome('DIAMOND_TOURNAMENT', 3, 30).outcome).toBe(
+        'CHAMPION',
+      );
       expect(resolveOutcome('DIAMOND_TOURNAMENT', 4, 30)).toEqual({
         outcome: 'TOURNAMENT_EXIT',
         newTier: 'DIAMOND',
@@ -88,14 +91,24 @@ describe('League ladder mechanics', () => {
   describe('UTC weeks', () => {
     it('snaps any date to its Monday', () => {
       // 2024-01-01 was a Monday.
-      expect(getUtcWeekStart(new Date('2024-01-01T00:00:00Z'))).toBe('2024-01-01');
-      expect(getUtcWeekStart(new Date('2024-01-03T15:34:00Z'))).toBe('2024-01-01'); // Wed
-      expect(getUtcWeekStart(new Date('2024-01-07T23:59:00Z'))).toBe('2024-01-01'); // Sun
-      expect(getUtcWeekStart(new Date('2024-01-08T00:00:00Z'))).toBe('2024-01-08'); // next Mon
+      expect(getUtcWeekStart(new Date('2024-01-01T00:00:00Z'))).toBe(
+        '2024-01-01',
+      );
+      expect(getUtcWeekStart(new Date('2024-01-03T15:34:00Z'))).toBe(
+        '2024-01-01',
+      ); // Wed
+      expect(getUtcWeekStart(new Date('2024-01-07T23:59:00Z'))).toBe(
+        '2024-01-01',
+      ); // Sun
+      expect(getUtcWeekStart(new Date('2024-01-08T00:00:00Z'))).toBe(
+        '2024-01-08',
+      ); // next Mon
     });
 
     it('ends a week exactly at the next Monday 00:00 UTC', () => {
-      expect(getWeekEndDate('2024-01-01')).toEqual(new Date('2024-01-08T00:00:00.000Z'));
+      expect(getWeekEndDate('2024-01-01')).toEqual(
+        new Date('2024-01-08T00:00:00.000Z'),
+      );
     });
   });
 });
@@ -106,7 +119,10 @@ describe('LeagueService', () => {
   let service: LeagueService;
   let prisma: any;
 
-  const makeCohort = (league: string, members: Array<{ userId: string; weeklyXp: number }>) => ({
+  const makeCohort = (
+    league: string,
+    members: Array<{ userId: string; weeklyXp: number }>,
+  ) => ({
     id: 'cohort-1',
     league,
     weekStart: '2024-01-01',
@@ -144,7 +160,11 @@ describe('LeagueService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LeagueService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        LeagueService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+      ],
     }).compile();
 
     service = module.get<LeagueService>(LeagueService);
@@ -189,12 +209,16 @@ describe('LeagueService', () => {
         userId: `u${i + 1}`,
         weeklyXp: 500 - i * 10,
       }));
-      prisma.leagueCohort.findUnique.mockResolvedValue(makeCohort('GOLD', members));
+      prisma.leagueCohort.findUnique.mockResolvedValue(
+        makeCohort('GOLD', members),
+      );
 
       await service.settleCohort('cohort-1');
 
       const calls = prisma.leagueMember.update.mock.calls;
-      const outcomesByRank = new Map(calls.map((c: any[]) => [c[0].data.rank, c[0].data.outcome]));
+      const outcomesByRank = new Map(
+        calls.map((c: any[]) => [c[0].data.rank, c[0].data.outcome]),
+      );
       // Gold promo zone 10 in a 12-member cohort (full-size rules).
       expect(outcomesByRank.get(1)).toBe('PROMOTED');
       expect(outcomesByRank.get(10)).toBe('PROMOTED');
@@ -259,7 +283,9 @@ describe('LeagueService', () => {
   describe('ensureSettled — inactivity demotion', () => {
     it('drops one tier per fully-elapsed week without a membership row', async () => {
       // Latest membership 2 weeks ago; no rows since → 2 missed weeks.
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
       prisma.studentProfile.findUnique
         .mockResolvedValueOnce({ leagueTier: 'GOLD' }) // week 1 demotion
         .mockResolvedValueOnce({ leagueTier: 'SILVER' }); // week 2 demotion
@@ -268,11 +294,21 @@ describe('LeagueService', () => {
 
       expect(prisma.leagueMember.createMany).toHaveBeenCalledTimes(2);
       expect(prisma.leagueMember.createMany).toHaveBeenNthCalledWith(1, {
-        data: [expect.objectContaining({ weekStart: '2024-01-08', outcome: 'INACTIVE_DEMOTED' })],
+        data: [
+          expect.objectContaining({
+            weekStart: '2024-01-08',
+            outcome: 'INACTIVE_DEMOTED',
+          }),
+        ],
         skipDuplicates: true,
       });
       expect(prisma.leagueMember.createMany).toHaveBeenNthCalledWith(2, {
-        data: [expect.objectContaining({ weekStart: '2024-01-15', outcome: 'INACTIVE_DEMOTED' })],
+        data: [
+          expect.objectContaining({
+            weekStart: '2024-01-15',
+            outcome: 'INACTIVE_DEMOTED',
+          }),
+        ],
         skipDuplicates: true,
       });
       expect(prisma.studentProfile.update).toHaveBeenNthCalledWith(1, {
@@ -286,8 +322,12 @@ describe('LeagueService', () => {
     });
 
     it('never demotes below Bronze and stops at the current week', async () => {
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'BRONZE' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'BRONZE',
+      });
 
       await service.ensureSettled('u1', new Date('2024-01-22T12:00:00Z'));
 
@@ -309,7 +349,9 @@ describe('LeagueService', () => {
     });
 
     it('skips weeks that already have a membership row', async () => {
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
       prisma.leagueMember.findUnique.mockResolvedValue({ id: 'existing' }); // week present
 
       await service.ensureSettled('u1', new Date('2024-01-15T12:00:00Z'));
@@ -322,10 +364,17 @@ describe('LeagueService', () => {
   describe('joinOrIncrement (via recordXp)', () => {
     it('joins the current week cohort on first XP of the week', async () => {
       prisma.leagueMember.findUnique.mockResolvedValue(null); // no membership yet
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'GOLD' });
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'GOLD',
+      });
       prisma.$queryRaw.mockResolvedValue([{ id: 'cohort-9', cohortIndex: 0 }]);
 
-      await service.recordXp('u1', 25, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+      await service.recordXp(
+        'u1',
+        25,
+        new Date('2024-01-03T12:00:00Z'),
+        'LESSON',
+      );
 
       expect(prisma.leagueMember.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -341,13 +390,23 @@ describe('LeagueService', () => {
       prisma.leagueMember.findUnique
         .mockResolvedValueOnce({ id: 'member-1' }) // membership exists
         .mockResolvedValue(null);
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'GOLD' });
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'GOLD',
+      });
 
-      await service.recordXp('u1', 15, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+      await service.recordXp(
+        'u1',
+        15,
+        new Date('2024-01-03T12:00:00Z'),
+        'LESSON',
+      );
 
       expect(prisma.leagueMember.update).toHaveBeenCalledWith({
         where: { id: 'member-1' },
-        data: { weeklyXp: { increment: 15 }, xpUpdatedAt: new Date('2024-01-03T12:00:00Z') },
+        data: {
+          weeklyXp: { increment: 15 },
+          xpUpdatedAt: new Date('2024-01-03T12:00:00Z'),
+        },
       });
       expect(prisma.leagueMember.create).not.toHaveBeenCalled();
     });

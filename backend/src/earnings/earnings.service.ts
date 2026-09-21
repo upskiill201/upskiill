@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   EarningsEntryType,
@@ -11,7 +12,12 @@ import {
   PayoutStatus,
   Prisma,
 } from '@prisma/client';
-import { decryptJson, encryptJson, generatePublicId, maskAccount } from './crypto.util';
+import {
+  decryptJson,
+  encryptJson,
+  generatePublicId,
+  maskAccount,
+} from './crypto.util';
 
 /**
  * Creator Earnings — immutable ledger, revenue-share engine, payouts.
@@ -74,7 +80,10 @@ export interface BalancesSnapshot {
 
 @Injectable()
 export class EarningsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   /* ─── agreements ─────────────────────────────────────────────────────── */
 
@@ -137,7 +146,9 @@ export class EarningsService {
   ) {
     const pct = dto.creatorSharePct;
     if (pct !== undefined && (!Number.isInteger(pct) || pct < 1 || pct > 99)) {
-      throw new BadRequestException('creatorSharePct must be an integer between 1 and 99');
+      throw new BadRequestException(
+        'creatorSharePct must be an integer between 1 and 99',
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -152,7 +163,9 @@ export class EarningsService {
       });
       const tier =
         dto.tier ??
-        (dto.creatorSharePct != null && dto.creatorSharePct > 70 ? 'FOUNDING' : current?.tier ?? 'STANDARD');
+        (dto.creatorSharePct != null && dto.creatorSharePct > 70
+          ? 'FOUNDING'
+          : (current?.tier ?? 'STANDARD'));
       const created = await tx.creatorEarningsAgreement.create({
         data: {
           userId: targetUserId,
@@ -204,12 +217,17 @@ export class EarningsService {
       // NULL would bypass the dedupe unique constraint — never allow it.
       throw new Error('recordSaleInTx requires a providerReference');
     }
-    const agreement = await this.getOrCreateActiveAgreement(tx, input.creatorId);
+    const agreement = await this.getOrCreateActiveAgreement(
+      tx,
+      input.creatorId,
+    );
     const grossMinor = Math.round(input.grossMinor);
     const discountMinor = Math.round(input.discountMinor ?? 0);
     const feeMinor = 0; // processing-fee capture ships later; column ready
     const netMinor = grossMinor - discountMinor - feeMinor;
-    const creatorAmountMinor = Math.round((netMinor * agreement.creatorSharePct) / 100);
+    const creatorAmountMinor = Math.round(
+      (netMinor * agreement.creatorSharePct) / 100,
+    );
     const teyroAmountMinor = netMinor - creatorAmountMinor;
 
     try {
@@ -235,7 +253,10 @@ export class EarningsService {
           providerReference: input.providerReference,
         },
       });
-      return { creatorSharePct: agreement.creatorSharePct, earningsTransactionId: created.id };
+      return {
+        creatorSharePct: agreement.creatorSharePct,
+        earningsTransactionId: created.id,
+      };
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -251,7 +272,9 @@ export class EarningsService {
 
   /** Match an original sale either by exact reference or by its composite
    *  form `reference:courseId` (multi-course payment intents). */
-  private originalSaleWhere(providerRefs: string[]): Prisma.EarningsTransactionWhereInput {
+  private originalSaleWhere(
+    providerRefs: string[],
+  ): Prisma.EarningsTransactionWhereInput {
     const clean = providerRefs.filter(Boolean);
     return {
       OR: [
@@ -345,7 +368,13 @@ export class EarningsService {
     entityId: string | null,
     meta?: Record<string, unknown>,
   ) {
-    await this.audit({ actorType: 'SYSTEM', action, entityType, entityId, meta });
+    await this.audit({
+      actorType: 'SYSTEM',
+      action,
+      entityType,
+      entityId,
+      meta,
+    });
   }
 
   /**
@@ -367,14 +396,20 @@ export class EarningsService {
         action: 'WEBHOOK_REFUND_UNMATCHED',
         entityType: 'EarningsTransaction',
         entityId: input.refundProviderReference,
-        meta: { tried: input.chargeProviderRefs, amountMinor: input.refundGrossMinor },
+        meta: {
+          tried: input.chargeProviderRefs,
+          amountMinor: input.refundGrossMinor,
+        },
       });
       return { matched: false };
     }
 
     // Clamp the refund to what the sales actually produced so the reversal
     // can never exceed the credits, then spread it across every course row.
-    const allocations = this.allocateReversal(originals, input.refundGrossMinor);
+    const allocations = this.allocateReversal(
+      originals,
+      input.refundGrossMinor,
+    );
     const byId = new Map(originals.map((o) => [o.id, o]));
     let creatorDebitTotal = 0;
     let teyroDebitTotal = 0;
@@ -469,7 +504,10 @@ export class EarningsService {
     }
 
     // Same clamping + allocation rule as refunds.
-    const allocations = this.allocateReversal(originals, input.disputeGrossMinor);
+    const allocations = this.allocateReversal(
+      originals,
+      input.disputeGrossMinor,
+    );
     const byId = new Map(originals.map((o) => [o.id, o]));
     let creatorDebitTotal = 0;
     let teyroDebitTotal = 0;
@@ -611,7 +649,9 @@ export class EarningsService {
       throw new BadRequestException('amountMinor must be a non-zero integer');
     }
     if (!dto.reason?.trim()) {
-      throw new BadRequestException('A written reason is required for every adjustment');
+      throw new BadRequestException(
+        'A written reason is required for every adjustment',
+      );
     }
 
     const tx = await this.prisma.$transaction(async (t) => {
@@ -710,7 +750,10 @@ export class EarningsService {
     const [balances, agreement, hasAny] = await Promise.all([
       this.computeBalancesFor(this.prisma, userId),
       this.getMyAgreement(userId),
-      this.prisma.earningsTransaction.count({ where: { creatorId: userId }, take: 1 }),
+      this.prisma.earningsTransaction.count({
+        where: { creatorId: userId },
+        take: 1,
+      }),
     ]);
     return {
       ...balances,
@@ -729,20 +772,44 @@ export class EarningsService {
     const rows = await this.prisma.earningsTransaction.findMany({
       where: {
         creatorId: userId,
-        occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) },
+        occurredAt: {
+          ...(from ? { gte: from } : {}),
+          ...(to ? { lte: to } : {}),
+        },
       },
-      select: { occurredAt: true, grossMinor: true, netMinor: true, creatorAmountMinor: true, teyroAmountMinor: true, type: true },
+      select: {
+        occurredAt: true,
+        grossMinor: true,
+        netMinor: true,
+        creatorAmountMinor: true,
+        teyroAmountMinor: true,
+        type: true,
+      },
     });
 
     const buckets = new Map<
       string,
-      { period: string; grossMinor: number; netMinor: number; creatorMinor: number; teyroMinor: number; count: number }
+      {
+        period: string;
+        grossMinor: number;
+        netMinor: number;
+        creatorMinor: number;
+        teyroMinor: number;
+        count: number;
+      }
     >();
     for (const r of rows) {
       const key = this.bucketKeyFor(r.occurredAt, granularity);
       let b = buckets.get(key);
       if (!b) {
-        b = { period: key, grossMinor: 0, netMinor: 0, creatorMinor: 0, teyroMinor: 0, count: 0 };
+        b = {
+          period: key,
+          grossMinor: 0,
+          netMinor: 0,
+          creatorMinor: 0,
+          teyroMinor: 0,
+          count: 0,
+        };
         buckets.set(key, b);
       }
       b.grossMinor += r.grossMinor;
@@ -753,11 +820,16 @@ export class EarningsService {
     }
     return {
       granularity,
-      buckets: [...buckets.values()].sort((a, b) => (a.period < b.period ? -1 : 1)),
+      buckets: [...buckets.values()].sort((a, b) =>
+        a.period < b.period ? -1 : 1,
+      ),
     };
   }
 
-  private bucketKeyFor(d: Date, granularity: 'day' | 'week' | 'month' | 'year'): string {
+  private bucketKeyFor(
+    d: Date,
+    granularity: 'day' | 'week' | 'month' | 'year',
+  ): string {
     const y = d.getUTCFullYear();
     const m = String(d.getUTCMonth() + 1).padStart(2, '0');
     const day = String(d.getUTCDate()).padStart(2, '0');
@@ -791,7 +863,10 @@ export class EarningsService {
       where: {
         creatorId: userId,
         courseId: { not: null },
-        occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) },
+        occurredAt: {
+          ...(from ? { gte: from } : {}),
+          ...(to ? { lte: to } : {}),
+        },
       },
       _sum: {
         grossMinor: true,
@@ -808,11 +883,16 @@ export class EarningsService {
         creatorId: userId,
         courseId: { not: null },
         type: { in: ['SALE', 'RENEWAL'] as EarningsEntryType[] },
-        occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) },
+        occurredAt: {
+          ...(from ? { gte: from } : {}),
+          ...(to ? { lte: to } : {}),
+        },
       },
       _count: { _all: true },
     });
-    const purchasesMap = new Map(purchaseCounts.map((p) => [p.courseId, p._count._all]));
+    const purchasesMap = new Map(
+      purchaseCounts.map((p) => [p.courseId, p._count._all]),
+    );
 
     return rows
       .map((r) => ({
@@ -824,10 +904,9 @@ export class EarningsService {
         teyroEarningsMinor: r._sum.teyroAmountMinor ?? 0,
         entries: r._count._all,
         purchases: purchasesMap.get(r.courseId) ?? 0,
-        avgPerPurchaseMinor:
-          purchasesMap.get(r.courseId)
-            ? Math.round((r._sum.grossMinor ?? 0) / purchasesMap.get(r.courseId)!)
-            : 0,
+        avgPerPurchaseMinor: purchasesMap.get(r.courseId)
+          ? Math.round((r._sum.grossMinor ?? 0) / purchasesMap.get(r.courseId)!)
+          : 0,
       }))
       .sort((a, b) => b.creatorEarningsMinor - a.creatorEarningsMinor);
   }
@@ -853,7 +932,12 @@ export class EarningsService {
         : {}),
       ...(opts.courseId ? { courseId: opts.courseId } : {}),
       ...(opts.from || opts.to
-        ? { occurredAt: { ...(opts.from ? { gte: opts.from } : {}), ...(opts.to ? { lte: opts.to } : {}) } }
+        ? {
+            occurredAt: {
+              ...(opts.from ? { gte: opts.from } : {}),
+              ...(opts.to ? { lte: opts.to } : {}),
+            },
+          }
         : {}),
     };
 
@@ -867,7 +951,9 @@ export class EarningsService {
       this.prisma.earningsTransaction.count({ where }),
     ]);
 
-    const courseIds = [...new Set(rows.map((r) => r.courseId).filter(Boolean))] as string[];
+    const courseIds = [
+      ...new Set(rows.map((r) => r.courseId).filter(Boolean)),
+    ] as string[];
     const courses = courseIds.length
       ? await this.prisma.course.findMany({
           where: { id: { in: courseIds } },
@@ -883,7 +969,9 @@ export class EarningsService {
         type: r.type,
         occurredAt: r.occurredAt,
         courseId: r.courseId,
-        courseTitle: r.courseId ? titleMap.get(r.courseId) ?? 'Removed course' : null,
+        courseTitle: r.courseId
+          ? (titleMap.get(r.courseId) ?? 'Removed course')
+          : null,
         studentRef: r.studentId,
         orderId: r.orderId,
         provider: r.provider,
@@ -919,7 +1007,8 @@ export class EarningsService {
       receivingCurrency?: string;
     },
   ) {
-    if (!dto.holderName?.trim()) throw new BadRequestException('Account holder name is required');
+    if (!dto.holderName?.trim())
+      throw new BadRequestException('Account holder name is required');
     const acct = dto.accountNumber?.replace(/[\s-]+/g, '') ?? '';
     // Honest per-type validation instead of a bare length check.
     if (dto.type === 'BANK') {
@@ -929,11 +1018,15 @@ export class EarningsService {
         );
       }
     } else if (!/^\+?\d{7,15}$/.test(acct)) {
-      throw new BadRequestException('Enter a valid mobile-money number (7–15 digits)');
+      throw new BadRequestException(
+        'Enter a valid mobile-money number (7–15 digits)',
+      );
     }
     const routing = dto.routingOrExtra?.trim() ?? '';
     if (routing && !/^[A-Za-z0-9][A-Za-z0-9 -]{3,31}$/.test(routing)) {
-      throw new BadRequestException('Enter a valid SWIFT/BIC or routing number');
+      throw new BadRequestException(
+        'Enter a valid SWIFT/BIC or routing number',
+      );
     }
     if (dto.type === 'BANK' && !dto.institutionName?.trim()) {
       throw new BadRequestException('Bank name is required for bank transfers');
@@ -967,7 +1060,8 @@ export class EarningsService {
       // reservation are the actual controls).
       isVerified: false,
       verifiedAt: null,
-      eligibilityNote: 'Details received. Our payouts team confirms them when your transfer is reviewed.',
+      eligibilityNote:
+        'Details received. Our payouts team confirms them when your transfer is reviewed.',
       isActive: true,
     };
 
@@ -994,7 +1088,9 @@ export class EarningsService {
 
   /** Only ever returns masked/display data — decrypted details never leave. */
   private async maskedMethod(userId: string) {
-    const m = await this.prisma.creatorPayoutMethod.findUnique({ where: { userId } });
+    const m = await this.prisma.creatorPayoutMethod.findUnique({
+      where: { userId },
+    });
     if (!m) return null;
     return {
       type: m.type,
@@ -1012,12 +1108,15 @@ export class EarningsService {
 
   /** Admin-only: decrypt details for the manual transfer. Audited. */
   async revealPayoutDetails(actorId: string, payoutId: string) {
-    const payout = await this.prisma.creatorPayout.findUnique({ where: { id: payoutId } });
+    const payout = await this.prisma.creatorPayout.findUnique({
+      where: { id: payoutId },
+    });
     if (!payout) throw new NotFoundException('Payout not found');
     const method = await this.prisma.creatorPayoutMethod.findUnique({
       where: { userId: payout.userId },
     });
-    if (!method) throw new NotFoundException('Creator has no payout method on file');
+    if (!method)
+      throw new NotFoundException('Creator has no payout method on file');
 
     await this.audit({
       actorType: 'ADMIN',
@@ -1028,7 +1127,11 @@ export class EarningsService {
       meta: { payoutId },
     });
     return {
-      payout: { publicId: payout.publicId, amountMinor: payout.amountMinor, status: payout.status },
+      payout: {
+        publicId: payout.publicId,
+        amountMinor: payout.amountMinor,
+        status: payout.status,
+      },
       details: decryptJson<{
         accountNumber: string;
         institutionName: string | null;
@@ -1066,7 +1169,9 @@ export class EarningsService {
         );
       }
 
-      const method = await tx.creatorPayoutMethod.findUnique({ where: { userId } });
+      const method = await tx.creatorPayoutMethod.findUnique({
+        where: { userId },
+      });
       // isVerified is intentionally NOT required: methods are confirmed by
       // the payouts team during manual review of THIS request — the flag only
       // tracks whether that confirmation already happened.
@@ -1152,9 +1257,21 @@ export class EarningsService {
 
   /* ─── admin: payout state machine ────────────────────────────────────── */
 
-  private static readonly TRANSITIONS: Record<PayoutStatus, Partial<Record<string, PayoutStatus>>> = {
-    REQUESTED: { review: 'UNDER_REVIEW', reject: 'REJECTED', cancel: 'CANCELLED', approve: 'PROCESSING' },
-    UNDER_REVIEW: { approve: 'PROCESSING', reject: 'REJECTED', cancel: 'CANCELLED' },
+  private static readonly TRANSITIONS: Record<
+    PayoutStatus,
+    Partial<Record<string, PayoutStatus>>
+  > = {
+    REQUESTED: {
+      review: 'UNDER_REVIEW',
+      reject: 'REJECTED',
+      cancel: 'CANCELLED',
+      approve: 'PROCESSING',
+    },
+    UNDER_REVIEW: {
+      approve: 'PROCESSING',
+      reject: 'REJECTED',
+      cancel: 'CANCELLED',
+    },
     PROCESSING: { 'mark-paid': 'PAID', fail: 'FAILED' },
     PAID: {},
     REJECTED: {},
@@ -1165,7 +1282,10 @@ export class EarningsService {
   async listAdminPayouts(status?: string) {
     return {
       items: await this.prisma.creatorPayout.findMany({
-        where: status && status !== 'ALL' ? { status: status as PayoutStatus } : undefined,
+        where:
+          status && status !== 'ALL'
+            ? { status: status as PayoutStatus }
+            : undefined,
         orderBy: { requestedAt: 'asc' },
         take: 200,
       }),
@@ -1178,7 +1298,9 @@ export class EarningsService {
     action: 'review' | 'approve' | 'reject' | 'mark-paid' | 'fail' | 'cancel',
     dto: { reason?: string; adminNote?: string; externalReference?: string },
   ) {
-    const payout = await this.prisma.creatorPayout.findUnique({ where: { id: payoutId } });
+    const payout = await this.prisma.creatorPayout.findUnique({
+      where: { id: payoutId },
+    });
     if (!payout) throw new NotFoundException('Payout not found');
 
     const next = EarningsService.TRANSITIONS[payout.status][action];
@@ -1187,7 +1309,10 @@ export class EarningsService {
         `Cannot ${action} a payout in status ${payout.status}`,
       );
     }
-    if ((next === 'REJECTED' || next === 'FAILED' || next === 'CANCELLED') && !dto.reason?.trim()) {
+    if (
+      (next === 'REJECTED' || next === 'FAILED' || next === 'CANCELLED') &&
+      !dto.reason?.trim()
+    ) {
       throw new BadRequestException(
         `A written reason is required when marking a payout ${next.toLowerCase()}`,
       );
@@ -1243,8 +1368,22 @@ export class EarningsService {
       action: `PAYOUT_${next}`,
       entityType: 'CreatorPayout',
       entityId: payoutId,
-      meta: { from: payout.status, reason: dto.reason, externalReference: dto.externalReference },
+      meta: {
+        from: payout.status,
+        reason: dto.reason,
+        externalReference: dto.externalReference,
+      },
     });
+
+    if (
+      next === 'PROCESSING' ||
+      next === 'PAID' ||
+      next === 'FAILED' ||
+      next === 'REJECTED'
+    ) {
+      this.eventEmitter.emit('payout.transitioned', { payoutId, status: next });
+    }
+
     return updated;
   }
 
@@ -1291,14 +1430,31 @@ export class EarningsService {
   }
 
   private static csvResponse(rows: string[][]): string {
-    return rows.map((r) => r.map(EarningsService.csvEscape).join(',')).join('\r\n') + '\r\n';
+    return (
+      rows.map((r) => r.map(EarningsService.csvEscape).join(',')).join('\r\n') +
+      '\r\n'
+    );
   }
 
   private static readonly TX_CSV_HEADER = [
-    'Transaction ID', 'Date (UTC)', 'Type', 'Course', 'Student Reference', 'Order ID',
-    'Provider', 'Provider Reference', 'Gross (USD)', 'Discounts (USD)', 'Fees (USD)',
-    'Net (USD)', 'Creator Share %', 'Creator Amount (USD)', 'Teyro Amount (USD)',
-    'Currency', 'Related Transaction', 'Reason',
+    'Transaction ID',
+    'Date (UTC)',
+    'Type',
+    'Course',
+    'Student Reference',
+    'Order ID',
+    'Provider',
+    'Provider Reference',
+    'Gross (USD)',
+    'Discounts (USD)',
+    'Fees (USD)',
+    'Net (USD)',
+    'Creator Share %',
+    'Creator Amount (USD)',
+    'Teyro Amount (USD)',
+    'Currency',
+    'Related Transaction',
+    'Reason',
   ];
 
   async buildTransactionsCsv(
@@ -1309,10 +1465,18 @@ export class EarningsService {
     // silently clamped and exports stopped at 100 rows. Iterate real pages
     // until the full result set is covered.
     const pageSize = 100;
-    const firstPage = await this.listTransactions(userId, { ...opts, page: 1, pageSize });
+    const firstPage = await this.listTransactions(userId, {
+      ...opts,
+      page: 1,
+      pageSize,
+    });
     const items = [...firstPage.items];
     for (let page = 2; page <= Math.ceil(firstPage.total / pageSize); page++) {
-      const next = await this.listTransactions(userId, { ...opts, page, pageSize });
+      const next = await this.listTransactions(userId, {
+        ...opts,
+        page,
+        pageSize,
+      });
       items.push(...next.items);
     }
     const rows: string[][] = [EarningsService.TX_CSV_HEADER];
@@ -1339,28 +1503,70 @@ export class EarningsService {
       ]);
     }
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    return { csv: EarningsService.csvResponse(rows), filename: `teyro-transactions-${stamp}.csv` };
+    return {
+      csv: EarningsService.csvResponse(rows),
+      filename: `teyro-transactions-${stamp}.csv`,
+    };
   }
 
   async buildEarningsReportCsv(
     userId: string,
-    opts: { granularity: 'day' | 'week' | 'month' | 'year'; from?: Date; to?: Date; courseId?: string },
+    opts: {
+      granularity: 'day' | 'week' | 'month' | 'year';
+      from?: Date;
+      to?: Date;
+      courseId?: string;
+    },
   ): Promise<{ csv: string; filename: string }> {
     const where: Prisma.EarningsTransactionWhereInput = {
       creatorId: userId,
       ...(opts.courseId ? { courseId: opts.courseId } : {}),
       ...(opts.from || opts.to
-        ? { occurredAt: { ...(opts.from ? { gte: opts.from } : {}), ...(opts.to ? { lte: opts.to } : {}) } }
+        ? {
+            occurredAt: {
+              ...(opts.from ? { gte: opts.from } : {}),
+              ...(opts.to ? { lte: opts.to } : {}),
+            },
+          }
         : {}),
     };
-    const txRows = await this.prisma.earningsTransaction.findMany({ where, select: { occurredAt: true, grossMinor: true, netMinor: true, creatorAmountMinor: true, teyroAmountMinor: true, type: true } });
+    const txRows = await this.prisma.earningsTransaction.findMany({
+      where,
+      select: {
+        occurredAt: true,
+        grossMinor: true,
+        netMinor: true,
+        creatorAmountMinor: true,
+        teyroAmountMinor: true,
+        type: true,
+      },
+    });
 
-    const buckets = new Map<string, { period: string; gross: number; net: number; creator: number; teyro: number; count: number; refunds: number }>();
+    const buckets = new Map<
+      string,
+      {
+        period: string;
+        gross: number;
+        net: number;
+        creator: number;
+        teyro: number;
+        count: number;
+        refunds: number;
+      }
+    >();
     for (const r of txRows) {
       const key = this.bucketKeyFor(r.occurredAt, opts.granularity);
       let b = buckets.get(key);
       if (!b) {
-        b = { period: key, gross: 0, net: 0, creator: 0, teyro: 0, count: 0, refunds: 0 };
+        b = {
+          period: key,
+          gross: 0,
+          net: 0,
+          creator: 0,
+          teyro: 0,
+          count: 0,
+          refunds: 0,
+        };
         buckets.set(key, b);
       }
       b.gross += r.grossMinor;
@@ -1368,17 +1574,34 @@ export class EarningsService {
       b.creator += r.creatorAmountMinor;
       b.teyro += r.teyroAmountMinor;
       b.count += 1;
-      if (r.type === 'REFUND' || r.type === 'CHARGEBACK') b.refunds += r.netMinor;
+      if (r.type === 'REFUND' || r.type === 'CHARGEBACK')
+        b.refunds += r.netMinor;
     }
 
     const rows: string[][] = [
-      ['Period', 'Gross (USD)', 'Deductions (USD)', 'Net (USD)', 'Creator Share %', 'Creator Earnings (USD)', 'Teyro Share (USD)', 'Entries', 'Refunds (USD)'],
+      [
+        'Period',
+        'Gross (USD)',
+        'Deductions (USD)',
+        'Net (USD)',
+        'Creator Share %',
+        'Creator Earnings (USD)',
+        'Teyro Share (USD)',
+        'Entries',
+        'Refunds (USD)',
+      ],
     ];
-    const sorted = [...buckets.values()].sort((a, b) => (a.period < b.period ? -1 : 1));
+    const sorted = [...buckets.values()].sort((a, b) =>
+      a.period < b.period ? -1 : 1,
+    );
     const pct = txRows.length
       ? Math.round(
           (txRows.reduce((a, r) => a + r.creatorAmountMinor, 0) /
-            Math.max(1, txRows.reduce((a, r) => a + r.netMinor, 0))) * 100,
+            Math.max(
+              1,
+              txRows.reduce((a, r) => a + r.netMinor, 0),
+            )) *
+            100,
         )
       : 70;
     for (const b of sorted) {
@@ -1395,10 +1618,16 @@ export class EarningsService {
       ]);
     }
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    return { csv: EarningsService.csvResponse(rows), filename: `teyro-earnings-report-${stamp}.csv` };
+    return {
+      csv: EarningsService.csvResponse(rows),
+      filename: `teyro-earnings-report-${stamp}.csv`,
+    };
   }
 
-  async buildStatementCsv(userId: string, month: string): Promise<{ csv: string; filename: string }> {
+  async buildStatementCsv(
+    userId: string,
+    month: string,
+  ): Promise<{ csv: string; filename: string }> {
     if (!/^\d{4}-\d{2}$/.test(month)) {
       throw new BadRequestException('month must look like YYYY-MM');
     }
@@ -1415,7 +1644,12 @@ export class EarningsService {
     const body = lines.slice(1); // drop header, keep day rows
     const totals = await this.prisma.earningsTransaction.aggregate({
       where: { creatorId: userId, occurredAt: { gte: from, lt: to } },
-      _sum: { grossMinor: true, netMinor: true, creatorAmountMinor: true, teyroAmountMinor: true },
+      _sum: {
+        grossMinor: true,
+        netMinor: true,
+        creatorAmountMinor: true,
+        teyroAmountMinor: true,
+      },
     });
     body.push(
       [
