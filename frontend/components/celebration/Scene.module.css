@@ -487,8 +487,8 @@
 
 .chestArtWrap {
   position: relative;
-  width: clamp(260px, min(82vw, 38vh), 380px);
-  height: clamp(260px, min(82vw, 38vh), 380px);
+  width: clamp(300px, min(94vw, 46vh), 460px);
+  height: clamp(300px, min(94vw, 46vh), 460px);
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   display: flex;
@@ -507,26 +507,177 @@
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
 }
 
-.chestIdleSparkle {
+/* ─── Chest aura ──────────────────────────────────────────────────────────
+   The "this is a moment" layer behind the chest: a breathing glow, slow
+   rotating god-rays, a ring of twinkling sparkles, drifting motes, and a
+   shockwave on every tap. Everything here is transform/opacity only and sits
+   behind the chest (pointer-events: none), so none of it can intercept a tap
+   or knock the Rive canvas off the compositor.
+
+   Intensity is driven by --aura-energy (0 → 1), which ChestScene raises as
+   the learner taps — the scene visibly winds up towards the reveal. */
+
+.chestAura {
   position: absolute;
-  color: #ffd54d;
-  font-size: 20px;
+  inset: 0;
+  display: grid;
+  place-items: center;
   pointer-events: none;
-  animation: chestIdleSparkle 1.7s ease-in-out infinite;
+  z-index: 0;
 }
 
-@keyframes chestIdleSparkle {
-  0% {
-    opacity: 0;
-    transform: scale(0.4);
+.auraGlow {
+  position: absolute;
+  width: 116%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 200, 0, calc(0.26 + var(--aura-energy, 0) * 0.3)) 0%,
+    rgba(255, 168, 0, calc(0.12 + var(--aura-energy, 0) * 0.16)) 38%,
+    rgba(255, 140, 0, 0) 68%
+  );
+  animation: auraBreathe 3.1s ease-in-out infinite;
+}
+
+@keyframes auraBreathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.82;
   }
   50% {
+    transform: scale(1.06);
     opacity: 1;
-    transform: scale(1);
+  }
+}
+
+/* Conic god-rays. Masked to a soft disc so the rays fade out rather than
+   ending in a hard circular edge. */
+.auraRays {
+  position: absolute;
+  width: 150%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  opacity: calc(0.24 + var(--aura-energy, 0) * 0.3);
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 213, 77, 0.5) 0deg 5deg,
+    rgba(255, 213, 77, 0) 5deg 30deg,
+    rgba(255, 213, 77, 0.38) 30deg 34deg,
+    rgba(255, 213, 77, 0) 34deg 60deg,
+    rgba(255, 213, 77, 0.5) 60deg 65deg,
+    rgba(255, 213, 77, 0) 65deg 90deg,
+    rgba(255, 213, 77, 0.34) 90deg 94deg,
+    rgba(255, 213, 77, 0) 94deg 120deg,
+    rgba(255, 213, 77, 0.5) 120deg 125deg,
+    rgba(255, 213, 77, 0) 125deg 150deg,
+    rgba(255, 213, 77, 0.38) 150deg 154deg,
+    rgba(255, 213, 77, 0) 154deg 180deg,
+    rgba(255, 213, 77, 0.5) 180deg 185deg,
+    rgba(255, 213, 77, 0) 185deg 210deg,
+    rgba(255, 213, 77, 0.34) 210deg 214deg,
+    rgba(255, 213, 77, 0) 214deg 240deg,
+    rgba(255, 213, 77, 0.5) 240deg 245deg,
+    rgba(255, 213, 77, 0) 245deg 270deg,
+    rgba(255, 213, 77, 0.38) 270deg 274deg,
+    rgba(255, 213, 77, 0) 274deg 300deg,
+    rgba(255, 213, 77, 0.5) 300deg 305deg,
+    rgba(255, 213, 77, 0) 305deg 330deg,
+    rgba(255, 213, 77, 0.34) 330deg 334deg,
+    rgba(255, 213, 77, 0) 334deg 360deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 12%, rgba(0, 0, 0, 0.55) 40%, transparent 66%);
+  mask-image: radial-gradient(circle, #000 12%, rgba(0, 0, 0, 0.55) 40%, transparent 66%);
+  animation: auraSpin 26s linear infinite;
+}
+
+@keyframes auraSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ring of sparkles. Each one is positioned by inline custom properties so the
+   ring geometry lives in the component and the animation lives here. */
+.auraSparkle {
+  position: absolute;
+  color: #ffd54d;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(255, 200, 0, 0.85);
+  transform: translate(var(--sx), var(--sy)) scale(0);
+  animation: auraTwinkle var(--sdur, 2s) ease-in-out infinite;
+  animation-delay: var(--sdelay, 0s);
+}
+
+@keyframes auraTwinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx), var(--sy)) scale(0.3) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(var(--sx), var(--sy)) scale(1) rotate(35deg);
+  }
+  70% {
+    opacity: 0.55;
+    transform: translate(var(--sx), var(--sy)) scale(0.8) rotate(55deg);
+  }
+}
+
+/* Slow upward motes — the "warm air rising off something valuable" cue. */
+.auraMote {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 219, 122, 0.95);
+  box-shadow: 0 0 8px rgba(255, 200, 0, 0.8);
+  animation: auraMoteRise var(--mdur, 4s) ease-in-out infinite;
+  animation-delay: var(--mdelay, 0s);
+}
+
+@keyframes auraMoteRise {
+  0% {
+    opacity: 0;
+    transform: translate(var(--mx), 40px) scale(0.5);
+  }
+  25% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.55;
   }
   100% {
     opacity: 0;
-    transform: scale(0.5);
+    transform: translate(calc(var(--mx) + var(--mdrift, 0px)), -120px) scale(1);
+  }
+}
+
+/* Expanding ring on each tap — keyed on tap index in the component so it
+   remounts and replays per tap rather than needing an imperative trigger. */
+.auraShock {
+  position: absolute;
+  /* Starts wider than the chest so the ring reads as expanding *past* it
+     rather than emerging from underneath it. */
+  width: 72%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 213, 77, 0.9);
+  animation: auraShockwave 0.62s cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes auraShockwave {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.55);
+    border-width: 4px;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+    border-width: 1px;
   }
 }
 
@@ -922,41 +1073,6 @@
   }
 }
 
-/* ─── Tap progress pips (bottom, Duolingo-style "you're building momentum") */
-
-.tapProgressRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.tapProgressPip {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.tapProgressPipFilled {
-  background: #ffc800;
-  transform: scale(1.2);
-  animation: tapProgressPipPop 0.3s ease-out;
-}
-
-@keyframes tapProgressPipPop {
-  0% {
-    transform: scale(0.6);
-  }
-  60% {
-    transform: scale(1.4);
-  }
-  100% {
-    transform: scale(1.2);
-  }
-}
-
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -969,8 +1085,24 @@
     animation: none;
   }
 
-  .tapProgressPipFilled {
+  /* The aura keeps its glow (it's what makes the chest feel special) but
+     stops moving: no spin, no twinkle, no rising motes, no shockwave. */
+  .auraGlow,
+  .auraRays,
+  .auraSparkle,
+  .auraMote,
+  .auraShock {
     animation: none;
+  }
+
+  .auraSparkle {
+    opacity: 0.85;
+    transform: translate(var(--sx), var(--sy)) scale(1);
+  }
+
+  .auraMote,
+  .auraShock {
+    display: none;
   }
 
   .progressFill {

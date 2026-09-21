@@ -14,6 +14,7 @@
 import React, { useState } from 'react';
 import { useCelebration } from '@/context/CelebrationContext';
 import { pickAchievementVoice } from '@/lib/tey/achievementVoice';
+import TreasureChestBench from '@/components/dashboard/v2/TreasureChestBench';
 
 const btn: React.CSSProperties = {
   display: 'block',
@@ -284,6 +285,15 @@ export default function TeyScenesDevPage() {
       <button style={btn} onClick={() => celebrate({ kind: 'CHEST' })}>
         Open today&apos;s chest
       </button>
+
+      {/* The same TreasureChestBench the dashboard shows, mounted here too so
+          the Rive chest can be exercised for every reward type without a
+          backend, a logged-in session or a real Daily Chest row. Identical
+          component, mocked claim — grants nothing. */}
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>
+        Chest (Rive, every reward type — no backend needed)
+      </h2>
+      <TreasureChestBench />
     </div>
   );
 }

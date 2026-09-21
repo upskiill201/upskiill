@@ -14,6 +14,22 @@ export const CHEST_TAP_HINT = ['Tap to open!', 'Hmm… should we open it? 😈',
 const REVEAL_COMMON = ['Not bad! Every bit counts.', 'A solid pull!', 'That works for me 🙂'];
 const REVEAL_RARE = ["OKAY, that's a good one! 🔥", 'Look at that shine! 😍', 'Somebody got lucky today 😤'];
 
+/**
+ * Said while the chest is being tapped open. Deliberately vague about how
+ * close the lid is: Rive owns the opening sequence and absorbs taps that land
+ * mid-animation, so the number of taps needed varies and the app is never
+ * told where in the sequence it is. Copy like "one more!" would be a guess,
+ * and wrong often enough to feel broken — these lines cheer the tapping on
+ * without predicting the end of it.
+ */
+const OPENING_LINES = ['Keep going!', "It's giving…", 'Harder! 😤', "Nearly had it—don't stop!"];
+
+/** Cycles by tap index so each tap visibly changes the line, then holds on
+ *  the last one rather than looping back to the start. */
+export function chestOpeningLine(tapIndex: number): string {
+  return OPENING_LINES[Math.min(Math.max(tapIndex - 1, 0), OPENING_LINES.length - 1)];
+}
+
 export function pickChestReadyHeadline(): string {
   return pickFromPool(CHEST_READY_HEADLINE, 'chest:headline');
 }

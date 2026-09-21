@@ -166,6 +166,86 @@ export function playGemChime(index: number) {
   scheduleTone(bus, { freq: base * 3.01, at: 0.01, dur: 0.18, type: 'sine', gain: 0.05 });
 }
 
+/**
+ * One coin hitting the heap. Metallic rather than melodic: a tight noise
+ * transient for the strike, plus two deliberately inharmonic partials (the
+ * 2.76 / 5.4 ratios are what stop it ringing like a tuned bell and start it
+ * sounding like struck metal).
+ *
+ * `progress` (0 → 1 through the pour) detunes downward and shortens the tail,
+ * so the cascade starts bright and thins out as the pile deadens — a pour of
+ * identical clinks reads as a machine gun, not as coins.
+ */
+export function playCoinImpact(index: number, progress = 0) {
+  const bus = soundManager.getSynthBus();
+  if (!bus) return;
+  // Pseudo-random per index so neighbouring coins never land on the same
+  // pitch, but a given coin always sounds the same.
+  const jitter = ((Math.sin(index * 12.9898) * 43758.5453) % 1 + 1) % 1;
+  const fall = 1 - progress * 0.34;
+  const base = (1180 + jitter * 520) * fall;
+  const level = (0.085 - progress * 0.03) * (0.75 + jitter * 0.45);
+
+  scheduleNoise(bus, {
+    dur: 0.035,
+    gain: level * 0.5,
+    filterFrom: 5200 * fall,
+    filterTo: 2200 * fall,
+    q: 1.4,
+  });
+  scheduleTone(bus, { freq: base, dur: 0.1 - progress * 0.035, type: 'triangle', gain: level });
+  scheduleTone(bus, { freq: base * 2.76, at: 0.004, dur: 0.07, type: 'sine', gain: level * 0.4 });
+  scheduleTone(bus, { freq: base * 5.4, at: 0.004, dur: 0.04, type: 'sine', gain: level * 0.16 });
+}
+
+/** Low body thump under the pour — the mass of the heap landing, layered
+ *  beneath the individual clinks so the cascade has weight and not just
+ *  sparkle. Pitched down as more of the pile settles. */
+export function playPileThud(progress = 0) {
+  const bus = soundManager.getSynthBus();
+  if (!bus) return;
+  const f = 128 - progress * 42;
+  scheduleTone(bus, { freq: f, dur: 0.26, type: 'sine', gain: 0.13, slideTo: f * 0.62 });
+  scheduleNoise(bus, { dur: 0.12, gain: 0.05, filterFrom: 420, filterTo: 150, q: 0.9 });
+}
+
+/**
+ * Cash register "cha-ching" — the reward being banked when the learner
+ * commits on CONTINUE.
+ *
+ * Two bright bell hits a major third apart over a drawer thunk: the first
+ * short and percussive ("cha"), the second higher and left ringing ("ching").
+ * That two-hit asymmetry is the whole character of the sound; a single chord
+ * reads as a notification instead of a till.
+ */
+export function playCashIn() {
+  const bus = soundManager.getSynthBus();
+  if (!bus || !shouldPlay('playCashIn')) return;
+
+  // "cha" — struck, damped fast
+  scheduleNoise(bus, { dur: 0.05, gain: 0.09, filterFrom: 6500, filterTo: 3000, q: 1.2 });
+  [1318.51, 1661.22, 2637.02].forEach((freq, i) => {
+    scheduleTone(bus, { freq, dur: 0.11, type: 'triangle', gain: 0.13 - i * 0.035 });
+  });
+
+  // "ching" — higher, left to ring
+  const ching = 0.085;
+  scheduleNoise(bus, { at: ching, dur: 0.04, gain: 0.07, filterFrom: 8000, filterTo: 4200, q: 1.3 });
+  [1760.0, 2217.46, 3520.0, 5274.04].forEach((freq, i) => {
+    scheduleTone(bus, {
+      freq,
+      at: ching,
+      dur: 0.72 - i * 0.13,
+      type: 'sine',
+      gain: 0.145 - i * 0.032,
+    });
+  });
+
+  // Drawer sliding shut underneath
+  scheduleTone(bus, { freq: 165, at: 0.02, dur: 0.3, type: 'sine', gain: 0.11, slideTo: 92 });
+  scheduleSparkleDust(bus, 0.26);
+}
+
 /** The reward physically bursting up out of the chest — a fast rising
  * shimmer cascade, layered under the reveal fanfare. This is the "stuff is
  * flying out at me" moment; the per-item playGemChime calls that follow are

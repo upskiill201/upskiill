@@ -75,9 +75,15 @@ export function toCelebrationCurrency(
 }
 
 // ─── Treasure Chest (Rive) reward-type mapping ──────────────────────────────
-// The TChest view model's `rewards.rewardType` enum, verified directly from
-// the treasure_chest.riv binary — "hartRewards" is the animator's real
-// spelling, not a typo. Do not rename it to "heartRewards".
+// Every name below was read out of the treasure_chest.riv binary with the
+// installed runtime, not taken from the integration guide — the guide and the
+// asset disagree in two places and the asset wins:
+//
+//  1. The nested view model on `TChest` is named `rewords` (with an 'o'). The
+//     guide calls it `rewards`; that path resolves to null on the real file.
+//     `CHEST_REWARD_VM_CANDIDATES` tries the guide's spelling too, so the day
+//     the animator fixes the typo this keeps working with no code change.
+//  2. "hartRewards" is the animator's real spelling. Do not "fix" it.
 
 export type TeyroRewardType = 'coins' | 'xp' | 'streakFreeze' | 'xpBoost' | 'hearts';
 
@@ -88,6 +94,16 @@ export type RiveRewardType =
   | 'xpBoostRewards'
   | 'hartRewards';
 
+/** Nested view-model property names to probe, in priority order. */
+export const CHEST_REWARD_VM_CANDIDATES = ['rewords', 'rewards'] as const;
+/** The enum property inside that nested view model. */
+export const CHEST_REWARD_ENUM_PROPERTY = 'rewardType';
+/** Root-level triggers on `TChest`. */
+export const CHEST_TRIGGER_CLICK = 'click';
+export const CHEST_TRIGGER_RESET = 'reset';
+/** Name of the Rive *event* (not a view-model trigger) fired at reveal. */
+export const CHEST_REVEAL_EVENT = 'rewardReveal';
+
 const TEYRO_TO_RIVE_REWARD_TYPE: Record<TeyroRewardType, RiveRewardType> = {
   coins: 'coinRewards',
   xp: 'xpRewards',
@@ -96,15 +112,42 @@ const TEYRO_TO_RIVE_REWARD_TYPE: Record<TeyroRewardType, RiveRewardType> = {
   hearts: 'hartRewards',
 };
 
-/** TeyroRewardType → the exact Rive enum value to set on `rewards.rewardType`. */
+/** Every enum value the asset actually declares — used to verify the contract
+ *  at load time rather than discovering a rename mid-reveal. */
+export const RIVE_REWARD_TYPES: readonly RiveRewardType[] =
+  Object.values(TEYRO_TO_RIVE_REWARD_TYPE);
+
+export function isTeyroRewardType(value: unknown): value is TeyroRewardType {
+  // hasOwnProperty, not `in`: `in` walks the prototype chain, so 'constructor'
+  // and 'toString' would validate and then map to undefined — which Rive
+  // accepts silently and renders as the default reward.
+  return (
+    typeof value === 'string' &&
+    Object.prototype.hasOwnProperty.call(TEYRO_TO_RIVE_REWARD_TYPE, value)
+  );
+}
+
+/** TeyroRewardType → the exact Rive enum value to set on `rewords.rewardType`. */
 export function toRiveRewardType(teyroType: TeyroRewardType): RiveRewardType {
   return TEYRO_TO_RIVE_REWARD_TYPE[teyroType];
 }
 
-/** Backend reward-type strings → TreasureChest's TeyroRewardType. */
+/** Same mapping, but total: returns null for anything the chest cannot show,
+ *  so callers fall back deliberately instead of silently revealing coins. */
+export function safeToRiveRewardType(value: unknown): RiveRewardType | null {
+  return isTeyroRewardType(value) ? TEYRO_TO_RIVE_REWARD_TYPE[value] : null;
+}
+
+/**
+ * Backend reward-type strings → TreasureChest's TeyroRewardType.
+ *
+ * Returns null for anything the chest has no animation for. Callers must not
+ * substitute coins: the server has already decided (and persisted) the real
+ * reward, so showing a coin animation for it would lie to the learner.
+ */
 export function toTreasureChestRewardType(
   backendType: string | undefined | null
-): TeyroRewardType {
+): TeyroRewardType | null {
   switch ((backendType || '').toUpperCase()) {
     case 'COINS':
     case 'GEMS':
@@ -119,6 +162,6 @@ export function toTreasureChestRewardType(
     case 'XP_BOOST':
       return 'xpBoost';
     default:
-      return 'coins';
+      return null;
   }
 }
