@@ -157,22 +157,207 @@ export function StatPillRow({ items }: { items: StatPillItem[] }) {
   );
 }
 
-// ─── RewardPile (drop-in gems/coins) ─────────────────────────────────────────
+// ─── ChestAura (the "this is a moment" layer) ────────────────────────────────
 
-/** Pyramid slot positions for up to 7 items (percentages of the stage box). */
-const PILE_SLOTS = [
-  { x: 50, y: 62 },
-  { x: 30, y: 74 },
-  { x: 70, y: 74 },
-  { x: 50, y: 84 },
-  { x: 16, y: 86 },
-  { x: 84, y: 86 },
-  { x: 50, y: 44 },
+/** Fixed ring geometry — deterministic so the sparkles never reshuffle when
+ *  the scene re-renders on a tap. Angles are deliberately uneven: a perfectly
+ *  regular ring reads as a loading spinner, not as magic.
+ *
+ *  Radii are large on purpose. The chest fills most of this box, so anything
+ *  inside ~130px is simply painted behind it and never seen. */
+const AURA_SPARKLES = [
+  { deg: 18, radius: 168, size: 22, dur: 2.1, delay: 0 },
+  { deg: 66, radius: 150, size: 14, dur: 2.6, delay: 0.7 },
+  { deg: 112, radius: 176, size: 18, dur: 1.9, delay: 1.3 },
+  { deg: 154, radius: 145, size: 12, dur: 2.4, delay: 0.35 },
+  { deg: 203, radius: 182, size: 24, dur: 2.2, delay: 1.05 },
+  { deg: 241, radius: 158, size: 15, dur: 2.8, delay: 1.75 },
+  { deg: 288, radius: 172, size: 19, dur: 2.0, delay: 0.5 },
+  { deg: 322, radius: 140, size: 13, dur: 2.5, delay: 1.5 },
+  { deg: 350, radius: 186, size: 16, dur: 2.3, delay: 2.0 },
+];
+
+/** Motes rise up the flanks of the chest rather than behind it. */
+const AURA_MOTES = [
+  { x: -148, drift: 18, dur: 4.2, delay: 0 },
+  { x: -120, drift: -14, dur: 5.1, delay: 1.1 },
+  { x: 128, drift: 20, dur: 4.6, delay: 2.3 },
+  { x: 156, drift: -10, dur: 5.4, delay: 0.6 },
+  { x: -168, drift: 26, dur: 4.9, delay: 3.1 },
+  { x: 142, drift: -20, dur: 5.6, delay: 1.9 },
 ];
 
 /**
- * Physical pile: items drop from above and bounce onto the shadow ellipse,
- * building one after another (chest reveal grammar).
+ * The glow, god-rays, sparkle ring and motes that sit behind the treasure
+ * chest — the difference between "an animation played" and "something
+ * happened to me".
+ *
+ * `energy` (0 → 1) winds the whole layer up as the learner taps, so the scene
+ * builds towards the reveal instead of looping at one intensity. `tapIndex`
+ * remounts the shockwave ring, which is how each tap gets its own outward
+ * pulse without an imperative animation handle.
+ *
+ * Purely decorative and pointer-events: none — it must never sit between the
+ * learner's finger and the chest.
+ */
+export function ChestAura({ energy = 0, tapIndex = 0 }: { energy?: number; tapIndex?: number }) {
+  const reducedMotion = useReducedMotion();
+  const clamped = Math.max(0, Math.min(1, energy));
+
+  return (
+    <div
+      className={styles.chestAura}
+      style={{ '--aura-energy': clamped } as React.CSSProperties}
+      aria-hidden
+    >
+      <div className={styles.auraRays} />
+      <div className={styles.auraGlow} />
+
+      {AURA_SPARKLES.map((s, i) => {
+        const rad = (s.deg * Math.PI) / 180;
+        return (
+          <span
+            key={i}
+            className={styles.auraSparkle}
+            style={
+              {
+                fontSize: s.size,
+                '--sx': `${Math.cos(rad) * s.radius}px`,
+                '--sy': `${Math.sin(rad) * s.radius}px`,
+                '--sdur': `${s.dur}s`,
+                '--sdelay': `${s.delay}s`,
+              } as React.CSSProperties
+            }
+          >
+            ✦
+          </span>
+        );
+      })}
+
+      {!reducedMotion &&
+        AURA_MOTES.map((m, i) => (
+          <span
+            key={i}
+            className={styles.auraMote}
+            style={
+              {
+                '--mx': `${m.x}px`,
+                '--mdrift': `${m.drift}px`,
+                '--mdur': `${m.dur}s`,
+                '--mdelay': `${m.delay}s`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+
+      {/* Keyed on the tap index so React remounts it per tap and the ring
+          replays from the start — a CSS animation on a persistent node would
+          only ever fire once. */}
+      {!reducedMotion && tapIndex > 0 && <div key={tapIndex} className={styles.auraShock} />}
+    </div>
+  );
+}
+
+// ─── RewardPile (drop-in gems/coins) ─────────────────────────────────────────
+
+/** Deterministic hash → [0,1). Seeded so a re-render never reshuffles a pile
+ *  the learner is already watching land. */
+function rand(seed: number): number {
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+interface PileItem {
+  /** Resting position, in % of the stage box. */
+  x: number;
+  y: number;
+  size: number;
+  /** Where it spills from — the chest mouth, not straight overhead. */
+  spawnX: number;
+  spinFrom: number;
+  spinTravel: number;
+  restRotate: number;
+  /** Projectile timings and heights. */
+  delay: number;
+  launch: number;
+  peak: number;
+  fall: number;
+  bounce: number;
+  /** Painter's-algorithm depth: lower in the heap draws in front. */
+  z: number;
+}
+
+/**
+ * Lay items out as a heap rather than a fixed pyramid: wide base, narrowing
+ * as it climbs, with per-item jitter so it reads as a poured pile instead of
+ * a grid. Rows fill bottom-up so the pile visibly *builds*.
+ */
+function buildPile(count: number): PileItem[] {
+  const items: PileItem[] = [];
+  // Row widths taper as the heap climbs. Generated rather than hard-coded so
+  // this works for 5 items and for 34.
+  const rows: number[] = [];
+  let remaining = count;
+  let width = Math.max(3, Math.round(Math.sqrt(count) * 1.6));
+  while (remaining > 0) {
+    const n = Math.min(remaining, width);
+    rows.push(n);
+    remaining -= n;
+    width = Math.max(1, width - (rows.length % 2 === 0 ? 2 : 1));
+  }
+
+  const rowCount = rows.length;
+  // Total width of the heap scales with how much is in it. A fixed spread
+  // makes five items read as a scattered row rather than a small pile.
+  const baseSpread = Math.min(84, 24 + count * 1.9);
+  let i = 0;
+  rows.forEach((n, row) => {
+    // Bottom row sits on the shadow; each row above stacks with overlap so
+    // the items nest into each other instead of stacking like plates.
+    const yBase = 88 - row * (30 / Math.max(1, rowCount));
+    const spread = baseSpread - row * ((baseSpread * 0.55) / Math.max(1, rowCount));
+    for (let c = 0; c < n; c++) {
+      const t = n === 1 ? 0.5 : c / (n - 1);
+      const jx = (rand(i * 3.1) - 0.5) * (spread / Math.max(2, n)) * 0.9;
+      const jy = (rand(i * 7.7) - 0.5) * 4.5;
+      const size = 44 + rand(i * 5.3) * 16 + (rowCount - row) * 1.5;
+      items.push({
+        x: 50 + (t - 0.5) * spread + jx,
+        y: yBase + jy,
+        size,
+        // Spilling out of the chest mouth: spawn clustered near the centre.
+        spawnX: 50 + (rand(i * 11.3) - 0.5) * 18,
+        spinFrom: (rand(i * 2.9) - 0.5) * 120,
+        // Keeps tumbling through the whole flight instead of snapping to rest.
+        spinTravel: (rand(i * 29.3) - 0.5) * 460,
+        restRotate: (rand(i * 13.1) - 0.5) * 34,
+        // Bottom rows land first — the heap fills from the floor up.
+        delay: row * 0.075 + c * 0.028 + rand(i * 17.3) * 0.05,
+        launch: 0.24 + rand(i * 31.7) * 0.1,
+        // Apex height. Kept deliberately low: the scene headline sits directly
+        // above this stage, and anything much taller throws coins across
+        // "+50 COINS" on the way up. Outer items go a little higher so the
+        // spill fans into an arc instead of rising as one column.
+        peak: 48 + rand(i * 19.7) * 52 + Math.abs(t - 0.5) * 66,
+        fall: 0.3 + rand(i * 37.1) * 0.13,
+        bounce: 10 + rand(i * 23.1) * 14,
+        z: Math.round(items.length + row * -40 + yBase * 4),
+      });
+      i++;
+    }
+  });
+  return items;
+}
+
+/**
+ * Physical pile: items pour out of the chest, accelerate under gravity, and
+ * bounce-settle into a heap on the shadow ellipse.
+ *
+ * Deliberately not a physics engine. Each item runs a hand-authored keyframe
+ * track — ease-in on the way down (acceleration), ease-out on each rebound,
+ * two diminishing bounces, and a squash/stretch pair on impact. That reads as
+ * weight far more cheaply than solving collisions for thirty sprites, and it
+ * keeps every item on the compositor (transform/opacity only).
  */
 export function RewardPile({
   iconSrc,
@@ -186,55 +371,114 @@ export function RewardPile({
   startDelay?: number;
 }) {
   const reducedMotion = useReducedMotion();
-  const visible = Math.max(1, Math.min(PILE_SLOTS.length, count));
+  const visible = Math.max(1, Math.min(40, count));
+  // Built once per pile: re-deriving on every render would reshuffle the heap
+  // mid-fall.
+  const items = React.useMemo(() => buildPile(visible), [visible]);
 
   useEffect(() => {
     if (reducedMotion) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
-    for (let i = 0; i < visible; i++) {
-      timers.push(setTimeout(() => onItemLand?.(i), startDelay + i * 170));
-    }
+    items.forEach((item, i) => {
+      // Fire on the actual first impact, not on a flat cadence, so the sound
+      // layer matches what the eye sees landing.
+      const impactMs = startDelay + (item.delay + item.launch + item.fall) * 1000;
+      timers.push(setTimeout(() => onItemLand?.(i), impactMs));
+    });
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, startDelay, reducedMotion]);
+  }, [items, startDelay, reducedMotion]);
 
   return (
     <div
+      data-reward-pile
       style={{
         position: 'relative',
-        width: 'min(78vw, 300px)',
-        height: 'clamp(150px, 26vh, 210px)',
+        width: 'min(86vw, 340px)',
+        height: 'clamp(170px, 30vh, 240px)',
       }}
       aria-hidden
     >
-      {Array.from({ length: visible }).map((_, i) => {
-        const slot = PILE_SLOTS[i];
-        const size = i === 0 ? 64 : 56 - (i % 2) * 4;
+      {items.map((item, i) => {
+        // Horizontal travel from the chest mouth to the resting slot, in px
+        // against the stage width.
+        const dx = ((item.spawnX - item.x) / 100) * 300;
+        // Projectile track: launch up out of the chest, apex, accelerate
+        // down, then two diminishing bounces. Segment durations in seconds.
+        const segs = [item.launch, item.fall, 0.12, 0.11, 0.07, 0.06];
+        const total = segs.reduce((a, b) => a + b, 0);
+        let acc = 0;
+        const times = [0, ...segs.map((s) => (acc += s) / total)];
         return (
           <motion.div
             key={i}
             className={styles.pileItem}
-            style={{ width: size, height: size, left: `${slot.x}%`, top: `${slot.y}%` }}
-            initial={reducedMotion ? false : { y: -260, opacity: 0, rotate: i % 2 ? 18 : -18, scale: 0.8 }}
-            animate={{ y: 0, opacity: 1, rotate: i % 2 ? 6 : -6, scale: 1 }}
+            style={{
+              width: item.size,
+              height: item.size,
+              left: `${item.x}%`,
+              top: `${item.y}%`,
+              marginLeft: -item.size / 2,
+              marginTop: -item.size / 2,
+              zIndex: item.z,
+            }}
+            initial={
+              reducedMotion
+                ? false
+                : { y: -26, x: dx, opacity: 0, rotate: item.spinFrom, scaleX: 1, scaleY: 1 }
+            }
+            animate={
+              reducedMotion
+                ? { y: 0, x: 0, opacity: 1, rotate: item.restRotate }
+                : {
+                    // Out of the chest → apex → impact → bounce → settle.
+                    y: [-26, -item.peak, 0, -item.bounce, 0, -item.bounce * 0.3, 0],
+                    // Most of the lateral travel happens on the way up, so the
+                    // spill fans outward at the apex and then drops nearly
+                    // straight down — a fountain, not a swarm drifting
+                    // sideways into place. Frozen after impact: a coin that
+                    // has landed does not slide.
+                    x: [dx, dx * 0.3, 0, 0, 0, 0, 0],
+                    opacity: [0, 1, 1, 1, 1, 1, 1],
+                    rotate: [
+                      item.spinFrom,
+                      item.spinFrom + item.spinTravel * 0.45,
+                      item.spinFrom + item.spinTravel,
+                      item.restRotate * 1.12,
+                      item.restRotate,
+                      item.restRotate,
+                      item.restRotate,
+                    ],
+                    // Stretch along the fast vertical segments, squash hard on
+                    // each impact — the weight cue that sells the landing.
+                    scaleX: [0.86, 0.94, 0.96, 1.22, 0.98, 1.08, 1],
+                    scaleY: [1.14, 1.06, 1.04, 0.78, 1.02, 0.94, 1],
+                  }
+            }
             transition={
               reducedMotion
-                ? { delay: i * 0.03 }
+                ? { delay: i * 0.012, duration: 0.2 }
                 : {
-                    delay: startDelay / 1000 + i * 0.17,
-                    type: 'spring',
-                    stiffness: 320,
-                    damping: 15,
-                    mass: 0.9,
+                    delay: startDelay / 1000 + item.delay,
+                    duration: total,
+                    times,
+                    // Decelerate into the apex, accelerate out of it — the
+                    // whole reason this reads as gravity rather than a tween.
+                    ease: ['easeOut', 'easeIn', 'easeOut', 'easeIn', 'easeOut', 'easeIn'],
                   }
             }
           >
             <Image
               src={iconSrc}
               alt=""
-              width={size}
-              height={size}
-              style={{ objectFit: 'contain', filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.4))' }}
+              width={Math.round(item.size)}
+              height={Math.round(item.size)}
+              style={{
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 5px 7px rgba(0,0,0,0.45))',
+                width: '100%',
+                height: '100%',
+              }}
               priority
             />
           </motion.div>

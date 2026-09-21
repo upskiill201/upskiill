@@ -2,11 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { ProfileService } from '../profile/profile.service';
-import { EmailService } from '../email/email.service';
+import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { firebaseAdmin } from './firebase-admin';
 import { Role } from '@prisma/client';
@@ -30,7 +34,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let prisma: PrismaService;
   let jwt: JwtService;
-  let emailService: EmailService;
+  let authEmails: AuthEmailService;
   let profileService: ProfileService;
 
   beforeEach(async () => {
@@ -76,7 +80,7 @@ describe('AuthService', () => {
           },
         },
         {
-          provide: EmailService,
+          provide: AuthEmailService,
           useValue: {
             sendVerificationEmail: jest.fn(),
             sendWelcomeEmail: jest.fn(),
@@ -95,7 +99,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
     prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
-    emailService = module.get<EmailService>(EmailService);
+    authEmails = module.get<AuthEmailService>(AuthEmailService);
     profileService = module.get<ProfileService>(ProfileService);
   });
 
@@ -144,11 +148,14 @@ describe('AuthService', () => {
         }),
       });
       // Verification email goes out; no JWT until the account is verified
-      expect(emailService.sendVerificationEmail).toHaveBeenCalled();
+      expect(authEmails.sendVerificationEmail).toHaveBeenCalled();
       expect(jwt.signAsync).not.toHaveBeenCalled();
       // The email builds its magic link from the RAW code — no stored hash
       // may be passed (that double-hash made link verification impossible)
-      expect((emailService.sendVerificationEmail as jest.Mock).mock.calls[0]).toHaveLength(4);
+      const call = (authEmails.sendVerificationEmail as jest.Mock).mock
+        .calls[0];
+      expect(call[1]).not.toEqual(expect.stringMatching(/^[0-9a-f]{64}$/)); // not the sha256 hash
+      expect(call[1]).toMatch(/^\d{6}$/); // the raw 6-digit code
       expect(result).toEqual({
         message: 'Check your email to verify your account',
         userId: '1',
@@ -176,12 +183,21 @@ describe('AuthService', () => {
     it('should hydrate the creator profile from onboarding answers on INSTRUCTOR signup', async () => {
       // The role must be the Prisma Role enum, not a bare string, or this
       // object no longer satisfies SignupDto and the file fails to typecheck.
-      const instructorDto = { ...dto, role: Role.INSTRUCTOR, draftId: 'draft-1' };
+      const instructorDto = {
+        ...dto,
+        role: Role.INSTRUCTOR,
+        draftId: 'draft-1',
+      };
       const onboarding = {
         step7: { biggestChallenge: ['not_enough_time'] },
         step3: { categories: ['Marketing'] },
       };
-      const mockUser = { id: '2', ...instructorDto, password: 'hashedPassword', role: 'INSTRUCTOR' };
+      const mockUser = {
+        id: '2',
+        ...instructorDto,
+        password: 'hashedPassword',
+        role: 'INSTRUCTOR',
+      };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
@@ -191,7 +207,10 @@ describe('AuthService', () => {
 
       // The array-shaped step7 used to throw inside hydration and get
       // swallowed — every answer was lost. It must reach the profile service.
-      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith('2', onboarding);
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith(
+        '2',
+        onboarding,
+      );
     });
 
     it('should successfully sign up a new INSTRUCTOR user and require email verification', async () => {
@@ -250,7 +269,9 @@ describe('AuthService', () => {
       });
 
       await expect(service.signup(dto)).rejects.toThrow(ConflictException);
-      await expect(service.signup(dto)).rejects.toThrow('An account with this email already exists.');
+      await expect(service.signup(dto)).rejects.toThrow(
+        'An account with this email already exists.',
+      );
     });
 
     it('should throw ConflictException asking for the password when upgrading to INSTRUCTOR with wrong credentials', async () => {
@@ -268,11 +289,16 @@ describe('AuthService', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.signup(dtoWithRole)).rejects.toThrow(ConflictException);
+      await expect(service.signup(dtoWithRole)).rejects.toThrow(
+        ConflictException,
+      );
       await expect(service.signup(dtoWithRole)).rejects.toThrow(
         'Enter your password to activate your Creator profile',
       );
-      expect(bcrypt.compare).toHaveBeenCalledWith(dtoWithRole.password, existingUser.password);
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        dtoWithRole.password,
+        existingUser.password,
+      );
     });
 
     it('should successfully link a verified STUDENT into INSTRUCTOR with correct credentials', async () => {
@@ -287,7 +313,11 @@ describe('AuthService', () => {
         hasStudentAccess: true,
         hasCreatorAccess: false,
       };
-      const upgradedUser = { ...existingUser, role: 'INSTRUCTOR', hasCreatorAccess: true };
+      const upgradedUser = {
+        ...existingUser,
+        role: 'INSTRUCTOR',
+        hasCreatorAccess: true,
+      };
       const mockToken = 'mocked_jwt_token';
 
       (prisma.user.findUnique as jest.Mock)
@@ -299,7 +329,10 @@ describe('AuthService', () => {
 
       const result = await service.signup(dtoWithRole);
 
-      expect(bcrypt.compare).toHaveBeenCalledWith(dtoWithRole.password, existingUser.password);
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        dtoWithRole.password,
+        existingUser.password,
+      );
       // Role upgrade also flips the creator access flag and ensures a Profile row
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { id: existingUser.id },
@@ -313,7 +346,12 @@ describe('AuthService', () => {
       });
       expect(result).toEqual({
         access_token: mockToken,
-        user: { id: '1', email: dto.email, fullName: dto.fullName, role: 'INSTRUCTOR' },
+        user: {
+          id: '1',
+          email: dto.email,
+          fullName: dto.fullName,
+          role: 'INSTRUCTOR',
+        },
         hasBothRoles: true,
         linked: true,
         verified: true,
@@ -357,7 +395,10 @@ describe('AuthService', () => {
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { email: dto.email.toLowerCase().trim() },
       });
-      expect(bcrypt.compare).toHaveBeenCalledWith(dto.password, activeUser.password);
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        dto.password,
+        activeUser.password,
+      );
       // JWT now carries the dual-role access flags
       expect(jwt.signAsync).toHaveBeenCalledWith(
         {
@@ -373,7 +414,12 @@ describe('AuthService', () => {
       expect(prisma.user.update).toHaveBeenCalled();
       expect(result).toEqual({
         access_token: mockToken,
-        user: { id: '1', email: dto.email, fullName: 'Test User', role: 'STUDENT' },
+        user: {
+          id: '1',
+          email: dto.email,
+          fullName: 'Test User',
+          role: 'STUDENT',
+        },
         hasBothRoles: false,
         redirectTo: '/dashboard',
       });
@@ -397,7 +443,11 @@ describe('AuthService', () => {
 
     it('should successfully login and grant creator access when the instructor portal is requested', async () => {
       const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
-      const upgradedUser = { ...activeUser, role: 'INSTRUCTOR', hasCreatorAccess: true };
+      const upgradedUser = {
+        ...activeUser,
+        role: 'INSTRUCTOR',
+        hasCreatorAccess: true,
+      };
       const mockToken = 'mocked_jwt_token';
 
       (prisma.user.findUnique as jest.Mock)
@@ -421,13 +471,20 @@ describe('AuthService', () => {
     });
 
     it('should never downgrade an ADMIN to INSTRUCTOR when logging in via the instructor portal', async () => {
-      const adminUser = { ...activeUser, role: 'ADMIN', hasCreatorAccess: false };
+      const adminUser = {
+        ...activeUser,
+        role: 'ADMIN',
+        hasCreatorAccess: false,
+      };
       const dtoWithRole = { ...dto, role: 'INSTRUCTOR' };
       const mockToken = 'mocked_jwt_token';
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(adminUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      (prisma.user.update as jest.Mock).mockResolvedValue({ ...adminUser, hasCreatorAccess: true });
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...adminUser,
+        hasCreatorAccess: true,
+      });
       (jwt.signAsync as jest.Mock).mockResolvedValue(mockToken);
 
       const result = await service.login(dtoWithRole);
@@ -437,7 +494,9 @@ describe('AuthService', () => {
         data: { hasCreatorAccess: true },
       });
       expect(prisma.user.update).not.toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ role: 'INSTRUCTOR' }) }),
+        expect.objectContaining({
+          data: expect.objectContaining({ role: 'INSTRUCTOR' }),
+        }),
       );
       expect(result.user.role).toBe('ADMIN');
     });
@@ -517,9 +576,9 @@ describe('AuthService', () => {
     it('does not touch the database for unknown emails', async () => {
       (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.verifyCode('ghost@example.com', code)).rejects.toThrow(
-        'Invalid verification code',
-      );
+      await expect(
+        service.verifyCode('ghost@example.com', code),
+      ).rejects.toThrow('Invalid verification code');
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
@@ -543,7 +602,12 @@ describe('AuthService', () => {
     const idToken = 'valid_firebase_token';
 
     it('should create a new user if one does not exist', async () => {
-      const decodedToken = { email: 'new@example.com', name: 'New User', picture: 'avatar.png', email_verified: true };
+      const decodedToken = {
+        email: 'new@example.com',
+        name: 'New User',
+        picture: 'avatar.png',
+        email_verified: true,
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -554,7 +618,9 @@ describe('AuthService', () => {
       };
       const mockToken = 'mocked_jwt_token';
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(null) // existing-user probe
         .mockResolvedValue(mockUser); // signToken access-flag lookup
@@ -566,7 +632,9 @@ describe('AuthService', () => {
       const result = await service.firebaseSignIn(idToken, 'STUDENT');
 
       expect(firebaseAdmin.auth().verifyIdToken).toHaveBeenCalledWith(idToken);
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { email: decodedToken.email } });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: decodedToken.email },
+      });
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           email: decodedToken.email,
@@ -580,13 +648,22 @@ describe('AuthService', () => {
       });
       expect(result).toEqual({
         access_token: mockToken,
-        user: { id: '1', email: mockUser.email, fullName: mockUser.fullName, role: 'STUDENT' },
+        user: {
+          id: '1',
+          email: mockUser.email,
+          fullName: mockUser.fullName,
+          role: 'STUDENT',
+        },
         hasBothRoles: false,
       });
     });
 
     it('should log in an existing user without creating a new row', async () => {
-      const decodedToken = { email: 'existing@example.com', email_verified: true, picture: 'avatar.png' };
+      const decodedToken = {
+        email: 'existing@example.com',
+        email_verified: true,
+        picture: 'avatar.png',
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -597,7 +674,9 @@ describe('AuthService', () => {
       };
       const mockToken = 'mocked_jwt_token';
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValue(mockUser);
@@ -608,13 +687,22 @@ describe('AuthService', () => {
       expect(prisma.user.create).not.toHaveBeenCalled();
       expect(result).toEqual({
         access_token: mockToken,
-        user: { id: '1', email: mockUser.email, fullName: mockUser.fullName, role: 'STUDENT' },
+        user: {
+          id: '1',
+          email: mockUser.email,
+          fullName: mockUser.fullName,
+          role: 'STUDENT',
+        },
         hasBothRoles: false,
       });
     });
 
     it('should upgrade existing user to INSTRUCTOR with a creator profile row if requested', async () => {
-      const decodedToken = { email: 'existing@example.com', email_verified: true, picture: 'avatar.png' };
+      const decodedToken = {
+        email: 'existing@example.com',
+        email_verified: true,
+        picture: 'avatar.png',
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -623,10 +711,16 @@ describe('AuthService', () => {
         hasStudentAccess: true,
         hasCreatorAccess: false,
       };
-      const updatedUser = { ...mockUser, role: 'INSTRUCTOR', hasCreatorAccess: true };
+      const updatedUser = {
+        ...mockUser,
+        role: 'INSTRUCTOR',
+        hasCreatorAccess: true,
+      };
       const mockToken = 'mocked_jwt_token';
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValue(updatedUser);
@@ -637,7 +731,10 @@ describe('AuthService', () => {
 
       expect(prisma.profile.upsert).toHaveBeenCalledWith({
         where: { userId: mockUser.id },
-        create: { userId: mockUser.id, avatarUrl: decodedToken.picture || null },
+        create: {
+          userId: mockUser.id,
+          avatarUrl: decodedToken.picture || null,
+        },
         update: {},
       });
       expect(prisma.user.update).toHaveBeenCalledWith({
@@ -649,7 +746,11 @@ describe('AuthService', () => {
     });
 
     it('should never downgrade an ADMIN to INSTRUCTOR via Firebase sign-in', async () => {
-      const decodedToken = { email: 'admin@example.com', email_verified: true, picture: 'avatar.png' };
+      const decodedToken = {
+        email: 'admin@example.com',
+        email_verified: true,
+        picture: 'avatar.png',
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -661,7 +762,9 @@ describe('AuthService', () => {
       const updatedUser = { ...mockUser, hasCreatorAccess: true };
       const mockToken = 'mocked_jwt_token';
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValue(updatedUser);
@@ -675,7 +778,9 @@ describe('AuthService', () => {
         data: { hasCreatorAccess: true },
       });
       expect(prisma.user.update).not.toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ role: 'INSTRUCTOR' }) }),
+        expect.objectContaining({
+          data: expect.objectContaining({ role: 'INSTRUCTOR' }),
+        }),
       );
       expect(result.user.role).toBe('ADMIN');
     });
@@ -683,23 +788,39 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException if no email in token', async () => {
       const decodedToken = { name: 'No Email User' };
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
 
-      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(UnauthorizedException);
+      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
+        UnauthorizedException,
+      );
       // Business-rule rejections pass through unwrapped (no "Invalid Firebase Token" prefix)
-      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow('No email found in Firebase token');
+      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
+        'No email found in Firebase token',
+      );
     });
 
     it('should throw UnauthorizedException if token verification fails', async () => {
       const error = new Error('Verification failed');
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockRejectedValue(error);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockRejectedValue(
+        error,
+      );
 
-      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(UnauthorizedException);
-      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow('Invalid Firebase Token: Verification failed');
+      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
+        'Invalid Firebase Token: Verification failed',
+      );
     });
 
     it('should successfully link creatorOnboardingDraft to user if draftId is provided', async () => {
-      const decodedToken = { email: 'existing@example.com', email_verified: true, picture: 'avatar.png' };
+      const decodedToken = {
+        email: 'existing@example.com',
+        email_verified: true,
+        picture: 'avatar.png',
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -710,7 +831,9 @@ describe('AuthService', () => {
       };
       const mockToken = 'mocked_jwt_token';
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValue(mockUser);
@@ -726,11 +849,18 @@ describe('AuthService', () => {
     });
 
     it('should reject sign-in when the provider has not verified the email claim', async () => {
-      const decodedToken = { email: 'unverified@example.com', email_verified: false };
+      const decodedToken = {
+        email: 'unverified@example.com',
+        email_verified: false,
+      };
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
 
-      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(UnauthorizedException);
+      await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
+        UnauthorizedException,
+      );
       await expect(service.firebaseSignIn(idToken, 'STUDENT')).rejects.toThrow(
         'not verified with your sign-in provider',
       );
@@ -755,7 +885,9 @@ describe('AuthService', () => {
         hasCreatorAccess: false,
       };
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(null) // existing-user probe
         .mockResolvedValue(mockUser); // signToken access-flag lookup
@@ -775,7 +907,11 @@ describe('AuthService', () => {
     });
 
     it('should hydrate the creator profile from onboarding answers for a new INSTRUCTOR', async () => {
-      const decodedToken = { email: 'creator@example.com', name: 'New Creator', email_verified: true };
+      const decodedToken = {
+        email: 'creator@example.com',
+        name: 'New Creator',
+        email_verified: true,
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -784,9 +920,14 @@ describe('AuthService', () => {
         hasStudentAccess: false,
         hasCreatorAccess: true,
       };
-      const onboarding = { step7: { biggestChallenge: ['time', 'editing'] }, step3: { categories: ['Design'] } };
+      const onboarding = {
+        step7: { biggestChallenge: ['time', 'editing'] },
+        step3: { categories: ['Design'] },
+      };
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(null) // existing-user probe
         .mockResolvedValue(mockUser); // signToken access-flag lookup
@@ -794,14 +935,26 @@ describe('AuthService', () => {
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
       (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
 
-      await service.firebaseSignIn(idToken, 'INSTRUCTOR', undefined, onboarding);
+      await service.firebaseSignIn(
+        idToken,
+        'INSTRUCTOR',
+        undefined,
+        onboarding,
+      );
 
       // The Google path used to silently drop this payload — it must hydrate
-      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith('1', onboarding);
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith(
+        '1',
+        onboarding,
+      );
     });
 
     it('should NOT re-hydrate onboarding answers over an existing creator profile', async () => {
-      const decodedToken = { email: 'creator@example.com', name: 'Existing Creator', email_verified: true };
+      const decodedToken = {
+        email: 'creator@example.com',
+        name: 'Existing Creator',
+        email_verified: true,
+      };
       const mockUser = {
         id: '1',
         email: decodedToken.email,
@@ -812,12 +965,19 @@ describe('AuthService', () => {
       };
       const onboarding = { step3: { categories: ['Stale answers'] } };
 
-      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(decodedToken);
+      (firebaseAdmin.auth().verifyIdToken as jest.Mock).mockResolvedValue(
+        decodedToken,
+      );
       (prisma.user.findUnique as jest.Mock)
         .mockResolvedValueOnce(mockUser) // already a creator before this call
         .mockResolvedValue(mockUser);
 
-      await service.firebaseSignIn(idToken, 'INSTRUCTOR', undefined, onboarding);
+      await service.firebaseSignIn(
+        idToken,
+        'INSTRUCTOR',
+        undefined,
+        onboarding,
+      );
 
       // Stale localStorage answers must never clobber settings-page edits
       expect(profileService.hydrateFromOnboarding).not.toHaveBeenCalled();
@@ -827,7 +987,10 @@ describe('AuthService', () => {
   describe('verifyEmail', () => {
     it('should verify with the RAW code from the magic link — single hash, matching the stored value', async () => {
       const code = '123456';
-      const storedHash = require('crypto').createHash('sha256').update(code).digest('hex');
+      const storedHash = require('crypto')
+        .createHash('sha256')
+        .update(code)
+        .digest('hex');
       const mockUser = {
         id: '1',
         email: 'verify@example.com',
@@ -839,7 +1002,11 @@ describe('AuthService', () => {
       };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-      (prisma.user.update as jest.Mock).mockResolvedValue({ ...mockUser, isVerified: true, verifyToken: null });
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...mockUser,
+        isVerified: true,
+        verifyToken: null,
+      });
 
       const result = await service.verifyEmail(code);
 
@@ -852,7 +1019,7 @@ describe('AuthService', () => {
         where: { id: '1' },
         data: { isVerified: true, verifyToken: null, tokenExpiry: null },
       });
-      expect(emailService.sendWelcomeEmail).toHaveBeenCalled();
+      expect(authEmails.sendWelcomeEmail).toHaveBeenCalled();
       expect(result.access_token).toBe('mocked-jwt-token');
     });
 
@@ -869,14 +1036,18 @@ describe('AuthService', () => {
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
-      await expect(service.verifyEmail('123456')).rejects.toThrow(ForbiddenException);
+      await expect(service.verifyEmail('123456')).rejects.toThrow(
+        ForbiddenException,
+      );
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
     it('should reject an unknown token without leaking whether the account exists', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.verifyEmail('000000')).rejects.toThrow(ForbiddenException);
+      await expect(service.verifyEmail('000000')).rejects.toThrow(
+        ForbiddenException,
+      );
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
   });
@@ -912,15 +1083,21 @@ describe('AuthService', () => {
     it('should reject switching to ADMIN even when both access flags are set', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(baseUser);
 
-      await expect(service.switchRole(baseUser.id, 'ADMIN')).rejects.toThrow(ForbiddenException);
-      await expect(service.switchRole(baseUser.id, 'ADMIN')).rejects.toThrow('Invalid role target');
+      await expect(service.switchRole(baseUser.id, 'ADMIN')).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.switchRole(baseUser.id, 'ADMIN')).rejects.toThrow(
+        'Invalid role target',
+      );
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
     it('should reject case-obfuscated admin targets', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(baseUser);
 
-      await expect(service.switchRole(baseUser.id, 'admin')).rejects.toThrow('Invalid role target');
+      await expect(service.switchRole(baseUser.id, 'admin')).rejects.toThrow(
+        'Invalid role target',
+      );
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
@@ -928,9 +1105,9 @@ describe('AuthService', () => {
       const studentOnly = { ...baseUser, hasCreatorAccess: false };
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(studentOnly);
 
-      await expect(service.switchRole(studentOnly.id, 'INSTRUCTOR')).rejects.toThrow(
-        'No creator profile found for this account',
-      );
+      await expect(
+        service.switchRole(studentOnly.id, 'INSTRUCTOR'),
+      ).rejects.toThrow('No creator profile found for this account');
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
   });
@@ -957,7 +1134,13 @@ describe('AuthService', () => {
         select: { hasCreatorAccess: true, hasStudentAccess: true },
       });
       expect(jwt.signAsync).toHaveBeenCalledWith(
-        { sub: userId, email, role, hasCreatorAccess: true, hasStudentAccess: true },
+        {
+          sub: userId,
+          email,
+          role,
+          hasCreatorAccess: true,
+          hasStudentAccess: true,
+        },
         { expiresIn: '7d', secret: expect.any(String) },
       );
       expect(result).toEqual({
@@ -971,8 +1154,18 @@ describe('AuthService', () => {
     it('returns enrollments with real per-course lesson totals in one grouped query', async () => {
       const userId = '1';
       const mockEnrollments = [
-        { id: '1', courseId: '100', userId, course: { id: '100', title: 'Course A' } },
-        { id: '2', courseId: '200', userId, course: { id: '200', title: 'Course B' } },
+        {
+          id: '1',
+          courseId: '100',
+          userId,
+          course: { id: '100', title: 'Course A' },
+        },
+        {
+          id: '2',
+          courseId: '200',
+          userId,
+          course: { id: '200', title: 'Course B' },
+        },
       ];
       // Two sections in course 100 (3 lessons), one in course 200 (4 lessons)
       const mockSections = [
@@ -981,7 +1174,9 @@ describe('AuthService', () => {
         { courseId: '200', _count: { lessons: 4 } },
       ];
 
-      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue(mockEnrollments);
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue(
+        mockEnrollments,
+      );
       (prisma.section.findMany as jest.Mock).mockResolvedValue(mockSections);
 
       const result = await service.getMyEnrollments(userId);

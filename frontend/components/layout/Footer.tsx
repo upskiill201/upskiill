@@ -45,6 +45,7 @@ export default function Footer() {
             <li><Link href="/skill-gap">Skill Gap Analyzer</Link></li>
             <li><Link href="/learning-path">Custom Learning Paths</Link></li>
             <li><Link href="/marketplace">Freelance Marketplace</Link></li>
+            <li><Link href="/features">All Features</Link></li>
           </ul>
         </div>
 
@@ -57,6 +58,7 @@ export default function Footer() {
             <li><Link href="/dashboard">Student Dashboard</Link></li>
             <li><Link href="/affiliate">Affiliate</Link></li>
             <li><Link href="/teach">Teach on Upskiill</Link></li>
+            <li><Link href="/for">Use Cases</Link></li>
           </ul>
         </div>
 
@@ -69,6 +71,7 @@ export default function Footer() {
             <li><Link href="/dashboard/feed">Community Feed</Link></li>
             <li><Link href="/blog">Blog & News</Link></li>
             <li><Link href="/investors">Investors</Link></li>
+            <li><Link href="/alternatives">Compare Platforms</Link></li>
           </ul>
         </div>
 

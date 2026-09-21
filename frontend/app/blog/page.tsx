@@ -95,10 +95,7 @@ export default function BlogIndexPage() {
             <div className={styles.heroContent}>
               <span
                 className={styles.heroPill}
-                style={{
-                  background: `${featuredCategory.accentColor}14`,
-                  color: featuredCategory.accentColor,
-                }}
+                style={{ background: featuredCategory.accentColor }}
               >
                 {featuredCategory.name}
               </span>

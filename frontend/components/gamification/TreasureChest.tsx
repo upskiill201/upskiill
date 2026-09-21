@@ -4,21 +4,41 @@
  * TreasureChest — the ONE Rive-powered treasure chest implementation for all
  * of Teyro. Every chest-worthy reward (Daily Chest today; Monthly Quest,
  * achievements, courses, events tomorrow) renders this component and drives
- * it through this same clean API. Do not build a second chest component —
- * see `frontend/public/Rive md/` for the source spec this was built against.
+ * it through this same API. Do not build a second chest component.
  *
- * Rive owns the chest's visual progression, opening, and reward-category
- * reveal (internally, via its own state machine) — this wrapper only sets
- * `rewards.rewardType` and forwards taps to the `click` trigger. Reward
- * eligibility/amount/persistence is entirely the caller's responsibility;
- * this component never calls a reward API itself.
+ * Division of labour: Rive owns the visual progression, the tap-to-open
+ * sequence, reveal timing and the per-reward animation. This wrapper owns the
+ * reward *data*, the interaction lifecycle and accessibility. It never calls
+ * a reward API and never grants anything — `onRewardReveal` is a presentation
+ * signal, not permission to award.
  *
- * View model contract (verified against the actual treasure_chest.riv
- * binary, not guessed): view model `TChest`, triggers `click` / `reset`,
- * nested `rewards` view model with enum `rewardType` — values `coinRewards`
- * / `xpRewards` / `streakFreezeRewards` / `xpBoostRewards` / `hartRewards`
- * (that spelling is real — see currency.ts's toRiveRewardType) — and a
- * `rewardReveal` trigger that fires at the exact reveal point.
+ * All ordering logic lives in `lib/chest/chestLifecycle.ts` as a pure state
+ * machine; this file is the driver that turns Rive callbacks into events and
+ * performs the effects that come back.
+ *
+ * ── Verified contract (read from the .riv binary, not the guide) ────────────
+ * The animator's integration guide disagrees with the shipped asset in two
+ * places; everything below is what the file actually exposes:
+ *
+ *   artboard        "Safe" (default)
+ *   state machine   "State Machine 1" — zero legacy inputs, pure data binding
+ *   view model      "TChest"  → triggers `click`, `reset`
+ *                             → nested VM `rewords` (guide says `rewards`,
+ *                               which resolves to null on the real file)
+ *                                 → enum `rewardType`
+ *                                 → boolean `isReveal` (Rive-owned, read only)
+ *   reveal signal   `rewardReveal` is a **Rive General event (type 128)**,
+ *                   NOT a view-model trigger. Binding it as a VM trigger —
+ *                   as the previous integration did — silently never fires.
+ *
+ * Two behaviours found by probing the state machine that the app must respect,
+ * because Rive will not protect us from either:
+ *   • `rewardType` defaults to `coinRewards`, so a tap landing before the
+ *     server has resolved the reward reveals coins regardless of what the
+ *     learner actually won. Taps are gated on a configured reward.
+ *   • A `click` after the reveal sends the machine back to `hovering` and
+ *     flips `isReveal` false — it re-closes the chest. Post-reveal taps are
+ *     dropped outright.
  */
 
 import React, {
@@ -26,93 +46,143 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import Image from 'next/image';
 import {
   Alignment,
+  EventType,
   Fit,
   Layout,
+  RiveEventType,
   useRive,
-  useViewModel,
-  useViewModelInstance,
-  useViewModelInstanceEnum,
-  useViewModelInstanceTrigger,
 } from '@rive-app/react-canvas';
-import { toRiveRewardType, type TeyroRewardType } from '../celebration/currency';
+import {
+  CHEST_REVEAL_EVENT,
+  CHEST_REWARD_ENUM_PROPERTY,
+  CHEST_REWARD_VM_CANDIDATES,
+  CHEST_TRIGGER_CLICK,
+  CHEST_TRIGGER_RESET,
+  RIVE_REWARD_TYPES,
+  safeToRiveRewardType,
+  type TeyroRewardType,
+} from '../celebration/currency';
+import {
+  chestReducer,
+  initialChestState,
+  type ChestEffect,
+  type ChestEvent,
+  type ChestPhase,
+  type ChestState,
+} from '@/lib/chest/chestLifecycle';
 
-const DEV = process.env.NODE_ENV === 'development';
-/** `?chestDebug=1` opts into diagnostics on any build where testing is
- * already explicitly enabled — NODE_ENV alone is useless for this since
- * `next build` is always 'production' on every deployed environment
- * (staging included), so every dev-gated log/overlay was silently inert
- * on staging the whole time this was being debugged.
+export type { ChestPhase } from '@/lib/chest/chestLifecycle';
+
+const RIVE_SRC = '/Rive/treasure_chest.riv';
+const STATE_MACHINE = 'State Machine 1';
+const FALLBACK_IMAGE_SRC = '/Tressure box.webp';
+
+/** Diagnostics are always opt-in via `?chestDebug=1`, including in local dev.
  *
- * Gated on NEXT_PUBLIC_SHOW_CHEST_BENCH (already the "this environment
- * has chest testing turned on" flag, set on staging, never on
- * production) rather than the query param alone — a bare query param
- * would make this work for any visitor on production too, not just
- * staging. Read once per module load (SSR-safe guard); neither value
- * changes without a full navigation anyway. */
-const CHEST_TESTING_ENABLED = process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true';
+ * Dev used to switch the overlay on unconditionally, which meant a black
+ * diagnostic panel sat on top of the chest art in every local session — the
+ * one place you most want to actually watch the animation. The information is
+ * still one query param away.
+ *
+ * Outside dev it additionally requires NEXT_PUBLIC_SHOW_CHEST_BENCH (already
+ * the "this environment has chest testing turned on" flag, set on staging,
+ * never on production). NODE_ENV alone is useless there since `next build` is
+ * always 'production' on every deployed environment, staging included — which
+ * is why every dev-gated log was silently inert on staging the whole time this
+ * was last being debugged. A bare query param would expose it on production. */
+const DEV = process.env.NODE_ENV === 'development';
+const CHEST_TESTING_ENABLED = DEV || process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true';
 const CHEST_DEBUG =
-  DEV ||
-  (CHEST_TESTING_ENABLED &&
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('chestDebug') === '1');
+  CHEST_TESTING_ENABLED &&
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).get('chestDebug') === '1';
+
 function devLog(...args: unknown[]) {
   if (CHEST_DEBUG) console.debug('[TreasureChest]', ...args);
 }
 
+/** Minimal shape of the bits of Rive's ViewModelInstance we actually touch. */
+interface RiveEnumProperty {
+  value: string;
+  values?: string[];
+}
+interface RiveBooleanProperty {
+  value: boolean;
+}
+interface RiveTriggerProperty {
+  trigger: () => void;
+}
+interface ChestViewModelInstance {
+  viewModel(name: string): ChestViewModelInstance | null;
+  enum(name: string): RiveEnumProperty | null;
+  boolean(name: string): RiveBooleanProperty | null;
+  trigger(name: string): RiveTriggerProperty | null;
+}
+
+type ChestBinding =
+  | { ok: true; root: ChestViewModelInstance; rewardVm: ChestViewModelInstance; rewardPath: string; declared: string[] }
+  | { ok: false; detail: string };
+
 export type TreasureChestHandle = {
-  /** Forward a tap/click to the chest's Rive interaction. No-ops (and is
-   * queued for replay) until `rewardType` is known. */
+  /** Forward a tap to the chest. Held (not dropped) until the reward is
+   *  configured; ignored once the reward has revealed. */
   click: () => void;
   /** Replay the chest without reloading the .riv file or remounting. */
   reset: () => void;
+  /** Current lifecycle phase — for the dev bench and tests. */
+  getPhase: () => ChestPhase;
 };
 
 export interface TreasureChestProps {
   /** Which reward to visually reveal. Leave undefined until the reward is
-   * resolved server-side — taps are accepted but held until this is set,
-   * so the chest never reveals a reward category before it's known. */
+   * resolved server-side — taps are accepted but held until this is set, so
+   * the chest never reveals a reward category before it's known. */
   rewardType?: TeyroRewardType;
   /** Whether the chest currently accepts taps/keyboard activation. */
   active?: boolean;
-  /** Rive layout fit mode. Defaults to Fit.Cover so the chest fills the viewport container without letterboxing. */
+  /** Rive layout fit mode. Defaults to Fit.Cover so the chest fills its
+   *  container without letterboxing. */
   fit?: Fit;
-  /** Visual scale multiplier for the chest graphic (default: 1.35) */
+  /** Visual scale multiplier for the chest graphic (default: 1.6). The chest
+   *  occupies well under half its artboard, so this is what makes it read as
+   *  the hero of the scene rather than a small object in a large empty box. */
   scale?: number;
   className?: string;
   style?: React.CSSProperties;
-  /** Fires once the Rive file has loaded and is ready for interaction. */
+  /** Fires once the Rive file has loaded and its contract has been verified. */
   onLoad?: () => void;
-  /** Fires once, on the first accepted tap/activation. */
+  /** Fires once per cycle, on the first accepted tap — including a tap that
+   *  arrives before the reward is known. The caller's cue to resolve the
+   *  reward server-side. */
   onStart?: () => void;
-  /** Fires on every tap actually forwarded to Rive's `click` trigger
-   * (including the first), with a 1-based tap index — use this to drive
-   * escalating feedback (shake pulse, rising tap sound, "keep going!"
-   * copy) while the chest is mid-open. */
+  /** Fires on every tap actually forwarded to Rive's `click` trigger, with a
+   *  1-based tap index — drives escalating feedback while the chest opens. */
   onTap?: (tapIndex: number) => void;
-  /** Fires once per click→reveal cycle. Guarded against duplicate Rive
-   * triggers (StrictMode, re-renders) — only `reset()` clears the guard. */
+  /** Fires exactly once per cycle, when Rive emits its `rewardReveal` event.
+   *  Presentation only — never treat this as a reward grant. */
   onRewardReveal?: () => void;
-  /** Rive failed to load or bind — falls back to a static image. The
-   * caller must be able to complete its own reward flow without waiting
-   * on `onRewardReveal` in this case. */
+  /** Rive failed to load, or the loaded file doesn't match the expected view
+   *  model contract, or the reward has no animation. Falls back to static
+   *  art that is still tappable. The caller must be able to complete its
+   *  reward flow without waiting on `onRewardReveal`. */
   onError?: (error: Error) => void;
+  /** Lifecycle observer for instrumentation and the dev bench. */
+  onPhaseChange?: (phase: ChestPhase) => void;
 }
-
-const RIVE_SRC = '/Rive/treasure_chest.riv';
-const FALLBACK_IMAGE_SRC = '/Tressure box.webp';
 
 const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(function TreasureChest(
   {
     rewardType,
     active = true,
     fit = Fit.Cover,
-    scale = 1.35,
+    scale = 1.6,
     className,
     style,
     onLoad,
@@ -120,330 +190,356 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
     onTap,
     onRewardReveal,
     onError,
+    onPhaseChange,
   },
   ref
 ) {
-  const [failed, setFailed] = useState(false);
-  /** On-screen readout for `?chestDebug=1` — production builds have no
-   * console access on a phone, so this needs to be visible on the chest
-   * itself, not just logged. */
-  const [debugInfo, setDebugInfo] = useState<{
-    smNames: string[];
-    smInputs: string[];
-    chestVMFound: boolean;
-    namedInstanceBound: boolean;
-    autoBound: boolean;
-    rewordsFound: boolean;
-    enumValues: string[];
-    lastSet: string | null;
-    lastReadback: string | null;
-    lastApplied: boolean | null;
-    resetFiredAt: number | null;
-    revealFiredAt: number | null;
-    lastError: string | null;
-  }>({
-    smNames: [],
-    smInputs: [],
-    chestVMFound: false,
-    namedInstanceBound: false,
-    autoBound: false,
-    rewordsFound: false,
-    enumValues: [],
-    lastSet: null,
-    lastReadback: null,
-    lastApplied: null,
-    resetFiredAt: null,
-    revealFiredAt: null,
-    lastError: null,
-  });
-  const startedRef = useRef(false);
-  const revealedRef = useRef(false);
-  const tapIndexRef = useRef(0);
-  // A tap that arrives before `rewardType` is known is held here and
-  // replayed once it lands, instead of being silently dropped.
-  const pendingClickRef = useRef(false);
-  // Latest-callback refs so useRive's mount-time callbacks never fire a
-  // stale closure. Assigned in an effect (not during render) — these are
-  // only read asynchronously on load/error, well after commit.
-  const onErrorRef = useRef(onError);
-  const onLoadRef = useRef(onLoad);
-  useEffect(() => {
-    onErrorRef.current = onError;
-    onLoadRef.current = onLoad;
-  }, [onError, onLoad]);
+  // The reducer's state lives in a ref so Rive's async callbacks always read
+  // the live value; `phase` mirrors it for rendering only.
+  const stateRef = useRef<ChestState>(initialChestState());
+  const [phase, setRenderPhase] = useState<ChestPhase>(stateRef.current.phase);
+  const bindingRef = useRef<ChestBinding | null>(null);
 
-  // Lazy useState rather than a ref: reading a ref during render is a
-  // React anti-pattern (and a lint error here). Stable for the component's
-  // lifetime, same as before — `fit` is a mount-time config.
+  // Latest-callback refs so Rive's mount-time and event callbacks never fire
+  // a stale closure. Assigned in an effect, read only asynchronously.
+  const cbRef = useRef({ onLoad, onStart, onTap, onRewardReveal, onError, onPhaseChange });
+  useEffect(() => {
+    cbRef.current = { onLoad, onStart, onTap, onRewardReveal, onError, onPhaseChange };
+  }, [onLoad, onStart, onTap, onRewardReveal, onError, onPhaseChange]);
+
+  const [debug, setDebug] = useState({
+    rewardPath: null as string | null,
+    enumValues: [] as string[],
+    triggers: [] as string[],
+    listenerBound: false,
+    lastEvent: null as string | null,
+    lastApplied: null as string | null,
+    readback: null as string | null,
+    isReveal: null as boolean | null,
+    cycle: 0,
+    taps: 0,
+    guards: 'started=false revealed=false pendingTap=false',
+  });
+  const patchDebug = useCallback((patch: Partial<typeof debug>) => {
+    if (!CHEST_DEBUG) return;
+    queueMicrotask(() => setDebug((d) => ({ ...d, ...patch })));
+  }, []);
+
+  // ── Effect performer ──────────────────────────────────────────────────────
+  const runEffect = useCallback(
+    (effect: ChestEffect) => {
+      const binding = bindingRef.current;
+      switch (effect.type) {
+        case 'EmitStart':
+          cbRef.current.onStart?.();
+          return;
+        case 'EmitTap':
+          cbRef.current.onTap?.(effect.tapIndex);
+          return;
+        case 'EmitReveal':
+          cbRef.current.onRewardReveal?.();
+          return;
+        case 'EmitError':
+          cbRef.current.onError?.(
+            new Error(`[TreasureChest:${effect.reason}] ${effect.detail}`)
+          );
+          return;
+        case 'ApplyReward': {
+          if (!binding?.ok) return;
+          try {
+            const prop = binding.rewardVm.enum(CHEST_REWARD_ENUM_PROPERTY);
+            if (!prop) return;
+            prop.value = effect.reward;
+            devLog('applied reward', effect.reward, '→ readback', prop.value);
+            patchDebug({ lastApplied: effect.reward, readback: prop.value });
+          } catch (e) {
+            devLog('ApplyReward threw', e);
+          }
+          return;
+        }
+        case 'FireClick': {
+          if (!binding?.ok) return;
+          binding.root.trigger(CHEST_TRIGGER_CLICK)?.trigger();
+          patchDebug({ isReveal: readIsReveal(binding.rewardVm) });
+          return;
+        }
+        case 'FireReset': {
+          if (!binding?.ok) return;
+          binding.root.trigger(CHEST_TRIGGER_RESET)?.trigger();
+          return;
+        }
+      }
+    },
+    [patchDebug]
+  );
+
+  /** Feed one event through the machine and perform whatever comes back.
+   *  Effects run synchronously so a tap reaches Rive in the same gesture. */
+  const dispatch = useCallback(
+    (event: ChestEvent) => {
+      const before = stateRef.current;
+      const { state, effects } = chestReducer(before, event);
+      stateRef.current = state;
+      if (state.phase !== before.phase) {
+        setRenderPhase(state.phase);
+        cbRef.current.onPhaseChange?.(state.phase);
+      }
+      effects.forEach(runEffect);
+      // Mirrored into state rather than read off the ref at render time, so
+      // the overlay shows the live guards instead of whatever was current at
+      // the last re-render.
+      patchDebug({
+        cycle: state.cycle,
+        taps: state.tapIndex,
+        guards: `started=${state.started} revealed=${state.revealed} pendingTap=${state.pendingTap}`,
+      });
+    },
+    [runEffect, patchDebug]
+  );
+
+  // Lazy useState, not a ref: reading a ref during render is a React
+  // anti-pattern. `fit` is mount-time config, stable for the component's life.
   const [layout] = useState(() => new Layout({ fit, alignment: Alignment.Center }));
 
   const { rive, RiveComponent } = useRive({
     src: RIVE_SRC,
+    // Naming the state machine at construction is what stops Rive falling
+    // back to the artboard's first *linear* animation (the file has nine of
+    // them). The previous integration corrected that after the fact with a
+    // stop()/play() dance on load; declaring it up front is the supported
+    // route and removes a frame of the wrong animation.
+    stateMachines: STATE_MACHINE,
     autoplay: true,
-    // Binds the artboard's own default view model instance. This is the
-    // instance the artboard actually READS from — writes to an instance
-    // resolved any other way can land on a detached copy that never
-    // reaches the animation (which is why every reward rendered as coins).
+    // Binds the artboard's own default view model instance — the instance the
+    // artboard actually READS from. Resolving an instance any other way can
+    // land writes on a detached copy that never reaches the animation.
     autoBind: true,
-    // We drive the chest entirely through explicit triggers (click/reset),
-    // not Rive's own built-in canvas interactivity — so its internal
-    // pointer/touch Listeners (hitBox/hover/swipe, baked into the .riv)
-    // are pure overhead we don't want. Worse: on iOS Safari specifically,
-    // if anything in a touch's path calls preventDefault() (which canvas
-    // gesture listeners commonly do), iOS refuses to synthesize the
-    // subsequent click event at all — silently breaking our own onClick
-    // handler on the wrapping div. Disabling Rive's listeners removes that
-    // interference entirely, on every platform, not just iOS.
+    // We drive the chest entirely through explicit triggers, not Rive's own
+    // canvas interactivity, so its internal pointer Listeners are overhead we
+    // don't want. Worse: on iOS Safari, if anything in a touch's path calls
+    // preventDefault() (which canvas gesture listeners commonly do), iOS
+    // refuses to synthesize the subsequent click event at all — silently
+    // breaking our own onClick on the wrapping div.
     shouldDisableRiveListeners: true,
     layout,
-    onLoad: () => onLoadRef.current?.(),
     onLoadError: (e) => {
       devLog('LOAD ERROR', e);
-      setFailed(true);
-      if (CHEST_DEBUG) setDebugInfo((d) => ({ ...d, lastError: `LOAD ERROR: ${String(e)}` }));
-      onErrorRef.current?.(new Error('Failed to load treasure_chest.riv'));
+      dispatch({ type: 'RiveFailed', detail: `Failed to load ${RIVE_SRC}: ${String(e)}` });
     },
   });
 
-  // The .riv artboard has both linear timeline animations (swipe1/opening/
-  // idleClick8/etc.) and the interactive state machine. Left unspecified,
-  // Rive's default is to play the first *linear animation* instead of the
-  // state machine — so clicks/resets would have nothing listening for them.
-  // Discover the real state machine name(s) at runtime (never guessed) and
-  // explicitly switch playback to them once the file has loaded.
-  useEffect(() => {
-    if (!rive) return;
-    const names = rive.stateMachineNames;
-    devLog('loaded', {
-      animationNames: rive.animationNames,
-      stateMachineNames: names,
-      bounds: rive.bounds,
-    });
-    if (names.length === 0) {
-      devLog('WARNING: no state machine found on this artboard — click/reset will do nothing.');
-      if (CHEST_DEBUG) {
-        queueMicrotask(() => setDebugInfo((d) => ({ ...d, smNames: [], lastError: 'NO STATE MACHINE FOUND' })));
-      }
-      return;
-    }
-    rive.stop();
-    rive.play(names, true);
+  // ── Resolve the view model and verify the contract ────────────────────────
+  // Once per Rive instance. If the asset doesn't expose what we need we fail
+  // loudly into the static fallback rather than animating a lie.
+  const binding = useMemo<ChestBinding | null>(() => {
+    if (!rive) return null;
+    const root = (rive as unknown as { viewModelInstance: ChestViewModelInstance | null })
+      .viewModelInstance;
+    if (!root) return { ok: false, detail: 'No bound view model instance (autoBind failed).' };
 
-    // Enumerate state machine INPUTS. If the reward branch is selected by an
-    // input here rather than by the view model enum, setting the enum alone
-    // would never change the visual — exactly the "always coins" symptom.
-    const inputSummary: string[] = [];
-    names.forEach((sm) => {
-      const inputs = rive.stateMachineInputs(sm);
-      inputs?.forEach((input) => {
-        inputSummary.push(`${input.name}:${input.type}`);
-      });
-    });
-    devLog('state machine inputs', inputSummary);
-    if (CHEST_DEBUG) {
-      queueMicrotask(() => setDebugInfo((d) => ({ ...d, smNames: names, smInputs: inputSummary })));
+    let rewardVm: ChestViewModelInstance | null = null;
+    let rewardPath: string | null = null;
+    for (const candidate of CHEST_REWARD_VM_CANDIDATES) {
+      try {
+        const nested = root.viewModel(candidate);
+        if (nested?.enum(CHEST_REWARD_ENUM_PROPERTY)) {
+          rewardVm = nested;
+          rewardPath = `${candidate}/${CHEST_REWARD_ENUM_PROPERTY}`;
+          break;
+        }
+      } catch {
+        /* try the next spelling */
+      }
     }
+    if (!rewardVm || !rewardPath) {
+      return {
+        ok: false,
+        detail: `No reward enum found at ${CHEST_REWARD_VM_CANDIDATES.map(
+          (c) => `${c}/${CHEST_REWARD_ENUM_PROPERTY}`
+        ).join(' or ')}.`,
+      };
+    }
+
+    const missingTriggers = [CHEST_TRIGGER_CLICK, CHEST_TRIGGER_RESET].filter((name) => {
+      try {
+        return !root.trigger(name);
+      } catch {
+        return true;
+      }
+    });
+    if (missingTriggers.length > 0) {
+      return { ok: false, detail: `Missing required trigger(s): ${missingTriggers.join(', ')}.` };
+    }
+
+    const declared = rewardVm.enum(CHEST_REWARD_ENUM_PROPERTY)?.values ?? [];
+    const missingValues = RIVE_REWARD_TYPES.filter((v) => !declared.includes(v));
+    if (missingValues.length > 0) {
+      return {
+        ok: false,
+        detail: `Reward enum is missing value(s): ${missingValues.join(
+          ', '
+        )}. Declared: ${declared.join(', ')}.`,
+      };
+    }
+
+    return { ok: true, root, rewardVm, rewardPath, declared };
   }, [rive]);
 
-  // Bind the TChest view model explicitly by name (verified against the
-  // actual .riv binary) rather than relying on `autoBind`'s default-instance
-  // heuristic, which can silently fail to find a binding.
-  const chestViewModel = useViewModel(rive, { name: 'TChest' });
-  const namedVmi = useViewModelInstance(chestViewModel, { useDefault: true, rive });
-  // ORDER MATTERS: prefer the autoBind instance — it's the one the artboard
-  // renders from. The named lookup is only a fallback for the case where the
-  // file's default view model isn't the one we want.
-  const vmi = rive?.viewModelInstance ?? namedVmi ?? null;
-
-  // Resolve the nested `rewords` ViewModelInstance (`VMrewards`) from `TChest`.
-  // NOTE: in the actual binary artboard, the animator named this property `rewords` (with an 'o').
-  const rewordsVmi = React.useMemo(() => {
-    if (!vmi) return null;
-    try {
-      return vmi.viewModel('rewords') ?? vmi.viewModel('rewards') ?? null;
-    } catch {
-      return null;
-    }
-  }, [vmi]);
-
   useEffect(() => {
-    if (!rive) return;
-    const info = {
-      chestViewModelFound: !!chestViewModel,
-      namedInstanceBound: !!namedVmi,
-      autoBoundFallback: !!rive.viewModelInstance,
-      rewordsVmiFound: !!rewordsVmi,
-    };
-    devLog('viewModel resolution', info);
-    if (CHEST_DEBUG) {
-      queueMicrotask(() =>
-        setDebugInfo((d) => ({
-          ...d,
-          chestVMFound: info.chestViewModelFound,
-          namedInstanceBound: info.namedInstanceBound,
-          autoBound: info.autoBoundFallback,
-          rewordsFound: info.rewordsVmiFound,
-        }))
-      );
-    }
-  }, [rive, chestViewModel, namedVmi, rewordsVmi]);
-
-  // Hook into the nested `rewardType` enum directly on `rewordsVmi`
-  const nestedRewardTypeEnum = useViewModelInstanceEnum('rewardType', rewordsVmi);
-  // Direct slash path on vmi (`rewords/rewardType` matches the binary structure)
-  const pathRewardTypeEnum = useViewModelInstanceEnum('rewords/rewardType', vmi);
-
-  const applyRewardType = useCallback(
-    (riveValue: string) => {
-      let applied = false;
-      // 1. Direct setter on nested enum hook
-      if (nestedRewardTypeEnum && typeof nestedRewardTypeEnum.setValue === 'function') {
-        try {
-          nestedRewardTypeEnum.setValue(riveValue);
-          applied = true;
-        } catch {}
-      }
-      // 2. Direct property setter on nested rewords VM
-      if (rewordsVmi) {
-        try {
-          const enumProp = rewordsVmi.enum('rewardType');
-          if (enumProp) {
-            enumProp.value = riveValue;
-            applied = true;
-          }
-        } catch {}
-      }
-      // 3. Fallback direct path on vmi
-      if (pathRewardTypeEnum && typeof pathRewardTypeEnum.setValue === 'function') {
-        try {
-          pathRewardTypeEnum.setValue(riveValue);
-          applied = true;
-        } catch {}
-      }
-      if (vmi) {
-        try {
-          const ep =
-            vmi.enum('rewords/rewardType') ||
-            vmi.enum('rewards/rewardType') ||
-            vmi.enum('rewardType');
-          if (ep) {
-            ep.value = riveValue;
-            applied = true;
-          }
-        } catch {}
-      }
-      const readback = nestedRewardTypeEnum.value ?? pathRewardTypeEnum.value ?? null;
-      devLog('applyRewardType ->', riveValue, { applied, readback });
-      if (CHEST_DEBUG) {
-        queueMicrotask(() =>
-          setDebugInfo((d) => ({ ...d, lastSet: riveValue, lastReadback: readback, lastApplied: applied }))
-        );
-      }
-      return applied;
-    },
-    [nestedRewardTypeEnum, rewordsVmi, pathRewardTypeEnum, vmi]
-  );
-
-  useEffect(() => {
-    if (!rewordsVmi && !vmi) return;
-    const values = nestedRewardTypeEnum.values.length ? nestedRewardTypeEnum.values : pathRewardTypeEnum.values;
-    devLog('rewardType enum bound values:', values);
-    if (CHEST_DEBUG) queueMicrotask(() => setDebugInfo((d) => ({ ...d, enumValues: values })));
-  }, [rewordsVmi, vmi, nestedRewardTypeEnum.values, pathRewardTypeEnum.values]);
-
-  const clickTrigger = useViewModelInstanceTrigger('click', vmi);
-  const resetTrigger = useViewModelInstanceTrigger('reset', vmi);
-  useViewModelInstanceTrigger('rewardReveal', vmi, {
-    onTrigger: () => {
-      devLog('rewardReveal trigger fired from Rive');
-      if (CHEST_DEBUG) {
-        const firedAt = Date.now();
-        queueMicrotask(() => setDebugInfo((d) => ({ ...d, revealFiredAt: firedAt })));
-      }
-      if (revealedRef.current) return;
-      revealedRef.current = true;
-      onRewardReveal?.();
-    },
-  });
-
-  // Reset the Rive experience as soon as the view model binds, BEFORE any
-  // reward type is set. Rive caches the loaded file and its default view
-  // model instance across mounts, so a second chest would otherwise start
-  // with the state machine still in its finished-from-last-time state and
-  // ignore the new rewardType — rendering the default (coins) no matter
-  // what we set. This is the `reset` trigger the animator's spec calls for:
-  // "resets the experience so it can be played again without reloading".
-  // Safe to run before rewardType arrives: it only lands after the
-  // server responds, which is always later than this.
-  const didResetRef = useRef(false);
-  useEffect(() => {
-    if (!vmi || didResetRef.current) return;
-    didResetRef.current = true;
-    devLog('firing reset on mount — clean slate for this chest');
-    if (CHEST_DEBUG) {
-      const firedAt = Date.now();
-      queueMicrotask(() => setDebugInfo((d) => ({ ...d, resetFiredAt: firedAt })));
-    }
-    resetTrigger.trigger();
-  }, [vmi, resetTrigger]);
-
-  // Set the reward category once both the ViewModel is bound and the
-  // reward is known, then flush any tap that was held waiting for it.
-  useEffect(() => {
-    if (!vmi || !rewardType) return;
-    const riveValue = toRiveRewardType(rewardType);
-    devLog('setting rewardType ->', riveValue);
-    applyRewardType(riveValue);
-    if (pendingClickRef.current) {
-      pendingClickRef.current = false;
-      devLog('flushing held tap -> click trigger');
-      clickTrigger.trigger();
-      tapIndexRef.current += 1;
-      onTap?.(tapIndexRef.current);
-    }
-  }, [vmi, rewardType, applyRewardType, clickTrigger, onTap]);
-
-  const handleActivate = useCallback(() => {
-    if (!active || failed) return;
-    if (!startedRef.current) {
-      startedRef.current = true;
-      onStart?.();
-    }
-    if (!vmi || !rewardType) {
-      devLog('tap held — rewardType not resolved yet');
-      pendingClickRef.current = true;
+    if (!binding) return;
+    bindingRef.current = binding;
+    if (!binding.ok) {
+      devLog('CONTRACT ERROR', binding.detail);
+      patchDebug({ rewardPath: null, lastEvent: `contract error: ${binding.detail}` });
+      dispatch({ type: 'ContractFailed', detail: binding.detail });
       return;
     }
-    // Re-assert the reward category immediately before every forwarded tap
-    // (not just the first) — closes any timing gap between a rewardType
-    // prop change and this click reaching Rive, so the reveal can never use
-    // a stale category.
-    const riveValue = toRiveRewardType(rewardType);
-    applyRewardType(riveValue);
-    tapIndexRef.current += 1;
-    devLog('click trigger fired, tap #', tapIndexRef.current, 'rewardType =', riveValue);
-    clickTrigger.trigger();
-    onTap?.(tapIndexRef.current);
-  }, [active, failed, vmi, rewardType, applyRewardType, clickTrigger, onStart, onTap]);
+    devLog('contract verified', { rewardPath: binding.rewardPath, values: binding.declared });
+    patchDebug({
+      rewardPath: binding.rewardPath,
+      enumValues: binding.declared,
+      triggers: [CHEST_TRIGGER_CLICK, CHEST_TRIGGER_RESET],
+    });
+    // Clean slate for this instance BEFORE any reward is configured. Rive
+    // caches the loaded file and its default view model instance across
+    // mounts, so without this a second chest starts in the finished state of
+    // the previous one and ignores the new rewardType. Still required on the
+    // new asset: a freshly loaded file reports isReveal=true until `reset`.
+    binding.root.trigger(CHEST_TRIGGER_RESET)?.trigger();
+    dispatch({ type: 'RiveReady' });
+    cbRef.current.onLoad?.();
+  }, [binding, dispatch, patchDebug]);
+
+  // ── `rewardReveal` is a Rive EVENT, not a view-model trigger ──────────────
+  // Registered once per Rive instance and torn down on unmount, so a remount
+  // can't leave two listeners double-firing the reveal.
+  useEffect(() => {
+    if (!rive) return;
+    const handler = (event: unknown) => {
+      const data = (event as { data?: { name?: string; type?: number } })?.data;
+      if (!data?.name) return;
+      patchDebug({ lastEvent: `${data.name} (type ${data.type})` });
+      if (data.name !== CHEST_REVEAL_EVENT) return;
+      // General events only — an OpenUrl event sharing the name would be a
+      // different signal entirely.
+      if (data.type !== undefined && data.type !== RiveEventType.General) return;
+      devLog('rewardReveal received');
+      dispatch({ type: 'Reveal' });
+    };
+
+    rive.on(EventType.RiveEvent, handler);
+    patchDebug({ listenerBound: true });
+    return () => {
+      rive.off(EventType.RiveEvent, handler);
+      patchDebug({ listenerBound: false });
+    };
+  }, [rive, dispatch, patchDebug]);
+
+  // ── Reward configuration ──────────────────────────────────────────────────
+  const configureReward = useCallback(
+    (value: TeyroRewardType | undefined) => {
+      if (!value) return;
+      if (!bindingRef.current?.ok) return;
+      const riveValue = safeToRiveRewardType(value);
+      if (!riveValue) {
+        // The server resolved something this asset has no animation for.
+        // Substituting coins would misrepresent a reward the learner has
+        // already been granted, so fail into the caller's fallback instead.
+        dispatch({
+          type: 'RewardUnsupported',
+          detail: `Unsupported reward type for the chest animation: ${String(value)}`,
+        });
+        return;
+      }
+      dispatch({ type: 'RewardResolved', reward: riveValue });
+    },
+    [dispatch]
+  );
+
+  const rewardTypeRef = useRef(rewardType);
+  useEffect(() => {
+    rewardTypeRef.current = rewardType;
+  }, [rewardType]);
+
+  useEffect(() => {
+    configureReward(rewardType);
+  }, [rewardType, binding, configureReward]);
+
+  // ── Public handle ─────────────────────────────────────────────────────────
+  const handleActivate = useCallback(() => {
+    if (!active) return;
+    dispatch({ type: 'Tap' });
+  }, [active, dispatch]);
 
   useImperativeHandle(
     ref,
     () => ({
       click: handleActivate,
       reset: () => {
-        startedRef.current = false;
-        revealedRef.current = false;
-        pendingClickRef.current = false;
-        tapIndexRef.current = 0;
-        resetTrigger.trigger();
+        dispatch({ type: 'Reset' });
+        // Re-arm with whatever reward is currently on the props. `reset`
+        // does NOT clear Rive's rewardType enum — it keeps the previous
+        // cycle's value — and the prop may not change between cycles, so
+        // without this the chest would sit in `ready` holding taps forever
+        // while Rive still points at the last reward.
+        configureReward(rewardTypeRef.current);
       },
+      getPhase: () => stateRef.current.phase,
     }),
-    [handleActivate, resetTrigger]
+    [handleActivate, dispatch, configureReward]
   );
 
+  // ── Render ────────────────────────────────────────────────────────────────
+  const failed = phase.status === 'error';
+  const interactive = active && phase.status !== 'revealed';
+
+  const ariaLabel =
+    phase.status === 'revealed'
+      ? 'Treasure chest opened'
+      : phase.status === 'opening'
+        ? 'Opening treasure chest, keep tapping'
+        : 'Open treasure chest';
+
+  /** Announced at the transitions that matter. Decorative animation frames
+   *  are deliberately not announced. */
+  const liveMessage =
+    phase.status === 'opening'
+      ? 'Opening your chest'
+      : phase.status === 'revealed'
+        ? 'Your chest is open'
+        : '';
+
+  const interactionProps = {
+    role: 'button' as const,
+    tabIndex: interactive ? 0 : -1,
+    'aria-label': ariaLabel,
+    'aria-disabled': !interactive,
+    'data-chest-phase': phase.status,
+    // Single click handler only. Adding pointerdown/touchstart alongside this
+    // would make one physical tap advance the machine twice.
+    onClick: handleActivate,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleActivate();
+      }
+    },
+  };
+
+  const wrapperStyle: React.CSSProperties = {
+    position: 'relative',
+    cursor: interactive ? 'pointer' : 'default',
+    touchAction: 'manipulation',
+    WebkitTapHighlightColor: 'transparent',
+    ...style,
+  };
+
   if (failed) {
+    // Static art, but still a real button: the learner taps to open exactly
+    // as before, and the caller reveals the reward through its fallback path.
+    // Auto-opening here would claim the chest with no learner intent.
     return (
-      <div className={className} style={style}>
+      <div className={className} style={wrapperStyle} {...interactionProps}>
         <Image
           src={FALLBACK_IMAGE_SRC}
           alt="Teyro treasure chest"
@@ -457,26 +553,7 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
   }
 
   return (
-    <div
-      className={className}
-      style={{
-        position: 'relative',
-        cursor: active ? 'pointer' : 'default',
-        touchAction: 'manipulation',
-        WebkitTapHighlightColor: 'transparent',
-        ...style,
-      }}
-      role="button"
-      tabIndex={active ? 0 : -1}
-      aria-label="Open treasure chest"
-      onClick={handleActivate}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleActivate();
-        }
-      }}
-    >
+    <div className={className} style={wrapperStyle} {...interactionProps}>
       <RiveComponent
         style={{
           width: '100%',
@@ -485,6 +562,20 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
           transformOrigin: 'center center',
         }}
       />
+
+      <span
+        aria-live="polite"
+        style={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {liveMessage}
+      </span>
 
       {CHEST_DEBUG && (
         <div
@@ -500,27 +591,43 @@ const TreasureChest = forwardRef<TreasureChestHandle, TreasureChestProps>(functi
             padding: '6px 8px',
             borderRadius: 6,
             textAlign: 'left',
-            maxWidth: 280,
+            maxWidth: 300,
           }}
         >
-          <div>rive: {rive ? 'loaded' : 'loading…'} · failed: {String(failed)}</div>
-          <div>SM: {debugInfo.smNames.join(', ') || '(none)'}</div>
-          <div style={{ color: '#FFD479' }}>SM inputs: {debugInfo.smInputs.join(', ') || '(none)'}</div>
           <div>
-            chestVM: {String(debugInfo.chestVMFound)} · named: {String(debugInfo.namedInstanceBound)} · autoBound: {String(debugInfo.autoBound)} · rewords: {String(debugInfo.rewordsFound)}
+            phase: {phase.status} · cycle {debug.cycle} · taps {debug.taps}
           </div>
-          <div style={{ color: '#9ecbff' }}>enum: {debugInfo.enumValues.join(', ') || '(none)'}</div>
-          <div>set: {debugInfo.lastSet ?? '—'} · applied: {String(debugInfo.lastApplied)}</div>
-          <div style={{ color: debugInfo.lastReadback === debugInfo.lastSet ? '#7CFFB2' : '#FF8A8A' }}>
-            readback: {debugInfo.lastReadback ?? '—'}
+          <div>
+            rive: {rive ? 'loaded' : 'loading…'} · SM: {STATE_MACHINE}
           </div>
-          <div>reset fired: {debugInfo.resetFiredAt ? new Date(debugInfo.resetFiredAt).toLocaleTimeString() : 'never'}</div>
-          <div>reveal fired: {debugInfo.revealFiredAt ? new Date(debugInfo.revealFiredAt).toLocaleTimeString() : 'never'}</div>
-          {debugInfo.lastError && <div style={{ color: '#FF8A8A' }}>ERROR: {debugInfo.lastError}</div>}
+          <div style={{ color: debug.rewardPath ? '#7CFFB2' : '#FF8A8A' }}>
+            reward path: {debug.rewardPath ?? '(unresolved)'}
+          </div>
+          <div style={{ color: '#9ecbff' }}>enum: {debug.enumValues.join(', ') || '(none)'}</div>
+          <div>triggers: {debug.triggers.join(', ') || '(none)'}</div>
+          <div style={{ color: debug.listenerBound ? '#7CFFB2' : '#FF8A8A' }}>
+            rewardReveal listener: {debug.listenerBound ? 'bound' : 'NOT BOUND'}
+          </div>
+          <div>last Rive event: {debug.lastEvent ?? '—'}</div>
+          <div style={{ color: debug.readback === debug.lastApplied ? '#7CFFB2' : '#FF8A8A' }}>
+            set: {debug.lastApplied ?? '—'} · readback: {debug.readback ?? '—'}
+          </div>
+          <div>isReveal (Rive-owned): {debug.isReveal === null ? '—' : String(debug.isReveal)}</div>
+          <div>guards: {debug.guards}</div>
         </div>
       )}
     </div>
   );
 });
+
+/** Read-only peek at Rive's own reveal flag, for the debug overlay. Never
+ *  written — the animator owns this property. */
+function readIsReveal(vm: ChestViewModelInstance): boolean | null {
+  try {
+    return vm.boolean('isReveal')?.value ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export default TreasureChest;

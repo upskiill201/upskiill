@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   COHORT_CAPACITY,
@@ -73,7 +74,10 @@ export class LeagueService {
   // each fresh `LeagueService` built in tests — starts with a clean cache.
   private readonly ensureSettledCheckedAt = new Map<string, number>();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   // ─── XP recording (called from LeagueListener on 'xp.awarded') ─────────────
 
@@ -82,14 +86,22 @@ export class LeagueService {
    * joining them to a cohort in their current tier on their first award of
    * the week ("complete a lesson to join this week's leaderboard").
    */
-  async recordXp(userId: string, amount: number, awardedAt: Date, source: string) {
+  async recordXp(
+    userId: string,
+    amount: number,
+    awardedAt: Date,
+    source: string,
+  ) {
     if (amount <= 0) return;
     try {
       await this.ensureSettled(userId, awardedAt);
       await this.joinOrIncrement(userId, amount, awardedAt);
     } catch (err) {
       // League tracking must never break the award flow that triggered it.
-      this.logger.error(`recordXp failed for user ${userId} (${source})`, err as Error);
+      this.logger.error(
+        `recordXp failed for user ${userId} (${source})`,
+        err as Error,
+      );
     }
   }
 
@@ -118,7 +130,14 @@ export class LeagueService {
     const cohortId = await this.assignCohort(league, weekStart);
 
     await this.prisma.leagueMember.create({
-      data: { userId, cohortId, weekStart, league, weeklyXp: amount, xpUpdatedAt: at },
+      data: {
+        userId,
+        cohortId,
+        weekStart,
+        league,
+        weeklyXp: amount,
+        xpUpdatedAt: at,
+      },
     });
   }
 
@@ -127,7 +146,10 @@ export class LeagueService {
    * creating one when none qualify. Cohort rows are locked FOR UPDATE inside
    * the transaction so two simultaneous joiners can't overflow the 30 slots.
    */
-  private async assignCohort(league: LeagueTier, weekStart: string): Promise<string> {
+  private async assignCohort(
+    league: LeagueTier,
+    weekStart: string,
+  ): Promise<string> {
     return this.prisma.$transaction(async (tx) => {
       // Lock every cohort row for this (league, week) — serializes placement
       // and cohort creation between concurrent joiners.
@@ -144,10 +166,11 @@ export class LeagueService {
             _count: true,
           })
         : [];
-      const countByCohort = new Map(counts.map((c) => [c.cohortId, c._count as number]));
+      const countByCohort = new Map(counts.map((c) => [c.cohortId, c._count]));
 
       for (const cohort of cohorts) {
-        if ((countByCohort.get(cohort.id) ?? 0) < COHORT_CAPACITY) return cohort.id;
+        if ((countByCohort.get(cohort.id) ?? 0) < COHORT_CAPACITY)
+          return cohort.id;
       }
 
       // All full (or none exist) — open the next cohort. Index = number of
@@ -179,7 +202,12 @@ export class LeagueService {
     // 1. Settle the user's finished cohorts (CAS-guarded, so concurrent calls
     //    for different users in the same cohort are safe).
     const unsettled = await this.prisma.leagueMember.findMany({
-      where: { userId, weekStart: { lt: currentWeek }, outcome: null, cohortId: { not: null } },
+      where: {
+        userId,
+        weekStart: { lt: currentWeek },
+        outcome: null,
+        cohortId: { not: null },
+      },
       select: { cohortId: true },
     });
     for (const m of unsettled) {
@@ -200,7 +228,11 @@ export class LeagueService {
       return;
     }
 
-    for (let week = getNextWeekStart(latest.weekStart); week < currentWeek; week = getNextWeekStart(week)) {
+    for (
+      let week = getNextWeekStart(latest.weekStart);
+      week < currentWeek;
+      week = getNextWeekStart(week)
+    ) {
       const existing = await this.prisma.leagueMember.findUnique({
         where: { userId_weekStart: { userId, weekStart: week } },
         select: { id: true },
@@ -229,7 +261,15 @@ export class LeagueService {
       // createMany + skipDuplicates: if a concurrent call already recorded
       // this week, count === 0 and the demotion is skipped (idempotent).
       const created = await tx.leagueMember.createMany({
-        data: [{ userId, weekStart, league: profile.leagueTier, weeklyXp: 0, outcome: 'INACTIVE_DEMOTED' }],
+        data: [
+          {
+            userId,
+            weekStart,
+            league: profile.leagueTier,
+            weeklyXp: 0,
+            outcome: 'INACTIVE_DEMOTED',
+          },
+        ],
         skipDuplicates: true,
       });
       if (created.count === 0) return;
@@ -269,7 +309,11 @@ export class LeagueService {
         for (let i = 0; i < total; i++) {
           const member = cohort.members[i];
           const rank = i + 1;
-          const { outcome, newTier } = resolveOutcome(cohort.league, rank, total);
+          const { outcome, newTier } = resolveOutcome(
+            cohort.league,
+            rank,
+            total,
+          );
 
           await tx.leagueMember.update({
             where: { id: member.id },
@@ -280,7 +324,9 @@ export class LeagueService {
             where: { userId: member.userId },
             data: {
               leagueTier: newTier,
-              ...(outcome === 'CHAMPION' ? { tournamentWins: { increment: 1 } } : {}),
+              ...(outcome === 'CHAMPION'
+                ? { tournamentWins: { increment: 1 } }
+                : {}),
             },
           });
         }
@@ -294,10 +340,23 @@ export class LeagueService {
           `Settled ${isTournament ? 'Diamond Tournament' : cohort.league} cohort ${cohortId} (${total} members)`,
         );
       });
+
+      // No event previously existed for "a cohort settled" — clients only
+      // ever discovered results by polling getPendingResults(). This is the
+      // hook the email system (and any future push notification) needs.
+      for (const member of cohort.members) {
+        this.eventEmitter.emit('league.settled', {
+          leagueMemberId: member.id,
+          userId: member.userId,
+        });
+      }
     } catch (err) {
       // Release the claim so a later read can retry the settlement.
       await this.prisma.leagueCohort
-        .updateMany({ where: { id: cohortId, status: 'SETTLING' }, data: { status: 'ACTIVE' } })
+        .updateMany({
+          where: { id: cohortId, status: 'SETTLING' },
+          data: { status: 'ACTIVE' },
+        })
         .catch(() => undefined);
       throw err;
     }
@@ -309,7 +368,10 @@ export class LeagueService {
   async getMyLeaderboard(userId: string): Promise<MyLeaderboard> {
     const now = new Date();
     await this.ensureSettled(userId, now).catch((err) =>
-      this.logger.error(`ensureSettled failed during leaderboard read for ${userId}`, err as Error),
+      this.logger.error(
+        `ensureSettled failed during leaderboard read for ${userId}`,
+        err as Error,
+      ),
     );
 
     const weekStart = getUtcWeekStart(now);
@@ -366,7 +428,9 @@ export class LeagueService {
       myRank: standings.find((s) => s.isMe)?.rank ?? null,
       promotionCutoff: getPromotionZoneFor(league, total),
       demotionStartRank:
-        league !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION ? total - DEMOTION_ZONE_SIZE + 1 : null,
+        league !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION
+          ? total - DEMOTION_ZONE_SIZE + 1
+          : null,
       standings,
     };
   }
@@ -377,14 +441,24 @@ export class LeagueService {
    * learner who was away for two weekly settlements gets both queued and
    * played in order, rather than only ever seeing the most recent one.
    */
-  async getPendingResults(userId: string): Promise<{ results: PendingLeagueResult[] }> {
+  async getPendingResults(
+    userId: string,
+  ): Promise<{ results: PendingLeagueResult[] }> {
     const currentWeek = getUtcWeekStart();
     await this.ensureSettled(userId).catch((err) =>
-      this.logger.error(`ensureSettled failed during pending-results read for ${userId}`, err as Error),
+      this.logger.error(
+        `ensureSettled failed during pending-results read for ${userId}`,
+        err as Error,
+      ),
     );
 
     const pendingRows = await this.prisma.leagueMember.findMany({
-      where: { userId, weekStart: { lt: currentWeek }, seenAt: null, outcome: { not: null } },
+      where: {
+        userId,
+        weekStart: { lt: currentWeek },
+        seenAt: null,
+        outcome: { not: null },
+      },
       orderBy: { weekStart: 'asc' },
     });
     if (pendingRows.length === 0) return { results: [] };

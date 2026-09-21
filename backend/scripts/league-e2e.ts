@@ -13,7 +13,7 @@ import { LeagueService } from '../src/league/league.service';
 import { getUtcWeekStart, addDays } from '../src/league/league.config';
 
 const prisma = new PrismaClient();
-const league = new LeagueService(prisma as any);
+const league = new LeagueService(prisma as any, { emit: () => false } as any);
 
 function assert(cond: boolean, label: string) {
   if (!cond) throw new Error(`❌ ${label}`);

@@ -117,6 +117,10 @@ model User {
   teyNotificationPrefs   TeyNotificationPrefs?
   googleDriveConnection  GoogleDriveConnection?
   courseImports          CourseImport[]
+  emailPreference        EmailPreference?
+  emailLogs              EmailLog[]
+  emailJobs              EmailJob[]
+  checkoutIntents        CheckoutIntent[]
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -2695,4 +2699,167 @@ model PlatformSettings {
   updatedByAdminId String?
 
   @@map("platform_settings")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Email / lifecycle communication system
+// ─────────────────────────────────────────────────────────────────────────
+
+/// One row per user. Category flags follow email.config.ts's EmailCategory
+/// enum. Security/transactional emails never consult this table — they are
+/// not optional. Absence of a row means "everything on" (safe default for
+/// users created before this table existed — see backfill note in docs).
+model EmailPreference {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// One-switch marketing/conversion opt-out (abandoned checkout, campaigns).
+  marketingOptOut Boolean @default(false)
+
+  /// Product lifecycle categories. Each can be turned off independently.
+  learningRemindersOptOut Boolean @default(false)
+  streakRemindersOptOut   Boolean @default(false)
+  progressEmailsOptOut    Boolean @default(false)
+  leagueEmailsOptOut      Boolean @default(false)
+  weeklyDigestOptOut      Boolean @default(false)
+  reengagementOptOut      Boolean @default(false)
+  creatorDigestOptOut     Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("email_preferences")
+}
+
+/// Durable delivery record. Also the idempotency ledger: a unique
+/// idempotencyKey prevents the same logical email (e.g. one course-completion
+/// notice) from ever being recorded/sent twice, even across process restarts
+/// or duplicate event emissions — the DB unique constraint is the actual
+/// authority, not an in-memory check.
+model EmailLog {
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  email       String
+  templateKey String
+  /// EmailCategory: TRANSACTIONAL | SECURITY | LEARNING | ENGAGEMENT |
+  /// REENGAGEMENT | CONVERSION | PAYMENT | CREATOR | DIGEST | MARKETING
+  category    String
+
+  /// userId + templateKey + a caller-supplied period/entity key, e.g.
+  /// "welcome:USER_ID" or "digest:USER_ID:2026-W38" or
+  /// "checkout-abandoned-2:CHECKOUT_ID".
+  idempotencyKey String @unique
+
+  /// 'QUEUED' | 'SENDING' | 'SENT' | 'FAILED' | 'SKIPPED'
+  status  String
+  /// Why a SKIPPED row exists — unsubscribed, already-sent, ineligible, etc.
+  skipReason String?
+
+  provider          String  @default("RESEND")
+  providerMessageId String?
+
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  openedAt    DateTime?
+  clickedAt   DateTime?
+  failedAt    DateTime?
+  error       String?
+
+  /// Small, non-sensitive context for observability (courseId, checkoutId,
+  /// campaignId...). Never raw tokens/links/secrets.
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, templateKey])
+  @@index([status, createdAt])
+  @@index([category, createdAt])
+  @@map("email_logs")
+}
+
+/// Postgres-backed claimable job queue, same shape/claim strategy as
+/// TeyScheduledAction (FOR UPDATE SKIP LOCKED) — deliberately not a new
+/// piece of infrastructure, just the same pattern applied to email.
+model EmailJob {
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// EmailEvent, e.g. "COURSE_COMPLETED", "CHECKOUT_ABANDONED_STAGE".
+  eventType   String
+  templateKey String
+
+  /// 'PENDING' | 'CLAIMED' | 'SENT' | 'SKIPPED' | 'CANCELLED' | 'FAILED'
+  status String @default("PENDING")
+
+  dueAt DateTime
+
+  /// Mirrors EmailLog.idempotencyKey — one live job per logical send.
+  dedupeKey String @unique
+
+  /// Data needed to hydrate the template at send time. Kept small; the
+  /// worker re-fetches authoritative state rather than trusting this.
+  payload Json?
+
+  attempts   Int       @default(0)
+  claimedAt  DateTime?
+  claimedBy  String?
+  lastError  String?
+  skipReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Hot queue query is `status='PENDING' AND dueAt <= now()`; the partial
+  // index for that lives in the hand-authored migration SQL (Prisma can't
+  // express a WHERE-qualified index).
+  @@index([userId, status])
+  @@map("email_jobs")
+}
+
+/// Abandoned-checkout funnel state. One row per checkout attempt (not per
+/// course) so two concurrent checkouts for the same user stay independent.
+model CheckoutIntent {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseId String
+  provider String // PaymentProviderType as string: STRIPE | MESOMB | MANUAL
+
+  /// Provider checkout/session/intent reference, when available.
+  checkoutRef String?
+
+  amountMinor Int
+  currency    String @default("USD")
+
+  /// 'STARTED' | 'PAID' | 'ABANDONED' | 'CANCELLED' | 'EXPIRED'
+  status String @default("STARTED")
+
+  startedAt DateTime @default(now())
+  paidAt    DateTime?
+
+  /// How many recovery emails have gone out (0-4). Bumped only after a send.
+  recoveryStage       Int       @default(0)
+  lastRecoveryEmailAt DateTime?
+
+  /// Recovery campaign id, echoed back on the "continue checkout" link so a
+  /// completed purchase can be attributed to the email that drove it.
+  campaignId String @default(uuid())
+
+  /// Set once EMAIL_ABANDONED_CHECKOUT stops emailing this intent for any
+  /// reason (paid, unsubscribed, cancelled, sequence exhausted).
+  recoveryStoppedAt     DateTime?
+  recoveryStoppedReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([status, startedAt])
+  @@map("checkout_intents")
 }

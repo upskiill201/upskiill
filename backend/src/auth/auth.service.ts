@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import {
   ForbiddenException,
   HttpException,
@@ -15,7 +15,7 @@ import { firebaseAdmin } from './firebase-admin';
 import { Role } from '@prisma/client';
 import * as crypto from 'crypto';
 import { ProfileService } from '../profile/profile.service';
-import { EmailService } from '../email/email.service';
+import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { getJwtSecret } from './jwt-secret.util';
 
@@ -32,7 +32,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private profileService: ProfileService,
-    private emailService: EmailService,
+    private authEmails: AuthEmailService,
     private userOnboarding: UserOnboardingService,
   ) {}
 
@@ -44,7 +44,8 @@ export class AuthService {
 
     // Security: self-service signups may only ever create STUDENT or INSTRUCTOR
     // accounts — ADMIN is never a client-selectable role.
-    const requestedRole = dto.role === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
+    const requestedRole =
+      dto.role === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
 
     if (existing) {
       // The bcrypt comparison runs ONLY on the two linking paths that act on
@@ -54,7 +55,8 @@ export class AuthService {
         requestedRole === 'INSTRUCTOR' &&
         existing.role !== Role.ADMIN &&
         (!existing.hasCreatorAccess || existing.role !== 'INSTRUCTOR');
-      const wantsStudentLink = requestedRole === 'STUDENT' && !existing.hasStudentAccess;
+      const wantsStudentLink =
+        requestedRole === 'STUDENT' && !existing.hasStudentAccess;
 
       if (wantsInstructorUpgrade || wantsStudentLink) {
         const pwMatches = await bcrypt.compare(dto.password, existing.password);
@@ -93,22 +95,37 @@ export class AuthService {
               data: { userId: existing.id },
             });
           } catch (err) {
-            console.warn(`Could not link draft ${dto.draftId} to existing user ${existing.id}:`, err);
+            console.warn(
+              `Could not link draft ${dto.draftId} to existing user ${existing.id}:`,
+              err,
+            );
           }
         }
 
         if (dto.onboarding) {
           try {
-            await this.profileService.hydrateFromOnboarding(existing.id, dto.onboarding as any);
+            await this.profileService.hydrateFromOnboarding(
+              existing.id,
+              dto.onboarding as any,
+            );
           } catch (err) {
-            console.warn(`Profile hydration failed for linked user ${existing.id}:`, err);
+            console.warn(
+              `Profile hydration failed for linked user ${existing.id}:`,
+              err,
+            );
           }
         }
 
-        const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
+        const hasBothRoles =
+          existing.hasStudentAccess && existing.hasCreatorAccess;
 
         if (existing.isVerified) {
-          const tokens = await this.signToken(existing.id, existing.email, existing.fullName, existing.role);
+          const tokens = await this.signToken(
+            existing.id,
+            existing.email,
+            existing.fullName,
+            existing.role,
+          );
           return {
             ...tokens,
             hasBothRoles,
@@ -146,16 +163,28 @@ export class AuthService {
         // settle any pending proofs now. Best-effort, non-fatal.
         if (dto.onboarding) {
           try {
-            await this.userOnboarding.applyPreSignupAnswers(existing.id, dto.onboarding);
+            await this.userOnboarding.applyPreSignupAnswers(
+              existing.id,
+              dto.onboarding,
+            );
           } catch (err) {
-            console.warn(`Pre-signup answer reconciliation failed for linked user ${existing.id}:`, err);
+            console.warn(
+              `Pre-signup answer reconciliation failed for linked user ${existing.id}:`,
+              err,
+            );
           }
         }
 
-        const hasBothRoles = existing.hasStudentAccess && existing.hasCreatorAccess;
+        const hasBothRoles =
+          existing.hasStudentAccess && existing.hasCreatorAccess;
 
         if (existing.isVerified) {
-          const tokens = await this.signToken(existing.id, existing.email, existing.fullName, existing.role);
+          const tokens = await this.signToken(
+            existing.id,
+            existing.email,
+            existing.fullName,
+            existing.role,
+          );
           return {
             ...tokens,
             hasBothRoles,
@@ -228,14 +257,20 @@ export class AuthService {
           data: { userId: user.id },
         });
       } catch (err) {
-        console.warn(`Could not link draft ${dto.draftId} to user ${user.id}:`, err);
+        console.warn(
+          `Could not link draft ${dto.draftId} to user ${user.id}:`,
+          err,
+        );
       }
     }
 
     // Hydrate the creator profile from onboarding answers if provided
     if (dto.onboarding && requestedRole === 'INSTRUCTOR') {
       try {
-        await this.profileService.hydrateFromOnboarding(user.id, dto.onboarding as any);
+        await this.profileService.hydrateFromOnboarding(
+          user.id,
+          dto.onboarding as any,
+        );
       } catch (err) {
         console.warn(`Profile hydration failed for user ${user.id}:`, err);
         // Non-fatal — profile can be completed later from the settings page
@@ -248,32 +283,48 @@ export class AuthService {
     // non-fatal — must never block the verification email below.
     if (dto.onboarding) {
       try {
-        await this.userOnboarding.applyPreSignupAnswers(user.id, dto.onboarding);
+        await this.userOnboarding.applyPreSignupAnswers(
+          user.id,
+          dto.onboarding,
+        );
       } catch (err) {
-        console.warn(`Pre-signup answer reconciliation failed for user ${user.id}:`, err);
+        console.warn(
+          `Pre-signup answer reconciliation failed for user ${user.id}:`,
+          err,
+        );
       }
     }
 
     // Send verification email — the magic link is built from the RAW code so
     // verifyEmail()'s single sha256 matches the stored hash (sending the
     // stored hash made the link double-hash and never verify).
-    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role);
+    // Not awaited-to-block: the response returns as soon as this call is
+    // issued, the send itself still happens immediately in the background.
+    void this.authEmails.sendVerificationEmail(
+      user.email,
+      code,
+      user.fullName,
+      user.role,
+      user.id,
+      tokenExpiry.getTime().toString(),
+    );
 
-    return { 
-      message: 'Check your email to verify your account', 
+    return {
+      message: 'Check your email to verify your account',
       userId: user.id,
-      requiresVerification: true 
+      requiresVerification: true,
     };
   }
 
-  
   async forgotPassword(email: string, requestedRole?: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
     // Always return the same message to avoid email enumeration
-    const message = { message: 'If that email exists, a reset link has been sent.' };
+    const message = {
+      message: 'If that email exists, a reset link has been sent.',
+    };
 
     if (!user) {
       return message;
@@ -286,8 +337,11 @@ export class AuthService {
 
     // 2. Generate raw token and hash it
     const plainToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(plainToken).digest('hex');
-    
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(plainToken)
+      .digest('hex');
+
     // 3. Store in DB (expires in 30 minutes)
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
     await this.prisma.passwordResetToken.create({
@@ -302,15 +356,21 @@ export class AuthService {
     // Use requestedRole if provided, otherwise default to user's database role
     const roleForEmail = requestedRole || user.role;
 
-    // 4. Send Email
-    await this.emailService.sendPasswordResetEmail(user.email, plainToken, user.fullName.split(' ')[0], roleForEmail);
+    // 4. Send Email — not awaited-to-block, see sendVerificationEmail above.
+    void this.authEmails.sendPasswordResetEmail(
+      user.email,
+      plainToken,
+      user.fullName.split(' ')[0],
+      roleForEmail,
+      user.id,
+    );
 
     return message;
   }
 
   async validateResetToken(token: string) {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    
+
     const resetToken = await this.prisma.passwordResetToken.findUnique({
       where: { tokenHash },
     });
@@ -332,11 +392,13 @@ export class AuthService {
 
   async resetPassword(token: string, newPassword: string) {
     if (newPassword.length < 8) {
-      throw new ConflictException('Password must be at least 8 characters long');
+      throw new ConflictException(
+        'Password must be at least 8 characters long',
+      );
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    
+
     const resetToken = await this.prisma.passwordResetToken.findUnique({
       where: { tokenHash },
     });
@@ -384,7 +446,11 @@ export class AuthService {
     }
 
     // Account status & soft-delete check
-    if (user.deletedAt || user.accountStatus === 'SUSPENDED' || user.accountStatus === 'DELETED') {
+    if (
+      user.deletedAt ||
+      user.accountStatus === 'SUSPENDED' ||
+      user.accountStatus === 'DELETED'
+    ) {
       throw new ForbiddenException('Account is suspended or disabled');
     }
 
@@ -419,12 +485,20 @@ export class AuthService {
     // Upgrade account to INSTRUCTOR if logged in via instructor portal —
     // never for an ADMIN, whose role already supersedes INSTRUCTOR and must
     // never be silently overwritten by a creator-portal login.
-    if (dto.role === 'INSTRUCTOR' && user.role !== 'INSTRUCTOR' && user.role !== Role.ADMIN) {
+    if (
+      dto.role === 'INSTRUCTOR' &&
+      user.role !== 'INSTRUCTOR' &&
+      user.role !== Role.ADMIN
+    ) {
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
       });
-    } else if (dto.role === 'INSTRUCTOR' && user.role === Role.ADMIN && !user.hasCreatorAccess) {
+    } else if (
+      dto.role === 'INSTRUCTOR' &&
+      user.role === Role.ADMIN &&
+      !user.hasCreatorAccess
+    ) {
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: { hasCreatorAccess: true },
@@ -465,7 +539,7 @@ export class AuthService {
     }
 
     return {
-      ...await this.signToken(user.id, user.email, user.fullName, user.role),
+      ...(await this.signToken(user.id, user.email, user.fullName, user.role)),
       hasBothRoles,
       redirectTo,
     };
@@ -475,7 +549,7 @@ export class AuthService {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
     const user = await this.prisma.user.findUnique({
       where: { verifyToken: hashedToken },
-      include: { profile: true }
+      include: { profile: true },
     });
 
     if (!user) {
@@ -495,18 +569,14 @@ export class AuthService {
       },
     });
 
-    // We hydrated onboarding answers into the profile during signup
-    // So we can extract the category from the profile for the welcome email
-    const onboardingMock = {
-      step11: { firstName: user.fullName.split(' ')[0] },
-      step3: { categories: [user.profile?.niche || 'your topic'] },
-    };
-
-    await this.emailService.sendWelcomeEmail(user.email, onboardingMock);
+    void this.authEmails.sendWelcomeEmail(user.email, user.fullName, user.id);
 
     // `role` lets the controller route the post-verification redirect:
     // students land back in their flow (/dashboard), creators in studio.
-    return { ...await this.signToken(user.id, user.email, user.fullName, user.role), role: user.role };
+    return {
+      ...(await this.signToken(user.id, user.email, user.fullName, user.role)),
+      role: user.role,
+    };
   }
 
   async verifyCode(email: string, code: string) {
@@ -516,7 +586,7 @@ export class AuthService {
     // flows through the same compare-and-count path (no existence oracle).
     const user = await this.prisma.user.findFirst({
       where: { email },
-      include: { profile: true }
+      include: { profile: true },
     });
 
     if (!user) {
@@ -566,12 +636,7 @@ export class AuthService {
       },
     });
 
-    const onboardingMock = {
-      step11: { firstName: user.fullName.split(' ')[0] },
-      step3: { categories: [user.profile?.niche || 'your topic'] },
-    };
-
-    await this.emailService.sendWelcomeEmail(user.email, onboardingMock);
+    void this.authEmails.sendWelcomeEmail(user.email, user.fullName, user.id);
 
     return this.signToken(user.id, user.email, user.fullName, user.role);
   }
@@ -581,11 +646,17 @@ export class AuthService {
    * Falls back to a dummy digest when either side is missing/malformed so a
    * cleared or corrupt token still costs the same comparison as a real one.
    */
-  private timingSafeDigestEquals(expectedHex: string, actualHex: string): boolean {
+  private timingSafeDigestEquals(
+    expectedHex: string,
+    actualHex: string,
+  ): boolean {
     const dummy = '0'.repeat(64);
     const expected = /^[0-9a-f]{64}$/.test(expectedHex) ? expectedHex : dummy;
     const actual = /^[0-9a-f]{64}$/.test(actualHex) ? actualHex : dummy;
-    return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(actual, 'hex'));
+    return crypto.timingSafeEqual(
+      Buffer.from(expected, 'hex'),
+      Buffer.from(actual, 'hex'),
+    );
   }
 
   /**
@@ -599,15 +670,21 @@ export class AuthService {
   async resendVerification(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new ForbiddenException('User not found');
-    if (user.isVerified) throw new ForbiddenException('User is already verified');
+    if (user.isVerified)
+      throw new ForbiddenException('User is already verified');
 
     // Anti-spam cooldown: every signup attempt against an unverified account
     // funnels here, so rapid retries used to fire an email each time until the
     // IP throttle kicked in. tokenExpiry is mintTime + 10 min — if less than a
     // minute has passed since minting, the previous email is still fresh.
-    const mintedAtMs = user.tokenExpiry ? user.tokenExpiry.getTime() - 10 * 60 * 1000 : 0;
+    const mintedAtMs = user.tokenExpiry
+      ? user.tokenExpiry.getTime() - 10 * 60 * 1000
+      : 0;
     if (user.verifyToken && Date.now() - mintedAtMs < 60_000) {
-      return { message: 'A verification email was just sent — check your inbox.', recentlySent: true };
+      return {
+        message: 'A verification email was just sent — check your inbox.',
+        recentlySent: true,
+      };
     }
 
     // CSPRNG — same reasoning as signup (B9).
@@ -623,7 +700,14 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, code, user.fullName, user.role);
+    void this.authEmails.sendVerificationEmail(
+      user.email,
+      code,
+      user.fullName,
+      user.role,
+      user.id,
+      tokenExpiry.getTime().toString(),
+    );
     return { message: 'Verification email resent' };
   }
 
@@ -652,7 +736,8 @@ export class AuthService {
       }
 
       // Security: ADMIN is not a self-service role — clamp to STUDENT/INSTRUCTOR.
-      const safeRole = requestedRole === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
+      const safeRole =
+        requestedRole === Role.INSTRUCTOR ? Role.INSTRUCTOR : Role.STUDENT;
       const isInstructor = safeRole === Role.INSTRUCTOR;
       const isStudent = !isInstructor;
 
@@ -694,20 +779,34 @@ export class AuthService {
         // downgrade an ADMIN to INSTRUCTOR just because they signed in
         // through a creator-facing path — ADMIN already supersedes it.
         const updates: any = {};
-        if (isInstructor && user.role !== 'INSTRUCTOR' && user.role !== Role.ADMIN) {
+        if (
+          isInstructor &&
+          user.role !== 'INSTRUCTOR' &&
+          user.role !== Role.ADMIN
+        ) {
           updates.role = 'INSTRUCTOR';
           updates.hasCreatorAccess = true;
           // Ensure creator Profile row exists
           await this.prisma.profile.upsert({
             where: { userId: user.id },
-            create: { userId: user.id, avatarUrl: decodedToken.picture || null },
+            create: {
+              userId: user.id,
+              avatarUrl: decodedToken.picture || null,
+            },
             update: {},
           });
-        } else if (isInstructor && user.role === Role.ADMIN && !user.hasCreatorAccess) {
+        } else if (
+          isInstructor &&
+          user.role === Role.ADMIN &&
+          !user.hasCreatorAccess
+        ) {
           updates.hasCreatorAccess = true;
           await this.prisma.profile.upsert({
             where: { userId: user.id },
-            create: { userId: user.id, avatarUrl: decodedToken.picture || null },
+            create: {
+              userId: user.id,
+              avatarUrl: decodedToken.picture || null,
+            },
             update: {},
           });
         }
@@ -735,7 +834,10 @@ export class AuthService {
             data: { userId: user.id },
           });
         } catch (err) {
-          console.warn(`Could not link draft ${draftId} to user ${user.id}:`, err);
+          console.warn(
+            `Could not link draft ${draftId} to user ${user.id}:`,
+            err,
+          );
         }
       }
 
@@ -746,7 +848,10 @@ export class AuthService {
         try {
           await this.userOnboarding.applyPreSignupAnswers(user.id, onboarding);
         } catch (err) {
-          console.warn(`Pre-signup answer reconciliation failed for user ${user.id}:`, err);
+          console.warn(
+            `Pre-signup answer reconciliation failed for user ${user.id}:`,
+            err,
+          );
         }
       }
 
@@ -763,7 +868,12 @@ export class AuthService {
 
       const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
       return {
-        ...await this.signToken(user.id, user.email, user.fullName, user.role),
+        ...(await this.signToken(
+          user.id,
+          user.email,
+          user.fullName,
+          user.role,
+        )),
         hasBothRoles,
       };
     } catch (error: any) {
@@ -828,7 +938,8 @@ export class AuthService {
       throw new ForbiddenException('Insufficient access');
     }
 
-    const roleEnum = typeof targetRole === 'string' ? targetRole.toUpperCase() : '';
+    const roleEnum =
+      typeof targetRole === 'string' ? targetRole.toUpperCase() : '';
 
     // Security: role switching is only ever STUDENT <-> INSTRUCTOR between
     // profiles the account already owns. Anything else — most importantly
@@ -849,7 +960,12 @@ export class AuthService {
       data: { role: roleEnum as Role },
     });
 
-    return this.signToken(updated.id, updated.email, updated.fullName, updated.role);
+    return this.signToken(
+      updated.id,
+      updated.email,
+      updated.fullName,
+      updated.role,
+    );
   }
 
   async getMyEnrollments(userId: string) {

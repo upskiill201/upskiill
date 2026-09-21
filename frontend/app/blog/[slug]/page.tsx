@@ -152,10 +152,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
 
           {/* ── Header ── */}
           <header className={styles.header}>
-            <span
-              className={styles.categoryPill}
-              style={{ background: `${category.accentColor}14`, color: category.accentColor }}
-            >
+            <span className={styles.categoryPill} style={{ background: category.accentColor }}>
               {category.name}
             </span>
             <h1 className={styles.title}>{fm.title}</h1>
