@@ -7,6 +7,10 @@ import { TeyDecisionService } from '../decision/tey-decision.service';
 import { LearnerStateService } from '../state/learner-state.service';
 import { TeyDeliveryService } from '../delivery/tey-delivery.service';
 import { resolveLocalNow } from '../state/local-time.util';
+import type { LearnerStateSnapshot } from '../contracts/tey-state.types';
+import { jitterSeconds, localTimeToday } from '../decision/rules';
+import { FINAL_RUNG } from '../decision/rules/inactive-return.rule';
+import { COURSE_UNLOCK, CourseUnlockJourney } from '../notify/course-unlock.journey';
 import {
   TeyActionRepository,
   ScheduledActionRow,
@@ -14,6 +18,13 @@ import {
 
 /** Actions claimed per tick. See the scaling note on `tick()`. */
 const BATCH_SIZE = 50;
+
+/**
+ * Pseudo rule id for the morning planner wake-up. Deliberately NOT in
+ * TEY_RULES: it never delivers, so it must never reach revalidation, and it
+ * is not cancelled by a learner's activity (tomorrow still needs planning).
+ */
+export const DAY_PLANNER = 'DAY_PLANNER';
 
 export interface TickSummary {
   claimed: number;
@@ -55,6 +66,7 @@ export class TeySchedulerService {
     private readonly decision: TeyDecisionService,
     private readonly learnerState: LearnerStateService,
     private readonly delivery: TeyDeliveryService,
+    private readonly unlockJourney: CourseUnlockJourney,
   ) {}
 
   /**
@@ -155,6 +167,21 @@ export class TeySchedulerService {
       return { sent: false, skipReason: 'EXPIRED' };
     }
 
+    // Unlock-journey steps are about a course, not the learner's day, so they
+    // carry their own revalidation (the paywall state) and their own copy.
+    // Dry-run is honoured inside the hub, like every event notification.
+    if (action.ruleId === COURSE_UNLOCK) {
+      return this.unlockJourney.process(action);
+    }
+
+    // A planner wake-up sends nothing: it re-projects the learner at the start
+    // of their day and queues that day's rungs (and tomorrow's wake-up).
+    if (action.ruleId === DAY_PLANNER) {
+      await this.planFor(action.userId, await this.learnerState.project(action.userId));
+      await this.actions.markSkipped(action.id, 'PLANNED');
+      return { sent: false, skipReason: 'PLANNED' };
+    }
+
     // The revalidation that makes the whole design safe: re-derive state from
     // source tables rather than trusting the context frozen at schedule time.
     const state = await this.learnerState.project(action.userId);
@@ -253,11 +280,93 @@ export class TeySchedulerService {
         }),
       );
 
+    // A cached snapshot doesn't carry the chosen reminder hour. Planning
+    // without it would move already-queued reminders to the habit hour and
+    // back on every app open, so read it rather than guess.
+    if (snapshot.preferredHour === undefined) {
+      const prefs = await this.prisma.teyNotificationPrefs.findUnique({
+        where: { userId },
+        select: { preferredHour: true },
+      });
+      snapshot.preferredHour = prefs?.preferredHour ?? null;
+    }
+
     const intents = this.decision.evaluate(snapshot, localNow);
     for (const intent of intents) {
       await this.actions.upsertIntent(userId, intent);
     }
+    await this.planTomorrow(snapshot, localNow);
     return intents.length;
+  }
+
+  /**
+   * Queues tomorrow morning's planner wake-up while the learner is still
+   * within reach of a reminder: on a streak, holding a repair offer, on the
+   * win-back ladder, or in their first week without a lesson.
+   *
+   * This is what lets reminders fire on a day the learner never opens the
+   * app — before it, every rung was planned only by the learner's own
+   * activity, so the day after studying (the day that matters most) was
+   * silent. It is still event-shaped rather than a sweep: one row per
+   * reachable learner, and none at all for someone who has gone quiet past
+   * the final rung.
+   */
+  private async planTomorrow(
+    s: LearnerStateSnapshot,
+    now: ReturnType<typeof resolveLocalNow>,
+  ): Promise<void> {
+    const reachable =
+      s.streakDays > 0 ||
+      !!s.repair ||
+      (s.daysSinceLastActivity !== null && s.daysSinceLastActivity <= FINAL_RUNG) ||
+      (s.engagementState === 'NEW' && (s.accountAgeDays ?? Infinity) <= 6);
+    if (!reachable) return;
+
+    const dueAt = new Date(
+      localTimeToday(now, 24 + 6, 0).getTime() + jitterSeconds(s.userId, 1800) * 1000,
+    );
+    const tomorrow = new Date(`${now.date}T00:00:00Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+    await this.actions.upsertIntent(s.userId, {
+      ruleId: DAY_PLANNER as never,
+      priority: 'LOW',
+      dueAt,
+      expiresAt: new Date(dueAt.getTime() + 16 * 3_600_000),
+      dedupeKey: `${DAY_PLANNER}:${s.userId}:${tomorrow.toISOString().slice(0, 10)}`,
+      contextHint: {},
+    });
+  }
+
+  /**
+   * Safety net for the planner chain. The chain is self-perpetuating, but a
+   * failed tick or a deploy mid-claim can break it; this re-seeds any
+   * recently-active learner who has nothing at all queued. Cheap: one indexed
+   * anti-join, capped.
+   */
+  @Cron('0 17 */3 * * *', { name: 'tey-planner-reseed' })
+  async reseedPlanners(): Promise<number> {
+    if (!this.enabled) return 0;
+    try {
+      const rows = await this.prisma.$queryRaw<{ userId: string }[]>`
+        SELECT ls."userId" FROM "learner_state" ls
+        WHERE ls."lastActivityAt" >= now() - interval '31 days'
+          AND NOT EXISTS (
+            SELECT 1 FROM "tey_scheduled_actions" a
+            WHERE a."userId" = ls."userId" AND a."status" = 'PENDING'
+          )
+        LIMIT 500`;
+      for (const { userId } of rows) {
+        await this.planFor(userId, await this.learnerState.project(userId)).catch(
+          (err) => this.logger.warn(`reseed failed for ${userId}: ${(err as Error).message}`),
+        );
+      }
+      if (rows.length) this.logger.log(`planner reseed: ${rows.length} learners`);
+      return rows.length;
+    } catch (err) {
+      this.logger.error('Planner reseed failed', err as Error);
+      return 0;
+    }
   }
 
   /** Drops pending nudges a learner's own activity has made moot. */

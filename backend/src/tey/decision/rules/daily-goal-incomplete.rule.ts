@@ -4,19 +4,27 @@ import {
   dedupeKeyFor,
   factsFrom,
   localTimeToday,
+  reminderHour,
   ScheduleIntent,
   TeyRule,
   withJitter,
 } from './rule.types';
 
 /**
- * The ordinary daily nudge, for learners with no streak on the line.
+ * The daily practice reminder — Duolingo's first ping of the day, sent at the
+ * time the learner chose.
  *
- * Anyone with a live streak gets the higher-urgency STREAK_AT_RISK path
- * instead; this one exists so a learner who is just starting out (or who has
- * already lost their streak) still hears from Tey, without borrowing urgency
- * that does not apply to them.
+ * It is the FIRST rung of a learner's day, not a competitor to the streak
+ * rules: someone on a streak hears this at their chosen time, then
+ * STREAK_AT_RISK in the evening, then STREAK_CRITICAL at 22:00. So it only
+ * fires early enough to leave room for the evening rungs — a learner whose
+ * chosen hour is already evening gets the streak saver instead of two pings
+ * an hour apart.
  */
+
+/** Past this local hour a streak learner's reminder is left to STREAK_AT_RISK. */
+const LATEST_FOR_STREAK = 16;
+
 export const DailyGoalIncompleteRule: TeyRule = {
   id: 'DAILY_GOAL_INCOMPLETE',
   priority: 'MEDIUM',
@@ -25,25 +33,22 @@ export const DailyGoalIncompleteRule: TeyRule = {
 
   plan(state, now): ScheduleIntent | null {
     if (state.todayGoalCompleted) return null;
-    // Leave it to the streak rules -- they say the same thing with real stakes.
-    if (state.streakDays >= 1) return null;
-    // A learner who has never started needs onboarding, not a study reminder.
+    // A learner who has never started needs FIRST_LESSON, not a study reminder.
     if (state.engagementState === 'NEW') return null;
 
-    // Only for learners who are actually *in* the habit right now. Anyone who
-    // has been away a day or more belongs to INACTIVE_RETURN, which knows when
-    // to escalate and — crucially — when to stop. Without this guard, someone
-    // gone two months would be told they had not hit "today's goal", which is
-    // both absurd and unstoppable, since this rule has no ladder to fall off.
-    if ((state.daysSinceLastActivity ?? Number.POSITIVE_INFINITY) >= 1) {
+    const onStreak = state.streakDays >= 1;
+    // Without a streak, only learners who are actually in the habit right now.
+    // Anyone away a day or more belongs to INACTIVE_RETURN, which knows when
+    // to escalate and — crucially — when to stop.
+    if (!onStreak && (state.daysSinceLastActivity ?? Number.POSITIVE_INFINITY) >= 1) {
       return null;
     }
 
-    const usual = state.usualHourLocal ?? TEY_THRESHOLDS.defaultAtRiskHour;
-    const hour = Math.max(Math.min(usual + 1, 20), 18);
+    const hour = reminderHour(state, onStreak ? 12 : 18, 8, 20);
+    if (onStreak && hour > LATEST_FOR_STREAK) return null;
 
     const dueAt = withJitter(localTimeToday(now, hour, 0), state.userId);
-    const expiresAt = localTimeToday(now, 21, 0);
+    const expiresAt = localTimeToday(now, Math.min(hour + 3, 21), 0);
     if (dueAt >= expiresAt) return null;
 
     return {

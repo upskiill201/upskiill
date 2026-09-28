@@ -73,6 +73,9 @@ export class OpenAiCompatibleAdapter implements AiProvider {
       ],
       max_tokens: req.maxOutputTokens,
       ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
+      // Only sent when asked for: a provider/model that doesn't know the
+      // field could reject the whole request.
+      ...(req.reasoningEffort ? { reasoning_effort: req.reasoningEffort } : {}),
     };
 
     if (req.jsonSchema) {

@@ -101,5 +101,10 @@ export function toCourseImportSummary(
       })),
     })),
     createdCourseId: courseImport.createdCourseId,
+    autopilot: courseImport.autopilot,
+    courseTitle: courseImport.courseTitle,
+    courseCategory: courseImport.courseCategory,
+    courseLevel: courseImport.courseLevel,
+    autopilotNote: courseImport.autopilotNote,
   };
 }

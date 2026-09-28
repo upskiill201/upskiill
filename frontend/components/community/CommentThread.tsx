@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Heart, Reply, Lock, CornerDownRight } from 'lucide-react';
-import Avatar from '@/components/ui/Avatar';
+import Image from 'next/image';
+import { Lock, CornerDownRight } from 'lucide-react';
+import MemberAvatar from './MemberAvatar';
+import ProfileLink from './ProfileLink';
 import type { CommentNode } from '@/lib/communityApi';
 import {
   addComment,
@@ -15,6 +17,11 @@ import { renderRichText } from '@/lib/communityRender';
 import TeyMascot from './TeyMascot';
 import shared from './community.module.css';
 import styles from './CommentThread.module.css';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
+import { getCachedUser } from '@/lib/user-cache';
+import { CreatorBadge } from '@/components/community/CreatorBadge';
+
 
 interface CommentThreadProps {
   postId: string;
@@ -64,29 +71,77 @@ export default function CommentThread({
     if (!text || sending) return;
     setSending(true);
     setErrorMsg('');
+
+    // Optimistic: the comment lands (with its sound) the moment you send it;
+    // the server's copy swaps in when it answers, a failure takes it back out.
+    const me = getCachedUser();
+    const parentId = replyTo?.id ?? null;
+    const tempId = `pending-${Date.now()}`;
+    const pending: CommentNode = {
+      id: tempId,
+      postId,
+      parentId,
+      contentText: text,
+      likeCount: 0,
+      createdAt: new Date().toISOString(),
+      author: { id: me?.id ?? currentUserId ?? '', fullName: me?.fullName ?? 'You', avatarUrl: me?.avatarUrl ?? null, streakDays: 0 },
+      likedByMe: false,
+      userId: me?.id ?? currentUserId ?? '',
+      replies: [],
+    };
+    const place = (list: CommentNode[], node: CommentNode, swapId?: string): CommentNode[] => {
+      if (!node.parentId) {
+        return swapId ? list.map((c) => (c.id === swapId ? { ...node, replies: c.replies ?? [] } : c)) : [...list, node];
+      }
+      return list.map((c) =>
+        c.id !== node.parentId
+          ? c
+          : {
+              ...c,
+              replies: swapId
+                ? (c.replies ?? []).map((r) => (r.id === swapId ? node : r))
+                : [...(c.replies ?? []), node],
+            },
+      );
+    };
+    const drop = (list: CommentNode[]): CommentNode[] =>
+      list.filter((c) => c.id !== tempId).map((c) => ({ ...c, replies: c.replies?.filter((r) => r.id !== tempId) }));
+
+    setComments((prev) => place(prev, pending));
+    if (!parentId) setTotal((t) => t + 1);
+    playSound('comment');
+    playHaptic('success', false);
+    setDraft('');
+    setReplyTo(null);
+
     try {
-      await addComment(postId, text, replyTo?.id);
-      setDraft('');
-      setReplyTo(null);
-      await loadPage(1, true); // refresh counts + ordering
+      const saved = await addComment(postId, text, parentId ?? undefined);
+      setComments((prev) => place(prev, { ...saved, replies: saved.replies ?? [] }, tempId));
       onCommentAdded?.();
     } catch (err) {
+      setComments(drop);
+      if (!parentId) setTotal((t) => Math.max(0, t - 1));
+      setDraft(text);
       setErrorMsg(err instanceof Error ? err.message : 'Could not post your comment.');
+      playSound('nodeLocked');
     } finally {
       setSending(false);
     }
   };
 
+  // Optimistic: the heart fills (with its sound) on tap; a failure flips it back.
   const handleLike = async (c: CommentNode) => {
+    const flip = (node: CommentNode): CommentNode =>
+      node.id === c.id
+        ? { ...node, likedByMe: !node.likedByMe, likeCount: Math.max(0, node.likeCount + (node.likedByMe ? -1 : 1)) }
+        : { ...node, replies: node.replies?.map(flip) };
+    playSound(c.likedByMe ? 'toggleOff' : 'like');
+    playHaptic(c.likedByMe ? 'light' : 'medium', false);
+    setComments((prev) => prev.map(flip));
     try {
       await toggleCommentLike(c.id, c.likedByMe);
-      const flip = (node: CommentNode): CommentNode =>
-        node.id === c.id
-          ? { ...node, likedByMe: !node.likedByMe, likeCount: node.likeCount + (node.likedByMe ? -1 : 1) }
-          : { ...node, replies: node.replies?.map(flip) };
-      setComments((prev) => prev.map(flip));
     } catch {
-      /* leave state as-is on failure */
+      setComments((prev) => prev.map(flip));
     }
   };
 
@@ -102,20 +157,30 @@ export default function CommentThread({
 
   const renderOne = (c: CommentNode, isReply: boolean) => (
     <div key={c.id} className={isReply ? styles.replies : styles.comment} style={isReply ? undefined : undefined}>
-      <div className={styles.comment}>
-        <Avatar src={c.author.avatarUrl ?? undefined} name={c.author.fullName} size="sm" />
+      <div className={`${styles.comment} ${c.id.startsWith('pending-') ? styles.pending : ''}`}>
+        <ProfileLink userId={c.id.startsWith('pending-') ? null : c.author.id} label={`${c.author.fullName}'s profile`}>
+          <MemberAvatar name={c.author.fullName} src={c.author.avatarUrl} level={c.author.level} size="sm" plain />
+        </ProfileLink>
         <div className={styles.bubbleCol}>
           <div className={styles.bubble}>
-            <span className={styles.authorName}>{c.author.fullName}</span>
+            <ProfileLink userId={c.id.startsWith('pending-') ? null : c.author.id}>
+              <span className={styles.authorName}>{c.author.fullName}</span>
+            </ProfileLink>
+            {c.author.isCreator && <CreatorBadge />}
             <span className={styles.time}>{timeAgo(c.createdAt)}</span>
             <div className={styles.text}>{renderRichText(c.contentText)}</div>
           </div>
+          {c.id.startsWith('pending-') ? (
+            <div className={styles.actions}>
+              <span className={styles.sendingLabel}>Sending…</span>
+            </div>
+          ) : (
           <div className={styles.actions}>
             <button
               className={`${styles.actionBtn} ${c.likedByMe ? styles.liked : ''}`}
               onClick={() => handleLike(c)}
             >
-              <Heart size={12} fill={c.likedByMe ? 'currentColor' : 'none'} /> {c.likeCount}
+              <Image src={c.likedByMe ? '/art/ui/like.svg' : '/art/ui/like-off.svg'} alt="" width={16} height={16} /> {c.likeCount}
             </button>
             {!isReply && !isLocked && (
               <button
@@ -135,6 +200,7 @@ export default function CommentThread({
               </button>
             )}
           </div>
+          )}
 
           {/* Nested replies (one level) */}
           {!isReply && c.replies && c.replies.length > 0 && (

@@ -14,9 +14,17 @@
  *  - Any other chest-worthy reward (`scene.claim`): calls the caller's claim
  *    function on the first tap (mirrors CLAIM scene's `claim` pattern) —
  *    e.g. a Monthly Quest milestone. No chest-specific backend involved.
+ *
+ * Duolingo pass (2026-09-24): a bright white stage (SceneShell),
+ * every sound on the studio instruments (lib/audio/lessonSounds.ts chest*
+ * cues — one sonic world with the lessons), and one haptic rhythm:
+ *   land: soft · taps: selection → light → rigid → medium ·
+ *   lid gives: heavy + rigid ("boom-ba") · pile: throttled ticks ·
+ *   CONTINUE: medium (the cha-ching).
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import SceneShell from '../SceneShell';
@@ -31,23 +39,7 @@ import {
   toTreasureChestRewardType,
   type TeyroRewardType,
 } from '../currency';
-import {
-  playCashIn,
-  playChestAppear,
-  playChestCreak,
-  playChestError,
-  playChestRevealFanfare,
-  playChestShake,
-  playCoinImpact,
-  playGemChime,
-  playIceCrackle,
-  playPileThud,
-  playRarityStamp,
-  playRewardRush,
-  playRewardTick,
-  playSparkle,
-  playWhoosh,
-} from '@/lib/audio/celebrationAudio';
+import { chestRewardVariant, playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import { useGamification } from '@/context/GamificationContext';
 import {
@@ -72,7 +64,14 @@ interface OpenResult {
 
 type Phase = 'loading' | 'ready' | 'opening' | 'revealed' | 'error';
 
-const CONFETTI_COLORS = ['#FFD54D', '#FFC800', '#FFFFFF', '#F59E0B'];
+// canvas-confetti draws on a canvas and can't take var(...) — resolve the
+// brand tokens from app/globals.css at fire time instead.
+function confettiColors(): string[] {
+  const css = getComputedStyle(document.documentElement);
+  return ['--warning', '--color-brand', '--brand-purple', '--success-green']
+    .map((t) => css.getPropertyValue(t).trim())
+    .filter(Boolean);
+}
 
 /** Hard cap on chest API calls — a hung request must never trap the scene
  *  on "Opening your chest…" with no way out (cold backend, dropped connection). */
@@ -80,26 +79,6 @@ function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs = 12000
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
-}
-
-/** Reward-specific sonic layer on top of the shared chest burst — reuses the
- * existing synth bank rather than inventing new audio assets. */
-function playRewardTypeFlourish(currency: CelebrationCurrency) {
-  switch (currency) {
-    case 'XP':
-      playSparkle();
-      return;
-    case 'FREEZE':
-      playIceCrackle();
-      return;
-    case 'BOOST':
-      playWhoosh('up');
-      return;
-    case 'COINS':
-    case 'HEARTS':
-    default:
-      playGemChime(0);
-  }
 }
 
 export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
@@ -174,12 +153,8 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     if (openedRef.current) return;
     openedRef.current = true;
     setPhase('opening');
-    playChestCreak();
-    // playAudio:false — playHaptic fires its own separate audio event by
-    // default (a different system from celebrationAudio.ts); we already
-    // have a bespoke creak sound for this exact moment, so only take the
-    // vibration channel here to avoid two competing sounds on one tap.
-    playHaptic('medium', false);
+    // The first tap's knock comes from handleTap (Rive reports every tap,
+    // the first included) — no second sound here.
 
     (async () => {
       try {
@@ -255,12 +230,10 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
   useEffect(() => {
     if (phase !== 'ready' || enterSoundPlayedRef.current) return;
     enterSoundPlayedRef.current = true;
-    playChestAppear();
-    playHaptic('soft', false); // gentle arrival tap, vibration only — playChestAppear is the sound
-    const timer = setTimeout(() => {
-      playRarityStamp(result?.rarityTier === 'rare');
-      playHaptic(result?.rarityTier === 'rare' ? 'success' : 'selection', false);
-    }, 260);
+    const rare = result?.rarityTier === 'rare' || result?.rarityTier === 'epic';
+    playSound('chestAppear', rare ? 1 : 0);
+    // The haptic lands with the thump (~200ms into the cue), not the whoosh.
+    const timer = setTimeout(() => playHaptic('soft', false), 200);
     return () => clearTimeout(timer);
   }, [phase, result?.rarityTier]);
 
@@ -269,8 +242,8 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
   useEffect(() => {
     if (phase !== 'error' || errorSoundPlayedRef.current) return;
     errorSoundPlayedRef.current = true;
-    playChestError();
-    playHaptic('warning', false); // vibration only — playChestError is the sound
+    playSound('chestError');
+    playHaptic('warning', false); // vibration only — chestError is the sound
   }, [phase]);
 
   /** Every tap actually forwarded to Rive (including the first) — escalating
@@ -278,7 +251,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
    * audibly reacts to each tap, not just the final reveal. */
   const handleTap = (tapIndex: number) => {
     setTapCount(tapIndex);
-    playChestShake(tapIndex);
+    playSound('chestTap', tapIndex);
     // Escalates in four steps rather than flipping straight to 'medium',
     // which is a 130ms double-pulse — fired on every tap from the third
     // onward, at roughly three taps a second, it smears into a continuous
@@ -286,7 +259,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     // chest resists, real weight only once it's about to give.
     playHaptic(
       tapIndex >= 7 ? 'medium' : tapIndex >= 5 ? 'rigid' : tapIndex >= 3 ? 'light' : 'selection',
-      false // vibration only — playChestShake is the sound
+      false // vibration only — chestTap is the sound
     );
     if (!reducedMotion) {
       void shakeControls.start({
@@ -308,7 +281,8 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     // Layered reveal: fanfare (the moment) → rush (the reward physically
     // bursting out) → reward-type flourish (what it actually is). The
     // per-item chimes from RewardPile land on top of this as they drop.
-    playChestRevealFanfare();
+    const rare = r.rarityTier === 'rare' || r.rarityTier === 'epic';
+    playSound('chestBurst', rare ? 1 : 0);
     // 'heavy' — one solid 35ms thump — NOT 'teyroCelebration' and NOT
     // 'success'. Both alternatives were measured against the installed
     // web-haptics build rather than assumed:
@@ -321,10 +295,11 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     //     biggest beat in the scene would have felt exactly like a button.
     // A lone thump is the one shape nothing else here uses, so the lid giving
     // way is the only moment that feels like that.
-    playHaptic('heavy', false); // vibration only — the fanfare + rush + flourish are the sound layer
+    playHaptic('heavy', false); // vibration only — chestBurst + chestReward are the sound layer
     revealTimersRef.current.push(
-      setTimeout(() => playRewardRush(), 160),
-      setTimeout(() => playRewardTypeFlourish(r.currency), 300)
+      // "boom-ba": a second, sharper knock right behind the thump.
+      setTimeout(() => playHaptic('rigid', false), 170),
+      setTimeout(() => playSound('chestReward', chestRewardVariant(r.currency)), 420)
     );
     if (!reducedMotion) {
       confetti({
@@ -332,7 +307,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
         spread: 85,
         startVelocity: 42,
         origin: { x: 0.5, y: 0.55 },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors(),
         scalar: 0.95,
         disableForReducedMotion: true,
       });
@@ -362,7 +337,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     // just animated. Synced to CountUpNumber's 0.55s duration.
     if (!reducedMotion) {
       for (let i = 0; i < 6; i++) {
-        const t = setTimeout(() => playRewardTick(i), 340 + i * 80);
+        const t = setTimeout(() => playSound('chestTick', i), 560 + i * 80);
         revealTimersRef.current.push(t);
       }
     }
@@ -419,7 +394,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
    * which lands as "cha-ching" under the finger and matches the sound's two
    * hits. A single thump here would feel out of step with what you hear. */
   const handleContinue = () => {
-    playCashIn();
+    playSound('chestCollect');
     playHaptic('medium', false);
     onAdvance();
   };
@@ -453,10 +428,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
     >
       <h1 className={styles.headline}>
         {phase === 'revealed' && result ? (
-          <>
-            +<CountUpNumber value={result.amount} duration={0.55} />{' '}
-            <span className={styles.headlineAccent}>{CURRENCY_LABELS[result.currency]}</span>
-          </>
+          'Chest opened!'
         ) : phase === 'error' ? (
           'Chest unavailable'
         ) : (
@@ -503,10 +475,9 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
               // Metallic clink per coin, detuning down as the heap deadens.
               // Every landing is voiced — that density IS the cascade — but
               // each hit is short and quiet enough not to smear.
-              playCoinImpact(i, progress);
-              // A low body thump every few items gives the pour mass without
-              // stacking a bass note under all thirty-four.
-              if (i % 7 === 0) playPileThud(progress);
+              // Every other landing clinks — the cascade stays dense
+              // without thirty-odd voices smearing into noise.
+              if (i % 2 === 0 || progress > 0.9) playSound('chestPile', i);
               // Throttled by TIME, not by index. Thirty-four landings inside
               // ~1.5s can't each have their own buzz: every
               // `navigator.vibrate` call cancels the previous one, so rapid
@@ -523,11 +494,23 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
           />
         )}
 
-        <div
-          className={styles.chestShadow}
-          style={{ opacity: phase === 'revealed' ? 0.75 : 1 }}
-        />
       </div>
+
+      {phase === 'revealed' && result && (
+        <motion.div
+          className={styles.rewardChip}
+          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={reducedMotion ? { duration: 0.2 } : { delay: 0.45, type: 'spring', stiffness: 520, damping: 15 }}
+          aria-live="polite"
+        >
+          <Image src={CURRENCY_ICONS[result.currency]} alt="" width={34} height={34} unoptimized />
+          <span>
+            +<CountUpNumber value={result.amount} from={0} duration={0.9} />{' '}
+            <span className={styles.headlineAccent}>{CURRENCY_LABELS[result.currency]}</span>
+          </span>
+        </motion.div>
+      )}
 
       {phase === 'loading' && <p className={styles.subhead}>Opening your chest…</p>}
       {phase === 'ready' && <p className={styles.tapHint}>{tapHint}</p>}
@@ -546,7 +529,7 @@ export default function ChestScene({ scene, onAdvance }: ChestSceneProps) {
           the momentum instead. */}
 
       {phase === 'revealed' && result && revealLine && (
-        <TypewriterBubble text={revealLine} startDelay={300} />
+        <TypewriterBubble text={revealLine} startDelay={900} />
       )}
     </SceneShell>
   );

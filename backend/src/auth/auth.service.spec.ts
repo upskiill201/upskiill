@@ -1167,11 +1167,14 @@ describe('AuthService', () => {
           course: { id: '200', title: 'Course B' },
         },
       ];
-      // Two sections in course 100 (3 lessons), one in course 200 (4 lessons)
+      // Two sections in course 100 (3 lessons), one in course 200 (4 lessons).
+      // The query only returns published lessons, so these are all countable.
+      const lessons = (prefix: string, n: number) =>
+        Array.from({ length: n }, (_, i) => ({ id: `${prefix}-${i + 1}`, title: `L${i + 1}` }));
       const mockSections = [
-        { courseId: '100', _count: { lessons: 2 } },
-        { courseId: '100', _count: { lessons: 1 } },
-        { courseId: '200', _count: { lessons: 4 } },
+        { courseId: '100', title: 'S1', lessons: lessons('a', 2) },
+        { courseId: '100', title: 'S2', lessons: lessons('b', 1) },
+        { courseId: '200', title: 'S1', lessons: lessons('c', 4) },
       ];
 
       (prisma.enrollment.findMany as jest.Mock).mockResolvedValue(
@@ -1197,6 +1200,7 @@ describe('AuthService', () => {
               level: true,
               shortDescription: true,
               subtitle: true,
+              thumbnailUrl: true,
             },
           },
         },
@@ -1207,20 +1211,94 @@ describe('AuthService', () => {
         orderBy: { updatedAt: 'desc' },
       });
       // ONE grouped query for all enrolled courses — no N+1
+      // Map order: sections and lessons by orderIndex, published lessons only —
+      // the same rules CourseService.findOne applies for students.
       expect(prisma.section.findMany).toHaveBeenCalledWith({
         where: { courseId: { in: ['100', '200'] } },
-        select: { courseId: true, _count: { select: { lessons: true } } },
+        orderBy: { orderIndex: 'asc' },
+        select: {
+          courseId: true,
+          title: true,
+          lessons: {
+            where: { status: 'published' },
+            orderBy: { orderIndex: 'asc' },
+            select: { id: true, title: true },
+          },
+        },
       });
       expect(result).toEqual([
         {
           ...mockEnrollments[0],
+          completedCount: 0,
+          nextLesson: { id: 'a-1', title: 'L1', sectionIndex: 0, sectionTitle: 'S1', number: 1 },
           course: { ...mockEnrollments[0].course, totalLessons: 3 },
         },
         {
           ...mockEnrollments[1],
+          completedCount: 0,
+          nextLesson: { id: 'c-1', title: 'L1', sectionIndex: 0, sectionTitle: 'S1', number: 1 },
           course: { ...mockEnrollments[1].course, totalLessons: 4 },
         },
       ]);
+    });
+
+    it('points nextLesson at the first unfinished lesson, in map order, across sections', async () => {
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+        {
+          id: '1',
+          courseId: '100',
+          // Includes an id that is no longer a published lesson — it must not
+          // inflate completedCount past what the map can show.
+          completedLessons: ['a-1', 'a-2', 'retired-lesson'],
+          course: { id: '100', title: 'Course A' },
+        },
+      ]);
+      (prisma.section.findMany as jest.Mock).mockResolvedValue([
+        { courseId: '100', title: 'Intro', lessons: [{ id: 'a-1', title: 'One' }, { id: 'a-2', title: 'Two' }] },
+        // A section with no published lessons still occupies a slot in the
+        // map's section list, so it must still advance sectionIndex.
+        { courseId: '100', title: 'Coming soon', lessons: [] },
+        { courseId: '100', title: 'Basics', lessons: [{ id: 'b-1', title: 'Three' }] },
+      ]);
+
+      const [result] = await service.getMyEnrollments('1');
+
+      expect(result.completedCount).toBe(2);
+      expect(result.course.totalLessons).toBe(3);
+      expect(result.nextLesson).toEqual({
+        id: 'b-1',
+        title: 'Three',
+        sectionIndex: 2,
+        sectionTitle: 'Basics',
+        number: 3,
+      });
+    });
+
+    it('returns a null nextLesson when every published lesson is done', async () => {
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+        { id: '1', courseId: '100', completedLessons: ['a-1'], course: { id: '100', title: 'A' } },
+      ]);
+      (prisma.section.findMany as jest.Mock).mockResolvedValue([
+        { courseId: '100', title: 'S', lessons: [{ id: 'a-1', title: 'One' }] },
+      ]);
+
+      const [result] = await service.getMyEnrollments('1');
+
+      expect(result.nextLesson).toBeNull();
+      expect(result.completedCount).toBe(1);
+    });
+
+    it('returns a null nextLesson and zero totals for a course with no published lessons', async () => {
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+        { id: '1', courseId: '100', completedLessons: null, course: { id: '100', title: 'A' } },
+      ]);
+      (prisma.section.findMany as jest.Mock).mockResolvedValue([]);
+
+      const [result] = await service.getMyEnrollments('1');
+
+      expect(result.nextLesson).toBeNull();
+      expect(result.completedCount).toBe(0);
+      expect(result.course.totalLessons).toBe(0);
     });
 
     it('short-circuits without a section query when there are no enrollments', async () => {
@@ -1230,6 +1308,81 @@ describe('AuthService', () => {
 
       expect(result).toEqual([]);
       expect(prisma.section.findMany).not.toHaveBeenCalled();
+    });
+  });
+describe('becomeCreator', () => {
+    const learner = {
+      id: 'u1',
+      email: 'kemi@example.com',
+      fullName: 'Kemi',
+      role: Role.STUDENT,
+      hasStudentAccess: true,
+      hasCreatorAccess: false,
+    };
+    const answers = { version: 2, track: 'ai', topics: ['build-agents'] };
+
+    it('adds creator access to a learner, makes INSTRUCTOR active and saves the answers', async () => {
+      const upgraded = { ...learner, role: Role.INSTRUCTOR, hasCreatorAccess: true };
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(learner);
+      (prisma.user.update as jest.Mock).mockResolvedValue(upgraded);
+
+      const result = await service.becomeCreator(learner.id, answers);
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: learner.id },
+        data: { hasCreatorAccess: true, role: Role.INSTRUCTOR },
+      });
+      expect(prisma.profile.upsert).toHaveBeenCalledWith({
+        where: { userId: learner.id },
+        create: { userId: learner.id },
+        update: {},
+      });
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith(learner.id, answers);
+      expect(result.access_token).toBe('mocked-jwt-token');
+      expect(result.user.role).toBe(Role.INSTRUCTOR);
+      expect(result.hasBothRoles).toBe(true);
+      expect(result.redirectTo).toBe('/creator');
+    });
+
+    it('never downgrades an ADMIN', async () => {
+      const admin = { ...learner, role: Role.ADMIN };
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(admin);
+      (prisma.user.update as jest.Mock).mockResolvedValue({ ...admin, hasCreatorAccess: true });
+
+      const result = await service.becomeCreator(admin.id);
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: admin.id },
+        data: { hasCreatorAccess: true },
+      });
+      expect(result.user.role).toBe(Role.ADMIN);
+    });
+
+    it('is idempotent for an existing creator: no user write, answers still saved', async () => {
+      const creator = { ...learner, role: Role.INSTRUCTOR, hasCreatorAccess: true };
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(creator);
+
+      await service.becomeCreator(creator.id, answers);
+
+      expect(prisma.user.update).not.toHaveBeenCalled();
+      expect(profileService.hydrateFromOnboarding).toHaveBeenCalledWith(creator.id, answers);
+    });
+
+    it('still opens the studio when saving the answers fails', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(learner);
+      (prisma.user.update as jest.Mock).mockResolvedValue({ ...learner, role: Role.INSTRUCTOR, hasCreatorAccess: true });
+      (profileService.hydrateFromOnboarding as jest.Mock).mockRejectedValueOnce(new Error('db down'));
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      await expect(service.becomeCreator(learner.id, answers)).resolves.toMatchObject({ redirectTo: '/creator' });
+      warn.mockRestore();
+    });
+
+    it('rejects an account that no longer exists', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.becomeCreator('gone')).rejects.toThrow(UnauthorizedException);
+      expect(prisma.user.update).not.toHaveBeenCalled();
     });
   });
 });

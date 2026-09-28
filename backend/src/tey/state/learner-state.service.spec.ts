@@ -55,6 +55,7 @@ describe('LearnerStateService', () => {
       },
       enrollment: { findFirst: jest.fn().mockResolvedValue(null) },
       section: { findMany: jest.fn().mockResolvedValue([]) },
+      teyNotificationPrefs: { findUnique: jest.fn().mockResolvedValue(null) },
     };
 
     const moduleRef = await Test.createTestingModule({

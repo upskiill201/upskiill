@@ -1,0 +1,20 @@
+/* Each month's badge colour — one per month, bright and distinct — plus the
+   badge's neutral greys. Apply .monthTokens to any container that shows a
+   month's colour (the card, the sidebar widget, the badge moment). */
+.monthTokens {
+  --month-1: #3D8BFF;
+  --month-2: #FF5C8A;
+  --month-3: #3FC46B;
+  --month-4: #33B5E5;
+  --month-5: #C565F0;
+  --month-6: #FFB020;
+  --month-7: #FF7A2F;
+  --month-8: #1FA2C9;
+  --month-9: #5B6CFF;
+  --month-10: #E0822B;
+  --month-11: #7D8FA8;
+  --month-12: #E8B400;
+  --badge-ribbon-ink: #FFFFFF;
+  --badge-locked: #CBD5E1;
+  --badge-locked-dark: #94A3B8;
+}

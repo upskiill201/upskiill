@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
-import { ChevronRight, Clock, CalendarDays, RefreshCw } from 'lucide-react';
+import { ChevronRight, Clock, CalendarDays } from 'lucide-react';
 import { getAllPostSlugs, getPostBySlug, getRelatedPosts, toSummary } from '@/lib/blog/posts';
 import { getCategoryOrThrow } from '@/lib/blog/categories';
 import { getAuthorOrDefault } from '@/lib/blog/authors';
 import { buildCanonical, formatDate, SITE_URL } from '@/lib/blog/site';
 import CoverImage from '@/components/features/blog/CoverImage';
 import TableOfContents from '@/components/features/blog/TableOfContents';
+import TocDisclosure from '@/components/features/blog/TocDisclosure';
 import FaqAccordion from '@/components/features/blog/FaqAccordion';
 import CtaBlock from '@/components/features/blog/CtaBlock';
 import ShareButtons from '@/components/features/blog/ShareButtons';
@@ -81,13 +83,14 @@ export default async function BlogPostPage({ params }: PostPageProps) {
     '@type': 'Article',
     headline: fm.title,
     description: fm.description,
-    image: [
-      ...(fm.coverImage ? [buildCanonical(fm.coverImage)] : []),
-      ogImageUrl,
-    ],
+    image: [...(fm.coverImage ? [buildCanonical(fm.coverImage)] : []), ogImageUrl],
     datePublished: fm.publishedDate,
     dateModified: fm.updatedDate ?? fm.publishedDate,
-    author: { '@type': 'Organization', name: author.name, url: buildCanonical(`/blog/author/${author.slug}`) },
+    author: {
+      '@type': 'Organization',
+      name: author.name,
+      url: buildCanonical(`/blog/author/${author.slug}`),
+    },
     publisher: {
       '@type': 'Organization',
       name: 'Teyro',
@@ -102,7 +105,12 @@ export default async function BlogPostPage({ params }: PostPageProps) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: buildCanonical('/blog') },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: buildCanonical('/blog'),
+      },
       {
         '@type': 'ListItem',
         position: 3,
@@ -128,96 +136,152 @@ export default async function BlogPostPage({ params }: PostPageProps) {
 
   /* ── Page ─────────────────────────────────────────────────────────── */
 
+  const accentStyle = {
+    '--accent': category.accentColor,
+  } as React.CSSProperties;
+  const wasUpdated = fm.updatedDate && fm.updatedDate !== fm.publishedDate;
+
   return (
-    <div className={styles.page}>
+    <div className={styles.page} style={accentStyle}>
+      {/* Scroll-linked reading progress — pure CSS, hidden where unsupported */}
+      <span className={styles.progress} aria-hidden="true" />
+
       {/* Structured data */}
-      <JsonLd data={faqSchema ? [articleSchema, breadcrumbSchema, faqSchema] : [articleSchema, breadcrumbSchema]} />
+      <JsonLd
+        data={
+          faqSchema
+            ? [articleSchema, breadcrumbSchema, faqSchema]
+            : [articleSchema, breadcrumbSchema]
+        }
+      />
 
-      <div className={styles.container}>
-        <article>
-          {/* ── Breadcrumb ── */}
-          <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-            <Link href="/" className={styles.crumbLink}>
-              Home
-            </Link>
-            <ChevronRight size={13} className={styles.crumbSep} aria-hidden="true" />
-            <Link href="/blog" className={styles.crumbLink}>
-              Blog
-            </Link>
-            <ChevronRight size={13} className={styles.crumbSep} aria-hidden="true" />
-            <Link href={`/blog/category/${category.slug}`} className={styles.crumbLink}>
+      <article>
+        {/* ── Header band ── */}
+        <header className={styles.band}>
+          <div className={styles.header}>
+            <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+              <Link href="/" className={styles.crumbLink}>
+                Home
+              </Link>
+              <ChevronRight
+                size={14}
+                strokeWidth={3}
+                className={styles.crumbSep}
+                aria-hidden="true"
+              />
+              <Link href="/blog" className={styles.crumbLink}>
+                Blog
+              </Link>
+              <ChevronRight
+                size={14}
+                strokeWidth={3}
+                className={styles.crumbSep}
+                aria-hidden="true"
+              />
+              <Link href={`/blog/category/${category.slug}`} className={styles.crumbLink}>
+                {category.name}
+              </Link>
+            </nav>
+
+            <Link href={`/blog/category/${category.slug}`} className={styles.categoryChip}>
               {category.name}
             </Link>
-          </nav>
-
-          {/* ── Header ── */}
-          <header className={styles.header}>
-            <span className={styles.categoryPill} style={{ background: category.accentColor }}>
-              {category.name}
-            </span>
             <h1 className={styles.title}>{fm.title}</h1>
-            <div className={styles.metaRow}>
+            <p className={styles.dek}>{fm.description}</p>
+
+            <div className={styles.byline}>
+              <Link href={`/blog/author/${author.slug}`} className={styles.author}>
+                {author.avatarUrl ? (
+                  <Image
+                    src={author.avatarUrl}
+                    alt=""
+                    width={44}
+                    height={44}
+                    className={styles.authorAvatar}
+                  />
+                ) : (
+                  <span className={styles.authorAvatar}>{author.name.charAt(0)}</span>
+                )}
+                <span className={styles.authorName}>{author.name}</span>
+              </Link>
               <span className={styles.metaItem}>
-                <CalendarDays size={14} strokeWidth={2.5} />
-                <time dateTime={fm.publishedDate}>{formatDate(fm.publishedDate)}</time>
+                <CalendarDays size={16} strokeWidth={2.5} />
+                {wasUpdated ? (
+                  <>
+                    Updated <time dateTime={fm.updatedDate}>{formatDate(fm.updatedDate!)}</time>
+                  </>
+                ) : (
+                  <time dateTime={fm.publishedDate}>{formatDate(fm.publishedDate)}</time>
+                )}
               </span>
-              {fm.updatedDate && fm.updatedDate !== fm.publishedDate && (
-                <span className={styles.metaItem}>
-                  <RefreshCw size={14} strokeWidth={2.5} />
-                  Updated <time dateTime={fm.updatedDate}>{formatDate(fm.updatedDate)}</time>
-                </span>
-              )}
               <span className={styles.metaItem}>
-                <Clock size={14} strokeWidth={2.5} />
+                <Clock size={16} strokeWidth={2.5} />
                 {post.readingTimeMinutes} min read
               </span>
             </div>
-          </header>
+          </div>
+        </header>
 
+        <div className={styles.container}>
           {/* ── Cover ── */}
           <div className={styles.coverWrap}>
-            <CoverImage src={fm.coverImage} alt={fm.title} slug={slug} title={fm.title} priority />
+            <CoverImage
+              src={fm.coverImage}
+              alt={fm.title}
+              slug={slug}
+              title={fm.title}
+              categorySlug={category.slug}
+              size="hero"
+              priority
+            />
           </div>
 
-          {/* ── Body (+ TOC sidebar on long posts) ── */}
+          {/* ── Body (+ sticky contents on long posts) ── */}
           <div className={showToc ? styles.bodyGrid : styles.bodySingle}>
-            <div className={`${proseStyles.prose} ${styles.articleBody}`}>
-              <MDXRemote
-                source={post.content}
-                options={{
-                  mdxOptions: {
-                    remarkPlugins: [remarkGfm],
-                    rehypePlugins: [rehypeSlug],
-                  },
-                }}
-              />
+            <div className={styles.mainCol}>
+              {showToc && <TocDisclosure items={post.toc} />}
+
+              <div className={`${proseStyles.prose} ${styles.articleBody}`}>
+                <MDXRemote
+                  source={post.content}
+                  options={{
+                    mdxOptions: {
+                      remarkPlugins: [remarkGfm],
+                      rehypePlugins: [rehypeSlug],
+                    },
+                  }}
+                />
+              </div>
+
+              {/* ── FAQ (accordion + FAQPage schema) ── */}
+              {fm.faq && fm.faq.length > 0 && <FaqAccordion items={fm.faq} />}
+
+              {/* ── Conversion + social ── */}
+              <CtaBlock cta={fm.cta} />
+              <ShareButtons url={canonical} title={fm.title} />
+              <AuthorBio author={author} />
             </div>
+
             {showToc && (
               <aside className={styles.tocCol}>
                 <TableOfContents items={post.toc} />
               </aside>
             )}
           </div>
+        </div>
+      </article>
 
-          {/* ── FAQ (accordion + FAQPage schema) ── */}
-          {fm.faq && fm.faq.length > 0 && <FaqAccordion items={fm.faq} />}
-
-          {/* ── Conversion + social ── */}
-          <CtaBlock cta={fm.cta} />
-          <ShareButtons url={canonical} title={fm.title} />
-          <AuthorBio author={author} />
-        </article>
-
-        {/* ── Related posts ── */}
-        {related.length > 0 && (
-          <section className={styles.related} aria-labelledby="related-heading">
+      {/* ── Related posts ── */}
+      {related.length > 0 && (
+        <section className={styles.related} aria-labelledby="related-heading">
+          <div className={styles.container}>
             <h2 id="related-heading" className={styles.relatedHeading}>
               Keep reading
             </h2>
             <PostGrid posts={related} />
-          </section>
-        )}
-      </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

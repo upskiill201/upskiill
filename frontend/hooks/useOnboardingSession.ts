@@ -1,185 +1,173 @@
 'use client';
 
 /**
- * useOnboardingSession
- *
- * The single hook used by every onboarding step page.
+ * useOnboardingSession — the single hook behind the onboarding shell.
  *
  * Responsibilities:
- *  - Restores session from localStorage immediately (no flash)
- *  - Reconciles with the backend DB if the user is authenticated
- *  - Guards against URL-skipping (redirects to correct step)
- *  - saveAnswer()  → writes to localStorage instantly
- *  - advance()     → writes to localStorage + syncs to DB (non-blocking) + navigates
+ *  - Restore from localStorage immediately (no flash on first paint)
+ *  - Reconcile with the DB when the learner is authenticated
+ *  - saveAnswer()  → typed write, with downstream invalidation
+ *  - advance()     → localStorage + non-blocking DB sync
  *
- * Usage:
- *   const { currentAnswer, isLoading, saveAnswer, advance } = useOnboardingSession({ currentStep: 2, onAdvance: () => {} });
+ * ── Why every request goes through `/api/*` ──────────────────────────────────
+ * The auth cookie is `sameSite: 'lax'`, so it never rides along on a
+ * cross-site fetch to the backend's own domain — only same-origin requests
+ * (which Next's server-side rewrite then forwards to the backend with the
+ * cookie intact) actually authenticate. Hitting NEXT_PUBLIC_API_URL directly
+ * here silently 401s, which is why onboarding progress never reached the DB
+ * before. `OnboardingShell` had its own copy of the sync that still did
+ * exactly that; it now imports `syncToBackend` from here instead.
  */
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { invalidateDownstream, pruneInvalidInterests } from '@/lib/onboarding/branching';
+import { ONBOARDING_SCHEMA_VERSION, type AnswerKey, type OnboardingAnswersV2 } from '@/lib/onboarding/types';
 import {
-  getOnboardingState,
-  saveOnboardingState,
-  saveStepAnswer,
-  markStepComplete,
-  getStepAnswer,
   TOTAL_STEPS,
-  type OnboardingAnswers,
+  getOnboardingState,
+  markStepComplete,
+  replaceAnswers,
+  saveOnboardingState,
 } from '@/lib/user-onboarding';
 
-// Routed through the frontend's own same-origin `/api/*` proxy (see
-// next.config.ts fallback rewrite), NOT the backend's own domain directly.
-// The auth cookie is `sameSite: 'lax'`, so it never rides along on a
-// cross-site fetch to the backend's domain — only same-origin requests (which
-// Next's server-side rewrite then forwards to the backend with the cookie
-// intact) actually authenticate. Hitting the backend URL directly here silently
-// 401s and was why onboarding progress never reached the DB post-login.
-async function fetchSessionFromBackend(): Promise<{
+interface RemoteSession {
   exists: boolean;
   currentStep?: number;
   completedSteps?: number[];
-  answers?: OnboardingAnswers;
+  answers?: OnboardingAnswersV2;
   onboardingComplete?: boolean;
-} | null> {
+  schemaVersion?: number;
+}
+
+async function fetchSessionFromBackend(): Promise<RemoteSession | null> {
   try {
-    const res = await fetch('/api/user-onboarding', {
-      credentials: 'include', // sends the httpOnly JWT cookie
-    });
+    const res = await fetch('/api/user-onboarding', { credentials: 'include' });
     if (!res.ok) return null;
-    return await res.json();
+    return (await res.json()) as RemoteSession;
   } catch {
     return null;
   }
 }
 
-export async function syncToBackend(payload: {
+export interface SyncPayload {
   currentStep: number;
   completedSteps: number[];
-  answers: OnboardingAnswers;
+  answers: OnboardingAnswersV2;
   onboardingComplete?: boolean;
-}): Promise<boolean> {
+}
+
+/**
+ * In-flight sync, shared process-wide.
+ *
+ * Repeated Continue taps and a double-mount under StrictMode would otherwise
+ * fire overlapping PUTs whose ordering isn't guaranteed — the older payload
+ * can land last and roll progress backwards. Coalescing onto one promise
+ * makes the last caller win deterministically.
+ */
+let inFlight: Promise<boolean> | null = null;
+let queued: SyncPayload | null = null;
+
+async function put(payload: SyncPayload): Promise<boolean> {
   try {
     const res = await fetch('/api/user-onboarding', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, schemaVersion: ONBOARDING_SCHEMA_VERSION }),
     });
     return res.ok;
   } catch {
-    // Non-blocking for normal step advances — localStorage is the source of
-    // truth for now. Callers that need the write CONFIRMED before doing
-    // something server-gated (e.g. claiming a badge) must check the
-    // returned boolean rather than just awaiting this.
+    // Non-blocking for ordinary advances — localStorage holds the progress
+    // and the next advance retries. Callers that need the write CONFIRMED
+    // before doing something server-gated must check the returned boolean.
     console.warn('[Teyro] Failed to sync onboarding session to backend');
     return false;
   }
 }
 
-export function useOnboardingSession(options: { 
-  currentStep: number;
-  disableGuard?: boolean;
-} | number) {
-  // Support legacy API of just passing currentStep
-  const currentStep = typeof options === 'number' ? options : options.currentStep;
-  const disableGuard = typeof options === 'number' ? false : options.disableGuard;
+export async function syncToBackend(payload: SyncPayload): Promise<boolean> {
+  if (inFlight) {
+    queued = payload;
+    return inFlight;
+  }
 
-  const router = useRouter();
+  inFlight = (async () => {
+    let result = await put(payload);
+    while (queued) {
+      const next = queued;
+      queued = null;
+      result = await put(next);
+    }
+    inFlight = null;
+    return result;
+  })();
+
+  return inFlight;
+}
+
+/** Test seam — clears the module-level coalescing state. */
+export function resetSyncState(): void {
+  inFlight = null;
+  queued = null;
+}
+
+export function useOnboardingSession(options: { currentStep: number; disableGuard?: boolean }) {
+  const { currentStep } = options;
+
   const [isLoading, setIsLoading] = useState(true);
-  const [answers, setAnswers] = useState<OnboardingAnswers>({});
+  const [answers, setAnswers] = useState<OnboardingAnswersV2>({});
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  /** Shared in-flight (or settled) session fetch — survives StrictMode remounts. */
-  const remoteSessionRef = useRef<Promise<{
-    exists: boolean;
-    currentStep?: number;
-    completedSteps?: number[];
-    answers?: OnboardingAnswers;
-    onboardingComplete?: boolean;
-  } | null> | null>(null);
 
-  // ── Mount: restore from localStorage immediately, then reconcile with DB ──
+  /** Shared session fetch — survives the StrictMode mount/unmount/mount cycle. */
+  const remoteSessionRef = useRef<Promise<RemoteSession | null> | null>(null);
+
   useEffect(() => {
-    // 1. Read localStorage first — instant, no flash
     const local = getOnboardingState();
+    // localStorage is not readable during render without desyncing the
+    // server-rendered HTML from the client's first paint, so an effect is the
+    // hydration-safe placement. Runs once per step, not per render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswers(local.answers);
     setCompletedSteps(local.completedSteps);
 
     let cancelled = false;
 
-    // 2. Step guard — prevent URL-skipping.
-    //    A user can only access a step if the previous step is complete;
-    //    Step 1 is always accessible.
-    const applyGuard = (completed: number[]) => {
-      if (disableGuard || currentStep <= 1) return;
-      const furthestAllowed = completed.length > 0 ? Math.max(...completed) + 1 : 1;
-      if (currentStep > furthestAllowed) {
-        router.replace(`/onboarding/${furthestAllowed}`);
-      }
-    };
-
-    // A device with local history guards instantly; an empty one must wait
-    // for the server (bounded) so a cross-device resume isn't bounced to
-    // Step 1 while the DB still holds the real position (B2).
-    const needsRemoteFirst = local.completedSteps.length === 0 && currentStep > 1;
-    if (!needsRemoteFirst) {
-      applyGuard(local.completedSteps);
-    }
-
-    // 3. Backend reconciliation — one shared request per mounted page, but
-    // EVERY effect run subscribes to it. React 19 StrictMode runs
-    // mount → cleanup → mount with refs intact, so a boolean "already
-    // synced" flag would leave the second run waiting forever (and skip the
-    // remote-first guard entirely).
-    const fetchRemote = () =>
-      needsRemoteFirst
-        ? Promise.race([
-            fetchSessionFromBackend(),
-            new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
-          ])
-        : fetchSessionFromBackend();
-
     if (!remoteSessionRef.current) {
-      remoteSessionRef.current = fetchRemote();
+      remoteSessionRef.current = fetchSessionFromBackend();
     }
 
-    remoteSessionRef.current.then(remote => {
+    remoteSessionRef.current.then((remote) => {
       if (cancelled) return;
 
-      if (!remote || !remote.exists) {
-        // Not authenticated, no session, or timed out — localStorage is
-        // the truth. For the waiting case that means guard against empty
-        // local progress (the honest pre-reconciliation answer).
-        if (needsRemoteFirst) applyGuard(local.completedSteps);
+      if (!remote?.exists) {
         setIsLoading(false);
         return;
       }
 
-      // Backend is authoritative — if it's ahead of localStorage, merge it in
-      const remoteStep = remote.currentStep ?? 1;
+      // A row written before v2 carries number-keyed answers that mean
+      // nothing now. Ignore it rather than merging nonsense into a live bag.
+      if (remote.schemaVersion !== ONBOARDING_SCHEMA_VERSION) {
+        setIsLoading(false);
+        return;
+      }
+
       const remoteCompleted = remote.completedSteps ?? [];
-      const remoteAnswers = remote.answers ?? {};
+      const remoteAnswers = pruneInvalidInterests(remote.answers ?? {});
 
-      const localFurthest = local.completedSteps.length > 0
-        ? Math.max(...local.completedSteps)
-        : 0;
-      const remoteFurthest = remoteCompleted.length > 0
-        ? Math.max(...remoteCompleted)
-        : 0;
+      const localFurthest = local.completedSteps.length ? Math.max(...local.completedSteps) : 0;
+      const remoteFurthest = remoteCompleted.length ? Math.max(...remoteCompleted) : 0;
 
+      // Remote wins ties: it is the cross-device source of truth, and a tie
+      // means the two agree anyway.
       if (remoteFurthest >= localFurthest) {
-        // Remote is same or further ahead — use remote data
         saveOnboardingState({
-          currentStep: remoteStep,
+          currentStep: remote.currentStep ?? 1,
           completedSteps: remoteCompleted,
           answers: remoteAnswers,
           onboardingComplete: remote.onboardingComplete ?? false,
         });
         setAnswers(remoteAnswers);
         setCompletedSteps(remoteCompleted);
-        if (needsRemoteFirst) applyGuard(remoteCompleted);
-      } else if (needsRemoteFirst) {
-        applyGuard(local.completedSteps);
       }
 
       setIsLoading(false);
@@ -188,54 +176,44 @@ export function useOnboardingSession(options: {
     return () => {
       cancelled = true;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
-  // ── saveAnswer: write to localStorage immediately ─────────────────────────
-  const saveAnswer = useCallback((answer: Record<string, unknown>) => {
-    saveStepAnswer(currentStep, answer);
-    setAnswers(prev => ({
-      ...prev,
-      [String(currentStep)]: answer,
-    }));
-  }, [currentStep]);
-
-  // ── advance: mark complete, sync to DB (non-blocking), navigate ───────────
-  const advance = useCallback(async () => {
-    markStepComplete(currentStep);
-
-    const newCompleted = [...new Set([...completedSteps, currentStep])];
-    const nextStep = currentStep + 1;
-    setCompletedSteps(newCompleted);
-
-    const state = getOnboardingState();
-    const isLastStep = currentStep === TOTAL_STEPS;
-
-    // Sync to backend non-blocking — don't await before navigating
-    syncToBackend({
-      currentStep: nextStep,
-      completedSteps: newCompleted,
-      answers: state.answers,
-      ...(isLastStep && { onboardingComplete: true }),
+  /**
+   * Write one answer, dropping anything it invalidates.
+   *
+   * Invalidation lives here rather than in the step components so that
+   * "switch Coding to AI" cannot leave `web-development` behind no matter
+   * which screen the edit came from — including an Edit jump from the review
+   * screen.
+   */
+  const saveAnswer = useCallback((key: AnswerKey, value: OnboardingAnswersV2[AnswerKey]) => {
+    setAnswers((prev) => {
+      const merged = { ...prev, [key]: value } as OnboardingAnswersV2;
+      const next = pruneInvalidInterests(invalidateDownstream(merged, key));
+      replaceAnswers(next);
+      return next;
     });
+  }, []);
 
-    if (isLastStep) {
-      saveOnboardingState({ onboardingComplete: true, completedAt: new Date().toISOString() } as never);
-      router.push('/dashboard');
-    } else {
-      router.push(`/onboarding/${nextStep}`);
-    }
-  }, [currentStep, completedSteps, router]);
+  const advance = useCallback(
+    (fromStep: number): OnboardingAnswersV2 => {
+      markStepComplete(fromStep);
 
-  // The pre-populated answer for the current step
-  const currentAnswer = answers[String(currentStep)] ?? null;
+      const state = getOnboardingState();
+      const newCompleted = [...new Set([...state.completedSteps, fromStep])];
+      setCompletedSteps(newCompleted);
 
-  return {
-    isLoading,
-    answers,
-    currentAnswer,
-    completedSteps,
-    saveAnswer,
-    advance,
-  };
+      syncToBackend({
+        currentStep: Math.min(fromStep + 1, TOTAL_STEPS),
+        completedSteps: newCompleted,
+        answers: state.answers,
+        ...(fromStep === TOTAL_STEPS && { onboardingComplete: true }),
+      });
+
+      return state.answers;
+    },
+    [],
+  );
+
+  return { isLoading, answers, completedSteps, saveAnswer, advance, setAnswers };
 }

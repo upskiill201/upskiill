@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRewardAnimation, useRewardAnimationVisuals, FlyingParticle } from '@/context/RewardAnimationContext';
-import { playAscendingPopSound } from '@/lib/audio/audioEvents';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 
 /**
@@ -31,12 +31,12 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
 
   const trailColor =
     particle.currency === 'COINS'
-      ? '#FACC15'
+      ? 'var(--warning)'
       : particle.currency === 'XP'
-      ? '#38BDF8'
+      ? 'var(--color-brand)'
       : particle.currency === 'HEARTS'
-      ? '#F87171'
-      : '#FB923C';
+      ? 'var(--error-red)'
+      : 'var(--warning)';
 
   const glowShadow =
     particle.currency === 'COINS'
@@ -51,7 +51,7 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
     if (hasTriggeredRef.current) return;
     hasTriggeredRef.current = true;
 
-    playAscendingPopSound(particle.particleIndexInSet);
+    playSound('collect', particle.particleIndexInSet);
     playHaptic('soft', false);
 
     removeParticle(
@@ -125,7 +125,7 @@ function SingleFlyingParticle({ particle }: { particle: FlyingParticle }) {
           height: 9,
           borderRadius: '50%',
           backgroundColor: trailColor,
-          boxShadow: `0 0 12px ${trailColor}, 0 0 4px #FFFFFF`,
+          boxShadow: `0 0 12px ${trailColor}, 0 0 4px var(--bg-page)`,
         }}
       />
 

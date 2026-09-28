@@ -444,6 +444,43 @@
   padding-top: 10px;
 }
 
+.renewNote {
+  margin: -4px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary, #64748b);
+}
+
+/* "Switch to yearly and keep $60 a year" — shown only while Monthly is picked */
+.switchNudge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: -2px;
+  padding: 10px 14px;
+  border: 2px dashed color-mix(in srgb, var(--warning, #f59e0b) 55%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--warning, #f59e0b) 8%, var(--bg-card, #ffffff));
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary, #1f2a44);
+  text-align: left;
+  cursor: pointer;
+}
+
+.switchNudge svg {
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--warning, #f59e0b) 80%, var(--text-primary, #1f2a44));
+}
+
+.switchNudge:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand-blue, #3d5afe) 35%, transparent);
+  outline-offset: 2px;
+}
+
 .railGroup {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -754,10 +791,11 @@
   justify-content: center;
   gap: 5px;
   margin: 0;
-  font-size: 10.5px;
+  /* What the learner will be charged — legible, never fine print */
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.4;
-  color: var(--text-muted, #94a3b8);
+  line-height: 1.45;
+  color: var(--text-secondary, #64748b);
   text-align: center;
 }
 

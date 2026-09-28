@@ -1,0 +1,248 @@
+/* Shared Duolingo card for the XP and Level popovers (the streak card has
+   its own, same family). White card, tinted header with the illustration,
+   a chunky gold bar, outlined 3D button. Tokens only. */
+
+.popoverCard {
+  --pp-tint: color-mix(in srgb, var(--warning) 12%, var(--bg-page));
+  --pp-ink: var(--color-ink);
+  --pp-soft: var(--text-secondary);
+  --pp-muted: var(--text-muted);
+  --pp-line: var(--border);
+  --pp-well: var(--bg-section);
+  --pp-gold: var(--warning);
+  --pp-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --pp-blue: var(--color-brand);
+  --pp-on: var(--bg-page);
+
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 344px;
+  background: var(--bg-card);
+  border: 2px solid var(--pp-line);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--pp-ink) 16%, transparent);
+  overflow: hidden;
+  z-index: 9999;
+  font-family: var(--font-jakarta), sans-serif;
+  text-align: left;
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.level {
+  --pp-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .popoverCard {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: 380px;
+    margin: 0 auto;
+    z-index: 10000;
+  }
+}
+
+.heroHeader {
+  padding: 16px;
+  background: var(--pp-tint);
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.heroTextGroup {
+  min-width: 0;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--pp-ink);
+}
+
+.heroSubtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pp-soft);
+}
+
+.heroArt {
+  position: relative;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+}
+
+.heroArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The level number sits on the hexagon art. */
+.heroArtNum {
+  position: absolute;
+  inset: 0 0 6px 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--pp-on);
+}
+
+.progressTrack {
+  position: relative;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 2px solid color-mix(in srgb, var(--pp-ink) 8%, transparent);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pp-gold);
+  box-shadow: inset 0 -4px 0 var(--pp-gold-deep), inset 0 3px 0 color-mix(in srgb, var(--pp-on) 35%, transparent);
+  transition: width 0.5s ease;
+}
+
+.progressLabel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pp-ink);
+}
+
+.cardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A row card (next unlock, Sage tier, boost). */
+.infoCard {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 2px solid var(--pp-line);
+  border-radius: 16px;
+  background: var(--bg-card);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.infoCard:hover {
+  background: var(--pp-well);
+}
+
+.infoArt {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.infoArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.infoText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pp-ink);
+}
+
+.infoSub {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pp-soft);
+}
+
+.boostCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--pp-gold) 14%, var(--bg-page));
+  color: var(--pp-gold-deep);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.boostLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta {
+  width: 100%;
+  min-height: 48px;
+  border: 2px solid var(--pp-line);
+  border-radius: 14px;
+  background: var(--bg-card);
+  box-shadow: 0 4px 0 var(--pp-line);
+  color: var(--pp-blue);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.cta:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popoverCard { animation: none; }
+  .progressFill { transition: none; }
+}

@@ -16,7 +16,7 @@ import {
   CURRENCY_COLORS,
 } from './currency';
 import type { StreakWeekDay } from '@/context/CelebrationContext';
-import { playScenePop, playGemChime, playTypingTick } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 
 // ─── CountUpNumber ───────────────────────────────────────────────────────────
 
@@ -34,27 +34,30 @@ export function CountUpNumber({
 }) {
   const reducedMotion = useReducedMotion();
   const [display, setDisplay] = useState(from ?? value);
-  const prevRef = useRef(from ?? value);
+  // What's on screen right now. Each run animates from here — not from the
+  // last target — so a run cut short (React dev double-invoking effects, or
+  // the value changing mid-count) resumes instead of freezing at the start.
+  const shownRef = useRef(from ?? value);
 
   useEffect(() => {
-    const from = prevRef.current;
-    prevRef.current = value;
-    if (from === value) return;
-    if (reducedMotion) {
-      setDisplay(value);
-      return;
-    }
-    const controls = animate(from, value, {
+    const start = shownRef.current;
+    if (start === value) return;
+    // Reduced motion renders the final value directly (below) — no count to run.
+    if (reducedMotion) return;
+    const controls = animate(start, value, {
       duration,
       ease: 'easeOut',
-      onUpdate: (v) => setDisplay(Math.round(v)),
+      onUpdate: (v) => {
+        shownRef.current = Math.round(v);
+        setDisplay(Math.round(v));
+      },
     });
     return () => controls.stop();
   }, [value, duration, reducedMotion]);
 
   return (
     <span className={className} style={{ fontVariantNumeric: 'tabular-nums' }}>
-      {display.toLocaleString()}
+      {(reducedMotion ? value : display).toLocaleString()}
     </span>
   );
 }
@@ -88,7 +91,7 @@ export function TypewriterBubble({
       interval = setInterval(() => {
         i += 1;
         setShown(text.slice(0, i));
-        if (i % 3 === 0) playTypingTick();
+        if (i % 3 === 0) playSound('typeTick');
         if (i >= text.length) {
           if (interval) clearInterval(interval);
           if (!doneRef.current) {
@@ -124,7 +127,7 @@ export function StatPillRow({ items }: { items: StatPillItem[] }) {
   useEffect(() => {
     if (reducedMotion) return;
     const timers = items.map((_, i) =>
-      setTimeout(() => playScenePop(i), i * 190 + 120)
+      setTimeout(() => playSound('statTick', i), i * 190 + 120)
     );
     return () => timers.forEach(clearTimeout);
   }, [items, reducedMotion]);
@@ -475,7 +478,7 @@ export function RewardPile({
               height={Math.round(item.size)}
               style={{
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 5px 7px rgba(0,0,0,0.45))',
+                filter: 'drop-shadow(0 4px 5px color-mix(in srgb, var(--color-ink) 22%, transparent))',
                 width: '100%',
                 height: '100%',
               }}
@@ -550,7 +553,7 @@ export function WeekCalendarRow({ days, startDelay = 900 }: { days: StreakWeekDa
                 >
                   <path
                     d="M20 6L9 17l-5-5"
-                    stroke="#FFFFFF"
+                    stroke="currentColor"
                     strokeWidth="3.4"
                     strokeLinecap="round"
                     strokeLinejoin="round"

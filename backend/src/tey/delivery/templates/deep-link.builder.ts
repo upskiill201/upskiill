@@ -28,7 +28,8 @@ export function buildDeepLink(target: TeyTarget, deliveryId: string): string {
     case 'COURSE':
       return withToken(`/learn/${target.courseId}`);
     case 'STREAK':
-      return withToken('/dashboard');
+      // The streak screen owns the repair offer and the freeze count.
+      return withToken('/dashboard/streak');
     case 'HOME':
     default:
       return withToken('/dashboard');

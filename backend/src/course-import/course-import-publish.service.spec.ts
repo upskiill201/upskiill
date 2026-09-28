@@ -7,6 +7,8 @@ import {
   APPLY_QUESTIONS_MAX,
   APPLY_QUESTIONS_MIN,
 } from './lesson-content-generation.types';
+import { buildRichLesson } from './rich-lesson';
+import { editingLessonOutput } from '../../test/fixtures/rich-lesson';
 
 const userId = 'user-1';
 const importId = 'import-1';
@@ -63,7 +65,9 @@ function baseImport(overrides: Record<string, unknown> = {}) {
             title: 'Symbols',
             status: 'GENERATED',
             description: 'Learn about symbols.',
-            learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/v.mp4' }],
+            learnBlocks: [
+              { type: 'videoUrl', value: 'https://cdn.example/v.mp4' },
+            ],
             applyBlocks: applyBlocks(),
             reflectBlocks: [{ type: 'reflectActivity', value: {} }],
             deepenBlocks: [{ type: 'deepenActivity', value: {} }],
@@ -151,7 +155,9 @@ describe('CourseImportPublishService', () => {
           sectionId: 'section-1',
           title: 'Stick Figure Animation Course',
           status: 'created',
-          lessons: [{ lessonId: 'real-lesson-1', title: 'Symbols', status: 'created' }],
+          lessons: [
+            { lessonId: 'real-lesson-1', title: 'Symbols', status: 'created' },
+          ],
         },
       ],
     });
@@ -189,7 +195,9 @@ describe('CourseImportPublishService', () => {
           sectionId: 'section-1',
           title: 'Stick Figure Animation Course',
           status: 'created',
-          lessons: [{ lessonId: 'lesson-1', title: 'Symbols', status: 'created' }],
+          lessons: [
+            { lessonId: 'lesson-1', title: 'Symbols', status: 'created' },
+          ],
         },
       ],
     });
@@ -289,7 +297,9 @@ describe('CourseImportPublishService', () => {
                 title: 'Symbols',
                 status: 'GENERATED',
                 description: 'desc',
-                learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/v.mp4' }],
+                learnBlocks: [
+                  { type: 'videoUrl', value: 'https://cdn.example/v.mp4' },
+                ],
                 applyBlocks: applyBlocks(),
                 reflectBlocks: [{ type: 'reflectActivity', value: {} }],
                 deepenBlocks: [{ type: 'deepenActivity', value: {} }],
@@ -339,7 +349,9 @@ describe('CourseImportPublishService', () => {
                 title: 'Symbols',
                 status: 'GENERATED',
                 description: 'desc',
-                learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/v.mp4' }],
+                learnBlocks: [
+                  { type: 'videoUrl', value: 'https://cdn.example/v.mp4' },
+                ],
                 applyBlocks: applyBlocks(),
                 reflectBlocks: [{ type: 'reflectActivity', value: {} }],
                 deepenBlocks: [{ type: 'deepenActivity', value: {} }],
@@ -356,10 +368,22 @@ describe('CourseImportPublishService', () => {
     const rejected = 'nothing to build a course from';
 
     it.each([
-      [`${APPLY_QUESTIONS_MIN - 1} Apply questions`, { applyBlocks: applyBlocks(APPLY_QUESTIONS_MIN - 1) }],
-      [`${APPLY_QUESTIONS_MAX + 1} Apply questions`, { applyBlocks: applyBlocks(APPLY_QUESTIONS_MAX + 1) }],
-      ['no Apply questions array at all', { applyBlocks: [{ type: 'mcqActivity', value: {} }] }],
-      ['a missing video', { learnBlocks: [{ type: 'text', value: 'no video here' }] }],
+      [
+        `${APPLY_QUESTIONS_MIN - 1} Apply questions`,
+        { applyBlocks: applyBlocks(APPLY_QUESTIONS_MIN - 1) },
+      ],
+      [
+        `${APPLY_QUESTIONS_MAX + 1} Apply questions`,
+        { applyBlocks: applyBlocks(APPLY_QUESTIONS_MAX + 1) },
+      ],
+      [
+        'no Apply questions array at all',
+        { applyBlocks: [{ type: 'mcqActivity', value: {} }] },
+      ],
+      [
+        'a missing video',
+        { learnBlocks: [{ type: 'text', value: 'no video here' }] },
+      ],
       ['empty Learn content', { learnBlocks: [] }],
       ['empty Reflect content', { reflectBlocks: [] }],
       ['empty Deepen content', { deepenBlocks: [] }],
@@ -380,13 +404,95 @@ describe('CourseImportPublishService', () => {
         courseCreation.createFullCourseTree.mockResolvedValue({
           courseId: 'course-1',
           status: 'created',
-          sections: [{ sectionId: 's1', title: 'Course', status: 'created', lessons: [] }],
+          sections: [
+            {
+              sectionId: 's1',
+              title: 'Course',
+              status: 'created',
+              lessons: [],
+            },
+          ],
         });
         await expect(
           service.createCourse(user, importId, baseInput),
         ).resolves.toMatchObject({ courseId: 'course-1' });
       },
     );
+
+    describe('rich (v2) lessons', () => {
+      const created = {
+        courseId: 'course-1',
+        status: 'created',
+        sections: [
+          { sectionId: 's1', title: 'Course', status: 'created', lessons: [] },
+        ],
+      };
+
+      it.each([
+        ['with a video card', 422],
+        ['with a long video kept in classic Learn', 1800],
+      ])(
+        'accepts a rich lesson %s, passing its blocks through unchanged',
+        async (_l, durationSec) => {
+          const rich = buildRichLesson(
+            editingLessonOutput(),
+            { url: 'https://cdn.example/v.mp4', durationSec },
+            null,
+          );
+          prisma.courseImport.findFirst.mockResolvedValue(
+            lessonWith({
+              learnBlocks: rich.learnBlocks,
+              applyBlocks: rich.applyBlocks,
+              reflectBlocks: rich.reflectBlocks,
+              deepenBlocks: rich.deepenBlocks,
+            }),
+          );
+          courseCreation.createFullCourseTree.mockResolvedValue(created);
+          await service.createCourse(user, importId, baseInput);
+          const spec = courseCreation.createFullCourseTree.mock.calls[0][2];
+          expect(spec.sections[0].lessons[0].content.applyBlocks).toEqual(
+            rich.applyBlocks,
+          );
+          expect(spec.sections[0].lessons[0].content.learnBlocks).toEqual(
+            rich.learnBlocks,
+          );
+        },
+      );
+
+      it('withholds a rich lesson whose exercises no longer pass the publish checks', async () => {
+        const rich = buildRichLesson(
+          editingLessonOutput(),
+          { url: 'https://cdn.example/v.mp4', durationSec: 422 },
+          null,
+        );
+        const apply = JSON.parse(JSON.stringify(rich.applyBlocks));
+        apply[0].value.items[0].correctOptionId = 'missing';
+        prisma.courseImport.findFirst.mockResolvedValue(
+          lessonWith({ learnBlocks: rich.learnBlocks, applyBlocks: apply }),
+        );
+        await expect(
+          service.createCourse(user, importId, baseInput),
+        ).rejects.toThrow(rejected);
+      });
+
+      it('withholds a rich lesson with no video anywhere', async () => {
+        const rich = buildRichLesson(
+          editingLessonOutput(),
+          { url: 'https://cdn.example/v.mp4', durationSec: 422 },
+          null,
+        );
+        const learn = JSON.parse(JSON.stringify(rich.learnBlocks));
+        learn[0].value = learn[0].value.filter(
+          (c: { kind: string }) => c.kind !== 'video',
+        );
+        prisma.courseImport.findFirst.mockResolvedValue(
+          lessonWith({ learnBlocks: learn, applyBlocks: rich.applyBlocks }),
+        );
+        await expect(
+          service.createCourse(user, importId, baseInput),
+        ).rejects.toThrow(rejected);
+      });
+    });
   });
 
   // ── Incremental append into an existing course ──────────────────────────
@@ -408,7 +514,9 @@ describe('CourseImportPublishService', () => {
                 title: 'Already Added',
                 status: 'GENERATED',
                 description: 'd',
-                learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/a.mp4' }],
+                learnBlocks: [
+                  { type: 'videoUrl', value: 'https://cdn.example/a.mp4' },
+                ],
                 applyBlocks: applyBlocks(),
                 reflectBlocks: [{ type: 'reflectActivity', value: {} }],
                 deepenBlocks: [{ type: 'deepenActivity', value: {} }],
@@ -420,7 +528,9 @@ describe('CourseImportPublishService', () => {
                 title: 'Newly Finished',
                 status: 'GENERATED',
                 description: 'd',
-                learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/b.mp4' }],
+                learnBlocks: [
+                  { type: 'videoUrl', value: 'https://cdn.example/b.mp4' },
+                ],
                 applyBlocks: applyBlocks(),
                 reflectBlocks: [{ type: 'reflectActivity', value: {} }],
                 deepenBlocks: [{ type: 'deepenActivity', value: {} }],
@@ -436,7 +546,10 @@ describe('CourseImportPublishService', () => {
 
     it('never creates a second course for the same import', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: false });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: false,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -451,7 +564,10 @@ describe('CourseImportPublishService', () => {
 
     it('adds only lessons that were not already written, so a retry cannot duplicate', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: false });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: false,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -471,7 +587,10 @@ describe('CourseImportPublishService', () => {
 
     it('adds into the existing section by id, never by matching its title', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: false });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: false,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -489,7 +608,10 @@ describe('CourseImportPublishService', () => {
     // gain visible lessons that no human has reviewed.
     it('adds lessons as DRAFTS when the course is already published', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: true });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: true,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -510,7 +632,10 @@ describe('CourseImportPublishService', () => {
 
     it('publishes added lessons only while the course is still a draft', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: false });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: false,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -531,7 +656,10 @@ describe('CourseImportPublishService', () => {
 
     it('records the new lesson link so the next append skips it too', async () => {
       prisma.courseImport.findFirst.mockResolvedValue(importWithCourse());
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: true });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: true,
+      });
       courseCreation.createLessonWithContent.mockResolvedValue({
         lessonId: 'real-lesson-new',
         title: 'Newly Finished',
@@ -553,7 +681,10 @@ describe('CourseImportPublishService', () => {
       prisma.courseImport.findFirst.mockResolvedValue(
         importWithCourse({ createdLessonId: 'real-lesson-new' }),
       );
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: true });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: true,
+      });
 
       await expect(
         service.createCourse(user, importId, baseInput),
@@ -564,7 +695,10 @@ describe('CourseImportPublishService', () => {
       prisma.courseImport.findFirst.mockResolvedValue(
         importWithCourse({ applyBlocks: applyBlocks(2) }),
       );
-      prisma.course.findUnique.mockResolvedValue({ id: 'course-1', published: true });
+      prisma.course.findUnique.mockResolvedValue({
+        id: 'course-1',
+        published: true,
+      });
 
       await expect(
         service.createCourse(user, importId, baseInput),
@@ -596,7 +730,9 @@ describe('CourseImportPublishService', () => {
             sectionId: 'section-1',
             title: 'Stick Figure Animation Course',
             status: 'created',
-            lessons: [{ lessonId: 'real-1', title: 'Symbols', status: 'created' }],
+            lessons: [
+              { lessonId: 'real-1', title: 'Symbols', status: 'created' },
+            ],
           },
         ],
       });

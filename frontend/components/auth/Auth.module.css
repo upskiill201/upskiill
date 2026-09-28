@@ -1,0 +1,532 @@
+/* Student auth screens — Duolingo style. Tokens only
+   (docs/08-color-system.md). */
+
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-page);
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
+  padding: max(env(safe-area-inset-top), 12px) 20px max(env(safe-area-inset-bottom), 20px);
+}
+
+/* ─── Top bar ──────────────────────────────────────────────────────────── */
+.topBar {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--border-strong);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .iconBtn:hover {
+    background: var(--bg-section);
+    color: var(--text-muted);
+  }
+}
+
+.topLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.topLink:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* ─── Welcome ──────────────────────────────────────────────────────────── */
+.welcome {
+  flex: 1;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+}
+
+.welcomeArt {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.halo {
+  position: absolute;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-brand) 14%, transparent), transparent 70%);
+}
+
+.teyFloat {
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+
+.teyImg {
+  display: block;
+  width: min(380px, 80vw);
+  height: auto;
+}
+
+@keyframes float {
+  50% { transform: translateY(-10px); }
+}
+
+.welcomeCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.mark {
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+}
+
+.welcomeTitle {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.welcomeTitle span {
+  color: var(--color-brand);
+}
+
+.welcomeSub {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.actions {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* ─── Forms ────────────────────────────────────────────────────────────── */
+.formPane {
+  flex: 1;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 24px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.formTitle {
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.formSub {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.formSub strong {
+  color: var(--color-ink);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Duolingo stacks its inputs in one rounded box with hairline dividers. */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 8px 0 16px;
+  transition: background 0.15s ease;
+}
+
+.field + .field {
+  border-top: 2px solid var(--border);
+}
+
+.field:focus-within {
+  background: var(--bg-card);
+  box-shadow: inset 0 0 0 2px var(--color-brand);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.trailing {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.eye {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.forgot {
+  padding: 8px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .forgot:hover {
+    color: var(--color-brand);
+  }
+}
+
+.hint {
+  margin: -8px 4px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.hintOk {
+  color: var(--success-green);
+}
+
+.hint svg {
+  display: inline;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+.codeInput {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 0.4em;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--error-red);
+  font-size: 14px;
+  font-weight: 700;
+  animation: shake 0.35s ease;
+}
+
+.error svg {
+  flex-shrink: 0;
+}
+
+@keyframes shake {
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.check input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-brand);
+}
+
+.check a,
+.legal a {
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.primary,
+.secondary {
+  width: 100%;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-radius: 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.primary {
+  border: none;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+}
+
+a.primary {
+  text-decoration: none;
+}
+
+.primaryGreen {
+  background: var(--success-green);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
+}
+
+@media (hover: hover) {
+  .primary:hover {
+    filter: brightness(1.06);
+  }
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.primary:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.secondary {
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+}
+
+@media (hover: hover) {
+  .secondary:hover {
+    background: var(--bg-section);
+  }
+}
+
+.secondary:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.google {
+  width: 18px;
+  height: 18px;
+  color: var(--color-brand);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.divider span {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+}
+
+.legal {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.sentBadge {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--success-green);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--success-green) 72%, black);
+  color: var(--bg-card);
+  margin-bottom: 8px;
+}
+
+.sentBadgeBad {
+  background: var(--error-red);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--error-red) 72%, black);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid color-mix(in srgb, var(--bg-card) 40%, transparent);
+  border-top-color: var(--bg-card);
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Phones ───────────────────────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .screen {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .welcome {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    gap: 16px;
+  }
+  .teyImg {
+    width: min(260px, 62vw);
+  }
+  .welcomeCopy {
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .mark {
+    display: none;
+  }
+  .welcomeTitle {
+    font-size: 28px;
+  }
+  .welcomeSub {
+    font-size: 15px;
+  }
+  .actions {
+    max-width: none;
+    margin-top: 12px;
+  }
+  .formPane {
+    padding-top: 8px;
+  }
+}
+
+@media (max-height: 640px) and (max-width: 800px) {
+  .teyImg {
+    width: min(180px, 46vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teyFloat,
+  .error,
+  .spinner {
+    animation: none;
+  }
+}

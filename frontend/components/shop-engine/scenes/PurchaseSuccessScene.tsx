@@ -20,8 +20,8 @@ import CelebrationMascot from '../../celebration/CelebrationMascot';
 import { CountUpNumber, TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle, SLOT_LABELS, type CosmeticSlot } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
-import { playClaimArpeggio, playGemChime } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { pickPurchaseLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'PURCHASE_SUCCESS' }>;
@@ -45,11 +45,12 @@ export default function PurchaseSuccessScene({
   const [teyLine] = useState(() => pickPurchaseLine(scene.rarity));
 
   useEffect(() => {
-    playClaimArpeggio();
-    playHaptic('medium');
+    // "Ka-ching" + the item's fanfare; the balance ticks down under it.
+    playSound('purchase');
+    celebrationHaptic('win');
     const timer = setTimeout(() => {
       setBalance(scene.coinsAfter);
-      playGemChime(0);
+      playSound('chestTick', 2);
     }, 620);
     return () => clearTimeout(timer);
   }, [scene.coinsAfter]);
@@ -60,7 +61,8 @@ export default function PurchaseSuccessScene({
     try {
       await scene.onEquip();
       setEquipped(true);
-      playHaptic('light');
+      playSound('itemUnlock');
+      playHaptic('medium', false);
       // Give the "Equipped" state a beat to register before the scene closes.
       setTimeout(onAdvance, 550);
     } catch {
@@ -125,13 +127,16 @@ export default function PurchaseSuccessScene({
         <div className={styles.pedestalShadow} aria-hidden />
       </div>
 
-      <div style={{ textAlign: 'center', color: tone.color }}>
-        <span className={styles.rarityRibbon}>
-          <span className={styles.raritySparkle}>✦</span>
-          {tone.label}
-          <span className={styles.raritySparkle}>✦</span>
-        </span>
-      </div>
+      {/* Rarity only when it's worth announcing — not on every power-up. */}
+      {scene.rarity.toUpperCase() !== 'COMMON' && (
+        <div style={{ textAlign: 'center', color: tone.color }}>
+          <span className={styles.rarityRibbon}>
+            <span className={styles.raritySparkle}>✦</span>
+            {tone.label}
+            <span className={styles.raritySparkle}>✦</span>
+          </span>
+        </div>
+      )}
 
       <h2 className={styles.itemName}>{scene.itemName}</h2>
       <p className={styles.itemDesc}>{scene.message}</p>

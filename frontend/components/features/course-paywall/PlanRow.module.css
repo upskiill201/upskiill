@@ -128,6 +128,26 @@
   color: var(--text-secondary, #64748b);
 }
 
+.perMonth {
+  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+}
+
+/* "$120.00 $60.00/yr" — the real anchor, struck, beside the real charge */
+.anchorRow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.anchorNow {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-primary, #1f2a44);
+}
+
 .effectiveNote {
   font-size: 10.5px;
   font-weight: 600;

@@ -10,14 +10,14 @@ import { pickFromPool } from './pool';
 const SECTION_COMPLETE_SPEECH = [
   'One section down. Keep that momentum!',
   "That's how it's done!",
-  'Nice work — onward to the next one 🔥',
+  'Nice work — onward to the next one!',
 ];
 
-const SECTION_UNLOCKED_HEADLINES = ['Section unlocked!', 'A new challenge appears! 👀', "Let's see what's next..."];
+const SECTION_UNLOCKED_HEADLINES = ['Section unlocked!', 'A new challenge appears!', "Let's see what's next..."];
 
 const COURSE_COMPLETE_SPEECH = [
   'You did it! Every lesson, every step — all yours now.',
-  "I'm not saying I'm proud... okay, I'm saying it. I'm proud. 🥹",
+  "I'm not saying I'm proud... okay, I'm saying it. I'm proud.",
   'A whole course. From nothing to this. Look at you.',
 ];
 
@@ -27,9 +27,9 @@ const BIG_MILESTONES = [25, 50, 75, 100];
 const PROGRESS_SMALL = ["Every bit counts.", 'Steady progress!', 'Keep that momentum going.'];
 
 const PROGRESS_BIG = [
-  "You're on a roll! 🔥",
+  "You're on a roll!",
   'Look at that bar move!',
-  'Okay, somebody is committed 😤',
+  'Okay, somebody is committed!',
 ];
 
 export function pickSectionCompleteSpeech(): string {

@@ -12,7 +12,7 @@ import { ImageResponse } from 'next/og';
  * second font for one image.
  */
 export const runtime = 'nodejs';
-export const alt = 'Teyro — the fun and effective way to learn anything';
+export const alt = 'Teyro — the fun way to finish learning coding and AI';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -53,11 +53,11 @@ export default function OgImage() {
           </div>
 
           <div style={{ display: 'flex', marginTop: 32, fontSize: 54, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.14 }}>
-            The fun and effective way to learn anything
+            The fun way to finish learning coding and AI
           </div>
 
           <div style={{ display: 'flex', marginTop: 28, fontSize: 24, fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>
-            Short lessons, real practice, and a reason to come back tomorrow.
+            Short daily lessons, streaks, leagues and friends that keep you coming back.
           </div>
 
           <div style={{ display: 'flex', marginTop: 40 }}>

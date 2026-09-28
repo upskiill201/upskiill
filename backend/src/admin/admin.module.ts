@@ -12,6 +12,7 @@ import { AdminCreatorsService } from './admin-creators.service';
 import { AdminPaymentsService } from './admin-payments.service';
 import { AdminPayoutsService } from './admin-payouts.service';
 import { AdminCouponsService } from './admin-coupons.service';
+import { AdminInsightsService } from './admin-insights.service';
 
 @Module({
   // CourseModule is imported (not reimplemented) so publish/unpublish reuse
@@ -35,6 +36,7 @@ import { AdminCouponsService } from './admin-coupons.service';
     AdminPaymentsService,
     AdminPayoutsService,
     AdminCouponsService,
+    AdminInsightsService,
   ],
 })
 export class AdminModule {}

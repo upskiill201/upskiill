@@ -24,8 +24,8 @@
  *    open /start page notices and stops asking.
  *
  * `platform`, `isStandalone`, `canPromptInstall` and `promptInstall` keep the
- * exact shape the previous version of this hook exported — Step15Content and
- * PwaPushNudgeCard consume those and are unaffected by everything added here.
+ * exact shape the previous version of this hook exported — RemindersScreen and
+ * the post-lesson RemindersScene consume those.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -70,6 +70,16 @@ export interface PwaInstallState {
   ready: boolean;
 }
 
+/**
+ * The held `beforeinstallprompt`, shared by every instance of this hook.
+ *
+ * Chrome fires the event once per page load. A per-instance ref meant only
+ * the components mounted at that moment could ever use it — a prompt that
+ * mounts later (the reminders scene after a lesson) would never get the
+ * one-tap install. Instances still keep their own ref; this is the fallback.
+ */
+let heldPrompt: BeforeInstallPromptEvent | null = null;
+
 export function usePwaInstall() {
   const [state, setState] = useState<PwaInstallState>({
     platform: 'other',
@@ -93,7 +103,7 @@ export function usePwaInstall() {
         const platform = detectPlatform();
         const browser = detectBrowser();
         const isStandalone = patch.isStandalone ?? detectStandalone();
-        const canPromptInstall = patch.canPromptInstall ?? prev.canPromptInstall;
+        const canPromptInstall = patch.canPromptInstall ?? (prev.canPromptInstall || heldPrompt !== null);
 
         const installMethod = resolveInstallMethod({
           platform,
@@ -127,6 +137,7 @@ export function usePwaInstall() {
       // ambushing someone mid-scroll.
       e.preventDefault();
       deferredPromptRef.current = e as BeforeInstallPromptEvent;
+      heldPrompt = e as BeforeInstallPromptEvent;
       trackInstallEvent('android_install_prompt_available', {
         platform: detectPlatform(),
         browser: detectBrowser(),
@@ -136,6 +147,7 @@ export function usePwaInstall() {
 
     const onInstalled = () => {
       deferredPromptRef.current = null;
+      heldPrompt = null;
       saveInstallFlowState({ stage: 'install-reported' });
       if (!installReportedRef.current) {
         installReportedRef.current = true;
@@ -185,7 +197,7 @@ export function usePwaInstall() {
    * so callers can fall through to a manual guide instead of dead-ending.
    */
   const promptInstall = useCallback(async (): Promise<PromptOutcome> => {
-    const deferred = deferredPromptRef.current;
+    const deferred = deferredPromptRef.current ?? heldPrompt;
     if (!deferred) return 'unavailable';
 
     const context = { platform: detectPlatform(), browser: detectBrowser() };
@@ -198,6 +210,7 @@ export function usePwaInstall() {
       // The event is single-use whatever the answer. Chrome may hand us a
       // fresh one later; until then the UI must fall back to the manual guide.
       deferredPromptRef.current = null;
+      heldPrompt = null;
       reconcile({ canPromptInstall: false });
 
       if (outcome === 'accepted') {
@@ -217,6 +230,7 @@ export function usePwaInstall() {
       // Chrome throws if prompt() is called twice, or outside a gesture.
       // Neither should reach the learner as a broken screen.
       deferredPromptRef.current = null;
+      heldPrompt = null;
       reconcile({ canPromptInstall: false });
       return 'error';
     }

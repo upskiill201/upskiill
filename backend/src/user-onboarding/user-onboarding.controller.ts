@@ -14,6 +14,8 @@ import { UserOnboardingService } from './user-onboarding.service';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { OptionalJwtAuthGuard } from '../auth/guard/optional-jwt-auth.guard';
 import { ChallengeCompleteDto } from './dto/challenge-complete.dto';
+import { UpsertOnboardingSessionDto } from './dto/upsert-onboarding-session.dto';
+import { ONBOARDING_SCHEMA_VERSION } from './onboarding-answers';
 
 /**
  * NOTE: guards are declared PER METHOD (not class-level) because the
@@ -34,29 +36,30 @@ export class UserOnboardingController {
   async getSession(@GetUser('id') userId: string) {
     const session = await this.service.getSession(userId);
     if (!session) return { exists: false };
-    return { exists: true, ...session };
+    // The client needs the schema version to decide whether the stored
+    // answers are still readable, or belong to the pre-v2 numbered shape.
+    return { exists: true, schemaVersion: ONBOARDING_SCHEMA_VERSION, ...session };
   }
 
   /**
    * PUT /user-onboarding
-   * Upserts the session. Accepts partial payload — only provided fields are updated.
-   * Body: { currentStep?, completedSteps?, answers?, onboardingComplete? }
+   * Upserts the session. Partial payload — only provided fields are written.
+   *
+   * The body is now a real DTO. It used to be an inline `answers: any`, which
+   * meant the global ValidationPipe had nothing to enforce and arbitrary
+   * client JSON was persisted straight into the answers column.
+   *
+   * `onboardingComplete` is treated as a claim, not a fact: the service only
+   * honours it when the answers satisfy every required question.
    */
   @Put()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   async upsertSession(
     @GetUser('id') userId: string,
-    @Body()
-    body: {
-      currentStep?: number;
-      completedSteps?: number[];
-      answers?: any;
-      onboardingComplete?: boolean;
-    },
+    @Body() body: UpsertOnboardingSessionDto,
   ) {
-    const session = await this.service.upsertSession(userId, body);
-    return session;
+    return this.service.upsertSession(userId, body);
   }
 
   /**

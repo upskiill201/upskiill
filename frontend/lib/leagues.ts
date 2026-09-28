@@ -33,7 +33,8 @@ export interface LeagueMeta {
     /** Bottom of the gradient / rim. */
     dark: string;
   };
-  emblem: 'feather' | 'trophy';
+  /** Trophy artwork for this tier, under /public/Leagues. */
+  icon: string;
 }
 
 export const LEAGUE_LADDER: LeagueMeta[] = [
@@ -43,7 +44,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Bronze',
     zone: 'Top 20 advance to the next league',
     colors: { light: '#D98E4F', base: '#B4713E', dark: '#7C4A21' },
-    emblem: 'feather',
+    icon: '/Leagues/league-bronze.png',
   },
   {
     tier: 'SILVER',
@@ -51,7 +52,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Silver',
     zone: 'Top 15 advance to the next league',
     colors: { light: '#CBD3DD', base: '#98A2AE', dark: '#626B77' },
-    emblem: 'feather',
+    icon: '/Leagues/league-silver.png',
   },
   {
     tier: 'GOLD',
@@ -59,7 +60,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Gold',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#FFD65C', base: '#EDB514', dark: '#B98A00' },
-    emblem: 'feather',
+    icon: '/Leagues/league-gold.png',
   },
   {
     tier: 'SAPPHIRE',
@@ -67,7 +68,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Sapphire',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#6C9BF2', base: '#3670DC', dark: '#1E4AA6' },
-    emblem: 'feather',
+    icon: '/Leagues/league-sapphire.png',
   },
   {
     tier: 'RUBY',
@@ -75,7 +76,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Ruby',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#F28286', base: '#DE4A4F', dark: '#A8262C' },
-    emblem: 'feather',
+    icon: '/Leagues/league-ruby.png',
   },
   {
     tier: 'EMERALD',
@@ -83,7 +84,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Emerald',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#6FDB97', base: '#2FB463', dark: '#1B7E43' },
-    emblem: 'feather',
+    icon: '/Leagues/league-emerald.png',
   },
   {
     tier: 'AMETHYST',
@@ -91,7 +92,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Amethyst',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#C394EC', base: '#9A5CD0', dark: '#6E349F' },
-    emblem: 'feather',
+    icon: '/Leagues/league-amethyst.png',
   },
   {
     tier: 'PEARL',
@@ -99,7 +100,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Pearl',
     zone: 'Top 10 advance to the next league',
     colors: { light: '#EDF2F8', base: '#C2CFDE', dark: '#8B9DB4' },
-    emblem: 'feather',
+    icon: '/Leagues/league-pearl.png',
   },
   {
     tier: 'DIAMOND',
@@ -107,7 +108,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Diamond',
     zone: 'Top 10 qualify for the Diamond Tournament',
     colors: { light: '#9BE4F8', base: '#4EC3EA', dark: '#2391BC' },
-    emblem: 'feather',
+    icon: '/Leagues/league-diamond.png',
   },
   {
     tier: 'DIAMOND_TOURNAMENT',
@@ -115,7 +116,7 @@ export const LEAGUE_LADDER: LeagueMeta[] = [
     shortName: 'Tournament',
     zone: 'Top 3 become champions',
     colors: { light: '#6C8CFF', base: '#3D5AFE', dark: '#2438B8' },
-    emblem: 'trophy',
+    icon: '/Leagues/league-tournament.png',
   },
 ];
 

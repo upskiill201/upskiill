@@ -1,9 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CheckoutDto } from './dto/checkout.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class OrdersService {
@@ -12,39 +11,29 @@ export class OrdersService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * Legacy cart checkout — FREE courses only.
+   *
+   * This path takes no payment: it records a COMPLETED order and enrolls. It
+   * used to accept paid courses too (and create accounts for any email as a
+   * "guest"), which let anyone mint fake orders, enrollments and inflated
+   * student counts for paid courses without paying. Paid courses are only
+   * sold through PaymentService.subscribeCourse (server-priced subscription
+   * + entitlement), so this method now refuses them and requires a signed-in
+   * learner.
+   */
   async checkout(userId: string | null, checkoutDto: CheckoutDto) {
-    const { courseIds, email, fullName } = checkoutDto;
+    const { courseIds } = checkoutDto;
+
+    if (!userId) {
+      throw new UnauthorizedException('Log in to enroll.');
+    }
 
     if (courseIds.length === 0) {
       throw new BadRequestException('Empty cart');
     }
 
-    // 1. Resolve User (if userId is null, handle guest/new user)
-    let finalUserId = userId;
-
-    if (!finalUserId) {
-      if (!email || !fullName) {
-        throw new BadRequestException(
-          'Email and Full Name are required for guest checkout',
-        );
-      }
-
-      // Check if user already exists
-      let user = await this.prisma.user.findUnique({ where: { email } });
-
-      if (!user) {
-        // Create a basic user account for the guest
-        user = await this.prisma.user.create({
-          data: {
-            email,
-            fullName,
-            password: 'guest_password_' + crypto.randomBytes(8).toString('hex'), // Temporary password
-            role: 'STUDENT',
-          },
-        });
-      }
-      finalUserId = user.id;
-    }
+    const finalUserId = userId;
 
     // 2. Fetch courses to get current prices
     const courses = await this.prisma.course.findMany({
@@ -53,6 +42,13 @@ export class OrdersService {
 
     if (courses.length !== courseIds.length) {
       throw new BadRequestException('One or more invalid course IDs');
+    }
+
+    const paid = courses.filter((c) => c.price > 0);
+    if (paid.length > 0) {
+      throw new BadRequestException(
+        'Paid courses are unlocked with a subscription from the course page, not the cart.',
+      );
     }
 
     // 3. Check for existing enrollments

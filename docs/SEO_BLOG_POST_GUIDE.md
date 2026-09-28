@@ -25,10 +25,10 @@ This document is the **standard operating procedure (SOP)** for writing, structu
 
 Every blog post must follow this conversion sequence:
 
-### 1. Early Teyro Hook (First 150 Words) ⛔ Mandatory
-- Immediately validate the reader's problem / search query.
-- Introduce the primary keyword in the first 2 sentences.
-- **Contextually introduce [Teyro](/onboarding/0)** as the solution:
+### 1. Answer First, Then Teyro (First 100–150 Words) ⛔ Mandatory
+- **Answer the query outright in the first 100 words.** Nobody scrolls past an intro to find the answer, and the first direct answer is what Google snippets and AI engines cite.
+- Use the primary keyword in the first 2 sentences.
+- **Only after the answer, introduce [Teyro](/onboarding/0)** in one line on why it solves this exact problem:
   > *"With gamified micro-learning platforms like [Teyro](/onboarding/0), you can master in-demand [Topic] skills in just 15 minutes of daily practice."*
 
 ### 2. Duolingo-Style Gamified Learning Section

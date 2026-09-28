@@ -21,7 +21,6 @@ import { usePathname } from 'next/navigation';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration, isCelebrationActive } from '@/context/CelebrationContext';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playHaptic } from '@/lib/haptics';
 
 /** Routes where a full-page student reward takeover must never appear. */
 const SKIP_ROUTE_PREFIXES = [
@@ -55,6 +54,7 @@ export default function DailyRewardWatcher() {
     isLoading,
     isEligibleForReward,
     dailyRewardCyclePosition,
+    dailyRewardSchedule,
     claimDailyReward,
   } = useGamification();
   const { celebrate } = useCelebration();
@@ -92,25 +92,12 @@ export default function DailyRewardWatcher() {
         /* ignore */
       }
 
-      const isDay7 = dailyRewardCyclePosition >= 7;
-      playHaptic('medium');
+      // The full week on one screen, today glowing, tap to claim. The scene
+      // runs the claim server-first and shows what the server actually paid.
       const scene: CelebrationScene = {
-        kind: 'CLAIM',
-        title: isDay7 ? 'Day 7 Mystery Chest!' : `Day ${dailyRewardCyclePosition} Reward!`,
-        subtitle: isDay7
-          ? 'A full week of learning — your biggest chest yet!'
-          : 'Welcome back! Your daily reward is waiting.',
-        rewards: isDay7
-          ? [
-              { currency: 'COINS', amount: 30 },
-              { currency: 'XP', amount: 50 },
-            ]
-          : [
-              { currency: 'COINS', amount: 20 },
-              { currency: 'XP', amount: 10 },
-            ],
-        // Server-first — the scene executes the real claim and degrades to an
-        // error state (with CONTINUE) if it fails.
+        kind: 'DAILY_REWARD',
+        day: dailyRewardCyclePosition,
+        schedule: dailyRewardSchedule,
         claim: () => claimDailyReward(),
         dedupeKey: `daily-reward-${todayKey()}`,
       };
@@ -121,7 +108,7 @@ export default function DailyRewardWatcher() {
         attemptingRef.current = false;
       }, 4000);
     }, SETTLE_DELAY_MS);
-  }, [celebrate, claimDailyReward, dailyRewardCyclePosition, isLoading, isEligibleForReward, pathname, profileLoaded]);
+  }, [celebrate, claimDailyReward, dailyRewardCyclePosition, dailyRewardSchedule, isLoading, isEligibleForReward, pathname, profileLoaded]);
 
   useEffect(() => {
     if (!profileLoaded || !isEligibleForReward) return;

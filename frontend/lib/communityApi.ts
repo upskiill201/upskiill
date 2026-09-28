@@ -10,6 +10,10 @@ export interface CommunityAuthor {
   fullName: string;
   avatarUrl: string | null;
   streakDays: number;
+  /** Community level (1–9) from all-time community points — Skool's number on the avatar. */
+  level?: number;
+  /** The course creator, who runs this community (the CREATOR badge). */
+  isCreator?: boolean;
 }
 
 export interface CommunityAttachment {
@@ -379,16 +383,16 @@ export const getDiscover = () => jsonFetch<DiscoverPayload>('/api/feed/discover'
 
 export const getNotifications = (page = 1, unreadOnly = false) =>
   jsonFetch<{ total: number; items: AppNotification[] }>(
-    `/api/notifications?page=${page}${unreadOnly ? '&unreadOnly=true' : ''}`,
+    `/api/notifications?scope=learner&page=${page}${unreadOnly ? '&unreadOnly=true' : ''}`,
   );
 
 export const getUnreadCount = () =>
-  jsonFetch<{ unreadCount: number }>('/api/notifications/unread-count');
+  jsonFetch<{ unreadCount: number }>('/api/notifications/unread-count?scope=learner');
 
 export const markNotificationsRead = (ids?: string[]) =>
   jsonFetch<{ success: boolean }>('/api/notifications/mark-read', {
     method: 'POST',
-    body: JSON.stringify(ids ? { ids } : {}),
+    body: JSON.stringify(ids ? { ids } : { scope: 'learner' }),
   });
 
 /** Relative time label ("3m ago") used across cards and threads. */

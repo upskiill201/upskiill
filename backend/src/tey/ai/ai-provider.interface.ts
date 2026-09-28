@@ -46,6 +46,13 @@ export interface AiCompletionRequest {
    * stall the whole due queue behind it.
    */
   timeoutMs: number;
+  /**
+   * For reasoning models that support it (e.g. gpt-oss on Groq): how much
+   * hidden reasoning to spend before answering. "low" keeps long structured
+   * outputs from being starved of tokens. Adapters that don't support it
+   * ignore it.
+   */
+  reasoningEffort?: 'low' | 'medium' | 'high';
 }
 
 export interface AiToolCall {

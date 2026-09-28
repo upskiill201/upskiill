@@ -1,217 +1,216 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+/**
+ * My Learning — Duolingo's course switcher. The course on your home path sits
+ * on top with its next lesson and a big CONTINUE; every other course is a row
+ * you can switch to, open the map of, or jump into its community (the
+ * Classroom tab in a community lands here via the course map).
+ *
+ * One cached request (/api/auth/me/enrollments, shared with home), so it
+ * paints from cache on return.
+ */
+
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { ArrowRight, BookOpen, X, MessagesSquare } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { AlertCircle, Check, Map as MapIcon, MessagesSquare, Plus } from 'lucide-react';
+import { LearnerRail } from '@/components/layout/LearnerRail';
+import { lessonHref, pickCurrentEnrollment, preloadCourse, useEnrollments, type Enrollment } from '@/hooks/useCourse';
+import { getHomeCourse, setHomeCourse } from '@/lib/homeCourse';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
-import { RightSidebar } from '@/components/layout/RightSidebar';
-import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
-import { useEnrollments } from '@/hooks/useCourse';
 import styles from './MyLearning.module.css';
+
+const TINTS = ['tintBlue', 'tintGreen', 'tintOrange', 'tintPurple'] as const;
+
+function lessonsDone(e: Enrollment) {
+  return Math.min(e.completedCount ?? 0, e.course.totalLessons || 0);
+}
+
+function pct(e: Enrollment) {
+  const total = e.course.totalLessons || 0;
+  return total > 0 ? Math.round((lessonsDone(e) / total) * 100) : 0;
+}
+
+function isComplete(e: Enrollment) {
+  return (e.course.totalLessons || 0) > 0 && !e.nextLesson;
+}
+
+function CourseTile({ e, i, size }: { e: Enrollment; i: number; size: 'lg' | 'sm' }) {
+  return (
+    <span className={`${styles.tile} ${styles[TINTS[i % TINTS.length]]} ${size === 'lg' ? styles.tileLg : ''}`}>
+      {e.course.thumbnailUrl ? (
+        <Image src={e.course.thumbnailUrl} alt="" fill sizes={size === 'lg' ? '160px' : '64px'} className={styles.tileImg} />
+      ) : (
+        <span className={styles.tileLetter}>{e.course.title.charAt(0).toUpperCase()}</span>
+      )}
+      {isComplete(e) && (
+        <span className={styles.tileDone} aria-label="Course complete">
+          <Check size={size === 'lg' ? 18 : 14} strokeWidth={3.5} />
+        </span>
+      )}
+    </span>
+  );
+}
 
 export default function MyLearningPage() {
   const router = useRouter();
-  const { showLoader, hideLoader } = useTeyroLoader();
-  // Shared SWR cache (hooks/useCourse.ts): a repeat visit to My Learning
-  // within the dedupe window paints from cache immediately instead of
-  // reshowing the full-screen loader every time.
-  const { enrollments: enrollmentsData } = useEnrollments();
-  const enrollments = enrollmentsData ?? [];
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const { enrollments, error, mutate } = useEnrollments();
+  // Read once: the course home's path shows. Client-only, and it only
+  // matters once enrollments exist (never on the first render).
+  const [homeId, setHomeId] = useState<string | null>(() => getHomeCourse());
 
-  useEffect(() => {
-    if (enrollmentsData) {
-      hideLoader(); // Only hide once data has actually resolved (fresh or cached).
-      return;
-    }
-    // No cached data yet — trigger loader without overrideText so it polls
-    // the 36 motivational text pool!
-    showLoader(undefined, false, undefined, true);
-  }, [enrollmentsData, showLoader, hideLoader]);
+  const list = enrollments ?? [];
+  const current = list.find((e) => e.course.id === homeId) ?? pickCurrentEnrollment(list);
+  const others = list.filter((e) => e.course.id !== current?.course.id);
 
-  const handleContinueLearning = (courseId: string) => {
-    playHaptic('medium');
-    router.push(`/learn/${courseId}`);
+  const continueHref = (e: Enrollment) =>
+    e.nextLesson ? lessonHref(e.course.id, e.nextLesson.sectionIndex, e.nextLesson.id) : `/learn/${e.course.id}`;
+
+  const switchTo = (e: Enrollment) => {
+    playSound('toggleOn');
+    playHaptic('success', false);
+    setHomeCourse(e.course.id);
+    setHomeId(e.course.id);
+    preloadCourse(e.course.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  const getMascotMotivationText = (slug: string) => {
-    const s = slug.toLowerCase();
-    if (s.includes('figma')) {
-      return "Figma variants and auto-layout make designs 10x faster!";
-    }
-    if (s.includes('web-development') || s.includes('html')) {
-      return "CSS variables and event listeners bring layout logic to life!";
-    }
-    if (s.includes('pitch-deck')) {
-      return "A great startup pitch deck bridges functional logic and human emotion!";
-    }
-    if (s.includes('ai-product') || s.includes('llm')) {
-      return "Integrating LLM services correctly multiplies product capabilities!";
-    }
-    if (s.includes('no-code')) {
-      return "Building relational tables visually speeds up market validation!";
-    }
-    return "You are making excellent progress! Keep up the daily learning momentum!";
-  };
-
-  // Data-loading state is surfaced by the shared TeyroLoaderProvider overlay
-  // (triggered above) — no second full-page loader here, it used to stack.
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h2 className={styles.pageTitle}>My Learning</h2>
-        <p className={styles.pageSubtitle}>All your active learning paths and progress indicators.</p>
-      </div>
-
-      <div className={styles.dashboardGrid}>
-        <div className={styles.middleColumn}>
-          {enrollments.length > 0 ? (
-            <div className={styles.journeysList}>
-              {enrollments.map((enrollment, idx) => {
-                const course = enrollment.course;
-                const schemeClass = [styles.schemeBlue, styles.schemeGreen, styles.schemeOrange, styles.schemePurple][idx % 4];
-                return (
-                  <div key={enrollment.id} className={`${styles.focusCard} ${schemeClass}`}>
-                    {/* Left Card Side */}
-                    <div className={styles.focusCardLeft}>
-                      <span className={styles.focusHeader}>{course.category} · {course.level}</span>
-                      <h3 className={styles.focusCourseTitle}>{course.title}</h3>
-                      <p className={styles.focusCourseDesc}>{course.shortDescription || course.subtitle}</p>
-                      
-                      {/* Progress Container */}
-                      <div className={styles.progressContainer}>
-                        <div className={styles.progressBarWrapper}>
-                          <div className={styles.progressBarFill} style={{ width: `${enrollment.progress}%` }} />
-                        </div>
-                        <div className={styles.progressLabels}>
-                          <span className={styles.progressPct}>{enrollment.progress}% COMPLETE</span>
-                          <span className={styles.progressUnit}>
-                            LESSON {Math.max(1, Math.round((enrollment.progress / 100) * (course.totalLessons || 0))) || 1}
-                            {' '}/ {course.totalLessons || '—'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* 3D Action Button */}
-                      <button
-                        onClick={() => handleContinueLearning(course.id)}
-                        className={styles.button3dPrimary}
-                      >
-                        <span>Continue Learning</span>
-                        <span className={styles.buttonIconCircle}>
-                          <ArrowRight size={16} />
-                        </span>
-                      </button>
-
-                      {/* Course community — per-course discussion space */}
-                      <button
-                        onClick={() => { playHaptic('light'); router.push(`/dashboard/community/${course.id}`); }}
-                        className={styles.communityLinkBtn}
-                      >
-                        <MessagesSquare size={14} />
-                        Course community
-                      </button>
-                    </div>
-
-                    {/* Right Mascot Side */}
-                    <div className={styles.focusCardRight}>
-                      <div className={styles.mascotBubble}>
-                        <span>{getMascotMotivationText(course.slug)}</span>
-                        <div className={styles.mascotBubbleTail} />
-                      </div>
-                      <div className={styles.focusMascotImageWrapper}>
-                        <Image 
-                          src="/dashboard tey.webp" 
-                          alt="Tey Mascot" 
-                          width={150} 
-                          height={150} 
-                          priority
-                          className={styles.focusMascotImage}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={styles.emptyState}>
-              <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
-                <BookOpen size={28} />
-              </div>
-              <h3 className={styles.emptyStateTitle}>No Journeys Yet</h3>
-              <p className={styles.emptyStateDesc}>You haven&apos;t enrolled in any learning paths. Visit the explorer to search for active courses.</p>
-              <button 
-                onClick={() => {
-                  playHaptic('medium');
-                  router.push('/dashboard');
-                }}
-                className={styles.button3dPrimary}
-                style={{ marginTop: 8 }}
-              >
-                <span>Explore Courses</span>
-                <span className={styles.buttonIconCircle}>
-                  <ArrowRight size={16} />
-                </span>
-              </button>
-            </div>
-          )}
-        </div>
-        <div className={styles.rightColumn}>
-          <RightSidebar />
-        </div>
-      </div>
-
-      {/* ─── MOBILE GAMIFIED SIDEBAR FLOATING ACTION BUTTON ─── */}
-      <button
-        type="button"
-        onClick={() => {
-          playHaptic('medium');
-          setMobileSidebarOpen(true);
-        }}
-        className={styles.mobileSidebarFab}
-        aria-label="Open Gamified Quests & Sidebar"
-      >
-        <Image src="/Tressure box.webp" width={26} height={26} alt="Quests" priority />
-        <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
-      </button>
-
-      {/* ─── MOBILE SIDEBAR DRAWER OVERLAY ─── */}
-      <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
-        <div className={styles.mobileSidebarHeader}>
-          <div className={styles.drawerTitleRow}>
-            <Image src="/Tressure box.webp" width={24} height={24} alt="Quests" />
-            <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
+    <div className={styles.page}>
+      <div className={styles.main}>
+        <header className={styles.head}>
+          <div>
+            <h1 className={styles.title}>My courses</h1>
+            <p className={styles.sub}>Pick up where you left off, or switch what your home path shows.</p>
           </div>
-          <button 
-            type="button" 
-            onClick={() => {
-              playHaptic('light');
-              setMobileSidebarOpen(false);
-            }} 
-            className={styles.mobileSidebarCloseBtn}
-            aria-label="Close drawer"
-          >
-            <X size={20} strokeWidth={2.5} />
-          </button>
-        </div>
-        <div className={styles.mobileSidebarBody}>
-          <RightSidebar />
-        </div>
+          <Link href="/dashboard/explore" className={styles.addBtn} onClick={() => playSound('navTap', 2)}>
+            <Plus size={18} strokeWidth={3} aria-hidden="true" /> Add a course
+          </Link>
+        </header>
+
+        {error && !enrollments ? (
+          <div className={styles.errorBox} role="alert">
+            <AlertCircle size={28} aria-hidden="true" />
+            <p>We couldn&apos;t load your courses.</p>
+            <button type="button" className={styles.ghostBtn} onClick={() => void mutate()}>
+              Try again
+            </button>
+          </div>
+        ) : !enrollments ? (
+          <div aria-busy="true" aria-label="Loading your courses" className={styles.stack}>
+            <div className={`${styles.skeleton} ${styles.skeletonHero}`} />
+            <div className={`${styles.skeleton} ${styles.skeletonRow}`} />
+            <div className={`${styles.skeleton} ${styles.skeletonRow}`} />
+          </div>
+        ) : !current ? (
+          <div className={styles.empty}>
+            <Image src="/dashboard tey.webp" alt="" width={140} height={140} />
+            <h2 className={styles.emptyTitle}>Your first course is one tap away</h2>
+            <p className={styles.emptyText}>Pick a skill, finish two lessons, and you&apos;re in its community.</p>
+            <Link href="/dashboard/explore" className={styles.primaryBtn} onClick={() => playSound('navTap', 1)}>
+              Explore courses
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* The course on your home path. */}
+            <section className={styles.hero} aria-label="Current course">
+              <CourseTile e={current} i={list.indexOf(current)} size="lg" />
+              <div className={styles.heroBody}>
+                <span className={styles.eyebrow}>{isComplete(current) ? 'Course complete' : 'Current course'}</span>
+                <h2 className={styles.heroTitle}>{current.course.title}</h2>
+                {current.nextLesson ? (
+                  <p className={styles.upNext}>
+                    <strong>Up next:</strong> Lesson {current.nextLesson.number} · {current.nextLesson.title}
+                  </p>
+                ) : (
+                  <p className={styles.upNext}>Every lesson done. Revisit any of them from the map.</p>
+                )}
+                <div className={styles.progress}>
+                  <span className={styles.track}>
+                    <span className={styles.fill} style={{ width: `${pct(current)}%` }} />
+                  </span>
+                  <span className={styles.progressText}>
+                    {lessonsDone(current)} / {current.course.totalLessons || 0}
+                  </span>
+                </div>
+                <div className={styles.heroActions}>
+                  <Link
+                    href={continueHref(current)}
+                    className={styles.primaryBtn}
+                    onMouseEnter={() => preloadCourse(current.course.id)}
+                    onClick={() => {
+                      playSound('navTap', 1);
+                      playHaptic('medium', false);
+                    }}
+                  >
+                    {isComplete(current) ? 'Review' : lessonsDone(current) === 0 ? 'Start' : 'Continue'}
+                  </Link>
+                  <Link href={`/learn/${current.course.id}`} className={styles.ghostBtn} onClick={() => playSound('navTap', 2)}>
+                    <MapIcon size={18} strokeWidth={2.75} aria-hidden="true" /> Course map
+                  </Link>
+                  <Link
+                    href={`/dashboard/community/${current.course.id}`}
+                    className={styles.ghostBtn}
+                    onClick={() => playSound('navTap', 3)}
+                  >
+                    <MessagesSquare size={18} strokeWidth={2.75} aria-hidden="true" /> Community
+                  </Link>
+                </div>
+              </div>
+            </section>
+
+            {others.length > 0 && (
+              <section aria-label="Your other courses">
+                <h2 className={styles.sectionTitle}>Your other courses</h2>
+                <ul className={styles.list}>
+                  {others.map((e) => (
+                    <li key={e.id} className={styles.row}>
+                      <Link
+                        href={`/learn/${e.course.id}`}
+                        className={styles.rowLink}
+                        onMouseEnter={() => preloadCourse(e.course.id)}
+                        onClick={() => playSound('navTap', 2)}
+                      >
+                        <CourseTile e={e} i={list.indexOf(e)} size="sm" />
+                        <span className={styles.rowText}>
+                          <span className={styles.rowTitle}>{e.course.title}</span>
+                          <span className={styles.rowProgress}>
+                            <span className={styles.trackSm}>
+                              <span className={styles.fill} style={{ width: `${pct(e)}%` }} />
+                            </span>
+                            <span className={styles.rowMeta}>
+                              {isComplete(e) ? 'Complete' : `${lessonsDone(e)} / ${e.course.totalLessons || 0} lessons`}
+                            </span>
+                          </span>
+                        </span>
+                      </Link>
+                      <button type="button" className={styles.switchBtn} onClick={() => switchTo(e)}>
+                        Switch
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            <button
+              type="button"
+              className={styles.homeLink}
+              onClick={() => {
+                playSound('navTap', 4);
+                router.push('/dashboard');
+              }}
+            >
+              Go to your path
+            </button>
+          </>
+        )}
       </div>
 
-      {/* Backdrop for mobile sidebar */}
-      {mobileSidebarOpen && (
-        <div 
-          className={styles.mobileSidebarBackdrop} 
-          onClick={() => {
-            playHaptic('light');
-            setMobileSidebarOpen(false);
-          }} 
-        />
-      )}
+      <LearnerRail />
     </div>
   );
 }

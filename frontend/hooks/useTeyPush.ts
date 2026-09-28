@@ -58,6 +58,19 @@ function isIosWithoutInstall(): boolean {
 }
 
 /**
+ * `navigator.serviceWorker.ready` never settles when no worker registers (in
+ * `next dev`, or if registration failed). Awaiting it bare left `ready` false
+ * forever — screens waiting on it sat on their default — and made `enable()`
+ * spin indefinitely. Race it instead.
+ */
+function swReady(ms: number): Promise<ServiceWorkerRegistration | null> {
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
+  ]);
+}
+
+/**
  * VAPID keys travel as base64url; PushManager wants raw bytes.
  *
  * Backed by an explicit ArrayBuffer because TypeScript 5.7 made Uint8Array
@@ -111,8 +124,8 @@ export function useTeyPush() {
 
     let subscribed = false;
     try {
-      const reg = await navigator.serviceWorker.ready;
-      subscribed = !!(await reg.pushManager.getSubscription());
+      const reg = await swReady(4000);
+      subscribed = !!(reg && (await reg.pushManager.getSubscription()));
     } catch {
       subscribed = false;
     }
@@ -188,7 +201,8 @@ export function useTeyPush() {
       };
       if (!key || !configured) return 'error';
 
-      const reg = await navigator.serviceWorker.ready;
+      const reg = await swReady(10_000);
+      if (!reg) return 'error';
       const sub =
         (await reg.pushManager.getSubscription()) ??
         (await reg.pushManager.subscribe({

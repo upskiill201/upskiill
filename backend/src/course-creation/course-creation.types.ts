@@ -13,6 +13,8 @@ export interface AuthenticatedUser {
 export interface CreateCourseDraftInput {
   title: string;
   category: string;
+  /** Beginner | Intermediate | Advanced; the course default applies when unset. */
+  level?: string;
   creatorTimeWeekly?: string;
 }
 

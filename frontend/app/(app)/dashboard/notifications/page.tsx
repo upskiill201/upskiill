@@ -1,71 +1,78 @@
 'use client';
 
+/**
+ * The notifications inbox. Shares the bell's SWR cache (same keys), so it
+ * opens instantly with what the bell already knows, then refreshes. Grouped
+ * Today / This week / Earlier like the bell; every tap has a sound.
+ */
+
 import React from 'react';
+import Image from 'next/image';
+import useSWR, { mutate as globalMutate } from 'swr';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, BellOff } from 'lucide-react';
+import { AlertCircle, CheckCheck } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
 import { NotificationRow } from '@/components/community/NotificationBell';
-import {
-  getNotifications,
-  markNotificationsRead,
-  type AppNotification,
-} from '@/lib/communityApi';
+import { getNotifications, markNotificationsRead, type AppNotification } from '@/lib/communityApi';
+import { groupFor, type NotificationGroup } from '@/lib/notificationCopy';
+import { fetcher } from '@/lib/swr';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
 import shared from '@/components/community/community.module.css';
 import styles from './NotificationsPage.module.css';
 
-/**
- * The full notification inbox. Rows are the exact component the bell panel
- * renders — the dropdown is a preview of this page, not a second design.
- */
+const GROUPS: NotificationGroup[] = ['Today', 'This week', 'Earlier'];
+const listKey = (unreadOnly: boolean) => `/api/notifications?scope=learner&page=1${unreadOnly ? '&unreadOnly=true' : ''}`;
+
 export default function NotificationsPage() {
   const router = useRouter();
-  const [items, setItems] = React.useState<AppNotification[]>([]);
-  const [total, setTotal] = React.useState(0);
-  const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState<'all' | 'unread'>('all');
-  const [state, setState] = React.useState<'loading' | 'error' | 'ready'>('loading');
+  const list = useSWR<{ total: number; items: AppNotification[] }>(listKey(filter === 'unread'), fetcher, {
+    revalidateOnFocus: true,
+  });
+  const unread = useSWR<{ unreadCount: number }>('/api/notifications/unread-count?scope=learner', fetcher);
+  const [more, setMore] = React.useState<{ filter: string; items: AppNotification[]; page: number }>({ filter: 'all', items: [], page: 1 });
   const [loadingMore, setLoadingMore] = React.useState(false);
-  const [errorMsg, setErrorMsg] = React.useState('');
 
-  const load = React.useCallback(
-    async (p: number, replace: boolean, unreadOnly: boolean) => {
-      if (replace) setState('loading');
-      else setLoadingMore(true);
-      try {
-        const res = await getNotifications(p, unreadOnly);
-        setTotal(res.total);
-        setPage(p);
-        setItems((prev) => (replace ? res.items : [...prev, ...res.items]));
-        setState('ready');
-      } catch (err) {
-        setErrorMsg(err instanceof Error ? err.message : 'Could not load notifications.');
-        if (replace) setState('error');
-      } finally {
-        setLoadingMore(false);
-      }
-    },
-    [],
-  );
+  const extra = more.filter === filter ? more.items : [];
+  const items = [...(list.data?.items ?? []), ...extra];
+  const total = list.data?.total ?? 0;
+  const unreadCount = unread.data?.unreadCount ?? 0;
 
-  React.useEffect(() => {
-    void load(1, true, filter === 'unread');
-  }, [load, filter]);
+  const grouped = new Map<NotificationGroup, AppNotification[]>();
+  for (const n of items) {
+    const g = groupFor(n.createdAt);
+    grouped.set(g, [...(grouped.get(g) ?? []), n]);
+  }
 
-  const unreadCount = items.filter((n) => !n.isRead).length;
+  const pick = (f: 'all' | 'unread') => {
+    if (f === filter) return;
+    playSound('navTap', f === 'all' ? 1 : 2);
+    playHaptic('selection', false);
+    setFilter(f);
+  };
 
   const markAllRead = async () => {
-    setItems((prev) => (filter === 'unread' ? [] : prev.map((n) => ({ ...n, isRead: true }))));
+    playSound('toggleOn');
+    playHaptic('light', false);
+    void list.mutate((cur) => (cur ? { ...cur, items: filter === 'unread' ? [] : cur.items.map((n) => ({ ...n, isRead: true })) } : cur), {
+      revalidate: false,
+    });
+    void unread.mutate({ unreadCount: 0 }, { revalidate: false });
     try {
       await markNotificationsRead();
-    } catch {
-      void load(1, true, filter === 'unread');
+    } finally {
+      void globalMutate((k) => typeof k === 'string' && k.startsWith('/api/notifications'));
     }
   };
 
-  const openRow = (n: AppNotification) => {
+  const open = (n: AppNotification) => {
+    playSound('navTap', 3);
     if (!n.isRead) {
-      setItems((prev) => prev.map((i) => (i.id === n.id ? { ...i, isRead: true } : i)));
+      void list.mutate((cur) => (cur ? { ...cur, items: cur.items.map((i) => (i.id === n.id ? { ...i, isRead: true } : i)) } : cur), {
+        revalidate: false,
+      });
+      void unread.mutate({ unreadCount: Math.max(0, unreadCount - 1) }, { revalidate: false });
       markNotificationsRead([n.id]).catch(() => undefined);
     }
     // Destination is resolved server-side; a row whose target was deleted has
@@ -73,93 +80,90 @@ export default function NotificationsPage() {
     if (n.url ?? n.deepLink) router.push((n.url ?? n.deepLink) as string);
   };
 
+  const loadMore = async () => {
+    setLoadingMore(true);
+    playSound('navTap', 4);
+    try {
+      const next = (more.filter === filter ? more.page : 1) + 1;
+      const res = await getNotifications(next, filter === 'unread');
+      setMore((m) => ({ filter, items: [...(m.filter === filter ? m.items : []), ...res.items], page: next }));
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>Notifications</h1>
-          <p className={styles.subtitle}>
-            Replies, mentions, likes and announcements from your communities.
-          </p>
+          <p className={styles.subtitle}>Replies, mentions, likes, friends and announcements.</p>
         </div>
-        <button
-          className={styles.markAllBtn}
-          onClick={markAllRead}
-          disabled={unreadCount === 0}
-          type="button"
-        >
-          Mark all read
+        <button className={styles.markAllBtn} onClick={() => void markAllRead()} disabled={unreadCount === 0} type="button">
+          <CheckCheck size={16} strokeWidth={2.75} /> Mark all read
         </button>
       </header>
 
-      <div className={styles.tabs}>
-        <button
-          type="button"
-          className={`${styles.tab} ${filter === 'all' ? styles.tabActive : ''}`}
-          onClick={() => setFilter('all')}
-        >
+      <div className={styles.tabs} role="tablist">
+        <button type="button" role="tab" aria-selected={filter === 'all'} className={`${styles.tab} ${filter === 'all' ? styles.tabActive : ''}`} onClick={() => pick('all')}>
           All
         </button>
-        <button
-          type="button"
-          className={`${styles.tab} ${filter === 'unread' ? styles.tabActive : ''}`}
-          onClick={() => setFilter('unread')}
-        >
-          Unread
+        <button type="button" role="tab" aria-selected={filter === 'unread'} className={`${styles.tab} ${filter === 'unread' ? styles.tabActive : ''}`} onClick={() => pick('unread')}>
+          Unread{unreadCount > 0 ? ` · ${unreadCount}` : ''}
         </button>
       </div>
 
-      {state === 'error' && (
+      {list.error && !list.data ? (
         <div className={shared.errorBanner}>
           <AlertCircle size={26} />
-          <span>{errorMsg}</span>
-          <Button variant="outline" onClick={() => void load(1, true, filter === 'unread')}>
+          <span>Could not load notifications.</span>
+          <Button variant="outline" onClick={() => void list.mutate()}>
             Try again
           </Button>
         </div>
-      )}
-
-      {state === 'loading' && (
-        <div className={styles.listCard}>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
+      ) : !list.data ? (
+        <div className={styles.listCard} aria-busy="true">
+          {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className={styles.skeletonRow}>
-              <div className={shared.skeletonAvatar} style={{ width: 36, height: 36 }} />
+              <div className={shared.skeletonAvatar} style={{ width: 40, height: 40 }} />
               <div style={{ flex: 1 }}>
                 <div className={shared.skeletonLine} style={{ width: '75%' }} />
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {state === 'ready' && items.length === 0 && (
-        <EmptyState
-          icon={<BellOff size={40} />}
-          title={filter === 'unread' ? 'Nothing unread' : 'No notifications yet'}
-          description={
-            filter === 'unread'
-              ? "You're all caught up."
-              : 'Post something in a course community and the replies will land here.'
-          }
-        />
-      )}
-
-      {state === 'ready' && items.length > 0 && (
-        <div className={styles.listCard}>
-          {items.map((n) => (
-            <NotificationRow key={n.id} n={n} onClick={() => openRow(n)} />
-          ))}
+      ) : items.length === 0 ? (
+        <div className={styles.empty}>
+          <Image src="/art/ui/community.svg" alt="" width={96} height={96} />
+          <h2 className={styles.emptyTitle}>{filter === 'unread' ? "You're all caught up" : 'Nothing yet'}</h2>
+          <p className={styles.emptySub}>
+            {filter === 'unread'
+              ? 'No unread notifications.'
+              : 'When someone likes, replies to or mentions you, or a friend joins with your invite, it shows up here.'}
+          </p>
+        </div>
+      ) : (
+        <>
+          {GROUPS.map((g) => {
+            const rows = grouped.get(g);
+            if (!rows?.length) return null;
+            return (
+              <section key={g} className={styles.group}>
+                <h2 className={styles.groupLabel}>{g}</h2>
+                <div className={styles.listCard}>
+                  {rows.map((n) => (
+                    <NotificationRow key={n.id} n={n} onClick={() => open(n)} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
           {items.length < total && (
-            <button
-              className={styles.loadMoreBtn}
-              disabled={loadingMore}
-              onClick={() => void load(page + 1, false, filter === 'unread')}
-              type="button"
-            >
-              {loadingMore ? 'Loading…' : 'Load older notifications'}
+            <button className={styles.loadMoreBtn} onClick={() => void loadMore()} disabled={loadingMore}>
+              {loadingMore ? 'Loading…' : 'Show older'}
             </button>
           )}
-        </div>
+        </>
       )}
     </div>
   );

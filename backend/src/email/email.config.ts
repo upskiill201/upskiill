@@ -77,6 +77,10 @@ export const emailConfig = {
   get creatorDigestEnabled(): boolean {
     return bool(process.env.EMAIL_CREATOR_DIGEST_ENABLED, true);
   },
+  /** "Your access ends in 3 days / tomorrow / ended" for plans that don't auto-renew. */
+  get accessEndingEnabled(): boolean {
+    return bool(process.env.EMAIL_ACCESS_ENDING_ENABLED, true);
+  },
 
   /**
    * Emails whose triggering event happened before this date are never sent.

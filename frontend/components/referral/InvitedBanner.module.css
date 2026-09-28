@@ -1,0 +1,21 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 2px solid color-mix(in srgb, var(--success-green) 40%, var(--border));
+  background: color-mix(in srgb, var(--success-green) 8%, var(--bg-page));
+}
+
+.banner p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.banner strong {
+  color: var(--color-ink);
+}

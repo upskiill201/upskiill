@@ -292,10 +292,15 @@ export class GoogleDriveService {
 
     let estimatedVideoDurationSeconds = 0;
     let videosMissingDuration = 0;
+    let videosOverLimit = 0;
+    const sections = new Set<string>();
     for (const file of nonFolders) {
       if (file.category !== 'video') continue;
+      sections.add(file.sectionFolderId ?? '(root)');
       if (typeof file.durationMs === 'number') {
         estimatedVideoDurationSeconds += Math.round(file.durationMs / 1000);
+        // Over Teyro's bite-size limit: imported with the classic Learn layout.
+        if (file.durationMs > 15 * 60 * 1000) videosOverLimit += 1;
       } else {
         videosMissingDuration += 1;
       }
@@ -313,6 +318,8 @@ export class GoogleDriveService {
       unsupported: nonFolders.filter((f) => f.category === 'other'),
       estimatedVideoDurationSeconds,
       videosMissingDuration,
+      videosOverLimit,
+      modules: sections.size,
     };
   }
 

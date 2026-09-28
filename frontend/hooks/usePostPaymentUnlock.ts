@@ -25,6 +25,12 @@ export interface UsePollCourseAccessOptions {
   pollIntervalMs?: number;
   /** Maximum number of access checks (~25s of patience at the default). */
   maxAttempts?: number;
+  /**
+   * Renewal mode: the learner ALREADY has access that ends at this ISO time,
+   * so "hasAccess" proves nothing. Only count it as unlocked once the access
+   * end date has moved past this — i.e. the new period really landed.
+   */
+  renewedPast?: string | null;
 }
 
 export const UNLOCK_POLL_EXHAUSTED_MESSAGE =
@@ -38,6 +44,7 @@ export function usePollCourseAccess(
     onExhausted,
     pollIntervalMs = 2500,
     maxAttempts = 10,
+    renewedPast = null,
   }: UsePollCourseAccessOptions,
 ): { isPolling: boolean } {
   const [isPolling, setIsPolling] = useState(enabled);
@@ -75,7 +82,10 @@ export function usePollCourseAccess(
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.hasAccess === true) {
+          const extended =
+            !renewedPast ||
+            (typeof data.expiresAt === 'string' && Date.parse(data.expiresAt) > Date.parse(renewedPast));
+          if (data.hasAccess === true && extended) {
             stop();
             unlockedRef.current?.();
             return;
@@ -102,7 +112,7 @@ export function usePollCourseAccess(
       if (timer !== null) clearTimeout(timer);
       setIsPolling(false);
     };
-  }, [enabled, courseId, maxAttempts, pollIntervalMs]);
+  }, [enabled, courseId, maxAttempts, pollIntervalMs, renewedPast]);
 
   return { isPolling };
 }

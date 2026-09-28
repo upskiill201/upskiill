@@ -13,10 +13,13 @@ import {
   WITH_FILES_AND_MODULES,
 } from './course-import-summary.util';
 import { APPLY_QUESTIONS_MAX, APPLY_QUESTIONS_MIN } from './lesson-content-generation.types';
+import { RICH_EXERCISES_KEEP_MIN } from './rich-lesson';
+import { phaseStateFromBlocks } from '../lesson/lesson-blocks.util';
 
 export interface CreateCourseFromImportInput {
   title: string;
   category: string;
+  level?: string;
   creatorTimeWeekly?: string;
 }
 
@@ -95,6 +98,7 @@ export class CourseImportPublishService {
       course: {
         title: input.title,
         category: input.category,
+        level: input.level,
         creatorTimeWeekly: input.creatorTimeWeekly,
       },
       sections: publishable.map(({ module, lessons }) => ({
@@ -250,6 +254,31 @@ export class CourseImportPublishService {
       return false;
     }
 
+    // Rich (v2) lessons: the exact checks publish runs, plus the video card.
+    const state = phaseStateFromBlocks({ learn, apply });
+    if (state.learn || state.apply) {
+      const cards = (learn.find((b) => (b as { type?: string }).type === 'learnCards') as { value?: { kind?: string }[] } | undefined)?.value;
+      const hasVideo =
+        (Array.isArray(cards) && cards.some((c) => c?.kind === 'video')) ||
+        learn.some((b) => (b as { type?: string }).type === 'videoUrl' && !!(b as { value?: string }).value);
+      const items = (apply.find((b) => (b as { type?: string }).type === 'exercises') as { value?: { items?: unknown[] } } | undefined)
+        ?.value?.items;
+      const count = Array.isArray(items) ? items.length : 0;
+      const ok =
+        hasVideo &&
+        (state.learn?.complete ?? true) &&
+        (state.apply?.complete ?? false) &&
+        count >= RICH_EXERCISES_KEEP_MIN &&
+        count <= 20;
+      if (!ok) {
+        this.logger.warn(
+          `Lesson "${lesson.title}" failed its checks (${[...(state.learn?.errors ?? []), ...(state.apply?.errors ?? [])].join(' ') || `${count} exercises`}) — withheld from the course.`,
+        );
+      }
+      return ok;
+    }
+
+    // Classic (v1) lessons from before rich generation.
     // The video is the Learn step; a lesson without one is a shell.
     const hasVideo = learn.some(
       (b) =>
@@ -306,9 +335,20 @@ export class CourseImportPublishService {
     // lesson in a course that may hold 100+ files, and rebuilding the map
     // each time would make it quadratic for no reason.
     const filesById = this.filesById(found);
+    // "N min" for learners: the video, plus ~30s per exercise.
+    const videoMs = lesson.primaryFileId ? filesById.get(lesson.primaryFileId)?.durationMs : null;
+    const applyItems = (
+      ((lesson.applyBlocks as unknown[] | null) ?? []).find((b) => (b as { type?: string }).type === 'exercises') as
+        | { value?: { items?: unknown[] } }
+        | undefined
+    )?.value?.items;
+    const durationMinutes = videoMs
+      ? Math.max(1, Math.round(Number(videoMs) / 60_000 + (Array.isArray(applyItems) ? applyItems.length * 0.5 : 0)))
+      : undefined;
     return {
       title: lesson.title,
       content: {
+        durationMinutes,
         description: lesson.description ?? undefined,
         learnBlocks: (lesson.learnBlocks as unknown[] | null) ?? undefined,
         applyBlocks: (lesson.applyBlocks as unknown[] | null) ?? undefined,

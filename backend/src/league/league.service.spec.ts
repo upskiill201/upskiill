@@ -127,17 +127,24 @@ describe('LeagueService', () => {
     league,
     weekStart: '2024-01-01',
     status: 'SETTLING',
+    cohortIndex: 0,
     members: members.map((m, i) => ({
       id: `member-${i}`,
+      league,
       userId: m.userId,
       weeklyXp: m.weeklyXp,
       xpUpdatedAt: new Date(2024, 0, 2 + i),
     })),
   });
 
+  let emitter: { emit: jest.Mock };
+
   beforeEach(async () => {
+    emitter = { emit: jest.fn() };
     prisma = {
       leagueCohort: {
+        count: jest.fn().mockResolvedValue(0),
+        create: jest.fn().mockResolvedValue({ id: 'new-cohort' }),
         updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         findUnique: jest.fn(),
         update: jest.fn().mockResolvedValue({}),
@@ -150,6 +157,9 @@ describe('LeagueService', () => {
         findFirst: jest.fn().mockResolvedValue(null),
         findUnique: jest.fn().mockResolvedValue(null),
         groupBy: jest.fn().mockResolvedValue([]),
+        // Plenty of learners last week → tiered weeks by default; the
+        // shared-week tests below lower it.
+        count: jest.fn().mockResolvedValue(500),
       },
       studentProfile: {
         findUnique: jest.fn().mockResolvedValue({ leagueTier: 'BRONZE' }),
@@ -163,7 +173,7 @@ describe('LeagueService', () => {
       providers: [
         LeagueService,
         { provide: PrismaService, useValue: prisma },
-        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: EventEmitter2, useValue: emitter },
       ],
     }).compile();
 
@@ -401,14 +411,62 @@ describe('LeagueService', () => {
         'LESSON',
       );
 
-      expect(prisma.leagueMember.update).toHaveBeenCalledWith({
-        where: { id: 'member-1' },
-        data: {
-          weeklyXp: { increment: 15 },
-          xpUpdatedAt: new Date('2024-01-03T12:00:00Z'),
-        },
-      });
+      expect(prisma.leagueMember.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'member-1' },
+          data: {
+            weeklyXp: { increment: 15 },
+            xpUpdatedAt: new Date('2024-01-03T12:00:00Z'),
+          },
+        }),
+      );
       expect(prisma.leagueMember.create).not.toHaveBeenCalled();
+    });
+
+    it('tells every learner the award jumped past — and only them', async () => {
+      prisma.leagueMember.findUnique.mockResolvedValueOnce({ id: 'member-1' });
+      prisma.leagueMember.update.mockResolvedValue({ weeklyXp: 120, cohortId: 'c1' });
+      prisma.leagueCohort.findUnique.mockResolvedValue({
+        cohortIndex: 0,
+        league: 'SILVER',
+        weekStart: '2024-01-01',
+      });
+      // Passed: 'amara' (at 100, now under 120). Board after the award:
+      const board = [
+        { userId: 'top', weeklyXp: 300, league: 'SILVER', user: { fullName: 'Top Dog' } },
+        { userId: 'u1', weeklyXp: 120, league: 'SILVER', user: { fullName: 'Sam Doe' } },
+        { userId: 'amara', weeklyXp: 100, league: 'SILVER', user: { fullName: 'Amara K' } },
+      ];
+      prisma.leagueMember.findMany.mockImplementation(async (args: any) => {
+        if (args?.where?.weeklyXp) return [{ userId: 'amara' }]; // who was passed
+        if (args?.where?.cohortId && args?.orderBy) return board; // the board
+        return []; // ensureSettled's unsettled scan
+      });
+
+      await service.recordXp('u1', 30, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      const passedQuery = prisma.leagueMember.findMany.mock.calls.find(
+        (c: any[]) => c[0]?.where?.weeklyXp,
+      )[0];
+      expect(passedQuery.where).toEqual(
+        expect.objectContaining({ cohortId: 'c1', weeklyXp: { gte: 90, lt: 120 } }),
+      );
+      const overtaken = emitter.emit.mock.calls.filter((c) => c[0] === 'league.overtaken');
+      expect(overtaken).toHaveLength(1);
+      expect(overtaken[0][1]).toEqual(
+        expect.objectContaining({ userId: 'amara', rivalName: 'Sam', rank: 3 }),
+      );
+      const climb = emitter.emit.mock.calls.find((c) => c[0] === 'league.passed.others');
+      expect(climb?.[1]).toEqual(expect.objectContaining({ userId: 'u1', passedNames: ['Amara'], rank: 2 }));
+    });
+
+    it('announces nothing when nobody was passed', async () => {
+      prisma.leagueMember.findUnique.mockResolvedValueOnce({ id: 'member-1' });
+      prisma.leagueMember.update.mockResolvedValue({ weeklyXp: 40, cohortId: 'c1' });
+
+      await service.recordXp('u1', 10, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(emitter.emit).not.toHaveBeenCalledWith('league.overtaken', expect.anything());
     });
 
     it('swallows failures so the award flow never breaks', async () => {
@@ -418,5 +476,85 @@ describe('LeagueService', () => {
         service.recordXp('u1', 10, new Date('2024-01-03T12:00:00Z'), 'LESSON'),
       ).resolves.toBeUndefined();
     });
+  });
+
+  describe('shared weeks (few learners: everyone on one board)', () => {
+    it('is a shared week when fewer than 60 learners competed last week', async () => {
+      prisma.leagueMember.count.mockResolvedValue(12);
+      await expect(service.isSharedWeek('2024-01-08')).resolves.toBe(true);
+      expect(prisma.leagueMember.count).toHaveBeenCalledWith({
+        where: { weekStart: '2024-01-01', cohortId: { not: null } },
+      });
+      prisma.leagueMember.count.mockResolvedValue(60);
+      await expect(service.isSharedWeek('2024-01-15')).resolves.toBe(false);
+    });
+
+    it("puts every tier on the shared board, keeping each learner's own tier", async () => {
+      prisma.leagueMember.count.mockResolvedValue(3);
+      prisma.leagueMember.findUnique.mockResolvedValue(null);
+      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'RUBY' });
+      prisma.$queryRaw.mockResolvedValue([{ id: 'shared-1', cohortIndex: -1 }]);
+
+      await service.recordXp('u1', 20, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(prisma.leagueMember.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ cohortId: 'shared-1', league: 'RUBY' }),
+      });
+    });
+
+    it('opens the first shared board with a negative index', async () => {
+      prisma.leagueMember.count.mockResolvedValue(0);
+      prisma.leagueMember.findUnique.mockResolvedValue(null);
+      prisma.$queryRaw.mockResolvedValue([]);
+
+      await service.recordXp('u1', 20, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(prisma.leagueCohort.create).toHaveBeenCalledWith({
+        data: { league: 'BRONZE', weekStart: '2024-01-01', cohortIndex: -1 },
+        select: { id: true },
+      });
+    });
+
+    it("settles a shared board from each member's own tier", async () => {
+      const cohort = {
+        ...makeCohort('BRONZE', [
+          { userId: 'u1', weeklyXp: 500 },
+          { userId: 'u2', weeklyXp: 300 },
+        ]),
+        cohortIndex: -1,
+      };
+      cohort.members[0].league = 'RUBY';
+      cohort.members[1].league = 'SILVER';
+      prisma.leagueCohort.findUnique.mockResolvedValue(cohort);
+
+      await service.settleCohort('cohort-1');
+
+      // Tiny board: top 3 promote — each from their own tier.
+      expect(prisma.studentProfile.update).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        data: { leagueTier: 'EMERALD' },
+      });
+      expect(prisma.studentProfile.update).toHaveBeenCalledWith({
+        where: { userId: 'u2' },
+        data: { leagueTier: 'GOLD' },
+      });
+    });
+  });
+});
+
+describe('Shared-board rules', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getSharedPromotionZone, resolveSharedOutcome } = require('./league.config');
+
+  it('promotes the top 3 on a small board, the top 20% on a bigger one', () => {
+    expect(getSharedPromotionZone(2)).toBe(2);
+    expect(getSharedPromotionZone(8)).toBe(3);
+    expect(getSharedPromotionZone(40)).toBe(8);
+  });
+
+  it('demotes the bottom five of a big board, but never out of Bronze', () => {
+    expect(resolveSharedOutcome('GOLD', 38, 40)).toEqual({ outcome: 'DEMOTED', newTier: 'SILVER' });
+    expect(resolveSharedOutcome('BRONZE', 40, 40)).toEqual({ outcome: 'STAYED', newTier: 'BRONZE' });
+    expect(resolveSharedOutcome('GOLD', 8, 9)).toEqual({ outcome: 'STAYED', newTier: 'GOLD' });
   });
 });

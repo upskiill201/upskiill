@@ -275,3 +275,8 @@
     max-height: 62vh;
   }
 }
+
+/* Rows sit inside rounded cards now (bell panel and inbox). */
+.item {
+  border-radius: 14px;
+}

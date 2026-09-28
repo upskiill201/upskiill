@@ -16,20 +16,22 @@ export const StreakAtRiskRule: TeyRule = {
   id: 'STREAK_AT_RISK',
   priority: 'HIGH',
   cooldownHours: 20,
-  supersedes: ['DAILY_GOAL_INCOMPLETE'],
+  // Not DAILY_GOAL_INCOMPLETE: that is the morning/afternoon rung of the same
+  // day and only plans itself early enough to leave room for this one.
+  supersedes: [],
 
   plan(state, now): ScheduleIntent | null {
     // Nothing to protect.
     if (state.streakDays < 1) return null;
     if (state.todayGoalCompleted) return null;
 
-    // Fire an hour after their usual study time, but never later than the
-    // evening cap -- a night owl whose usual hour is 23:00 would otherwise be
-    // nudged at midnight, which never arrives.
-    const usual = state.usualHourLocal ?? TEY_THRESHOLDS.defaultAtRiskHour;
-    const hour = Math.min(usual + 1, TEY_THRESHOLDS.latestAtRiskHour);
+    // The evening rung: 20:00, or the learner's own reminder hour when that
+    // is later — but never past the cap, or a night owl whose reminder hour
+    // is 23:00 would be nudged at midnight, which never arrives.
+    const chosen = state.preferredHour ?? state.usualHourLocal ?? 0;
+    const hour = Math.min(Math.max(20, chosen), TEY_THRESHOLDS.latestAtRiskHour);
 
-    const dueAt = withJitter(localTimeToday(now, hour, 30), state.userId);
+    const dueAt = withJitter(localTimeToday(now, hour, 0), state.userId);
     // Hand over to STREAK_CRITICAL rather than firing late.
     const expiresAt = localTimeToday(now, 22, 0);
     if (dueAt >= expiresAt) return null;

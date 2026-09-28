@@ -12,8 +12,8 @@ const RESERVED_USERNAMES = new Set([
   'creator', 'creators', 'dashboard', 'login', 'signup', 'settings', 'courses',
 ]);
 
-// Shape of one step's answers coming from the onboarding localStorage payload
-interface OnboardingPayload {
+// v1: the retired 16-step creator flow, answers keyed by step number.
+interface OnboardingPayloadV1 {
   draftId?: string;
   step2?: { creatorType?: string };
   step3?: { categories?: string[] };
@@ -25,6 +25,53 @@ interface OnboardingPayload {
   step9?: { weeklyHours?: string };
   step12?: { courseFormat?: string; launchGoal?: string };
   step13?: { communityOption?: string; bio?: string };
+}
+
+/**
+ * v2: creator onboarding since 2026-09 (frontend lib/creator-onboarding),
+ * answers keyed by name. Every value is checked against these closed lists —
+ * the payload comes straight from the browser.
+ */
+const CREATOR_V2 = {
+  creatorType: ['course-creator', 'content-creator', 'teacher', 'mentor', 'engineer', 'new-creator'],
+  track: ['coding', 'ai'],
+  topics: [
+    'web-development', 'mobile-development', 'programming-fundamentals', 'software-development',
+    'use-tools', 'build-agents', 'automations',
+  ],
+  experience: ['first-time', 'some', 'experienced', 'pro'],
+  audience: ['none', 'under-1k', '1k-10k', '10k-100k', '100k-plus'],
+  existing: ['videos', 'full-course', 'notes', 'community', 'nothing-yet'],
+  goal: ['earn', 'audience', 'impact', 'community'],
+  weeklyHours: ['1-2', '3-5', '6-10', '10-plus'],
+} as const;
+
+const TRACK_LABEL: Record<string, string> = { coding: 'Coding', ai: 'AI' };
+
+function pick(value: unknown, allowed: readonly string[]): string | null {
+  return typeof value === 'string' && allowed.includes(value) ? value : null;
+}
+
+function pickMany(value: unknown, allowed: readonly string[]): string[] {
+  if (!Array.isArray(value)) return [];
+  return Array.from(new Set(value.filter((v): v is string => typeof v === 'string' && allowed.includes(v))));
+}
+
+/** The v2 answers that survive validation, or null when the payload isn't v2. */
+export function parseCreatorOnboardingV2(data: Record<string, unknown>) {
+  if (data?.version !== 2) return null;
+  const track = pick(data.track, CREATOR_V2.track);
+  return {
+    creatorType: pick(data.creatorType, CREATOR_V2.creatorType),
+    track,
+    // Topics only count for the track they belong to.
+    topics: track ? pickMany(data.topics, CREATOR_V2.topics) : [],
+    experience: pick(data.experience, CREATOR_V2.experience),
+    audience: pick(data.audience, CREATOR_V2.audience),
+    existing: pickMany(data.existing, CREATOR_V2.existing),
+    goal: pick(data.goal, CREATOR_V2.goal),
+    weeklyHours: pick(data.weeklyHours, CREATOR_V2.weeklyHours),
+  };
 }
 
 /**
@@ -297,9 +344,55 @@ export class ProfileService {
 
   /**
    * Hydrates the creator Profile from their onboarding answers.
-   * Called automatically by AuthService after a successful creator signup.
+   * Called by AuthService after a creator sign-up, a creator-portal Google
+   * sign-in, or POST /auth/become-creator. Accepts the v2 payload
+   * (`version: 2`) and the retired 16-step v1 payload.
    */
-  async hydrateFromOnboarding(userId: string, data: OnboardingPayload) {
+  async hydrateFromOnboarding(userId: string, raw: Record<string, unknown>) {
+    const v2 = parseCreatorOnboardingV2(raw);
+    const profileData = v2 ? this.profileDataFromV2(v2) : this.profileDataFromV1(raw as OnboardingPayloadV1);
+
+    // Remove null/empty entries so we never overwrite existing data.
+    const cleanData = Object.fromEntries(
+      Object.entries(profileData).filter(
+        ([, v]) => v !== null && v !== undefined && !(Array.isArray(v) && v.length === 0),
+      ),
+    );
+
+    if (Object.keys(cleanData).length > 0) {
+      await this.prisma.profile.upsert({
+        where: { userId },
+        create: { userId, ...cleanData },
+        update: cleanData,
+      });
+    }
+
+    if (v2) {
+      // Onboarding is done: mark it on the (older) InstructorProfile too, which
+      // the admin creators list reads.
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { fullName: true } });
+      await this.prisma.instructorProfile.upsert({
+        where: { userId },
+        create: { userId, displayName: user?.fullName?.trim() || 'Creator', onboardingCompleted: true },
+        update: { onboardingCompleted: true },
+      });
+    }
+  }
+
+  private profileDataFromV2(v2: NonNullable<ReturnType<typeof parseCreatorOnboardingV2>>) {
+    return {
+      niche: v2.track,
+      primaryExpertise: v2.track ? TRACK_LABEL[v2.track] : null,
+      subCategories: v2.topics,
+      audienceSize: v2.audience,
+      weeklyHours: v2.weeklyHours,
+      launchGoal: v2.goal,
+      // The whole validated set, for the studio profile and future personalisation.
+      creatorOnboarding: { version: 2, ...v2 },
+    };
+  }
+
+  private profileDataFromV1(data: OnboardingPayloadV1) {
     // Step 7 is a multi-select: the live shell sends string[], but very old
     // stored payloads may hold a bare string — normalize to an array.
     const rawChallenge = data.step7?.biggestChallenge;
@@ -309,7 +402,7 @@ export class ProfileService {
         ? [rawChallenge]
         : null;
 
-    const profileData = {
+    return {
       niche: data.step3?.categories?.[0] ?? null,
       subCategories: data.step3?.categories ?? [],
       audienceSize: data.step4?.audienceSize ?? null,
@@ -317,24 +410,11 @@ export class ProfileService {
       biggestChallenge,
       teachingStyle: data.step8?.teachingStyle ?? null,
       weeklyHours: data.step9?.weeklyHours ?? null,
-      // The current flow's step 12 asks what to build/launch first and saves
-      // it under `courseFormat`; older drafts used `launchGoal`.
+      // The v1 flow's step 12 asked what to build/launch first and saved it
+      // under `courseFormat`; older drafts used `launchGoal`.
       launchGoal: data.step12?.courseFormat ?? data.step12?.launchGoal ?? null,
       bio: data.step13?.bio ?? null,
     };
-
-    // Remove null entries so we don't overwrite existing data
-    const cleanData = Object.fromEntries(
-      Object.entries(profileData).filter(([, v]) => v !== null && v !== undefined)
-    );
-
-    if (Object.keys(cleanData).length === 0) return;
-
-    await this.prisma.profile.upsert({
-      where: { userId },
-      create: { userId, ...cleanData },
-      update: cleanData,
-    });
   }
 
   /**
@@ -385,6 +465,15 @@ export class ProfileService {
     }
 
     if (!user) {
+      throw new NotFoundException(`Creator @${rawIdentifier} not found`);
+    }
+
+    // Honour "who can see your profile" (creator settings). A hidden page
+    // answers exactly like a missing one, so it can't be probed; the owner
+    // always sees their own.
+    const visibility = user.profile?.profileVisibility ?? 'PUBLIC';
+    const isOwner = Boolean(viewerUserId) && viewerUserId === user.id;
+    if (!isOwner && (visibility === 'HIDDEN' || (visibility === 'TEYRO_ONLY' && !viewerUserId))) {
       throw new NotFoundException(`Creator @${rawIdentifier} not found`);
     }
 
@@ -544,6 +633,23 @@ export class ProfileService {
       featuredCourse,
       courses: remainingCourses,
       achievements,
+      // Launch track + topics from creator onboarding (null/[] for older creators).
+      track: user.profile?.niche === 'coding' || user.profile?.niche === 'ai' ? user.profile.niche : null,
+      topics: Array.isArray(user.profile?.subCategories)
+        ? (user.profile.subCategories as unknown[]).filter((t): t is string => typeof t === 'string')
+        : [],
+      socials: canShow('showSocials')
+        ? {
+            website: user.profile?.website || null,
+            linkedin: user.profile?.linkedin || null,
+            github: user.profile?.github || null,
+            twitter: user.profile?.twitter || null,
+            youtube: user.profile?.youtube || null,
+            instagram: user.profile?.instagram || null,
+            tiktok: user.profile?.tiktok || null,
+          }
+        : null,
+      isSelf: Boolean(viewerUserId) && viewerUserId === user.id,
     };
   }
 

@@ -277,3 +277,21 @@ export function classifyLeaderboardEvent(
     return { ...base, type: 'PASSED_BY_RIVAL', rivalName: rival.name, rivalUserId: rival.userId };
   }
 }
+
+// ─── "Already seen" ─────────────────────────────────────────────────────────
+// The rank watcher diffs against the last snapshot it saved. When the screens
+// after a lesson have just SHOWN the learner their new standing, that's the
+// new baseline — so saving it here stops the watcher from announcing the
+// same climb again as a notice a moment later. Also clears the tab dot.
+
+export const LEADERBOARD_SNAPSHOT_KEY = 'teyro:leaderboard-snapshot';
+export const LEAGUE_SEEN_KEY = 'teyro:league-seen';
+
+export function markLeaderboardSeen(data: MyLeaderboard): void {
+  try {
+    window.localStorage.setItem(LEADERBOARD_SNAPSHOT_KEY, JSON.stringify(toSnapshot(data)));
+    window.localStorage.setItem(LEAGUE_SEEN_KEY, JSON.stringify({ weekStart: data.weekStart, rank: data.myRank ?? null }));
+  } catch {
+    // Storage blocked — the watcher's dedupe keys still prevent repeats.
+  }
+}

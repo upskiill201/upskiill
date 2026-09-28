@@ -11,6 +11,7 @@ import {
   Body,
   ForbiddenException,
   NotFoundException,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
@@ -94,6 +95,16 @@ export class CourseController {
     return await this.courseService.getCourseAccess(req.user.id as string, id);
   }
 
+  /**
+   * The home map's single request: sections, published lessons, completion
+   * and access for the signed-in learner. See CourseService.getLearningPath.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/path')
+  async getLearningPath(@Req() req: any, @Param('id') id: string) {
+    return await this.courseService.getLearningPath(req.user.id as string, id);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get(':id/progress')
   async getProgress(@Req() req: any, @Param('id') id: string) {
@@ -110,6 +121,8 @@ export class CourseController {
     @Body('timeSpentSeconds') timeSpentSeconds?: number,
     @Body('attemptsCount') attemptsCount?: number,
     @Body('quizScorePct') quizScorePct?: number,
+    @Body('correctAnswers') correctAnswers?: number,
+    @Body('missedBlockIds') missedBlockIds?: unknown,
   ) {
     return await this.courseService.markLessonComplete(
       req.user.id as string,
@@ -120,7 +133,31 @@ export class CourseController {
       typeof timeSpentSeconds === 'number' ? timeSpentSeconds : undefined,
       typeof attemptsCount === 'number' ? attemptsCount : undefined,
       typeof quizScorePct === 'number' ? quizScorePct : undefined,
+      typeof correctAnswers === 'number' ? correctAnswers : undefined,
+      Array.isArray(missedBlockIds) ? (missedBlockIds as string[]) : undefined,
     );
+  }
+
+  /** Lesson player pings for creator analytics: opened, and left part-way. */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @HttpCode(204)
+  @Post(':id/lessons/:lessonId/open')
+  async lessonOpened(@Req() req: any, @Param('id') id: string, @Param('lessonId') lessonId: string) {
+    await this.courseService.recordLessonOpen(req.user.id as string, id, lessonId).catch(() => {});
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @HttpCode(204)
+  @Post(':id/lessons/:lessonId/quit')
+  async lessonQuit(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('lessonId') lessonId: string,
+    @Body('step') step?: unknown,
+  ) {
+    await this.courseService.recordLessonQuit(req.user.id as string, id, lessonId, step).catch(() => {});
   }
 
   @UseGuards(AuthGuard('jwt'))

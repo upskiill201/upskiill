@@ -300,7 +300,7 @@ export class PaymentService {
   async subscribeCourse(
     userId: string,
     courseId: string,
-    plan: 'WEEKLY' | 'MONTHLY' | 'YEARLY',
+    plan: 'MONTHLY' | 'YEARLY',
     provider: 'STRIPE' | 'MESOMB',
     extra?: {
       phone?: string;
@@ -375,12 +375,7 @@ export class PaymentService {
 
     // Server-authoritative price from the pricing ladder
     const ladder = calculateCoursePricingLadder(course.price);
-    const planData =
-      plan === 'WEEKLY'
-        ? ladder.weekly
-        : plan === 'YEARLY'
-          ? ladder.yearly
-          : ladder.monthly;
+    const planData = plan === 'YEARLY' ? ladder.yearly : ladder.monthly;
     let actualPrice = planData.price;
 
     // Coupon re-validated HERE, at charge time — never trust an earlier
@@ -531,6 +526,8 @@ export class PaymentService {
       throw new BadRequestException('Course not found');
     }
 
+    // WEEKLY is legacy-only (renewals of subscriptions bought before 2026-09-24).
+    // WEEKLY is legacy-only: renewals of subscriptions bought before 2026-09-24.
     const durationDays = plan === 'WEEKLY' ? 7 : plan === 'MONTHLY' ? 30 : 365;
 
     const subscriptionEnrollmentIds: string[] = [];

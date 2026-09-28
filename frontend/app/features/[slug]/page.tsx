@@ -1,21 +1,26 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import {
-  getAllFeatureSlugs,
-  getFeatureBySlug,
-} from '@/lib/features/posts';
+import { CalendarDays, Clock } from 'lucide-react';
+import { getAllFeaturePages, getAllFeatureSlugs, getFeatureBySlug } from '@/lib/features/posts';
+import { ACCENTS } from '@/lib/seo/mdxPages';
+import { START_HREF } from '@/lib/seo/facts';
+import { formatDate } from '@/lib/blog/site';
+import { articleSchema, breadcrumbSchema, faqSchema, schemas } from '@/lib/seo/schema';
+import { relatedCards } from '@/lib/seo/related';
 import JsonLd from '@/components/features/blog/JsonLd';
-import styles from './FeaturePage.module.css';
+import FaqAccordion from '@/components/features/blog/FaqAccordion';
+import CtaBlock from '@/components/features/blog/CtaBlock';
+import { AnswerCard, LinkCards, SectionHead, SeoHeader } from '@/components/seo/Blocks';
+import proseStyles from '@/app/blog/prose.module.css';
+import s from '@/components/seo/Seo.module.css';
 
 export const revalidate = 3600;
-export const dynamicParams = true;
+export const dynamicParams = false;
 
-interface FeaturePageProps {
+interface Props {
   params: Promise<{ slug: string }>;
 }
 
@@ -23,96 +28,104 @@ export function generateStaticParams() {
   return getAllFeatureSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: FeaturePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const page = getFeatureBySlug(slug);
   if (!page) return {};
-  const { title, meta_description, keyword } = page.frontmatter;
+  const { title, meta_description } = page.frontmatter;
   return {
     title,
     description: meta_description,
-    keywords: keyword,
     alternates: { canonical: `/features/${slug}` },
+    openGraph: { type: 'article', url: `/features/${slug}`, title, description: meta_description },
+    twitter: { card: 'summary_large_image', title, description: meta_description },
   };
 }
 
-export default async function FeatureDetailPage({ params }: FeaturePageProps) {
+export default async function FeatureDetailPage({ params }: Props) {
   const { slug } = await params;
   const page = getFeatureBySlug(slug);
   if (!page) notFound();
 
-  const { frontmatter: fm, content } = page;
+  const fm = page.frontmatter;
+  const path = `/features/${slug}`;
+  const forCreators = fm.audience === 'creators';
 
-  let jsonLdData: Record<string, unknown>[] = [];
-  if (fm.json_ld) {
-    try {
-      const parsed =
-        typeof fm.json_ld === 'string' ? JSON.parse(fm.json_ld) : fm.json_ld;
-      jsonLdData = Array.isArray(parsed) ? parsed : [parsed];
-    } catch {
-      /* ignore */
-    }
-  }
+  // Explicit picks first, then neighbours for the same audience.
+  const siblings = getAllFeaturePages()
+    .filter((p) => p.slug !== slug && p.frontmatter.audience === fm.audience)
+    .map((p) => `/features/${p.slug}`);
+  const related = relatedCards([...fm.related, ...siblings], path, 3);
 
   return (
-    <div className={styles.page}>
-      {jsonLdData.length > 0 && <JsonLd data={jsonLdData} />}
+    <div className={s.page} style={{ '--accent': ACCENTS[fm.accent] } as React.CSSProperties}>
+      <JsonLd
+        data={schemas(
+          articleSchema({ path, title: fm.title, description: fm.meta_description, dateModified: fm.updated }),
+          breadcrumbSchema([
+            { name: 'Features', path: '/features' },
+            { name: fm.keyword, path },
+          ]),
+          faqSchema(fm.faq),
+        )}
+      />
 
-      {/* Hero */}
-      <header
-        className={styles.hero}
-        style={{ '--hero-color': fm.color } as React.CSSProperties}
-      >
-        <div className={styles.heroInner}>
-          <Link href="/features" className={styles.back}>
-            <ArrowLeft size={16} strokeWidth={3} />
-            All Features
-          </Link>
-          <div className={styles.heroIcon}>{fm.icon}</div>
-          <span className={styles.kicker}>{fm.keyword}</span>
-          <h1 className={styles.title}>{fm.title}</h1>
-          <p className={styles.subtitle}>{fm.meta_description}</p>
-          <div className={styles.heroBadges}>
-            <span className={styles.badge}>
-              {fm.reading_time} min read
+      <SeoHeader
+        crumbs={[{ name: 'Features', path: '/features' }]}
+        chip={forCreators ? 'For creators' : fm.keyword}
+        title={fm.title}
+        dek={fm.meta_description}
+        meta={
+          <>
+            <span className={s.metaItem}>
+              <CalendarDays size={16} strokeWidth={2.5} aria-hidden="true" />
+              Updated <time dateTime={fm.updated}>{formatDate(fm.updated)}</time>
             </span>
-            <span className={styles.badge}>
-              {fm.word_count.toLocaleString()} words
+            <span className={s.metaItem}>
+              <Clock size={16} strokeWidth={2.5} aria-hidden="true" />
+              {page.readingMinutes} min read
             </span>
-          </div>
+          </>
+        }
+      />
+
+      <div className={s.container}>
+        <AnswerCard answer={fm.answer} visual={fm.visual} caption={fm.caption ?? `${fm.keyword}, as it looks in Teyro`} />
+
+        <div className={`${proseStyles.prose} ${s.prose}`}>
+          <MDXRemote
+            source={page.content}
+            options={{ mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [rehypeSlug] } }}
+          />
         </div>
-      </header>
 
-      {/* Body */}
-      <div className={styles.container}>
-        <article className={styles.article}>
-          <div className={styles.body}>
-            <MDXRemote
-              source={content}
-              options={{
-                mdxOptions: {
-                  remarkPlugins: [remarkGfm],
-                  rehypePlugins: [rehypeSlug],
-                },
-              }}
-            />
-          </div>
-        </article>
+        <div className={s.narrow}>
+          {fm.faq.length > 0 && <FaqAccordion items={fm.faq} />}
+          <CtaBlock
+            cta={
+              forCreators
+                ? {
+                    title: 'Teach a course people finish',
+                    text: 'Build it in Teyro Studio and every learner gets streaks, leagues and a community around it.',
+                    href: '/teach',
+                    label: 'Teach on Teyro',
+                  }
+                : {
+                    title: 'Try it on your first lesson',
+                    text: 'Your first lesson takes a few minutes. Teyro is free to start, with no ads.',
+                    href: START_HREF,
+                    label: 'Get Teyro free',
+                  }
+            }
+          />
+        </div>
 
-        {/* CTA */}
-        <section className={styles.ctaSection}>
-          <h2 className={styles.ctaTitle}>Try {fm.keyword} today</h2>
-          <p className={styles.ctaText}>
-            Join thousands of learners building real skills with daily 15-minute missions.
-            Start free â€” no credit card needed.
-          </p>
-          <Link href="/onboarding/0" className={styles.ctaButton}>
-            Start your free streak
-            <ArrowRight size={18} strokeWidth={3} />
-          </Link>
-        </section>
+        {related.length > 0 && (
+          <section className={s.section} aria-labelledby="related-heading">
+            <SectionHead id="related-heading" title="Keep exploring" />
+            <LinkCards items={related} />
+          </section>
+        )}
       </div>
     </div>
   );

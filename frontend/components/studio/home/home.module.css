@@ -1,0 +1,545 @@
+/* Studio home — Tey's focus, the to-do queue, courses, activity.
+   Builds on studio.module.css; tokens only. */
+
+.hero {
+  padding-top: 8px;
+}
+
+.heroLine {
+  display: block;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+.sideLink {
+  font-size: 12.5px;
+  min-height: 32px;
+}
+
+.moreBtn {
+  align-self: flex-start;
+  min-height: 36px;
+}
+
+/* ── The one thing (inside Tey's bubble) ────────────────────────────── */
+
+.focus {
+  --tone: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--tone) 8%, var(--bg-card));
+  border: 2px solid color-mix(in srgb, var(--tone) 30%, var(--border));
+}
+
+.focusMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.focusIcon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--tone);
+  color: var(--bg-card);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--tone) 70%, var(--color-ink));
+}
+
+.focusText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.focusText strong {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.focusText span {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── To-do queue ────────────────────────────────────────────────────── */
+
+.todos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo {
+  --tone: var(--color-brand);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 18px;
+  background: var(--bg-card);
+  min-width: 0;
+}
+
+.todoIcon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 13%, var(--bg-card));
+  border: 2px solid color-mix(in srgb, var(--tone) 28%, var(--border));
+}
+
+.todoCount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--bg-card);
+  border: 2px solid var(--bg-card);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.todoText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todoText strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.todoText span {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.todoFaces {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .todo {
+    flex-wrap: wrap;
+  }
+
+  .todoText {
+    flex-basis: calc(100% - 60px);
+  }
+
+  .todoFaces {
+    margin-left: 58px;
+    margin-right: auto;
+  }
+}
+
+/* ── This week ──────────────────────────────────────────────────────── */
+
+.chartHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chartHead strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.chartHead span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ── Courses ────────────────────────────────────────────────────────── */
+
+.courses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1180px) {
+  .courses {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.course {
+  min-width: 0;
+}
+
+.courseLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 18px;
+  background: var(--bg-card);
+  color: inherit;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.courseLink:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 35%, var(--border));
+}
+
+.courseLink:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.cover {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.courseBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.courseTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.waitChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--error-red);
+  color: var(--bg-card);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.courseTitle {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.courseStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.courseStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.up {
+  color: var(--success-green);
+}
+
+.courseDraft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.courseArrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+/* ── Checklist ──────────────────────────────────────────────────────── */
+
+.checkHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.checkHead strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.checkHead span {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--success-green);
+}
+
+.checks {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 6px;
+  border-radius: 10px;
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.check:hover {
+  background: var(--bg-section);
+}
+
+.checkDone {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  pointer-events: none;
+}
+
+.checkBox {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 2px solid var(--border-strong);
+  color: var(--bg-card);
+}
+
+.checkDone .checkBox {
+  background: var(--success-green);
+  border-color: var(--success-green);
+}
+
+/* ── Activity ───────────────────────────────────────────────────────── */
+
+.feedHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 18px 8px;
+}
+
+.feedHead strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.liveDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--success-green);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--success-green) 50%, transparent);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  to {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveDot {
+    animation: none;
+  }
+}
+
+.feedEmpty {
+  margin: 0;
+  padding: 4px 18px 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0 8px 8px;
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.feedRow {
+  --tone: var(--color-brand);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.feedRow:hover {
+  background: var(--bg-section);
+}
+
+.feedAvatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.feedBadge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--bg-card);
+  border: 2px solid var(--bg-card);
+}
+
+.feedText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.feedText strong {
+  color: var(--color-ink);
+  font-weight: 800;
+}
+
+.feedText em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.feedTime {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Phones: the bubble is narrow, so the focus stacks and the button spans it. */
+@media (max-width: 640px) {
+  .heroLine {
+    font-size: 15.5px;
+  }
+
+  .focus {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .focusMeta {
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .focusText {
+    flex-basis: calc(100% - 52px);
+  }
+
+  .focusMeta > :last-child:not(.focusText) {
+    margin-left: 52px;
+  }
+}
+
+@media (max-width: 640px) {
+  .focus > a,
+  .focus > button {
+    width: 100%;
+  }
+
+  .hero > div {
+    gap: 8px;
+  }
+}

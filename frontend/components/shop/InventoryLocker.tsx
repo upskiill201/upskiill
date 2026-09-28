@@ -170,7 +170,7 @@ export default function InventoryLocker({
             {/* Freezes live on the profile counter, not the item table — see
                 the schema note on UserShopItem for why. */}
             <div className={styles.consumable}>
-              <Image src="/Icons/snowflake.svg" alt="" width={26} height={26} />
+              <Image src="/art/items/freeze.svg" alt="" width={32} height={32} />
               <span className={styles.chipName}>Streak Freeze</span>
               <span className={styles.qty}>
                 {inventory.streakFreezeBank} / {inventory.freezeCap}

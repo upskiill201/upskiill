@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
-import { Search, FileText } from 'lucide-react';
+import Image from 'next/image';
+import { Search } from 'lucide-react';
 import type { PostSummary } from '@/lib/blog/types';
 import PostCard from './PostCard';
 import styles from './BlogIndexClient.module.css';
@@ -64,7 +65,15 @@ export default function BlogIndexClient({ posts, categories, featuredSlug }: Blo
   }
 
   return (
-    <section className={styles.section} aria-label="All articles">
+    <section className={styles.section} aria-labelledby="all-articles-heading">
+      <div className={styles.head}>
+        <h2 id="all-articles-heading" className={styles.heading}>
+          {isFiltering
+            ? `${filtered.length} ${filtered.length === 1 ? 'article' : 'articles'}`
+            : 'Latest articles'}
+        </h2>
+      </div>
+
       {/* ── Toolbar: category pills + search ── */}
       <div className={styles.toolbar}>
         <div className={styles.pills} role="tablist" aria-label="Filter by category">
@@ -131,9 +140,13 @@ export default function BlogIndexClient({ posts, categories, featuredSlug }: Blo
       ) : (
         /* ── Actionable empty state ── */
         <div className={styles.empty}>
-          <div className={styles.emptyIcon}>
-            <FileText size={28} strokeWidth={2} />
-          </div>
+          <Image
+            src="/User onbarding Assets/tey/searching.webp"
+            alt=""
+            width={112}
+            height={143}
+            className={styles.emptyArt}
+          />
           <h3 className={styles.emptyTitle}>No articles found</h3>
           <p className={styles.emptyText}>
             Nothing matches {query.trim() ? `“${query.trim()}”` : 'this filter'} yet. Try a

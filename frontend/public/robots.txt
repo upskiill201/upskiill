@@ -12,6 +12,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -26,6 +27,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -47,6 +49,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -62,6 +65,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -72,6 +76,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Allow: /_next/
 Allow: /*.png$
@@ -87,6 +92,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -97,6 +103,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -107,6 +114,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -142,6 +150,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -151,6 +160,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -172,6 +182,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -186,6 +197,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -199,6 +211,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -209,6 +222,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -219,6 +233,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 
@@ -236,6 +251,7 @@ Allow: /blog
 Allow: /features
 Allow: /for
 Allow: /alternatives
+Allow: /teach
 Allow: /sitemap.xml
 Disallow: /
 

@@ -3,8 +3,9 @@
 /**
  * WelcomeBackScene — the learner returns after a gap since their last lesson,
  * with no live streak reconciliation to carry the moment (see the producer
- * gating in GamificationContext.tsx). Sad-Tey art, not celebratory: no
- * confetti, no fanfare — just Tey noticing the gap and being glad they're back.
+ * gating in GamificationContext.tsx). No confetti, no fanfare — Tey noticing
+ * the gap and being glad they're back: a warm hello (studio "welcomeBack"),
+ * never a sad motif.
  * Reuses the exact "Tey looks sad" illustration from the onboarding WhatsApp
  * skip step, rather than the Celebration Engine's default mascot art.
  */
@@ -15,8 +16,8 @@ import SceneShell from '../SceneShell';
 import { TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playHaptic } from '@/lib/haptics';
-import { playLossMotif } from '@/lib/audio/celebrationAudio';
+import { celebrationHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { pickWelcomeBackSpeech } from '@/lib/tey/streakVoice';
 
 type WelcomeBackSceneInput = Extract<CelebrationScene, { kind: 'WELCOME_BACK' }>;
@@ -32,8 +33,8 @@ export default function WelcomeBackScene({ scene, onAdvance }: WelcomeBackSceneP
   useEffect(() => {
     if (firedRef.current) return;
     firedRef.current = true;
-    playLossMotif();
-    playHaptic('medium');
+    playSound('welcomeBack');
+    celebrationHaptic('soft');
   }, []);
 
   // Picked once per scene instance so a re-render never rerolls the line the

@@ -357,6 +357,10 @@
   box-shadow: 0 3px 0 0 #CBD5E1;
 }
 
+.leagueCardBadge {
+  margin-bottom: 14px;
+}
+
 .lockIconOuter {
   width: 48px;
   height: 48px;

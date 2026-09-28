@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
-import { playWinSound } from '@/utils/audio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 import styles from './unlock.module.css';
@@ -32,8 +32,8 @@ export default function SuccessBeat({ returnTo, durationMs }: SuccessBeatProps) 
   useEffect(() => {
     if (!firedRef.current) {
       firedRef.current = true;
-      playWinSound();
-      playHaptic('success');
+      playSound('courseUnlocked');
+      playHaptic('success', false);
       if (!reducedMotion) {
         confetti({
           particleCount: 120,

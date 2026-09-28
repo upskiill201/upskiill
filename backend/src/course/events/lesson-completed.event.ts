@@ -11,5 +11,7 @@ export class LessonCompletedEvent {
     public readonly isFirstStreakOfDay: boolean = false,
     public readonly timeSpentSeconds?: number,
     public readonly quizScorePct?: number,
+    /** Right answers in the lesson's quiz (first try) — feeds daily quests. */
+    public readonly correctAnswers?: number,
   ) {}
 }

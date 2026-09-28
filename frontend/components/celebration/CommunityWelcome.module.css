@@ -1,6 +1,6 @@
 /* CommunityWelcomeScene — the interactive four-beat introduction to a course
- * community. Lives on the shared dark scene backdrop (Scene.module.css), so
- * everything here is content, never chrome.
+ * community. Lives on the shared bright scene backdrop (Scene.module.css) and
+ * uses its --sc-* tokens, so everything here is content, never chrome.
  *
  * Every beat must fit the viewport on a 360×640 phone without scrolling, which
  * is why sizes are clamp()ed rather than fixed. */
@@ -17,7 +17,7 @@
   width: 26px;
   height: 5px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--sc-line);
   transition: background 260ms ease, width 260ms ease;
 }
 .stepDotActive {
@@ -25,7 +25,7 @@
   background: var(--brand-violet);
 }
 .stepDotDone {
-  background: rgba(167, 139, 250, 0.55);
+  background: color-mix(in srgb, var(--brand-violet) 45%, transparent);
 }
 
 /* ── Beat 1: the door ────────────────────────────────────────────────────── */
@@ -43,7 +43,7 @@
   height: 100%;
   border-radius: 28px;
   object-fit: cover;
-  box-shadow: 0 18px 44px rgba(99, 82, 255, 0.42);
+  box-shadow: 0 8px 0 color-mix(in srgb, var(--brand-violet) 35%, transparent), 0 16px 28px var(--sc-shadow);
 }
 .coverFallback {
   display: grid;
@@ -52,16 +52,16 @@
   height: 100%;
   border-radius: 28px;
   background: var(--gradient-primary);
-  color: #fff;
+  color: var(--sc-on-color);
   font-size: 46px;
   font-weight: 800;
-  box-shadow: 0 18px 44px rgba(99, 82, 255, 0.42);
+  box-shadow: 0 8px 0 color-mix(in srgb, var(--brand-violet) 35%, transparent), 0 16px 28px var(--sc-shadow);
 }
 /* Faces orbit in around the cover — the room filling up in front of you. */
 .orbitFace {
   position: absolute;
   border-radius: 999px;
-  box-shadow: 0 0 0 3px #0f172a;
+  box-shadow: 0 0 0 3px var(--sc-bg);
 }
 
 .memberLine {
@@ -72,10 +72,10 @@
   margin-top: 4px;
   font-size: 15px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--sc-soft);
 }
 .memberCount {
-  color: #fff;
+  color: var(--sc-ink);
   font-size: 19px;
   font-weight: 800;
 }
@@ -96,24 +96,25 @@
   gap: 13px;
   width: 100%;
   padding: 15px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.14);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: var(--sc-bg);
+  color: var(--sc-ink);
   text-align: left;
   cursor: pointer;
   transition: border-color 160ms ease, background 160ms ease, transform 120ms ease;
 }
 .choice:hover {
-  border-color: rgba(167, 139, 250, 0.6);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: color-mix(in srgb, var(--brand-violet) 50%, transparent);
+  background: var(--sc-well);
 }
 .choice:active {
   transform: translateY(2px);
 }
 .choiceSelected {
   border-color: var(--brand-violet);
-  background: rgba(167, 139, 250, 0.16);
+  background: color-mix(in srgb, var(--brand-violet) 10%, var(--sc-bg));
 }
 .choiceIcon {
   display: grid;
@@ -122,12 +123,12 @@
   height: 42px;
   flex-shrink: 0;
   border-radius: 13px;
-  background: rgba(167, 139, 250, 0.2);
+  background: color-mix(in srgb, var(--brand-violet) 14%, var(--sc-bg));
   color: var(--brand-violet);
 }
 .choiceSelected .choiceIcon {
   background: var(--brand-violet);
-  color: #fff;
+  color: var(--sc-on-color);
 }
 .choiceBody {
   min-width: 0;
@@ -140,7 +141,8 @@
 }
 .choiceSub {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  color: var(--sc-soft);
   line-height: 1.4;
 }
 .choiceCheck {
@@ -154,11 +156,12 @@
   max-width: 420px;
   padding: 13px 16px;
   border-radius: 14px;
-  background: rgba(167, 139, 250, 0.14);
-  border: 1px solid rgba(167, 139, 250, 0.3);
+  background: color-mix(in srgb, var(--brand-violet) 8%, var(--sc-bg));
+  border: 2px solid color-mix(in srgb, var(--brand-violet) 30%, transparent);
   font-size: 14px;
+  font-weight: 600;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--sc-body);
   text-align: left;
 }
 
@@ -170,10 +173,11 @@
   margin: 0 auto;
   padding: 16px;
   border-radius: 16px;
-  background: #fff;
+  background: var(--sc-bg);
   color: var(--text-primary);
   text-align: left;
-  box-shadow: 0 16px 40px rgba(6, 8, 24, 0.5);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
 }
 .postHead {
   display: flex;
@@ -185,7 +189,11 @@
   font-weight: 700;
 }
 .postMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
+  font-weight: 700;
   color: var(--text-muted);
 }
 .postTitle {
@@ -229,9 +237,9 @@
   transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
 }
 .likeBtnOn {
-  border-color: var(--brand-blue);
-  background: var(--light-blue-bg);
-  color: var(--brand-blue);
+  border-color: color-mix(in srgb, var(--error-red) 45%, var(--bg-card));
+  background: color-mix(in srgb, var(--error-red) 10%, var(--bg-card));
+  color: var(--error-red);
 }
 .postStat {
   display: inline-flex;
@@ -272,18 +280,18 @@
   height: 34px;
   flex-shrink: 0;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-violet) 12%, var(--sc-bg));
   color: var(--brand-violet);
 }
 .ruleTitle {
   font-size: 14.5px;
   font-weight: 800;
-  color: #fff;
+  color: var(--sc-ink);
 }
 .ruleSub {
   font-size: 13px;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--sc-soft);
 }
 
 .pointsNote {
@@ -291,18 +299,124 @@
   max-width: 420px;
   padding: 12px 14px;
   border-radius: 13px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--sc-well);
   font-size: 13px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--sc-soft);
 }
 .pointsNote b {
-  color: #fff;
+  color: var(--sc-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .stepDot,
   .choice {
     transition: none;
+  }
+}
+
+/* Illustrated icons (post-type art) sit bare — no tinted tile behind them. */
+.artIcon,
+.choiceSelected .artIcon {
+  background: none;
+}
+
+/* ── Beat 4: learning with friends ───────────────────────────────────── */
+.perks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  margin: 18px 0 16px;
+}
+
+.perk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: var(--sc-bg);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--sc-ink);
+  text-align: center;
+}
+
+.friendList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friendRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 2px solid var(--sc-line);
+  border-radius: 16px;
+  background: var(--sc-bg);
+}
+
+.friendName {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--sc-ink);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.followBtn,
+.followingBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.followBtn {
+  border: none;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  color: var(--sc-on-color);
+}
+
+.followBtn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.followingBtn {
+  border: 2px solid var(--sc-line);
+  background: var(--sc-bg);
+  color: var(--color-brand);
+}
+
+@media (max-width: 420px) {
+  .perk {
+    font-size: 12px;
+    padding: 12px 6px;
   }
 }

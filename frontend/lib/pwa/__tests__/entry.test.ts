@@ -1,5 +1,5 @@
 import { resolveAppEntry } from '../entry';
-import { ONBOARDING_STORAGE_KEY } from '@/lib/user-onboarding';
+import { ONBOARDING_STORAGE_KEY, TOTAL_STEPS } from '@/lib/user-onboarding';
 
 /**
  * Where the manifest's start_url actually sends someone.
@@ -55,19 +55,23 @@ describe('resolveAppEntry', () => {
   });
 
   it('never points past the last step', () => {
-    // Completing 15 without the completion flag (a sync that did not land)
-    // must not produce /onboarding/16, which does not exist.
+    // Completing the final step without the completion flag (a sync that did
+    // not land) must not produce a step number past TOTAL_STEPS, which does
+    // not exist as a route.
     withStoredState({
-      currentStep: 15,
-      completedSteps: Array.from({ length: 15 }, (_, i) => i + 1),
+      currentStep: TOTAL_STEPS,
+      completedSteps: Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1),
       answers: {},
     });
-    expect(resolveAppEntry()).toEqual({ href: '/onboarding/15', reason: 'resume' });
+    expect(resolveAppEntry()).toEqual({
+      href: `/onboarding/${TOTAL_STEPS}`,
+      reason: 'resume',
+    });
   });
 
   it('sends a finished learner straight to the dashboard', () => {
     withStoredState({
-      currentStep: 15,
+      currentStep: TOTAL_STEPS,
       completedSteps: [1, 2, 3],
       answers: {},
       onboardingComplete: true,

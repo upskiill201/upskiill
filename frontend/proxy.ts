@@ -35,8 +35,10 @@ export function proxy(request: NextRequest) {
   // /admin is new privileged surface.
   const isLearn = path.startsWith('/learn');
   const isAdmin = path.startsWith('/admin');
-  const isTestRoute = path.startsWith('/creator-onboarding-test');
-  const isCreatorStudio = path.startsWith('/creator') && !isCreatorAuthPage && !isTestRoute;
+  // Exactly /creator and /creator/… — a bare prefix match also walled off the
+  // PUBLIC creator pages (/creator-profile/:username) from logged-out visitors.
+  const isCreatorStudio =
+    (path === '/creator' || path.startsWith('/creator/')) && !isCreatorAuthPage;
 
   // 1. No token → enforce login walls on protected routes only
   if (!token) {
@@ -49,7 +51,9 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     if (isCreatorStudio) {
-      return NextResponse.redirect(new URL('/creator/login', request.url));
+      const loginUrl = new URL('/creator/login', request.url);
+      loginUrl.searchParams.set('next', path + (request.nextUrl.search ?? ''));
+      return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
   }

@@ -9,10 +9,15 @@ import React, {
   useState,
   useMemo,
 } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import { fetcher } from '@/lib/swr';
 import { isStudentExperienceRoute } from '@/lib/herald-scope';
+import { notify } from '@/lib/awareness/notices';
+import { useCelebration } from '@/context/CelebrationContext';
+
+/** Where a full-screen moment may appear unprompted: the tabs, not mid-task. */
+const CALM_ROUTES = ['/dashboard', '/dashboard/profile', '/dashboard/quests', '/dashboard/leaderboards'];
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -21,7 +26,6 @@ export type HeraldNotificationType =
   | 'MISSION'
   | 'ACHIEVEMENT'
   | 'CHEST'
-  | 'SPIN'
   | 'WEEKLY_PROGRESS';
 
 /**
@@ -31,7 +35,6 @@ export type HeraldNotificationType =
  * - type=ACHIEVEMENT      → unlock nudge that launches the full-page
  *                           AchievementScene in the Celebration Engine
  * - type=CHEST            → nudge banner that launches HeraldChestReveal portal
- * - type=SPIN             → nudge banner that launches HeraldSpinReveal portal
  * - type=WEEKLY_PROGRESS  → celebratory banner for weekly progress milestone
  */
 export interface HeraldNotification {
@@ -69,30 +72,16 @@ export interface HeraldNotification {
   };
 }
 
-/** Priority order: MISSION (quickest claim) → ACHIEVEMENT → CHEST → SPIN → WEEKLY_PROGRESS */
-const PRIORITY: Record<HeraldNotificationType, number> = {
-  MISSION: 0,
-  ACHIEVEMENT: 1,
-  CHEST: 2,
-  SPIN: 3,
-  WEEKLY_PROGRESS: 4,
-};
 
-export type HeraldOverlayType = 'CHEST' | 'SPIN' | 'STREAK' | 'CLAIM' | 'MISSIONS';
+export type HeraldOverlayType = 'CHEST' | 'CLAIM';
 
 interface HeraldContextValue {
   /** Push a new reward-ready signal. Herald deduplicates and queues it. */
   enqueueHeraldNotification: (notification: HeraldNotification) => void;
-  /** Currently visible banner (null = nothing showing) */
-  activeNotification: HeraldNotification | null;
-  /** Dismiss the active banner (claimed or timed out) */
-  dismissActive: () => void;
   /** Which full-reveal overlay is currently open (null = none) */
   activeOverlay: HeraldOverlayType | null;
   setActiveOverlay: (type: HeraldOverlayType | null) => void;
-  openStreakModal: () => void;
   openChestModal: () => void;
-  openSpinModal: () => void;
   /**
    * Called by home-screen widgets on mount/unmount so Herald knows
    * whether the native widget for a reward type is currently visible.
@@ -114,15 +103,18 @@ const HeraldContext = createContext<HeraldContextValue | null>(null);
 
 export function HeraldProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const routerRef = useRef(router);
+  useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
+  const { celebrate } = useCelebration();
   const isStudentExperience = isStudentExperienceRoute(pathname);
   // Onboarding owns its celebration moments (step 13 claims the Novice badge
   // through the Celebration Engine) — Herald must stay silent there or its
   // claimables sweep would surface the unlock before the user claims it.
   const isOnboarding = pathname?.startsWith('/onboarding');
 
-  const [queue, setQueue] = useState<HeraldNotification[]>([]);
-  const [activeNotification, setActiveNotification] =
-    useState<HeraldNotification | null>(null);
   const [activeOverlay, setActiveOverlay] =
     useState<HeraldOverlayType | null>(null);
 
@@ -144,8 +136,6 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   // (route-based, so it self-clears once the user lands in the app).
   useEffect(() => {
     if (!isStudentExperience || isOnboarding) {
-      setActiveNotification(null);
-      setQueue([]);
       setActiveOverlay(null);
     }
     suppressedRef.current = isOnboarding === true;
@@ -165,46 +155,58 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     suppressedRef.current = suppress;
   }, []);
 
-  // ── Enqueue ──────────────────────────────────────────────────────────────
+  // ── Enqueue: route by the awareness rules ─────────────────────────────
+  // Duolingo's model (lib/awareness/notices.ts): most news waits for a calm
+  // moment — the screens after a lesson, a red dot on a tab — and only
+  // time-sensitive or big things interrupt:
+  //   MISSION          → no banner: the Quests tab dot + the after-lesson
+  //                      quest screen already tell the learner
+  //   CHEST            → a notice; tap opens the chest
+  //   ACHIEVEMENT      → its full-screen moment, once, on a calm screen
+  //   SPIN, WEEKLY_…   → retired (the wheel folds into chests; the weekly
+  //                      banner promised a +50 XP that was never paid)
 
   const enqueueHeraldNotification = useCallback(
     (notification: HeraldNotification) => {
-      // Hard-stop: only show student notifications inside the Student experience
-      if (typeof window !== 'undefined' && !isStudentExperienceRoute(window.location.pathname)) return;
-
-      // Hard-stop: already surfaced this exact transition this session
+      if (typeof window === 'undefined') return;
+      if (!isStudentExperienceRoute(window.location.pathname)) return;
       if (surfacedRef.current.has(notification.transitionKey)) return;
-
-      // Hard-stop: herald is suppressed (onboarding)
       if (suppressedRef.current) return;
 
-      // Suppression: the native widget for this reward type is currently visible
-      // (§2.1) — map notification type → widget ids the card registers under
-      const widgetMap: Record<HeraldNotificationType, string[]> = {
-        MISSION: ['mission-card'],
-        ACHIEVEMENT: [],
-        CHEST: ['mystery-chest'],
-        SPIN: ['weekly-spin'],
-        WEEKLY_PROGRESS: ['weekly-progress'],
-      };
-      const widgets = widgetMap[notification.type] || [];
-      const nativeVisible = widgets.some((w) =>
-        nativeWidgetsRef.current.has(w)
-      );
-      if (nativeVisible) return;
+      if (notification.type === 'CHEST') {
+        if (nativeWidgetsRef.current.has('mystery-chest')) return;
+        surfacedRef.current.add(notification.transitionKey);
+        notify({
+          id: notification.transitionKey,
+          tone: 'good',
+          icon: 'chest',
+          title: 'Your daily chest is ready!',
+          body: "You earned it with today's lesson.",
+          action: 'Open',
+          onTap: () => celebrate({ kind: 'CHEST', dedupeKey: 'daily-chest', source: 'daily-chest' }, { front: true, immediate: true }),
+        });
+        return;
+      }
 
-      setQueue((prev) => {
-        // Don't add a duplicate transitionKey already in the queue
-        if (prev.some((n) => n.transitionKey === notification.transitionKey))
-          return prev;
-
-        const next = [...prev, notification].sort(
-          (a, b) => PRIORITY[a.type] - PRIORITY[b.type]
-        );
-        return next;
-      });
+      if (notification.type === 'ACHIEVEMENT' && notification.achievement) {
+        if (!CALM_ROUTES.includes(window.location.pathname)) return;
+        surfacedRef.current.add(notification.transitionKey);
+        const a = notification.achievement;
+        celebrate({
+          kind: 'ACHIEVEMENT',
+          badgeId: a.badgeId,
+          badgeTitle: a.tierName,
+          tier: a.tier,
+          maxTier: a.maxTier,
+          tierDescription: a.description,
+          badgeBg: a.badgeBg,
+          ctaText: 'VIEW ACHIEVEMENT',
+          dedupeKey: notification.transitionKey,
+          onComplete: () => routerRef.current?.push('/dashboard/profile#achievements'),
+        });
+      }
     },
-    []
+    [celebrate],
   );
 
   // ── Automated Claimable Checker ─────────────────────────────────────────
@@ -217,57 +219,21 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     const tzOffset = new Date().getTimezoneOffset();
     const missionsKey = `/api/v2/missions/today?timezoneOffset=${tzOffset}`;
     const chestKey = `/api/chest/today`;
-    const weeklyKey = `/api/v2/progress/weekly?timezoneOffset=${tzOffset}`;
     const achievementsKey = `/api/gamification/achievements/unseen`;
 
     // All four checks fire together instead of chained one-after-another —
     // and routing them through SWR's global `mutate` (instead of a bare
-    // `fetch`) shares the request + cache with MysteryChestCard,
+    // `fetch`) shares the request + cache with DailyChestCard,
     // TodaysMissionsCard and WeeklyProgressCard, which read the same
     // endpoints via `useSWR`, so this sweep doesn't duplicate their calls.
-    const [missionsResult, chestResult, weeklyResult, achievementsResult] =
-      await Promise.allSettled([
-        mutate(missionsKey, fetcher(missionsKey)),
-        mutate(chestKey, fetcher(chestKey)),
-        mutate(weeklyKey, fetcher(weeklyKey)),
-        mutate(achievementsKey, fetcher(achievementsKey)),
-      ]);
+    const [missionsResult, chestResult, achievementsResult] = await Promise.allSettled([
+      mutate(missionsKey, fetcher(missionsKey)),
+      mutate(chestKey, fetcher(chestKey)),
+      mutate(achievementsKey, fetcher(achievementsKey)),
+    ]);
 
-    // 1. Check Today's Missions
-    if (missionsResult.status === 'fulfilled') {
-      const data = missionsResult.value as any;
-      if (Array.isArray(data?.missions)) {
-        data.missions.forEach((m: any) => {
-          const isCompleted =
-            m.isCompleted ||
-            m.status === 'COMPLETED' ||
-            m.currentProgress >= m.targetValue;
-          const isClaimed = m.isClaimed || m.status === 'CLAIMED';
-
-          if (isCompleted && !isClaimed) {
-            const transitionKey = `mission-${m.id}-${data.date || new Date().toISOString().split('T')[0]}`;
-            const rewardType =
-              m.reward?.type === 'GEMS'
-                ? 'COINS'
-                : (m.reward?.type as 'XP' | 'COINS') || 'XP';
-            const rewardAmount = m.reward?.amount || 20;
-
-            enqueueHeraldNotification({
-              id: `herald-mission-${m.id}-${Date.now()}`,
-              type: 'MISSION',
-              entityId: m.id,
-              transitionKey,
-              title: m.title,
-              subtitle: `+${rewardAmount} ${rewardType}`,
-              rewardType,
-              rewardAmount,
-              missionId: m.id,
-            });
-          }
-        });
-      }
-    }
-
+    // Missions are read only to refresh the shared cache the Quests tab dot
+    // reads — completing one raises no banner of its own.
     // 2. Check Daily Chest
     if (chestResult.status === 'fulfilled') {
       const chestData = chestResult.value as any;
@@ -285,35 +251,6 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 3. Check Weekly Progress
-    if (weeklyResult.status === 'fulfilled') {
-      const weeklyData = weeklyResult.value as any;
-      if (weeklyData?.progress) {
-        const { daysLearned, totalDays, completionPercentage } =
-          weeklyData.progress;
-        if (daysLearned >= 5 || completionPercentage >= 100) {
-          const now = new Date();
-          const weekStart = new Date(now);
-          weekStart.setDate(now.getDate() - now.getDay());
-          const transitionKey = `weekly-progress-${weekStart.toISOString().split('T')[0]}`;
-
-          enqueueHeraldNotification({
-            id: `herald-weekly-${Date.now()}`,
-            type: 'WEEKLY_PROGRESS',
-            entityId: 'weekly-progress',
-            transitionKey,
-            title:
-              daysLearned >= 7
-                ? 'Weekly Target Mastered! 🏆'
-                : '5 Days Learning Streak! 🔥',
-            subtitle: `${daysLearned} of ${totalDays || 7} days completed this week!`,
-            rewardType: 'XP',
-            rewardAmount: 50,
-          });
-        }
-      }
-    }
-
     // 4. Check unseen achievement unlocks — the achievement itself is the
     // reward (no claim step), so each stays pending until the student views
     // it; the transitionKey is stable per tier rather than time-bucketed.
@@ -322,7 +259,7 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(achData?.unseen)) {
         // Cap per sweep so a fresh account crossing many tiers at once
         // doesn't flood the banner queue — the rest surface after viewing.
-        achData.unseen.slice(0, 3).forEach((c: any) => {
+        achData.unseen.slice(0, 2).forEach((c: any) => {
           enqueueHeraldNotification({
             id: `herald-achievement-${c.badgeId}-${c.tier}-${Date.now()}`,
             type: 'ACHIEVEMENT',
@@ -348,17 +285,23 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     if (
       missionsResult.status === 'rejected' ||
       chestResult.status === 'rejected' ||
-      weeklyResult.status === 'rejected' ||
       achievementsResult.status === 'rejected'
     ) {
       console.error('Herald checkClaimables: one or more checks failed', {
         missionsResult,
         chestResult,
-        weeklyResult,
         achievementsResult,
       });
     }
   }, [enqueueHeraldNotification]);
+
+  // Badges wait for a calm screen — look again whenever the learner lands on one.
+  useEffect(() => {
+    if (pathname && CALM_ROUTES.includes(pathname)) {
+      const t = setTimeout(() => void checkClaimables(), 900);
+      return () => clearTimeout(t);
+    }
+  }, [pathname, checkClaimables]);
 
   // Global listeners: check claimables when focus/visibility/custom events fire.
   // `focus` and `visibilitychange` both fire on the same tab-switch, and the
@@ -405,37 +348,8 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     };
   }, [checkClaimables]);
 
-  // ── Drain queue → active ─────────────────────────────────────────────────
-
-  useEffect(() => {
-    if (activeNotification !== null) return; // already showing something
-    if (queue.length === 0) return;
-
-    const [next, ...rest] = queue;
-
-    // Mark as surfaced before showing — prevents a race if enqueue is called again
-    surfacedRef.current.add(next.transitionKey);
-
-    setActiveNotification(next);
-    setQueue(rest);
-  }, [queue, activeNotification]);
-
-  // ── Dismiss ──────────────────────────────────────────────────────────────
-
-  const dismissActive = useCallback(() => {
-    setActiveNotification(null);
-  }, []);
-
-  const openStreakModal = useCallback(() => {
-    setActiveOverlay('STREAK');
-  }, []);
-
   const openChestModal = useCallback(() => {
     setActiveOverlay('CHEST');
-  }, []);
-
-  const openSpinModal = useCallback(() => {
-    setActiveOverlay('SPIN');
   }, []);
 
   // PERF: memoized. An inline object literal here produced a new context
@@ -444,13 +358,9 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       enqueueHeraldNotification,
-      activeNotification,
-      dismissActive,
       activeOverlay,
       setActiveOverlay,
-      openStreakModal,
       openChestModal,
-      openSpinModal,
       registerNativeWidget,
       unregisterNativeWidget,
       suppressHerald,
@@ -458,13 +368,9 @@ export function HeraldProvider({ children }: { children: React.ReactNode }) {
     }),
     [
     enqueueHeraldNotification,
-    activeNotification,
-    dismissActive,
     activeOverlay,
     setActiveOverlay,
-    openStreakModal,
     openChestModal,
-    openSpinModal,
     registerNativeWidget,
     unregisterNativeWidget,
     suppressHerald,

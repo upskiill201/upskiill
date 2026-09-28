@@ -36,6 +36,8 @@ const CourseCompleteScene = dynamic(() => import('./scenes/CourseCompleteScene')
 const LeaderboardScene = dynamic(() => import('./scenes/LeaderboardScene'), { ssr: false });
 const CommunityWelcomeScene = dynamic(() => import('./scenes/CommunityWelcomeScene'), { ssr: false });
 const WelcomeBackScene = dynamic(() => import('./scenes/WelcomeBackScene'), { ssr: false });
+const DailyRewardScene = dynamic(() => import('./scenes/DailyRewardScene'), { ssr: false });
+const RemindersScene = dynamic(() => import('./scenes/RemindersScene'), { ssr: false });
 
 let sceneCounter = 0;
 
@@ -103,6 +105,10 @@ export default function CelebrationEngine() {
         return <CommunityWelcomeScene scene={scene} onAdvance={advance} />;
       case 'WELCOME_BACK':
         return <WelcomeBackScene scene={scene} onAdvance={advance} />;
+      case 'DAILY_REWARD':
+        return <DailyRewardScene scene={scene} onAdvance={advance} />;
+      case 'REMINDERS':
+        return <RemindersScene scene={scene} onAdvance={advance} />;
       default:
         return null;
     }

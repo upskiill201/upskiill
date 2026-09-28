@@ -9,8 +9,8 @@
 
 import { pickFromPool } from './pool';
 
-const PURCHASE_COMMON = ['Nice pickup!', "That's going straight to your collection.", 'Enjoy that one 🙂'];
-const PURCHASE_RARE = ['Ooh, good taste. 😏', "Now that's a look.", "You're going to want to show this off."];
+const PURCHASE_COMMON = ['Nice pickup!', "That's going straight to your collection.", 'Enjoy that one!'];
+const PURCHASE_RARE = ['Ooh, good taste.', "Now that's a look.", "You're going to want to show this off."];
 
 export function pickPurchaseLine(rarity: string): string {
   const isRare = rarity === 'RARE' || rarity === 'EPIC' || rarity === 'LEGENDARY';
@@ -20,14 +20,14 @@ export function pickPurchaseLine(rarity: string): string {
   );
 }
 
-const UNLOCK_LINES = ["Look what you unlocked! 👀", "This one's got your name on it now.", 'Earned, not given. Nice.'];
+const UNLOCK_LINES = ["Look what you unlocked!", "This one's got your name on it now.", 'Earned, not given. Nice.'];
 
 export function pickUnlockLine(): string {
   return pickFromPool(UNLOCK_LINES, 'shopEngine:unlock');
 }
 
 const COLLECTION_COMPLETE_LINES = [
-  'You cleared the whole set! 🏆',
+  'You cleared the whole set!',
   "Okay, that's impressive. Every piece.",
   'Nobody can buy their way to this one but you.',
 ];

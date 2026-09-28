@@ -1,62 +1,123 @@
+/* Blog cover — real image, or a generated Duolingo-style Tey illustration */
+
 .image {
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
-/* Branded placeholder used when a post has no coverImage */
-
 .placeholder {
+  --accent: var(--color-brand);
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: var(--accent);
+  container-type: size;
 }
 
-.placeholder::before {
-  content: '';
+/* Soft lighter disc Tey stands in front of */
+.halo {
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(61, 90, 254, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(61, 90, 254, 0.07) 1px, transparent 1px);
-  background-size: 32px 32px;
+  bottom: -38%;
+  width: 78cqh;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 72%, var(--bg-page));
 }
 
-.wordmark {
+/* Floating confetti shapes */
+.dotA,
+.dotB,
+.ring {
   position: absolute;
-  top: 14px;
-  left: 18px;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(61, 90, 254, 0.55);
+  border-radius: 999px;
 }
 
-.shapeCircleLg {
+.dotA {
+  width: 7cqh;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--bg-page) 38%, transparent);
+}
+
+.dotB {
+  width: 4cqh;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.ring {
+  width: 14cqh;
+  aspect-ratio: 1;
+  border: 2.4cqh solid color-mix(in srgb, var(--bg-page) 26%, transparent);
+}
+
+.mascot {
   position: absolute;
-  right: -20%;
-  bottom: -35%;
-  width: 60%;
-  height: 60%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(61, 90, 254, 0.1), rgba(61, 90, 254, 0.01) 70%);
+  bottom: -14%;
+  width: auto;
+  height: 104%;
+  object-fit: contain;
+  filter: drop-shadow(0 1.6cqh 0 color-mix(in srgb, var(--color-ink) 18%, transparent));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.shapeCircleSm {
-  display: none;
+/* ── Layouts (picked per post) ─────────────────────────────── */
+
+.layoutRight .halo {
+  right: 4%;
+}
+.layoutRight .mascot {
+  right: 12%;
+}
+.layoutRight .dotA {
+  top: 16%;
+  left: 12%;
+}
+.layoutRight .dotB {
+  top: 58%;
+  left: 30%;
+}
+.layoutRight .ring {
+  top: 22%;
+  left: 38%;
 }
 
-.shapeBadge {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #3d5afe;
-  box-shadow: 0 2px 10px -2px rgba(31, 42, 68, 0.18);
+.layoutCenter .halo {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.layoutCenter .mascot {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.layoutCenter .dotA {
+  top: 20%;
+  right: 14%;
+}
+.layoutCenter .dotB {
+  top: 62%;
+  left: 16%;
+}
+.layoutCenter .ring {
+  top: 14%;
+  left: 10%;
+}
+
+.layoutLeft .halo {
+  left: 4%;
+}
+.layoutLeft .mascot {
+  left: 12%;
+  transform: scaleX(-1);
+}
+.layoutLeft .dotA {
+  top: 18%;
+  right: 14%;
+}
+.layoutLeft .dotB {
+  top: 60%;
+  right: 34%;
+}
+.layoutLeft .ring {
+  top: 26%;
+  right: 40%;
 }

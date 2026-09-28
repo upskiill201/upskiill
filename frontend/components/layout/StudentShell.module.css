@@ -1,17 +1,39 @@
-/* DASHBOARD LAYOUT & RESPONSIVE GRID */
+/* ═══ Student shell — Duolingo's menu, bottom bar and top HUD ══════════════
+   Every colour is a --nav-* token resolved from the global palette
+   (docs/08-color-system.md), so nothing here is a hardcoded hex. */
+
 .dashboardContainer {
+  --nav-bg: var(--bg-page);
+  --nav-page: color-mix(in srgb, var(--bg-section) 60%, var(--bg-page));
+  --nav-line: var(--border);
+  --nav-ink: var(--text-secondary);
+  --nav-ink-strong: var(--color-ink);
+  --nav-hover: var(--bg-section);
+  --nav-active-bg: color-mix(in srgb, var(--color-brand) 9%, var(--bg-page));
+  --nav-active-line: color-mix(in srgb, var(--color-brand) 42%, var(--bg-page));
+  --nav-active-ink: var(--color-brand);
+  --nav-danger: var(--error-red);
+  --nav-shadow: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --rail-w: 256px;
+  --rail-w-compact: 88px;
+
   display: flex;
   min-height: 100vh;
-  background-color: #F8FAFC;
+  background-color: var(--nav-page);
   position: relative;
-  overflow-x: hidden;
+  /* clip, not hidden: `overflow-x: hidden` makes this box a scroll container
+     (its overflow-y computes to auto), and every position:sticky element in
+     the app then sticks to a box that never scrolls — the home HUD and unit
+     banners scrolled away with the page. `clip` trims the same horizontal
+     overflow without creating a scroll container (same fix as globals.css). */
+  overflow-x: clip;
 }
 
-/* SIDEBAR STYLES */
+/* ─── LEFT MENU ──────────────────────────────────────────────────────────── */
 .sidebarWrapper {
-  width: 280px;
-  background: white;
-  border-right: 1px solid rgba(226, 232, 240, 0.8);
+  width: var(--rail-w);
+  background: var(--nav-bg);
+  border-right: 2px solid var(--nav-line);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -19,303 +41,242 @@
   top: 0;
   bottom: 0;
   height: 100vh;
-  padding: 0;
   z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 10px 0 30px rgba(31, 42, 68, 0.015);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebarWrapper.collapsed {
-  width: 80px;
+  width: var(--rail-w-compact);
 }
 
 .sidebarHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 20px;
-  min-height: 80px;
+  padding: 32px 24px 24px 32px;
+  min-height: 88px;
 }
 
-/* Desktop sidebar bell only — on mobile the bell moves out of the drawer to
-   always-visible surfaces (sticky header, home HUD). */
+.collapsed .sidebarHeader {
+  padding: 32px 0 24px;
+  justify-content: center;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* The Tey app tile, alone (no wordmark), in both rail widths. */
+.logoLink img {
+  display: block;
+  border-radius: 14px;
+  transition: transform 0.15s ease;
+}
+
+.logoLink:hover img {
+  transform: rotate(-4deg) scale(1.04);
+}
+
+.nav {
+  flex: 0 1 auto;
+  min-height: 0;
+  padding: 0 16px;
+  overflow-y: auto;
+  overflow-x: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar { display: none; }
+
+/* A Duolingo menu row: icon, then an uppercase bold label. The active row
+   gets the tinted tile with an outline, never just a colour change. */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 16px 8px 8px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--nav-ink);
+  text-decoration: none;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navItem:hover {
+  background-color: var(--nav-hover);
+}
+
+.navItem:focus-visible {
+  outline: 3px solid var(--nav-active-line);
+  outline-offset: 2px;
+}
+
+.navItem.active,
+.navItem.moreOpen {
+  background-color: var(--nav-active-bg);
+  border-color: var(--nav-active-line);
+  color: var(--nav-active-ink);
+}
+
+.collapsed .navItem {
+  justify-content: center;
+  padding: 8px;
+}
+
+.collapsed .label {
+  display: none;
+}
+
+.icon {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.12s ease;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── MORE MENU ──────────────────────────────────────────────────────────── */
+.moreWrap {
+  position: relative;
+  padding: 8px 16px 0;
+}
+
+.moreMenu {
+  position: absolute;
+  left: calc(100% + 8px);
+  bottom: 0;
+  z-index: 1100;
+  width: 240px;
+  padding: 8px;
+  background: var(--nav-bg);
+  border: 2px solid var(--nav-line);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px var(--nav-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: left bottom;
+}
+
+.moreItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--nav-ink-strong);
+  text-decoration: none;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+}
+
+.moreItem:hover {
+  background: var(--nav-hover);
+}
+
+.moreItem svg {
+  color: var(--nav-ink);
+  flex-shrink: 0;
+}
+
+.moreDanger,
+.moreDanger svg {
+  color: var(--nav-danger);
+}
+
+.moreItem:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ─── FOOTER (bell + collapse) ───────────────────────────────────────────── */
+.sidebarFooter {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 24px 24px;
+}
+
+.collapsed .sidebarFooter {
+  flex-direction: column;
+  padding: 16px 0 24px;
+}
+
 .sidebarBellSlot {
   display: flex;
   align-items: center;
 }
 
-.logoContainer {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.sidebarLogo {
-  object-fit: contain;
-  transition: opacity 0.3s ease;
-}
-
-.compactLogo {
-  background: linear-gradient(135deg, #0172FD, #3A96FF);
-  color: white;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  font-weight: 900;
-  font-size: 20px;
-  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.2);
-}
-
 .sidebarToggle {
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  color: #64748B;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 2px solid var(--nav-line);
+  background: var(--nav-bg);
+  color: var(--nav-ink);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .sidebarToggle:hover {
-  background: #0172FD;
-  color: white;
-  border-color: #0172FD;
+  background: var(--nav-hover);
+  color: var(--nav-ink-strong);
 }
 
-.nav {
-  flex: 1;
-  padding: 12px 16px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.mobileClose {
+  display: none;
 }
 
-.nav::-webkit-scrollbar { width: 4px; }
-.nav::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
-
-.navItem {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  color: #5C6F84;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.2s;
-  white-space: nowrap;
-  font-family: var(--font-jakarta), sans-serif;
-  gap: 12px;
-}
-
-.collapsed .navItem {
-  padding: 12px;
-  justify-content: center;
-}
-
-.navItem:hover {
-  background-color: #F4F8FF;
-  color: #0172FD;
-}
-
-.navItem.active {
-  background-color: #EBF3FE;
-  color: #0172FD;
-  font-weight: 700;
-}
-
-/* CUSTOM SIDEBAR MENUS ICONS DESIGN STYLES */
-.activeIconCircle {
-  background-color: #0172FD;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(1, 114, 253, 0.25);
-}
-
-.activeHomeIcon {
-  color: white;
-  fill: white;
-}
-
-.navIcon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.bottomNavIcon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-.icon {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.label {
-  transition: opacity 0.2s;
-}
-
-.sidebarFooter {
-  padding: 16px 0;
-  border-top: 1px solid #F1F5F9;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* FOOTER CARDS */
-.footerCardsWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 16px;
-  margin-bottom: 8px;
-}
-
-.sidebarCard {
-  background: white;
-  border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.sidebarCard:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.sidebarCardIconBg {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.streakBg {
-  background-color: #FFF2E8;
-}
-
-.streakFlameIcon {
-  color: #FF5A00;
-}
-
-.profileAvatar {
-  border: 1.5px solid #0172FD;
-  flex-shrink: 0;
-}
-
-.sidebarCardContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-left: 10px;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.sidebarCardTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: #071233;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarCardSubtitle {
-  font-size: 11px;
-  color: #64748B;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.sidebarCardChevron {
-  color: #94A3B8;
-  flex-shrink: 0;
-  margin-left: 4px;
-}
-
-.switcherContainer {
-  padding: 0 16px;
-  width: 100%;
-}
-
-.utilityActions {
-  padding: 4px 16px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.navItemCompact {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  color: #64748B;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.2s;
-  white-space: nowrap;
-  gap: 10px;
-}
-
-.navItemCompact:hover {
-  background-color: #F8FAFC;
-  color: #0172FD;
-}
-
-.logoutBtn:hover {
-  color: #EF4444;
-  background-color: #FEF2F2;
-}
-
-/* MAIN CONTENT CONTAINER */
+/* ─── MAIN ───────────────────────────────────────────────────────────────── */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
-  margin-left: 280px;
+  margin-left: var(--rail-w);
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main.expanded {
-  margin-left: 80px;
+  margin-left: var(--rail-w-compact);
 }
 
 .content {
@@ -330,139 +291,224 @@
   max-width: 1400px;
 }
 
-/* MOBILE HEADER STICKY BAR */
-.mobileHeader {
-  display: none;
+.desktopStats {
+  display: flex;
+  justify-content: flex-end;
+  margin: -16px 0 24px;
 }
 
-.mobileToggle {
-  display: none;
-}
-
-/* OVERLAY */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 950;
-  animation: fadeIn 0.3s ease;
-}
-
-.mobileClose { display: none; }
-
+.mobileHeader,
+.mobileToggle,
 .mobileBottomNav {
   display: none;
 }
 
-@media (max-width: 768px) {
-  .sidebarWrapper {
-    position: fixed;
-    left: -100%;
-    height: 100vh;
-    z-index: 1000;
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  z-index: 950;
+}
+
+/* Duolingo drops to an icon-only rail on narrower desktops. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .sidebarWrapper,
+  .sidebarWrapper.collapsed {
+    width: var(--rail-w-compact);
   }
-  
-  .sidebarWrapper.mobileOpen {
-    left: 0;
-    width: 280px;
+  .main,
+  .main.expanded {
+    margin-left: var(--rail-w-compact);
+  }
+  .sidebarHeader {
+    padding: 32px 0 24px;
+    justify-content: center;
+  }
+  .logoLink img {
+    width: 40px;
+    height: 40px;
+  }
+  .navItem {
+    justify-content: center;
+    padding: 8px;
+  }
+  .label {
+    display: none;
+  }
+  .sidebarFooter {
+    flex-direction: column;
+    padding: 16px 0 24px;
+  }
+  .sidebarToggle {
+    display: none;
+  }
+}
+
+/* ─── PHONE ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebarWrapper,
+  .sidebarWrapper.collapsed {
+    left: -100%;
+    width: 288px;
+    box-shadow: none;
   }
 
-  .sidebarToggle { display: none; }
-  /* Bell is not part of the mobile menu — it lives outside the drawer */
-  .sidebarBellSlot { display: none; }
+  /* Above the bottom bar (1001) while open, with its overlay just under. */
+  .sidebarWrapper.mobileOpen {
+    left: 0;
+    z-index: 1003;
+    box-shadow: 16px 0 40px var(--nav-shadow);
+  }
+
+  .overlay {
+    z-index: 1002;
+  }
+
+  /* The drawer always shows labels, even if the desktop rail was collapsed. */
+  .collapsed .label { display: inline; }
+  .collapsed .navItem { justify-content: flex-start; padding: 8px 16px 8px 8px; }
+  .collapsed .sidebarHeader { justify-content: space-between; padding: 24px 16px 16px 24px; }
+
+  .sidebarHeader {
+    padding: 24px 16px 16px 24px;
+    min-height: 72px;
+  }
+
+  .sidebarToggle,
+  .sidebarBellSlot {
+    display: none;
+  }
+
   .mobileClose {
     display: flex;
-    background: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     border: none;
-    color: #64748B;
+    background: transparent;
+    color: var(--nav-ink);
     cursor: pointer;
   }
 
-  .main { 
-    margin-left: 0 !important; 
+  /* On a phone the More menu opens upward inside the drawer. */
+  .moreMenu {
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 8px);
+    width: auto;
+    transform-origin: left bottom;
   }
-  
+
+  .main,
+  .main.expanded {
+    margin-left: 0;
+  }
+
+  .desktopStats {
+    display: none;
+  }
+
+  /* Duolingo's phone HUD: menu · four stats · bell. */
   .mobileHeader {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: white;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    gap: 4px;
     position: sticky;
     top: 0;
     z-index: 90;
-    height: 60px;
+    min-height: calc(58px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 8px 0;
+    background: var(--nav-bg);
+    border-bottom: 2px solid var(--nav-line);
   }
 
   .mobileToggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     border: none;
-    color: #071233;
+    background: transparent;
+    color: var(--nav-ink-strong);
     cursor: pointer;
-    padding: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobileToggle:active {
+    background: var(--nav-hover);
+  }
+
+  .mobileStats {
+    flex: 1;
+    min-width: 0;
+    justify-content: space-evenly;
+  }
+
+  .mobileBell {
+    flex-shrink: 0;
+    margin-left: 8px;
   }
 
   .content {
-    padding: 16px 14px calc(84px + env(safe-area-inset-bottom)) !important;
+    /* 14px sides: the home HUD cancels exactly this with -mx-[14px]. */
+    padding: 16px 14px calc(84px + env(safe-area-inset-bottom));
   }
 
+  /* Duolingo's bottom bar: five tabs, the current one in an outlined tile. */
   .mobileBottomNav {
     display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 64px;
-    background: white;
-    border-top: 2px solid #E2E8F0;
+    z-index: 1001;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 0 8px env(safe-area-inset-bottom);
+    background: var(--nav-bg);
+    border-top: 2px solid var(--nav-line);
     justify-content: space-around;
     align-items: center;
-    z-index: 1001;
-    box-shadow: 0 -4px 12px rgba(7, 18, 51, 0.03);
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .bottomNavItem {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #64748B;
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 700;
-    font-family: var(--font-jakarta), sans-serif;
-    gap: 4px;
     flex: 1;
     height: 100%;
-    transition: color 0.15s ease;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .bottomNavItem svg {
-    transition: transform 0.15s ease, color 0.15s ease;
+  .bottomNavIconWrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 46px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
   }
 
-  .bottomNavItem:active svg {
-    transform: scale(0.9);
-  }
-
-  .activeBottomItem {
-    color: #0172FD;
+  .activeBottomItem .bottomNavIconWrap {
+    background-color: var(--nav-active-bg);
+    border-color: var(--nav-active-line);
   }
 }
 
 @media (max-width: 360px) {
   .content {
-    padding: 12px 8px 84px !important;
+    padding: 12px 8px 84px;
   }
-  .mobileHeader {
-    padding: 8px 12px !important;
-    height: 52px !important;
+  .bottomNavIconWrap {
+    width: 48px;
   }
 }
 
@@ -480,7 +526,7 @@
 
 @media (max-width: 768px) {
   .immersiveContent {
-    padding: 0 16px !important;
+    padding: 0 16px;
     height: 100vh;
     height: 100dvh;
     min-height: 0;
@@ -488,10 +534,19 @@
   }
 }
 
-/* COMING SOON MODAL & OTHERS */
-.modalBody { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; }
-.modalIconWrapper { width: 80px; height: 80px; background: rgba(1, 114, 253, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #0172FD; }
-.modalTitle { font-size: 20px; font-weight: 800; color: #071233; margin-bottom: 12px; }
-.modalDescription { color: #64748B; font-size: 14px; line-height: 1.6; margin-bottom: 32px; max-width: 360px; }
+@media (prefers-reduced-motion: reduce) {
+  .sidebarWrapper,
+  .main,
+  .icon,
+  .bottomNavIconWrap {
+    transition: none;
+  }
+}
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* COMING SOON MODAL */
+.modalBody { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px; }
+.modalIconWrapper { width: 80px; height: 80px; background: var(--nav-active-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: var(--color-brand); }
+.sparkleIcon { color: var(--color-brand); }
+.modalTitle { font-size: 20px; font-weight: 800; color: var(--color-ink); margin-bottom: 16px; }
+.modalDescription { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 32px; max-width: 360px; }
+.modalActions { display: flex; justify-content: center; }

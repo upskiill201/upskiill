@@ -3,16 +3,27 @@ import type { LearnerStateSnapshot } from '../../contracts/tey-state.types';
 import type { TeyLocalNow } from '../../state/local-time.util';
 import { TEY_THRESHOLDS } from '../../tey.constants';
 import {
-  dedupeKeyFor,
   factsFrom,
   localTimeToday,
+  reminderHour,
   ScheduleIntent,
   TeyRule,
   withJitter,
 } from './rule.types';
 
-/** The escalation ladder, in whole days away. */
-const ESCALATION_DAYS = [1, 3, 7] as const;
+/**
+ * The win-back ladder, in whole days away — Duolingo's shape: daily at first,
+ * while the habit is still warm, then spreading out, then one honest
+ * "I'll stop" at day 30 and silence after it.
+ */
+export const ESCALATION_DAYS = [1, 2, 3, 5, 7, 14, 21, 30] as const;
+/** The last rung — its copy says Tey is stepping back, and it means it. */
+export const FINAL_RUNG = ESCALATION_DAYS[ESCALATION_DAYS.length - 1];
+
+/** Identifies one lapse: the instant the learner was last active. */
+function lapseKey(state: { lastActivityAt: Date | null }): string {
+  return state.lastActivityAt ? state.lastActivityAt.toISOString().slice(0, 10) : 'never';
+}
 
 function stepFor(days: number | null): number | null {
   if (days === null) return null;
@@ -25,18 +36,19 @@ function stepFor(days: number | null): number | null {
 }
 
 /**
- * Win back a lapsed learner, escalating 1 -> 3 -> 7 days and then stopping.
+ * Win back a lapsed learner along ESCALATION_DAYS, then stop.
  *
- * This rule is what makes the scheduler self-perpetuating without a cron sweep:
- * when a fired action finds the learner still away, planning runs again and
- * queues the next rung. A learner who never comes back falls off the ladder
- * after day 7 and costs nothing thereafter -- which is the whole reason the
- * system never has to scan every user.
+ * The scheduler's daily planner wake-up (DAY_PLANNER) re-plans each lapsed
+ * learner once a day, which is what lets a rung fire on a day the learner
+ * never opened the app. A learner who never comes back falls off the ladder
+ * after the final rung, and the planner stops waking for them too.
  */
 export const InactiveReturnRule: TeyRule = {
   id: 'INACTIVE_RETURN',
   priority: 'LOW',
-  cooldownHours: 44,
+  // Rungs 1-2-3 are consecutive days, so the cooldown only stops a same-day
+  // double; the per-rung dedupe key is what keeps each rung to one send.
+  cooldownHours: 20,
   supersedes: ['DAILY_GOAL_INCOMPLETE'],
 
   plan(state, now): ScheduleIntent | null {
@@ -54,13 +66,14 @@ export const InactiveReturnRule: TeyRule = {
     const days = state.daysSinceLastActivity;
     if (days === null || days < 1) return null;
     // Past the last rung we stop pestering. Silence is a feature.
-    if (days > TEY_THRESHOLDS.dormantDays) return null;
+    if (days > FINAL_RUNG) return null;
 
     const step = stepFor(days);
     if (step === null) return null;
 
-    // Come back at the hour they used to study -- that is when the habit lives.
-    const hour = state.usualHourLocal ?? TEY_THRESHOLDS.defaultAtRiskHour;
+    // Come back at the hour they chose, or used to study -- that is when the
+    // habit lives.
+    const hour = reminderHour(state, TEY_THRESHOLDS.defaultAtRiskHour, 9, 20);
     const dueAt = withJitter(localTimeToday(now, hour, 0), state.userId);
     const expiresAt = localTimeToday(now, 21, 30);
     if (dueAt >= expiresAt) return null;
@@ -70,9 +83,10 @@ export const InactiveReturnRule: TeyRule = {
       priority: days >= 3 ? 'MEDIUM' : 'LOW',
       dueAt,
       expiresAt,
-      // Scoped by rung as well as day, so day 3 can fire even though day 1
-      // already did.
-      dedupeKey: `${dedupeKeyFor('INACTIVE_RETURN', state.userId, now.date)}:${step}`,
+      // One send per rung per lapse: keyed by the rung and by the lapse's
+      // last active day, so a missed planner day catches the rung up late
+      // rather than skipping it, and a new lapse starts a fresh ladder.
+      dedupeKey: `INACTIVE_RETURN:${state.userId}:${lapseKey(state)}:${step}`,
       contextHint: {
         reason: 'INACTIVE_RETURN',
         urgency: days >= 3 ? 'MEDIUM' : 'LOW',
@@ -102,9 +116,21 @@ export const InactiveReturnRule: TeyRule = {
       recommendedAction:
         state.target.type === 'LESSON' ? 'COMPLETE_LESSON' : 'RESUME_COURSE',
       target: state.target,
-      // Someone coming back after a week gets warmth, never a guilt trip.
-      tone: days >= 3 ? 'WARM_WELCOME' : 'ENCOURAGING',
-      teyState: days >= 3 ? 'WELCOME_BACK' : 'ENCOURAGING',
+      // Days 1-2 the habit is still warm, so the owl can be a little
+      // dramatic; after that it's warmth, never a guilt trip. The final rung
+      // is Tey stepping back — said plainly, once.
+      tone:
+        days >= FINAL_RUNG
+          ? 'NEUTRAL'
+          : days >= 3
+            ? 'WARM_WELCOME'
+            : 'URGENT_PLAYFUL',
+      teyState:
+        days >= FINAL_RUNG
+          ? 'PASSIVE_AGGRESSIVE'
+          : days >= 3
+            ? 'WELCOME_BACK'
+            : 'REMINDER',
       ignoredNudgeStreak: state.consecutiveIgnoredNudges,
     };
   },

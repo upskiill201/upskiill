@@ -1,32 +1,52 @@
 'use client';
 
+/**
+ * Home — the learning path, Duolingo-style.
+ *
+ * Home used to be a feed: nine stacked cards (level banner, quest hero,
+ * journey strip, missions, monthly quest, chest, weekly progress, level-up
+ * banner, carousel) running six phone-screens tall, with "take my next
+ * lesson" as one card among nine. Now home IS the path:
+ *
+ *  - Phone: a sticky HUD (menu · course · streak · Coins · XP · hearts ·
+ *    bell) and the winding road of lessons, landing on the next one.
+ *  - Desktop: the road in the centre and Duolingo's right rail — stats,
+ *    level, daily quests, chest.
+ *  - The feed's other cards were not deleted: missions and the monthly quest
+ *    live on the Quests tab, and the desktop rail keeps the daily ones.
+ *
+ * Open app → tap the glowing node → START. Two taps to a lesson.
+ */
+
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import { X, Menu } from 'lucide-react';
-import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Menu, RotateCcw } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
-import { useComingSoon, useMobileMenu } from '@/components/layout/StudentShell';
-import { getOnboardingState } from '@/lib/user-onboarding';
-import { RightSidebar } from '@/components/layout/RightSidebar';
+import { useMobileMenu } from '@/components/layout/StudentShell';
 import { StatsBar } from '@/components/ui/StatsBar';
-import { useGamification } from '@/context/GamificationContext';
-import { useTeyroLoader } from '@/components/providers/TeyroLoaderProvider';
 import LevelProgressionBanner from '@/components/dashboard/v2/LevelProgressionBanner';
-import CurrentQuestCard from '@/components/dashboard/v2/CurrentQuestCard';
-import JourneyPathMap from '@/components/dashboard/v2/JourneyPathMap';
-import TodaysMissionsCard from '@/components/dashboard/v2/TodaysMissionsCard';
-import MonthlyQuestCard from '@/components/dashboard/v2/MonthlyQuestCard';
-import MysteryChestCard from '@/components/dashboard/v2/MysteryChestCard';
-import WeeklyProgressCard from '@/components/dashboard/v2/WeeklyProgressCard';
-import LevelUpIncomingBanner from '@/components/dashboard/v2/LevelUpIncomingBanner';
-import ContinueLearningCarousel from '@/components/dashboard/v2/ContinueLearningCarousel';
-import PwaPushNudgeCard from '@/components/dashboard/v2/PwaPushNudgeCard';
-import { getCachedUser, setCachedUser } from '@/lib/user-cache';
-import { useMe } from '@/hooks/useMe';
-import { useEnrollments } from '@/hooks/useCourse';
+import DailyQuestsCard from '@/components/quests/DailyQuestsCard';
+import DailyChestCard from '@/components/quests/DailyChestCard';
 import NotificationBell from '@/components/community/NotificationBell';
-import styles from './Page.module.css';
+import { CoursePicker } from '@/components/home/CoursePicker';
+import { LearningPath } from '@/components/home/LearningPath';
+import { PathSkeleton } from '@/components/home/PathSkeleton';
+import { NewLearnerHome } from '@/components/home/NewLearnerHome';
+import { ComingSoonPath } from '@/components/home/ComingSoonPath';
+import { useMe } from '@/hooks/useMe';
+import { getOnboardingState } from '@/lib/user-onboarding';
+import { isLearningTrack } from '@/lib/path/trackCourse';
+import { HOME_COURSE_KEY } from '@/lib/homeCourse';
+import type { LearningCategory } from '@/lib/onboarding/types';
+import {
+  lessonHref,
+  pickCurrentEnrollment,
+  preloadCourse,
+  useEnrollments,
+  useLearningPath,
+  type Enrollment,
+} from '@/hooks/useCourse';
 
 // Dev-only reward/celebration test bench. The component already self-guards on
 // NEXT_PUBLIC_ENVIRONMENT and renders null in production, so this is not a
@@ -46,225 +66,201 @@ const TreasureChestBench = dynamic(
   { ssr: false },
 );
 
+/** Which course the path shows. A per-device convenience, so localStorage. */
+const COURSE_KEY = HOME_COURSE_KEY;
+
+/** The mobile HUD's height — sticky unit banners stop just under it. */
+const MOBILE_HUD = 'calc(60px + env(safe-area-inset-top))';
+
 export default function DashboardPage() {
   const router = useRouter();
-  const { triggerComingSoon } = useComingSoon();
   const { openMobileMenu } = useMobileMenu();
-  const { streakDays, xp: xpPoints, lives: livesCount, coins, userLevel } = useGamification();
-  const [userName, setUserName] = useState<string | null>(null);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  const { showLoader, showLoaderImmediate, hideLoader } = useTeyroLoader();
+  const { enrollments, error: enrollmentsError } = useEnrollments();
+  const { me } = useMe();
 
-  // Shared with StudentShell — one request, not two.
-  const { me, avatarUrl } = useMe();
-  // Shared SWR cache (hooks/useCourse.ts) — dedupes against My Learning's
-  // identical /api/auth/me/enrollments fetch, and paints instantly on a
-  // revisit to the dashboard instead of reloading from scratch.
-  const { enrollments: enrollmentsData } = useEnrollments();
-  const enrollments = enrollmentsData ?? [];
+  // The learner's track (Coding / AI): their profile first, else the
+  // onboarding answers on this device (a learner who just finished
+  // onboarding may land here before the profile write is read back).
+  const [localTrack] = useState<LearningCategory | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const c = getOnboardingState().answers.category;
+    return isLearningTrack(c) ? c : null;
+  });
+  const profileTrack = (me?.studentProfile as { learningTrack?: unknown } | null | undefined)?.learningTrack;
+  const track: LearningCategory | null = isLearningTrack(profileTrack) ? profileTrack : localTrack;
 
-  useEffect(() => {
-    if (me?.fullName) {
-      setUserName(me.fullName.split(' ')[0]);
-      // Cache the resolved photo, not the raw User.avatarUrl column — see
-      // resolveAvatarUrl in useMe.ts. Otherwise this write races
-      // StudentShell's own setCachedUser and can clobber a resolved photo
-      // back to null for Google-onboarded users.
-      setCachedUser({ ...me, avatarUrl });
+  // Development-only preview of the new-learner home, for accounts that
+  // already have courses: ?preview=new-coding | new-ai | new-none |
+  // soon-coding | soon-ai. Inert everywhere else.
+  const searchParams = useSearchParams();
+  const preview =
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ? searchParams.get('preview') : null;
+  const loadingEnrollments = enrollments === undefined && !enrollmentsError;
+
+  // ── Which course the path shows ─────────────────────────────────────────
+  // Default: the course you're partway through. A choice made in the course
+  // picker sticks, as long as you're still enrolled in it.
+  //
+  // Read once at mount. Safe from hydration mismatch: the choice only matters
+  // once enrollments have loaded, and they never exist on the first render
+  // (server or client) — home's first frame is always the path skeleton.
+  const [chosenId, setChosenId] = useState<string | null>(() => {
+    try {
+      return typeof window === 'undefined' ? null : localStorage.getItem(COURSE_KEY);
+    } catch {
+      return null; // Storage blocked — the default course is fine.
     }
-  }, [me, avatarUrl]);
+  });
+  const active: Enrollment | null =
+    enrollments?.find((e) => e.course.id === chosenId) ?? pickCurrentEnrollment(enrollments);
+  const activeId = active?.course.id ?? null;
 
-  useEffect(() => {
-    // Hydrate cached user on client mount safely to prevent SSR hydration mismatch
-    const cached = getCachedUser();
-    if (cached?.fullName) {
-      setUserName(cached.fullName.split(' ')[0]);
-    } else {
-      const state = getOnboardingState();
-      if (state?.answers?.['1']?.name) {
-        setUserName((state.answers['1'].name as string).split(' ')[0]);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (enrollmentsData) {
-      hideLoader(); // Only hide once data has actually resolved (fresh or cached).
-      return;
-    }
-    // No cached data yet — trigger loader with suppressed connection-check
-    // popups; loader hides itself the instant cached-or-fresh data lands above.
-    showLoader(undefined, false, undefined, true);
-  }, [enrollmentsData, showLoader, hideLoader]);
-
-  const handleContinueLearning = () => {
-    playHaptic('medium');
-    showLoaderImmediate(
-      "Tey is preparing your custom learning path...",
-      false, // Preserves desktop sidebar (replaces middle column + right sidebar)!
-      undefined, // No artificial hold — loader clears as soon as the next page's data resolves
-      true,  // Suppress connection check unless actual error occurs
-      'working'
-    );
-    if (enrollments.length > 0) {
-      router.push(`/learn/${enrollments[0].course.id}`);
-    } else {
-      router.push('/learn/advanced-product-design-ux-strategy');
+  const choose = (courseId: string) => {
+    setChosenId(courseId);
+    try {
+      localStorage.setItem(COURSE_KEY, courseId);
+    } catch {
+      // Not persisted this time; still switches for this visit.
     }
   };
 
-  const currentEnrollment = enrollments.length > 0 ? enrollments[0] : null;
-  const currentTotalLessons = currentEnrollment?.course?.totalLessons || 25;
-  const currentMissionNum = currentEnrollment
-    ? Math.max(1, Math.round((currentEnrollment.progress / 100) * currentTotalLessons) || 12)
-    : 12;
+  const { path, error: pathError, mutate: retryPath } = useLearningPath(activeId);
+
+  // Warm the lesson route for the next lesson — its data AND its code — so
+  // START opens a painted lesson instead of a skeleton. (Next skips route
+  // prefetch in `next dev`; it shows in production.)
+  const nextHref = active?.nextLesson
+    ? lessonHref(active.course.id, active.nextLesson.sectionIndex, active.nextLesson.id)
+    : null;
+  useEffect(() => {
+    if (activeId) preloadCourse(activeId);
+  }, [activeId]);
+  useEffect(() => {
+    if (nextHref) router.prefetch(nextHref);
+  }, [nextHref, router]);
+
+  const picker =
+    active && enrollments && enrollments.length > 0 ? (
+      <CoursePicker enrollments={enrollments} current={active} onSelect={choose} />
+    ) : null;
+
+  // ── The centre column ───────────────────────────────────────────────────
+  let centre: React.ReactNode;
+  const previewTrack = preview?.split('-')[1];
+  if (preview?.startsWith('soon-') && isLearningTrack(previewTrack)) {
+    centre = <ComingSoonPath track={previewTrack} stickyTop="var(--path-sticky-top)" />;
+  } else if (preview?.startsWith('new-')) {
+    centre = (
+      <NewLearnerHome
+        track={isLearningTrack(previewTrack) ? previewTrack : null}
+        stickyTop="var(--path-sticky-top)"
+        previewCourse={
+          searchParams.get('course')
+            ? { id: searchParams.get('course') as string, isWarmUp: searchParams.get('warmup') === '1' }
+            : undefined
+        }
+      />
+    );
+  } else if (loadingEnrollments || (active && !path && !pathError)) {
+    centre = <PathSkeleton />;
+  } else if (!active) {
+    // No course yet: their track's course, or its coming-soon path.
+    centre = <NewLearnerHome track={track} stickyTop="var(--path-sticky-top)" />;
+  } else if (pathError || !path) {
+    centre = (
+      <div className="py-16 text-center">
+        <p className="text-[18px] font-extrabold text-ink">We couldn&apos;t load your path.</p>
+        <p className="mt-2 text-[15px] text-ink-soft">Check your connection and try again.</p>
+        <button
+          type="button"
+          onClick={() => {
+            playHaptic('light');
+            void retryPath();
+          }}
+          className="mt-5 inline-flex items-center gap-2 h-12 px-6 rounded-[14px] bg-brand text-white text-[15px] font-extrabold uppercase tracking-wide cursor-pointer"
+          style={{ boxShadow: '0 4px 0 var(--color-brand-dark)' }}
+        >
+          <RotateCcw className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+          Try again
+        </button>
+      </div>
+    );
+  } else {
+    // Keyed by course: switching courses remounts the path, so it lands on
+    // the NEW course's next lesson instead of keeping the old scroll spot.
+    centre = <LearningPath key={path.course.id} path={path} stickyTop="var(--path-sticky-top)" />;
+  }
 
   return (
-    <div className={styles.container}>
-      
-      {/* TOP GAME HUD ROW */}
-      <div className={styles.topHeaderRow}>
-        {/* MOBILE HUD CLUSTER: inline menu trigger + stat pills (Duolingo-style headerless home) */}
-        <div className={styles.hudTopCluster}>
+    <div
+      className="relative [--path-sticky-top:calc(60px+env(safe-area-inset-top))] md:[--path-sticky-top:16px]"
+    >
+      {/* ═══ PHONE HUD — Duolingo's top bar ═══════════════════════════════
+          Edge to edge: cancels the shell's 14px/16px mobile content padding. */}
+      <div
+        className="md:hidden sticky top-0 z-40 -mx-[14px] -mt-4 mb-2 px-2.5 bg-white border-b-2 border-[var(--border)]"
+        style={{ paddingTop: 'env(safe-area-inset-top)', minHeight: MOBILE_HUD }}
+      >
+        <div className="h-[58px] flex items-center gap-1">
           <button
             type="button"
-            className={styles.mobileMenuBtn}
-            onClick={() => { playHaptic('light'); openMobileMenu(); }}
-            aria-label="Open menu"
-          >
-            <Menu size={24} strokeWidth={2.5} />
-          </button>
-
-          {/* Bell sits OUTSIDE the drawer menu so notifications are always
-              reachable on the headerless home (panel opens rightward, away
-              from the left screen edge). */}
-          <div className={styles.hudBell}>
-            <NotificationBell panelAlign="left" />
-          </div>
-
-          {/* FLAT DUOLINGO-STYLE GAME HUD STAT PILLS */}
-          <StatsBar className={styles.hudStats} />
-        </div>
-
-        <div className={styles.welcomeBanner}>
-          <h2 className={styles.welcomeTitle}>
-            Welcome back, {userName ? `${userName}!` : <span className="inline-block w-28 h-7 bg-slate-200 animate-pulse rounded-md align-middle mx-1" />}
-          </h2>
-          <p className={styles.welcomeSubtitle}>Let&apos;s keep your learning momentum going.</p>
-        </div>
-      </div>
-
-      {/* TWO-COLUMN GRID CONTAINER (Desktop / Mobile) */}
-      <div className={styles.dashboardGrid}>
-        
-        {/* MIDDLE COLUMN: GAME ACTION LOOP */}
-        <div className={styles.middleColumn}>
-
-          {/* iOS PWA install / push-permission nudge — only shows once the
-              learner has completed a lesson, so it never competes with the
-              onboarding flow's own Step 15 prompt for a brand-new signup. */}
-          <PwaPushNudgeCard />
-
-          {/* 1. LEVEL PROGRESSION BANNER */}
-          <LevelProgressionBanner />
-
-          {/* 2. CURRENT QUEST HERO CARD */}
-          <CurrentQuestCard
-            currentEnrollment={currentEnrollment}
-            currentLessonIndex={currentMissionNum}
-            onPlay={handleContinueLearning}
-          />
-
-          {/* 3. YOUR JOURNEY PATH MAP */}
-          <JourneyPathMap
-            currentEnrollment={currentEnrollment}
-            currentLessonIndex={currentMissionNum}
-            totalLessons={currentTotalLessons}
-            onNodeClick={handleContinueLearning}
-          />
-
-          {/* 4. TODAY'S MISSIONS */}
-          <TodaysMissionsCard />
-
-          {/* 5. MONTHLY QUEST */}
-          <MonthlyQuestCard />
-
-          {/* 6. 2-COLUMN GAME GRID: MYSTERY CHEST + WEEKLY PROGRESS */}
-          <div className={styles.gameCardsGrid}>
-            <MysteryChestCard />
-            <WeeklyProgressCard />
-          </div>
-
-          {/* 7. LEVEL UP INCOMING! BANNER */}
-          <LevelUpIncomingBanner onPlay={handleContinueLearning} />
-
-          {/* 8. CONTINUE LEARNING CAROUSEL */}
-          <ContinueLearningCarousel enrollments={enrollments} />
-
-          {/* 9. DEV TEST BENCH (Collapsible) */}
-
-          {process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' && <RewardRunTestWidget />}
-
-          {(process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true' ||
-            process.env.NEXT_PUBLIC_ENVIRONMENT === 'development') && <TreasureChestBench />}
-
-        </div>
-
-        {/* RIGHT COLUMN: Sidebar Stats & Quests (Desktop View) */}
-        <div className={styles.rightColumn}>
-          <RightSidebar />
-        </div>
-
-      </div>
-
-      {/* ─── MOBILE GAMIFIED SIDEBAR FLOATING ACTION BUTTON ─── */}
-      <button
-        type="button"
-        onClick={() => {
-          playHaptic('medium');
-          setMobileSidebarOpen(true);
-        }}
-        className={styles.mobileSidebarFab}
-        aria-label="Open Gamified Quests & Sidebar"
-      >
-        <Image src="/Tressure box.webp" width={26} height={26} alt="Quests" priority />
-        <span className={styles.mobileSidebarFabBadge}>Quest HUD</span>
-      </button>
-
-      {/* ─── MOBILE SIDEBAR DRAWER OVERLAY ─── */}
-      <div className={`${styles.mobileSidebarDrawer} ${mobileSidebarOpen ? styles.mobileSidebarDrawerOpen : ''}`}>
-        <div className={styles.mobileSidebarHeader}>
-          <div className={styles.drawerTitleRow}>
-            <Image src="/Tressure box.webp" width={24} height={24} alt="Quests" />
-            <span className={styles.mobileSidebarTitle}>Rewards & Quests</span>
-          </div>
-          <button 
-            type="button" 
             onClick={() => {
               playHaptic('light');
-              setMobileSidebarOpen(false);
-            }} 
-            className={styles.mobileSidebarCloseBtn}
-            aria-label="Close drawer"
+              openMobileMenu();
+            }}
+            aria-label="Open menu"
+            className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-ink hover:bg-slate-100 cursor-pointer"
           >
-            <X size={20} strokeWidth={2.5} />
+            <Menu className="w-6 h-6 stroke-[2.5]" />
           </button>
-        </div>
-        <div className={styles.mobileSidebarBody}>
-          {/* Mounted only while the drawer is open — this drawer sits in the
-              DOM at all times (for its slide-in transition), and mounting a
-              second live RightSidebar unconditionally used to double every
-              one of its network requests on every dashboard load. */}
-          {mobileSidebarOpen && <RightSidebar />}
+          {picker}
+          <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className="flex-1 min-w-0 justify-evenly" />
+          {/* ml keeps the bell's count badge off the hearts number. */}
+          <div className="shrink-0 ml-2">
+            <NotificationBell panelAlign="right" />
+          </div>
         </div>
       </div>
-      {mobileSidebarOpen && (
-        <div 
-          className={styles.mobileSidebarBackdrop} 
-          onClick={() => setMobileSidebarOpen(false)} 
-        />
-      )}
+
+      <div className="flex justify-center gap-10 xl:gap-14">
+        {/* ═══ THE PATH ═══════════════════════════════════════════════════ */}
+        {/* Not a <main>: the shell already provides the page's main landmark,
+            and a nested second one confuses screen-reader navigation. */}
+        <section id="home-path" aria-label="Your learning path" className="w-full max-w-[560px] min-w-0">
+          {/* Tablet: no phone HUD and no right rail — stats go on top. */}
+          <div className="hidden md:flex lg:hidden items-center justify-between gap-4 mb-4">
+            {picker}
+            <StatsBar />
+          </div>
+
+          {centre}
+
+          {/* Dev-only benches: below the path, never in the rail, where
+              their height pushed the learner's own stats off-screen. */}
+          {process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' && <RewardRunTestWidget />}
+          {(process.env.NEXT_PUBLIC_SHOW_CHEST_BENCH === 'true' ||
+            process.env.NEXT_PUBLIC_ENVIRONMENT === 'development') && <TreasureChestBench />}
+        </section>
+
+        {/* ═══ RIGHT RAIL — desktop ═══════════════════════════════════════ */}
+        {/* Sticky, and scrolls inside itself when taller than the window —
+            otherwise its top (your stats) scrolls out of view while the
+            path is centred on your lesson. */}
+        <aside
+          className="hidden lg:flex flex-col gap-5 w-[364px] shrink-0 sticky self-start overflow-y-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ top: 16, maxHeight: 'calc(100vh - 32px)' }}
+          aria-label="Your stats and quests"
+        >
+          <div className="flex items-center justify-between gap-2">
+            {picker}
+            <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className="flex-1 justify-end" />
+          </div>
+          <LevelProgressionBanner />
+          <DailyQuestsCard />
+          <DailyChestCard />
+        </aside>
+      </div>
     </div>
   );
 }

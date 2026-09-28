@@ -22,8 +22,8 @@ import CelebrationMascot from '../../celebration/CelebrationMascot';
 import { TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle, SLOT_LABELS } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
-import { playClaimArpeggio } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic } from '@/lib/haptics';
 import { pickUnlockLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'ITEM_UNLOCKED' }>;
@@ -41,8 +41,8 @@ export default function ItemUnlockedScene({
   const [teyLine] = useState(() => pickUnlockLine());
 
   useEffect(() => {
-    playClaimArpeggio();
-    playHaptic('medium');
+    playSound('itemUnlock');
+    celebrationHaptic('win');
   }, []);
 
   const canBuyNow = item.affordable && !item.soldOut && Boolean(scene.onBuy);

@@ -1,0 +1,243 @@
+/* Coupons as tickets: a coloured stub with the discount, a perforation, and
+   the code. Tokens only. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 400px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ticket {
+  --tone: var(--color-brand);
+  position: relative;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  border: 2px solid color-mix(in srgb, var(--tone) 35%, var(--border));
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  background: var(--bg-card);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+a.ticket:hover {
+  border-color: color-mix(in srgb, var(--tone) 60%, var(--border));
+}
+
+.ticketDim {
+  --tone: var(--text-muted);
+  opacity: 0.8;
+}
+
+.stub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 16px 8px;
+  background: var(--tone);
+  color: var(--bg-card);
+  text-align: center;
+}
+
+/* the perforation between stub and body */
+.stub::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 10px;
+  bottom: 10px;
+  border-right: 3px dotted var(--bg-card);
+}
+
+.stubValue {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stubOff {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.uses {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.uses > :first-child {
+  flex: 1;
+}
+
+.uses > :last-child {
+  white-space: nowrap;
+}
+
+.builder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .builder {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stepHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.stepNum {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: var(--bg-card);
+  font-size: 14px;
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pick:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.pickOn {
+  border-color: color-mix(in srgb, var(--color-brand) 55%, var(--border));
+  background: color-mix(in srgb, var(--color-brand) 7%, var(--bg-card));
+}
+
+.check {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 2px solid var(--border-strong);
+  color: var(--bg-card);
+}
+
+.pickOn .check {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.price {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.was {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.now {
+  font-size: 16px;
+  color: var(--success-green);
+}
+
+.sticky {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .sticky {
+    position: static;
+  }
+}

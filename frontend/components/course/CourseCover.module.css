@@ -1,0 +1,36 @@
+/* Course cover — tokens only (docs/08-color-system.md). Size it from the
+   parent with width/height or aspect-ratio. */
+
+.cover {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--tile-main);
+}
+
+.img {
+  object-fit: cover;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--bg-card);
+}
+
+/* The glyph sits on a chunky lipped badge, like the path's nodes. */
+.badge {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--bg-card) 18%, transparent);
+  box-shadow: 0 5px 0 var(--tile-deep);
+}
+
+.tintBlue { --tile-main: var(--color-brand); --tile-deep: var(--color-brand-deep); }
+.tintGreen { --tile-main: var(--success-green); --tile-deep: color-mix(in srgb, var(--success-green) 72%, black); }
+.tintOrange { --tile-main: var(--warning); --tile-deep: color-mix(in srgb, var(--warning) 70%, black); }
+.tintPurple { --tile-main: var(--brand-purple); --tile-deep: color-mix(in srgb, var(--brand-purple) 70%, black); }

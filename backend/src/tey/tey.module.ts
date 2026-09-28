@@ -29,6 +29,10 @@ import { TeyActionRepository } from './scheduler/tey-action.repository';
 import { TeySchedulerController } from './scheduler/tey-scheduler.controller';
 import { TeySchedulerService } from './scheduler/tey-scheduler.service';
 import { TeyController } from './tey.controller';
+import { TeyNotifyService } from './notify/tey-notify.service';
+import { TeyEventNotifier } from './notify/tey-event.notifier';
+import { CourseUnlockJourney } from './notify/course-unlock.journey';
+import { EmailModule } from '../email/email.module';
 
 /**
  * Tey's intelligence layer.
@@ -47,6 +51,7 @@ import { TeyController } from './tey.controller';
     StreakModule,
     NotificationModule,
     WhatsappModule,
+    EmailModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [
@@ -77,8 +82,12 @@ import { TeyController } from './tey.controller';
     TeyAiService,
     ToolRegistry,
     TeyListener,
+    TeyNotifyService,
+    TeyEventNotifier,
+    CourseUnlockJourney,
   ],
   exports: [
+    TeyNotifyService,
     TeyActivityService,
     LearnerStateService,
     TeyTimezoneService,
@@ -86,6 +95,7 @@ import { TeyController } from './tey.controller';
     TeySchedulerService,
     TeyDeliveryService,
     TeyPolicyService,
+    PushChannel,
     TeyAiService,
     AiConfigService,
     AiBudgetService,

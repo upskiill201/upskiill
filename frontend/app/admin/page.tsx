@@ -1,277 +1,255 @@
 'use client';
 
+/**
+ * Teyro HQ — Overview. The whole platform in one screen: what needs the team
+ * now, how the period compares with the one before, today's pulse, the daily
+ * trend, and the latest people and money coming in. Deeper looks live on
+ * Learning, Creators at a glance and Subscribers.
+ */
+
+import { useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 import {
-  AlertTriangle,
-  Bell,
-  BookOpen,
-  Eye,
-  Flame,
-  Send,
-  Smartphone,
-  Timer,
-  UserCheck,
+  BookOpenCheck,
+  CircleDollarSign,
+  FolderInput,
+  GraduationCap,
+  LifeBuoy,
+  PartyPopper,
+  UserPlus,
   Users,
   Wallet,
+  type LucideIcon,
 } from 'lucide-react';
+import { useAdminData } from '@/components/admin/AdminUI';
 import {
-  BarList,
-  Banner,
-  Card,
-  ErrorState,
-  Loading,
-  Metric,
-  PageHeader,
-  adminStyles as s,
-  useAdminData,
-} from '@/components/admin/AdminUI';
+  Face,
+  Hero,
+  LoadError,
+  MoreLink,
+  Panel,
+  RangeSwitch,
+  SeriesChart,
+  Skeleton,
+  Tile,
+  ago,
+  compact,
+  greeting,
+  hq as h,
+  money,
+  type Range,
+  type Stat,
+} from '@/components/admin/hq/HQ';
 
-/** GET /admin/summary — platform-wide numbers, real and currently
- *  computable only. Anything not yet computable (revenue, DAU/MAU,
- *  retention) is left out here rather than faked; those land with the
- *  Analytics phase. */
-interface PlatformSummary {
-  users: {
-    total: number;
-    newLast7d: number;
-    byRole: Record<string, number>;
-    byAccountStatus: Record<string, number>;
-  };
-  courses: { total: number; published: number };
-  creators: {
-    total: number;
-    byVerificationStatus: Record<string, number>;
-  };
-  payouts: { pendingReview: number };
+interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
 }
 
-interface TeyOverview {
-  windowDays: number;
-  learners: number;
-  states: {
-    streak: Record<string, number>;
-    engagement: Record<string, number>;
-  };
-  deliveries: {
-    sent: number;
-    suppressed: number;
-    failed: number;
-    opened: number;
-    converted: number;
-    openRate: number;
-    conversionRate: number;
-  };
-  reachability: Record<string, number>;
-  scheduler: { backlog: number; queue: Record<string, number> };
+interface Overview {
+  range: Range;
+  totals: { learners: number; creators: number };
+  headline: { signups: Stat; active: Stat; lessons: Stat; revenueMinor: Stat };
+  pulse: { dau: number; wau: number; mau: number; stickinessPct: number };
+  subscribers: { active: number; cancelling: number; mrrMinor: number; byPlan: Record<string, number> };
+  money: { gross: number; refunds: number; net: number; teyro: number; creators: number; sales: number; renewals: number };
+  series: { day: string; active: number; signups: number; lessons: number }[];
+  attention: { review: number; payouts: number; support: number; importsFailed: number; importsRunning: number };
+  latestUsers: (Person & { createdAt: string; hasStudentAccess: boolean; hasCreatorAccess: boolean })[];
+  latestSales: { id: string; amountMinor: number; at: string; course: string; buyer: Person | null }[];
 }
 
-interface TeyHealth {
-  config: {
-    schedulerEnabled: boolean;
-    dryRun: boolean;
-    pushKillSwitch: boolean;
-    externalTickConfigured: boolean;
-    vapidConfigured: boolean;
-  };
-}
-
-/** The platform-wide half of the Overview. Deliberately independent of the
- *  Tey fetches below it — a failure in one section should never blank the
- *  other, they're unrelated systems sharing one page. */
-function PlatformSection() {
-  const { data, error, isLoading } = useAdminData<PlatformSummary>(
-    '/api/admin/summary',
-  );
-
-  if (error) return <ErrorState error={error as Error} />;
-  if (isLoading || !data) return <Loading />;
-
-  return (
-    <>
-      <div className={s.grid}>
-        <Metric
-          label="Total users"
-          value={data.users.total.toLocaleString()}
-          icon={<Users size={13} />}
-          hint={`${data.users.newLast7d.toLocaleString()} new in the last 7 days`}
-        />
-        <Metric
-          label="Courses"
-          value={data.courses.total.toLocaleString()}
-          icon={<BookOpen size={13} />}
-          hint={`${data.courses.published.toLocaleString()} published`}
-        />
-        <Metric
-          label="Creators"
-          value={data.creators.total.toLocaleString()}
-          icon={<UserCheck size={13} />}
-          hint={`${(data.creators.byVerificationStatus.PENDING ?? 0).toLocaleString()} pending verification`}
-        />
-        <Metric
-          label="Payouts awaiting review"
-          value={data.payouts.pendingReview.toLocaleString()}
-          icon={<Wallet size={13} />}
-          hint="Requested or under review"
-          accent={data.payouts.pendingReview > 0 ? 'warn' : 'none'}
-        />
-      </div>
-
-      <div className={s.grid}>
-        <Card title="Users by role" icon={<Users size={15} />}>
-          <BarList data={data.users.byRole} />
-        </Card>
-        <Card title="Users by account status" icon={<UserCheck size={15} />}>
-          <BarList data={data.users.byAccountStatus} />
-        </Card>
-      </div>
-    </>
-  );
-}
-
-/** The existing Tey (notification pipeline) half of the Overview, unchanged
- *  in substance from the original Tey-only admin page. */
-function TeySection() {
-  const { data, error, isLoading } = useAdminData<TeyOverview>(
-    '/api/tey/admin/overview',
-  );
-  const { data: health } = useAdminData<TeyHealth>('/api/tey/admin/health');
-
-  if (error) return <ErrorState error={error as Error} />;
-  if (isLoading || !data) return <Loading />;
-
-  const { deliveries, scheduler } = data;
-  const cfg = health?.config;
-
-  return (
-    <>
-      {/* The single most common "why did nobody get a notification?" answer,
-          surfaced before any of the numbers that would look broken because
-          of it. */}
-      {cfg?.dryRun && (
-        <Banner tone="warn">
-          <AlertTriangle size={16} />
-          <span>
-            <strong>Dry-run.</strong> The scheduler is evaluating and recording
-            what it would send, but nothing is being delivered. Set{' '}
-            <code>TEY_DELIVERY_ENABLED=true</code> to go live.
-          </span>
-        </Banner>
-      )}
-      {cfg && !cfg.dryRun && cfg.pushKillSwitch && (
-        <Banner tone="warn">
-          <AlertTriangle size={16} />
-          <span>
-            <strong>Push kill switch is on.</strong> Every nudge is being
-            suppressed before it reaches a channel.
-          </span>
-        </Banner>
-      )}
-
-      <div className={s.grid}>
-        <Metric
-          label="Learners tracked"
-          value={data.learners.toLocaleString()}
-          icon={<Users size={13} />}
-          hint="With a projected state"
-        />
-        <Metric
-          label="Sent"
-          value={deliveries.sent.toLocaleString()}
-          icon={<Send size={13} />}
-          hint={`${deliveries.failed} failed`}
-          accent={deliveries.failed > 0 ? 'warn' : 'none'}
-        />
-        <Metric
-          label="Open rate"
-          value={`${deliveries.openRate}%`}
-          icon={<Eye size={13} />}
-          hint={`${deliveries.opened.toLocaleString()} opened`}
-        />
-        <Metric
-          label="Queue backlog"
-          value={scheduler.backlog.toLocaleString()}
-          icon={<Timer size={13} />}
-          hint="Due but not yet processed"
-          // A backlog that is not draining is the clearest sign the tick has
-          // stopped — most likely a spun-down free-plan instance.
-          accent={
-            scheduler.backlog > 500
-              ? 'bad'
-              : scheduler.backlog > 50
-                ? 'warn'
-                : 'good'
-          }
-        />
-      </div>
-
-      <div className={s.grid}>
-        <Card title="Streak states" icon={<Flame size={15} />}>
-          <BarList data={data.states.streak} />
-        </Card>
-
-        <Card title="Engagement" icon={<Users size={15} />}>
-          <BarList data={data.states.engagement} />
-        </Card>
-      </div>
-
-      <div className={s.grid}>
-        <Card title="Reachable devices" icon={<Smartphone size={15} />}>
-          <BarList
-            data={data.reachability}
-            emptyLabel="No push subscriptions yet"
-          />
-          {/* The iOS ceiling is a product constraint, not a bug — worth stating
-              on the page so it is measured rather than rediscovered. */}
-          <p className={s.metricHint} style={{ marginTop: 12 }}>
-            iOS only allows push from a Home-Screen-installed PWA, so
-            <strong> other</strong> largely means iOS Safari — reachable
-            in-app, but not by notification.
-          </p>
-        </Card>
-
-        <Card title="Scheduler queue" icon={<Bell size={15} />}>
-          <BarList
-            data={scheduler.queue}
-            variant="muted"
-            emptyLabel="Queue is empty"
-          />
-        </Card>
-      </div>
-    </>
-  );
-}
-
-/** Section label used to separate Platform from Tey within one Overview
- *  page — not a full PageHeader, just enough to orient the reader. */
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <h2
-      style={{
-        fontSize: 12,
-        fontWeight: 700,
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        color: 'var(--text-muted)',
-        margin: '32px 0 12px',
-      }}
-    >
-      {children}
-    </h2>
-  );
-}
+const NEEDS: { key: keyof Overview['attention']; label: string; href: string; icon: LucideIcon; tone: string }[] = [
+  { key: 'review', label: 'courses to review', href: '/admin/courses?reviewStatus=SUBMITTED', icon: BookOpenCheck, tone: 'var(--brand-purple)' },
+  { key: 'payouts', label: 'payouts to approve', href: '/admin/payouts', icon: Wallet, tone: 'var(--warning)' },
+  { key: 'support', label: 'support messages waiting', href: '/admin/support', icon: LifeBuoy, tone: 'var(--color-brand)' },
+  { key: 'importsFailed', label: 'course imports failed', href: '/admin/courses/import', icon: FolderInput, tone: 'var(--error-red)' },
+];
 
 export default function AdminOverviewPage() {
+  const [range, setRange] = useState<Range>(30);
+  const { data, error, mutate } = useAdminData<Overview>(`/api/admin/insights/overview?range=${range}`);
+
+  if (error && !data) return <LoadError onRetry={() => void mutate()} />;
+  if (!data) return <Skeleton />;
+
+  const waiting = NEEDS.reduce((s, n) => s + data.attention[n.key], 0);
+  const period = `last ${range} days`;
+
   return (
-    <>
-      <PageHeader
-        title="Overview"
-        subtitle="Platform-wide numbers, plus Tey's notification pipeline"
+    <div className={h.page}>
+      <Hero
+        pose={waiting > 0 ? 'pointing' : 'cheering'}
+        title={`${greeting()}! Here’s Teyro right now.`}
+        sub={
+          waiting > 0
+            ? `${waiting} thing${waiting === 1 ? '' : 's'} need${waiting === 1 ? 's' : ''} the team. ${compact(data.totals.learners)} learners and ${compact(data.totals.creators)} creators on the platform.`
+            : `Nothing is waiting on the team. ${compact(data.totals.learners)} learners and ${compact(data.totals.creators)} creators on the platform.`
+        }
+        right={<RangeSwitch value={range} onChange={setRange} />}
       />
 
-      <SectionLabel>Platform</SectionLabel>
-      <PlatformSection />
+      {/* What needs the team */}
+      <div className={h.attention}>
+        {NEEDS.map((n) => {
+          const count = data.attention[n.key];
+          const Icon = n.icon;
+          return (
+            <Link key={n.key} href={n.href} className={`${h.need} ${count === 0 ? h.needCalm : ''}`} style={{ '--tone': n.tone } as CSSProperties}>
+              <span className={h.needIcon} aria-hidden="true">
+                {count === 0 ? <PartyPopper size={20} strokeWidth={2.5} /> : <Icon size={20} strokeWidth={2.5} />}
+              </span>
+              <span className={h.needText}>
+                <strong>{count}</strong>
+                <span>{count === 0 ? `No ${n.label}` : n.label}</span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
 
-      <SectionLabel>Tey · notifications</SectionLabel>
-      <TeySection />
-    </>
+      {/* Headline */}
+      <div className={h.tiles}>
+        <Tile icon={<UserPlus size={19} />} tone="var(--color-brand)" label="New signups" value={compact(data.headline.signups.value)} stat={data.headline.signups} href="/admin/users" />
+        <Tile icon={<Users size={19} />} tone="var(--brand-purple)" label="Active learners" value={compact(data.headline.active.value)} stat={data.headline.active} href="/admin/learning" />
+        <Tile icon={<GraduationCap size={19} />} tone="var(--success-green)" label="Lessons finished" value={compact(data.headline.lessons.value)} stat={data.headline.lessons} href="/admin/learning" />
+        <Tile
+          icon={<CircleDollarSign size={19} />}
+          tone="var(--warning)"
+          label="Revenue"
+          value={money(data.headline.revenueMinor.value)}
+          stat={data.headline.revenueMinor}
+          href="/admin/payments"
+          foot={data.money.refunds > 0 ? <span>· {money(data.money.refunds)} refunded</span> : undefined}
+        />
+      </div>
+
+      {/* Today's pulse */}
+      <div className={h.pulse}>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>Today</span>
+          <span className={h.pulseValue}>{compact(data.pulse.dau)}</span>
+          <span className={h.pulseHint}>active in 24h</span>
+        </div>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>This week</span>
+          <span className={h.pulseValue}>{compact(data.pulse.wau)}</span>
+          <span className={h.pulseHint}>active in 7 days</span>
+        </div>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>This month</span>
+          <span className={h.pulseValue}>{compact(data.pulse.mau)}</span>
+          <span className={h.pulseHint}>active in 30 days</span>
+        </div>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>Stickiness</span>
+          <span className={h.pulseValue}>{data.pulse.stickinessPct}%</span>
+          <span className={h.pulseHint}>daily ÷ monthly</span>
+        </div>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>Subscribers</span>
+          <span className={h.pulseValue}>{compact(data.subscribers.active)}</span>
+          <span className={h.pulseHint}>{data.subscribers.cancelling} cancelling</span>
+        </div>
+        <div className={h.pulseCell}>
+          <span className={h.pulseLabel}>Monthly run rate</span>
+          <span className={h.pulseValue}>{money(data.subscribers.mrrMinor)}</span>
+          <span className={h.pulseHint}>from active plans</span>
+        </div>
+      </div>
+
+      <SeriesChart
+        title={`Every day, ${period}`}
+        tabs={[
+          { key: 'active', label: 'Active', tone: 'var(--brand-purple)', summary: (ps) => `${compact(Math.max(0, ...ps.map((x) => x.value)))} on the busiest day`, unit: (n) => `${compact(n)} active`, points: data.series.map((p) => ({ day: p.day, value: p.active })) },
+          { key: 'lessons', label: 'Lessons', tone: 'var(--success-green)', unit: (n) => `${compact(n)} lessons`, points: data.series.map((p) => ({ day: p.day, value: p.lessons })) },
+          { key: 'signups', label: 'Signups', tone: 'var(--color-brand)', unit: (n) => `${compact(n)} signups`, points: data.series.map((p) => ({ day: p.day, value: p.signups })) },
+        ]}
+      />
+
+      <div className={h.grid2}>
+        <Panel title="Money this period" note={`Learner payments, ${period}`} action={<MoreLink href="/admin/payments">Payments</MoreLink>}>
+          <div className={h.bigNums}>
+            <span className={h.bigNum}>
+              <strong>{money(data.money.gross)}</strong>
+              <span>Paid by learners</span>
+              <em>
+                {data.money.sales} sale{data.money.sales === 1 ? '' : 's'} · {data.money.renewals} renewal{data.money.renewals === 1 ? '' : 's'}
+              </em>
+            </span>
+            <span className={h.bigNum}>
+              <strong style={{ color: 'var(--color-brand)' }}>{money(data.money.teyro)}</strong>
+              <span>Teyro’s share</span>
+              <em>after creator shares</em>
+            </span>
+            <span className={h.bigNum}>
+              <strong style={{ color: 'var(--brand-purple)' }}>{money(data.money.creators)}</strong>
+              <span>Creators earned</span>
+              <em>
+                <Link href="/admin/payouts">see payouts</Link>
+              </em>
+            </span>
+          </div>
+        </Panel>
+
+        <Panel title="Latest sales" flush action={<span style={{ paddingRight: 20 }}><MoreLink href="/admin/payments/transactions">All</MoreLink></span>}>
+          {data.latestSales.length === 0 ? (
+            <p className={h.empty}>No sales yet.</p>
+          ) : (
+            <ul className={h.list}>
+              {data.latestSales.map((s) => (
+                <li key={s.id} className={h.row}>
+                  <Face person={s.buyer ?? { fullName: '?', avatarUrl: null }} />
+                  <span className={h.rowMain}>
+                    <span className={h.rowTitle}>{s.buyer?.fullName ?? 'A learner'}</span>
+                    <span className={h.rowMeta}>
+                      {s.course} · {ago(s.at)}
+                    </span>
+                  </span>
+                  <span className={h.rowSide} style={{ color: 'var(--success-green)' }}>
+                    +{money(s.amountMinor, true)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      </div>
+
+      <Panel title="Newest people" flush action={<span style={{ paddingRight: 20 }}><MoreLink href="/admin/users">All users</MoreLink></span>}>
+        {data.latestUsers.length === 0 ? (
+          <p className={h.empty}>No signups yet.</p>
+        ) : (
+          <ul className={h.list}>
+            {data.latestUsers.map((u) => (
+              <li key={u.id}>
+                <Link href={`/admin/users/${u.id}`} className={h.row}>
+                  <Face person={u} />
+                  <span className={h.rowMain}>
+                    <span className={h.rowTitle}>{u.fullName}</span>
+                    <span className={h.rowMeta}>Joined {ago(u.createdAt)}</span>
+                  </span>
+                  <span className={h.rowSide}>
+                    {u.hasCreatorAccess && (
+                      <span className={h.tag} style={{ '--tone': 'var(--brand-purple)' } as CSSProperties}>
+                        Creator
+                      </span>
+                    )}{' '}
+                    {u.hasStudentAccess ? (
+                      <span className={h.tag} style={{ '--tone': 'var(--success-green)' } as CSSProperties}>
+                        Learner
+                      </span>
+                    ) : (
+                      <span className={h.tag}>Onboarding</span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
+    </div>
   );
 }

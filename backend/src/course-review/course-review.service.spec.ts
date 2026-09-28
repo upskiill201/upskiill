@@ -106,12 +106,28 @@ const readyCourse = {
   instructorId: 'creator1',
   reviewStatus: 'DRAFT',
   title: 'My Course',
+  category: 'Coding',
+  description: 'Learn JavaScript from zero by building three small, real projects.',
   sections: [
     { title: 'Intro', lessons: [{ title: 'Welcome', status: 'published' }] },
   ],
 };
 
 describe('CourseReviewService — submitForReview', () => {
+  it('needs a launch track and a real description before review', async () => {
+    const { svc } = makeService({
+      findUnique: jest.fn().mockResolvedValue({ ...readyCourse, category: 'Music', description: 'New Course Draft' }),
+    });
+    await expect(svc.submitForReview('c1', 'creator1')).rejects.toMatchObject({
+      response: {
+        errors: expect.arrayContaining([
+          'Choose the course track: Coding or AI.',
+          'Write a course description of at least 40 characters.',
+        ]),
+      },
+    });
+  });
+
   it('rejects a course that fails the structural readiness gate', async () => {
     const { svc } = makeService({
       findUnique: jest.fn().mockResolvedValue({ ...readyCourse, sections: [] }),

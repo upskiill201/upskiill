@@ -3,18 +3,25 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-  ThumbsUp, MessageSquare, Pin, Lock, Flame, Paperclip, BookOpen,
+  Pin, Lock, Flame, Paperclip, BookOpen,
   MoreHorizontal, Trash2, Link2, BarChart3, Check,
+  HelpCircle, Trophy, Lightbulb, Megaphone, MessagesSquare, FolderOpen, Target, Hash,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
-import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
+import MemberAvatar from './MemberAvatar';
+import ProfileLink from './ProfileLink';
+import PostTypeArt from './PostTypeArt';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
 import type { CommunityPost } from '@/lib/communityApi';
 import { timeAgo, togglePostLike } from '@/lib/communityApi';
 import { plainExcerpt } from '@/lib/communityRender';
 import shared from './community.module.css';
 import styles from './PostCard.module.css';
+import { CreatorBadge } from '@/components/community/CreatorBadge';
 
 const TYPE_BADGE: Record<string, string> = {
   QUESTION: 'badgeQuestion',
@@ -42,6 +49,18 @@ const TYPE_LABEL: Record<string, string> = {
   PROGRESS: 'Progress',
   MILESTONE: 'Milestones',
   ACHIEVEMENT: 'Achievements',
+};
+
+/** Each category's icon — the same set as the filter chips. */
+export const TYPE_ICON: Record<string, LucideIcon> = {
+  QUESTION: HelpCircle,
+  TIP: Lightbulb,
+  WIN: Trophy,
+  RESOURCE: FolderOpen,
+  DISCUSSION: MessagesSquare,
+  POLL: BarChart3,
+  ANNOUNCEMENT: Megaphone,
+  CHALLENGE: Target,
 };
 
 export function categoryLabel(postType: string): string {
@@ -85,6 +104,7 @@ function PostCard({
   const [copied, setCopied] = React.useState(false);
   const [burst, setBurst] = React.useState(0);
   const busy = React.useRef(false);
+  const reducedMotion = useReducedMotion();
 
   const href =
     detailHref ??
@@ -110,6 +130,8 @@ function PostCard({
     if (busy.current) return;
     busy.current = true;
     const nextLiked = !liked;
+    playSound(nextLiked ? 'like' : 'toggleOff');
+    playHaptic(nextLiked ? 'medium' : 'light', false);
     setLiked(nextLiked);
     setLikeCount((c) => Math.max(0, c + (nextLiked ? 1 : -1)));
     if (nextLiked) setBurst((b) => b + 1);
@@ -160,7 +182,10 @@ function PostCard({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.16 }}
-      onClick={() => router.push(href)}
+      onClick={() => {
+        playSound('navTap', 2);
+        router.push(href);
+      }}
       role="link"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -182,30 +207,41 @@ function PostCard({
         {/* Author's equipped frame. Loadout reads across a feed are batched
             into one request, so this stays one call no matter how many posts
             are on screen. */}
-        <CosmeticFrame userId={post.author.id} thickness={3}>
-          <Avatar src={post.author.avatarUrl ?? undefined} name={post.author.fullName} size="md" />
-        </CosmeticFrame>
+        <ProfileLink userId={post.author.id} label={`${post.author.fullName}'s profile`}>
+          <MemberAvatar
+            userId={post.author.id}
+            name={post.author.fullName}
+            src={post.author.avatarUrl}
+            level={post.author.level}
+            size="md"
+          />
+        </ProfileLink>
         <div className={styles.authorBlock}>
-          <span className={styles.authorName}>{post.author.fullName}</span>
+          <span style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+            <ProfileLink userId={post.author.id}>
+              <span className={styles.authorName}>{post.author.fullName}</span>
+            </ProfileLink>
+            {post.author.isCreator && <CreatorBadge />}
+          </span>
           <div className={styles.metaRow}>
             <span>{timeAgo(post.createdAt)}</span>
-            <span>in</span>
-            {onCategoryClick ? (
-              <button
-                className={styles.categoryLink}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCategoryClick(post.postType);
-                }}
-              >
-                {categoryLabel(post.postType)}
-              </button>
-            ) : (
-              <span className={styles.categoryLink}>{categoryLabel(post.postType)}</span>
-            )}
             {post.author.streakDays > 0 && (
               <span className={styles.streak}>
                 <Flame size={12} /> {post.author.streakDays}
+              </span>
+            )}
+            {origin && (
+              <span className={styles.originChip} onClick={(e) => e.stopPropagation()}>
+                {origin.courseThumbnailUrl && (
+                  <Image
+                    src={origin.courseThumbnailUrl}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className={styles.originThumb}
+                  />
+                )}
+                {origin.name}
               </span>
             )}
             {post.editedAt && <span>· edited</span>}
@@ -217,20 +253,33 @@ function PostCard({
           </div>
         </div>
 
-        {origin && (
-          <span className={styles.originChip} onClick={(e) => e.stopPropagation()}>
-            {origin.courseThumbnailUrl && (
-              <Image
-                src={origin.courseThumbnailUrl}
-                alt=""
-                width={20}
-                height={20}
-                className={styles.originThumb}
-              />
-            )}
-            {origin.name}
-          </span>
-        )}
+        {/* The post's type — Skool's category as a Duolingo badge. Taps
+            filter the list to it where the list supports that. */}
+        {(() => {
+          const chip = (
+            <>
+              <PostTypeArt postType={post.postType} size={22} fallback={TYPE_ICON[post.postType] ?? Hash} />
+              <span className={styles.typeLabel}>{categoryLabel(post.postType)}</span>
+            </>
+          );
+          const cls = `${styles.typeChip} ${styles[`cat_${post.postType}`] ?? ''}`;
+          return onCategoryClick ? (
+            <button
+              type="button"
+              className={cls}
+              onClick={(e) => {
+                e.stopPropagation();
+                playSound('navTap', 3);
+                onCategoryClick(post.postType);
+              }}
+              aria-label={`Show ${categoryLabel(post.postType)}`}
+            >
+              {chip}
+            </button>
+          ) : (
+            <span className={cls}>{chip}</span>
+          );
+        })()}
 
         <div className={styles.menuWrap} onClick={(e) => e.stopPropagation()}>
           <button
@@ -277,7 +326,7 @@ function PostCard({
             </span>
           )}
 
-          {(post.poll || post.attachments.length > 0 || (post.images?.length ?? 0) > 1) && (
+          {(post.poll || post.attachments.length > 0) && (
             <div className={styles.inlineHints}>
               {post.poll && (
                 <span className={styles.hint}>
@@ -290,20 +339,26 @@ function PostCard({
                   {post.attachments.length > 1 ? 's' : ''}
                 </span>
               )}
-              {(post.images?.length ?? 0) > 1 && (
-                <span className={styles.hint}>+{post.images.length - 1} more images</span>
-              )}
             </div>
           )}
         </div>
-
-        {heroImage && (
-          /* eslint-disable-next-line @next/next/no-img-element -- learner
-             uploads are arbitrary S3/CloudFront keys, not a fixed remote
-             allowlist next/image can be configured against. */
-          <img className={styles.thumb} src={heroImage} alt="" loading="lazy" />
-        )}
       </div>
+
+      {heroImage && (
+        <div className={`${styles.media} ${post.images.length > 1 ? styles.mediaGrid : ''}`}>
+          {post.images.slice(0, post.images.length > 1 ? 2 : 1).map((src, i) => (
+            <span key={src + i} className={styles.mediaCell}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- learner
+                  uploads are arbitrary R2 keys, not a fixed remote allowlist
+                  next/image can be configured against. */}
+              <img className={styles.mediaImg} src={src} alt="" loading="lazy" />
+              {i === 1 && post.images.length > 2 && (
+                <span className={styles.mediaMore}>+{post.images.length - 2}</span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className={styles.footerRow} onClick={(e) => e.stopPropagation()}>
         <button
@@ -319,17 +374,34 @@ function PostCard({
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 600, damping: 15 }}
           >
-            <ThumbsUp size={16} fill={liked ? 'currentColor' : 'none'} />
+            <Image src={liked ? '/art/ui/like.svg' : '/art/ui/like-off.svg'} alt="" width={22} height={22} />
           </motion.span>
           {likeCount}
+          <AnimatePresence>
+            {burst > 0 && liked && !reducedMotion && (
+              <motion.span
+                key={burst}
+                className={styles.plusOne}
+                initial={{ opacity: 0, y: 0 }}
+                animate={{ opacity: [0, 1, 0], y: -22 }}
+                transition={{ duration: 0.8 }}
+                aria-hidden="true"
+              >
+                +1
+              </motion.span>
+            )}
+          </AnimatePresence>
         </button>
 
         <button
           className={styles.statBtn}
-          onClick={() => router.push(`${href}#comments`)}
+          onClick={() => {
+            playSound('navTap', 1);
+            router.push(`${href}#comments`);
+          }}
           aria-label="Open comments"
         >
-          <MessageSquare size={16} />
+          <Image src="/art/ui/comment.svg" alt="" width={22} height={22} />
           {post.commentCount}
         </button>
 

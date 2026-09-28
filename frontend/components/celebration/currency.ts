@@ -66,6 +66,7 @@ export function toCelebrationCurrency(
     case 'STREAK':
       return 'STREAK';
     case 'STREAK_FREEZE':
+    case 'FREEZE': // the monthly challenge's name for it
       return 'FREEZE';
     case 'XP_BOOST':
       return 'BOOST';
@@ -158,6 +159,7 @@ export function toTreasureChestRewardType(
     case 'LIVES':
       return 'hearts';
     case 'STREAK_FREEZE':
+    case 'FREEZE': // the monthly challenge's name for it
       return 'streakFreeze';
     case 'XP_BOOST':
       return 'xpBoost';

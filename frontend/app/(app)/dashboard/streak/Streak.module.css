@@ -1,0 +1,413 @@
+/* Streak page. Streak orange comes from the amber + red tokens (as in the
+   calendar), gold from --warning; no hardcoded hex. */
+
+.page {
+  --sk-orange: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+  --sk-orange-deep: color-mix(in srgb, var(--sk-orange) 78%, black);
+  --sk-orange-tint: color-mix(in srgb, var(--sk-orange) 12%, var(--bg-page));
+  --sk-gold: var(--warning);
+  --sk-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --sk-ice: var(--color-brand);
+  --sk-ice-tint: color-mix(in srgb, var(--color-brand) 12%, var(--bg-page));
+  --sk-ink: var(--color-ink);
+  --sk-soft: var(--text-secondary);
+  --sk-muted: var(--text-muted);
+  --sk-line: var(--border);
+  --sk-well: var(--bg-section);
+  --sk-card: var(--bg-card);
+  --sk-on: var(--bg-page);
+
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--sk-ink);
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 176px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--sk-well);
+  border: 2px solid var(--sk-line);
+}
+
+.heroLit {
+  background: var(--sk-orange-tint);
+  border-color: color-mix(in srgb, var(--sk-orange) 30%, var(--bg-page));
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+}
+
+.heroCount {
+  font-size: 64px;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--sk-muted);
+}
+
+.heroLit .heroCount {
+  color: var(--sk-orange);
+}
+
+.heroLabel {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--sk-ink);
+  margin-top: 4px;
+}
+
+.heroSub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--sk-soft);
+}
+
+.heroLit .heroSub {
+  color: var(--sk-orange-deep);
+}
+
+.heroFlame {
+  flex-shrink: 0;
+}
+
+.flameDim {
+  filter: grayscale(1) opacity(0.45);
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--sk-card);
+  border: 2px solid var(--sk-line);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--sk-ink);
+}
+
+.cardSub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--sk-soft);
+  line-height: 1.5;
+}
+
+.inlineError {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--error-red);
+}
+
+/* ─── Repair ───────────────────────────────────────────────────────────── */
+.repairCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid color-mix(in srgb, var(--sk-gold) 45%, var(--bg-page));
+  background: color-mix(in srgb, var(--sk-gold) 10%, var(--bg-page));
+}
+
+.repairIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sk-gold);
+  color: var(--sk-on);
+  box-shadow: 0 4px 0 var(--sk-gold-deep);
+}
+
+.repairText {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── Goal ─────────────────────────────────────────────────────────────── */
+.goalHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.goalChest {
+  flex-shrink: 0;
+}
+
+.goalTrack {
+  position: relative;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--sk-well);
+  overflow: hidden;
+}
+
+.goalFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--sk-orange);
+  box-shadow: inset 0 -4px 0 var(--sk-orange-deep), inset 0 4px 0 color-mix(in srgb, var(--sk-on) 30%, transparent);
+}
+
+.goalCount {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sk-ink);
+}
+
+/* ─── Freezes & record ─────────────────────────────────────────────────── */
+.twoUp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.freezeRow {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.freezeSlot {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--sk-line);
+  color: var(--sk-muted);
+}
+
+.freezeOn {
+  border: 2px solid color-mix(in srgb, var(--sk-ice) 35%, var(--bg-page));
+  background: var(--sk-ice-tint);
+  color: var(--sk-ice);
+}
+
+.record {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--sk-gold);
+}
+
+.record svg {
+  align-self: center;
+}
+
+.recordNum {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--sk-ink);
+}
+
+.pbPill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sk-gold) 16%, var(--bg-page));
+  color: var(--sk-gold-deep);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Society ──────────────────────────────────────────────────────────── */
+.society {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.societyIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sk-well);
+  color: var(--sk-muted);
+}
+
+.societyOn {
+  border-color: color-mix(in srgb, var(--sk-gold) 45%, var(--bg-page));
+}
+
+.societyOn .societyIcon {
+  background: color-mix(in srgb, var(--sk-gold) 16%, var(--bg-page));
+  color: var(--sk-gold-deep);
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.primaryBtn,
+.secondaryBtn,
+.goldBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primaryBtn {
+  background: var(--sk-orange);
+  color: var(--sk-on);
+  border: none;
+  box-shadow: 0 4px 0 var(--sk-orange-deep);
+}
+
+.primaryBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.goldBtn {
+  flex-shrink: 0;
+  background: var(--sk-gold);
+  color: var(--sk-on);
+  border: none;
+  box-shadow: 0 4px 0 var(--sk-gold-deep);
+  padding: 0 16px;
+}
+
+.goldBtn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.goldBtn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.secondaryBtn {
+  flex-shrink: 0;
+  background: var(--sk-card);
+  color: var(--color-brand);
+  border: 2px solid var(--sk-line);
+  box-shadow: 0 4px 0 var(--sk-line);
+  padding: 0 16px;
+}
+
+.secondaryBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.linkBtn {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+/* ─── States ───────────────────────────────────────────────────────────── */
+.skeleton {
+  background: var(--sk-well);
+  border-color: var(--sk-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+.errorCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 16px;
+  color: var(--sk-soft);
+  font-weight: 700;
+  text-align: center;
+}
+
+.errorCard svg:first-child {
+  color: var(--error-red);
+}
+
+@media (max-width: 560px) {
+  .hero {
+    min-height: 144px;
+    padding: 16px 24px;
+  }
+  .heroCount {
+    font-size: 52px;
+  }
+  .heroFlame img {
+    width: 88px;
+    height: 88px;
+  }
+  .twoUp {
+    grid-template-columns: 1fr;
+  }
+  .repairCard {
+    flex-wrap: wrap;
+  }
+  .repairCard > :last-child {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}

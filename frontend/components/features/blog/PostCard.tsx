@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
 import type { PostSummary } from '@/lib/blog/types';
@@ -16,13 +15,11 @@ interface PostCardProps {
 export default function PostCard({ post, priority = false }: PostCardProps) {
   const category = getCategory(post.categorySlug);
 
-  const accent = category?.accentColor ?? '#3D5AFE';
-
   return (
     <Link
       href={`/blog/${post.slug}`}
       className={styles.card}
-      style={{ '--accent': accent } as React.CSSProperties}
+      style={category ? ({ '--accent': category.accentColor } as React.CSSProperties) : undefined}
     >
       <div className={styles.cover}>
         <CoverImage
@@ -30,26 +27,20 @@ export default function PostCard({ post, priority = false }: PostCardProps) {
           alt=""
           slug={post.slug}
           title={post.title}
+          categorySlug={post.categorySlug}
           priority={priority}
         />
-        {category && (
-          <span
-            className={styles.categoryPill}
-            style={{ background: category.accentColor }}
-          >
-            {category.shortLabel}
-          </span>
-        )}
       </div>
 
       <div className={styles.body}>
+        {category && <span className={styles.category}>{category.name}</span>}
         <h3 className={styles.title}>{post.title}</h3>
         <p className={styles.excerpt}>{post.description}</p>
         <div className={styles.meta}>
           <span>{formatDate(post.publishedDate)}</span>
-          <span className={styles.metaDot}>·</span>
+          <span className={styles.metaDot} aria-hidden="true" />
           <span className={styles.readTime}>
-            <Clock size={13} strokeWidth={2.5} />
+            <Clock size={14} strokeWidth={2.5} />
             {post.readingTimeMinutes} min read
           </span>
         </div>

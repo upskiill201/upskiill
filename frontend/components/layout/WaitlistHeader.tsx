@@ -1,32 +1,40 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+/**
+ * The marketing site's header (homepage, /teach, /blog, /terms, /privacy).
+ *
+ * Duolingo/Coddy style: the Tey mark (alone — never locked up with a
+ * wordmark), a short nav, LOG IN and GET STARTED. Sticky; gains a hairline
+ * once the page scrolls. On the homepage the nav scroll-spies its sections.
+ *
+ * Anchors are section ids in components/homepage/v3/Sections.tsx.
+ */
+
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { TeyMark } from '@/components/brand/TeyMark';
 import styles from './WaitlistHeader.module.css';
 
 interface NavLink {
   label: string;
-  /** In-page section anchor (homepage) */
+  /** In-page section on the homepage. */
   anchor?: string;
-  /** Standalone route (navigates via <Link>) */
   href?: string;
 }
 
 const NAV_LINKS: NavLink[] = [
+  { label: 'Courses', anchor: '#tracks' },
   { label: 'How it works', anchor: '#how-it-works' },
-  { label: 'Features', href: '/features' },
-  { label: 'Rewards', anchor: '#rewards' },
   { label: 'Leagues', anchor: '#leagues' },
   { label: 'Community', anchor: '#community' },
-  { label: 'Use Cases', href: '/for' },
-  { label: 'Compare', href: '/alternatives' },
-  { label: 'Teach', href: '/teach' },
+  { label: 'For creators', href: '/teach' },
   { label: 'Blog', href: '/blog' },
-  { label: 'FAQ', anchor: '#faq' },
 ];
+
+const START_HREF = '/start';
+const LOGIN_HREF = '/login?mode=signin';
 
 export default function WaitlistHeader() {
   const pathname = usePathname();
@@ -35,244 +43,129 @@ export default function WaitlistHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
 
-  // Track scroll to toggle glassmorphism
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    onScroll(); // initial check
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Scroll-spy: highlight whichever section is currently in view, so the
-  // nav reflects where on the page you actually are, not just a static list.
+  // Scroll-spy on the homepage: highlight the section being read.
   useEffect(() => {
-    if (pathname !== '/') {
-      setActiveAnchor(null);
-      return;
-    }
-    const anchors = NAV_LINKS.filter((l) => l.anchor).map((l) => l.anchor!);
-    const sections = anchors
-      .map((a) => document.querySelector(a))
+    if (pathname !== '/') return;
+    const sections = NAV_LINKS.filter((l) => l.anchor)
+      .map((l) => document.querySelector(l.anchor!))
       .filter((el): el is Element => Boolean(el));
     if (sections.length === 0) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
         if (visible.length === 0) return;
-        // Prefer the one closest to the top of the viewport, matching the
-        // section the visitor is actually reading rather than one merely
-        // peeking into view at the bottom edge.
-        const top = visible.reduce((best, e) => (e.boundingClientRect.top < best.boundingClientRect.top ? e : best));
+        const top = visible.reduce((a, b) => (b.boundingClientRect.top < a.boundingClientRect.top ? b : a));
         setActiveAnchor('#' + top.target.id);
       },
-      { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+      { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
     );
-    sections.forEach((s) => observer.observe(s));
+    sections.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [pathname]);
 
-  // Close mobile nav on route change
+  // Close the phone menu on navigation; lock the page behind it while open.
   useEffect(() => {
+    // Navigation is the external event this reacts to.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => {
       document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
+    };
   }, [mobileOpen]);
 
-  /**
-   * Handle nav link clicks.
-   * If we're on the homepage ('/'), smooth-scroll to the anchor.
-   * If we're on a legal page ('/terms', '/privacy'), navigate to homepage with anchor.
-   */
-  const handleNavClick = useCallback((anchor: string) => {
-    setMobileOpen(false);
-    
-    if (pathname === '/') {
-      // Smooth scroll to section on current page
-      const el = document.querySelector(anchor);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const goToAnchor = useCallback(
+    (anchor: string) => {
+      setMobileOpen(false);
+      if (pathname === '/') {
+        document.querySelector(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        router.push('/' + anchor);
       }
-    } else {
-      // Navigate to homepage with anchor
-      router.push('/' + anchor);
-    }
-  }, [pathname, router]);
+    },
+    [pathname, router],
+  );
 
-  /**
-   * "Login" is the application-entry CTA, not a waitlist-conversion one — it
-   * goes to the install gateway, which hands a returning learner to
-   * /onboarding/0 (sign-in) and a new one to install-then-onboard.
-   *
-   * "Get Started" goes to the same place. It used to point at the /join
-   * waitlist, which was correct while Teyro was pre-launch; now that the
-   * homepage sells the live product, sending the header CTA to a waitlist
-   * form would contradict every button on the page.
-   */
-  const goToStart = useCallback(() => {
-    setMobileOpen(false);
-    router.push('/start');
-  }, [router]);
+  const renderLink = (link: NavLink, className: string, activeClass?: string) =>
+    link.href ? (
+      <Link key={link.label} href={link.href} className={className} onClick={() => setMobileOpen(false)}>
+        {link.label}
+      </Link>
+    ) : (
+      <button
+        key={link.label}
+        type="button"
+        className={`${className} ${activeClass && activeAnchor === link.anchor ? activeClass : ''}`}
+        onClick={() => goToAnchor(link.anchor!)}
+      >
+        {link.label}
+      </button>
+    );
 
   return (
     <>
-      <header
-        className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}
-      >
+      <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
-          {/* Logo */}
-          <Link href="/" className={styles.logoLink}>
-            <Image
-              src="/teyro-logo-blue.png"
-              alt="Teyro Logo"
-              width={220}
-              height={66}
-              priority
-              style={{
-                width: 'auto', aspectRatio: '220 / 66',
-                height: '56px',
-                objectFit: 'contain',
-              }}
-            />
+          <Link href="/" className={styles.logo} aria-label="Teyro home">
+            <TeyMark size={44} priority />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className={styles.desktopNav}>
-            {NAV_LINKS.map((link) =>
-              link.href ? (
-                <Link key={link.label} href={link.href} className={styles.navLink}>
-                  {link.label}
-                </Link>
-              ) : (
-                <button
-                  key={link.label}
-                  className={`${styles.navLink} ${activeAnchor === link.anchor ? styles.navLinkActive : ''}`}
-                  onClick={() => handleNavClick(link.anchor ?? '')}
-                  type="button"
-                >
-                  {link.label}
-                </button>
-              )
-            )}
+          <nav className={styles.nav} aria-label="Main">
+            {NAV_LINKS.map((l) => renderLink(l, styles.navLink, styles.navLinkActive))}
           </nav>
 
-          {/* Desktop Right: Login + Get Started */}
-          <div className={styles.rightSection}>
+          <div className={styles.actions}>
+            <Link href={LOGIN_HREF} className={styles.login}>
+              Log in
+            </Link>
+            <Link href={START_HREF} className={styles.start}>
+              Get started
+            </Link>
             <button
-              className={styles.loginBtn}
-              onClick={goToStart}
               type="button"
+              className={styles.menuBtn}
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={mobileOpen}
             >
-              Login
-            </button>
-            <button
-              className={styles.getStartedBtn}
-              onClick={goToStart}
-              type="button"
-            >
-              Get Started
-              <ChevronRight size={16} className={styles.btnIcon} />
+              <Menu size={26} strokeWidth={2.75} />
             </button>
           </div>
-
-          {/* Mobile Hamburger */}
-          <button
-            className={styles.hamburgerBtn}
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open navigation menu"
-            aria-expanded={mobileOpen}
-            type="button"
-          >
-            <Menu size={24} />
-          </button>
         </div>
       </header>
 
-      {/* ── Mobile Navigation Panel ── */}
       {mobileOpen && (
         <>
-          {/* Overlay */}
-          <div
-            className={styles.mobileOverlay}
-            onClick={() => setMobileOpen(false)}
-          />
-
-          {/* Panel */}
-          <div className={styles.mobilePanel}>
-            <div className={styles.mobileHeader}>
-              <Link href="/" className={styles.logoLink} onClick={() => setMobileOpen(false)}>
-                <Image
-                  src="/teyro-logo-blue.png"
-                  alt="Teyro Logo"
-                  width={200}
-                  height={60}
-                  style={{
-                    width: 'auto', aspectRatio: '200 / 60',
-                    height: '46px',
-                    objectFit: 'contain',
-                  }}
-                />
+          <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
+          <div className={styles.panel} role="dialog" aria-modal="true" aria-label="Menu">
+            <div className={styles.panelHead}>
+              <Link href="/" aria-label="Teyro home" onClick={() => setMobileOpen(false)}>
+                <TeyMark size={40} />
               </Link>
-              <button
-                className={styles.closeBtn}
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close navigation menu"
-                type="button"
-              >
-                <X size={24} />
+              <button type="button" className={styles.menuBtn} onClick={() => setMobileOpen(false)} aria-label="Close menu">
+                <X size={26} strokeWidth={2.75} />
               </button>
             </div>
-
-            <nav className={styles.mobileNavLinks}>
-              {NAV_LINKS.map((link) =>
-                link.href ? (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className={styles.mobileNavLink}
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={link.label}
-                    className={styles.mobileNavLink}
-                    onClick={() => handleNavClick(link.anchor ?? '')}
-                    type="button"
-                  >
-                    {link.label}
-                  </button>
-                )
-              )}
+            <nav className={styles.panelNav} aria-label="Main">
+              {NAV_LINKS.map((l) => renderLink(l, styles.panelLink))}
             </nav>
-
-            <div className={styles.mobileDivider} />
-
-            <div className={styles.mobileAuthButtons}>
-              <button
-                className={styles.mobileLoginBtn}
-                onClick={goToStart}
-                type="button"
-              >
-                Login
-              </button>
-              <button
-                className={styles.mobileGetStartedBtn}
-                onClick={goToStart}
-                type="button"
-              >
-                Get Started
-              <ChevronRight size={16} />
-              </button>
+            <div className={styles.panelActions}>
+              <Link href={START_HREF} className={styles.startBig}>
+                Get started
+              </Link>
+              <Link href={LOGIN_HREF} className={styles.loginBig}>
+                I already have an account
+              </Link>
             </div>
           </div>
         </>

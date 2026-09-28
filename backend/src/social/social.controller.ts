@@ -8,6 +8,14 @@ export class SocialController {
   constructor(private readonly socialService: SocialService) {}
 
   /**
+   * GET /social/users/:id — a learner's public profile card.
+   */
+  @Get("users/:id")
+  async getLearnerProfile(@Req() req: any, @Param("id") targetUserId: string) {
+    return this.socialService.getLearnerProfile(targetUserId, req.user.id as string);
+  }
+
+  /**
    * POST /social/follow/:id
    */
   @Post("follow/:id")

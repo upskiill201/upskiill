@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { ShopService } from '../shop/shop.service';
+import { StreakService } from '../streak/streak.service';
+import { DAILY_REWARD_SCHEDULE, dailyRewardFor } from './daily-reward';
 
 @Injectable()
 export class GamificationService {
@@ -11,6 +13,8 @@ export class GamificationService {
     private eventEmitter: EventEmitter2,
     // Perfect Lesson Protection is spent from the life-loss path.
     private shopService: ShopService,
+    // Streaks reconcile (and repair) in exactly one place.
+    private streakService: StreakService,
   ) {}
 
   /**
@@ -19,62 +23,15 @@ export class GamificationService {
    * Reconciles daily streak resets, multi-day freeze consumption, and daily login rewards.
    */
   async getMyStats(userId: string, timezoneOffsetMinutes = 0) {
-    let profile = await this.prisma.studentProfile.upsert({
-      where: { userId },
-      create: { userId },
-      update: {},
-    });
+    // 1. Streak: reconciled in exactly one place (StreakService), which spends
+    // freezes, records a break for the repair offer, and logs both.
+    const reconciled = await this.streakService.reconcile(userId, timezoneOffsetMinutes);
+    let profile = reconciled.profile;
+    const { streakStatus, lostStreakCount } = reconciled;
 
     const now = new Date();
     const todayStr = this.getLocalDayString(now, timezoneOffsetMinutes);
-    let updatedFields: any = {};
-
-    // 1. Timezone-aware Daily Streak Check and Multi-Day Freeze Consumption
-    let streakStatus: 'NORMAL' | 'SAVED' | 'RESET' = 'NORMAL';
-    let lostStreakCount = 0;
-
-    if (profile.lastStreakEarnedAt && profile.streakDays > 0) {
-      const lastActiveStr = this.getLocalDayString(profile.lastStreakEarnedAt, timezoneOffsetMinutes);
-      const diffDays = this.getDaysDiff(todayStr, lastActiveStr);
-
-      if (diffDays > 1) {
-        const missedDays = diffDays - 1;
-        const availableFreezes = profile.streakFreezeBank || 0;
-
-        if (availableFreezes >= missedDays) {
-          // Protected! Consume exact missed days of freezes
-          updatedFields.streakFreezeBank = availableFreezes - missedDays;
-          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-          updatedFields.lastStreakEarnedAt = yesterday;
-          streakStatus = 'SAVED';
-
-          // Idempotent audit log for freeze usage
-          const freezeKey = `freeze_consumed:${userId}_${todayStr}_${missedDays}`;
-          try {
-            await this.prisma.rewardTransaction.upsert({
-              where: { idempotencyKey: freezeKey },
-              update: {},
-              create: {
-                userId,
-                currency: 'FREEZE',
-                amount: -missedDays,
-                sourceType: 'STREAK',
-                sourceId: `streak_protected_${todayStr}`,
-                idempotencyKey: freezeKey,
-              },
-            });
-          } catch (e) {
-            // Ignore duplicate key race condition
-          }
-        } else {
-          // Freeze buffer exhausted! Wipe streak
-          lostStreakCount = profile.streakDays;
-          updatedFields.streakDays = 0;
-          updatedFields.streakFreezeBank = 0; // Exhausted
-          streakStatus = 'RESET';
-        }
-      }
-    }
+    const updatedFields: Record<string, unknown> = {};
 
     // 1b. Timezone-aware "welcome back" gap detection — independent of streak
     // reconciliation above, so it still fires when the learner never had a
@@ -109,17 +66,16 @@ export class GamificationService {
       updatedFields.livesLastLostAt = refilled.lives >= profile.maxLives ? null : profile.livesLastLostAt;
     }
 
-    // 4. Timezone-aware Daily Login Reward Missed-Day Verification (Freeze Protection)
+    // 4. Daily login reward cycle: a missed day restarts it — unless a streak
+    // freeze just covered that gap, in which case the cycle is protected too.
+    // (It used to spend a second, unlogged freeze for the same missed day.)
     if (profile.lastRewardClaimedAt) {
       const lastClaimStr = this.getLocalDayString(profile.lastRewardClaimedAt, timezoneOffsetMinutes);
       const diffClaims = this.getDaysDiff(todayStr, lastClaimStr);
 
       if (diffClaims > 1) {
-        const currentFreezes = updatedFields.streakFreezeBank ?? profile.streakFreezeBank;
-        if (currentFreezes > 0) {
-          updatedFields.streakFreezeBank = Math.max(0, currentFreezes - 1);
-          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-          updatedFields.lastRewardClaimedAt = yesterday;
+        if (streakStatus === 'SAVED') {
+          updatedFields.lastRewardClaimedAt = new Date(now.getTime() - 24 * 60 * 60 * 1000);
         } else {
           updatedFields.dailyRewardCyclePosition = 1;
         }
@@ -134,7 +90,15 @@ export class GamificationService {
       });
     }
 
-    return this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount, daysSinceLastLesson);
+    // A streak that just broke comes with its repair offer (price, window),
+    // so the "Streak lost" scene can quote the real number.
+    const streakRepair =
+      streakStatus === 'RESET' ? await this.streakService.getRepairOffer(userId, profile.streakDays) : null;
+
+    return {
+      ...this.buildResponse(profile, timezoneOffsetMinutes, streakStatus, lostStreakCount, daysSinceLastLesson),
+      streakRepair,
+    };
   }
 
   /**
@@ -273,32 +237,12 @@ export class GamificationService {
   }
 
   /**
-   * Repair a lost streak using 150 Coins or 100 XP.
+   * Repair a streak that just broke — coins only, once, within the offer
+   * window. See StreakService.repairStreak.
    */
   async repairStreak(userId: string, timezoneOffsetMinutes = 0) {
-    const profile = await this.prisma.studentProfile.upsert({
-      where: { userId },
-      create: { userId },
-      update: {},
-    });
-
-    if (profile.coins < 150 && profile.xp < 100) {
-      throw new BadRequestException('Insufficient balance to repair streak.');
-    }
-
-    const now = new Date();
-    const restoredCount = Math.max(1, profile.longestStreak || 1);
-
-    const updated = await this.prisma.studentProfile.update({
-      where: { userId },
-      data: {
-        ...(profile.coins >= 150 ? { coins: { decrement: 150 } } : { xp: { decrement: 100 } }),
-        streakDays: restoredCount,
-        lastStreakEarnedAt: now,
-      },
-    });
-
-    return this.buildResponse(updated, timezoneOffsetMinutes);
+    const { profile } = await this.streakService.repairStreak(userId, timezoneOffsetMinutes);
+    return this.buildResponse(profile, timezoneOffsetMinutes);
   }
 
   /**
@@ -365,13 +309,14 @@ export class GamificationService {
       }
     }
 
-    let currentPosition = profile.dailyRewardCyclePosition || 1;
-    const coinsReward = currentPosition === 7 ? 30 : 20;
-    const xpReward = currentPosition === 7 ? 50 : 10;
+    const currentPosition = Math.min(Math.max(1, profile.dailyRewardCyclePosition || 1), 7);
+    const { coins: coinsReward, xp: xpReward } = dailyRewardFor(currentPosition);
     const nextPosition = currentPosition === 7 ? 1 : currentPosition + 1;
 
-    const updated = await this.prisma.studentProfile.update({
-      where: { userId },
+    // Compare-and-set on the claim marker: two tabs (or a double tap) racing
+    // the same claim must pay once. The loser sees "already claimed".
+    const won = await this.prisma.studentProfile.updateMany({
+      where: { userId, lastRewardClaimedAt: profile.lastRewardClaimedAt, dailyRewardCyclePosition: profile.dailyRewardCyclePosition },
       data: {
         coins: { increment: coinsReward },
         xp: { increment: xpReward },
@@ -379,6 +324,10 @@ export class GamificationService {
         dailyRewardCyclePosition: nextPosition,
       },
     });
+    if (won.count === 0) {
+      throw new BadRequestException('Daily reward already claimed today.');
+    }
+    const updated = await this.prisma.studentProfile.findUniqueOrThrow({ where: { userId } });
 
     // Credit the weekly league standings (async, non-blocking).
     this.eventEmitter.emit('xp.awarded', new XpAwardedEvent(userId, xpReward, 'DAILY_REWARD'));
@@ -544,6 +493,7 @@ export class GamificationService {
       completedQuests: Array.isArray(profile.completedQuests) ? profile.completedQuests : [],
       lastRewardClaimedAt: profile.lastRewardClaimedAt ? profile.lastRewardClaimedAt.toISOString() : null,
       dailyRewardCyclePosition: profile.dailyRewardCyclePosition || 1,
+      dailyRewardSchedule: DAILY_REWARD_SCHEDULE,
       isEligibleForReward,
       nextRewardClaimInMs,
       userLevel: Math.floor(profile.xp / 100) + 1,

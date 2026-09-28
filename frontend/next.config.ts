@@ -101,6 +101,19 @@ const nextConfig: NextConfig = {
         destination: '/start',
         permanent: true,
       },
+      // The first /alternatives pages (retired 2026-09-28, sources kept in
+      // content/landing/_retired) → the registry pages that replaced them.
+      ...[
+        ['5-best-duolingo-alternatives-for-smarter', 'duolingo-alternatives'],
+        ['5-best-khan-academy-alternatives-for', 'khan-academy-alternatives'],
+        ['6-best-coursera-alternative-platforms-for', 'coursera-alternatives'],
+        ['6-skillshare-alternative-platforms-ranked-by', 'skillshare-alternatives'],
+        ['6-udemy-alternative-platforms-for-engaging', 'udemy-alternatives'],
+      ].map(([from, to]) => ({
+        source: `/alternatives/${from}`,
+        destination: `/alternatives/${to}`,
+        permanent: true,
+      })),
     ];
   },
 
@@ -122,6 +135,15 @@ const nextConfig: NextConfig = {
       // Anything that wasn't handled locally proxies through to NestJS,
       // e.g. legacy /api/social/* paths with no local route handler.
       fallback: [
+        {
+          // Community, feed, posts, comments and notifications used to go
+          // through pass-through route handlers (browser → Next function →
+          // NestJS): two hops and a serverless cold start on every tap. The
+          // rewrite proxies at the edge instead. Only /api/community needs
+          // its own rule — the backend calls it /communities.
+          source: '/api/community/:path*',
+          destination: `${backendUrl}/communities/:path*`,
+        },
         {
           // Proxy remaining /api/* calls to the NestJS backend.
           source: '/api/:path*',

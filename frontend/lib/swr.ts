@@ -66,18 +66,14 @@ export function clearSwrCache() {
 }
 
 export function localStorageCacheProvider(): Cache {
-  let map: Map<string, unknown>;
+  // Always starts EMPTY — on the client too — so the first client render
+  // matches the server's exactly. The persisted entries are seeded into it
+  // after hydration (see `readPersistedCache` + SWRProvider). Reading them
+  // here, synchronously, is what forced the provider to be swapped in after
+  // hydration, and that swap stranded every in-flight request.
+  const map = new Map<string, unknown>();
 
-  if (typeof window === 'undefined') {
-    map = new Map();
-  } else {
-    try {
-      const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
-      map = raw ? new Map(JSON.parse(raw)) : new Map();
-    } catch {
-      map = new Map();
-    }
-
+  if (typeof window !== 'undefined') {
     let scheduled = false;
     const persist = () => {
       scheduled = false;
@@ -103,6 +99,20 @@ export function localStorageCacheProvider(): Cache {
 
   activeCacheMap = map;
   return map as unknown as Cache;
+}
+
+/**
+ * The cache entries persisted by a previous visit — SWR state objects keyed
+ * by request key. Empty on the server, in privacy mode, or on bad JSON.
+ */
+export function readPersistedCache(): [string, { data?: unknown } | undefined][] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
 
 /**

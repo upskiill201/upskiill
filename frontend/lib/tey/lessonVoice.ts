@@ -102,17 +102,20 @@ export function pickComboLine(combo: number): string {
  * A broken run gets its own pool so losing a streak isn't silently the same
  * as a first-try miss.
  */
+// The right answer is shown after a miss and the question comes back at
+// the end (lib/lesson/quizQueue.ts) — so these point at "remember it", not
+// at "try again right now".
 const WRONG_FIRST = [
-  "Not it — but you're circling the right idea. Go again.",
-  "Nope. Read it once more, you'll see it.",
-  "Close. Try the other one.",
+  "Not that one — but now you've seen the answer. It's coming back.",
+  'Nope. Remember the green one, I\'ll ask again.',
+  'Close. Hold on to the right answer — you\'ll get another go.',
 ];
 
 function wrongAfterStreak(brokenStreak: number): string[] {
   return [
     `And there goes the ${brokenStreak}-run. Shake it off.`,
-    `${brokenStreak} in a row, then that. Happens. Go again.`,
-    `Streak's broken at ${brokenStreak}. Doesn't erase it — go again.`,
+    `${brokenStreak} in a row, then that. Happens — it'll come back round.`,
+    `Streak's broken at ${brokenStreak}. Doesn't erase it. Remember that one.`,
   ];
 }
 
@@ -274,4 +277,189 @@ const READY_TO_UNLOCK = [
 /** Fires when the reveal-peak node is sequence-reached but still paywalled. */
 export function pickLessonReadyToUnlockLine(): string {
   return pickFromPool(READY_TO_UNLOCK, 'lesson:node-unlock:paywalled');
+}
+
+// ─── After the lesson ───────────────────────────────────────────────────────
+
+const COMPLETE_PERFECT = [
+  'Not one slip. That was clean.',
+  'Every answer, first try. I noticed.',
+  'Flawless. Do that again tomorrow.',
+];
+
+const COMPLETE_FAST = [
+  'Quick and correct. My favourite combination.',
+  "That was fast. You're getting good at this.",
+  'In and out. Efficient. I like it.',
+];
+
+const COMPLETE_STANDARD = [
+  "Another one done. That's how it builds.",
+  "Lesson in the bank. You're further than yesterday.",
+  'Done. Small steps, real progress.',
+  "That's the work. It adds up — trust me.",
+];
+
+const COMPLETE_REVIEW = [
+  "Practice pays. It sticks better the second time.",
+  'Round two, done. That one is yours now.',
+  'Revisited and reinforced. Good call.',
+];
+
+/** Tey's line under "Lesson complete!" — built from how the lesson went. */
+export function pickLessonCompleteLine(opts: { perfect: boolean; fast: boolean; isReview: boolean }): string {
+  if (opts.isReview) return pickFromPool(COMPLETE_REVIEW, 'lesson:complete:review');
+  if (opts.perfect) return pickFromPool(COMPLETE_PERFECT, 'lesson:complete:perfect');
+  if (opts.fast) return pickFromPool(COMPLETE_FAST, 'lesson:complete:fast');
+  return pickFromPool(COMPLETE_STANDARD, 'lesson:complete');
+}
+
+function streakLines(days: number): string[] {
+  if (days <= 1) {
+    return [
+      'Day one. Every streak starts exactly here.',
+      'A streak is born. Come back tomorrow and it grows.',
+      "One day down. Tomorrow's the one that counts.",
+    ];
+  }
+  return [
+    `${days} days in a row. Don't let it go cold.`,
+    `${days} days straight. Same time tomorrow?`,
+    `That's ${days}. You're building a habit, not just a streak.`,
+  ];
+}
+
+/** Under the streak number, on the day's first lesson. */
+export function pickStreakLine(days: number): string {
+  return pickFromPool(streakLines(days), days <= 1 ? 'lesson:streak:first' : 'lesson:streak');
+}
+
+const UNIT_DONE = [
+  "A whole unit. That's real ground covered.",
+  'Unit cleared. The next one just opened for you.',
+  "That's a unit in the bank. On to the next.",
+];
+
+const COURSE_DONE = [
+  'The whole course. From the first lesson to the last. Look at you.',
+  "Every unit, every lesson. You finished what you started.",
+  "Course complete. Most people never get here. You did.",
+];
+
+/** Under "Unit complete!" / "Course complete!". */
+export function pickUnitCompleteLine(courseComplete: boolean): string {
+  return courseComplete
+    ? pickFromPool(COURSE_DONE, 'lesson:course-complete')
+    : pickFromPool(UNIT_DONE, 'lesson:unit-complete');
+}
+
+// ─── Reflect ────────────────────────────────────────────────────────────────
+
+export type Confidence = 'solid' | 'mostly' | 'fuzzy' | 'lost';
+
+const AFTER_CONFIDENCE: Record<Confidence, string[]> = {
+  solid: [
+    "Love that. Say it in your own words — that's how it sticks.",
+    'Confident. Good. One line in your words locks it in.',
+    "Then this'll be easy: tell me how you'd use it.",
+  ],
+  mostly: [
+    'Mostly is a great place to be. Writing it down fills the gaps.',
+    "Nearly there. Put the clear part into words and the rest follows.",
+    'Mostly counts. One line and it gets sharper.',
+  ],
+  fuzzy: [
+    "Fuzzy is normal the first time. Write the part that's clearest.",
+    "That's honest. Start with the one bit that made sense.",
+    'Happens to everyone. One line on what you did get.',
+  ],
+  lost: [
+    "That's okay. Say what tripped you up — naming it is half the fix.",
+    "Thanks for being straight with me. What's the confusing bit?",
+    "No shame in that. Write the question you'd ask the instructor.",
+  ],
+};
+
+/** Tey's answer to "how did that land?", over the writing box. */
+export function pickReflectLine(confidence: Confidence): string {
+  return pickFromPool(AFTER_CONFIDENCE[confidence], `lesson:reflect:${confidence}`);
+}
+
+const FIX_MISTAKES = [
+  "Right — let's go back to the ones that got away.",
+  "Second chances. You've seen the answers now.",
+  "Mistakes are just questions you haven't finished. Let's finish them.",
+];
+
+export function pickFixMistakesLine(): string {
+  return pickFromPool(FIX_MISTAKES, 'lesson:fix-mistakes');
+}
+
+// ─── Finish moments (lib/lesson/moments.ts) ─────────────────────────────────
+
+function momentLines(
+  id: string,
+  ctx: { daysAway: number; today: number; run: number; streak: number },
+): string[] | null {
+  switch (id) {
+    case 'comeback':
+      return [
+        `${ctx.daysAway} days away and straight back into it. That's the hard part done.`,
+        "Missed you. And look — you didn't miss a beat.",
+        'Back in the saddle. Let\'s not make it that long again.',
+      ];
+    case 'onFire':
+      return [
+        `${ctx.run} in a row. I had to check that twice.`,
+        `A ${ctx.run}-answer run. You were in the zone.`,
+        `${ctx.run} straight. Nobody stopped you.`,
+      ];
+    case 'dayRoll':
+      return [
+        `That's ${ctx.today} today. Your future self is grateful.`,
+        `${ctx.today} lessons in one day. That's how skills get built.`,
+        `Lesson ${ctx.today} of the day. You're on a proper roll.`,
+      ];
+    case 'firstOfDay':
+      return [
+        "Today's lesson: done. Everything else is a bonus.",
+        'First one of the day. The streak is safe.',
+        "That's today sorted. Want another while you're warm?",
+      ];
+    default:
+      return null;
+  }
+}
+
+/**
+ * Tey's line for the headline moment. Moments with their own words use them;
+ * the rest fall back to how the lesson went (pickLessonCompleteLine).
+ */
+export function pickMomentLine(
+  id: string,
+  ctx: { daysAway: number; today: number; run: number; streak: number; perfect: boolean; fast: boolean; isReview: boolean },
+): string {
+  const lines = momentLines(id, ctx);
+  if (lines) return pickFromPool(lines, `lesson:moment:${id}`);
+  return pickLessonCompleteLine(ctx);
+}
+
+function streakMilestoneLines(days: number, personalBest: boolean): string[] {
+  if (personalBest) {
+    return [
+      `${days} days. That's your longest streak ever.`,
+      `New personal best: ${days} days. Keep it going.`,
+      `You've never had a streak this long. ${days} days!`,
+    ];
+  }
+  return [
+    `${days} days. That's not luck — that's a habit.`,
+    `${days} days in a row. Look how far you've come.`,
+    `${days} days. I'm genuinely impressed.`,
+  ];
+}
+
+/** Under the streak number on a milestone day or a new personal best. */
+export function pickStreakMilestoneLine(days: number, personalBest: boolean): string {
+  return pickFromPool(streakMilestoneLines(days, personalBest), personalBest ? 'lesson:streak:best' : 'lesson:streak:milestone');
 }

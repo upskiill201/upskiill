@@ -189,19 +189,26 @@ describe('CouponsService', () => {
     });
 
     it('rejects when a raised max-discount-% would push a cheap plan below the minimum charge', async () => {
-      // With the default 80% cap, the pricing floors (min $0.99/$2.99/$9.99)
+      // With the default 80% cap, the pricing floors (min $2.99/$9.99)
       // can never actually dip below the $0.50 minimum — this only becomes
       // reachable if an admin raises the platform cap higher.
       mockPrisma.platformSettings.findUnique.mockResolvedValue({
         ...DEFAULT_SETTINGS,
         maxDiscountPercent: 99,
       });
-      mockPrisma.course.findUnique.mockResolvedValue({ price: 5 }); // → cheap weekly floor
+      mockPrisma.course.findUnique.mockResolvedValue({ price: 5 }); // → $2.99 monthly floor
       mockPrisma.coupon.findUnique.mockResolvedValue(
-        activeCoupon({ discountType: 'FIXED_AMOUNT', discountValue: 100000, eligiblePlans: [{ plan: 'WEEKLY' }] }),
+        activeCoupon({ discountType: 'FIXED_AMOUNT', discountValue: 100000, eligiblePlans: [{ plan: 'MONTHLY' }] }),
       );
-      const result = await service.quote({ courseId: 'course-1', plan: 'WEEKLY', code: 'SAVE20' });
+      const result = await service.quote({ courseId: 'course-1', plan: 'MONTHLY', code: 'SAVE20' });
       expect(result).toEqual({ valid: false, reason: 'BELOW_MINIMUM_CHARGE' });
+    });
+
+    it('rejects the retired WEEKLY plan even if an old coupon still lists it', async () => {
+      mockPrisma.course.findUnique.mockResolvedValue({ price: 30 });
+      mockPrisma.coupon.findUnique.mockResolvedValue(activeCoupon({ eligiblePlans: [{ plan: 'WEEKLY' }] }));
+      const result = await service.quote({ courseId: 'course-1', plan: 'WEEKLY', code: 'SAVE20' });
+      expect(result).toEqual({ valid: false, reason: 'PLAN_NOT_ELIGIBLE' });
     });
 
     it('is exempt from the maxDiscountPercent clamp at exactly 100% (fully free)', async () => {

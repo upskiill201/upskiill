@@ -1,6 +1,8 @@
 import type { TeyReason } from '../../contracts/tey-context.types';
 import { CourseNearCompletionRule } from './course-near-completion.rule';
 import { DailyGoalIncompleteRule } from './daily-goal-incomplete.rule';
+import { FirstLessonRule } from './first-lesson.rule';
+import { StreakRepairExpiringRule } from './streak-repair-expiring.rule';
 import { InactiveReturnRule } from './inactive-return.rule';
 import { LessonAbandonedRule } from './lesson-abandoned.rule';
 import { MilestoneRule } from './milestone.rule';
@@ -23,13 +25,15 @@ import type { TeyRule } from './rule.types';
  */
 export const TEY_RULES: readonly TeyRule[] = [
   StreakCriticalRule,
+  StreakRepairExpiringRule,
   StreakAtRiskRule,
   MilestoneRule,
   CourseNearCompletionRule,
+  StreakLostRule,
+  FirstLessonRule,
   DailyGoalIncompleteRule,
   ProgressCelebrationRule,
   InactiveReturnRule,
-  StreakLostRule,
   LessonAbandonedRule,
 ];
 

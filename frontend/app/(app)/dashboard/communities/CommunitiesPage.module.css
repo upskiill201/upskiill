@@ -1,106 +1,126 @@
-/* My Communities index — Duolingo skin */
+/* My communities — Skool's group grid, Duolingo's chunky cards. Tokens only. */
 
 .page {
+  max-width: 1040px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 860px;
-  margin: 0 auto;
-  width: 100%;
+  gap: 24px;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
 }
 
 .title {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--text-primary);
-  margin: 4px 0 0;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-ink);
 }
+
 .sub {
-  font-size: 14px;
-  font-weight: 600;
+  margin: 4px 0 0;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .card {
-  position: relative;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 16px 16px;
+  flex-direction: column;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 20px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  text-decoration: none;
   overflow: hidden;
-}
-.cardCover {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 6px;
-  background: var(--gradient-brand);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.12s ease, border-color 0.15s ease;
 }
 
-.thumb {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--border);
-  flex-shrink: 0;
+.card:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 30%, var(--border));
 }
-.thumbFallback {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--gradient-brand);
-  color: var(--text-on-blue);
-  font-weight: 900;
-  font-size: 24px;
+
+.card:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.cover {
+  position: relative;
+  height: 120px;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
 }
 
-.cardBody { min-width: 0; flex: 1; }
-.kicker {
-  font-size: 10.5px;
-  font-weight: 900;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--brand-blue);
+.coverImg {
+  object-fit: cover;
 }
-.cardTitle {
-  font-size: 16.5px;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.name {
+  margin: 0;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--text-primary);
-  margin: 2px 0 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--color-ink);
 }
-.cardMeta {
+
+.meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  font-size: 12.5px;
+  margin: 0;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
-.cardChevron { color: var(--text-muted); flex-shrink: 0; }
-
-/* Skeleton card mirroring the real card shape */
-.skeletonCard {
-  display: flex;
+.meta span {
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 16px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  gap: 4px;
+}
+
+.teach {
+  color: var(--color-brand);
+}
+
+.open {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.skeleton {
+  height: 240px;
+  background: var(--bg-section);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
 }

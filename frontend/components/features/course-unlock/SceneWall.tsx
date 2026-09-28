@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Lock } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './unlock.module.css';
 
 interface SceneWallProps {
@@ -30,7 +31,8 @@ export default function SceneWall({
   const remaining = Math.max(0, totalCount - completedCount);
 
   const handleSeePlans = () => {
-    playHaptic('medium');
+    playHaptic('medium', false);
+    playSound('next');
     onSeePlans();
   };
 

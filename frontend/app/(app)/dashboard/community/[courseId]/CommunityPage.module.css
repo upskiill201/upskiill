@@ -1,419 +1,769 @@
-/* Course community — Skool layout.
- *
- * Two columns: a scrolling post column and a sticky right rail carrying the
- * About card and the leaderboard. Below 1024px the rail becomes a drawer that
- * slides in from the right (same pattern as the dashboard sidebar: fixed
- * panel + scrim + Escape/scrim to close), because on a phone the rail's
- * content is reference material, not something to scroll past to reach posts.
- */
+/* A course community — Skool's group layout with Duolingo's chunky feel.
+   Tokens only (docs/08-color-system.md). */
 
 .page {
-  max-width: 1140px;
+  --cm-ink: var(--color-ink);
+  --cm-body: var(--text-primary);
+  --cm-soft: var(--text-secondary);
+  --cm-muted: var(--text-muted);
+  --cm-line: var(--border);
+  --cm-well: var(--bg-section);
+  --cm-card: var(--bg-card);
+  --cm-on: var(--bg-page);
+  --cm-blue: var(--color-brand);
+  --cm-blue-deep: var(--color-brand-deep);
+  --cm-blue-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --cm-blue-line: color-mix(in srgb, var(--color-brand) 42%, var(--bg-page));
+
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--cm-body);
 }
 
-/* ── Top bar: identity + tabs ────────────────────────────────────────────── */
-
-.topBar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 18px 0 14px;
-}
-.identity {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-width: 0;
-  flex: 1;
-  color: inherit;
-  text-decoration: none;
-}
-.identityThumb {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--bg-section);
-}
-.identityText {
-  min-width: 0;
-}
-.communityName {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--text-primary);
-  line-height: 1.2;
+/* ─── Group header ─────────────────────────────────────────────────────── */
+.hero {
+  border: 2px solid var(--cm-line);
+  border-bottom-width: 4px;
+  border-radius: 24px;
+  background: var(--cm-card);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.communityKicker {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
 }
 
-/* Rail trigger — only exists below the two-column breakpoint. */
-.railTrigger {
-  display: none;
+.heroSkeleton {
+  height: 248px;
+  background: var(--cm-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+.cover {
+  position: relative;
+  height: 176px;
+  background: var(--cm-blue-tint);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* No course image: Teyro blue with the post types floating on it. */
+.coverDrawn {
+  background: var(--cm-blue);
+}
+
+.coverTile {
+  position: absolute;
+  display: block;
+  opacity: 0.9;
+  filter: drop-shadow(0 6px 0 color-mix(in srgb, var(--cm-ink) 18%, transparent));
+  animation: tileBob 5s ease-in-out infinite;
+}
+
+.coverTile:nth-child(2n) {
+  animation-delay: -2.5s;
+}
+
+.coverTile:nth-child(3n) {
+  animation-duration: 6.5s;
+}
+
+@keyframes tileBob {
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+.coverImg {
+  object-fit: cover;
+}
+
+.coverArt {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 8px 0 color-mix(in srgb, var(--cm-ink) 22%, transparent));
+}
+
+.heroBody {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 0 24px 24px;
+}
+
+.heroActions {
+  margin-top: 16px;
+}
+
+.groupMark {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: 104px;
+  height: 104px;
+  margin-top: -52px;
+  border-radius: 22px;
+  border: 4px solid var(--cm-card);
+  background: var(--cm-blue);
+  overflow: hidden;
+  box-shadow: 0 4px 0 var(--cm-blue-deep);
+}
+
+.groupMarkImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.groupMarkLetter {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--cm-on);
+}
+
+.heroText {
+  flex: 1;
+  min-width: 0;
+  padding-top: 12px;
+}
+
+.heroDesc {
+  margin: 6px 0 0;
+  max-width: 60ch;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--cm-soft);
+}
+
+.heroMeta b {
+  font-weight: 800;
+  color: var(--cm-ink);
+}
+
+.heroHost {
+  gap: 6px !important;
+}
+
+.heroFoot {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 14px;
-  border: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 12px;
+}
+
+/* Your level in this community — Skool's number, Duolingo's chip. */
+.levelChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 4px 14px 4px 4px;
+  border: 2px solid var(--cm-line);
+  border-bottom-width: 4px;
   border-radius: 999px;
-  background: var(--bg-card);
+  background: var(--cm-card);
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.levelChip:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.levelChipNum {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cm-blue);
+  color: var(--cm-on);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.levelChipText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 96px;
+  text-align: left;
+}
+
+.levelChipName {
   font-size: 13px;
   font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: border-color 120ms ease;
+  color: var(--cm-ink);
 }
-.railTrigger:hover {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-/* ── Tabs ────────────────────────────────────────────────────────────────── */
 
+.levelChipTrack {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cm-well);
+  overflow: hidden;
+}
+
+.levelChipFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--warning);
+}
+
+.communityName {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--cm-ink);
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cm-muted);
+}
+
+.heroMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.heroFaces {
+  display: flex;
+  align-items: center;
+}
+
+.heroFaces > * {
+  margin-left: -6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--cm-card);
+}
+
+.heroFaces > *:first-child {
+  margin-left: 0;
+}
+
+.heroFacesMore {
+  margin-left: 8px !important;
+  box-shadow: none !important;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cm-soft);
+}
+
+.heroActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.inviteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  background: var(--cm-blue);
+  box-shadow: 0 4px 0 var(--cm-blue-deep);
+  color: var(--cm-on);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.inviteBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.infoBtn {
+  display: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 2px solid var(--cm-line);
+  border-bottom-width: 4px;
+  background: var(--cm-card);
+  color: var(--cm-soft);
+  place-items: center;
+  cursor: pointer;
+}
+
+/* ─── Tabs ─────────────────────────────────────────────────────────────── */
 .tabs {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
-  margin-bottom: 22px;
+  padding: 4px 0;
 }
+
 .tabs::-webkit-scrollbar {
   display: none;
 }
+
 .tabBtn {
-  position: relative;
   flex-shrink: 0;
-  padding: 12px 16px;
-  border: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid transparent;
+  border-radius: 14px;
   background: transparent;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
+  color: var(--cm-soft);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
   text-decoration: none;
-  transition: color 130ms ease;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
+
 .tabBtn:hover {
-  color: var(--text-primary);
-}
-.tabActive {
-  color: var(--text-primary);
-}
-.tabActive::after {
-  content: '';
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -1px;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: var(--text-primary);
+  background: var(--cm-well);
 }
 
-/* ── Two-column body ─────────────────────────────────────────────────────── */
+.tabActive,
+.tabActive:hover {
+  background: var(--cm-blue-tint);
+  border-color: var(--cm-blue-line);
+  color: var(--cm-blue);
+}
 
+/* ─── Layout ───────────────────────────────────────────────────────────── */
 .layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 328px;
-  gap: 24px;
-  align-items: start;
-}
-.mainCol {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 0;
+  gap: 24px;
+  align-items: flex-start;
 }
-.railCol {
-  position: sticky;
-  top: 18px;
+
+.mainCol {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* ── Filters ─────────────────────────────────────────────────────────────── */
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.chipRow {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 2px 0;
-  flex: 1;
-  min-width: 0;
-}
-.chipRow::-webkit-scrollbar {
-  display: none;
-}
-.filterChip {
+.railCol {
+  width: 320px;
   flex-shrink: 0;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-card);
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 130ms ease, color 130ms ease, border-color 130ms ease;
-}
-.filterChip:hover {
-  border-color: var(--border-strong);
-}
-.filterChipActive {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
-  color: var(--text-on-blue);
-}
-.sortSelect {
-  flex-shrink: 0;
-  padding: 9px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-card);
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* Filter switches dim the list in place instead of blanking it to skeletons —
-   a full skeleton flash on every chip tap reads as "slow" even when it is not. */
-.listDim {
-  opacity: 0.5;
-  transition: opacity 120ms ease;
-  pointer-events: none;
-}
-
+/* ─── Feed controls ────────────────────────────────────────────────────── */
 .lessonFilter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding: 11px 15px;
-  border: 1px solid var(--border-indigo);
-  border-radius: 14px;
-  background: var(--light-blue-bg);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-primary);
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--cm-blue-tint);
+  border: 2px solid var(--cm-blue-line);
 }
+
+.lessonFilterText {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--cm-blue);
+}
+
 .clearFilterBtn {
   font-size: 13px;
-  font-weight: 700;
-  color: var(--brand-blue);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cm-blue);
   text-decoration: none;
 }
-.clearFilterBtn:hover {
-  text-decoration: underline;
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chipRow {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 6px;
+}
+
+.chipRow::-webkit-scrollbar {
+  display: none;
+}
+
+.filterChip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 2px solid var(--cm-line);
+  border-bottom-width: 3px;
+  border-radius: 12px;
+  background: var(--cm-card);
+  color: var(--cm-soft);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.15s ease;
+}
+
+.filterChip:hover {
+  background: var(--cm-well);
+}
+
+.filterChip:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+.filterChipActive,
+.filterChipActive:hover {
+  background: var(--cm-ink);
+  border-color: var(--cm-ink);
+  color: var(--cm-on);
+}
+
+.sortSelect {
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 2px solid var(--cm-line);
+  border-radius: 12px;
+  background: var(--cm-card);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--cm-ink);
+  cursor: pointer;
 }
 
 .postList {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  transition: opacity 0.15s ease;
 }
+
+.listDim {
+  opacity: 0.5;
+}
+
 .loadMoreBtn {
   align-self: center;
-  margin-top: 6px;
-  padding: 11px 26px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-card);
+  min-height: 48px;
+  padding: 0 24px;
+  border: 2px solid var(--cm-line);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--cm-card);
+  color: var(--cm-blue);
+  font: inherit;
   font-size: 14px;
   font-weight: 800;
-  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 120ms ease;
 }
-.loadMoreBtn:hover:not(:disabled) {
-  border-color: var(--brand-blue);
-  color: var(--brand-blue);
+
+.loadMoreBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
+
 .loadMoreBtn:disabled {
   opacity: 0.6;
-  cursor: default;
+  cursor: wait;
 }
 
-/* ── Members tab ─────────────────────────────────────────────────────────── */
-
+/* ─── Members tab ──────────────────────────────────────────────────────── */
 .membersPanel {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
 }
+
 .memberCard {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--bg-card);
-}
-.memberInfo {
+  padding: 12px 16px;
+  border: 2px solid var(--cm-line);
+  border-radius: 16px;
+  background: var(--cm-card);
   min-width: 0;
-  flex: 1;
 }
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+}
+
 .memberName {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--cm-ink);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
+
+.creatorTag {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--cm-blue);
+  color: var(--cm-on);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .memberMeta {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
-  color: var(--text-muted);
+  gap: 10px;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cm-muted);
 }
-.creatorTag {
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--light-blue-bg);
-  color: var(--brand-blue);
-  font-size: 10.5px;
+
+.memberStreak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+}
+
+.followBtn,
+.followingBtn {
+  flex-shrink: 0;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
-/* ── Mobile rail drawer ──────────────────────────────────────────────────── */
+.followBtn {
+  border: none;
+  background: var(--cm-blue);
+  box-shadow: 0 3px 0 var(--cm-blue-deep);
+  color: var(--cm-on);
+}
 
+.followBtn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.followingBtn {
+  border: 2px solid var(--cm-line);
+  background: var(--cm-card);
+  color: var(--cm-soft);
+}
+
+/* ─── Mobile drawer ────────────────────────────────────────────────────── */
 .scrim {
   position: fixed;
   inset: 0;
-  z-index: 1200;
-  background: rgba(15, 23, 42, 0.45);
-  border: 0;
-  padding: 0;
+  z-index: 1100;
+  border: none;
+  background: color-mix(in srgb, var(--cm-ink) 40%, transparent);
 }
+
 .drawer {
   position: fixed;
-  top: 0;
+  left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1201;
-  width: min(360px, 88vw);
-  padding: 16px 16px 48px;
+  z-index: 1101;
+  max-height: 85vh;
   overflow-y: auto;
-  overscroll-behavior: contain;
-  background: var(--bg-section);
-  box-shadow: -12px 0 32px rgba(15, 23, 42, 0.18);
+  border-radius: 24px 24px 0 0;
+  background: var(--cm-well);
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
 .drawerHead {
+  position: sticky;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  padding: 16px;
+  background: var(--cm-well);
+  z-index: 1;
 }
+
 .drawerTitle {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--cm-ink);
 }
+
 .drawerClose {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: var(--cm-card);
+  color: var(--cm-soft);
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
   cursor: pointer;
 }
+
 .drawerRail {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  padding: 0 16px 24px;
 }
 
-/* ── Breakpoints ─────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 96px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(90vw, 420px);
+  z-index: 9000;
+  padding: 12px 24px;
+  border-radius: 16px;
+  background: var(--cm-ink);
+  color: var(--cm-on);
+  font-size: 15px;
+  font-weight: 700;
+}
 
-@media (max-width: 1023px) {
-  .layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
+/* ─── Narrower ─────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
   .railCol {
     display: none;
   }
-  .railTrigger {
-    display: inline-flex;
+  .infoBtn {
+    display: grid;
   }
 }
 
 @media (max-width: 640px) {
-  .page {
-    padding: 0 12px 72px;
+  .hero {
+    border-radius: 20px;
   }
-  .topBar {
-    padding: 14px 0 12px;
+  .cover {
+    height: 120px;
   }
-  .communityName {
-    font-size: 17px;
-  }
-  .identityThumb {
-    width: 36px;
-    height: 36px;
-  }
-  .railTrigger {
-    padding: 8px 11px;
-  }
-  /* The trigger keeps only its icon — the label would push the name to an
-     ellipsis on a 360px screen. */
-  .railTriggerLabel {
+  .coverTile:nth-child(odd) {
     display: none;
   }
+  .coverArt {
+    width: 88px;
+    height: 88px;
+  }
+  .heroBody {
+    flex-wrap: wrap;
+    padding: 0 16px 16px;
+    gap: 12px;
+  }
+  .groupMark {
+    width: 72px;
+    height: 72px;
+    margin-top: -36px;
+    border-radius: 18px;
+  }
+  .heroText {
+    flex-basis: 100%;
+    order: 2;
+    padding-top: 0;
+  }
+  .heroActions {
+    order: 1;
+    margin-left: auto;
+    align-self: flex-start;
+    margin-top: 12px;
+  }
+  .communityName {
+    font-size: 24px;
+  }
+  .heroActions {
+    margin-top: 12px;
+  }
+  .inviteBtn {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+  .infoBtn {
+    width: 44px;
+    height: 44px;
+  }
   .tabBtn {
-    padding: 11px 13px;
+    padding: 0 12px;
     font-size: 14px;
   }
-  .membersPanel {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* The sort control was eating nearly half the row and crushing the category
-     chips into a stub. Chips take the full width and scroll; sort drops onto
-     its own line beneath them. */
   .controls {
     flex-wrap: wrap;
-    gap: 8px;
-  }
-  .chipRow {
-    flex: 1 0 100%;
   }
   .sortSelect {
     margin-left: auto;
-    /* 16px inputs — anything smaller makes iOS Safari zoom on focus. */
-    font-size: 16px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .listDim {
-    transition: none;
-  }
+  .heroSkeleton { animation: none; }
+  .coverTile { animation: none; }
 }

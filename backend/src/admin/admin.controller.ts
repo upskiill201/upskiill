@@ -36,6 +36,7 @@ import {
   AdminCouponsService,
   type ListCouponsQuery,
 } from './admin-coupons.service';
+import { AdminInsightsService, toRange } from './admin-insights.service';
 
 interface AuthedUser {
   id: string;
@@ -65,11 +66,49 @@ export class AdminController {
     private readonly adminPayments: AdminPaymentsService,
     private readonly adminPayouts: AdminPayoutsService,
     private readonly adminCoupons: AdminCouponsService,
+    private readonly insights: AdminInsightsService,
   ) {}
 
   @Get('summary')
   summary() {
     return this.admin.summary();
+  }
+
+  // ── Teyro HQ insights ────────────────────────────────────────────────
+
+  @Get('insights/badges')
+  insightBadges() {
+    return this.insights.badges();
+  }
+
+  @Get('insights/overview')
+  insightOverview(@Query('range') range?: string) {
+    return this.insights.overview(toRange(range));
+  }
+
+  @Get('insights/learning')
+  insightLearning(@Query('range') range?: string) {
+    return this.insights.learning(toRange(range));
+  }
+
+  @Get('insights/creators')
+  insightCreators(@Query('range') range?: string) {
+    return this.insights.creators(toRange(range));
+  }
+
+  @Get('insights/subscribers')
+  insightSubscribers(
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('range') range?: string,
+  ) {
+    return this.insights.subscribers({
+      status,
+      search: search?.slice(0, 120),
+      page: page ? Math.max(1, parseInt(page, 10) || 1) : 1,
+      range: toRange(range),
+    });
   }
 
   // ── Users ────────────────────────────────────────────────────────────

@@ -5,6 +5,16 @@ import { createHash, randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 import { normalisePhone, maskPhone } from '../whatsapp/phone.util';
+import {
+  COMMITMENT_TO_DAILY_GOAL_XP,
+  PREFERRED_TIME_TO_HOUR,
+  answersAreComplete,
+  readChallengeClaim,
+  readLegacyWhatsapp,
+  type DailyCommitment,
+  type OnboardingAnswersV2,
+  type PreferredTime,
+} from './onboarding-answers';
 
 /** One-time reward paid by the onboarding Step 9 shape challenge. */
 export const ONBOARDING_CHALLENGE_XP = 25;
@@ -46,6 +56,24 @@ export class UserOnboardingService {
   ) {
     const now = new Date();
 
+    // A client-sent `onboardingComplete` is a CLAIM, not a fact. Honour it
+    // only when the answers actually satisfy every required question —
+    // otherwise a crafted request could mark onboarding done with an empty
+    // profile and walk straight into the app.
+    const claimsComplete = payload.onboardingComplete === true;
+    const complete =
+      payload.onboardingComplete === undefined
+        ? undefined
+        : claimsComplete && answersAreComplete(payload.answers as OnboardingAnswersV2);
+    const completedAt =
+      complete === undefined ? payload.completedAt : complete ? now : null;
+
+    if (claimsComplete && complete === false) {
+      this.logger.warn(
+        `Refused onboardingComplete for user ${userId}: required answers missing`,
+      );
+    }
+
     const session = await this.prisma.onboardingSession.upsert({
       where: { userId },
       create: {
@@ -53,8 +81,8 @@ export class UserOnboardingService {
         currentStep: payload.currentStep ?? 1,
         completedSteps: payload.completedSteps ?? [],
         answers: payload.answers ?? {},
-        onboardingComplete: payload.onboardingComplete ?? false,
-        completedAt: payload.completedAt ?? null,
+        onboardingComplete: complete ?? false,
+        completedAt: completedAt ?? null,
       },
       update: {
         ...(payload.currentStep !== undefined && {
@@ -64,12 +92,8 @@ export class UserOnboardingService {
           completedSteps: payload.completedSteps,
         }),
         ...(payload.answers !== undefined && { answers: payload.answers }),
-        ...(payload.onboardingComplete !== undefined && {
-          onboardingComplete: payload.onboardingComplete,
-        }),
-        ...(payload.completedAt !== undefined && {
-          completedAt: payload.completedAt,
-        }),
+        ...(complete !== undefined && { onboardingComplete: complete }),
+        ...(completedAt !== undefined && { completedAt }),
         updatedAt: now,
       },
     });
@@ -93,6 +117,79 @@ export class UserOnboardingService {
     if (!answers) return;
     await this.reconcileWhatsappVerification(userId, answers);
     await this.settlePendingChallengeReward(userId, answers);
+    await this.applyLearningPreferences(userId, answers);
+  }
+
+  /**
+   * Land the onboarding answers the rest of the app actually runs on.
+   *
+   * Before this existed the daily-goal answer was write-only: it sat in the
+   * `answers` JSON and nothing read it, so every learner ran on the schema
+   * default of 20 XP/day no matter what they picked in onboarding.
+   *
+   * Only three things graduate out of the blob, because only three are
+   * consumed elsewhere:
+   *   dailyCommitment    -> StudentProfile.dailyGoalXp
+   *   category/interests -> StudentProfile.learningTrack / learningInterests
+   *   preferredTime      -> TeyNotificationPrefs.preferredHour
+   *
+   * Barriers and prior attempts deliberately stay in the blob: they
+   * personalize Tey's dialogue, they are not profile settings, and
+   * self-reported difficulty should not be copied across extra tables.
+   *
+   * Absent answers are omitted rather than written as nulls, so a partial
+   * onboarding can never blank a profile value that already holds something
+   * better. Best-effort — must never fail the signup or sync that called it.
+   */
+  async applyLearningPreferences(userId: string, rawAnswers: any): Promise<void> {
+    try {
+      const answers = (rawAnswers ?? {}) as OnboardingAnswersV2;
+
+      const dailyGoalXp =
+        answers.dailyCommitment !== undefined
+          ? COMMITMENT_TO_DAILY_GOAL_XP[answers.dailyCommitment as DailyCommitment]
+          : undefined;
+      const learningTrack = answers.category;
+      const learningInterests =
+        Array.isArray(answers.interests) && answers.interests.length > 0
+          ? answers.interests
+          : undefined;
+
+      if (dailyGoalXp !== undefined || learningTrack || learningInterests) {
+        const data = {
+          ...(dailyGoalXp !== undefined && { dailyGoalXp }),
+          ...(learningTrack && { learningTrack }),
+          ...(learningInterests && { learningInterests }),
+        };
+        // Upsert because the profile may not exist yet on a fresh signup.
+        // `create` carries only userId plus these values, so every other
+        // column keeps its schema default (starter XP, hearts, coins).
+        await this.prisma.studentProfile.upsert({
+          where: { userId },
+          create: { userId, ...data },
+          update: data,
+        });
+      }
+
+      // `no-preference` maps to null on purpose: an absent preferredHour
+      // lets the scheduler use the learner's inferred habit rather than
+      // pinning everyone who didn't care to one arbitrary hour.
+      if (answers.preferredTime !== undefined) {
+        const preferredHour =
+          PREFERRED_TIME_TO_HOUR[answers.preferredTime as PreferredTime];
+        if (preferredHour !== null && preferredHour !== undefined) {
+          await this.prisma.teyNotificationPrefs.upsert({
+            where: { userId },
+            create: { userId, preferredHour },
+            update: { preferredHour },
+          });
+        }
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Could not apply learning preferences for user ${userId}: ${String(err)}`,
+      );
+    }
   }
 
   /**
@@ -106,11 +203,12 @@ export class UserOnboardingService {
    */
   private async reconcileWhatsappVerification(userId: string, answers: any) {
     try {
-      const step6 = answers?.['6'];
-      const rawPhone = step6?.whatsappNumber;
-      if (!rawPhone || step6?.verified !== true) return;
+      // v1-only: onboarding v2 never collects a phone number, so this binds
+      // numbers captured before the migration and no-ops for everyone else.
+      const legacy = readLegacyWhatsapp(answers);
+      if (!legacy) return;
 
-      const phone = normalisePhone(String(rawPhone));
+      const phone = normalisePhone(String(legacy.phone));
       if (!phone) return;
 
       const user = await this.prisma.user.findUnique({
@@ -338,11 +436,13 @@ export class UserOnboardingService {
    */
   async settlePendingChallengeReward(userId: string, answers: any): Promise<void> {
     try {
-      const step9 = answers?.['9'];
-      if (step9?.completed !== true) return;
+      // Reads both schemas: v2 names the answer `challenge`, v1 kept it
+      // under the step number. Legacy rows stay redeemable for the claim TTL,
+      // so nobody loses the 25 coins they already earned.
+      const challenge = readChallengeClaim(answers);
+      if (!challenge) return;
 
-      const rawToken =
-        typeof step9?.claimToken === 'string' ? step9.claimToken : '';
+      const rawToken = challenge.claimToken;
       if (rawToken) {
         const outcome = await this.prisma.$transaction(
           async (tx): Promise<{ settled: boolean; newlyGranted: boolean }> => {
@@ -377,10 +477,11 @@ export class UserOnboardingService {
         }
       }
 
-      const step6 = answers?.['6'];
-      const rawPhone = step6?.whatsappNumber;
-      if (!rawPhone || step6?.verified !== true) return;
-      const phone = normalisePhone(String(rawPhone));
+      // Onboarding v2 has no WhatsApp step, so this fallback only ever fires
+      // for a session row written before the migration.
+      const legacyPhone = readLegacyWhatsapp(answers);
+      if (!legacyPhone) return;
+      const phone = normalisePhone(String(legacyPhone.phone));
       if (!phone) return;
 
       const phoneOutcome = await this.prisma.$transaction(

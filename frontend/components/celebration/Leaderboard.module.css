@@ -99,23 +99,6 @@
 
 /* ─── Icon ────────────────────────────────────────────────────────────────── */
 
-.iconBadge {
-  width: clamp(64px, min(20vw, 16vh), 96px);
-  height: clamp(64px, min(20vw, 16vh), 96px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--light-blue-bg);
-  color: var(--brand-blue);
-  flex-shrink: 0;
-}
-
-.iconBadge svg {
-  width: 56%;
-  height: 56%;
-}
-
 /* ─── Typography ─────────────────────────────────────────────────────────── */
 
 .headline {

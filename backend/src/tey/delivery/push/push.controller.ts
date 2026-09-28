@@ -71,6 +71,9 @@ class UpdatePrefsDto {
   @IsOptional() @IsBoolean() dailyReminders?: boolean;
   @IsOptional() @IsBoolean() milestones?: boolean;
   @IsOptional() @IsBoolean() reengagement?: boolean;
+  @IsOptional() @IsBoolean() leagueUpdates?: boolean;
+  @IsOptional() @IsBoolean() courseOffers?: boolean;
+  @IsOptional() @IsBoolean() creatorActivity?: boolean;
 
   /** Minutes from local midnight. */
   @IsOptional() @IsInt() @Min(0) @Max(1439) quietHoursStart?: number;

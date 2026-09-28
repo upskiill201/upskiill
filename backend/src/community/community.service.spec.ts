@@ -64,9 +64,9 @@ describe('CommunityService', () => {
       expect(prisma.communityMembership.upsert).not.toHaveBeenCalled();
     });
 
-    it('lazily seats an enrolled learner who has no membership row yet', async () => {
+    it('lazily seats an enrolled learner who has finished two lessons', async () => {
       prisma.communityMembership.findUnique.mockResolvedValue(null);
-      prisma.enrollment.findUnique.mockResolvedValue({ id: 'e1' });
+      prisma.enrollment.findUnique.mockResolvedValue({ id: 'e1', completedLessons: ['l1', 'l2'] });
       prisma.courseAccessEntitlement.findFirst.mockResolvedValue(null);
       prisma.communityMembership.upsert.mockResolvedValue({
         role: 'MEMBER',
@@ -83,14 +83,27 @@ describe('CommunityService', () => {
       );
     });
 
-    it('seats via an active entitlement when no enrollment exists', async () => {
+    it('keeps an enrolled learner out until two lessons, saying how close they are', async () => {
+      prisma.communityMembership.findUnique.mockResolvedValue(null);
+      prisma.enrollment.findUnique.mockResolvedValue({ id: 'e1', completedLessons: ['l1'] });
+      prisma.courseAccessEntitlement.findFirst.mockResolvedValue(null);
+
+      const err = await service.assertMember(communityId, 'learner-3').catch((e) => e);
+      expect(err).toBeInstanceOf(ForbiddenException);
+      expect(err.getResponse()).toEqual(
+        expect.objectContaining({ code: 'COMMUNITY_LOCKED', lessonsDone: 1, lessonsNeeded: 2, courseId }),
+      );
+      expect(prisma.communityMembership.upsert).not.toHaveBeenCalled();
+    });
+
+    it('holds a subscriber with no lessons yet at the same gate', async () => {
       prisma.communityMembership.findUnique.mockResolvedValue(null);
       prisma.enrollment.findUnique.mockResolvedValue(null);
       prisma.courseAccessEntitlement.findFirst.mockResolvedValue({ id: 'ent-1' });
-      prisma.communityMembership.upsert.mockResolvedValue({ role: 'MEMBER' });
 
-      await service.assertMember(communityId, 'subscriber-1');
-      expect(prisma.communityMembership.upsert).toHaveBeenCalled();
+      const err = await service.assertMember(communityId, 'subscriber-1').catch((e) => e);
+      expect(err.getResponse()).toEqual(expect.objectContaining({ code: 'COMMUNITY_LOCKED', lessonsDone: 0 }));
+      expect(prisma.communityMembership.upsert).not.toHaveBeenCalled();
     });
 
     it('rejects outsiders with no membership and no course access', async () => {

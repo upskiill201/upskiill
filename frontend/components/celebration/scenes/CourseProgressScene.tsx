@@ -14,7 +14,7 @@ import CelebrationMascot from '../CelebrationMascot';
 import { AnimatedProgressBar, CountUpNumber, TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playWhoosh } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { pickCourseProgressLine } from '@/lib/tey/milestoneVoice';
 
 type CourseProgressInput = Extract<CelebrationScene, { kind: 'COURSE_PROGRESS' }>;
@@ -34,7 +34,7 @@ export default function CourseProgressScene({ scene, onAdvance }: CourseProgress
   useEffect(() => {
     if (whooshedRef.current) return;
     whooshedRef.current = true;
-    if (!reducedMotion) playWhoosh('up');
+    if (!reducedMotion) playSound('progress');
   }, [reducedMotion]);
 
   const barDelay = reducedMotion ? 0 : 0.5;
@@ -55,6 +55,8 @@ export default function CourseProgressScene({ scene, onAdvance }: CourseProgress
       {/* Hero percentage — counts up as the bar below sweeps forward */}
       <motion.div
         className={styles.balanceRow}
+        // The % hugs its number; balanceRow's gap is for icon + value pairs.
+        style={{ gap: 2, alignItems: 'baseline' }}
         initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 20 }}
@@ -67,7 +69,7 @@ export default function CourseProgressScene({ scene, onAdvance }: CourseProgress
         />
         <span
           className={styles.balanceValue}
-          style={{ fontSize: 'clamp(26px, 7vw, 40px)', color: '#6c8cff' }}
+          style={{ fontSize: 'clamp(26px, 7vw, 40px)', color: 'var(--color-brand)', minWidth: 0 }}
         >
           %
         </span>

@@ -15,8 +15,9 @@ import { CountUpNumber, RewardPile, TypewriterBubble } from '../ScenePrimitives'
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
-import { playLevelUpFanfare } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { confettiColors } from '../confetti';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { pickLevelUpVoice } from '@/lib/tey/levelUpVoice';
 
 type LevelUpSceneInput = Extract<CelebrationScene, { kind: 'LEVEL_UP' }>;
@@ -25,8 +26,6 @@ interface LevelUpSceneProps {
   scene: LevelUpSceneInput;
   onAdvance: () => void;
 }
-
-const CONFETTI_COLORS = ['#3D5AFE', '#6C8CFF', '#FFD54D', '#FFFFFF'];
 
 export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
   const reducedMotion = useReducedMotion();
@@ -41,25 +40,27 @@ export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
   useEffect(() => {
     if (firedRef.current) return;
     firedRef.current = true;
-    playLevelUpFanfare();
-    playHaptic('teyroCelebration');
+    playSound('levelUp');
+    celebrationHaptic('big');
     if (!reducedMotion && typeof window !== 'undefined') {
       confetti({
         particleCount: 140,
         spread: 100,
         startVelocity: 45,
         origin: { x: 0.5, y: 0.35 },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors('brand'),
         scalar: 1,
         disableForReducedMotion: true,
       });
-      const side = setTimeout(() => {
+      // Fire-and-forget: the once-only guard above means a cleanup here would
+      // cancel this under React's dev double-invoke and never re-arm it.
+      setTimeout(() => {
         confetti({
           particleCount: 70,
           angle: 60,
           spread: 60,
           origin: { x: 0, y: 0.4 },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('brand'),
           disableForReducedMotion: true,
         });
         confetti({
@@ -67,16 +68,22 @@ export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
           angle: 120,
           spread: 60,
           origin: { x: 1, y: 0.4 },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('brand'),
           disableForReducedMotion: true,
         });
       }, 350);
-      const flip = setTimeout(() => setShownLevel(scene.newLevel), 900);
-      return () => {
-        clearTimeout(side);
-        clearTimeout(flip);
-      };
     }
+  }, [scene.newLevel, reducedMotion]);
+
+  // Badge number flips old → new once the badge has landed.
+  useEffect(() => {
+    if (reducedMotion) return;
+    const flip = setTimeout(() => {
+      setShownLevel(scene.newLevel);
+      playSound('statTick', 3);
+      playHaptic('rigid', false);
+    }, 900);
+    return () => clearTimeout(flip);
   }, [scene.newLevel, reducedMotion]);
 
   const pileCount = Math.max(3, Math.min(7, Math.ceil((scene.bonusCoins ?? 0) / 20)));
@@ -112,7 +119,7 @@ export default function LevelUpScene({ scene, onAdvance }: LevelUpSceneProps) {
             count={pileCount}
             startDelay={reducedMotion ? 0 : 1100}
             onItemLand={() => {
-              if (!reducedMotion) playHaptic('light');
+              if (!reducedMotion) playHaptic('selection', false);
             }}
           />
           <div className={styles.balanceRow}>

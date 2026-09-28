@@ -12,7 +12,7 @@ export default function CreatorOnboardingLayout({
         minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--bg-page)',
       }}
     >
       {children}

@@ -1,6 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
+/**
+ * One inbox, two audiences. A creator is often a learner too, so the studio
+ * bell reads only studio rows (STUDIO_* plus course-review COURSE_*) and the
+ * learner bell reads everything else. Omitting the scope reads both.
+ */
+export type NotificationScope = 'creator' | 'learner';
+
+const STUDIO_TYPES = {
+  OR: [{ type: { startsWith: 'STUDIO_' } }, { type: { startsWith: 'COURSE_' } }],
+};
+
+export function scopeWhere(scope?: NotificationScope) {
+  if (scope === 'creator') return STUDIO_TYPES;
+  if (scope === 'learner') return { NOT: STUDIO_TYPES };
+  return {};
+}
+
 export interface CreateNotificationInput {
   userId: string; // recipient
   actorId?: string | null; // who triggered it
@@ -55,13 +72,14 @@ export class NotificationsService {
   /** Paginated inbox, newest first. */
   async list(
     userId: string,
-    opts: { page?: number; pageSize?: number; unreadOnly?: boolean } = {},
+    opts: { page?: number; pageSize?: number; unreadOnly?: boolean; scope?: NotificationScope } = {},
   ) {
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(50, Math.max(1, opts.pageSize ?? 20));
     const where = {
       userId,
       ...(opts.unreadOnly ? { isRead: false } : {}),
+      ...scopeWhere(opts.scope),
     };
 
     const [total, items] = await Promise.all([
@@ -164,9 +182,9 @@ export class NotificationsService {
     });
   }
 
-  async getUnreadCount(userId: string): Promise<{ unreadCount: number }> {
+  async getUnreadCount(userId: string, scope?: NotificationScope): Promise<{ unreadCount: number }> {
     const unreadCount = await this.prisma.notification.count({
-      where: { userId, isRead: false },
+      where: { userId, isRead: false, ...scopeWhere(scope) },
     });
     return { unreadCount };
   }
@@ -175,12 +193,13 @@ export class NotificationsService {
    * Marks notifications read. With `ids` → only those (must belong to the
    * caller); without → everything unread.
    */
-  async markRead(userId: string, ids?: string[]): Promise<{ success: true }> {
-    const where: { userId: string; isRead: boolean; id?: { in: string[] } } = {
+  async markRead(userId: string, ids?: string[], scope?: NotificationScope): Promise<{ success: true }> {
+    const where = {
       userId,
       isRead: false,
+      // "Mark all read" in one bell must not clear the other bell's rows.
+      ...(ids && ids.length > 0 ? { id: { in: ids } } : scopeWhere(scope)),
     };
-    if (ids && ids.length > 0) where.id = { in: ids };
 
     await this.prisma.notification.updateMany({
       where,

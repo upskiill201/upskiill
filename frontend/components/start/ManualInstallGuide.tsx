@@ -12,9 +12,10 @@
  */
 
 import React from 'react';
-import { MoreVertical, Menu, MonitorDown, SquarePlus } from 'lucide-react';
+import { MoreVertical, Menu, MonitorDown } from 'lucide-react';
 import { browserLabel, type PwaBrowser, type PwaPlatform } from '@/lib/pwa/platform';
-import { StartButton, StartCard, StartGhostButton, StartHeadline } from './StartUi';
+import { StartButton, StartCard, StartGhostButton, StartHeadline, TeySays, startStyles } from './StartUi';
+import { HomeScreenMock } from './HomeScreenMock';
 
 interface MenuRecipe {
   icon: React.ReactNode;
@@ -27,22 +28,22 @@ function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
     switch (browser) {
       case 'samsung':
         return {
-          icon: <Menu className="w-5 h-5" aria-hidden="true" />,
+          icon: <Menu size={18} strokeWidth={3} aria-hidden="true" />,
           path: ['Open the menu (☰) in the bottom bar', 'Tap "Add page to"', 'Choose "Home screen"'],
         };
       case 'firefox':
         return {
-          icon: <MoreVertical className="w-5 h-5" aria-hidden="true" />,
+          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
           path: ['Open the menu (⋮) in the toolbar', 'Tap "Install"', 'Confirm to add Teyro'],
         };
       case 'edge':
         return {
-          icon: <MoreVertical className="w-5 h-5" aria-hidden="true" />,
+          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
           path: ['Open the menu (⋯) at the bottom', 'Tap "Add to phone"', 'Confirm to add Teyro'],
         };
       default:
         return {
-          icon: <MoreVertical className="w-5 h-5" aria-hidden="true" />,
+          icon: <MoreVertical size={18} strokeWidth={3} aria-hidden="true" />,
           path: ['Open the menu (⋮) in the top right', 'Tap "Install app" or "Add to Home screen"', 'Confirm to add Teyro'],
         };
     }
@@ -50,7 +51,7 @@ function recipeFor(platform: PwaPlatform, browser: PwaBrowser): MenuRecipe {
 
   // Desktop Chromium.
   return {
-    icon: <MonitorDown className="w-5 h-5" aria-hidden="true" />,
+    icon: <MonitorDown size={18} strokeWidth={3} aria-hidden="true" />,
     path: [
       'Look for the install icon at the right of the address bar',
       'Or open the browser menu and choose "Install Teyro"',
@@ -74,41 +75,29 @@ export default function ManualInstallGuide({
   const recipe = recipeFor(platform, browser);
 
   return (
-    <div className="w-full max-w-[440px] flex flex-col items-center gap-4">
-      <div className="text-center">
-        <StartHeadline
-          lead="Two taps in"
-          accent={browserLabel(browser)}
-          className="!text-[clamp(1.6rem,7.5vw,2.1rem)]"
-        />
-      </div>
+    <div className={startStyles.stack}>
+      <div className={startStyles.grow} />
+      <HomeScreenMock compact />
+      <StartHeadline lead="Two taps in" accent={browserLabel(browser)} size="md" />
 
       <StartCard>
-        <ol className="flex flex-col gap-3.5" aria-label={`How to install Teyro in ${browserLabel(browser)}`}>
+        <ol className={startStyles.steps} aria-label={`How to install Teyro in ${browserLabel(browser)}`}>
           {recipe.path.map((line, i) => (
-            <li key={line} className="flex items-start gap-3">
-              <span
-                className="flex-shrink-0 w-7 h-7 rounded-full bg-[#EEF2FF] text-[#0172FD] flex items-center justify-center text-[0.8rem] font-[800]"
-                aria-hidden="true"
-              >
-                {i + 1}
+            <li key={line} className={startStyles.stepRow}>
+              <span className={startStyles.stepNum} aria-hidden="true">
+                {i === 0 ? recipe.icon : i + 1}
               </span>
-              <span className="text-[0.93rem] font-[600] text-[#071233] leading-snug pt-0.5">{line}</span>
+              <span>{line}</span>
             </li>
           ))}
         </ol>
-
-        <p className="mt-4 text-[0.85rem] font-[600] text-slate-500">
-          Your browser keeps this one to itself — I can point, but you get to do the honours.
-        </p>
       </StartCard>
 
-      <div className="w-full">
-        <StartButton
-          onClick={onDone}
-          icon={<SquarePlus className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />}
-          ariaLabel="I have installed Teyro"
-        >
+      <TeySays>Your browser keeps this one to itself. I can point, but you get to do the honours.</TeySays>
+      <div className={startStyles.grow} />
+
+      <div className={startStyles.actions}>
+        <StartButton onClick={onDone} tone="green" ariaLabel="I have installed Teyro">
           I&apos;ve installed it
         </StartButton>
         <StartGhostButton onClick={onSkip}>Keep going in my browser</StartGhostButton>

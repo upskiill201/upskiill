@@ -133,9 +133,9 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     category: EmailCategory.REENGAGEMENT,
     audience: EmailAudience.STUDENT,
     channel: EmailChannel.EMAIL,
-    enabled: false,
+    enabled: true,
     description:
-      'Staged inactivity ladder — scaffolded (config + job shape) but not turned on this pass; see docs Known limitations.',
+      'Win-back ladder at 3/7/14/30 days away (daily scan); day 30 is the honest "I’ll stop" and nothing sends after it.',
   },
 
   'course.enrollment': {
@@ -165,6 +165,15 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     enabled: true,
     description:
       'Fired from the Stripe invoice.payment_failed webhook handler.',
+  },
+  'payment.access-ending': {
+    templateKey: 'payment.access-ending',
+    category: EmailCategory.PAYMENT,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description:
+      'Daily scan — course access that will NOT auto-renew (Mobile Money, cancelled card plans) ends in 3 days, tomorrow, or ended yesterday.',
   },
   'payment.pending': {
     templateKey: 'payment.pending',
@@ -227,6 +236,31 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     description: 'Stage 4 (final), ~6 days later.',
   },
 
+  'conversion.course-unlock-1': {
+    templateKey: 'conversion.course-unlock-1',
+    category: EmailCategory.CONVERSION,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description: 'Unlock journey stage 1, ~3h after the learner finishes the free lessons of a paid course.',
+  },
+  'conversion.course-unlock-2': {
+    templateKey: 'conversion.course-unlock-2',
+    category: EmailCategory.CONVERSION,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description: 'Unlock journey stage 2, day 3 — the course’s outcomes and (when real) its learner count.',
+  },
+  'conversion.course-unlock-3': {
+    templateKey: 'conversion.course-unlock-3',
+    category: EmailCategory.CONVERSION,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description: 'Unlock journey stage 3 (final), day 7 — says it is the last one.',
+  },
+
   'creator.welcome': {
     templateKey: 'creator.welcome',
     category: EmailCategory.CREATOR,
@@ -260,8 +294,16 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     audience: EmailAudience.CREATOR,
     channel: EmailChannel.EMAIL,
     enabled: false,
+    description: 'Superseded by creator.weekly-digest, which carries earnings plus learners and questions.',
+  },
+  'creator.weekly-digest': {
+    templateKey: 'creator.weekly-digest',
+    category: EmailCategory.DIGEST,
+    audience: EmailAudience.CREATOR,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
     description:
-      'Learner weekly-summary batch job was built; the creator-earnings variant was scoped out this pass.',
+      'Monday batch — last week’s sales, revenue, new learners, lessons done, finishes, and unanswered questions.',
   },
 
   'payout.initiated': {

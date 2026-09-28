@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import { TOTAL_STEPS } from '@/lib/user-onboarding';
 
 export default function OnboardingTemplate({
   children,
@@ -46,9 +47,12 @@ export default function OnboardingTemplate({
     }),
   };
 
-  // Steps 1-15 are managed by the persistent OnboardingShell SPA
-  // We use a shared key so template.tsx does not remount / wipe the shell during step transitions
-  const templateKey = currentStep >= 1 && currentStep <= 15 ? 'onboarding-shell-all' : pathname;
+  // Every numbered step is managed by the persistent OnboardingShell SPA.
+  // A shared key means template.tsx does not remount / wipe the shell during
+  // step transitions. Derived from TOTAL_STEPS rather than hardcoded so this
+  // never drifts when a step is added or removed.
+  const templateKey =
+    currentStep >= 1 && currentStep <= TOTAL_STEPS ? 'onboarding-shell-all' : pathname;
 
   return (
     // Outer container: overflow-hidden clips the sliding content

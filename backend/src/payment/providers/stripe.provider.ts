@@ -38,7 +38,6 @@ export class StripeProvider implements IPaymentProvider {
       } = input;
 
       const intervalMap = {
-        WEEKLY: { interval: 'week', interval_count: 1 },
         MONTHLY: { interval: 'month', interval_count: 1 },
         YEARLY: { interval: 'year', interval_count: 1 },
       };

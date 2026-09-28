@@ -1,361 +1,245 @@
-/* ===== WAITLIST HEADER — Clean Light Nav ===== */
+/* Marketing header — Duolingo/Coddy style. Tokens only. */
 
 .header {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  padding: 0 10px 0 24px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(229, 231, 235, 0.8);
-  border-radius: 100px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  width: 94%;
-  max-width: 1180px;
-  transition: all 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-page);
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
+  font-family: var(--font-jakarta), sans-serif;
 }
 
-/* Scrolled state */
-.headerScrolled {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  top: 16px;
+.scrolled {
+  border-bottom-color: var(--border);
 }
 
 .container {
+  max-width: 1120px;
+  height: 76px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 60px;
+  gap: 32px;
 }
 
-/* ── Logo ── */
-.logoLink {
-  text-decoration: none;
+.logo {
   flex-shrink: 0;
+  display: flex;
 }
 
-/* Removed dead logoText CSS */
+.logo img {
+  border-radius: 12px;
+  transition: transform 0.15s ease;
+}
 
-/* ── Desktop Navigation ── */
-.desktopNav {
+@media (hover: hover) {
+  .logo:hover img {
+    transform: rotate(-5deg) scale(1.05);
+  }
+}
+
+.nav {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 2px;
-  flex-wrap: nowrap;
+  gap: 4px;
 }
 
 .navLink {
-  color: #6B7280;
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 500;
   padding: 8px 12px;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  background: none;
   border: none;
-  font-family: inherit;
-  white-space: nowrap;
+  border-radius: 12px;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
-.navLink:hover {
-  color: #111827;
-  background: #F3F4F6;
+@media (hover: hover) {
+  .navLink:hover {
+    background: var(--bg-section);
+    color: var(--color-ink);
+  }
 }
 
 .navLinkActive {
   color: var(--color-brand);
-  background: #EFF6FF;
 }
 
-.navLinkActive:hover {
-  color: var(--color-brand);
-  background: #EFF6FF;
-}
-
-/* ── Right Section: Buttons ── */
-.rightSection {
+.actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 
-/* Both header CTAs use Teyro's tactile treatment — a solid face plus a
-   darker "bottom edge" strip that reads as depth and compresses flat on
-   press. Pill-shaped here (unlike the rounded-rectangle used elsewhere on
-   the marketing site) because the header itself is a full capsule
-   (border-radius: 100px on .header) — a pill echoes that container shape
-   instead of clashing with its curved edge. Same technique as the
-   homepage's TactileButton component; this header is CSS-module-styled
-   rather than Tailwind, so it's hand-rolled here against the same
-   --color-brand* tokens rather than sharing that component directly. Login
-   is the light/secondary read of the same idea (white face, gray edge);
-   Get Started is the solid brand-blue one. */
-.loginBtn {
-  color: #374151;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 8px 20px;
-  border-radius: 100px;
-  border: 1.5px solid var(--border-strong);
-  background: #ffffff;
-  box-shadow: 0 4px 0 var(--border-strong);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: 0.01em;
-}
-
-.loginBtn:hover {
-  color: #111827;
-  background: #F9FAFB;
-}
-
-.loginBtn:active {
-  transform: translateY(4px);
-  box-shadow: 0 0 0 var(--border-strong);
-}
-
-.getStartedBtn {
+.login,
+.start,
+.startBig,
+.loginBig {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  font-size: 13px;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 14px;
   font-weight: 800;
-  padding: 10px 22px;
-  border-radius: 100px;
-  border: none;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.login,
+.loginBig {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+}
+
+.start,
+.startBig {
+  min-height: 46px;
+  padding: 0 20px;
   background: var(--color-brand);
-  box-shadow: 0 4px 0 var(--color-brand-dark);
-  color: #ffffff;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.2s ease;
-  font-family: inherit;
-  letter-spacing: 0.01em;
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-page);
 }
 
-.getStartedBtn:hover {
-  filter: brightness(1.05);
+.login:active,
+.loginBig:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
-.getStartedBtn:active {
+.start:active,
+.startBig:active {
   transform: translateY(4px);
-  box-shadow: 0 0 0 var(--color-brand-dark);
+  box-shadow: none;
 }
 
-.btnIcon {
-  flex-shrink: 0;
-}
-
-/* ── Mobile Hamburger ── */
-.hamburgerBtn {
+.menuBtn {
   display: none;
-  background: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
   border: none;
-  color: #374151;
+  border-radius: 12px;
+  background: none;
+  color: var(--color-ink);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: background 0.2s;
 }
 
-.hamburgerBtn:hover {
-  background: #F3F4F6;
-}
-
-/* ── Mobile Overlay ── */
-.mobileOverlay {
+/* ─── Phone menu ───────────────────────────────────────────────────────── */
+.overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1001;
-  animation: fadeIn 0.2s ease;
+  z-index: 200;
+  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ── Mobile Panel ── */
-.mobilePanel {
+.panel {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 320px;
-  max-width: 85vw;
-  background: #FFFFFF;
-  border-left: 1px solid #E5E7EB;
-  z-index: 1002;
+  inset: 0 0 0 auto;
+  z-index: 201;
+  width: min(360px, 88vw);
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
+  padding: 16px 20px max(env(safe-area-inset-bottom), 20px);
+  background: var(--bg-page);
+  font-family: var(--font-jakarta), sans-serif;
+  animation: slideIn 0.22s ease-out;
 }
 
 @keyframes slideIn {
   from { transform: translateX(100%); }
-  to { transform: translateX(0); }
 }
 
-.mobileHeader {
+.panelHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 16px;
 }
 
-.closeBtn {
-  background: none;
-  border: none;
-  color: #6B7280;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: all 0.2s;
+.panelHead img {
+  border-radius: 12px;
 }
 
-.closeBtn:hover {
-  color: #111827;
-  background: #F3F4F6;
-}
-
-.mobileNavLinks {
+.panelNav {
   display: flex;
   flex-direction: column;
-  padding: 16px 0;
-  flex: 1;
 }
 
-.mobileNavLink {
-  color: #374151;
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 14px 24px;
-  transition: all 0.2s ease;
+.panelLink {
+  padding: 16px 4px;
   border: none;
+  border-bottom: 2px solid var(--bg-section);
   background: none;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 800;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
-  font-family: inherit;
 }
 
-.mobileNavLink:hover {
-  color: #111827;
-  background: #F3F4F6;
-}
-
-.mobileDivider {
-  height: 1px;
-  background: #E5E7EB;
-  margin: 8px 24px;
-}
-
-.mobileAuthButtons {
-  padding: 16px 24px 32px;
+.panelActions {
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-top: 1px solid #E5E7EB;
 }
 
-.mobileLoginBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #374151;
-  text-decoration: none;
+.startBig,
+.loginBig {
+  min-height: 54px;
   font-size: 15px;
-  font-weight: 700;
-  padding: 12px 20px;
-  border-radius: var(--radius-btn);
-  border: 1.5px solid var(--border-strong);
-  background: #ffffff;
-  box-shadow: 0 4px 0 var(--border-strong);
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
-  font-family: inherit;
 }
 
-.mobileLoginBtn:hover {
-  background: #F9FAFB;
-  color: #111827;
-}
-
-.mobileLoginBtn:active {
-  transform: translateY(4px);
-  box-shadow: 0 0 0 var(--border-strong);
-}
-
-.mobileGetStartedBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 800;
-  padding: 12px 20px;
-  border-radius: var(--radius-btn);
-  border: none;
-  background: var(--color-brand);
-  box-shadow: 0 4px 0 var(--color-brand-dark);
-  color: #ffffff;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.2s ease;
-  font-family: inherit;
-}
-
-.mobileGetStartedBtn:hover {
-  filter: brightness(1.05);
-}
-
-.mobileGetStartedBtn:active {
-  transform: translateY(4px);
-  box-shadow: 0 0 0 var(--color-brand-dark);
-}
-
-/* ── Responsive ── */
-@media (max-width: 1100px) {
-  .header {
-    padding: 0 16px;
+/* ─── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1040px) {
+  .nav {
+    display: none;
   }
+}
 
+@media (max-width: 720px) {
   .container {
     height: 64px;
+    padding: 0 16px;
+    gap: 12px;
   }
-
-  .desktopNav {
+  .login {
     display: none;
   }
-
-  .rightSection {
-    display: none;
+  .start {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 13px;
   }
-
-  .hamburgerBtn {
-    display: flex;
+  .menuBtn {
+    display: grid;
   }
 }
 
-@media (max-width: 480px) {
-  .header {
-    padding: 0 12px;
+@media (min-width: 721px) and (max-width: 1040px) {
+  .menuBtn {
+    display: grid;
   }
+}
 
-  .mobilePanel {
-    width: 100%;
-    max-width: 100vw;
-    border-left: none;
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
   }
 }
