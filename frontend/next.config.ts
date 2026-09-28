@@ -101,6 +101,19 @@ const nextConfig: NextConfig = {
         destination: '/start',
         permanent: true,
       },
+      // The first /alternatives pages (retired 2026-09-28, sources kept in
+      // content/landing/_retired) → the registry pages that replaced them.
+      ...[
+        ['5-best-duolingo-alternatives-for-smarter', 'duolingo-alternatives'],
+        ['5-best-khan-academy-alternatives-for', 'khan-academy-alternatives'],
+        ['6-best-coursera-alternative-platforms-for', 'coursera-alternatives'],
+        ['6-skillshare-alternative-platforms-ranked-by', 'skillshare-alternatives'],
+        ['6-udemy-alternative-platforms-for-engaging', 'udemy-alternatives'],
+      ].map(([from, to]) => ({
+        source: `/alternatives/${from}`,
+        destination: `/alternatives/${to}`,
+        permanent: true,
+      })),
     ];
   },
 

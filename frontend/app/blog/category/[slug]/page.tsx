@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CATEGORIES } from '@/lib/blog/categories';
 import { getPostsByCategory, toSummary } from '@/lib/blog/posts';
 import { buildCanonical } from '@/lib/blog/site';
@@ -48,25 +49,62 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
-        {/* ── Category header ── */}
-        <header className={styles.header} style={{ maxWidth: 720 }}>
-          <p className={styles.kicker} style={{ color: category.accentColor }}>
-            Category
-          </p>
-          <h1 className={styles.title}>{category.name}</h1>
-          <p className={styles.subtitle}>{category.seoIntro}</p>
-        </header>
+      {/* ── Category hero ── */}
+      <header
+        className={styles.band}
+        style={{ '--accent': category.accentColor } as React.CSSProperties}
+      >
+        <div className={`${styles.container} ${styles.heroGrid}`}>
+          <div className={styles.heroCopy}>
+            <Link href="/blog" className={styles.backLink}>
+              <ArrowLeft size={16} strokeWidth={3} />
+              All articles
+            </Link>
+            <p className={styles.kicker}>Topic</p>
+            <h1 className={styles.title}>{category.name}</h1>
+            <p className={styles.subtitle}>{category.seoIntro}</p>
+            <p className={styles.count}>
+              {posts.length} {posts.length === 1 ? 'guide' : 'guides'}
+            </p>
+            <nav className={styles.topics} aria-label="Other blog topics">
+              {CATEGORIES.filter((c) => c.slug !== category.slug).map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/blog/category/${c.slug}`}
+                  className={styles.topic}
+                  style={{ '--accent': c.accentColor } as React.CSSProperties}
+                >
+                  <span className={styles.topicDot} aria-hidden="true" />
+                  {c.shortLabel}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          {category.mascots[0] && (
+            <div className={styles.categoryArt} aria-hidden="true">
+              <span className={styles.heroDisc} />
+              <Image
+                src={category.mascots[0]}
+                alt=""
+                width={300}
+                height={450}
+                priority
+                className={styles.heroTey}
+              />
+            </div>
+          )}
+        </div>
+      </header>
 
-        {/* ── Posts ── */}
+      <div className={styles.container}>
         {posts.length > 0 ? (
           <PostGrid posts={posts} priorityCount={3} />
         ) : (
           <div className={styles.emptyState}>
-            <p>No articles in this category yet — check back soon.</p>
+            <p>No articles in this topic yet — check back soon.</p>
             <Link href="/blog" className={styles.backLink}>
               Browse all articles
-              <ArrowRight size={15} strokeWidth={2.5} />
+              <ArrowRight size={16} strokeWidth={3} />
             </Link>
           </div>
         )}
