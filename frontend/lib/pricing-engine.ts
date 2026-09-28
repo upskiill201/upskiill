@@ -4,10 +4,12 @@
  * Converts a creator's single Course Base Value (e.g. $30) into an automated,
  * psychology-backed subscription ladder (Weekly, Monthly, Yearly).
  *
- * Formulas:
- *  - Weekly (7 days):   Base Price ÷ 10 (min $0.99)
- *  - Monthly (30 days): Weekly × 4 × 70% (min $2.99) [30% discount vs weekly]
- *  - Yearly (365 days): Base Price × 80% (min $9.99) [~76% discount vs monthly]
+ * Formulas (since 2026-09-28 — the creator's price IS the yearly plan):
+ *  - Yearly (365 days): the creator's price (min $9.99)
+ *  - Monthly (30 days): Yearly ÷ 6, rounded up — yearly saves 50% (min $2.99)
+ *  - Weekly (7 days):   Base Price ÷ 10 (min $0.99) — legacy tier, removed in
+ *    the upcoming app release
+ * Display only — the backend's identical engine decides the charge.
  */
 
 export type AccessPlanType = 'WEEKLY' | 'MONTHLY' | 'YEARLY';
@@ -90,17 +92,18 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
   const rawWeekly = cleanBase / 10;
   const weeklyPrice = roundToCleanPrice(Math.max(MIN_WEEKLY_FLOOR, rawWeekly));
 
-  // 2. Monthly Calculation (30 Days) - 30% discount on 4 weeks
-  const rawMonthly = weeklyPrice * 4 * 0.70;
-  const monthlyPrice = roundToCleanPrice(Math.max(MIN_MONTHLY_FLOOR, rawMonthly));
+  // 2. Yearly Calculation (365 Days) — since 2026-09-28 the creator's price
+  //    IS the yearly plan.
+  const yearlyPrice = roundToCleanPrice(Math.max(MIN_YEARLY_FLOOR, cleanBase));
 
-  // 3. Yearly Calculation (365 Days) - 20% discount on base value
-  const rawYearly = cleanBase * 0.80;
-  const yearlyPrice = roundToCleanPrice(Math.max(MIN_YEARLY_FLOOR, rawYearly));
+  // 3. Monthly Calculation (30 Days) — yearly ÷ 6, rounded UP to the cent, so
+  //    paying yearly always saves at least 50%.
+  const monthlyPrice = Math.max(MIN_MONTHLY_FLOOR, Math.ceil((yearlyPrice / 6) * 100 - 1e-9) / 100);
 
   // Calculations for savings comparison
   const monthlySavingsVsWeekly = Math.round(((weeklyPrice * 4 - monthlyPrice) / (weeklyPrice * 4)) * 100);
-  const yearlySavingsVsMonthly = Math.round(((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100);
+  // The real saving — shown to learners, so it is never rounded up.
+  const yearlySavingsVsMonthly = Math.floor(((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100);
 
   const weekly: PlanPricing = {
     plan: 'WEEKLY',
@@ -135,8 +138,8 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
     intervalText: '/year',
     isBestValue: true,
     badge: '🏆 Best value',
-    savingsText: `Save ${Math.max(50, yearlySavingsVsMonthly)}% vs monthly`,
-    savingsPercent: Math.max(50, yearlySavingsVsMonthly),
+    savingsText: `Save ${yearlySavingsVsMonthly}% vs monthly`,
+    savingsPercent: yearlySavingsVsMonthly,
     effectiveMonthly: roundToCleanPrice(yearlyPrice / 12),
   };
 

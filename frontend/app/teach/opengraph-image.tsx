@@ -3,20 +3,25 @@ import path from 'path';
 import { ImageResponse } from 'next/og';
 
 /**
- * Social card for /teach — the earnings success visual (the page's own
- * "Available to withdraw" card, EarningsGrowthVisual) recreated for the
- * share preview, not a generic title card. Reuses the blog's committed
- * Plus Jakarta Sans TTFs (see next.config.ts's outputFileTracingIncludes)
- * instead of shipping a second font for one image.
+ * Social card for /teach — the page's hero story in one frame: the headline
+ * and the Studio's "Earned this month" card (StudioHeroVisual), with Tey.
+ * Numbers match the page: a $60 course (the yearly price) is $10/month, the
+ * creator keeps $7. Satori can't read CSS variables, so colours are the palette's hex
+ * values here only. Brand is the Tey mascot alone, never a wordmark.
  */
 export const runtime = 'nodejs';
-export const alt = 'Teach on Teyro — turn what you know into income';
+export const alt = 'Teach on Teyro: earn every month your learners keep learning';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 const FONT_DIR = path.join(process.cwd(), 'app', 'blog', '_fonts');
 const fontBold = fs.readFileSync(path.join(FONT_DIR, 'PlusJakartaSans-Bold.ttf'));
 const fontExtra = fs.readFileSync(path.join(FONT_DIR, 'PlusJakartaSans-ExtraBold.ttf'));
+const mascot = `data:image/png;base64,${fs
+  .readFileSync(path.join(process.cwd(), 'app', '_og-assets', 'tey-mascot.png'))
+  .toString('base64')}`;
+
+const BARS = [18, 28, 44, 60, 79, 100];
 
 export default function OgImage() {
   return new ImageResponse(
@@ -28,136 +33,116 @@ export default function OgImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: 72,
-          background: 'linear-gradient(135deg, #0172FD 0%, #0050B3 100%)',
+          padding: '64px 72px',
+          background: '#0172FD',
           fontFamily: 'Jakarta',
+          position: 'relative',
         }}
       >
-        {/* Left: brand + headline */}
-        <div style={{ display: 'flex', flexDirection: 'column', width: 560 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ fontSize: 32, fontWeight: 800, color: '#FFFFFF', letterSpacing: 2 }}>TEYRO</div>
-            <div
-              style={{
-                display: 'flex',
-                padding: '7px 18px',
-                borderRadius: 999,
-                background: 'rgba(255,255,255,0.16)',
-                color: '#FFFFFF',
-                fontSize: 18,
-                fontWeight: 700,
-                letterSpacing: 2,
-              }}
-            >
-              TEACH
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', width: 600 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignSelf: 'flex-start',
+              padding: '8px 18px',
+              borderRadius: 999,
+              background: 'rgba(255,255,255,0.16)',
+              color: '#FFFFFF',
+              fontSize: 20,
+              fontWeight: 800,
+              letterSpacing: 2,
+            }}
+          >
+            TEYRO FOR CREATORS
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 48 }}>
-            <div style={{ fontSize: 60, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.12 }}>
-              Turn What You Know
-            </div>
-            <div style={{ fontSize: 60, fontWeight: 800, color: '#FFD34D', lineHeight: 1.12 }}>
-              Into Income
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 36 }}>
+            <div style={{ fontSize: 58, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1 }}>Teach coding or AI.</div>
+            <div style={{ fontSize: 58, fontWeight: 800, color: '#FFD34D', lineHeight: 1.1 }}>Earn every month</div>
+            <div style={{ fontSize: 58, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1 }}>they keep learning.</div>
           </div>
-
-          <div style={{ display: 'flex', marginTop: 40 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '14px 30px',
-                borderRadius: 14,
-                background: '#FFFFFF',
-                color: '#0172FD',
-                fontSize: 24,
-                fontWeight: 800,
-                letterSpacing: 1,
-              }}
-            >
-              BECOME A CREATOR
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 36 }}>
+            {['You keep 70%', '2 free lessons', 'Bank or mobile money'].map((c) => (
+              <div
+                key={c}
+                style={{
+                  display: 'flex',
+                  padding: '10px 18px',
+                  borderRadius: 14,
+                  background: '#FFFFFF',
+                  color: '#0172FD',
+                  fontSize: 20,
+                  fontWeight: 800,
+                }}
+              >
+                {c}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Right: the Earnings card visual — same story as
-            EarningsGrowthVisual, rebuilt with satori-safe flex/inline
-            styles instead of Tailwind classes. */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            width: 420,
+            width: 400,
             borderRadius: 28,
             background: '#FFFFFF',
-            padding: 36,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+            padding: 32,
+            borderBottom: '8px solid #D6E4F5',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 1, color: '#AFAFAF' }}>
-              AVAILABLE TO WITHDRAW
-            </div>
+          <div style={{ display: 'flex', fontSize: 16, fontWeight: 800, letterSpacing: 1.5, color: '#94A3B8' }}>
+            EARNED THIS MONTH
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 6 }}>
+            <div style={{ display: 'flex', fontSize: 56, fontWeight: 800, color: '#0F172A' }}>$1,260</div>
             <div
               style={{
                 display: 'flex',
-                padding: '6px 14px',
+                padding: '6px 12px',
                 borderRadius: 999,
-                background: '#FFF4CC',
-                color: '#B45309',
-                fontSize: 15,
+                background: '#DCFCE7',
+                color: '#16A34A',
+                fontSize: 18,
                 fontWeight: 800,
               }}
             >
-              FOUNDING · 70%
+              +26%
             </div>
           </div>
-
-          <div style={{ display: 'flex', fontSize: 68, fontWeight: 800, color: '#58A700', marginTop: 8 }}>
-            $11,600
-          </div>
-
-          {/* Growth bars */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              gap: 10,
-              height: 90,
-              marginTop: 32,
-              paddingTop: 10,
-              borderTop: '2px solid #F0F2F5',
-            }}
-          >
-            {[28, 38, 50, 64, 82, 100].map((h, i) => (
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 130, marginTop: 20 }}>
+            {BARS.map((h, i) => (
               <div
                 key={i}
                 style={{
                   display: 'flex',
-                  width: 44,
+                  flex: 1,
                   height: `${h}%`,
-                  borderRadius: 8,
-                  background: i === 5 ? '#58A700' : '#D7FFB8',
+                  borderRadius: 10,
+                  background: i === BARS.length - 1 ? '#0172FD' : '#B3D4FF',
                 }}
               />
             ))}
           </div>
-
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: 8,
+              flexDirection: 'column',
               marginTop: 20,
-              fontSize: 20,
-              fontWeight: 800,
-              color: '#58A700',
+              padding: 14,
+              borderRadius: 16,
+              border: '2px solid #E2E8F0',
             }}
           >
-            +263% in 6 months
+            <div style={{ display: 'flex', fontSize: 20, fontWeight: 800, color: '#0F172A' }}>Python for Data</div>
+            <div style={{ display: 'flex', fontSize: 16, fontWeight: 700, color: '#64748B' }}>
+              180 subscribers × $7 a month
+            </div>
           </div>
         </div>
+
+        {/* eslint-disable-next-line @next/next/no-img-element -- satori renders plain img only */}
+        <img src={mascot} alt="" width={150} height={150} style={{ position: 'absolute', right: 40, bottom: 10 }} />
       </div>
     ),
     {
@@ -166,6 +151,6 @@ export default function OgImage() {
         { name: 'Jakarta', data: fontBold, weight: 700, style: 'normal' },
         { name: 'Jakarta', data: fontExtra, weight: 800, style: 'normal' },
       ],
-    }
+    },
   );
 }

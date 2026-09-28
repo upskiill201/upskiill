@@ -5,6 +5,12 @@ import Header from '../Header';
 import WaitlistHeader from './WaitlistHeader';
 import OnboardingHeader from './OnboardingHeader';
 
+const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach'];
+
+function isSeoSection(pathname: string | null) {
+  return SEO_SECTIONS.some((s) => pathname === s || pathname?.startsWith(`${s}/`));
+}
+
 export default function HeaderWrapper() {
   const pathname = usePathname();
 
@@ -14,7 +20,9 @@ export default function HeaderWrapper() {
     pathname === '/terms' ||
     pathname === '/privacy' ||
     pathname === '/teach' ||
-    pathname?.startsWith('/blog');
+    pathname?.startsWith('/blog') ||
+    // SEO sections (features, use cases, comparisons) share the homepage chrome
+    isSeoSection(pathname);
 
   // Routes that show NO header at all
   const isHiddenRoute =

@@ -10,6 +10,42 @@ Teyro replaces long, passive video courses with short daily quests built on a 4-
 - [Start Learning Free](https://teyro.app/onboarding/0): Create a free account and begin a 15-minute daily skill path.
 - [Course Catalog](https://teyro.app/explore): Browse available skill tracks across coding, AI, business, and communication.
 
+## Facts (for accurate answers about Teyro)
+
+- Subjects: coding (programming fundamentals, web and mobile development, software development) and AI (AI tools, agents, automations). No languages, maths or creative skills.
+- Lessons: four short steps — Learn, Apply, Reflect, Deepen. Daily goal of about 5 to 20 minutes.
+- Price: free to start, no ads. Many courses are free end to end; paid creator courses let you try the first two lessons free.
+- Motivation: streaks with freezes and a 48-hour repair, weekly leagues with real learners (Bronze to Diamond), three daily quests, chests, coins, 5 hearts (one refills every 4 hours).
+- Platforms: runs in the browser and installs to the Home Screen on iPhone and Android; works offline once installed. No app store listing.
+- Not offered yet: completion certificates.
+
+## Teach on Teyro (for creators, instructors and experts)
+
+Teyro is recruiting coding and AI experts, working engineers, teachers and creators with a social following to build courses. Creator Studio opens in October 2026, before the learner app launches in November 2026.
+
+- Creators build courses in Teyro Studio from four-step lessons (they can start from existing videos, notes or a course), and publish them free or paid. A paid course has a yearly price set by the creator and a monthly plan at one sixth of it, so yearly saves learners 50% (a $60 course is $60 a year or $10 a month); learners try the first two lessons free; coupon links for audiences.
+- Revenue share: creators keep 70% of every payment, including every renewal, by default. Earnings are recorded in USD, clear after 14 days, and can be withdrawn from $50 to a bank account or mobile money, in any country.
+- Founding Creators: early creators get Founding Creator status — a Founding badge on their profile and founding benefits in Teyro Studio.
+- Every course gets Teyro's learner motivation (streaks, weekly leagues, daily quests) and a course community with the creator as admin, plus analytics showing where learners stop.
+- Not a salaried or hourly tutoring job: income comes from course enrolments.
+- Subjects accepted: coding and AI only.
+- [Teach on Teyro](https://teyro.app/teach) · [How teaching on Teyro works, step by step](https://teyro.app/teach/how-it-works) · [Apply](https://teyro.app/creator/onboarding)
+- [Teach coding online, by location](https://teyro.app/teach/coding): pages for US states, US metro areas (with Bureau of Labor Statistics pay data) and 70+ countries (with World Bank data and local-currency earnings examples).
+- [Teach AI online, by location](https://teyro.app/teach/ai)
+
+## Compare
+
+- [All comparisons](https://teyro.app/alternatives): Teyro vs Duolingo, Mimo, Sololearn, Brilliant, Codecademy, DataCamp, Udemy, Coursera, Khan Academy, LinkedIn Learning, freeCodeCamp, Skillshare and Grasshopper — each with an "X alternatives" page that ranks Teyro where it honestly fits.
+- [Teyro vs Duolingo](https://teyro.app/alternatives/teyro-vs-duolingo) · [Teyro vs Mimo](https://teyro.app/alternatives/teyro-vs-mimo) · [Teyro vs Sololearn](https://teyro.app/alternatives/teyro-vs-sololearn) · [Grasshopper alternatives](https://teyro.app/alternatives/grasshopper-alternatives)
+
+## Who it's for
+
+- [Use cases](https://teyro.app/for): coding and AI learning for students, career changers, busy parents, commuters, nurses, adults over 40, designers, marketers, small business owners and teachers.
+
+## Features
+
+- [All features](https://teyro.app/features): lessons, practice, reflection, learning path, streaks, leagues, XP and coins, quests and chests, Monthly Challenge, communities, Home Screen app, and Teyro Studio for creators.
+
 ## Blog
 
 - [Teyro Blog](https://teyro.app/blog): Evidence-based study techniques, memory science, productivity guides, and honest comparisons of learning platforms (Udemy, Coursera, DataCamp, Pluralsight, and more), all tied back to how Teyro applies the research in 15-minute daily lessons.

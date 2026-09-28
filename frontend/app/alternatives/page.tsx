@@ -1,176 +1,147 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowRight, Zap, Trophy, Shield } from 'lucide-react';
-import { getAllLandingPages } from '@/lib/landing/posts';
-import { buildCanonical } from '@/lib/blog/site';
+import { ArrowRight, Scale, Shuffle } from 'lucide-react';
+import { COMPETITORS, altSlug, vsSlug } from '@/lib/seo/competitors';
+import type { Competitor } from '@/lib/seo/competitors';
+import { START_HREF, START_LABEL, TEYRO_LIMITS } from '@/lib/seo/facts';
+import { breadcrumbSchema, collectionSchema, itemListSchema, schemas } from '@/lib/seo/schema';
 import JsonLd from '@/components/features/blog/JsonLd';
-import styles from './LandingHub.module.css';
+import CtaBlock from '@/components/features/blog/CtaBlock';
+import { LinkCards, ListCard, SectionHead } from '@/components/seo/Blocks';
+import s from '@/components/seo/Seo.module.css';
 
 export const revalidate = 3600;
 
+const DESCRIPTION =
+  'Honest comparisons of Teyro with Duolingo, Mimo, Sololearn, Codecademy, Udemy, Coursera and more — including when to stay with them.';
+
 export const metadata: Metadata = {
-  title: 'Teyro vs Competitors — The Better Way to Learn Skills',
-  description:
-    'Honest comparison of Teyro against Duolingo, Skillshare, Khan Academy, Udemy, and Coursera. See why learners switch to Teyro for daily skill building.',
+  title: 'Teyro vs Other Learning Apps: Honest Comparisons',
+  description: DESCRIPTION,
   alternates: { canonical: '/alternatives' },
 };
 
+// Grouped the way people shop: phone coding apps first, then course platforms.
+const GROUPS: { title: string; lead: string; ids: string[] }[] = [
+  {
+    title: 'Coding apps',
+    lead: 'Short, phone-first ways to learn to code.',
+    ids: ['mimo', 'sololearn', 'grasshopper', 'codecademy', 'freecodecamp'],
+  },
+  {
+    title: 'Gamified learning apps',
+    lead: 'Habit-forming apps for everything else.',
+    ids: ['duolingo', 'brilliant', 'khan-academy'],
+  },
+  {
+    title: 'Course platforms',
+    lead: 'Video courses and certificates.',
+    ids: ['udemy', 'coursera', 'linkedin-learning', 'datacamp', 'skillshare'],
+  },
+];
+
+function cards(ids: string[]) {
+  return ids
+    .map((id) => COMPETITORS.find((c) => c.id === id))
+    .filter((c): c is Competitor => Boolean(c))
+    .flatMap((c) => [
+      {
+        href: `/alternatives/${vsSlug(c)}`,
+        kicker: 'Head to head',
+        title: `Teyro vs ${c.name}`,
+        text: c.summary,
+        art: <Scale size={28} strokeWidth={2.5} />,
+      },
+      {
+        href: `/alternatives/${altSlug(c)}`,
+        kicker: 'Alternatives',
+        title: `Best ${c.name} alternatives`,
+        text: `Ranked by what you are leaving ${c.name} for.`,
+        accent: 'var(--success-green)',
+        art: <Shuffle size={28} strokeWidth={2.5} />,
+      },
+    ]);
+}
+
 export default function AlternativesHubPage() {
-  const pages = getAllLandingPages();
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Teyro vs Competitors',
-    url: buildCanonical('/alternatives'),
-    description:
-      'Honest comparison of Teyro against Duolingo, Skillshare, Khan Academy, Udemy, and Coursera. See why learners switch to Teyro for daily skill building.',
-    isPartOf: {
-      '@type': 'WebSite',
-      name: 'Teyro',
-      url: buildCanonical('/'),
-    },
-  };
-
   return (
-    <div className={styles.page}>
-      <JsonLd data={jsonLd} />
-      <div className={styles.container}>
-        {/* ── Hero ── */}
-        <header className={styles.hero}>
-          <div className={styles.heroContent}>
-            <span className={styles.kicker}>Compare</span>
-            <h1 className={styles.title}>
-              The Best Learning Platform Alternatives
+    <div className={s.page}>
+      <JsonLd
+        data={schemas(
+          collectionSchema({ name: 'Teyro comparisons', path: '/alternatives', description: DESCRIPTION }),
+          breadcrumbSchema([{ name: 'Compare', path: '/alternatives' }]),
+          itemListSchema(
+            'Teyro comparisons',
+            COMPETITORS.map((c) => ({ name: `Teyro vs ${c.name}`, url: `/alternatives/${vsSlug(c)}` })),
+          ),
+        )}
+      />
+
+      <div className={s.hubBand}>
+        <header className={s.hubHero}>
+          <div className={s.hubCopy}>
+            <span className={s.eyebrow}>Compare</span>
+            <h1 className={`${s.display} ${s.hubTitle}`}>
+              Honest comparisons, <em>including when to stay.</em>
             </h1>
-            <p className={styles.subtitle}>
-              Honest, in-depth comparisons of Teyro against the most popular
-              learning platforms. No spin — just what actually determines
-              outcomes: completion rate, daily consistency, and whether the
-              format produces applied skill.
+            <p className={s.lead}>
+              Every page puts Teyro next to another app on the same facts, ranks Teyro where it actually belongs, and
+              tells you when the other app is the better choice.
             </p>
-            <div className={styles.heroStats}>
-              <div className={styles.stat}>
-                <Shield size={28} strokeWidth={2} />
-                <span className={styles.statValue}>5</span>
-                <span className={styles.statLabel}>Platforms Compared</span>
-              </div>
-              <div className={styles.stat}>
-                <Zap size={28} strokeWidth={2} />
-                <span className={styles.statValue}>15 min</span>
-                <span className={styles.statLabel}>Daily Sessions</span>
-              </div>
-              <div className={styles.stat}>
-                <Trophy size={28} strokeWidth={2} />
-                <span className={styles.statValue}>0</span>
-                <span className={styles.statLabel}>Courses to Buy</span>
-              </div>
+            <div className={s.pillRow}>
+              {GROUPS.map((g) => (
+                <a key={g.title} href={`#${g.title.toLowerCase().replace(/\s+/g, '-')}`} className={s.pill}>
+                  {g.title}
+                </a>
+              ))}
             </div>
+            <Link href={START_HREF} className={s.btn}>
+              {START_LABEL}
+              <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
+            </Link>
+          </div>
+          <div className={s.hubArt}>
+            <Image
+              src="/User onbarding Assets/tey/thinking.webp"
+              alt=""
+              width={260}
+              height={300}
+              className={s.hubTey}
+              priority
+            />
           </div>
         </header>
+      </div>
 
-        {/* ── Intro ── */}
-        <section className={styles.intro}>
-          <p>
-            Most learning platforms sell you access. Teyro builds your
-            ability. The comparisons below focus on what actually determines
-            outcomes: completion rate, daily consistency, and whether the
-            format produces applied skill — not just knowledge.
-          </p>
-          <p>
-            Every comparison is written honestly, including where the
-            competitor genuinely excels. If you&apos;re considering switching,
-            start here to find the comparison that matters to you.
-          </p>
-        </section>
+      <div className={s.container}>
+        {GROUPS.map((g) => {
+          const id = g.title.toLowerCase().replace(/\s+/g, '-');
+          return (
+            <section key={g.title} className={s.section} aria-labelledby={id}>
+              <SectionHead id={id} title={g.title} lead={g.lead} />
+              <LinkCards items={cards(g.ids)} columns={2} />
+            </section>
+          );
+        })}
 
-        {/* ── All Alternatives Grid ── */}
-        <section className={styles.grid} aria-labelledby="alternatives-heading">
-          <h2 id="alternatives-heading" className={styles.sectionHeading}>
-            Platform Comparisons
-          </h2>
-          <div className={styles.cards}>
-            {pages.map((page) => (
-              <Link
-                href={`/alternatives/${page.slug}`}
-                key={page.slug}
-                className={styles.card}
-              >
-                <div className={styles.cardContent}>
-                  <h3 className={styles.cardTitle}>
-                    {page.frontmatter.title}
-                  </h3>
-                  <p className={styles.cardDescription}>
-                    {page.frontmatter.meta_description}
-                  </p>
-                  <div className={styles.cardMeta}>
-                    <span className={styles.cardMetaItem}>
-                      {page.frontmatter.reading_time} min read
-                    </span>
-                    <span className={styles.cardMetaDot}>·</span>
-                    <span className={styles.cardMetaItem}>
-                      {page.frontmatter.word_count.toLocaleString()} words
-                    </span>
-                  </div>
-                  <span className={styles.cardCta}>
-                    Read comparison
-                    <ArrowRight size={14} strokeWidth={3} />
-                  </span>
-                </div>
-              </Link>
-            ))}
+        <section className={s.section} aria-labelledby="limits">
+          <div className={s.narrow}>
+            <SectionHead id="limits" eyebrow="In fairness" title="What Teyro doesn't do (yet)" />
+            <ListCard title="Teyro’s limits today" items={[...TEYRO_LIMITS]} negative />
           </div>
         </section>
 
-        {/* ── Why Teyro ── */}
-        <section className={styles.whySection}>
-          <h2 className={styles.sectionHeading}>Why Learners Switch</h2>
-          <div className={styles.whyGrid}>
-            <div className={styles.whyCard}>
-              <h3>Built for completion</h3>
-              <p>
-                Most platforms sell access and hope you finish. Teyro&apos;s
-                daily missions and streaks are engineered to make you
-                complete — not just enroll.
-              </p>
-            </div>
-            <div className={styles.whyCard}>
-              <h3>No courses to buy</h3>
-              <p>
-                There&apos;s no catalog to browse, no $200 course to purchase,
-                and no decision paralysis. Just one daily mission, every day.
-              </p>
-            </div>
-            <div className={styles.whyCard}>
-              <h3>Practical skills first</h3>
-              <p>
-                Every skill track is designed around applied practice —
-                coding, business, AI, communication — not theory you&apos;ll
-                forget.
-              </p>
-            </div>
-            <div className={styles.whyCard}>
-              <h3>Free to start</h3>
-              <p>
-                Teyro&apos;s free tier includes full daily missions, streaks,
-                and XP. No credit card needed to build a real learning habit.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── CTA ── */}
-        <section className={styles.ctaSection}>
-          <h2 className={styles.ctaTitle}>Stop consuming. Start building.</h2>
-          <p className={styles.ctaText}>
-            Your first mission takes 15 minutes. That&apos;s all it takes to know
-            Teyro is different.
-          </p>
-          <Link href="/onboarding/0" className={styles.ctaButton}>
-            Start your free streak
-            <ArrowRight size={18} strokeWidth={3} />
-          </Link>
-        </section>
+        <div className={s.narrow}>
+          <CtaBlock
+            cta={{
+              title: 'The fastest way to compare is to try it',
+              text: 'Your first lesson takes a few minutes. Free to start, no ads.',
+              href: START_HREF,
+              label: START_LABEL,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

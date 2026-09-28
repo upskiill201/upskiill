@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import type { CtaOverride } from '@/lib/blog/types';
 import styles from './CtaBlock.module.css';
 
@@ -14,8 +14,10 @@ const DEFAULTS = {
   label: 'Try Teyro free',
 };
 
-// Soft conversion block at the end of every post. Plain <Link> + CSS module
-// (NOT components/ui/Button — that component is client-only and would break RSC).
+// Conversion panel at the end of every post (and the blog index) — the
+// homepage's final-CTA look: flat brand blue, cheering Tey, white 3D button.
+// Plain <Link> + CSS module (NOT components/ui/Button — that component is
+// client-only and would break RSC).
 export default function CtaBlock({ cta }: CtaBlockProps) {
   const title = cta?.title ?? DEFAULTS.title;
   const text = cta?.text ?? DEFAULTS.text;
@@ -25,14 +27,21 @@ export default function CtaBlock({ cta }: CtaBlockProps) {
   return (
     <aside className={styles.block} aria-label="Call to action">
       <div className={styles.content}>
-        <p className={styles.kicker}>Ready when you are</p>
         <h2 className={styles.title}>{title}</h2>
         <p className={styles.text}>{text}</p>
         <Link href={href} className={styles.button}>
           {label}
-          <ArrowRight size={16} strokeWidth={3} className={styles.buttonIcon} />
         </Link>
         <p className={styles.fineprint}>Free to start · No credit card needed</p>
+      </div>
+      <div className={styles.art} aria-hidden="true">
+        <Image
+          src="/User onbarding Assets/tey/cheering.webp"
+          alt=""
+          width={180}
+          height={209}
+          className={styles.tey}
+        />
       </div>
     </aside>
   );

@@ -1,0 +1,296 @@
+/* /teach/how-it-works sections — on top of the homepage's Home.module.css
+   (band, wrap, split, display…). Tokens only. */
+
+/* ── At a glance ──────────────────────────────────────────── */
+
+.glanceBand {
+  padding: 48px 0;
+}
+
+.glance {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.glanceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 24px;
+  background: var(--bg-card);
+  text-align: center;
+}
+
+.glanceBig {
+  font-size: clamp(40px, 5vw, 56px);
+  color: var(--color-brand);
+}
+
+.glanceLine {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-ink-soft);
+}
+
+/* ── Journey path ─────────────────────────────────────────── */
+
+.path {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.pathItem {
+  display: block;
+}
+
+.pathLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 2px solid var(--border);
+  border-bottom-width: 5px;
+  border-radius: 20px;
+  background: var(--bg-card);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+@media (hover: hover) {
+  .pathLink:hover {
+    border-color: var(--color-brand);
+    transform: translateY(-2px);
+  }
+}
+
+.pathLink:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+
+.pathNode {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--bg-card);
+}
+
+.pathTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+/* ── Step tag ─────────────────────────────────────────────── */
+
+.stepTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.stepNum {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  letter-spacing: 0;
+  color: var(--bg-card);
+}
+
+/* ── Outcome ──────────────────────────────────────────────── */
+
+.outcome {
+  align-items: center;
+}
+
+.wins {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.win {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid var(--border);
+  border-bottom-width: 5px;
+  border-radius: 22px;
+  background: var(--bg-card);
+}
+
+.winTitle {
+  display: block;
+  font-size: 22px;
+}
+
+.winLine {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ── Founding ─────────────────────────────────────────────── */
+
+.founding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 40px;
+  border: 2px solid color-mix(in srgb, var(--warning) 45%, var(--bg-page));
+  border-bottom-width: 8px;
+  border-radius: 32px;
+  background: var(--bg-card);
+  text-align: center;
+}
+
+.crown {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 28px;
+  background: var(--warning);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--warning) 65%, var(--color-ink));
+  color: var(--bg-card);
+}
+
+.foundingList {
+  align-self: center;
+  text-align: left;
+}
+
+/* ── Who ──────────────────────────────────────────────────── */
+
+.who {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.whoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  border: 2px solid var(--border);
+  border-bottom-width: 5px;
+  border-radius: 22px;
+  background: var(--bg-card);
+  font-size: 16px;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+/* ── Fact sheet ───────────────────────────────────────────── */
+
+.facts {
+  max-width: 900px;
+  margin: 0 auto;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 24px;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+.fact + .fact {
+  border-top: 2px solid var(--bg-section);
+}
+
+.fact dt {
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.fact dd {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+}
+
+.faq {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .glance {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .path {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .who {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .path,
+  .who {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .founding {
+    padding: 32px 20px;
+  }
+
+  .fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 14px 18px;
+  }
+}

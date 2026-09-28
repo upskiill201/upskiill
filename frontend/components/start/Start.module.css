@@ -1,0 +1,560 @@
+/* /start install gateway — Duolingo style. Tokens only
+   (docs/08-color-system.md). */
+
+.screen {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  background: var(--bg-page);
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
+  padding: max(env(safe-area-inset-top), 12px) 20px max(env(safe-area-inset-bottom), 20px);
+}
+
+.panel {
+  width: 100%;
+  max-width: 440px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  outline: none;
+}
+
+.stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.grow {
+  flex: 1;
+  min-height: 12px;
+}
+
+.center {
+  text-align: center;
+}
+
+/* ─── Type ─────────────────────────────────────────────────────────────── */
+.headline {
+  margin: 0;
+  font-size: clamp(30px, 8.5vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.headline span {
+  color: var(--color-brand);
+}
+
+.headlineMd {
+  font-size: clamp(24px, 7vw, 32px);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.button {
+  width: 100%;
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 16px;
+  background: var(--color-brand);
+  box-shadow: 0 5px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.buttonGreen {
+  background: var(--success-green);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--success-green) 72%, black);
+}
+
+@media (hover: hover) {
+  .button:hover {
+    filter: brightness(1.06);
+  }
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+.button:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.ghost {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 14px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ghost:hover {
+    background: var(--bg-section);
+    color: var(--text-secondary);
+  }
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid color-mix(in srgb, var(--bg-card) 40%, transparent);
+  border-top-color: var(--bg-card);
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────── */
+.card {
+  width: 100%;
+  padding: 18px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 22px;
+  background: var(--bg-card);
+}
+
+.cardText {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.cardMuted {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.benefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.benefitIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
+  color: var(--color-brand);
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chipBenefit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chipBenefit svg {
+  color: var(--color-brand);
+}
+
+/* ─── Tey ──────────────────────────────────────────────────────────────── */
+.tey {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.teyImg {
+  flex-shrink: 0;
+  width: 56px;
+  height: auto;
+}
+
+.bubble {
+  position: relative;
+  flex: 1;
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 14px;
+  width: 14px;
+  height: 14px;
+  border-left: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-card);
+  transform: rotate(45deg);
+}
+
+/* ─── Guide ────────────────────────────────────────────────────────────── */
+.guideTop {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.back {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--border-strong);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .back:hover {
+    background: var(--bg-section);
+    color: var(--text-muted);
+  }
+}
+
+.back:disabled {
+  visibility: hidden;
+}
+
+.progress {
+  flex: 1;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--success-green);
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--success-green) 75%, black 8%),
+    inset 0 4px 0 color-mix(in srgb, var(--bg-card) 30%, transparent);
+}
+
+/* The tap trail: every control the learner taps, in order. */
+.trail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.trailStep {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 2px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.trailDone {
+  border-color: color-mix(in srgb, var(--success-green) 45%, var(--bg-card));
+  background: color-mix(in srgb, var(--success-green) 10%, var(--bg-card));
+  color: color-mix(in srgb, var(--success-green) 75%, black);
+}
+
+.trailNow {
+  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+  color: var(--color-brand);
+  transform: scale(1.06);
+}
+
+.trailArrow {
+  color: var(--border-strong);
+}
+
+.shot {
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.instruction {
+  margin: 14px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+/* Numbered browser-menu steps. */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.stepNum {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* ─── Home Screen mock ─────────────────────────────────────────────────── */
+.phone {
+  position: relative;
+  width: min(250px, 64vw);
+  aspect-ratio: 9 / 15;
+  padding: 36px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  border: 8px solid var(--color-ink);
+  border-radius: 38px;
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--color-brand) 10%, var(--bg-card)),
+    color-mix(in srgb, var(--brand-purple) 10%, var(--bg-card))
+  );
+  box-shadow: 0 10px 0 color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+.phoneCompact {
+  width: min(190px, 50vw);
+  padding-top: 30px;
+  border-width: 7px;
+  border-radius: 32px;
+}
+
+.phoneNotch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 34%;
+  height: 16px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--color-ink);
+}
+
+.appGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 10px;
+}
+
+.appSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.blankApp {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 24%;
+  background: color-mix(in srgb, var(--color-ink) 14%, var(--bg-card));
+}
+
+.blankName {
+  width: 70%;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 12%, var(--bg-card));
+}
+
+.teyroApp {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  z-index: 1;
+}
+
+.teyroApp img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 24%;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--color-brand) 45%, transparent);
+}
+
+.ring {
+  position: absolute;
+  inset: -4px;
+  border: 3px solid var(--warning);
+  border-radius: 28%;
+  pointer-events: none;
+}
+
+.appName {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 5px;
+  color: var(--color-ink);
+}
+
+.dock {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card) 55%, transparent);
+}
+
+@media (min-width: 900px) {
+  .screen {
+    justify-content: center;
+  }
+  .panel {
+    flex: 0 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+  .trailNow {
+    transform: none;
+  }
+}

@@ -1,52 +1,56 @@
-/* Author page (E-E-A-T) */
+/* Author page (E-E-A-T) — sits inside BlogIndex.module.css's hero band */
 
 .header {
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .avatar {
-  width: 88px;
-  height: 88px;
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
   border-radius: 999px;
   object-fit: cover;
-  border: 2px solid #e2e8f0;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(61, 90, 254, 0.12);
+  border: 3px solid var(--bg-card);
+  box-shadow:
+    0 0 0 2px var(--border),
+    0 6px 0 var(--border);
+  background: var(--bg-card);
 }
 
 .avatarFallback {
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
-  font-size: 2rem;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 40px;
   font-weight: 800;
-  color: #3d5afe;
-  background: #eef2ff;
+  color: var(--color-brand);
+  background: var(--color-band);
 }
 
 .name {
-  margin: 0 0 4px;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  margin: 4px 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
   font-weight: 800;
-  color: #1f2a44;
+  line-height: 1.05;
+  color: var(--color-ink);
 }
 
 .role {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #0172fd;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-brand);
 }
 
 .bio {
   max-width: 640px;
-  margin: 0 0 48px;
-  font-size: 0.98rem;
-  line-height: 1.7;
-  color: #64748b;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
