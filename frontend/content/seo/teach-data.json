@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-09-28",
+ "generatedAt": "2026-09-29",
  "bls": {
   "year": "2025",
-  "complete": false,
+  "complete": true,
   "source": "U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics"
  },
  "worldBank": {
   "source": "World Bank Open Data"
  },
  "fx": {
-  "date": "2026-09-28",
+  "date": "2026-09-29",
   "source": "ExchangeRate-API (open.er-api.com)"
  },
  "us": [
@@ -1512,6 +1512,2826 @@
    "devJobs": 2180,
    "dsMedian": 108680,
    "dsJobs": 350
+  },
+  {
+   "code": "0039340",
+   "type": "metro",
+   "stateCode": "49",
+   "name": "Provo-Orem-Lehi, UT",
+   "devMedian": 131210,
+   "devJobs": 7870,
+   "dsMedian": 103340,
+   "dsJobs": 840
+  },
+  {
+   "code": "0045780",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Toledo, OH",
+   "devMedian": 104360,
+   "devJobs": 880,
+   "dsMedian": 82000,
+   "dsJobs": 150
+  },
+  {
+   "code": "0048620",
+   "type": "metro",
+   "stateCode": "20",
+   "name": "Wichita, KS",
+   "devMedian": 105980,
+   "devJobs": 2040,
+   "dsMedian": 94680,
+   "dsJobs": 70
+  },
+  {
+   "code": "0020500",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Durham-Chapel Hill, NC",
+   "devMedian": 135620,
+   "devJobs": 9790,
+   "dsMedian": 106500,
+   "dsJobs": 1320
+  },
+  {
+   "code": "0012260",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Augusta-Richmond County, GA-SC",
+   "devMedian": 119780,
+   "devJobs": 910,
+   "dsMedian": 92800,
+   "dsJobs": 220
+  },
+  {
+   "code": "0037340",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Palm Bay-Melbourne-Titusville, FL",
+   "devMedian": 131760,
+   "devJobs": 5030,
+   "dsMedian": 105400,
+   "dsJobs": 280
+  },
+  {
+   "code": "0027100",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Jackson, MI",
+   "devMedian": 130220,
+   "devJobs": 390,
+   "dsMedian": 107640,
+   "dsJobs": 70
+  },
+  {
+   "code": "0027140",
+   "type": "metro",
+   "stateCode": "28",
+   "name": "Jackson, MS",
+   "devMedian": 96990,
+   "devJobs": 550,
+   "dsMedian": 98290,
+   "dsJobs": 110
+  },
+  {
+   "code": "0027180",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Jackson, TN",
+   "devMedian": 96540,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0025420",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Harrisburg-Carlisle, PA",
+   "devMedian": 109470,
+   "devJobs": 2580,
+   "dsMedian": 96760,
+   "dsJobs": 500
+  },
+  {
+   "code": "0044060",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Spokane-Spokane Valley, WA",
+   "devMedian": 130690,
+   "devJobs": 1840,
+   "dsMedian": 117250,
+   "dsJobs": 160
+  },
+  {
+   "code": "0016860",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Chattanooga, TN-GA",
+   "devMedian": 106750,
+   "devJobs": 990,
+   "dsMedian": 91340,
+   "dsJobs": 200
+  },
+  {
+   "code": "0042540",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Scranton--Wilkes-Barre, PA",
+   "devMedian": 119960,
+   "devJobs": 730,
+   "dsMedian": 84750,
+   "dsJobs": 200
+  },
+  {
+   "code": "0026620",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Huntsville, AL",
+   "devMedian": 128080,
+   "devJobs": 7030,
+   "dsMedian": 111810,
+   "dsJobs": 620
+  },
+  {
+   "code": "0029540",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Lancaster, PA",
+   "devMedian": 104740,
+   "devJobs": 850,
+   "dsMedian": 90960,
+   "dsJobs": 190
+  },
+  {
+   "code": "0033700",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Modesto, CA",
+   "devMedian": 119770,
+   "devJobs": 300,
+   "dsMedian": 104990,
+   "dsJobs": 80
+  },
+  {
+   "code": "0022220",
+   "type": "metro",
+   "stateCode": "05",
+   "name": "Fayetteville-Springdale-Rogers, AR",
+   "devMedian": 105130,
+   "devJobs": 2490,
+   "dsMedian": 125590,
+   "dsJobs": 280
+  },
+  {
+   "code": "0022180",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Fayetteville, NC",
+   "devMedian": 122900,
+   "devJobs": 420,
+   "dsMedian": 106270,
+   "dsJobs": 90
+  },
+  {
+   "code": "0039900",
+   "type": "metro",
+   "stateCode": "32",
+   "name": "Reno, NV",
+   "devMedian": 125710,
+   "devJobs": 1200,
+   "dsMedian": 97940,
+   "dsJobs": 330
+  },
+  {
+   "code": "0049660",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Youngstown-Warren, OH",
+   "devMedian": 107990,
+   "devJobs": 260,
+   "dsMedian": 79720,
+   "dsJobs": 50
+  },
+  {
+   "code": "0030460",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Lexington-Fayette, KY",
+   "devMedian": 123510,
+   "devJobs": 1430,
+   "dsMedian": 84460,
+   "dsJobs": 230
+  },
+  {
+   "code": "0037860",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Pensacola-Ferry Pass-Brent, FL",
+   "devMedian": 108430,
+   "devJobs": 1000,
+   "dsMedian": 101490,
+   "dsJobs": 130
+  },
+  {
+   "code": "0042220",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Santa Rosa-Petaluma, CA",
+   "devMedian": 148630,
+   "devJobs": 560,
+   "dsMedian": 119930,
+   "dsJobs": 130
+  },
+  {
+   "code": "0011460",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Ann Arbor, MI",
+   "devMedian": 126830,
+   "devJobs": 2740,
+   "dsMedian": 112680,
+   "dsJobs": 340
+  },
+  {
+   "code": "0014500",
+   "type": "metro",
+   "stateCode": "08",
+   "name": "Boulder, CO",
+   "devMedian": 164560,
+   "devJobs": 7130,
+   "dsMedian": 134040,
+   "dsJobs": 540
+  },
+  {
+   "code": "0045940",
+   "type": "metro",
+   "stateCode": "34",
+   "name": "Trenton-Princeton, NJ",
+   "devMedian": 128770,
+   "devJobs": 3390,
+   "dsMedian": 135320,
+   "dsJobs": 430
+  },
+  {
+   "code": "0023540",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Gainesville, FL",
+   "devMedian": 122950,
+   "devJobs": 580,
+   "dsMedian": 109800,
+   "dsJobs": 70
+  },
+  {
+   "code": "0023580",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Gainesville, GA",
+   "devMedian": 121940,
+   "devJobs": 290,
+   "dsMedian": 84670,
+   "dsJobs": 70
+  },
+  {
+   "code": "0045220",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Tallahassee, FL",
+   "devMedian": 121800,
+   "devJobs": 1320,
+   "dsMedian": 94620,
+   "dsJobs": 160
+  },
+  {
+   "code": "0030700",
+   "type": "metro",
+   "stateCode": "31",
+   "name": "Lincoln, NE",
+   "devMedian": 101690,
+   "devJobs": 1530,
+   "dsMedian": 87890,
+   "dsJobs": 450
+  },
+  {
+   "code": "0022660",
+   "type": "metro",
+   "stateCode": "08",
+   "name": "Fort Collins-Loveland, CO",
+   "devMedian": 133990,
+   "devJobs": 1820,
+   "dsMedian": 111310,
+   "dsJobs": 220
+  },
+  {
+   "code": "0011700",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Asheville, NC",
+   "devMedian": 134350,
+   "devJobs": 780,
+   "dsMedian": 97690,
+   "dsJobs": 130
+  },
+  {
+   "code": "0042340",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Savannah, GA",
+   "devMedian": 123220,
+   "devJobs": 440,
+   "dsMedian": 97200,
+   "dsJobs": 160
+  },
+  {
+   "code": "0011260",
+   "type": "metro",
+   "stateCode": "02",
+   "name": "Anchorage, AK",
+   "devMedian": 104030,
+   "devJobs": 320,
+   "dsMedian": 98630,
+   "dsJobs": 120
+  },
+  {
+   "code": "0015500",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Burlington, NC",
+   "devMedian": 127570,
+   "devJobs": 270,
+   "dsMedian": 96300,
+   "dsJobs": 80
+  },
+  {
+   "code": "0015540",
+   "type": "metro",
+   "stateCode": "50",
+   "name": "Burlington-South Burlington, VT",
+   "devMedian": 126940,
+   "devJobs": 770,
+   "dsMedian": 131820,
+   "dsJobs": 100
+  },
+  {
+   "code": "0011500",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Anniston-Oxford, AL",
+   "devMedian": 99260,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0012220",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Auburn-Opelika, AL",
+   "devMedian": 120310,
+   "devJobs": 290,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0019300",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Daphne-Fairhope-Foley, AL",
+   "devMedian": 121320,
+   "devJobs": 340,
+   "dsMedian": 71240,
+   "dsJobs": 30
+  },
+  {
+   "code": "0019460",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Decatur, AL",
+   "devMedian": 107740,
+   "devJobs": 160,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0020020",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Dothan, AL",
+   "devMedian": 115580,
+   "devJobs": 160,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0022520",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Florence-Muscle Shoals, AL",
+   "devMedian": 116260,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0033660",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Mobile, AL",
+   "devMedian": 122540,
+   "devJobs": 1050,
+   "dsMedian": 83910,
+   "dsJobs": 100
+  },
+  {
+   "code": "0033860",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Montgomery, AL",
+   "devMedian": 110620,
+   "devJobs": 780,
+   "dsMedian": 87640,
+   "dsJobs": 80
+  },
+  {
+   "code": "0046220",
+   "type": "metro",
+   "stateCode": "01",
+   "name": "Tuscaloosa, AL",
+   "devMedian": 104870,
+   "devJobs": 290,
+   "dsMedian": 92880,
+   "dsJobs": 50
+  },
+  {
+   "code": "0021820",
+   "type": "metro",
+   "stateCode": "02",
+   "name": "Fairbanks-College, AK",
+   "devMedian": 101260,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": 40
+  },
+  {
+   "code": "0022380",
+   "type": "metro",
+   "stateCode": "04",
+   "name": "Flagstaff, AZ",
+   "devMedian": 113580,
+   "devJobs": 110,
+   "dsMedian": 95080,
+   "dsJobs": 50
+  },
+  {
+   "code": "0029420",
+   "type": "metro",
+   "stateCode": "04",
+   "name": "Lake Havasu City-Kingman, AZ",
+   "devMedian": 114750,
+   "devJobs": 110,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0039150",
+   "type": "metro",
+   "stateCode": "04",
+   "name": "Prescott Valley-Prescott, AZ",
+   "devMedian": 125590,
+   "devJobs": 210,
+   "dsMedian": 79990,
+   "dsJobs": 50
+  },
+  {
+   "code": "0043420",
+   "type": "metro",
+   "stateCode": "04",
+   "name": "Sierra Vista-Douglas, AZ",
+   "devMedian": 115890,
+   "devJobs": 280,
+   "dsMedian": 103440,
+   "dsJobs": 40
+  },
+  {
+   "code": "0049740",
+   "type": "metro",
+   "stateCode": "04",
+   "name": "Yuma, AZ",
+   "devMedian": 121610,
+   "devJobs": 230,
+   "dsMedian": 97580,
+   "dsJobs": 50
+  },
+  {
+   "code": "0022900",
+   "type": "metro",
+   "stateCode": "05",
+   "name": "Fort Smith, AR-OK",
+   "devMedian": 114140,
+   "devJobs": 200,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0026300",
+   "type": "metro",
+   "stateCode": "05",
+   "name": "Hot Springs, AR",
+   "devMedian": 117610,
+   "devJobs": 60,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0027860",
+   "type": "metro",
+   "stateCode": "05",
+   "name": "Jonesboro, AR",
+   "devMedian": 84990,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0017020",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Chico, CA",
+   "devMedian": 131360,
+   "devJobs": 150,
+   "dsMedian": null,
+   "dsJobs": 40
+  },
+  {
+   "code": "0020940",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "El Centro, CA",
+   "devMedian": 125930,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0032900",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Merced, CA",
+   "devMedian": 132120,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0034900",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Napa, CA",
+   "devMedian": 153130,
+   "devJobs": 130,
+   "dsMedian": 101830,
+   "dsJobs": 30
+  },
+  {
+   "code": "0039820",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Redding, CA",
+   "devMedian": 129230,
+   "devJobs": 160,
+   "dsMedian": 96960,
+   "dsJobs": 60
+  },
+  {
+   "code": "0041500",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Salinas, CA",
+   "devMedian": 135160,
+   "devJobs": 290,
+   "dsMedian": 99850,
+   "dsJobs": 90
+  },
+  {
+   "code": "0042020",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "San Luis Obispo-Paso Robles, CA",
+   "devMedian": 135020,
+   "devJobs": 520,
+   "dsMedian": 114830,
+   "dsJobs": 60
+  },
+  {
+   "code": "0042100",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Santa Cruz-Watsonville, CA",
+   "devMedian": 156910,
+   "devJobs": 540,
+   "dsMedian": 130980,
+   "dsJobs": 80
+  },
+  {
+   "code": "0042200",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Santa Maria-Santa Barbara, CA",
+   "devMedian": 158290,
+   "devJobs": 1680,
+   "dsMedian": 113990,
+   "dsJobs": 190
+  },
+  {
+   "code": "0046700",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Vallejo, CA",
+   "devMedian": 136930,
+   "devJobs": 330,
+   "dsMedian": 104530,
+   "dsJobs": 70
+  },
+  {
+   "code": "0047300",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Visalia, CA",
+   "devMedian": 126170,
+   "devJobs": 230,
+   "dsMedian": 97870,
+   "dsJobs": 40
+  },
+  {
+   "code": "0049700",
+   "type": "metro",
+   "stateCode": "06",
+   "name": "Yuba City, CA",
+   "devMedian": 132120,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0024300",
+   "type": "metro",
+   "stateCode": "08",
+   "name": "Grand Junction, CO",
+   "devMedian": 123990,
+   "devJobs": 170,
+   "dsMedian": 111300,
+   "dsJobs": 40
+  },
+  {
+   "code": "0024540",
+   "type": "metro",
+   "stateCode": "08",
+   "name": "Greeley, CO",
+   "devMedian": 129480,
+   "devJobs": 560,
+   "dsMedian": 116790,
+   "dsJobs": 100
+  },
+  {
+   "code": "0039380",
+   "type": "metro",
+   "stateCode": "08",
+   "name": "Pueblo, CO",
+   "devMedian": 122780,
+   "devJobs": 150,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0035980",
+   "type": "metro",
+   "stateCode": "09",
+   "name": "Norwich-New London-Willimantic, CT",
+   "devMedian": 123780,
+   "devJobs": 1060,
+   "dsMedian": 101940,
+   "dsJobs": 60
+  },
+  {
+   "code": "0047930",
+   "type": "metro",
+   "stateCode": "09",
+   "name": "Waterbury-Shelton, CT",
+   "devMedian": 131290,
+   "devJobs": 730,
+   "dsMedian": 59160,
+   "dsJobs": 170
+  },
+  {
+   "code": "0020100",
+   "type": "metro",
+   "stateCode": "10",
+   "name": "Dover, DE",
+   "devMedian": 107530,
+   "devJobs": 250,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0018880",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Crestview-Fort Walton Beach-Destin, FL",
+   "devMedian": 130640,
+   "devJobs": 1380,
+   "dsMedian": 83340,
+   "dsJobs": 160
+  },
+  {
+   "code": "0026140",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Homosassa Springs, FL",
+   "devMedian": 124540,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0034940",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Naples-Marco Island, FL",
+   "devMedian": 130730,
+   "devJobs": 720,
+   "dsMedian": 115140,
+   "dsJobs": 50
+  },
+  {
+   "code": "0036100",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Ocala, FL",
+   "devMedian": 112780,
+   "devJobs": 380,
+   "dsMedian": 93760,
+   "dsJobs": 40
+  },
+  {
+   "code": "0037460",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Panama City-Panama City Beach, FL",
+   "devMedian": 121150,
+   "devJobs": 400,
+   "dsMedian": 87750,
+   "dsJobs": 50
+  },
+  {
+   "code": "0038940",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Port St. Lucie, FL",
+   "devMedian": 128510,
+   "devJobs": 420,
+   "dsMedian": 95190,
+   "dsJobs": 40
+  },
+  {
+   "code": "0039460",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Punta Gorda, FL",
+   "devMedian": 134510,
+   "devJobs": 280,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0042680",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Sebastian-Vero Beach-West Vero Corridor, FL",
+   "devMedian": 132720,
+   "devJobs": 190,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0042700",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Sebring, FL",
+   "devMedian": 116110,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0048680",
+   "type": "metro",
+   "stateCode": "12",
+   "name": "Wildwood-The Villages, FL",
+   "devMedian": 128560,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0012020",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Athens-Clarke County, GA",
+   "devMedian": 106870,
+   "devJobs": 150,
+   "dsMedian": 76090,
+   "dsJobs": 30
+  },
+  {
+   "code": "0015260",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Brunswick-St. Simons, GA",
+   "devMedian": 103170,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0019140",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Dalton, GA",
+   "devMedian": 115480,
+   "devJobs": 280,
+   "dsMedian": 101020,
+   "dsJobs": 50
+  },
+  {
+   "code": "0031420",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Macon-Bibb County, GA",
+   "devMedian": 120410,
+   "devJobs": 230,
+   "dsMedian": 95550,
+   "dsJobs": 80
+  },
+  {
+   "code": "0040660",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Rome, GA",
+   "devMedian": 118030,
+   "devJobs": 140,
+   "dsMedian": 92130,
+   "dsJobs": 30
+  },
+  {
+   "code": "0046660",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Valdosta, GA",
+   "devMedian": 105640,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0047580",
+   "type": "metro",
+   "stateCode": "13",
+   "name": "Warner Robins, GA",
+   "devMedian": 118520,
+   "devJobs": 250,
+   "dsMedian": 87060,
+   "dsJobs": 110
+  },
+  {
+   "code": "0027980",
+   "type": "metro",
+   "stateCode": "15",
+   "name": "Kahului-Wailuku, HI",
+   "devMedian": 133870,
+   "devJobs": 110,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0046520",
+   "type": "metro",
+   "stateCode": "15",
+   "name": "Urban Honolulu, HI",
+   "devMedian": 120230,
+   "devJobs": 1290,
+   "dsMedian": 102080,
+   "dsJobs": 250
+  },
+  {
+   "code": "0014260",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Boise City, ID",
+   "devMedian": 131590,
+   "devJobs": 3240,
+   "dsMedian": 97950,
+   "dsJobs": 600
+  },
+  {
+   "code": "0017660",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Coeur d'Alene, ID",
+   "devMedian": 126870,
+   "devJobs": 310,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0026820",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Idaho Falls, ID",
+   "devMedian": 123450,
+   "devJobs": 530,
+   "dsMedian": 167840,
+   "dsJobs": 230
+  },
+  {
+   "code": "0030300",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Lewiston, ID-WA",
+   "devMedian": 101310,
+   "devJobs": 70,
+   "dsMedian": 81250,
+   "dsJobs": 40
+  },
+  {
+   "code": "0038540",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Pocatello, ID",
+   "devMedian": 119430,
+   "devJobs": 90,
+   "dsMedian": 79300,
+   "dsJobs": 40
+  },
+  {
+   "code": "0046300",
+   "type": "metro",
+   "stateCode": "16",
+   "name": "Twin Falls, ID",
+   "devMedian": 124000,
+   "devJobs": 120,
+   "dsMedian": 93330,
+   "dsJobs": 30
+  },
+  {
+   "code": "0014010",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Bloomington, IL",
+   "devMedian": 123320,
+   "devJobs": 1570,
+   "dsMedian": 120760,
+   "dsJobs": 590
+  },
+  {
+   "code": "0016580",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Champaign-Urbana, IL",
+   "devMedian": 106080,
+   "devJobs": 670,
+   "dsMedian": 91760,
+   "dsJobs": 140
+  },
+  {
+   "code": "0019500",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Decatur, IL",
+   "devMedian": 110300,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0028100",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Kankakee, IL",
+   "devMedian": 116550,
+   "devJobs": 60,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0037900",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Peoria, IL",
+   "devMedian": 130590,
+   "devJobs": 1650,
+   "dsMedian": 120000,
+   "dsJobs": 340
+  },
+  {
+   "code": "0040420",
+   "type": "metro",
+   "stateCode": "17",
+   "name": "Rockford, IL",
+   "devMedian": 107640,
+   "devJobs": 380,
+   "dsMedian": 92990,
+   "dsJobs": 100
+  },
+  {
+   "code": "0014020",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Bloomington, IN",
+   "devMedian": 99990,
+   "devJobs": 220,
+   "dsMedian": 83020,
+   "dsJobs": 50
+  },
+  {
+   "code": "0021140",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Elkhart-Goshen, IN",
+   "devMedian": 101710,
+   "devJobs": 230,
+   "dsMedian": 81420,
+   "dsJobs": 100
+  },
+  {
+   "code": "0021780",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Evansville, IN",
+   "devMedian": 98560,
+   "devJobs": 290,
+   "dsMedian": 83140,
+   "dsJobs": 140
+  },
+  {
+   "code": "0023060",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Fort Wayne, IN",
+   "devMedian": 101560,
+   "devJobs": 810,
+   "dsMedian": 94470,
+   "dsJobs": 270
+  },
+  {
+   "code": "0029020",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Kokomo, IN",
+   "devMedian": 132390,
+   "devJobs": 60,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0029200",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Lafayette-West Lafayette, IN",
+   "devMedian": 99750,
+   "devJobs": 490,
+   "dsMedian": 79280,
+   "dsJobs": 70
+  },
+  {
+   "code": "0033140",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Michigan City-La Porte, IN",
+   "devMedian": 98510,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0034620",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Muncie, IN",
+   "devMedian": 99380,
+   "devJobs": 120,
+   "dsMedian": 82160,
+   "dsJobs": 30
+  },
+  {
+   "code": "0043780",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "South Bend-Mishawaka, IN-MI",
+   "devMedian": 95500,
+   "devJobs": 350,
+   "dsMedian": 81570,
+   "dsJobs": 130
+  },
+  {
+   "code": "0045460",
+   "type": "metro",
+   "stateCode": "18",
+   "name": "Terre Haute, IN",
+   "devMedian": 107770,
+   "devJobs": 110,
+   "dsMedian": 77220,
+   "dsJobs": 50
+  },
+  {
+   "code": "0011180",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Ames, IA",
+   "devMedian": 129440,
+   "devJobs": 470,
+   "dsMedian": 79430,
+   "dsJobs": 100
+  },
+  {
+   "code": "0016300",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Cedar Rapids, IA",
+   "devMedian": 114340,
+   "devJobs": 1250,
+   "dsMedian": 99410,
+   "dsJobs": 180
+  },
+  {
+   "code": "0019340",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Davenport-Moline-Rock Island, IA-IL",
+   "devMedian": 115780,
+   "devJobs": 1220,
+   "dsMedian": 106340,
+   "dsJobs": 280
+  },
+  {
+   "code": "0020220",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Dubuque, IA",
+   "devMedian": 105360,
+   "devJobs": 330,
+   "dsMedian": 74790,
+   "dsJobs": 90
+  },
+  {
+   "code": "0026980",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Iowa City, IA",
+   "devMedian": 107680,
+   "devJobs": 690,
+   "dsMedian": 72120,
+   "dsJobs": 170
+  },
+  {
+   "code": "0043580",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Sioux City, IA-NE-SD",
+   "devMedian": 101150,
+   "devJobs": 230,
+   "dsMedian": 90030,
+   "dsJobs": 40
+  },
+  {
+   "code": "0047940",
+   "type": "metro",
+   "stateCode": "19",
+   "name": "Waterloo-Cedar Falls, IA",
+   "devMedian": 113970,
+   "devJobs": 280,
+   "dsMedian": 82050,
+   "dsJobs": 70
+  },
+  {
+   "code": "0029940",
+   "type": "metro",
+   "stateCode": "20",
+   "name": "Lawrence, KS",
+   "devMedian": 104990,
+   "devJobs": 410,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0031740",
+   "type": "metro",
+   "stateCode": "20",
+   "name": "Manhattan, KS",
+   "devMedian": 101960,
+   "devJobs": 350,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0045820",
+   "type": "metro",
+   "stateCode": "20",
+   "name": "Topeka, KS",
+   "devMedian": 111870,
+   "devJobs": 1500,
+   "dsMedian": 94780,
+   "dsJobs": 40
+  },
+  {
+   "code": "0014540",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Bowling Green, KY",
+   "devMedian": 100650,
+   "devJobs": 200,
+   "dsMedian": 65620,
+   "dsJobs": 40
+  },
+  {
+   "code": "0021060",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Elizabethtown, KY",
+   "devMedian": 95980,
+   "devJobs": 180,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0031140",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Louisville/Jefferson County, KY-IN",
+   "devMedian": 110270,
+   "devJobs": 2770,
+   "dsMedian": 99980,
+   "dsJobs": 650
+  },
+  {
+   "code": "0036980",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Owensboro, KY",
+   "devMedian": 102010,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0037140",
+   "type": "metro",
+   "stateCode": "21",
+   "name": "Paducah, KY-IL",
+   "devMedian": 99260,
+   "devJobs": 140,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0010780",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Alexandria, LA",
+   "devMedian": 95510,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0025220",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Hammond, LA",
+   "devMedian": 118590,
+   "devJobs": 60,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0026380",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Houma-Bayou Cane-Thibodaux, LA",
+   "devMedian": 102970,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0029180",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Lafayette, LA",
+   "devMedian": 109010,
+   "devJobs": 660,
+   "dsMedian": 98130,
+   "dsJobs": 50
+  },
+  {
+   "code": "0029340",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Lake Charles, LA",
+   "devMedian": 120940,
+   "devJobs": 100,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0033740",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Monroe, LA",
+   "devMedian": 94580,
+   "devJobs": 140,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0043340",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Shreveport-Bossier City, LA",
+   "devMedian": 96680,
+   "devJobs": 260,
+   "dsMedian": 98400,
+   "dsJobs": 40
+  },
+  {
+   "code": "0043640",
+   "type": "metro",
+   "stateCode": "22",
+   "name": "Slidell-Mandeville-Covington, LA",
+   "devMedian": 101530,
+   "devJobs": 270,
+   "dsMedian": 115140,
+   "dsJobs": 40
+  },
+  {
+   "code": "0012620",
+   "type": "metro",
+   "stateCode": "23",
+   "name": "Bangor, ME",
+   "devMedian": 104140,
+   "devJobs": 110,
+   "dsMedian": null,
+   "dsJobs": 60
+  },
+  {
+   "code": "0030340",
+   "type": "metro",
+   "stateCode": "23",
+   "name": "Lewiston-Auburn, ME",
+   "devMedian": 117700,
+   "devJobs": 150,
+   "dsMedian": 81570,
+   "dsJobs": 70
+  },
+  {
+   "code": "0025180",
+   "type": "metro",
+   "stateCode": "24",
+   "name": "Hagerstown-Martinsburg, MD-WV",
+   "devMedian": 122830,
+   "devJobs": 530,
+   "dsMedian": 97190,
+   "dsJobs": 50
+  },
+  {
+   "code": "0030500",
+   "type": "metro",
+   "stateCode": "24",
+   "name": "Lexington Park, MD",
+   "devMedian": 132850,
+   "devJobs": 720,
+   "dsMedian": 129020,
+   "dsJobs": 90
+  },
+  {
+   "code": "0041540",
+   "type": "metro",
+   "stateCode": "24",
+   "name": "Salisbury, MD",
+   "devMedian": 116380,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0011200",
+   "type": "metro",
+   "stateCode": "25",
+   "name": "Amherst Town-Northampton, MA",
+   "devMedian": 126670,
+   "devJobs": 260,
+   "dsMedian": 94640,
+   "dsJobs": 40
+  },
+  {
+   "code": "0012700",
+   "type": "metro",
+   "stateCode": "25",
+   "name": "Barnstable Town, MA",
+   "devMedian": 133690,
+   "devJobs": 210,
+   "dsMedian": 129530,
+   "dsJobs": 70
+  },
+  {
+   "code": "0038340",
+   "type": "metro",
+   "stateCode": "25",
+   "name": "Pittsfield, MA",
+   "devMedian": 154860,
+   "devJobs": 280,
+   "dsMedian": 103590,
+   "dsJobs": 50
+  },
+  {
+   "code": "0012980",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Battle Creek, MI",
+   "devMedian": 126050,
+   "devJobs": 190,
+   "dsMedian": null,
+   "dsJobs": 80
+  },
+  {
+   "code": "0013020",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Bay City, MI",
+   "devMedian": 124420,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0022420",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Flint, MI",
+   "devMedian": 101750,
+   "devJobs": 260,
+   "dsMedian": 79610,
+   "dsJobs": 110
+  },
+  {
+   "code": "0028020",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Kalamazoo-Portage, MI",
+   "devMedian": 118100,
+   "devJobs": 430,
+   "dsMedian": 80830,
+   "dsJobs": 150
+  },
+  {
+   "code": "0029620",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Lansing-East Lansing, MI",
+   "devMedian": 97120,
+   "devJobs": 3020,
+   "dsMedian": 87160,
+   "dsJobs": 490
+  },
+  {
+   "code": "0033220",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Midland, MI",
+   "devMedian": 83730,
+   "devJobs": 160,
+   "dsMedian": 84520,
+   "dsJobs": 70
+  },
+  {
+   "code": "0033780",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Monroe, MI",
+   "devMedian": 98270,
+   "devJobs": 100,
+   "dsMedian": 96140,
+   "dsJobs": 40
+  },
+  {
+   "code": "0034740",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Muskegon-Norton Shores, MI",
+   "devMedian": 101940,
+   "devJobs": 90,
+   "dsMedian": 79480,
+   "dsJobs": 40
+  },
+  {
+   "code": "0035660",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Niles, MI",
+   "devMedian": 111720,
+   "devJobs": 160,
+   "dsMedian": 95350,
+   "dsJobs": 50
+  },
+  {
+   "code": "0040980",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Saginaw, MI",
+   "devMedian": 101430,
+   "devJobs": 230,
+   "dsMedian": 85460,
+   "dsJobs": 80
+  },
+  {
+   "code": "0045900",
+   "type": "metro",
+   "stateCode": "26",
+   "name": "Traverse City, MI",
+   "devMedian": 95860,
+   "devJobs": 140,
+   "dsMedian": 77420,
+   "dsJobs": 60
+  },
+  {
+   "code": "0020260",
+   "type": "metro",
+   "stateCode": "27",
+   "name": "Duluth, MN-WI",
+   "devMedian": 103500,
+   "devJobs": 460,
+   "dsMedian": 99400,
+   "dsJobs": 50
+  },
+  {
+   "code": "0031860",
+   "type": "metro",
+   "stateCode": "27",
+   "name": "Mankato, MN",
+   "devMedian": 100630,
+   "devJobs": 160,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0041060",
+   "type": "metro",
+   "stateCode": "27",
+   "name": "St. Cloud, MN",
+   "devMedian": 103000,
+   "devJobs": 420,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0025060",
+   "type": "metro",
+   "stateCode": "28",
+   "name": "Gulfport-Biloxi, MS",
+   "devMedian": 104240,
+   "devJobs": 300,
+   "dsMedian": 73360,
+   "dsJobs": 40
+  },
+  {
+   "code": "0025620",
+   "type": "metro",
+   "stateCode": "28",
+   "name": "Hattiesburg, MS",
+   "devMedian": null,
+   "devJobs": 40,
+   "dsMedian": 72930,
+   "dsJobs": 40
+  },
+  {
+   "code": "0016020",
+   "type": "metro",
+   "stateCode": "29",
+   "name": "Cape Girardeau, MO-IL",
+   "devMedian": 100220,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0027620",
+   "type": "metro",
+   "stateCode": "29",
+   "name": "Jefferson City, MO",
+   "devMedian": null,
+   "devJobs": null,
+   "dsMedian": 80220,
+   "dsJobs": 120
+  },
+  {
+   "code": "0027900",
+   "type": "metro",
+   "stateCode": "29",
+   "name": "Joplin, MO-KS",
+   "devMedian": 105960,
+   "devJobs": 120,
+   "dsMedian": 96650,
+   "dsJobs": 60
+  },
+  {
+   "code": "0041140",
+   "type": "metro",
+   "stateCode": "29",
+   "name": "St. Joseph, MO-KS",
+   "devMedian": 98570,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0013740",
+   "type": "metro",
+   "stateCode": "30",
+   "name": "Billings, MT",
+   "devMedian": 100440,
+   "devJobs": 250,
+   "dsMedian": 97280,
+   "dsJobs": 50
+  },
+  {
+   "code": "0014580",
+   "type": "metro",
+   "stateCode": "30",
+   "name": "Bozeman, MT",
+   "devMedian": 126110,
+   "devJobs": 510,
+   "dsMedian": 120500,
+   "dsJobs": 50
+  },
+  {
+   "code": "0025740",
+   "type": "metro",
+   "stateCode": "30",
+   "name": "Helena, MT",
+   "devMedian": 99370,
+   "devJobs": 310,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0033540",
+   "type": "metro",
+   "stateCode": "30",
+   "name": "Missoula, MT",
+   "devMedian": null,
+   "devJobs": 390,
+   "dsMedian": 90850,
+   "dsJobs": 30
+  },
+  {
+   "code": "0024260",
+   "type": "metro",
+   "stateCode": "31",
+   "name": "Grand Island, NE",
+   "devMedian": 96260,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0016180",
+   "type": "metro",
+   "stateCode": "32",
+   "name": "Carson City, NV",
+   "devMedian": 130500,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0031700",
+   "type": "metro",
+   "stateCode": "33",
+   "name": "Manchester-Nashua, NH",
+   "devMedian": 162090,
+   "devJobs": 4370,
+   "dsMedian": 103790,
+   "dsJobs": 280
+  },
+  {
+   "code": "0012100",
+   "type": "metro",
+   "stateCode": "34",
+   "name": "Atlantic City-Hammonton, NJ",
+   "devMedian": 126670,
+   "devJobs": 540,
+   "dsMedian": 97930,
+   "dsJobs": 70
+  },
+  {
+   "code": "0047220",
+   "type": "metro",
+   "stateCode": "34",
+   "name": "Vineland, NJ",
+   "devMedian": 123920,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0022140",
+   "type": "metro",
+   "stateCode": "35",
+   "name": "Farmington, NM",
+   "devMedian": 113780,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0029740",
+   "type": "metro",
+   "stateCode": "35",
+   "name": "Las Cruces, NM",
+   "devMedian": 107300,
+   "devJobs": 300,
+   "dsMedian": 94950,
+   "dsJobs": 30
+  },
+  {
+   "code": "0042140",
+   "type": "metro",
+   "stateCode": "35",
+   "name": "Santa Fe, NM",
+   "devMedian": 112380,
+   "devJobs": 180,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0013780",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Binghamton, NY",
+   "devMedian": 128460,
+   "devJobs": 1070,
+   "dsMedian": 103130,
+   "dsJobs": 110
+  },
+  {
+   "code": "0024020",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Glens Falls, NY",
+   "devMedian": 132040,
+   "devJobs": 150,
+   "dsMedian": 104620,
+   "dsJobs": 30
+  },
+  {
+   "code": "0027060",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Ithaca, NY",
+   "devMedian": 122730,
+   "devJobs": 310,
+   "dsMedian": 74170,
+   "dsJobs": 140
+  },
+  {
+   "code": "0028740",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Kingston, NY",
+   "devMedian": 124300,
+   "devJobs": 230,
+   "dsMedian": 105160,
+   "dsJobs": 40
+  },
+  {
+   "code": "0028880",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Kiryas Joel-Poughkeepsie-Newburgh, NY",
+   "devMedian": 145830,
+   "devJobs": 1010,
+   "dsMedian": 107310,
+   "dsJobs": 240
+  },
+  {
+   "code": "0046540",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Utica-Rome, NY",
+   "devMedian": 113390,
+   "devJobs": 610,
+   "dsMedian": 79100,
+   "dsJobs": 150
+  },
+  {
+   "code": "0048060",
+   "type": "metro",
+   "stateCode": "36",
+   "name": "Watertown-Fort Drum, NY",
+   "devMedian": 119350,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0024140",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Goldsboro, NC",
+   "devMedian": 96140,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0025860",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Hickory-Lenoir-Morganton, NC",
+   "devMedian": 122540,
+   "devJobs": 420,
+   "dsMedian": 95290,
+   "dsJobs": 110
+  },
+  {
+   "code": "0038240",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Pinehurst-Southern Pines, NC",
+   "devMedian": 130240,
+   "devJobs": 200,
+   "dsMedian": 102740,
+   "dsJobs": 40
+  },
+  {
+   "code": "0040580",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Rocky Mount, NC",
+   "devMedian": 130600,
+   "devJobs": 120,
+   "dsMedian": 111870,
+   "dsJobs": 30
+  },
+  {
+   "code": "0048900",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Wilmington, NC",
+   "devMedian": 123730,
+   "devJobs": 880,
+   "dsMedian": 93090,
+   "dsJobs": 160
+  },
+  {
+   "code": "0049180",
+   "type": "metro",
+   "stateCode": "37",
+   "name": "Winston-Salem, NC",
+   "devMedian": 124130,
+   "devJobs": 1050,
+   "dsMedian": 101570,
+   "dsJobs": 300
+  },
+  {
+   "code": "0013900",
+   "type": "metro",
+   "stateCode": "38",
+   "name": "Bismarck, ND",
+   "devMedian": 106020,
+   "devJobs": 390,
+   "dsMedian": 76960,
+   "dsJobs": 50
+  },
+  {
+   "code": "0022020",
+   "type": "metro",
+   "stateCode": "38",
+   "name": "Fargo, ND-MN",
+   "devMedian": 105980,
+   "devJobs": 860,
+   "dsMedian": 92050,
+   "dsJobs": 100
+  },
+  {
+   "code": "0024220",
+   "type": "metro",
+   "stateCode": "38",
+   "name": "Grand Forks, ND-MN",
+   "devMedian": 92120,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0033500",
+   "type": "metro",
+   "stateCode": "38",
+   "name": "Minot, ND",
+   "devMedian": 108470,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0015940",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Canton-Massillon, OH",
+   "devMedian": 105500,
+   "devJobs": 480,
+   "dsMedian": 88110,
+   "dsJobs": 60
+  },
+  {
+   "code": "0030620",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Lima, OH",
+   "devMedian": 114600,
+   "devJobs": 140,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0031900",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Mansfield, OH",
+   "devMedian": 99560,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0041780",
+   "type": "metro",
+   "stateCode": "39",
+   "name": "Sandusky, OH",
+   "devMedian": 108250,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0021420",
+   "type": "metro",
+   "stateCode": "40",
+   "name": "Enid, OK",
+   "devMedian": 94830,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0030020",
+   "type": "metro",
+   "stateCode": "40",
+   "name": "Lawton, OK",
+   "devMedian": 107240,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0013460",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Bend, OR",
+   "devMedian": 129030,
+   "devJobs": 690,
+   "dsMedian": 106790,
+   "dsJobs": 80
+  },
+  {
+   "code": "0018700",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Corvallis, OR",
+   "devMedian": 125650,
+   "devJobs": 320,
+   "dsMedian": 140190,
+   "dsJobs": 60
+  },
+  {
+   "code": "0021660",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Eugene-Springfield, OR",
+   "devMedian": 121050,
+   "devJobs": 810,
+   "dsMedian": 107130,
+   "dsJobs": 90
+  },
+  {
+   "code": "0024420",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Grants Pass, OR",
+   "devMedian": 130120,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0032780",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Medford, OR",
+   "devMedian": 129690,
+   "devJobs": 330,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0041420",
+   "type": "metro",
+   "stateCode": "41",
+   "name": "Salem, OR",
+   "devMedian": 131620,
+   "devJobs": 970,
+   "dsMedian": 124040,
+   "dsJobs": 90
+  },
+  {
+   "code": "0011020",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Altoona, PA",
+   "devMedian": 101670,
+   "devJobs": 180,
+   "dsMedian": 91170,
+   "dsJobs": 50
+  },
+  {
+   "code": "0016540",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Chambersburg, PA",
+   "devMedian": 106200,
+   "devJobs": 200,
+   "dsMedian": 86060,
+   "dsJobs": 40
+  },
+  {
+   "code": "0021500",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Erie, PA",
+   "devMedian": 101550,
+   "devJobs": 390,
+   "dsMedian": 79560,
+   "dsJobs": 140
+  },
+  {
+   "code": "0023900",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Gettysburg, PA",
+   "devMedian": 100560,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0027780",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Johnstown, PA",
+   "devMedian": 100340,
+   "devJobs": 140,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0030140",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Lebanon, PA",
+   "devMedian": 107810,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0039740",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Reading, PA",
+   "devMedian": 120920,
+   "devJobs": 640,
+   "dsMedian": 100340,
+   "dsJobs": 190
+  },
+  {
+   "code": "0044300",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "State College, PA",
+   "devMedian": 103620,
+   "devJobs": 450,
+   "dsMedian": 81840,
+   "dsJobs": 90
+  },
+  {
+   "code": "0048700",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "Williamsport, PA",
+   "devMedian": 93960,
+   "devJobs": 120,
+   "dsMedian": 70190,
+   "dsJobs": 40
+  },
+  {
+   "code": "0049620",
+   "type": "metro",
+   "stateCode": "42",
+   "name": "York-Hanover, PA",
+   "devMedian": 114600,
+   "devJobs": 720,
+   "dsMedian": 97510,
+   "dsJobs": 130
+  },
+  {
+   "code": "0022500",
+   "type": "metro",
+   "stateCode": "45",
+   "name": "Florence, SC",
+   "devMedian": 108460,
+   "devJobs": 250,
+   "dsMedian": 80050,
+   "dsJobs": 110
+  },
+  {
+   "code": "0025940",
+   "type": "metro",
+   "stateCode": "45",
+   "name": "Hilton Head Island-Bluffton-Port Royal, SC",
+   "devMedian": 125760,
+   "devJobs": 260,
+   "dsMedian": 93930,
+   "dsJobs": 60
+  },
+  {
+   "code": "0034820",
+   "type": "metro",
+   "stateCode": "45",
+   "name": "Myrtle Beach-Conway-North Myrtle Beach, SC",
+   "devMedian": null,
+   "devJobs": 320,
+   "dsMedian": 91740,
+   "dsJobs": 100
+  },
+  {
+   "code": "0043900",
+   "type": "metro",
+   "stateCode": "45",
+   "name": "Spartanburg, SC",
+   "devMedian": 114460,
+   "devJobs": 440,
+   "dsMedian": 94330,
+   "dsJobs": 170
+  },
+  {
+   "code": "0044940",
+   "type": "metro",
+   "stateCode": "45",
+   "name": "Sumter, SC",
+   "devMedian": 121880,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": 50
+  },
+  {
+   "code": "0039660",
+   "type": "metro",
+   "stateCode": "46",
+   "name": "Rapid City, SD",
+   "devMedian": 91840,
+   "devJobs": 270,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0043620",
+   "type": "metro",
+   "stateCode": "46",
+   "name": "Sioux Falls, SD-MN",
+   "devMedian": 101040,
+   "devJobs": 1400,
+   "dsMedian": 99560,
+   "dsJobs": 150
+  },
+  {
+   "code": "0017300",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Clarksville, TN-KY",
+   "devMedian": 96650,
+   "devJobs": 310,
+   "dsMedian": 79200,
+   "dsJobs": 50
+  },
+  {
+   "code": "0027740",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Johnson City, TN",
+   "devMedian": 103320,
+   "devJobs": 300,
+   "dsMedian": 69330,
+   "dsJobs": 30
+  },
+  {
+   "code": "0028700",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Kingsport-Bristol, TN-VA",
+   "devMedian": 115310,
+   "devJobs": 430,
+   "dsMedian": 98470,
+   "dsJobs": 90
+  },
+  {
+   "code": "0034100",
+   "type": "metro",
+   "stateCode": "47",
+   "name": "Morristown, TN",
+   "devMedian": 102390,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0010180",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Abilene, TX",
+   "devMedian": 103760,
+   "devJobs": 250,
+   "dsMedian": 83600,
+   "dsJobs": 40
+  },
+  {
+   "code": "0011100",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Amarillo, TX",
+   "devMedian": 116530,
+   "devJobs": 320,
+   "dsMedian": 101350,
+   "dsJobs": 70
+  },
+  {
+   "code": "0013140",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Beaumont-Port Arthur, TX",
+   "devMedian": 124470,
+   "devJobs": 420,
+   "dsMedian": 97980,
+   "dsJobs": 90
+  },
+  {
+   "code": "0015180",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Brownsville-Harlingen, TX",
+   "devMedian": 106990,
+   "devJobs": 310,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0017780",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "College Station-Bryan, TX",
+   "devMedian": 101910,
+   "devJobs": 620,
+   "dsMedian": 100280,
+   "dsJobs": 110
+  },
+  {
+   "code": "0018580",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Corpus Christi, TX",
+   "devMedian": 123580,
+   "devJobs": 520,
+   "dsMedian": 113450,
+   "dsJobs": 80
+  },
+  {
+   "code": "0028660",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Killeen-Temple, TX",
+   "devMedian": 123320,
+   "devJobs": 470,
+   "dsMedian": 98620,
+   "dsJobs": 100
+  },
+  {
+   "code": "0029700",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Laredo, TX",
+   "devMedian": 111450,
+   "devJobs": 130,
+   "dsMedian": 78100,
+   "dsJobs": 50
+  },
+  {
+   "code": "0030980",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Longview, TX",
+   "devMedian": 106360,
+   "devJobs": 320,
+   "dsMedian": 107270,
+   "dsJobs": 60
+  },
+  {
+   "code": "0031180",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Lubbock, TX",
+   "devMedian": 115190,
+   "devJobs": 340,
+   "dsMedian": 89490,
+   "dsJobs": 90
+  },
+  {
+   "code": "0033260",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Midland, TX",
+   "devMedian": 126190,
+   "devJobs": 400,
+   "dsMedian": 125330,
+   "dsJobs": 100
+  },
+  {
+   "code": "0036220",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Odessa, TX",
+   "devMedian": 127080,
+   "devJobs": 110,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0041660",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "San Angelo, TX",
+   "devMedian": 95580,
+   "devJobs": 130,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0043300",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Sherman-Denison, TX",
+   "devMedian": 128630,
+   "devJobs": 120,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0045500",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Texarkana, TX-AR",
+   "devMedian": 116490,
+   "devJobs": 80,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0046340",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Tyler, TX",
+   "devMedian": 123760,
+   "devJobs": 320,
+   "dsMedian": 108780,
+   "dsJobs": null
+  },
+  {
+   "code": "0047380",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Waco, TX",
+   "devMedian": 123080,
+   "devJobs": 490,
+   "dsMedian": 95730,
+   "dsJobs": 100
+  },
+  {
+   "code": "0048660",
+   "type": "metro",
+   "stateCode": "48",
+   "name": "Wichita Falls, TX",
+   "devMedian": 108260,
+   "devJobs": 70,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0030860",
+   "type": "metro",
+   "stateCode": "49",
+   "name": "Logan, UT-ID",
+   "devMedian": 100740,
+   "devJobs": 960,
+   "dsMedian": 79880,
+   "dsJobs": 70
+  },
+  {
+   "code": "0041100",
+   "type": "metro",
+   "stateCode": "49",
+   "name": "St. George, UT",
+   "devMedian": 113240,
+   "devJobs": 590,
+   "dsMedian": 98130,
+   "dsJobs": 60
+  },
+  {
+   "code": "0013980",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Blacksburg-Christiansburg-Radford, VA",
+   "devMedian": 111630,
+   "devJobs": 590,
+   "dsMedian": 89070,
+   "dsJobs": 60
+  },
+  {
+   "code": "0016820",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Charlottesville, VA",
+   "devMedian": 128520,
+   "devJobs": 1390,
+   "dsMedian": 149800,
+   "dsJobs": null
+  },
+  {
+   "code": "0025500",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Harrisonburg, VA",
+   "devMedian": 119250,
+   "devJobs": 220,
+   "dsMedian": 79560,
+   "dsJobs": 40
+  },
+  {
+   "code": "0031340",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Lynchburg, VA",
+   "devMedian": 109840,
+   "devJobs": 510,
+   "dsMedian": null,
+   "dsJobs": 70
+  },
+  {
+   "code": "0040220",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Roanoke, VA",
+   "devMedian": 121110,
+   "devJobs": 770,
+   "dsMedian": 106090,
+   "dsJobs": null
+  },
+  {
+   "code": "0044420",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Staunton-Stuarts Draft, VA",
+   "devMedian": 115610,
+   "devJobs": 140,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0049020",
+   "type": "metro",
+   "stateCode": "51",
+   "name": "Winchester, VA-WV",
+   "devMedian": 133290,
+   "devJobs": 350,
+   "dsMedian": 129990,
+   "dsJobs": 60
+  },
+  {
+   "code": "0013380",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Bellingham, WA",
+   "devMedian": 128250,
+   "devJobs": 640,
+   "dsMedian": 120180,
+   "dsJobs": 40
+  },
+  {
+   "code": "0014740",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Bremerton-Silverdale-Port Orchard, WA",
+   "devMedian": 146200,
+   "devJobs": 690,
+   "dsMedian": 134220,
+   "dsJobs": 60
+  },
+  {
+   "code": "0028420",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Kennewick-Richland, WA",
+   "devMedian": 127800,
+   "devJobs": 820,
+   "dsMedian": 156830,
+   "dsJobs": 150
+  },
+  {
+   "code": "0031020",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Longview-Kelso, WA",
+   "devMedian": 130000,
+   "devJobs": 150,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0034580",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Mount Vernon-Anacortes, WA",
+   "devMedian": 106640,
+   "devJobs": 270,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0036500",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Olympia-Lacey-Tumwater, WA",
+   "devMedian": 124060,
+   "devJobs": 1920,
+   "dsMedian": 120040,
+   "dsJobs": 120
+  },
+  {
+   "code": "0047460",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Walla Walla, WA",
+   "devMedian": 114920,
+   "devJobs": 90,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0048300",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Wenatchee-East Wenatchee, WA",
+   "devMedian": 131970,
+   "devJobs": 160,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0049420",
+   "type": "metro",
+   "stateCode": "53",
+   "name": "Yakima, WA",
+   "devMedian": 115170,
+   "devJobs": 170,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0013220",
+   "type": "metro",
+   "stateCode": "54",
+   "name": "Beckley, WV",
+   "devMedian": 100840,
+   "devJobs": 40,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0026580",
+   "type": "metro",
+   "stateCode": "54",
+   "name": "Huntington-Ashland, WV-KY-OH",
+   "devMedian": 110780,
+   "devJobs": 280,
+   "dsMedian": 91130,
+   "dsJobs": 50
+  },
+  {
+   "code": "0034060",
+   "type": "metro",
+   "stateCode": "54",
+   "name": "Morgantown, WV",
+   "devMedian": 108950,
+   "devJobs": 330,
+   "dsMedian": 78950,
+   "dsJobs": 40
+  },
+  {
+   "code": "0048260",
+   "type": "metro",
+   "stateCode": "54",
+   "name": "Weirton-Steubenville, WV-OH",
+   "devMedian": 118130,
+   "devJobs": 50,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0048540",
+   "type": "metro",
+   "stateCode": "54",
+   "name": "Wheeling, WV-OH",
+   "devMedian": 112340,
+   "devJobs": 60,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0011540",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Appleton, WI",
+   "devMedian": 102970,
+   "devJobs": 570,
+   "dsMedian": 103210,
+   "dsJobs": 90
+  },
+  {
+   "code": "0020740",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Eau Claire, WI",
+   "devMedian": 104490,
+   "devJobs": 440,
+   "dsMedian": 99410,
+   "dsJobs": 70
+  },
+  {
+   "code": "0022540",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Fond du Lac, WI",
+   "devMedian": 104140,
+   "devJobs": 100,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0024580",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Green Bay, WI",
+   "devMedian": 103160,
+   "devJobs": 860,
+   "dsMedian": 99340,
+   "dsJobs": 240
+  },
+  {
+   "code": "0027500",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Janesville-Beloit, WI",
+   "devMedian": 105670,
+   "devJobs": 280,
+   "dsMedian": 99630,
+   "dsJobs": 70
+  },
+  {
+   "code": "0028450",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Kenosha, WI",
+   "devMedian": 130330,
+   "devJobs": 410,
+   "dsMedian": 106120,
+   "dsJobs": 80
+  },
+  {
+   "code": "0029100",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "La Crosse-Onalaska, WI-MN",
+   "devMedian": 102110,
+   "devJobs": 380,
+   "dsMedian": 100990,
+   "dsJobs": 90
+  },
+  {
+   "code": "0036780",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Oshkosh-Neenah, WI",
+   "devMedian": 104000,
+   "devJobs": 600,
+   "dsMedian": 100920,
+   "dsJobs": 290
+  },
+  {
+   "code": "0039540",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Racine-Mount Pleasant, WI",
+   "devMedian": 101220,
+   "devJobs": 300,
+   "dsMedian": 104530,
+   "dsJobs": 50
+  },
+  {
+   "code": "0043100",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Sheboygan, WI",
+   "devMedian": 101380,
+   "devJobs": 190,
+   "dsMedian": 126270,
+   "dsJobs": 40
+  },
+  {
+   "code": "0048140",
+   "type": "metro",
+   "stateCode": "55",
+   "name": "Wausau, WI",
+   "devMedian": 98650,
+   "devJobs": 190,
+   "dsMedian": 104420,
+   "dsJobs": 50
+  },
+  {
+   "code": "0016220",
+   "type": "metro",
+   "stateCode": "56",
+   "name": "Casper, WY",
+   "devMedian": 103000,
+   "devJobs": 150,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0016940",
+   "type": "metro",
+   "stateCode": "56",
+   "name": "Cheyenne, WY",
+   "devMedian": 121990,
+   "devJobs": 540,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0010380",
+   "type": "metro",
+   "stateCode": "72",
+   "name": "Aguadilla, PR",
+   "devMedian": 77840,
+   "devJobs": 270,
+   "dsMedian": null,
+   "dsJobs": null
+  },
+  {
+   "code": "0041980",
+   "type": "metro",
+   "stateCode": "72",
+   "name": "San Juan-Bayamon-Caguas, PR",
+   "devMedian": 79380,
+   "devJobs": 1440,
+   "dsMedian": 80280,
+   "dsJobs": 70
   }
  ],
  "countries": [
@@ -1527,7 +4347,7 @@
    "internetPct": 95.4720993,
    "gdpPerCapita": 57601.9621201954,
    "wbYear": "2025",
-   "usdRate": 0.755594
+   "usdRate": 0.754467
   },
   {
    "slug": "ireland",
@@ -1540,7 +4360,7 @@
    "internetPct": 97.18769836,
    "gdpPerCapita": 131592.462547877,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "germany",
@@ -1553,7 +4373,7 @@
    "internetPct": 93.49999579,
    "gdpPerCapita": 60496.4350820414,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "france",
@@ -1566,7 +4386,7 @@
    "internetPct": 88.65381638,
    "gdpPerCapita": 48985.7307807924,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "netherlands",
@@ -1579,7 +4399,7 @@
    "internetPct": 97.00679779,
    "gdpPerCapita": 73683.917132794,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "belgium",
@@ -1592,7 +4412,7 @@
    "internetPct": 95.77579144,
    "gdpPerCapita": 60750.2735864647,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "spain",
@@ -1605,7 +4425,7 @@
    "internetPct": 95.7574516,
    "gdpPerCapita": 38627.2472148623,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "portugal",
@@ -1618,7 +4438,7 @@
    "internetPct": 88.48704454,
    "gdpPerCapita": 32081.8106150292,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "italy",
@@ -1631,7 +4451,7 @@
    "internetPct": 89.2207202,
    "gdpPerCapita": 43308.6403060733,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "switzerland",
@@ -1644,7 +4464,7 @@
    "internetPct": 97.32103855,
    "gdpPerCapita": 114769.012314293,
    "wbYear": "2025",
-   "usdRate": 0.829327
+   "usdRate": 0.831749
   },
   {
    "slug": "austria",
@@ -1657,7 +4477,7 @@
    "internetPct": 91.92573373,
    "gdpPerCapita": 62930.0351324599,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "sweden",
@@ -1670,7 +4490,7 @@
    "internetPct": 95.76629783,
    "gdpPerCapita": 63133.2126736715,
    "wbYear": "2025",
-   "usdRate": 9.923533
+   "usdRate": 9.95673
   },
   {
    "slug": "norway",
@@ -1683,7 +4503,7 @@
    "internetPct": 99,
    "gdpPerCapita": 94594.1929573987,
    "wbYear": "2025",
-   "usdRate": 9.514776
+   "usdRate": 9.526347
   },
   {
    "slug": "denmark",
@@ -1696,7 +4516,7 @@
    "internetPct": 99.76915157,
    "gdpPerCapita": 76970.1535217919,
    "wbYear": "2025",
-   "usdRate": 6.558672
+   "usdRate": 6.571853
   },
   {
    "slug": "finland",
@@ -1709,7 +4529,7 @@
    "internetPct": 93.72405196,
    "gdpPerCapita": 56148.580949046,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "poland",
@@ -1722,7 +4542,7 @@
    "internetPct": 88.58496367,
    "gdpPerCapita": 28419.5777395638,
    "wbYear": "2025",
-   "usdRate": 3.840834
+   "usdRate": 3.844045
   },
   {
    "slug": "czechia",
@@ -1735,7 +4555,7 @@
    "internetPct": 87.68776014,
    "gdpPerCapita": 35917.2724081665,
    "wbYear": "2025",
-   "usdRate": 21.399634
+   "usdRate": 21.448104
   },
   {
    "slug": "romania",
@@ -1748,7 +4568,7 @@
    "internetPct": 91.29048551,
    "gdpPerCapita": 22537.9532108047,
    "wbYear": "2025",
-   "usdRate": 4.629417
+   "usdRate": 4.638635
   },
   {
    "slug": "hungary",
@@ -1761,7 +4581,7 @@
    "internetPct": 93.77898628,
    "gdpPerCapita": 25907.4743259406,
    "wbYear": "2025",
-   "usdRate": 320.923923
+   "usdRate": 322.746453
   },
   {
    "slug": "greece",
@@ -1774,7 +4594,7 @@
    "internetPct": 86.26968886,
    "gdpPerCapita": 26948.0070432791,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "bulgaria",
@@ -1787,7 +4607,7 @@
    "internetPct": 82.438955,
    "gdpPerCapita": 20328.1667065538,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "serbia",
@@ -1800,7 +4620,7 @@
    "internetPct": 87.69071294,
    "gdpPerCapita": 15262.0464193413,
    "wbYear": "2025",
-   "usdRate": 103.117796
+   "usdRate": 103.325674
   },
   {
    "slug": "ukraine",
@@ -1813,7 +4633,7 @@
    "internetPct": 82.47489929,
    "gdpPerCapita": 5865.884765625,
    "wbYear": "2025",
-   "usdRate": 44.845393
+   "usdRate": 44.819171
   },
   {
    "slug": "turkey",
@@ -1826,7 +4646,7 @@
    "internetPct": 89.77024003,
    "gdpPerCapita": 18599.4420922378,
    "wbYear": "2025",
-   "usdRate": 48.948487
+   "usdRate": 48.997476
   },
   {
    "slug": "canada",
@@ -1839,7 +4659,7 @@
    "internetPct": 94.353302,
    "gdpPerCapita": 55697.6639660837,
    "wbYear": "2025",
-   "usdRate": 1.414854
+   "usdRate": 1.416139
   },
   {
    "slug": "mexico",
@@ -1852,7 +4672,7 @@
    "internetPct": 83.12233799,
    "gdpPerCapita": 13889.2339628708,
    "wbYear": "2025",
-   "usdRate": 17.735545
+   "usdRate": 17.899234
   },
   {
    "slug": "brazil",
@@ -1865,7 +4685,7 @@
    "internetPct": 84.46347227,
    "gdpPerCapita": 10713.2856869511,
    "wbYear": "2025",
-   "usdRate": 5.189503
+   "usdRate": 5.207659
   },
   {
    "slug": "argentina",
@@ -1878,7 +4698,7 @@
    "internetPct": 89.66715228,
    "gdpPerCapita": 14898.0885943842,
    "wbYear": "2025",
-   "usdRate": 1523.9662
+   "usdRate": 1528.7563
   },
   {
    "slug": "colombia",
@@ -1891,7 +4711,7 @@
    "internetPct": 79.34543299,
    "gdpPerCapita": 8561.62091854449,
    "wbYear": "2025",
-   "usdRate": 3334.28191
+   "usdRate": 3300.866532
   },
   {
    "slug": "chile",
@@ -1904,7 +4724,7 @@
    "internetPct": 95.590243,
    "gdpPerCapita": 17994.5911957485,
    "wbYear": "2025",
-   "usdRate": 962.264198
+   "usdRate": 961.514006
   },
   {
    "slug": "peru",
@@ -1917,7 +4737,7 @@
    "internetPct": 81.95705992,
    "gdpPerCapita": 9684.41170314988,
    "wbYear": "2025",
-   "usdRate": 3.392941
+   "usdRate": 3.417803
   },
   {
    "slug": "jamaica",
@@ -1930,7 +4750,7 @@
    "internetPct": 90.10870361,
    "gdpPerCapita": 8002.92104076242,
    "wbYear": "2025",
-   "usdRate": 157.933178
+   "usdRate": 158.289339
   },
   {
    "slug": "trinidad-and-tobago",
@@ -1943,7 +4763,7 @@
    "internetPct": 82.15989685,
    "gdpPerCapita": 18967.2704636681,
    "wbYear": "2025",
-   "usdRate": 6.792403
+   "usdRate": 6.754142
   },
   {
    "slug": "nigeria",
@@ -1956,7 +4776,7 @@
    "internetPct": 41.21139908,
    "gdpPerCapita": 1224.25410237743,
    "wbYear": "2025",
-   "usdRate": 1327.301923
+   "usdRate": 1329.375909
   },
   {
    "slug": "kenya",
@@ -1971,7 +4791,7 @@
    "internetPct": 34.97622513,
    "gdpPerCapita": 2362.86091198611,
    "wbYear": "2025",
-   "usdRate": 129.619855
+   "usdRate": 129.549122
   },
   {
    "slug": "ghana",
@@ -1986,7 +4806,7 @@
    "internetPct": 72.17569733,
    "gdpPerCapita": 3257.1588903576,
    "wbYear": "2025",
-   "usdRate": 11.635545
+   "usdRate": 11.576165
   },
   {
    "slug": "south-africa",
@@ -1999,7 +4819,7 @@
    "internetPct": 78.35759735,
    "gdpPerCapita": 6597.71450918774,
    "wbYear": "2025",
-   "usdRate": 16.322134
+   "usdRate": 16.410682
   },
   {
    "slug": "uganda",
@@ -2015,7 +4835,7 @@
    "internetPct": 8.949831061,
    "gdpPerCapita": 1206.30450825002,
    "wbYear": "2025",
-   "usdRate": 3891.437778
+   "usdRate": 3837.903629
   },
   {
    "slug": "tanzania",
@@ -2031,7 +4851,7 @@
    "internetPct": 31.16209984,
    "gdpPerCapita": 1318.81921386719,
    "wbYear": "2025",
-   "usdRate": 2657.137693
+   "usdRate": 2646.71894
   },
   {
    "slug": "rwanda",
@@ -2047,7 +4867,7 @@
    "internetPct": 31.70330048,
    "gdpPerCapita": 1123.73874633225,
    "wbYear": "2025",
-   "usdRate": 1478.239841
+   "usdRate": 1477.845418
   },
   {
    "slug": "ethiopia",
@@ -2062,7 +4882,7 @@
    "internetPct": 21.94129944,
    "gdpPerCapita": 932.729352775179,
    "wbYear": "2025",
-   "usdRate": 162.473672
+   "usdRate": 162.376285
   },
   {
    "slug": "cameroon",
@@ -2078,7 +4898,7 @@
    "internetPct": 46.25880051,
    "gdpPerCapita": 1972.3815800786,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "senegal",
@@ -2094,7 +4914,7 @@
    "internetPct": 60.11780167,
    "gdpPerCapita": 1954.71174194867,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "cote-divoire",
@@ -2111,7 +4931,7 @@
    "internetPct": 41.43219902,
    "gdpPerCapita": 3050.10202257321,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "zambia",
@@ -2127,7 +4947,7 @@
    "internetPct": 17.10099983,
    "gdpPerCapita": 1317.87771619597,
    "wbYear": "2025",
-   "usdRate": 19.560933
+   "usdRate": 19.688622
   },
   {
    "slug": "zimbabwe",
@@ -2157,7 +4977,7 @@
    "internetPct": 18.96159935,
    "gdpPerCapita": 671.506847203876,
    "wbYear": "2025",
-   "usdRate": 1747.266506
+   "usdRate": 1747.414521
   },
   {
    "slug": "botswana",
@@ -2172,7 +4992,7 @@
    "internetPct": 57.45950036,
    "gdpPerCapita": 7778.1151090571,
    "wbYear": "2025",
-   "usdRate": 13.869151
+   "usdRate": 13.997986
   },
   {
    "slug": "egypt",
@@ -2185,7 +5005,7 @@
    "internetPct": 74.64839935,
    "gdpPerCapita": 3085.80712036204,
    "wbYear": "2025",
-   "usdRate": 51.744321
+   "usdRate": 52.070874
   },
   {
    "slug": "morocco",
@@ -2198,7 +5018,7 @@
    "internetPct": 91.2,
    "gdpPerCapita": 4672.46826171875,
    "wbYear": "2025",
-   "usdRate": 9.59777
+   "usdRate": 9.636484
   },
   {
    "slug": "tunisia",
@@ -2211,7 +5031,7 @@
    "internetPct": 76.5,
    "gdpPerCapita": 4656.63818386852,
    "wbYear": "2025",
-   "usdRate": 2.947661
+   "usdRate": 2.946569
   },
   {
    "slug": "united-arab-emirates",
@@ -2264,7 +5084,7 @@
    "internetPct": 88.18242225,
    "gdpPerCapita": 60336.8477964194,
    "wbYear": "2025",
-   "usdRate": 3.045597
+   "usdRate": 3.069475
   },
   {
    "slug": "jordan",
@@ -2290,7 +5110,7 @@
    "internetPct": 70,
    "gdpPerCapita": 2702.47987141553,
    "wbYear": "2025",
-   "usdRate": 95.927874
+   "usdRate": 96.069945
   },
   {
    "slug": "pakistan",
@@ -2306,7 +5126,7 @@
    "internetPct": 57.253,
    "gdpPerCapita": 1595.90912252837,
    "wbYear": "2025",
-   "usdRate": 276.909534
+   "usdRate": 276.962836
   },
   {
    "slug": "bangladesh",
@@ -2321,7 +5141,7 @@
    "internetPct": 53.42171316,
    "gdpPerCapita": 2597.34352335275,
    "wbYear": "2025",
-   "usdRate": 122.984636
+   "usdRate": 123.051589
   },
   {
    "slug": "sri-lanka",
@@ -2334,7 +5154,7 @@
    "internetPct": 54.59,
    "gdpPerCapita": 5002.07904353724,
    "wbYear": "2025",
-   "usdRate": 330.026559
+   "usdRate": 330.654542
   },
   {
    "slug": "nepal",
@@ -2350,7 +5170,7 @@
    "internetPct": 46.32189941,
    "gdpPerCapita": 1535.87781246307,
    "wbYear": "2025",
-   "usdRate": 153.493654
+   "usdRate": 153.712558
   },
   {
    "slug": "philippines",
@@ -2366,7 +5186,7 @@
    "internetPct": 67.26300914,
    "gdpPerCapita": 4170.72347271451,
    "wbYear": "2025",
-   "usdRate": 62.449889
+   "usdRate": 62.499801
   },
   {
    "slug": "indonesia",
@@ -2379,7 +5199,7 @@
    "internetPct": 72.78075544,
    "gdpPerCapita": 5059.62596411213,
    "wbYear": "2025",
-   "usdRate": 17921.041858
+   "usdRate": 17984.765665
   },
   {
    "slug": "malaysia",
@@ -2392,7 +5212,7 @@
    "internetPct": 98.0206059,
    "gdpPerCapita": 13124.5554178269,
    "wbYear": "2025",
-   "usdRate": 4.074399
+   "usdRate": 4.083242
   },
   {
    "slug": "singapore",
@@ -2405,7 +5225,7 @@
    "internetPct": 94.37757178,
    "gdpPerCapita": 98813.9788172877,
    "wbYear": "2025",
-   "usdRate": 1.278218
+   "usdRate": 1.277664
   },
   {
    "slug": "vietnam",
@@ -2418,7 +5238,7 @@
    "internetPct": 84.15,
    "gdpPerCapita": 5065.99091899299,
    "wbYear": "2025",
-   "usdRate": 25936.548312
+   "usdRate": 25917.425983
   },
   {
    "slug": "thailand",
@@ -2431,7 +5251,7 @@
    "internetPct": 90.86718789,
    "gdpPerCapita": 8056.56359761558,
    "wbYear": "2025",
-   "usdRate": 33.416091
+   "usdRate": 33.590728
   },
   {
    "slug": "japan",
@@ -2444,7 +5264,7 @@
    "internetPct": 85.54153081,
    "gdpPerCapita": 35951.0449549304,
    "wbYear": "2025",
-   "usdRate": 157.489371
+   "usdRate": 157.315109
   },
   {
    "slug": "south-korea",
@@ -2457,7 +5277,7 @@
    "internetPct": 97.89563777,
    "gdpPerCapita": 36226.9663637512,
    "wbYear": "2025",
-   "usdRate": 1356.044355
+   "usdRate": 1358.968392
   },
   {
    "slug": "hong-kong",
@@ -2470,7 +5290,7 @@
    "internetPct": 95.75536971,
    "gdpPerCapita": 56983.0663059906,
    "wbYear": "2025",
-   "usdRate": 7.844488
+   "usdRate": 7.844766
   },
   {
    "slug": "taiwan",
@@ -2480,7 +5300,7 @@
    "region": "Asia",
    "mobileMoney": [],
    "wbYear": null,
-   "usdRate": 31.7654
+   "usdRate": 31.811614
   },
   {
    "slug": "australia",
@@ -2493,7 +5313,7 @@
    "internetPct": 96.13140106,
    "gdpPerCapita": 65129.7227990563,
    "wbYear": "2025",
-   "usdRate": 1.425788
+   "usdRate": 1.425042
   },
   {
    "slug": "new-zealand",
@@ -2506,7 +5326,7 @@
    "internetPct": 93.51930237,
    "gdpPerCapita": 49591.0405731713,
    "wbYear": "2025",
-   "usdRate": 1.767657
+   "usdRate": 1.765387
   },
   {
    "slug": "ecuador",
@@ -2532,7 +5352,7 @@
    "internetPct": 79.70469666,
    "gdpPerCapita": 5147.81081955367,
    "wbYear": "2025",
-   "usdRate": 12.233272
+   "usdRate": 12.235131
   },
   {
    "slug": "paraguay",
@@ -2545,7 +5365,7 @@
    "internetPct": 81.57806793,
    "gdpPerCapita": 7026.61906146401,
    "wbYear": "2025",
-   "usdRate": 5923.870669
+   "usdRate": 5895.227031
   },
   {
    "slug": "uruguay",
@@ -2558,7 +5378,7 @@
    "internetPct": 91.99109007,
    "gdpPerCapita": 25215.8238152781,
    "wbYear": "2025",
-   "usdRate": 40.063086
+   "usdRate": 40.083507
   },
   {
    "slug": "costa-rica",
@@ -2571,7 +5391,7 @@
    "internetPct": 87.17019653,
    "gdpPerCapita": 19970.0989059622,
    "wbYear": "2025",
-   "usdRate": 452.97621
+   "usdRate": 454.012521
   },
   {
    "slug": "panama",
@@ -2597,7 +5417,7 @@
    "internetPct": 60.22140121,
    "gdpPerCapita": 6598.18032988711,
    "wbYear": "2025",
-   "usdRate": 7.634677
+   "usdRate": 7.634797
   },
   {
    "slug": "dominican-republic",
@@ -2610,7 +5430,7 @@
    "internetPct": 91.0022446,
    "gdpPerCapita": 11059.2081531834,
    "wbYear": "2025",
-   "usdRate": 59.459173
+   "usdRate": 59.482188
   },
   {
    "slug": "el-salvador",
@@ -2636,7 +5456,7 @@
    "internetPct": 58.62269974,
    "gdpPerCapita": 3598.21450440452,
    "wbYear": "2025",
-   "usdRate": 26.831065
+   "usdRate": 26.83581
   },
   {
    "slug": "guyana",
@@ -2649,7 +5469,7 @@
    "internetPct": 83.00080109,
    "gdpPerCapita": 32413.7930757518,
    "wbYear": "2025",
-   "usdRate": 209.161176
+   "usdRate": 209.167483
   },
   {
    "slug": "slovakia",
@@ -2662,7 +5482,7 @@
    "internetPct": 89.82507032,
    "gdpPerCapita": 28543.6653439813,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "slovenia",
@@ -2675,7 +5495,7 @@
    "internetPct": 90.76355487,
    "gdpPerCapita": 37376.2216079138,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "croatia",
@@ -2688,7 +5508,7 @@
    "internetPct": 83.63240029,
    "gdpPerCapita": 27103.9116109268,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "lithuania",
@@ -2701,7 +5521,7 @@
    "internetPct": 89.16116293,
    "gdpPerCapita": 32958.6706396386,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "latvia",
@@ -2714,7 +5534,7 @@
    "internetPct": 92.70757011,
    "gdpPerCapita": 26311.9730706362,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "estonia",
@@ -2727,7 +5547,7 @@
    "internetPct": 92.23796204,
    "gdpPerCapita": 34417.6320815138,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "luxembourg",
@@ -2740,7 +5560,7 @@
    "internetPct": 99.12902211,
    "gdpPerCapita": 147252.179121515,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "cyprus",
@@ -2753,7 +5573,7 @@
    "internetPct": 89.60099246,
    "gdpPerCapita": 41783.08984375,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "malta",
@@ -2766,7 +5586,7 @@
    "internetPct": 93.86029816,
    "gdpPerCapita": 47906.9000057635,
    "wbYear": "2025",
-   "usdRate": 0.878356
+   "usdRate": 0.879241
   },
   {
    "slug": "iceland",
@@ -2779,7 +5599,7 @@
    "internetPct": 98.209198,
    "gdpPerCapita": 98323.4849517418,
    "wbYear": "2025",
-   "usdRate": 120.290023
+   "usdRate": 120.452497
   },
   {
    "slug": "albania",
@@ -2792,7 +5612,7 @@
    "internetPct": 85.86389923,
    "gdpPerCapita": 12998.147869552,
    "wbYear": "2025",
-   "usdRate": 80.758863
+   "usdRate": 80.807863
   },
   {
    "slug": "north-macedonia",
@@ -2818,7 +5638,7 @@
    "internetPct": 86.10091103,
    "gdpPerCapita": 10381.8460703874,
    "wbYear": "2025",
-   "usdRate": 1.717205
+   "usdRate": 1.719942
   },
   {
    "slug": "moldova",
@@ -2831,7 +5651,7 @@
    "internetPct": 77.3687973,
    "gdpPerCapita": 8621.71721623786,
    "wbYear": "2025",
-   "usdRate": 17.63128
+   "usdRate": 17.710416
   },
   {
    "slug": "georgia-country",
@@ -2844,7 +5664,7 @@
    "internetPct": 83.79855689,
    "gdpPerCapita": 9691.53472415196,
    "wbYear": "2025",
-   "usdRate": 2.601676
+   "usdRate": 2.603422
   },
   {
    "slug": "armenia",
@@ -2857,7 +5677,7 @@
    "internetPct": 81.33930206,
    "gdpPerCapita": 9474.01849300368,
    "wbYear": "2025",
-   "usdRate": 363.612931
+   "usdRate": 363.48857
   },
   {
    "slug": "azerbaijan",
@@ -2870,7 +5690,7 @@
    "internetPct": 90.80000181,
    "gdpPerCapita": 7410.72281660142,
    "wbYear": "2025",
-   "usdRate": 1.699654
+   "usdRate": 1.699627
   },
   {
    "slug": "kazakhstan",
@@ -2883,7 +5703,7 @@
    "internetPct": 93.39167254,
    "gdpPerCapita": 14692.1331757237,
    "wbYear": "2025",
-   "usdRate": 442.635582
+   "usdRate": 440.652605
   },
   {
    "slug": "uzbekistan",
@@ -2896,7 +5716,7 @@
    "internetPct": 89.50550079,
    "gdpPerCapita": 3968.2720079072,
    "wbYear": "2025",
-   "usdRate": 11830.201553
+   "usdRate": 11828.479498
   },
   {
    "slug": "cambodia",
@@ -2909,7 +5729,7 @@
    "internetPct": 68.47530365,
    "gdpPerCapita": 2872.42926639909,
    "wbYear": "2025",
-   "usdRate": 4048.914544
+   "usdRate": 4048.825173
   },
   {
    "slug": "mongolia",
@@ -2922,7 +5742,7 @@
    "internetPct": 85.12349701,
    "gdpPerCapita": 7108.22743246244,
    "wbYear": "2025",
-   "usdRate": 3571.718831
+   "usdRate": 3578.011286
   },
   {
    "slug": "maldives",
@@ -2935,7 +5755,7 @@
    "internetPct": 85.23999786,
    "gdpPerCapita": 14614.7208116541,
    "wbYear": "2025",
-   "usdRate": 15.439048
+   "usdRate": 15.442371
   },
   {
    "slug": "namibia",
@@ -2948,7 +5768,7 @@
    "internetPct": 64.87460327,
    "gdpPerCapita": 4875.92558158247,
    "wbYear": "2025",
-   "usdRate": 16.319117
+   "usdRate": 16.411222
   },
   {
    "slug": "mauritius",
@@ -2961,7 +5781,7 @@
    "internetPct": 73.30793533,
    "gdpPerCapita": 12991.2935987166,
    "wbYear": "2025",
-   "usdRate": 47.574262
+   "usdRate": 47.523253
   },
   {
    "slug": "mozambique",
@@ -2976,7 +5796,7 @@
    "internetPct": 20.52729988,
    "gdpPerCapita": 626.914419215727,
    "wbYear": "2025",
-   "usdRate": 63.848352
+   "usdRate": 63.784713
   },
   {
    "slug": "benin",
@@ -2991,7 +5811,7 @@
    "internetPct": 33.98379898,
    "gdpPerCapita": 1658.27312662991,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "togo",
@@ -3004,7 +5824,7 @@
    "internetPct": 39.48320007,
    "gdpPerCapita": 1383.89974929887,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "sierra-leone",
@@ -3034,7 +5854,7 @@
    "internetPct": 32.23360062,
    "gdpPerCapita": 915.328972645548,
    "wbYear": "2025",
-   "usdRate": 171.975328
+   "usdRate": 172.025066
   },
   {
    "slug": "gambia",
@@ -3049,7 +5869,7 @@
    "internetPct": 49.49430084,
    "gdpPerCapita": 919.060423427951,
    "wbYear": "2025",
-   "usdRate": 74.45814
+   "usdRate": 74.388229
   },
   {
    "slug": "burkina-faso",
@@ -3064,7 +5884,7 @@
    "internetPct": 28.25270081,
    "gdpPerCapita": 1147.57131635601,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "mali",
@@ -3079,7 +5899,7 @@
    "internetPct": 36.80149841,
    "gdpPerCapita": 1193.27601004701,
    "wbYear": "2025",
-   "usdRate": 575.925782
+   "usdRate": 576.843579
   },
   {
    "slug": "dr-congo",
@@ -3097,7 +5917,7 @@
    "internetPct": 19.67350006,
    "gdpPerCapita": 806.776000708534,
    "wbYear": "2025",
-   "usdRate": 2311.600613
+   "usdRate": 2311.002304
   },
   {
    "slug": "algeria",
@@ -3110,7 +5930,7 @@
    "internetPct": 77.4178009,
    "gdpPerCapita": 6051.00322704182,
    "wbYear": "2025",
-   "usdRate": 133.749756
+   "usdRate": 133.809466
   },
   {
    "slug": "kuwait",
@@ -3123,7 +5943,7 @@
    "internetPct": 100,
    "gdpPerCapita": 32312.3119953634,
    "wbYear": "2025",
-   "usdRate": 0.308332
+   "usdRate": 0.308645
   },
   {
    "slug": "bahrain",
@@ -3162,7 +5982,7 @@
    "internetPct": 74.7052002,
    "gdpPerCapita": 6642.00449450523,
    "wbYear": "2025",
-   "usdRate": 2.247813
+   "usdRate": 2.229744
   },
   {
    "slug": "papua-new-guinea",
@@ -3175,7 +5995,7 @@
    "internetPct": 18.81159973,
    "gdpPerCapita": 3019.5309140573,
    "wbYear": "2025",
-   "usdRate": 4.451592
+   "usdRate": 4.482018
   },
   {
    "slug": "united-states",

@@ -186,7 +186,10 @@ export default async function TeachPlacePage({ params }: Props) {
                 {p.kind === 'metro' && us.state && us.vsState != null
                   ? `Median pay for ${copy.occupation} in ${p.inSentence} is ${Math.abs(us.vsState)}% ${us.vsState >= 0 ? 'above' : 'below'} the ${us.state.name} median. `
                   : ''}
-                {`By headcount, ${p.name} ranks ${ordinal(us.size.rank)} of ${us.size.of}. That is a lot of people who already know ${copy.noun} well enough to teach it — and every one of them started as a beginner who needed a good course.`}
+                {`By headcount, ${p.name} ranks ${ordinal(us.size.rank)} of ${us.size.of}. `}
+                {us.jobs >= 1500
+                  ? `That is a lot of people who already know ${copy.noun} well enough to teach it — and every one of them started as a beginner who needed a good course.`
+                  : `It is a smaller market, and that is fine: Teyro is online, so a course you build from ${p.name} reaches learners everywhere, not just nearby.`}
               </p>
               <p className={s.source}>
                 <Database size={12} aria-hidden="true" /> Source: {TEACH_SOURCES.bls} ({copy.occupation}, SOC{' '}
