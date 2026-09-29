@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { TeyMark } from '@/components/brand/TeyMark';
+import { LaunchBar } from '@/components/launch/LaunchSections';
+import { LEARNER_ENTRY } from '@/lib/launch';
 import styles from './WaitlistHeader.module.css';
 
 interface NavLink {
@@ -33,8 +35,12 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Blog', href: '/blog' },
 ];
 
-const START_HREF = '/start';
+// While the app is gated (lib/launch.ts) the start button becomes "Get notified"
+// and there is no login to offer yet.
+const START_HREF = LEARNER_ENTRY.href;
+const START_LABEL = LEARNER_ENTRY.label;
 const LOGIN_HREF = '/login?mode=signin';
+const SHOW_LOGIN = !LEARNER_ENTRY.gated;
 
 export default function WaitlistHeader() {
   const pathname = usePathname();
@@ -114,6 +120,7 @@ export default function WaitlistHeader() {
 
   return (
     <>
+      <LaunchBar />
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <Link href="/" className={styles.logo} aria-label="Teyro home">
@@ -125,11 +132,13 @@ export default function WaitlistHeader() {
           </nav>
 
           <div className={styles.actions}>
-            <Link href={LOGIN_HREF} className={styles.login}>
-              Log in
-            </Link>
+            {SHOW_LOGIN && (
+              <Link href={LOGIN_HREF} className={styles.login}>
+                Log in
+              </Link>
+            )}
             <Link href={START_HREF} className={styles.start}>
-              Get started
+              {START_LABEL}
             </Link>
             <button
               type="button"
@@ -161,11 +170,13 @@ export default function WaitlistHeader() {
             </nav>
             <div className={styles.panelActions}>
               <Link href={START_HREF} className={styles.startBig}>
-                Get started
+                {START_LABEL}
               </Link>
-              <Link href={LOGIN_HREF} className={styles.loginBig}>
-                I already have an account
-              </Link>
+              {SHOW_LOGIN && (
+                <Link href={LOGIN_HREF} className={styles.loginBig}>
+                  I already have an account
+                </Link>
+              )}
             </div>
           </div>
         </>

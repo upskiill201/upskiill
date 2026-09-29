@@ -1,5 +1,6 @@
 import data from '@/content/seo/teach-data.json';
 import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
+import { STUDIO_ENTRY } from '@/lib/launch';
 
 /**
  * Creator-recruitment location pages: /teach/<skill>/<place>.
@@ -16,7 +17,9 @@ export const TEACH_SKILLS: TeachSkill[] = ['coding', 'ai'];
 export const CREATOR_SHARE_PCT = 70; // backend EarningsService default agreement
 export const MIN_PAYOUT_USD = 50;
 export const CLEARING_DAYS = 14;
-export const APPLY_HREF = '/creator/onboarding';
+// While Teyro Studio is closed (lib/launch.ts) applying goes to the /teach apply form.
+export const APPLY_HREF = STUDIO_ENTRY.href;
+export const APPLY_LABEL = STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : 'Apply to teach';
 
 /**
  * A worked example, always labelled as one — never a promise. Paid courses are
