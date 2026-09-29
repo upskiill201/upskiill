@@ -27,6 +27,7 @@ import {
   Tracks,
   WhyItWorks,
 } from '@/components/homepage/v3/Sections';
+import { LaunchSection } from '@/components/launch/LaunchSections';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -56,6 +57,7 @@ export default function Home() {
       </noscript>
       <Hero />
       <LaunchBadges />
+      <LaunchSection />
       <Tracks />
       <WhyItWorks />
       <Features />

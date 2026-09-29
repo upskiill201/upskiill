@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { LEARNER_ENTRY } from '@/lib/launch';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowRight, Clock } from 'lucide-react';
@@ -187,7 +188,7 @@ export default function BlogIndexPage() {
               Every guide ties back to the same underlying idea Teyro is built on: short, daily,
               gamified practice beats long, passive video sessions for almost everyone. If you want
               to put that into practice rather than just read about it,{' '}
-              <Link href="/onboarding/0">Teyro</Link> turns these study techniques into 15-minute
+              <Link href={LEARNER_ENTRY.href}>Teyro</Link> turns these study techniques into 15-minute
               daily lessons with streaks and XP, so the habit — not just the knowledge — actually
               sticks.
             </p>

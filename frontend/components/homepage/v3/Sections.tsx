@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Accordion from '@/components/ui/Accordion';
 import LaunchBadges from '@/components/homepage/v2/LaunchBadges';
+import { APP_LAUNCHES, LEARNER_ENTRY, STUDIO_OPENS } from '@/lib/launch';
 import {
   FriendsVisual,
   HeroPhone,
@@ -37,8 +38,10 @@ import {
 } from './Visuals';
 import s from './Home.module.css';
 
-export const START_HREF = '/start';
+// While the app is gated (lib/launch.ts) these point at the notify-me form.
+export const START_HREF = LEARNER_ENTRY.href;
 export const LOGIN_HREF = '/login?mode=signin';
+const START_LABEL = LEARNER_ENTRY.label;
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 
@@ -48,6 +51,11 @@ export function Hero() {
       <div className={s.heroGlow} aria-hidden="true" />
       <div className={`${s.wrap} ${s.heroGrid}`}>
         <div className={s.heroCopy}>
+          {LEARNER_ENTRY.gated && (
+            <span className={s.eyebrow} style={{ marginBottom: 0 }}>
+              Launching {APP_LAUNCHES}
+            </span>
+          )}
           <h1 id="hero-title" className={`${s.display} ${s.h1}`}>
             The fun way to <em>finish</em> learning coding and AI.
           </h1>
@@ -57,11 +65,17 @@ export function Hero() {
           </p>
           <div className={s.heroActions}>
             <Link href={START_HREF} className={s.btn}>
-              Get started
+              {START_LABEL}
             </Link>
-            <Link href={LOGIN_HREF} className={s.btnGhost}>
-              I already have an account
-            </Link>
+            {LEARNER_ENTRY.gated ? (
+              <a href="#how-it-works" className={s.btnGhost}>
+                See how it works
+              </a>
+            ) : (
+              <Link href={LOGIN_HREF} className={s.btnGhost}>
+                I already have an account
+              </Link>
+            )}
           </div>
           <div className={s.heroNote}>
             <span>
@@ -470,6 +484,13 @@ const FAQ = [
   },
 ];
 
+// Answered first while the app is closed — it is also what search and AI
+// answer engines will quote for "when does Teyro launch".
+const LAUNCH_FAQ = {
+  question: 'When does Teyro launch?',
+  answer: `The learner app launches in ${APP_LAUNCHES}, and Teyro Studio for creators opens in ${STUDIO_OPENS}. Leave your email on this page and we’ll tell you the day it opens.`,
+};
+
 export function Faq() {
   return (
     <section className={`${s.band} ${s.tint}`} id="faq" aria-labelledby="faq-title">
@@ -480,7 +501,7 @@ export function Faq() {
           </h2>
         </Reveal>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          <Accordion items={FAQ} />
+          <Accordion items={LEARNER_ENTRY.gated ? [LAUNCH_FAQ, ...FAQ] : FAQ} />
         </div>
       </div>
     </section>
@@ -494,11 +515,23 @@ export function FinalCta() {
     <section className={s.final} aria-labelledby="final-title">
       <div className={`${s.wrap} ${s.finalInner}`}>
         <h2 id="final-title" className={`${s.display} ${s.h2}`}>
-          Start your streak <em>today.</em>
+          {LEARNER_ENTRY.gated ? (
+            <>
+              Be first in <em>when we launch.</em>
+            </>
+          ) : (
+            <>
+              Start your streak <em>today.</em>
+            </>
+          )}
         </h2>
-        <p className={s.lead}>Your first lesson takes a few minutes. Your future self will thank you.</p>
+        <p className={s.lead}>
+          {LEARNER_ENTRY.gated
+            ? `Teyro launches in ${APP_LAUNCHES}. Get notified the day the doors open.`
+            : 'Your first lesson takes a few minutes. Your future self will thank you.'}
+        </p>
         <Link href={START_HREF} className={s.btn}>
-          Get started
+          {START_LABEL}
         </Link>
       </div>
       <div className={s.finalStage} aria-hidden="true">

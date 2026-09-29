@@ -8,6 +8,7 @@ import React from 'react';
 import Link from 'next/link';
 import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok, FaXTwitter } from 'react-icons/fa6';
 import { TeyMark } from '@/components/brand/TeyMark';
+import { LEARNER_ENTRY, STUDIO_ENTRY } from '@/lib/launch';
 import styles from './WaitlistFooter.module.css';
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
@@ -18,7 +19,7 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
       ['AI track', '/#tracks'],
       ['How it works', '/#how-it-works'],
       ['Leagues', '/#leagues'],
-      ['Get the app', '/start'],
+      [LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app', LEARNER_ENTRY.href],
     ],
   },
   {
@@ -28,8 +29,9 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
       ['How teaching works', '/teach/how-it-works'],
       ['Teach coding online', '/teach/coding'],
       ['Teach AI online', '/teach/ai'],
-      ['Become a creator', '/creator/onboarding'],
-      ['Creator log in', '/creator/login'],
+      [STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : 'Become a creator', STUDIO_ENTRY.href],
+      // No Studio login to offer until Studio opens (lib/launch.ts).
+      ...(STUDIO_ENTRY.gated ? [] : ([['Creator log in', '/creator/login']] as [string, string][])),
     ],
   },
   {
@@ -71,8 +73,8 @@ export default function WaitlistFooter() {
             <p className={styles.promise}>
               The fun way to finish learning coding and AI: short daily lessons with streaks, leagues and friends.
             </p>
-            <Link href="/start" className={styles.getApp}>
-              Get the app
+            <Link href={LEARNER_ENTRY.href} className={styles.getApp}>
+              {LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app'}
             </Link>
           </div>
 

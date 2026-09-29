@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
+import iosSplash from "../lib/pwa/iosSplash.json";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,7 +22,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 // weights on /, /blog, /terms and /login, where a celebration cannot render.
 
 export const viewport: Viewport = {
-  themeColor: '#3D5AFE',
+  themeColor: '#0172FD',
   viewportFit: 'cover',
 };
 
@@ -33,9 +34,9 @@ export const metadata: Metadata = {
   // Describes what actually ships. The previous copy called Teyro an
   // "AI-personalized learning platform"; AI is Phase Two and disarmed, so that
   // was promising a product nobody could use yet.
-  title: 'Teyro — The fun and effective way to learn anything',
+  title: 'Teyro — The fun way to finish learning coding and AI',
   description:
-    'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+    'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
 
   // ── Keywords ──
   keywords: [
@@ -89,9 +90,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://teyro.app',
     siteName: 'Teyro',
-    title: 'Teyro — The fun and effective way to learn anything',
+    title: 'Teyro — The fun way to finish learning coding and AI',
     description:
-      'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+      'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
     locale: 'en_US',
     images: [
       {
@@ -107,9 +108,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@teyroapp',
-    title: 'Teyro — The fun and effective way to learn anything',
+    title: 'Teyro — The fun way to finish learning coding and AI',
     description:
-      'The fun and effective way to learn anything. Short lessons, real practice, streaks and XP — free to start on iPhone, Android and web.',
+      'Teyro helps students and career switchers finish the coding and AI skills they start, with short daily lessons, streaks, leagues and friends. Free to start on iPhone, Android and web.',
     images: ['/teyro-og.png'],
   },
 
@@ -130,19 +131,23 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-96.png', sizes: '96x96', type: 'image/png' },
       { url: '/Icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: '/favicon.png',
+    shortcut: '/favicon.ico',
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Teyro',
+    // Launch screens for the installed app (scripts/gen-app-icons.mjs); without
+    // one per screen size iOS shows a blank white screen while Teyro boots.
+    startupImage: iosSplash,
   },
   manifest: '/manifest.webmanifest',
 };

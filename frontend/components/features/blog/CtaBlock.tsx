@@ -1,11 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CtaOverride } from '@/lib/blog/types';
+import { APP_LAUNCHES, gateHref, LEARNER_ENTRY, LEARNER_GATE } from '@/lib/launch';
 import styles from './CtaBlock.module.css';
 
 interface CtaBlockProps {
   cta?: CtaOverride;
 }
+
+const GATED = {
+  title: 'Be first in when Teyro launches',
+  text: `Teyro launches in ${APP_LAUNCHES}: short daily lessons in coding and AI, with streaks, leagues and friends. Leave your email and we’ll tell you the day the doors open.`,
+  label: 'Get notified',
+};
 
 const DEFAULTS = {
   title: 'Turn reading into actually learning',
@@ -19,10 +26,14 @@ const DEFAULTS = {
 // Plain <Link> + CSS module (NOT components/ui/Button — that component is
 // client-only and would break RSC).
 export default function CtaBlock({ cta }: CtaBlockProps) {
-  const title = cta?.title ?? DEFAULTS.title;
-  const text = cta?.text ?? DEFAULTS.text;
-  const href = cta?.href ?? DEFAULTS.href;
-  const label = cta?.label ?? DEFAULTS.label;
+  // While the app is closed (lib/launch.ts) any CTA that would have sent the
+  // reader into it points at the notify-me form instead, and says so — a
+  // "Start learning free" label on a waitlist link would be a lie.
+  const href = gateHref(cta?.href ?? DEFAULTS.href) ?? DEFAULTS.href;
+  const toWaitlist = LEARNER_GATE && href === LEARNER_ENTRY.href;
+  const title = toWaitlist ? GATED.title : (cta?.title ?? DEFAULTS.title);
+  const text = toWaitlist ? GATED.text : (cta?.text ?? DEFAULTS.text);
+  const label = toWaitlist ? GATED.label : (cta?.label ?? DEFAULTS.label);
 
   return (
     <aside className={styles.block} aria-label="Call to action">
@@ -32,7 +43,9 @@ export default function CtaBlock({ cta }: CtaBlockProps) {
         <Link href={href} className={styles.button}>
           {label}
         </Link>
-        <p className={styles.fineprint}>Free to start · No credit card needed</p>
+        <p className={styles.fineprint}>
+          {toWaitlist ? 'No spam · One email when it’s live' : 'Free to start · No credit card needed'}
+        </p>
       </div>
       <div className={styles.art} aria-hidden="true">
         <Image
