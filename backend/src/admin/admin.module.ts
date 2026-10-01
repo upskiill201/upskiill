@@ -4,6 +4,7 @@ import { CourseModule } from '../course/course.module';
 import { CourseReviewModule } from '../course-review/course-review.module';
 import { EarningsModule } from '../earnings/earnings.module';
 import { CouponsModule } from '../coupons/coupons.module';
+import { SiteModule } from '../site/site.module';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { AdminUsersService } from './admin-users.service';
@@ -26,7 +27,7 @@ import { AdminInsightsService } from './admin-insights.service';
   // re-deriving coupon status — see admin-courses.service.ts,
   // admin-creators.service.ts, admin-payments.service.ts,
   // admin-payouts.service.ts, admin-coupons.service.ts.
-  imports: [PrismaModule, CourseModule, CourseReviewModule, EarningsModule, CouponsModule],
+  imports: [PrismaModule, CourseModule, CourseReviewModule, EarningsModule, CouponsModule, SiteModule],
   controllers: [AdminController],
   providers: [
     AdminService,
