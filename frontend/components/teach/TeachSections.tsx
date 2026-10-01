@@ -173,8 +173,8 @@ export function Loop() {
         <div className={`${s.pillars} ${t.loop}`}>
           {LOOP.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.1} className={s.pillar}>
-              <span className={s.pillarArt}>
-                <Image src={p.art} alt="" width={112} height={112} style={{ objectFit: 'contain' }} />
+              <span className={`${s.pillarArt} ${s.pillarArtTall}`}>
+                <Image src={p.art} alt="" width={112} height={144} style={{ objectFit: 'contain' }} />
               </span>
               <span className={t.loopNum}>{i + 1}</span>
               <h3 className={`${s.display} ${s.h3}`}>{p.title}</h3>
