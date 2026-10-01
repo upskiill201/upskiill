@@ -2745,6 +2745,9 @@ model PlatformSettings {
   // percentage is still capped normally. Off by default; an admin opts in.
   allowFreeCoupons           Boolean @default(false)
 
+  // Homepage introduction video (a YouTube link). Null hides the section.
+  introVideoUrl String?
+
   updatedAt        DateTime @updatedAt
   updatedByAdminId String?
 

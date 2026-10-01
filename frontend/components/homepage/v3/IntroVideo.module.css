@@ -1,0 +1,122 @@
+/* Homepage intro video — same chunky-border, 3D-lip look as the rest of the
+   homepage. Tokens only (docs/08-color-system.md). */
+
+.band {
+  padding: 24px 0 96px;
+}
+
+.frame {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 8px;
+  border-radius: 32px;
+  background: var(--bg-card);
+}
+
+.screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--color-ink);
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.poster:hover .thumb {
+  transform: scale(1.03);
+}
+
+.poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+}
+
+.play {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  padding-left: 6px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow: 0 7px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+  transition: transform 0.15s ease;
+}
+
+.poster:hover .play {
+  transform: translateY(-2px);
+}
+
+.poster:active .play {
+  transform: translateY(6px);
+  box-shadow: 0 1px 0 var(--color-brand-deep);
+}
+
+.poster:focus-visible {
+  outline: 4px solid color-mix(in srgb, var(--color-brand) 55%, transparent);
+  outline-offset: -4px;
+}
+
+@media (max-width: 640px) {
+  .band {
+    padding: 8px 0 64px;
+  }
+
+  .frame {
+    padding: 8px;
+    border-radius: 24px;
+    border-bottom-width: 6px;
+  }
+
+  .screen {
+    border-radius: 16px;
+  }
+
+  .play {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb,
+  .play {
+    transition: none;
+  }
+}
