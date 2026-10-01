@@ -24,6 +24,7 @@ import {
   FinalCta,
   Hero,
   LaunchBadges,
+  StayRelevant,
   Tracks,
   WhyItWorks,
 } from '@/components/homepage/v3/Sections';
@@ -57,6 +58,7 @@ export default function Home() {
       <Hero />
       <LaunchBadges />
       <Tracks />
+      <StayRelevant />
       <WhyItWorks />
       <Features />
       <Audience />
