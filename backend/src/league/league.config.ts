@@ -170,3 +170,50 @@ export function addDays(weekStart: string, n: number): string {
 export function getWeekEndDate(weekStart: string): Date {
   return new Date(addDays(weekStart, 7) + 'T00:00:00.000Z');
 }
+
+// ─── Shared weeks (pre-launch: everyone active races on one board) ──────────
+//
+// Founder decision 2026-09-24: real learners only, no bots — so while Teyro
+// is small, a tiered league of 30 would leave most learners racing alone.
+// Instead, a week is SHARED when fewer than SHARED_LEAGUE_UNTIL learners
+// competed the week before: everyone active joins one board (a second opens
+// past SHARED_COHORT_CAPACITY). Each learner keeps their own tier; the board
+// just decides who moves. Once last week had enough learners, tiered cohorts
+// of COHORT_CAPACITY come back on their own — no switch to flip.
+
+/** Learners active last week needed before tiered leagues return. */
+export const SHARED_LEAGUE_UNTIL = 60;
+/** One shared board holds this many; the next joiner opens another. */
+export const SHARED_COHORT_CAPACITY = 100;
+/** Shared cohorts live under this placeholder tier + a negative index. */
+export const SHARED_COHORT_TIER: LeagueTier = 'BRONZE';
+
+export function isSharedCohortIndex(cohortIndex: number): boolean {
+  return cohortIndex < 0;
+}
+
+/** Top 3 on a small board, top 20% on a bigger one. */
+export function getSharedPromotionZone(total: number): number {
+  if (total < MIN_COHORT_FOR_DEMOTION) return Math.min(3, total);
+  return Math.max(3, Math.ceil(total * 0.2));
+}
+
+/**
+ * Outcome on a shared board: movement is decided by the board, but each
+ * learner moves from THEIR OWN tier. Bronze never demotes; demotion needs a
+ * board of MIN_COHORT_FOR_DEMOTION or more; the tournament keeps its rules.
+ */
+export function resolveSharedOutcome(
+  memberTier: LeagueTier,
+  rank: number,
+  total: number,
+): { outcome: LeagueOutcome; newTier: LeagueTier } {
+  if (memberTier === 'DIAMOND_TOURNAMENT') return resolveOutcome(memberTier, rank, total);
+  if (rank <= getSharedPromotionZone(total)) {
+    return { outcome: 'PROMOTED', newTier: promoteTier(memberTier) };
+  }
+  const demotes =
+    memberTier !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION && rank > total - DEMOTION_ZONE_SIZE;
+  if (demotes) return { outcome: 'DEMOTED', newTier: demoteTier(memberTier) };
+  return { outcome: 'STAYED', newTier: memberTier };
+}

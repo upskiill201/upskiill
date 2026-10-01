@@ -10,14 +10,14 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Trophy } from 'lucide-react';
 import LeaderboardSceneShell from '../LeaderboardSceneShell';
 import AnimatedRankList from '../leaderboard/AnimatedRankList';
 import CelebrationMascot from '../CelebrationMascot';
+import LeagueBadge from '@/components/leaderboard/LeagueBadge';
 import styles from '../Leaderboard.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { getLeagueMeta } from '@/lib/leagues';
-import { playRankUp, playRankJoin, playRankDown, playStreakFanfare, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 
 type LeaderboardSceneInput = Extract<CelebrationScene, { kind: 'LEADERBOARD' }>;
@@ -32,39 +32,29 @@ interface LeaderboardSceneProps {
  * since that's the moment they're actually watching. */
 function playIntroSound(variant: LeaderboardSceneInput['variant']) {
   switch (variant) {
-    case 'JOINED':
-      playHaptic('light');
-      playRankJoin();
-      break;
     case 'REACHED_FIRST':
     case 'ENTERED_PROMOTION_ZONE':
-      playHaptic('teyroCelebration');
-      playStreakFanfare();
+      playHaptic('teyroCelebration', false);
+      playSound('leagueTop');
+      break;
+    case 'JOINED':
+    case 'CLOSE_TO_PROMOTION':
+      playHaptic('light', false);
+      playSound('leagueJoin');
       break;
     case 'ESCAPED_DEMOTION_ZONE':
-      playHaptic('medium');
-      playSparkle();
-      playWhoosh('up');
-      break;
-    case 'CLOSE_TO_PROMOTION':
-      playHaptic('light');
-      playRankJoin();
-      break;
     case 'BIG_JUMP_UP':
-      playHaptic('medium');
-      playRankUp();
+      playHaptic('medium', false);
+      playSound('leagueUp', 2);
       break;
     case 'ENTERED_DEMOTION_ZONE':
     case 'BIG_JUMP_DOWN':
-      playHaptic('medium');
-      playRankDown();
-      break;
     case 'EXITED_PROMOTION_ZONE':
-      playHaptic('light');
-      playWhoosh('down');
+      playHaptic('medium', false);
+      playSound('noticeWarn');
       break;
     default:
-      playHaptic('medium');
+      playHaptic('medium', false);
   }
 }
 
@@ -96,8 +86,8 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
   }, [scene.variant]);
 
   const handleSwapStart = () => {
-    if (scene.variant === 'PASSED_RIVAL') playRankUp();
-    else if (scene.variant === 'PASSED_BY_RIVAL') playRankDown();
+    if (scene.variant === 'PASSED_RIVAL') playSound('leagueUp', 1);
+    else if (scene.variant === 'PASSED_BY_RIVAL') playSound('noticeWarn');
   };
 
   const fallbackHeadline =
@@ -115,7 +105,8 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
       <>You&apos;re #{scene.myRank}!</>
     );
 
-  const headline = scene.teyLine ?? fallbackHeadline;
+  // The headline states the fact; Tey's line reacts in the subhead.
+  const headline = fallbackHeadline;
 
   const fallbackSubhead =
     scene.variant === 'JOINED'
@@ -140,7 +131,7 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
                         ? `Up to #${scene.myRank} in ${leagueMeta.name}`
                         : `Down to #${scene.myRank} in ${leagueMeta.name}`;
 
-  const subhead = scene.teySubhead ?? fallbackSubhead;
+  const subhead = scene.teyLine ?? scene.teySubhead ?? fallbackSubhead;
 
   const ctaText =
     scene.variant === 'JOINED'
@@ -164,12 +155,11 @@ export default function LeaderboardScene({ scene, onAdvance }: LeaderboardSceneP
   return (
     <LeaderboardSceneShell cta={settled ? { text: ctaText, onClick: onAdvance } : null} onSkip={settled ? undefined : onAdvance}>
       <motion.div
-        className={styles.iconBadge}
         initial={reducedMotion ? false : { scale: 0.4, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
-        <Trophy />
+        <LeagueBadge tier={scene.league} size="lg" priority />
       </motion.div>
 
       <motion.h1

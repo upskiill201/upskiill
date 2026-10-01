@@ -22,6 +22,8 @@ export const TEY_REASONS = [
   'STREAK_AT_RISK',
   'STREAK_CRITICAL',
   'STREAK_LOST',
+  'STREAK_REPAIR_EXPIRING',
+  'FIRST_LESSON',
   'INACTIVE_RETURN',
   'LESSON_ABANDONED',
   'MILESTONE',
@@ -82,6 +84,12 @@ export interface TeyFacts {
   courseTitle: string | null;
   hoursUntilLocalMidnight: number;
   daysSinceLastActivity: number | null;
+  /** The broken streak a repair would restore; 0 when no offer is open. */
+  repairLostStreak?: number;
+  /** Price of that repair in Coins (the shop's price, discounts applied). */
+  repairCostCoins?: number;
+  /** Whole hours before the repair offer closes; null when no offer. */
+  repairHoursLeft?: number | null;
 }
 
 export interface TeyContext {

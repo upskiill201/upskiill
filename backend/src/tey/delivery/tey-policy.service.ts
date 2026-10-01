@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { TeyContext, TeyReason } from '../contracts/tey-context.types';
 import { localTimeToday } from '../decision/rules';
-import type { TeyLocalNow } from '../state/local-time.util';
+import { resolveLocalNow, type TeyLocalNow } from '../state/local-time.util';
 import { ruleById } from '../decision/rules';
 
 export type PolicyDecision =
@@ -14,23 +14,40 @@ const CATEGORY_OF: Record<TeyReason, keyof PrefFlags> = {
   STREAK_AT_RISK: 'streakReminders',
   STREAK_CRITICAL: 'streakReminders',
   STREAK_LOST: 'streakReminders',
+  STREAK_REPAIR_EXPIRING: 'streakReminders',
   DAILY_GOAL_INCOMPLETE: 'dailyReminders',
   LESSON_ABANDONED: 'dailyReminders',
+  FIRST_LESSON: 'dailyReminders',
   INACTIVE_RETURN: 'reengagement',
   MILESTONE: 'milestones',
   COURSE_NEAR_COMPLETION: 'milestones',
   PROGRESS_CELEBRATION: 'milestones',
 };
 
-interface PrefFlags {
+/**
+ * The reminder rules' own ledger. Cap, spacing and cooldown count only these:
+ * event notifications (a league overtake, a creator's sale, a course offer)
+ * have their own throttles in TeyNotifyService, and letting a "Sam passed
+ * you" at 19:00 swallow the 20:00 streak saver would be exactly backwards.
+ */
+export const REMINDER_RULE_IDS: string[] = Object.keys(CATEGORY_OF);
+
+export interface PrefFlags {
   streakReminders: boolean;
   dailyReminders: boolean;
   milestones: boolean;
   reengagement: boolean;
+  leagueUpdates: boolean;
+  courseOffers: boolean;
+  creatorActivity: boolean;
 }
 
-/** Minimum gap between ordinary pushes. */
-const MIN_GAP_MINUTES = 240;
+/**
+ * Minimum gap between ordinary reminders. Three hours leaves room for the
+ * day's ladder — reminder at the chosen hour (≤16:00), streak saver at 20:00
+ * — while still stopping two reminders landing back to back.
+ */
+const MIN_GAP_MINUTES = 180;
 /** A CRITICAL may come closer, but not immediately after something else. */
 const MIN_GAP_MINUTES_CRITICAL = 60;
 /** CRITICAL may run this late, but no later. Nothing else crosses quiet hours. */
@@ -78,12 +95,13 @@ export class TeyPolicyService {
     //      Deriving these from the ledger rather than a counter means they
     //      cannot drift out of sync with what was actually sent.
     const since = this.localMidnight(now);
+    const reminders = { in: REMINDER_RULE_IDS };
     const [todayCount, last] = await Promise.all([
       this.prisma.teyDelivery.count({
-        where: { userId, channel: 'PUSH', status: 'SENT', sentAt: { gte: since } },
+        where: { userId, channel: 'PUSH', status: 'SENT', ruleId: reminders, sentAt: { gte: since } },
       }),
       this.prisma.teyDelivery.findFirst({
-        where: { userId, channel: 'PUSH', status: 'SENT' },
+        where: { userId, channel: 'PUSH', status: 'SENT', ruleId: reminders },
         orderBy: { sentAt: 'desc' },
         select: { sentAt: true, ruleId: true },
       }),
@@ -143,6 +161,9 @@ export class TeyPolicyService {
         dailyReminders: true,
         milestones: true,
         reengagement: true,
+        leagueUpdates: true,
+        courseOffers: true,
+        creatorActivity: true,
         quietHoursStart: 1290,
         quietHoursEnd: 480,
         maxPerDay: 4,
@@ -153,10 +174,35 @@ export class TeyPolicyService {
   }
 
   /**
+   * For pushes that aren't Tey's own (a creator's nudge or cheer): the kill
+   * switch, the learner's push toggle and the category they belong to, quiet
+   * hours in the learner's local time, and a device to send to. Volume is
+   * the caller's job (creator nudges have their own per-course limits).
+   */
+  async allowsDirectPush(
+    user: { id: string; timezone: string | null; timezoneOffsetMinutes: number | null },
+    category: keyof PrefFlags,
+  ): Promise<boolean> {
+    if (process.env.TEY_PUSH_ENABLED === 'false') return false;
+    const prefs = await this.prefsFor(user.id);
+    if (!prefs.pushEnabled || !prefs[category]) return false;
+    if (this.inQuietHours(resolveLocalNow(user).minutesOfDay, prefs, false)) return false;
+    const active = await this.prisma.pushSubscription.count({ where: { userId: user.id, isActive: true } });
+    return active > 0;
+  }
+
+  /**
    * Quiet hours wrap midnight (21:30 -> 08:00), so the window is a union of
    * two ranges rather than a simple interval. Getting this backwards would
    * silence the entire day and send only at night.
    */
+  isQuietNow(
+    user: { timezone: string | null; timezoneOffsetMinutes: number | null },
+    prefs: { quietHoursStart: number; quietHoursEnd: number },
+  ): boolean {
+    return this.inQuietHours(resolveLocalNow(user).minutesOfDay, prefs, false);
+  }
+
   private inQuietHours(
     minutesOfDay: number,
     prefs: { quietHoursStart: number; quietHoursEnd: number },

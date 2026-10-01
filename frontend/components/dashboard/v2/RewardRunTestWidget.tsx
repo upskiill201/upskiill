@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Sparkles, Zap, Flame, Heart, Award } from 'lucide-react';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardAnimation, RewardItem } from '@/context/RewardAnimationContext';
-import { useHerald } from '@/context/HeraldContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { playHaptic } from '@/lib/haptics';
 import styles from './RewardRunTestWidget.module.css';
@@ -13,7 +12,6 @@ import styles from './RewardRunTestWidget.module.css';
 export default function RewardRunTestWidget() {
   const { refresh } = useGamification();
   const { triggerRewardAnimation, openClaimModal } = useRewardAnimation();
-  const { openStreakModal, openSpinModal } = useHerald();
   const { celebrate } = useCelebration();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -379,7 +377,7 @@ export default function RewardRunTestWidget() {
           {/* Duolingo Streak Screen */}
           <button
             type="button"
-            onClick={() => { playHaptic('medium'); openStreakModal(); }}
+            onClick={() => { playHaptic('medium'); celebrate({ kind: 'STREAK', mode: 'EXTENDED', days: 7, previousDays: 6 }); }}
             style={{
               display: 'flex',
               alignItems: 'center',

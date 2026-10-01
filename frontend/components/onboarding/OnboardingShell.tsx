@@ -1,519 +1,330 @@
 'use client';
 
 /**
- * OnboardingShell — Duolingo-style persistent SPA container for steps 1-15.
+ * OnboardingShell — the persistent SPA container for steps 1–14.
  *
- * Architecture:
- * ┌──────────────────────────────────────────────┐
- * │  ← Back  [████████░░░░░░░░░░░░]  X/15       │  ← NEVER SLIDES (persistent)
- * ├──────────────────────────────────────────────┤
- * │             [Tey mascot]                     │  ← SLIDES (direction-aware)
- * ├──────────────────────────────────────────────┤
- * │  [Step Question / Content / Interactive]     │  ← SLIDES (with 40ms delay)
- * │  [Continue →]                                │
- * └──────────────────────────────────────────────┘
+ * Renders from `STEP_DEFINITIONS` rather than a switch statement, so the flow
+ * is data: reordering a step, or adding one, is an edit to `steps.ts`.
  *
- * The progress bar's width is controlled by a single Framer Motion `animate`
- * prop — it never unmounts across all 15 steps. It fills smoothly from 1/15 to 15/15.
+ * It owns the three things no individual screen should:
+ *  - navigation (including the browser history entries, so back works)
+ *  - the dialogue beats for the current step
+ *  - the Continue gate, derived from each step's own `validate`
+ *
+ * Navigation deliberately uses `history.pushState` rather than the Next
+ * router: the route group's provider stack (celebration, gamification, audio)
+ * is expensive to tear down and re-mount, and the old flow's step-to-step
+ * transitions were visibly janky because of it. The URL still updates, and a
+ * `popstate` listener keeps state in sync with the back/forward buttons.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { MascotBackground } from './MascotBackground';
-import Step1Content from './steps/Step1Content';
-import Step2Content from './steps/Step2Content';
-import Step3Content from './steps/Step3Content';
-import Step4Content from './steps/Step4Content';
-import Step5Content from './steps/Step5Content';
-import Step6Content from './steps/Step6Content';
-import Step7Content from './steps/Step7Content';
-import Step8Content from './steps/Step8Content';
-import Step9Content from './steps/Step9Content';
-import Step10Content from './steps/Step10Content';
-import Step11Content from './steps/Step11Content';
-import Step12Content from './steps/Step12Content';
-import Step13Content from './steps/Step13Content';
-import Step14Content from './steps/Step14Content';
-import Step15Content from './steps/Step15Content';
-import { markStepComplete, getOnboardingState, saveOnboardingState } from '@/lib/user-onboarding';
+import { useAudioContext } from '@/context/AudioContext';
+import { playOnboardingCue } from '@/lib/audio/onboardingAudio';
+import { playTeyReaction } from '@/lib/audio/onboardingAudio';
 import { playHaptic } from '@/lib/haptics';
+import {
+  trackCategorySelected,
+  trackOnboardingStarted,
+  trackStepCompleted,
+  trackStepSkipped,
+  trackStepViewed,
+} from '@/lib/onboarding/analytics';
+import { matchRule, resolveDialogue, resolveReaction } from '@/lib/onboarding/dialogue/resolve';
+import type { Beat } from '@/lib/onboarding/dialogue/types';
+import { progressFor } from '@/lib/onboarding/progress';
+import { STEP_DEFINITIONS, TOTAL_ONBOARDING_STEPS, canAdvance, stepByNumber } from '@/lib/onboarding/steps';
+import type { OnboardingAnswersV2, TeyPose } from '@/lib/onboarding/types';
+import { useOnboardingSession } from '@/hooks/useOnboardingSession';
+import { OnboardingFooter } from './OnboardingFooter';
+import { OnboardingLayout } from './OnboardingLayout';
+import AccountScreen from './screens/AccountScreen';
+import CategoryScreen from './screens/CategoryScreen';
+import NameScreen from './screens/NameScreen';
+import PathRevealScreen from './screens/PathRevealScreen';
+import QuestionScreen from './screens/QuestionScreen';
+import RemindersScreen from './screens/RemindersScreen';
+import ReviewScreen from './screens/ReviewScreen';
+import { questionConfigFor } from './screens/questionConfig';
+import type { ScreenProps } from './screens/types';
 
-// ─── Step configuration for mascots & layout styles ─────────────────────────
+/** Guard window matching the slide transition, so a double tap can't skip a step. */
+const TRANSITION_MS = 550;
 
-interface StepMeta {
-  mobile: string;
-  desktop: string;
-  mobileMascotHeight?: string;
-  hideShellMascot?: boolean; // Step provides its own integrated mascot layout (e.g. step 7, 8, 9, 10, 12)
-  fullBleed?: boolean; // Hero steps: mascot area flexes to absorb leftover space, content sits directly on the gradient (no white band)
-  softBg?: boolean; // Calmer bubble field behind the mascot (hero/question steps where Tey is the focus)
-}
-
-const STEP_CONFIG: Record<number, StepMeta> = {
-  1: {
-    mobile: '/User onbarding Assets/Tey_welcome.webp',
-    desktop: '/User onbarding Assets/Tey_welcome.webp',
-    fullBleed: true,
-  },
-  2: {
-    mobile: '/User onbarding Assets/Tey_thinking _Mobile.webp',
-    desktop: '/User onbarding Assets/Tey_thinking_desktop.webp',
-    mobileMascotHeight: '30dvh',
-    softBg: true,
-  },
-  3: {
-    mobile: '/User onbarding Assets/Tey_step3_mobile.webp',
-    desktop: '/User onbarding Assets/Tey_step3_desktop.webp',
-    fullBleed: true,
-  },
-  4: {
-    mobile: '/User onbarding Assets/Tey_step4_mobile.webp',
-    desktop: '/User onbarding Assets/Tey_step4_desktop.webp',
-    fullBleed: true,
-  },
-  5: {
-    mobile: '/User onbarding Assets/Step_5_mobile_mascot.webp',
-    desktop: '/User onbarding Assets/step_5_desktop_mascot.webp',
-    fullBleed: true,
-  },
-  6: {
-    mobile: '/User onbarding Assets/Step_6_mascot.webp',
-    desktop: '/User onbarding Assets/Step_6_mascot.webp',
-    fullBleed: true,
-  },
-  7: {
-    mobile: '/User onbarding Assets/Step_7_tey_verified_state.webp',
-    desktop: '/User onbarding Assets/Step_7_tey_verified_state.webp',
-    hideShellMascot: true,
-  },
-  8: {
-    mobile: '/User onbarding Assets/Step_8_mascot_Mobile.webp',
-    desktop: '/User onbarding Assets/Step_8_mascot_desktop.webp',
-    hideShellMascot: true,
-  },
-  9: {
-    mobile: '/User onbarding Assets/Tey_step_9_img.webp',
-    desktop: '/User onbarding Assets/Tey_step_9_img.webp',
-    hideShellMascot: true,
-  },
-  10: {
-    mobile: '/User onbarding Assets/Step_10_image.webp',
-    desktop: '/User onbarding Assets/Step_10_image.webp',
-    hideShellMascot: true,
-  },
-  11: {
-    mobile: '/User onbarding Assets/Step_11_image_mobile.webp',
-    desktop: '/User onbarding Assets/Step_11_image_desktop.webp',
-    fullBleed: true,
-  },
-  12: {
-    mobile: '/User onbarding Assets/Step_12_image_mobile.webp',
-    desktop: '/User onbarding Assets/Step_12_image_desktop.webp',
-    hideShellMascot: true,
-  },
-  13: {
-    mobile: '/User onbarding Assets/Step-13_img.webp',
-    desktop: '/User onbarding Assets/Step-13_img.webp',
-    fullBleed: true,
-  },
-  14: {
-    mobile: '/User onbarding Assets/Step_14_image_mobile.webp',
-    desktop: '/User onbarding Assets/Step_14_image_desktop.webp',
-    fullBleed: true,
-  },
-  15: {
-    mobile: '/User onbarding Assets/step_15_image_mobile.webp',
-    desktop: '/User onbarding Assets/step_15_image_desktop.webp',
-    fullBleed: true,
-  },
-};
-
-// ─── Shared slide variants (direction-aware) ─────────────────────────────────
-
-const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 0 }),
-};
-
-const SLIDE_TRANSITION = {
-  type: 'spring',
-  stiffness: 320,
-  damping: 32,
-  mass: 0.9,
-} as const;
-
-// ─── Backend sync (non-blocking) ─────────────────────────────────────────────
-
-async function syncToBackend(payload: {
-  currentStep: number;
-  completedSteps: number[];
-  answers: Record<string, unknown>;
-  onboardingComplete?: boolean;
-}) {
-  try {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-onboarding`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    // Non-critical; localStorage is source of truth
-  }
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
-
-interface OnboardingShellProps {
+export interface OnboardingShellProps {
   initialStep: number;
 }
 
 export function OnboardingShell({ initialStep }: OnboardingShellProps) {
   const router = useRouter();
-  const [step, setStep] = useState<number>(initialStep);
+  const { isMuted, toggleMute } = useAudioContext();
+  const { answers, saveAnswer, advance } = useOnboardingSession({
+    currentStep: initialStep,
+    disableGuard: true,
+  });
+
+  const [step, setStep] = useState(initialStep);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [busy, setBusy] = useState(false);
+  /** Tey's reaction to the option just tapped; cleared on step change. */
+  const [reaction, setReaction] = useState<Beat | null>(null);
 
-  // ── Sync initialStep prop if changed ───────────────────────────────────────
-  useEffect(() => {
-    if (initialStep !== step && initialStep >= 1 && initialStep <= 15) {
-      setDirection(initialStep > step ? 1 : -1);
-      setStep(initialStep);
-    }
-  }, [initialStep]);
+  const headingRef = useRef<HTMLDivElement>(null);
 
-  // ── Internal navigation (stays within the persistent SPA shell) ────────────
+  const definition = useMemo(() => stepByNumber(step) ?? STEP_DEFINITIONS[0], [step]);
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+
   const goToStep = useCallback(
-    (newStep: number, dir: 1 | -1) => {
-      if (busy || newStep === step) return;
+    (next: number, dir: 1 | -1) => {
+      if (busy || next === step) return;
+      if (next < 1 || next > TOTAL_ONBOARDING_STEPS) return;
+
       setBusy(true);
       setDirection(dir);
-      setStep(newStep);
-      // Update browser URL without triggering Next.js route teardown
-      window.history.pushState(null, '', `/onboarding/${newStep}`);
-      setTimeout(() => setBusy(false), 550);
+      setStep(next);
+      setReaction(null);
+      window.history.pushState(null, '', `/onboarding/${next}`);
+      window.setTimeout(() => setBusy(false), TRANSITION_MS);
     },
-    [busy, step]
+    [busy, step],
   );
 
-  // ── Advance handler ────────────────────────────────────────────────────────
-  const handleAdvance = useCallback(
-    (fromStep: number) => {
-      const nextStep = fromStep + 1;
-
-      // Persist locally
-      markStepComplete(fromStep);
-      const state = getOnboardingState();
-      const newCompleted = [...new Set([...state.completedSteps, fromStep])];
-      const isLastStep = fromStep === 15;
-
-      // Sync to backend (fire-and-forget)
-      syncToBackend({
-        currentStep: nextStep,
-        completedSteps: newCompleted,
-        answers: state.answers as Record<string, unknown>,
-        ...(isLastStep && { onboardingComplete: true }),
-      });
-
-      if (isLastStep) {
-        saveOnboardingState({ onboardingComplete: true, completedAt: new Date().toISOString() } as never);
-        router.push('/dashboard');
-      } else {
-        goToStep(nextStep, 1);
-      }
-    },
-    [goToStep, router]
+  /** Public jump, used by the review screen's Edit actions. */
+  const jumpToStep = useCallback(
+    (next: number) => goToStep(next, next > step ? 1 : -1),
+    [goToStep, step],
   );
 
-  // ── Back handler ──────────────────────────────────────────────────────────
-  const handleBack = useCallback(
-    (fromStep: number) => {
-      const prevStep = fromStep - 1;
-      playHaptic('light');
-      if (prevStep < 1) {
-        router.push('/onboarding/0');
-      } else {
-        goToStep(prevStep, -1);
-      }
-    },
-    [goToStep, router]
-  );
+  const handleAdvance = useCallback(() => {
+    if (busy) return;
 
-  // ── Browser back/forward button support ───────────────────────────────────
+    trackStepCompleted(definition.id, definition.number);
+    playOnboardingCue(step === TOTAL_ONBOARDING_STEPS ? 'completion' : 'continue');
+    advance(step);
+
+    if (step === TOTAL_ONBOARDING_STEPS) {
+      // Progress is marked complete by `advance` BEFORE we leave, so the bar is
+      // complete and the completion screen can legitimately show none.
+      router.push('/onboarding/complete');
+      return;
+    }
+    goToStep(step + 1, 1);
+  }, [advance, busy, definition.id, definition.number, goToStep, router, step]);
+
+  const handleBack = useCallback(() => {
+    playHaptic('light');
+    playOnboardingCue('back');
+    if (step <= 1) {
+      router.push('/onboarding/0');
+      return;
+    }
+    goToStep(step - 1, -1);
+  }, [goToStep, router, step]);
+
+  // Browser back/forward.
   useEffect(() => {
-    const handlePop = () => {
+    const onPop = () => {
       const match = window.location.pathname.match(/\/onboarding\/(\d+)/);
-      if (match) {
-        const urlStep = parseInt(match[1], 10);
-        if (urlStep >= 1 && urlStep <= 15 && urlStep !== step) {
-          setDirection(urlStep > step ? 1 : -1);
-          setStep(urlStep);
-        }
+      if (!match) return;
+      const urlStep = Number.parseInt(match[1], 10);
+      if (urlStep >= 1 && urlStep <= TOTAL_ONBOARDING_STEPS && urlStep !== step) {
+        setDirection(urlStep > step ? 1 : -1);
+        setStep(urlStep);
+        setReaction(null);
       }
     };
-    window.addEventListener('popstate', handlePop);
-    return () => window.removeEventListener('popstate', handlePop);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
   }, [step]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  const config = STEP_CONFIG[step] || STEP_CONFIG[1];
-  const progressPct = Math.min(100, Math.max(0, (step / 15) * 100));
+  // Move focus to the new step so keyboard and screen-reader users land at
+  // the top of the question rather than wherever the previous step left them.
+  //
+  // `preventScroll` matters: without it the browser scrolls the focused
+  // content into view, which on a long list (goals, barriers) scrolled Tey
+  // and the question straight off the top of the screen on arrival.
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true });
+  }, [step]);
 
-  // Content switcher
-  const contentForStep = (s: number) => {
-    switch (s) {
-      case 1:
-        return <Step1Content onNext={() => handleAdvance(1)} />;
-      case 2:
-        return <Step2Content onNext={() => handleAdvance(2)} />;
-      case 3:
-        return <Step3Content onNext={() => handleAdvance(3)} />;
-      case 4:
-        return <Step4Content onNext={() => handleAdvance(4)} />;
-      case 5:
-        return <Step5Content onNext={() => handleAdvance(5)} />;
-      case 6:
-        return <Step6Content onNext={() => handleAdvance(6)} />;
-      case 7:
-        return <Step7Content onNext={() => handleAdvance(7)} />;
-      case 8:
-        return <Step8Content onNext={() => handleAdvance(8)} />;
-      case 9:
-        return <Step9Content onNext={() => handleAdvance(9)} />;
-      case 10:
-        return <Step10Content onNext={() => handleAdvance(10)} />;
-      case 11:
-        return <Step11Content onNext={() => handleAdvance(11)} />;
-      case 12:
-        return <Step12Content onNext={() => handleAdvance(12)} />;
-      case 13:
-        return <Step13Content onNext={() => handleAdvance(13)} />;
-      case 14:
-        return <Step14Content onNext={() => handleAdvance(14)} />;
-      case 15:
-        return <Step15Content onNext={() => handleAdvance(15)} />;
+  // Funnel instrumentation. `trackStepViewed` dedupes per session, so a
+  // StrictMode double-mount or a refresh cannot inflate the counts.
+  useEffect(() => {
+    if (step === 1) trackOnboardingStarted();
+    trackStepViewed(definition.id, definition.number);
+  }, [definition.id, definition.number, step]);
+
+  // ── Dialogue ──────────────────────────────────────────────────────────────
+
+  /**
+   * The step's two spoken lines.
+   *
+   * A step may have no `ack` rule at all (step 1 has nothing to acknowledge
+   * yet). In that case the prompt becomes the MAIN line and there is no
+   * secondary — deciding this by whether an ack rule exists, rather than by
+   * comparing the resolved text, matters: both slots draw from pools, so a
+   * text comparison let step 1 render two different greetings at once.
+   *
+   * Re-drawn when the step changes, not on every answer edit, or Tey would
+   * restate himself on each keystroke of the name field.
+   */
+  const { ackBeat, promptBeat } = useMemo(() => {
+    const hasAckRule = Boolean(matchRule('ack', definition.id, answers));
+    const ack = hasAckRule ? resolveDialogue('ack', definition.id, answers) : null;
+    const prompt = resolveDialogue('prompt', definition.id, answers);
+
+    return ack
+      ? { ackBeat: ack, promptBeat: prompt }
+      : { ackBeat: prompt, promptBeat: null };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [definition.id]);
+
+  const revealBeat = useMemo(
+    () => resolveDialogue('reveal', definition.id, answers),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [definition.id],
+  );
+
+  /**
+   * The bubble always holds the step's own line — the question. A live
+   * reaction goes to the footer instead of replacing it, so the learner can
+   * still read what they were asked after tapping an answer.
+   */
+  const bubbleBeat = revealBeat ?? ackBeat;
+  const pose: TeyPose = (reaction ?? bubbleBeat)?.pose ?? 'idle';
+
+  const react = useCallback(
+    (pending: Partial<OnboardingAnswersV2>) => {
+      const beat = resolveReaction(definition.id, answers, pending);
+      if (!beat) return;
+      setReaction(beat);
+      // Sound follows the beat's pose family, so line, pose and sting can
+      // never drift apart.
+      playTeyReaction(beat.poseFamily);
+    },
+    [answers, definition.id],
+  );
+
+  // ── Screens ───────────────────────────────────────────────────────────────
+
+  const screenProps: ScreenProps = {
+    answers,
+    saveAnswer,
+    react,
+    onNext: handleAdvance,
+    goToStep: jumpToStep,
+  };
+
+  const question = questionConfigFor(definition.id, answers);
+
+  const renderScreen = () => {
+    if (question) {
+      return (
+        <QuestionScreen
+          legend={ackBeat?.text ?? promptBeat?.text ?? 'Choose an option'}
+          options={question.options}
+          selected={question.selected}
+          multi={question.multi}
+          note={question.note}
+          onToggle={(id) => {
+            const value = question.next(id);
+            saveAnswer(question.answerKey, value);
+            if (question.answerKey === 'category' && typeof value === 'string') {
+              trackCategorySelected(value);
+            }
+            react({ [question.answerKey]: value } as Partial<OnboardingAnswersV2>);
+          }}
+        />
+      );
+    }
+
+    switch (definition.id) {
+      case 'welcome':
+        return null; // Tey's greeting is the whole screen.
+      case 'name':
+        return <NameScreen {...screenProps} />;
+      case 'category':
+        return <CategoryScreen {...screenProps} />;
+      case 'path-reveal':
+        return <PathRevealScreen {...screenProps} />;
+      case 'review':
+        return <ReviewScreen {...screenProps} />;
+      case 'account':
+        return <AccountScreen onNext={handleAdvance} />;
+      case 'reminders':
+        return <RemindersScreen onNext={handleAdvance} />;
       default:
         return null;
     }
   };
 
-  const isCustomMascot = config.hideShellMascot === true;
+  // These screens own their own CTA (sign-up buttons, the exercise, the
+  // enable/decline pair), so the shell must not stack a second Continue.
+  const ownsItsCta = definition.id === 'account' || definition.id === 'reminders';
+
+  const ready = canAdvance(definition, answers);
+  const optionalAndUnanswered =
+    definition.optional && definition.answerKey && !answers[definition.answerKey];
+
+  const footer = ownsItsCta ? null : (
+    <OnboardingFooter
+      onContinue={handleAdvance}
+      canContinue={ready}
+      busy={busy}
+      label={definition.id === 'welcome' ? "Let's go" : 'Continue'}
+      feedback={reaction}
+      disabledReason={
+        question?.multi
+          ? 'Pick at least one option to continue'
+          : 'Choose an option to continue'
+      }
+      onSkip={
+        optionalAndUnanswered
+          ? () => {
+              trackStepSkipped(definition.id, definition.number);
+              handleAdvance();
+            }
+          : undefined
+      }
+      skipLabel="Skip"
+    />
+  );
+
+  // Long lists get the smaller Tey so the answers still fit above the fold
+  // on a phone; everything else gets the big one.
+  const long =
+    (question?.options.length ?? 0) > 5 ||
+    definition.id === 'review' ||
+    definition.id === 'path-reveal';
 
   return (
-    <>
-      {/* ════════════════════════════════════════════════════════════════
-          MOBILE LAYOUT
-          ════════════════════════════════════════════════════════════════ */}
-      <div className="h-[100dvh] w-full flex flex-col md:hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden">
-        {/* ── PERSISTENT TOP BAR (never slides, width animates) ─────── */}
-        <div
-          className="w-full px-5 flex items-center gap-3.5 shrink-0 z-40 bg-transparent"
-          style={{ paddingTop: 'max(env(safe-area-inset-top), 12px)', paddingBottom: '10px' }}
-        >
-          {/* Back button */}
-          <button
-            onClick={() => handleBack(step)}
-            disabled={busy}
-            className="w-10 h-10 bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shrink-0 shadow-sm hover:bg-slate-50 active:scale-95 transition-all cursor-pointer disabled:opacity-40"
-          >
-            <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
-          </button>
-
-          {/* Progress bar track */}
-          <div className="flex-1 h-2 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner relative">
-            {/* PERSISTENT FILL */}
-            <motion.div
-              animate={{ width: `${progressPct}%` }}
-              transition={{ type: 'spring', stiffness: 240, damping: 22, mass: 1 }}
-              className="absolute inset-y-0 left-0 rounded-full"
-              style={{
-                background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)',
-                boxShadow: 'inset 0px -2px 0px rgba(0,0,0,0.1), inset 0px 2px 0px rgba(255,255,255,0.35)',
-              }}
-            />
-          </div>
-
-          {/* Step counter */}
-          <motion.span
-            key={step}
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-            className="text-sm font-[800] text-[#0172FD] shrink-0 tabular-nums"
-            style={{ textShadow: '0 0 10px rgba(255,255,255,1)', minWidth: '2.5rem', textAlign: 'right' }}
-          >
-            {step}/15
-          </motion.span>
-        </div>
-
-        {/* ── MASCOT AREA (only rendered when step doesn't provide integrated mascot layout) ── */}
-        {!isCustomMascot && (
-          <div
-            className={`w-full relative overflow-hidden ${config.fullBleed ? 'flex-1 min-h-0' : 'shrink-0'}`}
-            style={
-              config.fullBleed
-                ? undefined
-                : {
-                    height: config.mobileMascotHeight || '32dvh',
-                    transition: 'height 420ms cubic-bezier(0.32, 0.72, 0, 1)',
-                  }
-            }
-          >
-            <div className="absolute inset-0 w-full h-full pointer-events-none">
-              <MascotBackground variant={config.fullBleed || config.softBg ? 'soft' : 'default'} />
-            </div>
-
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              <motion.div
-                key={`mascot-${step}`}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={SLIDE_TRANSITION}
-                className="absolute inset-0 flex items-center justify-center z-10"
-              >
-                <div className={`relative ${config.fullBleed ? 'w-full h-full' : 'h-full aspect-square max-w-[80vw] mx-auto'}`}>
-                  <Image
-                    src={config.mobile}
-                    alt="Tey Mascot"
-                    fill
-                    className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]"
-                    priority
-                  />
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* ── CONTENT AREA (slides horizontally with 40ms stagger) ── */}
-        <div
-          className={`w-full relative min-h-0 ${
-            config.fullBleed ? 'shrink-0' : `flex-1 ${isCustomMascot ? 'bg-transparent' : 'bg-white'}`
-          }`}
-        >
-          {!isCustomMascot && !config.fullBleed && (
-            <div className="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
-          )}
-
-          <AnimatePresence initial={false} custom={direction} mode="popLayout">
-            <motion.div
-              key={`content-${step}`}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ ...SLIDE_TRANSITION, delay: 0.04 }}
-              className={config.fullBleed ? 'relative w-full' : 'absolute inset-0 w-full h-full'}
-              style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
-            >
-              {contentForStep(step)}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+    <OnboardingLayout
+      step={step}
+      total={TOTAL_ONBOARDING_STEPS}
+      percent={progressFor(step, answers)}
+      direction={direction}
+      pose={pose}
+      mascot={definition.mascot}
+      layout={definition.layout}
+      mascotSize={long ? 'md' : 'lg'}
+      reactKey={reaction?.text ?? null}
+      beat={bubbleBeat}
+      prompt={revealBeat ? null : promptBeat}
+      onBack={handleBack}
+      backDisabled={busy}
+      muted={isMuted}
+      onToggleSound={toggleMute}
+      bare={definition.customLayout}
+      footer={footer}
+      footerActive={Boolean(reaction) && !ownsItsCta}
+    >
+      <div ref={headingRef} tabIndex={-1} className="outline-none">
+        {renderScreen()}
       </div>
-
-      {/* ════════════════════════════════════════════════════════════════
-          DESKTOP LAYOUT
-          ════════════════════════════════════════════════════════════════ */}
-      <div className="hidden md:flex h-screen w-full bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] overflow-hidden">
-        {/* LEFT PANEL: Mascot (slides) - for standard dual-pane steps */}
-        {!isCustomMascot && (
-          <div className="w-1/2 lg:w-5/12 h-full relative overflow-hidden flex-shrink-0">
-            <div className="absolute inset-0 pointer-events-none">
-              <MascotBackground />
-            </div>
-
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              <motion.div
-                key={`desktop-mascot-${step}`}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={SLIDE_TRANSITION}
-                className="absolute inset-0 flex items-center justify-center z-10"
-              >
-                <div className="relative w-[85%] aspect-square">
-                  <Image
-                    src={config.desktop}
-                    alt="Tey Mascot"
-                    fill
-                    className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
-                    priority
-                  />
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* RIGHT (OR FULL) PANEL: Persistent progress bar + sliding content */}
-        <div
-          className={`flex-1 flex flex-col ${
-            isCustomMascot ? 'px-8 lg:px-16 max-w-[1300px] mx-auto w-full' : 'px-10 lg:px-14'
-          } py-8 lg:py-10 overflow-hidden min-w-0 h-full`}
-        >
-          {/* ── PERSISTENT DESKTOP PROGRESS BAR ────────────────────── */}
-          <div className="w-full flex items-center gap-5 mb-6 lg:mb-8 shrink-0">
-            <button
-              onClick={() => handleBack(step)}
-              disabled={busy}
-              className="w-12 h-12 bg-white border border-slate-200 text-slate-700 rounded-full flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all shadow-sm shrink-0 cursor-pointer disabled:opacity-40"
-            >
-              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
-            </button>
-
-            <div className="flex-1 h-4 bg-[#E5EAEF] rounded-full overflow-hidden shadow-inner relative">
-              <motion.div
-                animate={{ width: `${progressPct}%` }}
-                transition={{ type: 'spring', stiffness: 240, damping: 22, mass: 1 }}
-                className="absolute inset-y-0 left-0 rounded-full"
-                style={{
-                  background: 'linear-gradient(90deg, #0172FD 0%, #3A96FF 100%)',
-                  boxShadow: 'inset 0px -2.5px 0px rgba(0,0,0,0.1), inset 0px 2.5px 0px rgba(255,255,255,0.3)',
-                }}
-              />
-            </div>
-
-            <motion.span
-              key={step}
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-              className="text-lg font-extrabold text-[#0172FD] shrink-0 tabular-nums"
-            >
-              {step}/15
-            </motion.span>
-          </div>
-
-          {/* ── SLIDING CONTENT ─────────────────────────────────────── */}
-          <div className="flex-1 relative overflow-hidden min-h-0">
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              <motion.div
-                key={`desktop-content-${step}`}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ ...SLIDE_TRANSITION, delay: 0.04 }}
-                className="absolute inset-0 flex flex-col justify-center"
-              >
-                {contentForStep(step)}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-    </>
+    </OnboardingLayout>
   );
 }
+
+export default OnboardingShell;

@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 /**
  * Next.js typed manifest route — served at /manifest.webmanifest.
  * Makes Teyro installable as a standalone PWA. Icons generated from the
- * square brand mark at public/teyro-logo-blue.png (see public/Icons/icon-*).
+ * Tey mark in public/Tey Logo and icons/ by scripts/gen-app-icons.mjs.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -37,8 +37,10 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
 
     display: 'standalone',
-    background_color: '#FFFFFF',
-    theme_color: '#3D5AFE',
+    // Android draws its launch splash from this + the "any" icon; deep brand
+    // blue matches the iOS launch screens (public/splash) and /launch.
+    background_color: '#0050B3',
+    theme_color: '#0172FD',
     icons: [
       {
         src: '/Icons/icon-192.png',

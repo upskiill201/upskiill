@@ -1,0 +1,26 @@
+/* Sticky, and scrolls inside itself when taller than the window, like the
+   home rail — so the top card never scrolls out of view. */
+.rail {
+  width: 340px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .rail {
+    display: none;
+  }
+}

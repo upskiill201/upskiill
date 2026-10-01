@@ -1,0 +1,215 @@
+{
+  "generatedAt": "2026-09-28",
+  "source": "Apple App Store public reviews",
+  "competitors": {
+    "duolingo": {
+      "appStoreId": 570060128,
+      "reviewed": 80,
+      "lowStar": 15,
+      "from": "2019-04-12",
+      "to": "2026-09-17",
+      "themes": {
+        "paywall": 5,
+        "limits": 3,
+        "ads": 3,
+        "bugs": 0,
+        "shallow": 0,
+        "streak": 1,
+        "content-errors": 1,
+        "support": 0,
+        "redesign": 1
+      }
+    },
+    "mimo": {
+      "appStoreId": 1133960732,
+      "reviewed": 109,
+      "lowStar": 29,
+      "from": "2020-01-05",
+      "to": "2026-09-08",
+      "themes": {
+        "paywall": 15,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 6,
+        "shallow": 0,
+        "streak": 1,
+        "content-errors": 0,
+        "support": 2,
+        "redesign": 1
+      }
+    },
+    "sololearn": {
+      "appStoreId": 1210079064,
+      "reviewed": 50,
+      "lowStar": 11,
+      "from": "2021-06-28",
+      "to": "2026-08-07",
+      "themes": {
+        "paywall": 9,
+        "limits": 5,
+        "ads": 2,
+        "bugs": 1,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 1,
+        "support": 2,
+        "redesign": 0
+      }
+    },
+    "brilliant": {
+      "appStoreId": 913335252,
+      "reviewed": 60,
+      "lowStar": 12,
+      "from": "2017-09-04",
+      "to": "2026-08-27",
+      "themes": {
+        "paywall": 9,
+        "limits": 0,
+        "ads": 2,
+        "bugs": 1,
+        "shallow": 1,
+        "streak": 0,
+        "content-errors": 1,
+        "support": 2,
+        "redesign": 0
+      }
+    },
+    "codecademy": {
+      "appStoreId": 1376029326,
+      "reviewed": 60,
+      "lowStar": 18,
+      "from": "2018-10-14",
+      "to": "2026-09-04",
+      "themes": {
+        "paywall": 10,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 3,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 0,
+        "support": 0,
+        "redesign": 0
+      }
+    },
+    "datacamp": {
+      "appStoreId": 1263413087,
+      "reviewed": 60,
+      "lowStar": 7,
+      "from": "2019-12-18",
+      "to": "2026-09-23",
+      "themes": {
+        "paywall": 3,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 1,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 0,
+        "support": 1,
+        "redesign": 0
+      }
+    },
+    "udemy": {
+      "appStoreId": 562413829,
+      "reviewed": 60,
+      "lowStar": 33,
+      "from": "2017-11-07",
+      "to": "2025-11-04",
+      "themes": {
+        "paywall": 11,
+        "limits": 1,
+        "ads": 0,
+        "bugs": 12,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 2,
+        "support": 5,
+        "redesign": 1
+      }
+    },
+    "coursera": {
+      "appStoreId": 736535961,
+      "reviewed": 106,
+      "lowStar": 42,
+      "from": "2018-01-24",
+      "to": "2026-09-26",
+      "themes": {
+        "paywall": 24,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 5,
+        "shallow": 1,
+        "streak": 0,
+        "content-errors": 1,
+        "support": 17,
+        "redesign": 1
+      }
+    },
+    "khan-academy": {
+      "appStoreId": 469863705,
+      "reviewed": 100,
+      "lowStar": 9,
+      "from": "2017-12-04",
+      "to": "2026-07-30",
+      "themes": {
+        "paywall": 1,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 0,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 0,
+        "support": 0,
+        "redesign": 0
+      }
+    },
+    "linkedin-learning": {
+      "appStoreId": 1084807225,
+      "reviewed": 61,
+      "lowStar": 17,
+      "from": "2018-08-22",
+      "to": "2026-07-12",
+      "themes": {
+        "paywall": 4,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 7,
+        "shallow": 1,
+        "streak": 0,
+        "content-errors": 0,
+        "support": 2,
+        "redesign": 0
+      }
+    },
+    "programming-hub": {
+      "appStoreId": 1049691226,
+      "reviewed": 0,
+      "lowStar": 0,
+      "from": null,
+      "to": null,
+      "themes": {
+        "paywall": 0,
+        "limits": 0,
+        "ads": 0,
+        "bugs": 0,
+        "shallow": 0,
+        "streak": 0,
+        "content-errors": 0,
+        "support": 0,
+        "redesign": 0
+      }
+    }
+  },
+  "themes": {
+    "paywall": "Paywalls and subscription price",
+    "limits": "Hearts, energy or daily limits cut practice short",
+    "ads": "Too many ads",
+    "bugs": "Bugs, crashes and lost progress",
+    "shallow": "Too basic to build anything real",
+    "streak": "Losing a streak unfairly",
+    "content-errors": "Wrong answers or content errors",
+    "support": "No reply from support",
+    "redesign": "A redesign or update made it worse"
+  }
+}

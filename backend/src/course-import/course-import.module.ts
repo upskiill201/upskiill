@@ -5,6 +5,7 @@ import { CourseStructureAnalysisService } from './course-structure-analysis.serv
 import { LessonContentGenerationService } from './lesson-content-generation.service';
 import { LessonContentGenerationProcessorService } from './lesson-content-generation-processor.service';
 import { CourseImportPublishService } from './course-import-publish.service';
+import { CourseImportAutopilotService } from './course-import-autopilot.service';
 import { CourseImportController } from './course-import.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { GoogleDriveModule } from '../google-drive/google-drive.module';
@@ -32,6 +33,7 @@ import { HeavyTransferLockModule } from './heavy-transfer-lock.module';
     LessonContentGenerationService,
     LessonContentGenerationProcessorService,
     CourseImportPublishService,
+    CourseImportAutopilotService,
   ],
 })
 export class CourseImportModule {}

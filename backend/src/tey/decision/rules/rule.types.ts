@@ -85,6 +85,28 @@ export function jitterSeconds(userId: string, maxSeconds = 900): number {
   return Math.abs(h) % maxSeconds;
 }
 
+/**
+ * The hour the learner's daily reminder belongs at: the time they picked in
+ * onboarding or settings first (Duolingo's "practice reminder" is always at
+ * the time you chose), then the hour their habit says they study, then the
+ * fallback — clamped to a window where a reminder is still civil.
+ */
+export function reminderHour(
+  state: LearnerStateSnapshot,
+  fallback: number,
+  min = 8,
+  max = 20,
+): number {
+  const hour = state.preferredHour ?? state.usualHourLocal ?? fallback;
+  return Math.min(max, Math.max(min, hour));
+}
+
+/** Whole hours from `now` until `until` (floored, never negative). */
+export function hoursUntil(now: TeyLocalNow, until: Date): number {
+  const nowInstant = localTimeToday(now, 0, now.minutesOfDay).getTime();
+  return Math.max(0, Math.floor((until.getTime() - nowInstant) / 3_600_000));
+}
+
 /** Applies jitter to a planned due time. */
 export function withJitter(due: Date, userId: string): Date {
   return new Date(due.getTime() + jitterSeconds(userId) * 1000);
@@ -109,5 +131,8 @@ export function factsFrom(
     courseTitle: state.currentCourseTitle,
     hoursUntilLocalMidnight: (1440 - now.minutesOfDay) / 60,
     daysSinceLastActivity: state.daysSinceLastActivity,
+    repairLostStreak: state.repair?.lostStreak ?? 0,
+    repairCostCoins: state.repair?.costCoins ?? 0,
+    repairHoursLeft: state.repair ? hoursUntil(now, state.repair.expiresAt) : null,
   };
 }

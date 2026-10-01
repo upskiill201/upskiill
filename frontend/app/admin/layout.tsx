@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AdminShell } from '@/components/admin/AdminShell';
@@ -16,6 +17,11 @@ import { AdminShell } from '@/components/admin/AdminShell';
  * of failed requests.
  */
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: { default: 'Teyro HQ', template: '%s · Teyro HQ' },
+  robots: { index: false, follow: false },
+};
 
 async function requireAdmin() {
   const cookieStore = await cookies();

@@ -44,6 +44,10 @@ export interface FolderPreview {
   estimatedVideoDurationSeconds: number;
   /** How many videos have no Drive-reported duration (metadata missing). */
   videosMissingDuration: number;
+  /** Videos over 15 minutes: they import with the classic Learn layout. */
+  videosOverLimit: number;
+  /** Modules the import will make (one per section folder holding videos). */
+  modules: number;
 }
 
 /** Categorizes by Google's mimeType — the same supported-type list CLAUDE.md

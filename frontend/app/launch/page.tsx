@@ -30,10 +30,21 @@
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { TeyMark } from '@/components/brand/TeyMark';
 import { resolveAppEntry } from '@/lib/pwa/entry';
 import { detectBrowser, detectPlatform, detectStandalone } from '@/lib/pwa/platform';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
 import { saveInstallFlowState } from '@/lib/pwa/installFlow';
+import styles from './Launch.module.css';
+
+/**
+ * How long the splash holds when opened from the Home Screen. The OS splash
+ * (manifest background + icon on Android, public/splash on iOS) is the same
+ * picture, so this reads as one moment: Tey's tile pops, then the app opens.
+ * Long enough to land, short enough to never feel like waiting. A normal tab
+ * (a shared link, a bookmark) skips it.
+ */
+const SPLASH_MS = 850;
 
 export default function LaunchPage() {
   const router = useRouter();
@@ -58,27 +69,31 @@ export default function LaunchPage() {
       standalone,
       entry_reason: entry.reason,
       // A launch that is NOT standalone means someone reached /launch in a
-      // normal tab — a shared link, or a bookmark of the start_url. Worth
-      // separating in the funnel rather than counting as an app open.
+      // normal tab — a shared link, or a bookmark of the start_url.
       via_home_screen: standalone,
     });
 
-    router.replace(entry.href);
+    if (!standalone) {
+      router.replace(entry.href);
+      return;
+    }
+    // Warm the destination while the splash plays, so the hand-off is instant.
+    router.prefetch(entry.href);
+    const t = setTimeout(() => router.replace(entry.href), SPLASH_MS);
+    return () => clearTimeout(t);
   }, [router]);
 
-  // Matches the onboarding loading state exactly, so the handoff into
-  // /onboarding/* is a continuation rather than a flash of different chrome.
   return (
-    <div
-      className="h-[100dvh] w-full bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF] flex items-center justify-center"
-      role="status"
-      aria-live="polite"
-    >
+    <div className={styles.splash} role="status" aria-live="polite">
       <span className="sr-only">Opening Teyro</span>
-      <div
-        className="w-8 h-8 border-4 border-[#0172FD]/30 border-t-[#0172FD] rounded-full animate-spin"
-        aria-hidden="true"
-      />
+      <div className={styles.tile}>
+        <TeyMark size={128} priority />
+      </div>
+      <div className={styles.dots} aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
     </div>
   );
 }

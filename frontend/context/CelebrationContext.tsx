@@ -10,6 +10,9 @@ import React, {
   useMemo,
 } from 'react';
 import type { LeagueTier } from '@/lib/leagues';
+import { isLessonFocused, useLessonFocused } from '@/lib/lesson/lessonFocus';
+import { repairStreak } from '@/lib/streak/repair';
+import type { DailyRewardClaim, DailyRewardDay } from '@/context/GamificationContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -90,6 +93,8 @@ export type CelebrationScene =
       speech?: string;
       /** LOST only — repair action wired to the CTA. */
       onRepair?: () => Promise<void> | void;
+      /** LOST only — coins the repair costs, shown on the button. */
+      repairCost?: number;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -106,6 +111,17 @@ export type CelebrationScene =
       /** Full calendar days since the learner's last completed lesson. */
       days: number;
       speech?: string;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
+      /** The daily login reward: the 7-day ladder, today glowing, tap to claim. */
+      kind: 'DAILY_REWARD';
+      /** Today's place on the ladder (1–7). */
+      day: number;
+      schedule: DailyRewardDay[];
+      /** Server-first: resolves with what was actually paid. */
+      claim: () => Promise<DailyRewardClaim>;
       onComplete?: () => void;
       dedupeKey?: string;
     }
@@ -157,7 +173,7 @@ export type CelebrationScene =
   | {
       kind: 'LEAGUE';
       /** Weekly settlement verdict. */
-      outcome: 'PROMOTED' | 'DEMOTED' | 'INACTIVE_DEMOTED' | 'CHAMPION';
+      outcome: 'PROMOTED' | 'DEMOTED' | 'INACTIVE_DEMOTED' | 'CHAMPION' | 'STAYED' | 'TOURNAMENT_EXIT';
       /** LeagueTier keys the user moved from/to. */
       fromTier: LeagueTier;
       toTier: LeagueTier;
@@ -275,6 +291,19 @@ export type CelebrationScene =
       dedupeKey?: string;
     }
   | {
+      /**
+       * Ask for reminder notifications after a finished lesson — or, in a
+       * browser tab that can install Teyro, ask to install first. Budget and
+       * spacing live in lib/push/askPolicy.ts; ReminderAskWatcher queues it.
+       */
+      kind: 'REMINDERS';
+      variant: 'install' | 'enable';
+      /** For the preview notification's line ("keep your 4-day streak"). */
+      streakDays: number;
+      onComplete?: () => void;
+      dedupeKey?: string;
+    }
+  | {
       kind: 'LEADERBOARD';
       /** Mid-week rank moment — a real end-of-week promotion/demotion is
        * still the 'LEAGUE' scene above, not this one. Covers every
@@ -328,8 +357,17 @@ export interface RankRow {
 }
 
 interface CelebrationContextValue {
-  /** Queue one or more scenes. They play one at a time, in order. */
-  celebrate: (input: CelebrationScene | CelebrationScene[]) => void;
+  /**
+   * Queue one or more scenes. They play one at a time, in order.
+   * `front: true` puts them ahead of anything already waiting — a finished
+   * lesson's payoff goes before the banners that held off during it.
+   */
+  celebrate: (
+    input: CelebrationScene | CelebrationScene[],
+    /** `immediate`: the learner asked for this (tapped a chest) — it plays
+     * now, even while a lesson or other full-screen moment holds the queue. */
+    opts?: { front?: boolean; immediate?: boolean },
+  ) => void;
   /** Advance past the current scene (CTA press) → next scene or close. */
   advance: () => void;
   /** Drop everything (navigation, logout). */
@@ -342,13 +380,18 @@ const CelebrationContext = createContext<CelebrationContextValue | null>(null);
 
 // ─── Session dedup + cross-layer visibility (module scope, SSR-safe) ─────────
 
+/** Scenes the learner asked for (a tapped chest) — played through any hold. */
+const immediateScenes = new WeakSet<CelebrationScene>();
+
 /** transitionKeys already surfaced this session — cleared on full reload. */
 const surfacedKeys = new Set<string>();
 
 /** Module-level flag so non-React layers (Herald) can suppress while a scene plays. */
 let activeCount = 0;
 export function isCelebrationActive(): boolean {
-  return activeCount > 0;
+  // A lesson in progress counts: everything that waits for a celebration
+  // (Herald banners, reward watchers) waits for the lesson too.
+  return activeCount > 0 || isLessonFocused();
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────
@@ -362,21 +405,24 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
   const activeSceneRef = useRef<CelebrationScene | null>(null);
   activeSceneRef.current = activeScene;
 
-  const celebrate = useCallback((input: CelebrationScene | CelebrationScene[]) => {
+  const lessonFocused = useLessonFocused();
+
+  const celebrate = useCallback((input: CelebrationScene | CelebrationScene[], opts?: { front?: boolean; immediate?: boolean }) => {
     const incoming = Array.isArray(input) ? input : [input];
     if (incoming.length === 0) return;
+    if (opts?.immediate) incoming.forEach((scene) => immediateScenes.add(scene));
 
     setQueue((prev) => {
-      const next = [...prev];
+      const next: CelebrationScene[] = [];
       for (const scene of incoming) {
         if (scene.dedupeKey) {
           // Skip if already surfaced this session OR already waiting in queue
           if (surfacedKeys.has(scene.dedupeKey)) continue;
-          if (next.some((s) => s.dedupeKey === scene.dedupeKey)) continue;
+          if ([...prev, ...next].some((s) => s.dedupeKey === scene.dedupeKey)) continue;
         }
         next.push(scene);
       }
-      return next;
+      return opts?.front ? [...next, ...prev] : [...prev, ...next];
     });
   }, []);
 
@@ -404,6 +450,9 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (activeScene !== null) return;
+    // Held while a lesson is in progress — see lib/lesson/lessonFocus.ts —
+    // unless the learner asked for this one (a chest they tapped).
+    if (lessonFocused && !(queue[0] && immediateScenes.has(queue[0]))) return;
     if (queue.length === 0) {
       return;
     }
@@ -411,7 +460,7 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
     if (next.dedupeKey) surfacedKeys.add(next.dedupeKey);
     setActiveScene(next);
     setQueue(rest);
-  }, [queue, activeScene]);
+  }, [queue, activeScene, lessonFocused]);
 
   // Track active count for isCelebrationActive()
   useEffect(() => {
@@ -446,10 +495,14 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
         mode: 'SAVED' | 'LOST';
         days: number;
         lostCount?: number;
+        repair?: { available: boolean; costCoins: number } | null;
         personalBest?: boolean;
         weekDays?: StreakWeekDay[];
       }>).detail;
       if (!detail) return;
+      // A broken streak comes with Duolingo's repair offer when the server
+      // says so (it owns the window, the price and once-per-break).
+      const canRepair = detail.mode === 'LOST' && !!detail.repair?.available;
       celebrate({
         kind: 'STREAK',
         mode: detail.mode,
@@ -458,6 +511,22 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
         personalBest: detail.personalBest,
         weekDays: detail.weekDays,
         dedupeKey: `streak-${detail.mode}-${detail.days}-${detail.lostCount ?? 0}`,
+        ...(canRepair
+          ? {
+              repairCost: detail.repair?.costCoins,
+              onRepair: async () => {
+                const { streakDays } = await repairStreak();
+                celebrate({
+                  kind: 'STREAK',
+                  mode: 'SAVED',
+                  days: streakDays,
+                  previousDays: streakDays,
+                  speech: `Repaired! Your ${streakDays}-day streak is back. One lesson today keeps it growing.`,
+                  dedupeKey: `streak-repaired-${streakDays}`,
+                });
+              },
+            }
+          : {}),
       });
     };
 

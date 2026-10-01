@@ -8,6 +8,9 @@ import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import type { CommunityOverview } from '@/lib/communityApi';
 import { createPost, getMembers } from '@/lib/communityApi';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
+
 import { getCachedUser } from '@/lib/user-cache';
 import shared from './community.module.css';
 import styles from './PostComposer.module.css';
@@ -214,6 +217,7 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
       onPosted?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not publish your post.');
+      playSound('nodeLocked');
     } finally {
       sendingRef.current = false;
       setSending(false);
@@ -229,7 +233,14 @@ export default function PostComposer({ community, lessonLink, defaultOpen = fals
             src={me?.avatarUrl ?? undefined}
             name={me?.fullName || 'You'}
           />
-          <button className={styles.triggerBtn} onClick={() => setOpen(true)}>
+          <button
+            className={styles.triggerBtn}
+            onClick={() => {
+              playSound('menuOpen');
+              playHaptic('light', false);
+              setOpen(true);
+            }}
+          >
             {/* Two labels, one shown per breakpoint. The long one wrapped onto
                 two lines on a phone, which doubled the pill's height and made
                 the composer the loudest thing on the screen. */}

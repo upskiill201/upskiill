@@ -34,6 +34,7 @@ const GUARDED_HOOKS = [
   'useRewardAnimation',
   'useRewardAnimationVisuals',
   'useAudio',
+  'useAudioContext',
   'useTeyroLoader',
 ];
 

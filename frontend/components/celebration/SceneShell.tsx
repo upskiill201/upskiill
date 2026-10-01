@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SceneShell — the full-page dark scene container every celebration plays in.
+ * SceneShell — the full-page bright scene container every celebration plays in.
  * Full-bleed at every viewport width (320px → desktop): ambient glow, centered
  * content column, one full-width 3D CTA pinned to the bottom (safe-area aware).
  */

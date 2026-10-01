@@ -1,0 +1,201 @@
+/* A classmate's profile — the bits the shared Profile.module.css doesn't
+   have: the big follow button, the level badge, "Follows you", and the
+   courses you share. Tokens only. */
+
+.back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--color-brand);
+}
+
+.avatarRing {
+  position: relative;
+}
+
+.levelBadge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 3px solid var(--bg-card);
+  background: var(--color-brand);
+  color: var(--bg-page);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.handleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.followsYou {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+  color: color-mix(in srgb, var(--success-green) 72%, black);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.followBig,
+.followingBig {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.followBig {
+  border: none;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+}
+
+.followBig:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.followingBig {
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+}
+
+.followingBig:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.followBig:disabled,
+.followingBig:disabled {
+  cursor: wait;
+}
+
+.emptyShared {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.emptyShared p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.sharedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sharedRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.08s ease;
+}
+
+.sharedRow:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.sharedThumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+}
+
+.sharedText {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sharedTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sharedTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  overflow: hidden;
+}
+
+.sharedFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--warning);
+}
+
+.sharedSub {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}

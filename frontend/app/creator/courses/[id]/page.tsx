@@ -1,10 +1,10 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default async function CreatorCourseDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = await params;
-  redirect(`/creator/courses/${resolvedParams.id}/manage`);
+import React from 'react';
+import { CourseWorkspace } from '@/components/course-workspace/CourseWorkspace';
+
+/** /creator/courses/:id — the course workspace (components/course-workspace). */
+export default function CourseWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  return <CourseWorkspace courseId={id} />;
 }

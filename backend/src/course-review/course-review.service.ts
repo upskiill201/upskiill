@@ -3,12 +3,14 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Course, CourseReviewStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notification/notification.service';
-import { assessCourseReadiness } from '../course/course-readiness.util';
+import { assessCourseDetails, assessCourseReadiness } from '../course/course-readiness.util';
 
 const REVIEWABLE: CourseReviewStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
 const LOCKED_FOR_EDITING: CourseReviewStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
@@ -25,6 +27,7 @@ export class CourseReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    @Optional() private readonly events?: EventEmitter2,
   ) {}
 
   /**
@@ -104,7 +107,7 @@ export class CourseReviewService {
       );
     }
 
-    const errors = assessCourseReadiness(course);
+    const errors = [...assessCourseDetails(course), ...assessCourseReadiness(course)];
     if (errors.length > 0) {
       throw new UnprocessableEntityException({
         message: "This course isn't ready to submit for review yet.",
@@ -137,7 +140,7 @@ export class CourseReviewService {
         entityId: courseId,
         title: 'Course submitted for review',
         body: `"${course.title}" is now in Teyro's review queue.`,
-        deepLink: `/creator/courses/${courseId}/manage`,
+        deepLink: `/creator/courses/${courseId}`,
       },
     ]);
 
@@ -261,8 +264,8 @@ export class CourseReviewService {
     await this.notifyCreator(
       course,
       'COURSE_APPROVED',
-      'Course approved',
-      `"${course.title}" passed Teyro's review and is ready to publish.`,
+      'Your course is approved!',
+      `"${course.title}" passed review and is ready to publish. Go make it live.`,
     );
     return { reviewStatus: 'APPROVED' as const };
   }
@@ -376,8 +379,17 @@ export class CourseReviewService {
         entityId: course.id,
         title,
         body,
-        deepLink: `/creator/courses/${course.id}/manage`,
+        deepLink: `/creator/courses/${course.id}`,
       },
     ]);
+    // A review decision is news worth a push: Tey's hub decides if and when.
+    this.events?.emit('studio.notified', {
+      userId: course.instructorId,
+      kind: 'STUDIO_COURSE_STATUS',
+      title,
+      body,
+      url: `/creator/courses/${course.id}`,
+      dedupeKey: `${type}:${course.id}:${Date.now()}`,
+    });
   }
 }

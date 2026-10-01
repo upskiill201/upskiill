@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import { LEARNER_ENTRY } from '@/lib/launch';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowRight, Clock } from 'lucide-react';
@@ -6,6 +8,7 @@ import { CATEGORIES, getCategoryOrThrow } from '@/lib/blog/categories';
 import { formatDate } from '@/lib/blog/site';
 import CoverImage from '@/components/features/blog/CoverImage';
 import BlogIndexClient from '@/components/features/blog/BlogIndexClient';
+import CtaBlock from '@/components/features/blog/CtaBlock';
 import styles from './BlogIndex.module.css';
 
 // Fully static with hourly ISR — new commits trigger a rebuild that
@@ -49,23 +52,126 @@ export default function BlogIndexPage() {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      {/* ── Hero band ── */}
+      <header className={styles.band}>
+        <div className={`${styles.container} ${styles.heroGrid}`}>
+          <div className={styles.heroCopy}>
+            <p className={styles.kicker}>The Teyro Blog</p>
+            <h1 className={styles.title}>
+              Learn smarter. <em>Remember longer.</em>
+            </h1>
+            <p className={styles.subtitle}>
+              Learning science made practical — study techniques, focus strategies and
+              skill-building guides, backed by the research behind Teyro&apos;s bite-sized lessons.
+            </p>
+            <nav className={styles.topics} aria-label="Blog topics">
+              {CATEGORIES.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/blog/category/${c.slug}`}
+                  className={styles.topic}
+                  style={{ '--accent': c.accentColor } as React.CSSProperties}
+                >
+                  <span className={styles.topicDot} aria-hidden="true" />
+                  {c.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className={styles.heroArt} aria-hidden="true">
+            <span className={styles.heroDisc} />
+            <Image
+              src="/User onbarding Assets/tey/tablet.webp"
+              alt=""
+              width={330}
+              height={578}
+              priority
+              className={styles.heroTey}
+            />
+            <span className={`${styles.heroChip} ${styles.heroChipTop}`}>
+              <Image src="/Icons/burn.png" alt="" width={24} height={24} />
+              15 min a day
+            </span>
+            <span className={`${styles.heroChip} ${styles.heroChipBottom}`}>
+              <Image src="/art/ui/xp-bolt.svg" alt="" width={22} height={22} />
+              {posts.length} free guides
+            </span>
+          </div>
+        </div>
+      </header>
+
       <div className={styles.container}>
-        {/* ── Header ── */}
-        <header className={styles.header}>
-          <p className={styles.kicker}>The Teyro Blog</p>
-          <h1 className={styles.title}>Learn smarter. Remember longer.</h1>
-          <p className={styles.subtitle}>
-            Learning science made practical — study techniques, focus strategies and skill-building
-            guides, backed by the research behind Teyro&apos;s bite-sized lessons.
-          </p>
-          <div className={styles.intro}>
+        {/* ── Featured (latest post) ── */}
+        {featured && featuredCategory && (
+          <Link
+            href={`/blog/${featured.slug}`}
+            className={styles.featured}
+            style={
+              {
+                '--accent': featuredCategory.accentColor,
+              } as React.CSSProperties
+            }
+          >
+            <div className={styles.featuredCover}>
+              <CoverImage
+                src={featured.frontmatter.coverImage}
+                alt=""
+                slug={featured.slug}
+                title={featured.frontmatter.title}
+                categorySlug={featuredCategory.slug}
+                size="hero"
+                priority
+              />
+            </div>
+            <div className={styles.featuredBody}>
+              <div className={styles.featuredTags}>
+                <span className={styles.newTag}>New</span>
+                <span className={styles.featuredCategory}>{featuredCategory.name}</span>
+              </div>
+              <h2 className={styles.featuredTitle}>{featured.frontmatter.title}</h2>
+              <p className={styles.featuredExcerpt}>{featured.frontmatter.description}</p>
+              <div className={styles.featuredMeta}>
+                <span>{formatDate(featured.frontmatter.publishedDate)}</span>
+                <span className={styles.metaDot} aria-hidden="true" />
+                <span className={styles.readTime}>
+                  <Clock size={14} strokeWidth={2.5} />
+                  {featured.readingTimeMinutes} min read
+                </span>
+              </div>
+              <span className={styles.featuredBtn}>
+                Read article
+                <ArrowRight size={18} strokeWidth={3} />
+              </span>
+            </div>
+          </Link>
+        )}
+
+        {/* ── Filterable grid (client island) ── */}
+        <BlogIndexClient
+          posts={rest}
+          featuredSlug={featured?.slug}
+          categories={CATEGORIES.map((c) => ({
+            slug: c.slug,
+            shortLabel: c.shortLabel,
+            name: c.name,
+          }))}
+        />
+
+        {/* ── About (head-term copy for search, below the fold for people) ── */}
+        <section className={styles.about} aria-labelledby="about-heading">
+          <h2 id="about-heading" className={styles.aboutHeading}>
+            About the Teyro Blog
+          </h2>
+          <div className={styles.aboutBody}>
             <p>
               This is where Teyro breaks down the research behind how people actually learn, and
-              turns it into guides you can use the same day you read them. Every article here
-              starts from a real question — how spaced repetition works, whether a Udemy
-              certificate means anything to an employer, how to build a study habit that survives
-              a busy week — and answers it with evidence instead of generic advice, because vague
-              tips are easy to write and hard to act on.
+              turns it into guides you can use the same day you read them. Every article here starts
+              from a real question — how spaced repetition works, whether a Udemy certificate means
+              anything to an employer, how to build a study habit that survives a busy week — and
+              answers it with evidence instead of generic advice, because vague tips are easy to
+              write and hard to act on.
             </p>
             <p>
               The posts are organized into six practical areas: <strong>study techniques</strong>{' '}
@@ -82,60 +188,14 @@ export default function BlogIndexPage() {
               Every guide ties back to the same underlying idea Teyro is built on: short, daily,
               gamified practice beats long, passive video sessions for almost everyone. If you want
               to put that into practice rather than just read about it,{' '}
-              <Link href="/onboarding/0">Teyro</Link> turns these study techniques into 15-minute
+              <Link href={LEARNER_ENTRY.href}>Teyro</Link> turns these study techniques into 15-minute
               daily lessons with streaks and XP, so the habit — not just the knowledge — actually
               sticks.
             </p>
           </div>
-        </header>
+        </section>
 
-        {/* ── Featured hero (latest post) ── */}
-        {featured && featuredCategory && (
-          <Link href={`/blog/${featured.slug}`} className={styles.hero}>
-            <div className={styles.heroContent}>
-              <span
-                className={styles.heroPill}
-                style={{ background: featuredCategory.accentColor }}
-              >
-                {featuredCategory.name}
-              </span>
-              <h2 className={styles.heroTitle}>{featured.frontmatter.title}</h2>
-              <p className={styles.heroExcerpt}>{featured.frontmatter.description}</p>
-              <div className={styles.heroMeta}>
-                <span>{formatDate(featured.frontmatter.publishedDate)}</span>
-                <span className={styles.heroMetaDot}>·</span>
-                <span className={styles.heroReadTime}>
-                  <Clock size={13} strokeWidth={2.5} />
-                  {featured.readingTimeMinutes} min read
-                </span>
-              </div>
-              <span className={styles.heroCta}>
-                Read article
-                <ArrowRight size={15} strokeWidth={3} />
-              </span>
-            </div>
-            <div className={styles.heroCover}>
-              <CoverImage
-                src={featured.frontmatter.coverImage}
-                alt=""
-                slug={featured.slug}
-                title={featured.frontmatter.title}
-                priority
-              />
-            </div>
-          </Link>
-        )}
-
-        {/* ── Filterable grid (client island) ── */}
-        <BlogIndexClient
-          posts={rest}
-          featuredSlug={featured?.slug}
-          categories={CATEGORIES.map((c) => ({
-            slug: c.slug,
-            shortLabel: c.shortLabel,
-            name: c.name,
-          }))}
-        />
+        <CtaBlock />
       </div>
     </div>
   );

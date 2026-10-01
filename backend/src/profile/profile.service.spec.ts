@@ -208,6 +208,26 @@ describe('ProfileService (student settings)', () => {
       ...overrides,
     });
 
+    describe('profile visibility', () => {
+      const withVisibility = (profileVisibility: string) =>
+        makeCreator({ profile: { ...makeCreator().profile, profileVisibility } });
+
+      it('hides a HIDDEN profile from everyone but its owner, as a plain 404', async () => {
+        prisma.user.findFirst.mockResolvedValue(withVisibility('HIDDEN'));
+
+        await expect(service.getPublicCreatorProfile('ada')).rejects.toThrow(NotFoundException);
+        await expect(service.getPublicCreatorProfile('ada', 'someone-else')).rejects.toThrow(NotFoundException);
+        await expect(service.getPublicCreatorProfile('ada', 'creator-1')).resolves.toMatchObject({ isSelf: true });
+      });
+
+      it('shows a TEYRO_ONLY profile to signed-in viewers only', async () => {
+        prisma.user.findFirst.mockResolvedValue(withVisibility('TEYRO_ONLY'));
+
+        await expect(service.getPublicCreatorProfile('ada')).rejects.toThrow(NotFoundException);
+        await expect(service.getPublicCreatorProfile('ada', 'learner-9')).resolves.toMatchObject({ username: 'ada' });
+      });
+    });
+
     it('only ever queries PUBLISHED courses (drafts must not leak)', async () => {
       prisma.user.findFirst.mockResolvedValue(makeCreator());
 
@@ -350,5 +370,100 @@ describe('ProfileService (student settings)', () => {
       expect(result).toEqual({ isFollowing: false, followersCount: 2 });
       expect(tx.userFollow.delete).toHaveBeenCalledWith({ where: { id: 'uf-1' } });
     });
+  });
+});
+
+describe('ProfileService.hydrateFromOnboarding', () => {
+  let service: ProfileService;
+  let prisma: Record<string, any>;
+
+  beforeEach(async () => {
+    prisma = {
+      user: { findUnique: jest.fn().mockResolvedValue({ fullName: 'Ada Lovelace' }) },
+      profile: { upsert: jest.fn().mockResolvedValue({}) },
+      instructorProfile: { upsert: jest.fn().mockResolvedValue({}) },
+    };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ProfileService, { provide: PrismaService, useValue: prisma }],
+    }).compile();
+    service = module.get(ProfileService);
+  });
+
+  it('maps v2 answers onto the profile and keeps the validated set', async () => {
+    await service.hydrateFromOnboarding('u1', {
+      version: 2,
+      name: 'Ada',
+      creatorType: 'engineer',
+      track: 'coding',
+      topics: ['web-development', 'software-development'],
+      experience: 'some',
+      audience: '1k-10k',
+      existing: ['videos'],
+      goal: 'earn',
+      weeklyHours: '3-5',
+    });
+
+    const { create } = prisma.profile.upsert.mock.calls[0][0];
+    expect(create).toMatchObject({
+      userId: 'u1',
+      niche: 'coding',
+      primaryExpertise: 'Coding',
+      subCategories: ['web-development', 'software-development'],
+      audienceSize: '1k-10k',
+      weeklyHours: '3-5',
+      launchGoal: 'earn',
+    });
+    expect(create.creatorOnboarding).toEqual({
+      version: 2,
+      creatorType: 'engineer',
+      track: 'coding',
+      topics: ['web-development', 'software-development'],
+      experience: 'some',
+      audience: '1k-10k',
+      existing: ['videos'],
+      goal: 'earn',
+      weeklyHours: '3-5',
+    });
+    expect(prisma.instructorProfile.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ update: { onboardingCompleted: true } }),
+    );
+  });
+
+  it('drops anything outside the known v2 ids instead of storing it', async () => {
+    await service.hydrateFromOnboarding('u1', {
+      version: 2,
+      track: 'music',
+      topics: ['web-development'],
+      creatorType: '<script>',
+      existing: ['videos', 'hacks', 42],
+      audience: 'none',
+    });
+
+    const { create } = prisma.profile.upsert.mock.calls[0][0];
+    // No valid track: no niche, and topics without a track are dropped.
+    expect(create.niche).toBeUndefined();
+    expect(create.subCategories).toBeUndefined();
+    expect(create.audienceSize).toBe('none');
+    expect(create.creatorOnboarding).toMatchObject({ creatorType: null, track: null, topics: [], existing: ['videos'] });
+  });
+
+  it('still reads the retired v1 step-keyed payload', async () => {
+    await service.hydrateFromOnboarding('u1', {
+      step3: { categories: ['programming'] },
+      step4: { audienceSize: 'under_1k' },
+      step7: { biggestChallenge: 'time' },
+      step12: { courseFormat: 'create' },
+    });
+
+    const { create } = prisma.profile.upsert.mock.calls[0][0];
+    expect(create).toMatchObject({
+      niche: 'programming',
+      subCategories: ['programming'],
+      audienceSize: 'under_1k',
+      biggestChallenge: ['time'],
+      launchGoal: 'create',
+    });
+    expect(create.creatorOnboarding).toBeUndefined();
+    expect(prisma.instructorProfile.upsert).not.toHaveBeenCalled();
   });
 });

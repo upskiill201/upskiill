@@ -12,6 +12,22 @@ const DEFAULT_CHEST_POOLS = [
   { id: 'pool-hearts', rewardType: 'HEARTS', amountMin: 1, amountMax: 2, rarityTier: 'common', weight: 5, active: true },
 ];
 
+// ─── Streak chests (the lucky wheel, folded into chests — 2026-09-24) ────────
+//
+// A streak milestone now earns a chest, opened with the same Rive chest and
+// paid by the same server-side reward roll as the daily chest. No new table:
+// a streak chest is a DailyChest row whose chestDay is
+// "streak-<days>-<YYYY-MM-DD>" — unique, never mistaken for today's daily
+// chest (whose chestDay is the bare date), and openable by id like any chest.
+
+/** Streak lengths that earn a chest: 3, 7, 14, 21, 30, then every 30 days. */
+export function isStreakChestDay(streakDays: number): boolean {
+  if ([3, 7, 14, 21, 30].includes(streakDays)) return true;
+  return streakDays > 30 && streakDays % 30 === 0;
+}
+
+export const STREAK_CHEST_PREFIX = 'streak-';
+
 @Injectable()
 export class ChestService {
   private readonly logger = new Logger(ChestService.name);
@@ -89,6 +105,34 @@ export class ChestService {
     }
 
     return chest;
+  }
+
+  /**
+   * Grants the chest for reaching a streak milestone. Idempotent per streak
+   * length per day (a second lesson the same day can't grant another).
+   */
+  async grantStreakChest(userId: string, streakDays: number, timezoneOffsetMinutes: number = 0) {
+    if (!isStreakChestDay(streakDays)) return null;
+    const chestDay = `${STREAK_CHEST_PREFIX}${streakDays}-${this.getChestDay(timezoneOffsetMinutes)}`;
+    return this.prisma.dailyChest.upsert({
+      where: { userId_chestDay: { userId, chestDay } },
+      update: {},
+      create: { userId, chestDay, status: 'READY_TO_OPEN', unlockedAt: new Date() },
+    });
+  }
+
+  /** Streak chests earned and not yet opened, newest first. */
+  async getPendingBonusChests(userId: string) {
+    const rows = await this.prisma.dailyChest.findMany({
+      where: { userId, status: 'READY_TO_OPEN', chestDay: { startsWith: STREAK_CHEST_PREFIX } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      kind: 'STREAK' as const,
+      streakDays: Number(r.chestDay.slice(STREAK_CHEST_PREFIX.length).split('-')[0]) || null,
+      createdAt: r.createdAt,
+    }));
   }
 
   async openChest(userId: string, chestId: string, timezoneOffsetMinutes: number = 0) {

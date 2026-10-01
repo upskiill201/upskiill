@@ -31,6 +31,13 @@ model User {
 
   profile             Profile?
   studentProfile      StudentProfile?
+  // Invite-a-friend (see ReferralCode / Referral)
+  referralCode        ReferralCode?
+  referralsMade       Referral[]                @relation("ReferralReferrer")
+  referredBy          Referral?                 @relation("ReferralReferred")
+  // Creator → learner nudges and cheers (see CreatorNudge)
+  nudgesSent          CreatorNudge[]            @relation("NudgeCreator")
+  nudgesReceived      CreatorNudge[]            @relation("NudgeLearner")
   instructorProfile   InstructorProfile?
   enrollments         Enrollment[]
   courses             Course[]                  @relation("InstructorCourses")
@@ -102,10 +109,10 @@ model User {
   comments               Comment[]
   likes                  Like[]
   activityFeed           ActivityFeed[]
-  viewerFriendActivities FriendActivity[]      @relation("ViewerFriendActivities")
-  actorFriendActivities  FriendActivity[]      @relation("ActorFriendActivities")
+  viewerFriendActivities FriendActivity[]       @relation("ViewerFriendActivities")
+  actorFriendActivities  FriendActivity[]       @relation("ActorFriendActivities")
   notifications          Notification[]
-  notificationActors     Notification[]        @relation("NotificationActor")
+  notificationActors     Notification[]         @relation("NotificationActor")
   pollVotes              PollVote[]
   courseWeeklyXp         CourseWeeklyXp[]
   leagueMembers          LeagueMember[]
@@ -121,6 +128,8 @@ model User {
   emailLogs              EmailLog[]
   emailJobs              EmailJob[]
   checkoutIntents        CheckoutIntent[]
+  supportTickets         SupportTicket[]
+  supportReplies         SupportReply[]
 
   @@index([accountStatus, role])
   @@index([createdAt, role])
@@ -185,14 +194,17 @@ model Profile {
   usernameLastChangedAt DateTime?
 
   // Creator profile fields (hydrated from onboarding answers)
-  niche            String? // Step 3: primary teaching category
-  subCategories    Json? // Step 3: all selected categories
-  audienceSize     String? // Step 4: audience scale
-  platforms        Json? // Step 5: current platforms
-  weeklyHours      String? // Step 9: available time per week
-  biggestChallenge Json? // Step 7: selected pain points (multi-select array from onboarding)
-  teachingStyle    String? // Step 8: content/teaching approach
-  launchGoal       String? // Step 12: first course launch goal
+  niche             String? // Step 3: primary teaching category
+  subCategories     Json? // Step 3: all selected categories
+  audienceSize      String? // Step 4: audience scale
+  platforms         Json? // Step 5: current platforms
+  weeklyHours       String? // Step 9: available time per week
+  biggestChallenge  Json? // Step 7: selected pain points (multi-select array from onboarding)
+  teachingStyle     String? // Step 8: content/teaching approach
+  launchGoal        String? // Step 12: first course launch goal
+  // Creator onboarding v2: the full answer set (creatorType, experience,
+  // existing content, goal, topics…) — see ProfileService.hydrateFromOnboarding.
+  creatorOnboarding Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -267,6 +279,7 @@ model Course {
   orderItems           OrderItem[]
   userCourseProgresses UserCourseProgress[]
   community            Community?
+  creatorNudges        CreatorNudge[]
   posts                Post[]
   weeklyXpRows         CourseWeeklyXp[]
   views                CourseView[]
@@ -721,7 +734,18 @@ model StudentProfile {
 
   // Daily goal (XP/day) — Duolingo-style commitment level
   // 20 Casual | 50 Regular | 100 Serious | 200 Intense
+  // Set from onboarding's minutes-per-day answer via
+  // COMMITMENT_TO_DAILY_GOAL_XP; also editable at PATCH /profile/me.
   dailyGoalXp Int @default(20)
+
+  // Learning track chosen in onboarding: "coding" | "ai".
+  // Nullable because it postdates every existing learner, and because it is
+  // a learner PREFERENCE, not a course taxonomy — Course.category remains
+  // free text and is mapped onto this in frontend/lib/onboarding/catalog.ts.
+  learningTrack     String?
+  // The specific interests under that track, e.g. ["build-agents"]. Ordered:
+  // the first entry is the primary interest that drives recommendations.
+  learningInterests Json?
 
   // Weekly league standing (Duolingo-style leaderboards). Source of truth for
   // which tier the user joins next week; mutated only by league settlement.
@@ -1047,6 +1071,12 @@ model UserLessonProgress {
   // Apply-phase accuracy (0–100) reported by the player at completion time.
   // Null for lessons without an activity or completions before this existed.
   quizScore          Float?
+  // Creator analytics (lesson insights). openCount/quitCount come from the
+  // player's open and quit pings; missedBlockIds are the Apply exercises the
+  // learner got wrong on the first try, recorded on the FIRST completion only.
+  openCount          Int       @default(0)
+  quitCount          Int       @default(0)
+  missedBlockIds     String[]  @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1395,6 +1425,9 @@ model CommunityMembership {
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   role        String    @default("MEMBER") // 'MEMBER' | 'ADMIN'
   joinedAt    DateTime  @default(now())
+  /// Set by the course creator. While in the future the member can read but
+  /// not post or comment.
+  mutedUntil  DateTime?
 
   @@unique([userId, communityId])
   @@index([userId])
@@ -2130,6 +2163,12 @@ model TeyNotificationPrefs {
   dailyReminders  Boolean @default(true)
   milestones      Boolean @default(true)
   reengagement    Boolean @default(true)
+  /// League moves: someone passed you, the week is ending, your result.
+  leagueUpdates   Boolean @default(true)
+  /// Offers on a course the learner started (the lesson-3 unlock journey).
+  courseOffers    Boolean @default(true)
+  /// Creator side: sales, new learners, questions, finishes, payouts.
+  creatorActivity Boolean @default(true)
 
   /// Minutes from LOCAL midnight. Defaults 21:30 -> 08:00, and the window
   /// wraps midnight by design.
@@ -2357,14 +2396,25 @@ model CourseImport {
   /// persist its result rather than being killed — so "pause requested" and
   /// "actually paused" are genuinely different states and the UI says which.
   /// Cleared on resume.
-  pauseRequestedAt DateTime?
+  pauseRequestedAt  DateTime?
   /// Set once no work for this import is in flight any more. status is
   /// PAUSED from the pause request onward; this timestamp is what makes
   /// "stopping..." vs "stopped" honest.
-  pausedAt         DateTime?
+  pausedAt          DateTime?
   /// The status to return to on resume. Lets a pause be a true suspend of
   /// whatever stage was running instead of guessing the stage afterwards.
   statusBeforePause CourseImportStatus?
+
+  /// Autopilot (Teyro HQ): when on, the importer runs the structure analysis
+  /// and builds the DRAFT course by itself, using the settings below, so the
+  /// admin only returns to review. Appending later lessons into an existing
+  /// course stays a manual step (it can reopen an approved course).
+  autopilot      Boolean @default(false)
+  courseTitle    String?
+  courseCategory String?
+  courseLevel    String?
+  /// The last thing autopilot did, or why it stopped and handed back.
+  autopilotNote  String?
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -2408,7 +2458,7 @@ model CourseImportFile {
   sectionFolderId   String?
   sectionFolderName String?
 
-  status CourseImportFileStatus @default(PENDING)
+  status     CourseImportFileStatus @default(PENDING)
   /// Populated once UPLOADED — the R2 object key and its public URL. Phase 5
   /// (AI -> Course Creation) reads storageUrl straight into a lesson's
   /// contentBlocks/LessonResource; the object is uploaded exactly once and
@@ -2416,13 +2466,13 @@ model CourseImportFile {
   storageKey String?
   storageUrl String?
 
-  error    String?
+  error     String?
   /// Machine-readable companion to `error` (CourseImportErrorCode). Drives
   /// the retry decision — a terminal code stops burning retry attempts —
   /// and lets the admin UI explain a failure instead of printing an
   /// exception string.
   errorCode String?
-  attempts Int     @default(0)
+  attempts  Int     @default(0)
 
   /// Claim bookkeeping — same fields/semantics as TeyScheduledAction so a
   /// crashed instance's in-flight claim is reapable the same way.
@@ -2432,12 +2482,12 @@ model CourseImportFile {
   /// Populated for video files once transcribed (Gemini File API). This is
   /// the primary signal fed into lesson content generation — the AI is never
   /// asked to invent what a lesson teaches, only to work from this text.
-  transcript          String?           @db.Text
+  transcript          String?          @db.Text
   transcriptLanguage  String?
-  transcriptStatus    TranscriptStatus  @default(NOT_APPLICABLE)
+  transcriptStatus    TranscriptStatus @default(NOT_APPLICABLE)
   transcriptError     String?
   transcriptErrorCode String?
-  transcriptAttempts  Int               @default(0)
+  transcriptAttempts  Int              @default(0)
   transcriptClaimedAt DateTime?
   transcriptClaimedBy String?
 
@@ -2502,8 +2552,8 @@ model CourseImportLesson {
   /// (e.g. a PDF that immediately follows this video in Drive's ordering).
   resourceFileIds Json @default("[]")
 
-  status LessonGenerationStatus @default(PENDING)
-  error  String?
+  status    LessonGenerationStatus @default(PENDING)
+  error     String?
   /// CourseImportErrorCode — see CourseImportFile.errorCode.
   errorCode String?
 
@@ -2524,7 +2574,7 @@ model CourseImportLesson {
   /// Real Teyro block shapes — the exact arrays CourseCreationService's
   /// LessonContentInput expects (see course-creation/course-creation.types.ts),
   /// so Phase 5 can hand these straight to attachLessonContent() unchanged.
-  description   String?  @db.Text
+  description   String? @db.Text
   learnBlocks   Json?
   applyBlocks   Json?
   reflectBlocks Json?
@@ -2754,7 +2804,7 @@ model EmailLog {
   idempotencyKey String @unique
 
   /// 'QUEUED' | 'SENDING' | 'SENT' | 'FAILED' | 'SKIPPED'
-  status  String
+  status     String
   /// Why a SKIPPED row exists — unsubscribed, already-sent, ineligible, etc.
   skipReason String?
 
@@ -2840,7 +2890,7 @@ model CheckoutIntent {
   /// 'STARTED' | 'PAID' | 'ABANDONED' | 'CANCELLED' | 'EXPIRED'
   status String @default("STARTED")
 
-  startedAt DateTime @default(now())
+  startedAt DateTime  @default(now())
   paidAt    DateTime?
 
   /// How many recovery emails have gone out (0-4). Bumped only after a send.
@@ -2862,4 +2912,94 @@ model CheckoutIntent {
   @@index([userId, status])
   @@index([status, startedAt])
   @@map("checkout_intents")
+}
+
+/// A learner's stable invite code (the ?ref= in their invite link). Kept apart
+/// from the username so an invite link never breaks when a handle changes.
+model ReferralCode {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("referral_codes")
+}
+
+/// One friend who joined through an invite. PENDING until the friend finishes
+/// their first lesson (so empty sign-ups earn nothing), then REWARDED — both
+/// sides are paid once, in the same transaction that flips the status.
+model Referral {
+  id         String    @id @default(uuid())
+  referrerId String
+  referrer   User      @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredId String    @unique
+  referred   User      @relation("ReferralReferred", fields: [referredId], references: [id], onDelete: Cascade)
+  code       String
+  status     String    @default("PENDING") // PENDING | REWARDED
+  createdAt  DateTime  @default(now())
+  rewardedAt DateTime?
+
+  @@index([referrerId, createdAt])
+  @@map("referrals")
+}
+
+/// A creator stepping in: a nudge to a learner who went quiet or got stuck,
+/// or a cheer for one who is flying. Each row is also a notification; the
+/// table exists for rate limits and so the studio can say "nudged 2d ago".
+model CreatorNudge {
+  id        String   @id @default(uuid())
+  creatorId String
+  creator   User     @relation("NudgeCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  learnerId String
+  learner   User     @relation("NudgeLearner", fields: [learnerId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  kind      String // 'NUDGE' | 'CHEER'
+  message   String   @db.VarChar(280)
+  createdAt DateTime @default(now())
+
+  @@index([learnerId, courseId, createdAt])
+  @@index([creatorId, createdAt])
+  @@map("creator_nudges")
+}
+
+/// Help & feedback: one conversation a learner or creator starts with Teyro
+/// (feedback, an idea, a bug, a question). `audience` says which app it came
+/// from and which bell hears the answer. Staff replies set `userUnread`.
+model SupportTicket {
+  id             String         @id @default(uuid())
+  publicId       String         @unique // "TS-7K2Q9M" — what the user quotes
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audience       String // 'LEARNER' | 'CREATOR'
+  kind           String // 'FEEDBACK' | 'IDEA' | 'BUG' | 'HELP' | 'ACCOUNT' | 'PAYMENT' | 'COURSE'
+  subject        String         @db.VarChar(140)
+  mood           Int? // 1–5, how the app feels (feedback only)
+  pagePath       String?        @db.VarChar(300)
+  userAgent      String?        @db.VarChar(300)
+  status         String         @default("OPEN") // 'OPEN' | 'ANSWERED' | 'CLOSED'
+  userUnread     Boolean        @default(false)
+  lastActivityAt DateTime       @default(now())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  replies        SupportReply[]
+
+  @@index([userId, lastActivityAt])
+  @@index([status, lastActivityAt])
+  @@map("support_tickets")
+}
+
+/// One message in a support conversation — the opening message included.
+model SupportReply {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  isStaff   Boolean       @default(false)
+  message   String        @db.Text
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId, createdAt])
+  @@map("support_replies")
 }

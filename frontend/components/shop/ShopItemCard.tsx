@@ -16,6 +16,8 @@ import ShopItemArt from '../shop-engine/ShopItemArt';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopItem } from '@/lib/shop/types';
 import { pickShopMessage } from '@/lib/tey/shopVoice';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
 import styles from './ShopItemCard.module.css';
 
 interface ShopItemCardProps {
@@ -26,6 +28,11 @@ interface ShopItemCardProps {
   /** Reason this item is being surfaced ("Your hearts are running low"). */
   reason?: string;
   busy?: boolean;
+  /**
+   * Tapped while it can't be bought (locked, too few coins, at the cap).
+   * Duolingo explains instead of greying out, so the page can say why.
+   */
+  onBlocked?: (item: ShopItem, message: string) => void;
 }
 
 export default function ShopItemCard({
@@ -34,6 +41,7 @@ export default function ShopItemCard({
   variant = 'tile',
   reason,
   busy = false,
+  onBlocked,
 }: ShopItemCardProps) {
   const tone = rarityStyle(item.rarity);
   const locked = !item.unlock.unlocked;
@@ -44,6 +52,19 @@ export default function ShopItemCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.id, item.blockedReasonCode, item.blockedReason],
   );
+
+  const explain = () => {
+    playSound('nodeLocked');
+    playHaptic('light', false);
+    onBlocked?.(item, locked ? `${item.unlock.label} to unlock this.` : blockedMessage ?? 'Not available right now.');
+  };
+
+  const buy = () => {
+    if (!buyable) return explain();
+    playSound('select');
+    playHaptic('medium', false);
+    onBuy(item);
+  };
 
   // Owned stackables still show a count; owned one-times are simply done.
   const ownedLabel = item.soldOut
@@ -87,14 +108,11 @@ export default function ShopItemCard({
       <div className={styles.body}>
         <div className={styles.titleRow}>
           <h3 className={styles.name}>{item.name}</h3>
-          <span className={styles.rarity}>{tone.label}</span>
+          {item.rarity !== 'COMMON' && <span className={styles.rarity}>{tone.label}</span>}
         </div>
 
-        {reason ? (
-          <p className={styles.reason}>{reason}</p>
-        ) : (
-          <p className={styles.desc}>{item.description}</p>
-        )}
+        <p className={styles.desc}>{item.description}</p>
+        {reason && <p className={styles.reason}>{reason}</p>}
 
         {/* Locked: show exactly how far off it is. */}
         {locked ? (
@@ -123,7 +141,8 @@ export default function ShopItemCard({
             Earned only
           </span>
         ) : locked ? (
-          <button type="button" className={styles.lockedBtn} disabled>
+          <button type="button" className={styles.lockedBtn} aria-disabled="true" onClick={explain}>
+            <Lock size={14} strokeWidth={2.8} aria-hidden="true" />
             LOCKED
           </button>
         ) : item.soldOut ? (
@@ -138,8 +157,9 @@ export default function ShopItemCard({
             <button
               type="button"
               className={buyable ? styles.buyBtn : styles.buyBtnDisabled}
-              onClick={() => buyable && onBuy(item)}
-              disabled={!buyable}
+              onClick={buy}
+              aria-disabled={!buyable}
+              disabled={busy}
               title={item.blockedReason ?? undefined}
             >
               <Image src="/Icons/Coin.png" alt="" width={17} height={17} />

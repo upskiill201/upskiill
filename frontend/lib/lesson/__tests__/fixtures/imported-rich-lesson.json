@@ -1,0 +1,246 @@
+{
+  "stats": {
+    "learnCards": 6,
+    "exercises": 6,
+    "kinds": [
+      "mcq",
+      "fillBlank",
+      "orderLines",
+      "findBug",
+      "matchPairs"
+    ],
+    "dropped": [],
+    "classicLearn": false
+  },
+  "contentBlocks": {
+    "learn": [
+      {
+        "type": "learnCards",
+        "value": [
+          {
+            "id": "c_video",
+            "kind": "video",
+            "url": "https://cdn.example/v.mp4",
+            "durationSec": 422
+          },
+          {
+            "id": "c_idea0",
+            "kind": "text",
+            "html": "<h3>Every frame has a focal point</h3><p>Before you cut, ask where the eye lands first. Brightness, faces and contrast pull attention.</p>"
+          },
+          {
+            "id": "c_idea1",
+            "kind": "text",
+            "html": "<h3>Thirds beat the centre</h3><p>Placing the subject on a third line leaves room to look into, and it feels more natural than dead centre.</p>"
+          },
+          {
+            "id": "c_idea2",
+            "kind": "text",
+            "html": "<h3>Cut on movement</h3><p>A cut hidden inside a movement feels invisible, so the viewer stays in the story instead of noticing the edit.</p>"
+          },
+          {
+            "id": "c_tip",
+            "kind": "callout",
+            "tone": "remember",
+            "text": "If you have to ask where to look, the frame has no focal point yet."
+          },
+          {
+            "id": "c_check",
+            "kind": "check",
+            "question": "Where should a single subject usually sit?",
+            "options": [
+              "Dead centre",
+              "On a third line",
+              "At the very edge"
+            ],
+            "correctIndex": 1,
+            "explanation": "The third lines give the subject room and feel natural."
+          }
+        ]
+      },
+      {
+        "type": "whatYouWillLearn",
+        "value": [
+          "Spot the focal point of a frame",
+          "Use the rule of thirds when cropping",
+          "Cut on movement to keep attention"
+        ]
+      }
+    ],
+    "apply": [
+      {
+        "type": "exercises",
+        "value": {
+          "scenario": "You're cutting a 30-second promo for a local café.",
+          "items": [
+            {
+              "id": "ex_0",
+              "kind": "mcq",
+              "variant": "standard",
+              "prompt": "A shot feels flat and the eye wanders. What do you check first?",
+              "explanation": "A wandering eye means no clear focal point.",
+              "options": [
+                {
+                  "id": "ex_0_o0",
+                  "text": "The focal point"
+                },
+                {
+                  "id": "ex_0_o1",
+                  "text": "The export bitrate"
+                },
+                {
+                  "id": "ex_0_o2",
+                  "text": "The music volume"
+                }
+              ],
+              "correctOptionId": "ex_0_o0"
+            },
+            {
+              "id": "ex_1",
+              "kind": "fillBlank",
+              "prompt": "Complete the rule.",
+              "explanation": "Thirds for placement, movement to hide the cut.",
+              "template": "Place the subject on a [[1]] line and cut on [[2]].",
+              "blanks": [
+                {
+                  "id": "ex_1_b0",
+                  "answers": [
+                    "third"
+                  ]
+                },
+                {
+                  "id": "ex_1_b1",
+                  "answers": [
+                    "movement"
+                  ]
+                }
+              ],
+              "distractors": [
+                "centre",
+                "silence"
+              ]
+            },
+            {
+              "id": "ex_2",
+              "kind": "orderLines",
+              "prompt": "Put the edit in order.",
+              "explanation": "See it, find the point, frame it, then cut.",
+              "lines": [
+                "Watch the raw clip",
+                "Find the focal point",
+                "Crop to the thirds",
+                "Cut on the movement"
+              ]
+            },
+            {
+              "id": "ex_3",
+              "kind": "findBug",
+              "prompt": "Tap the step that's wrong.",
+              "explanation": "Dead centre every time is the mistake.",
+              "lines": [
+                "Find where the eye lands",
+                "Put the subject dead centre every time",
+                "Leave room to look into"
+              ],
+              "bugLine": 1,
+              "fix": "Put the subject on a third line"
+            },
+            {
+              "id": "ex_4",
+              "kind": "matchPairs",
+              "prompt": "Match each idea to what it does.",
+              "explanation": "Each tool solves a different problem.",
+              "pairs": [
+                {
+                  "id": "ex_4_p0",
+                  "left": "Focal point",
+                  "right": "Where the eye lands"
+                },
+                {
+                  "id": "ex_4_p1",
+                  "left": "Rule of thirds",
+                  "right": "Natural subject placement"
+                },
+                {
+                  "id": "ex_4_p2",
+                  "left": "Cut on movement",
+                  "right": "Hides the edit"
+                }
+              ]
+            },
+            {
+              "id": "ex_5",
+              "kind": "mcq",
+              "variant": "standard",
+              "prompt": "Which cut is least noticeable?",
+              "explanation": "Movement hides the cut.",
+              "options": [
+                {
+                  "id": "ex_5_o0",
+                  "text": "During a head turn"
+                },
+                {
+                  "id": "ex_5_o1",
+                  "text": "On a still frame"
+                },
+                {
+                  "id": "ex_5_o2",
+                  "text": "Mid-sentence with no motion"
+                }
+              ],
+              "correctOptionId": "ex_5_o0"
+            }
+          ]
+        }
+      }
+    ],
+    "reflect": [
+      {
+        "type": "reflectActivity",
+        "value": {
+          "prompt": "Pick one shot from your last edit. Where does the eye land, and how would you reframe it?",
+          "type": "open",
+          "openConfig": {
+            "useStarters": true,
+            "starters": [
+              "In my last edit…",
+              "I would reframe…"
+            ],
+            "minWordCount": 20,
+            "required": true,
+            "peerVisibility": false,
+            "allowComments": false,
+            "allowAttachments": false
+          },
+          "guidedConfig": {
+            "questions": [],
+            "minWordCountPerQuestion": 10,
+            "required": true,
+            "allowAttachments": false
+          }
+        }
+      }
+    ],
+    "deepen": [
+      {
+        "type": "deepenActivity",
+        "value": {
+          "collectionTitle": "Leading lines",
+          "collectionDescription": "Once thirds feel easy, use lines in the scene to pull the eye toward your subject.",
+          "resourceSettings": {
+            "makeRequired": false,
+            "trackCompletion": false,
+            "allowDownloads": true,
+            "openInNewTab": true
+          },
+          "recommendedNextStep": {
+            "type": "continue"
+          },
+          "showLearningPathSuggestions": false,
+          "learningPathSuggestions": []
+        }
+      }
+    ]
+  },
+  "description": "In this lesson I'll show you how composition guides the viewer's eye, and how to use it on purpose in your edits."
+}

@@ -17,8 +17,8 @@ import styles from '../Scene.module.css';
 import type { CelebrationCurrency, CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_COLORS, CURRENCY_ICONS, CURRENCY_LABELS } from '../currency';
 import { runSceneClaim } from '../sceneClaim';
-import { playClaimArpeggio, playRewardTick, playSparkle } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { useGamification } from '@/context/GamificationContext';
 import { pickClaimTitle } from '@/lib/tey/xpClaimVoice';
 
@@ -157,8 +157,8 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
 
   // ── Intro sound + haptic ──────────────────────────────────────────────────
   useEffect(() => {
-    playClaimArpeggio();
-    playHaptic('medium');
+    playSound('rewardClaim');
+    celebrationHaptic('win');
   }, []);
 
   // ── Timeline driver ───────────────────────────────────────────────────────
@@ -195,8 +195,8 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
     }
     if (step.act === 'deposit') {
       setDepositedCount((c) => Math.max(c, step.rewardIndex + 1));
-      playRewardTick(step.rewardIndex);
-      playHaptic('light');
+      playSound('chestTick', step.rewardIndex);
+      playHaptic('light', false);
       const t = setTimeout(() => setStepIdx((i) => i + 1), DEPOSIT_PAUSE_MS);
       return () => clearTimeout(t);
     }
@@ -342,10 +342,10 @@ export default function ClaimScene({ scene, onAdvance }: ClaimSceneProps) {
               height: 90,
               marginLeft: -45,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(250,204,21,0.35) 40%, transparent 70%)',
+              background: 'radial-gradient(circle, color-mix(in srgb, var(--warning) 40%, transparent) 0%, color-mix(in srgb, var(--warning) 14%, transparent) 40%, transparent 70%)',
               pointerEvents: 'none',
             }}
-            onAnimationStart={() => playSparkle()}
+            onAnimationStart={() => playSound('shine')}
           />
         )}
       </div>

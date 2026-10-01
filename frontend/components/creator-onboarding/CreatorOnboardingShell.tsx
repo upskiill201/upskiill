@@ -1,583 +1,432 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+/**
+ * Creator onboarding — the persistent container for /creator/onboarding/1–14.
+ *
+ * Built from the learner flow's pieces (OnboardingLayout, OnboardingFooter,
+ * OptionCard, Tey) so creating on Teyro feels like the same app as learning
+ * on it. The flow is data (lib/creator-onboarding/steps.ts); Tey's lines come
+ * from lib/creator-onboarding/dialogue.ts.
+ *
+ * Same navigation model as the learner shell: `history.pushState` + popstate,
+ * with a transition-length busy guard so a double tap can't skip a step.
+ *
+ * /creator sits outside the (app) route group, so there is no AudioProvider
+ * here: mute state comes from useStandaloneSound, never useAudioContext.
+ */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, X } from 'lucide-react';
 import { captureEvent } from '@/lib/analytics';
+import { playOnboardingCue, playTeyReaction } from '@/lib/audio/onboardingAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { useStandaloneSound } from '@/lib/audio/useStandaloneSound';
+import { playHaptic } from '@/lib/haptics';
+import type { Beat } from '@/lib/onboarding/dialogue/types';
+import { CREATOR_TRACKS } from '@/lib/creator/categories';
+import {
+  AUDIENCE_OPTIONS,
+  CREATOR_TYPE_OPTIONS,
+  EXISTING_CONTENT_OPTIONS,
+  EXPERIENCE_OPTIONS,
+  GOAL_OPTIONS,
+  WEEKLY_HOURS_OPTIONS,
+  type CreatorAnswers,
+  type ExistingContent,
+} from '@/lib/creator-onboarding/catalog';
+import { lineFor, reactionFor } from '@/lib/creator-onboarding/dialogue';
+import {
+  ACCOUNT_STEP,
+  CREATOR_STEPS,
+  PROFILE_STEP,
+  READY_STEP,
+  TOTAL_CREATOR_STEPS,
+  canAdvanceCreator,
+  creatorProgress,
+  creatorStepByNumber,
+  firstUnansweredStep,
+} from '@/lib/creator-onboarding/steps';
+import { clearCreatorOnboarding, getCreatorOnboarding, saveCreatorAnswers } from '@/lib/creator-onboarding/storage';
+import { OnboardingFooter } from '@/components/onboarding/OnboardingFooter';
+import { OnboardingLayout } from '@/components/onboarding/OnboardingLayout';
+import { PrimaryButton, SecondaryButton } from '@/components/auth/AuthUi';
+import CreatorQuestion from './screens/CreatorQuestion';
+import CreatorNameScreen from './screens/CreatorNameScreen';
+import CreatorTrackScreen from './screens/CreatorTrackScreen';
+import CreatorPlanScreen from './screens/CreatorPlanScreen';
+import CreatorAccountScreen from './screens/CreatorAccountScreen';
+import CreatorProfileScreen from './screens/CreatorProfileScreen';
+import CreatorReadyScreen from './screens/CreatorReadyScreen';
+import { useCreatorSession } from './useCreatorSession';
+import styles from './CreatorOnboarding.module.css';
 
-import Step1Content from './steps/Step1Content';
-import Step2Content from './steps/Step2Content';
-import Step3Content from './steps/Step3Content';
-import Step4Content from './steps/Step4Content';
-import Step5Content from './steps/Step5Content';
-import Step6Content from './steps/Step6Content';
-import Step7Content from './steps/Step7Content';
-import Step8Content from './steps/Step8Content';
-import Step9Content from './steps/Step9Content';
-import Step10Content from './steps/Step10Content';
-import Step11Content from './steps/Step11Content';
-import Step12Content from './steps/Step12Content';
-import Step13Content from './steps/Step13Content';
-import Step14Content from './steps/Step14Content';
-import Step15Content from './steps/Step15Content';
-import Step16Content from './steps/Step16Content';
-import DuolingoButton3D from './DuolingoButton3D';
+const TRANSITION_MS = 550;
 
-import { getOnboardingData, saveOnboardingStep, clearOnboardingData } from '@/lib/onboarding';
-import { getCachedUser, setCachedUser } from '@/lib/user-cache';
-
-interface CreatorOnboardingShellProps {
-  initialStep: number;
+/** "Nothing yet" can't sit alongside real material, in either direction. */
+function toggleExisting(current: ExistingContent[], id: ExistingContent): ExistingContent[] {
+  if (current.includes(id)) return current.filter((c) => c !== id);
+  if (id === 'nothing-yet') return ['nothing-yet'];
+  return [...current.filter((c) => c !== 'nothing-yet'), id];
 }
 
-const TOTAL_STEPS = 16;
-const BATCH_MAX_STEP = 16;
+function toggle<T extends string>(current: T[], id: T): T[] {
+  return current.includes(id) ? current.filter((c) => c !== id) : [...current, id];
+}
 
-export function CreatorOnboardingShell({ initialStep }: CreatorOnboardingShellProps) {
+export function CreatorOnboardingShell({ initialStep }: { initialStep: number }) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(initialStep);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
-  const [isLoading, setIsLoading] = useState(false);
-  const [authError, setAuthError] = useState('');
-  // Set when signup 409s because a verified account already owns the email —
-  // the form only creates accounts, so without this link that creator was
-  // stuck with no way in.
-  const [showLoginLink, setShowLoginLink] = useState(false);
+  const { muted, toggleMute } = useStandaloneSound();
+  const { session, refresh } = useCreatorSession();
 
-  // Step Data State (Optimistic In-Memory)
-  const [step2Type, setStep2Type] = useState<string | null>(null);
-  const [step3Category, setStep3Category] = useState<string | null>(null);
-  const [step4Audience, setStep4Audience] = useState<string | null>(null);
-  const [step5Platforms, setStep5Platforms] = useState<string[]>([]);
-  const [step6Content, setStep6Content] = useState<string[]>([]);
-  const [step7Challenges, setStep7Challenges] = useState<string[]>([]);
-  const [step8Revenue, setStep8Revenue] = useState<string | null>(null);
-  const [step12Format, setStep12Format] = useState<string | null>(null);
-  const [step13Community, setStep13Community] = useState<string | null>(null);
-  const [step15Data, setStep15Data] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-  });
+  const [step, setStep] = useState(() => Math.min(Math.max(initialStep, 1), TOTAL_CREATOR_STEPS));
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [busy, setBusy] = useState(false);
+  const [answers, setAnswers] = useState<CreatorAnswers>({});
+  const [loaded, setLoaded] = useState(false);
+  const [reaction, setReaction] = useState<Beat | null>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
 
-  // Load existing onboarding data on mount
+  const definition = useMemo(() => creatorStepByNumber(step) ?? CREATOR_STEPS[0], [step]);
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+
+  const goToStep = useCallback(
+    (next: number, dir: 1 | -1, { replace = false }: { replace?: boolean } = {}) => {
+      if (next < 1 || next > TOTAL_CREATOR_STEPS) return;
+      setBusy(true);
+      setDirection(dir);
+      setStep(next);
+      setReaction(null);
+      const url = `/creator/onboarding/${next}`;
+      if (replace) window.history.replaceState(null, '', url);
+      else window.history.pushState(null, '', url);
+      window.setTimeout(() => setBusy(false), TRANSITION_MS);
+    },
+    [],
+  );
+
+  // Load saved answers once, then send anyone who deep-linked past an
+  // unanswered question back to it (the plan is built from those answers).
   useEffect(() => {
-    const data = getOnboardingData();
-    if (data.step2?.creatorType) setStep2Type(data.step2.creatorType);
-    if (data.step3?.categories?.[0]) setStep3Category(data.step3.categories[0]);
-    if (data.step4?.audienceSize) setStep4Audience(data.step4.audienceSize);
-    if (data.step5?.platforms) setStep5Platforms(data.step5.platforms);
-    if (data.step6?.existingContent) setStep6Content(data.step6.existingContent);
-    if (data.step7?.biggestChallenge) setStep7Challenges(Array.isArray(data.step7.biggestChallenge) ? data.step7.biggestChallenge : [data.step7.biggestChallenge]);
-    if (data.step8?.teachingStyle) setStep8Revenue(data.step8.teachingStyle);
-    if (data.step12?.courseFormat) setStep12Format(data.step12.courseFormat);
-    if (data.step13?.communityOption) setStep13Community(data.step13.communityOption);
-
-    // Hydrate user info if available from cache or server
-    const cached = getCachedUser();
-    if (cached?.fullName) {
-      setStep15Data((prev) => ({ ...prev, fullName: cached.fullName || prev.fullName, email: cached.email || prev.email }));
-    } else {
-      fetch('/api/auth/me', { credentials: 'include' })
-        .then((res) => (res.ok ? res.json() : null))
-        .then((user) => {
-          if (user?.fullName) {
-            setCachedUser(user);
-            setStep15Data((prev) => ({ ...prev, fullName: user.fullName, email: user.email || prev.email }));
-          }
-        })
-        .catch(() => {});
+    const saved = getCreatorOnboarding();
+    setAnswers(saved.answers);
+    setLoaded(true);
+    if (initialStep < ACCOUNT_STEP) {
+      const missing = firstUnansweredStep(saved.answers);
+      if (missing !== null && missing < initialStep) goToStep(missing, -1, { replace: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync with browser URL back/forward navigation
+  // Profile and ready need a session; a guest there goes back to the account step.
   useEffect(() => {
-    const handlePopState = () => {
+    if (session.status === 'guest' && step > ACCOUNT_STEP) goToStep(ACCOUNT_STEP, -1, { replace: true });
+  }, [session.status, step, goToStep]);
+
+  // Prefill the name for a signed-in creator or learner.
+  useEffect(() => {
+    if (session.status !== 'signed-in' || answers.name || !loaded) return;
+    const first = session.user.fullName?.trim();
+    if (first) {
+      setAnswers((a) => saveCreatorAnswers({ ...a, name: first }).answers);
+    }
+  }, [session, answers.name, loaded]);
+
+  useEffect(() => {
+    const onPop = () => {
       const match = window.location.pathname.match(/\/creator\/onboarding\/(\d+)/);
-      if (match) {
-        const targetStep = parseInt(match[1], 10);
-        if (targetStep !== currentStep) {
-          setDirection(targetStep > currentStep ? 1 : -1);
-          setCurrentStep(targetStep);
-        }
+      if (!match) return;
+      const urlStep = Number.parseInt(match[1], 10);
+      if (urlStep >= 1 && urlStep <= TOTAL_CREATOR_STEPS && urlStep !== step) {
+        setDirection(urlStep > step ? 1 : -1);
+        setStep(urlStep);
+        setReaction(null);
       }
     };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [step]);
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [currentStep]);
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true });
+    captureEvent('creator_onboarding_step_viewed', { step, id: definition.id });
+    if (step === 1) playSound('studioOpen');
+  }, [step, definition.id]);
 
-  // Navigate to target step (instant in-memory transition)
-  const goToStep = useCallback((targetStep: number) => {
-    if (targetStep < 1 || targetStep > TOTAL_STEPS) return;
+  // The finish: the answers now live on the server.
+  useEffect(() => {
+    if (step === READY_STEP) clearCreatorOnboarding();
+  }, [step]);
 
-    setDirection(targetStep > currentStep ? 1 : -1);
-    setCurrentStep(targetStep);
-    window.history.pushState(null, '', `/creator/onboarding/${targetStep}`);
-    captureEvent('onboarding_step_viewed', { step: targetStep });
-  }, [currentStep]);
-
-  // Step Select / Form Handlers
-  const handleStep2Select = (id: string) => {
-    setStep2Type(id);
-    saveOnboardingStep(2, { creatorType: id });
-  };
-
-  const handleStep3Select = (id: string) => {
-    setStep3Category(id);
-    saveOnboardingStep(3, { categories: [id] });
-  };
-
-  const handleStep4Select = (id: string) => {
-    setStep4Audience(id);
-    saveOnboardingStep(4, { audienceSize: id });
-  };
-
-  const handleStep5Toggle = (id: string) => {
-    setStep5Platforms((prev) => {
-      const next = prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id];
-      saveOnboardingStep(5, { platforms: next });
-      return next;
-    });
-  };
-
-  const handleStep6Toggle = (id: string) => {
-    setStep6Content((prev) => {
-      const next = prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id];
-      saveOnboardingStep(6, { existingContent: next });
-      return next;
-    });
-  };
-
-  const handleStep7Toggle = (id: string) => {
-    setStep7Challenges((prev) => {
-      const next = prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id];
-      saveOnboardingStep(7, { biggestChallenge: next });
-      return next;
-    });
-  };
-
-  const handleStep8Select = (id: string) => {
-    setStep8Revenue(id);
-    saveOnboardingStep(8, { teachingStyle: id });
-  };
-
-  const handleStep12Select = (id: string) => {
-    setStep12Format(id);
-    saveOnboardingStep(12, { courseFormat: id });
-  };
-
-  const handleStep13Select = (id: string) => {
-    setStep13Community(id);
-    saveOnboardingStep(13, { communityOption: id });
-  };
-
-  const handleStep15Change = (field: string, value: string) => {
-    setAuthError('');
-    setShowLoginLink(false);
-    setStep15Data((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleGoogleSuccess = (name: string, email: string) => {
-    setAuthError('');
-    setStep15Data((prev) => ({ ...prev, fullName: name, email }));
-    goToStep(16);
-  };
-
-  // Next Step Advance Router
-  const handleNext = async () => {
-    if (currentStep === 1) {
-      saveOnboardingStep(1, { started: true });
-      captureEvent('onboarding_started', { step: 1 });
-      goToStep(2);
-    } else if (currentStep === 2) {
-      if (!step2Type) return;
-      saveOnboardingStep(2, { creatorType: step2Type });
-      captureEvent('onboarding_step_completed', { step: 2, creatorType: step2Type });
-      goToStep(3);
-    } else if (currentStep === 3) {
-      if (!step3Category) return;
-      saveOnboardingStep(3, { categories: [step3Category] });
-      captureEvent('onboarding_step_completed', { step: 3, category: step3Category });
-      goToStep(4);
-    } else if (currentStep === 4) {
-      if (!step4Audience) return;
-      saveOnboardingStep(4, { audienceSize: step4Audience });
-      captureEvent('onboarding_step_completed', { step: 4, audienceSize: step4Audience });
-      goToStep(5);
-    } else if (currentStep === 5) {
-      if (step5Platforms.length === 0) return;
-      saveOnboardingStep(5, { platforms: step5Platforms });
-      captureEvent('onboarding_step_completed', { step: 5, platforms: step5Platforms });
-      goToStep(6);
-    } else if (currentStep === 6) {
-      if (step6Content.length === 0) return;
-      saveOnboardingStep(6, { existingContent: step6Content });
-      captureEvent('onboarding_step_completed', { step: 6, existingContent: step6Content });
-      goToStep(7);
-    } else if (currentStep === 7) {
-      if (step7Challenges.length === 0) return;
-      saveOnboardingStep(7, { biggestChallenge: step7Challenges });
-      captureEvent('onboarding_step_completed', { step: 7, challenges: step7Challenges });
-      goToStep(8);
-    } else if (currentStep === 8) {
-      if (!step8Revenue) return;
-      saveOnboardingStep(8, { teachingStyle: step8Revenue });
-      captureEvent('onboarding_step_completed', { step: 8, revenueGoal: step8Revenue });
-      goToStep(9);
-    } else if (currentStep === 9) {
-      saveOnboardingStep(9, { viewed: true });
-      captureEvent('onboarding_step_completed', { step: 9 });
-      goToStep(10);
-    } else if (currentStep === 10) {
-      saveOnboardingStep(10, { viewed: true });
-      captureEvent('onboarding_step_completed', { step: 10 });
-      goToStep(11);
-    } else if (currentStep === 11) {
-      saveOnboardingStep(11, { viewed: true });
-      captureEvent('onboarding_step_completed', { step: 11 });
-      goToStep(12);
-    } else if (currentStep === 12) {
-      if (!step12Format) return;
-      saveOnboardingStep(12, { courseFormat: step12Format });
-      captureEvent('onboarding_step_completed', { step: 12, format: step12Format });
-      goToStep(13);
-    } else if (currentStep === 13) {
-      if (!step13Community) return;
-      saveOnboardingStep(13, { communityOption: step13Community });
-      captureEvent('onboarding_step_completed', { step: 13, community: step13Community });
-      goToStep(14);
-    } else if (currentStep === 14) {
-      saveOnboardingStep(14, { reviewed: true });
-      captureEvent('onboarding_step_completed', { step: 14 });
-      goToStep(15);
-    } else if (currentStep === 15) {
-      if (isLoading) return; // double-fire guard — rapid Enters used to re-POST signup
-      if (!step15Data.fullName.trim() || !step15Data.email.trim() || !step15Data.password) {
-        setAuthError('Please fill in all fields to create your account.');
-        return;
-      }
-      if (step15Data.password.length < 6) {
-        setAuthError('Password must be at least 6 characters.');
-        return;
-      }
-
-      setIsLoading(true);
-      setAuthError('');
-
-      try {
-        const onboardingData = getOnboardingData();
-        const res = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            email: step15Data.email.toLowerCase().trim(),
-            password: step15Data.password,
-            fullName: step15Data.fullName.trim(),
-            role: 'INSTRUCTOR',
-            draftId: onboardingData.draftId,
-            onboarding: onboardingData,
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          if (data.requiresVerification) {
-            saveOnboardingStep(15, { accountCreated: true, email: step15Data.email });
-            window.location.href = `/creator/verify-pending?email=${encodeURIComponent(data.email || step15Data.email)}`;
-            return;
-          }
-          const errMsg = Array.isArray(data.message) ? data.message[0] : data.message;
-          // A verified account already owns this email — offer the way in.
-          setShowLoginLink(
-            res.status === 409 && data.code === 'EMAIL_ALREADY_EXISTS' && data.isVerified === true
-          );
-          throw new Error(errMsg || 'Account creation failed');
+  const saveAnswer = useCallback(
+    <K extends keyof CreatorAnswers>(key: K, value: CreatorAnswers[K]) => {
+      setAnswers((prev) => {
+        let next: CreatorAnswers = { ...prev, [key]: value };
+        // Switching Coding → AI drops the coding topics.
+        const def = CREATOR_STEPS.find((s) => s.answerKey === key);
+        if (def?.invalidates && prev[key] !== value) {
+          for (const k of def.invalidates) next = { ...next, [k]: undefined };
         }
-
-        if (data.requiresVerification) {
-          saveOnboardingStep(15, { accountCreated: true, email: step15Data.email });
-          window.location.href = `/creator/verify-pending?email=${encodeURIComponent(step15Data.email)}`;
-          return;
-        }
-
-        // Account is active and session token is issued
-        saveOnboardingStep(15, { accountCreated: true });
-        if (data.user || data) setCachedUser(data.user || data);
-        captureEvent('creator_account_created', { email: step15Data.email, method: 'email' });
-        goToStep(16);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Registration failed';
-        setAuthError(msg);
-      } finally {
-        setIsLoading(false);
-      }
-    } else if (currentStep === 16) {
-      setIsLoading(true);
-      clearOnboardingData();
-      captureEvent('creator_studio_entered');
-      setTimeout(() => {
-        window.location.href = '/creator';
-      }, 300);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      goToStep(currentStep - 1);
-    } else {
-      router.push('/creator');
-    }
-  };
-
-  const isNextDisabled = () => {
-    if (currentStep === 2 && !step2Type) return true;
-    if (currentStep === 3 && !step3Category) return true;
-    if (currentStep === 4 && !step4Audience) return true;
-    if (currentStep === 5 && step5Platforms.length === 0) return true;
-    if (currentStep === 6 && step6Content.length === 0) return true;
-    if (currentStep === 7 && step7Challenges.length === 0) return true;
-    if (currentStep === 8 && !step8Revenue) return true;
-    if (currentStep === 12 && !step12Format) return true;
-    if (currentStep === 13 && !step13Community) return true;
-    if (currentStep === 15 && (!step15Data.fullName.trim() || !step15Data.email.trim() || !step15Data.password || step15Data.password.length < 6)) return true;
-    return false;
-  };
-
-  const getStatusText = () => {
-    if (currentStep === 2) return step2Type ? 'Ready to continue' : 'Select an option to proceed';
-    if (currentStep === 3) return step3Category ? 'Category selected' : 'Choose your primary subject';
-    if (currentStep === 4) return step4Audience ? 'Audience size selected' : 'Select your current audience tier';
-    if (currentStep === 5) return step5Platforms.length > 0 ? `${step5Platforms.length} platform${step5Platforms.length > 1 ? 's' : ''} selected` : 'Select at least one platform';
-    if (currentStep === 6) return step6Content.length > 0 ? `${step6Content.length} asset type${step6Content.length > 1 ? 's' : ''} selected` : 'Select your existing content types';
-    if (currentStep === 7) return step7Challenges.length > 0 ? `${step7Challenges.length} challenge${step7Challenges.length > 1 ? 's' : ''} selected` : 'Select your main challenges';
-    if (currentStep === 8) return step8Revenue ? 'Revenue goal selected' : 'Select your primary monthly target';
-    if (currentStep === 9 || currentStep === 10 || currentStep === 11 || currentStep === 14) return 'Ready to continue';
-    if (currentStep === 12) return step12Format ? 'Build goal selected' : 'Select what you want to create first';
-    if (currentStep === 13) return step13Community ? 'Community preference selected' : 'Choose community preference';
-    if (currentStep === 15) return step15Data.fullName && step15Data.email ? 'Details complete' : 'Fill in your creator details';
-    if (currentStep === 16) return 'Your studio is ready!';
-    return '';
-  };
-
-  const getButtonText = () => {
-    if (currentStep === 15) return 'Create Account';
-    if (currentStep === 16) return 'Enter Creator Studio 🚀';
-    return 'Continue';
-  };
-
-  // Duolingo Horizontal Spring Slide Variants
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? '100%' : '-100%',
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
+        return saveCreatorAnswers(next, step).answers;
+      });
     },
-    exit: (dir: number) => ({
-      x: dir > 0 ? '-100%' : '100%',
-      opacity: 0,
-    }),
+    [step],
+  );
+
+  const react = useCallback(
+    (pending: Partial<CreatorAnswers>) => {
+      const beat = reactionFor(definition.id, pending);
+      setReaction(beat);
+      if (beat) playTeyReaction(beat.poseFamily);
+    },
+    [definition.id],
+  );
+
+  const advance = useCallback(() => {
+    if (busy) return;
+    captureEvent('creator_onboarding_step_completed', { step, id: definition.id });
+    playOnboardingCue('continue');
+    playHaptic('light', false);
+    saveCreatorAnswers(answers, step + 1);
+    goToStep(step + 1, 1);
+  }, [answers, busy, definition.id, goToStep, step]);
+
+  const handleBack = useCallback(() => {
+    playHaptic('light', false);
+    playOnboardingCue('back');
+    // The finale can't be walked back into the account step.
+    if (step === 1 || step === READY_STEP) {
+      router.push(session.status === 'signed-in' ? '/creator' : '/creator/login');
+      return;
+    }
+    if (step === PROFILE_STEP) {
+      router.push('/creator');
+      return;
+    }
+    goToStep(step - 1, -1);
+  }, [goToStep, router, session.status, step]);
+
+  // ── Screens ───────────────────────────────────────────────────────────────
+
+  const line = lineFor(definition.id, answers);
+  const legend = line.text;
+
+  const renderScreen = () => {
+    switch (definition.id) {
+      case 'welcome':
+        return null;
+      case 'name':
+        return (
+          <CreatorNameScreen
+            value={answers.name}
+            onChange={(name) => saveAnswer('name', name)}
+            onCommit={(name) => react({ name })}
+          />
+        );
+      case 'type':
+        return (
+          <CreatorQuestion
+            question="type"
+            legend={legend}
+            options={CREATOR_TYPE_OPTIONS}
+            selected={answers.creatorType ? [answers.creatorType] : []}
+            onToggle={(id) => {
+              saveAnswer('creatorType', id as CreatorAnswers['creatorType']);
+              react({ creatorType: id as CreatorAnswers['creatorType'] });
+            }}
+          />
+        );
+      case 'track':
+        return (
+          <CreatorTrackScreen
+            selected={answers.track}
+            onSelect={(track) => {
+              saveAnswer('track', track);
+              react({ track });
+            }}
+          />
+        );
+      case 'topics': {
+        const topics = answers.track ? CREATOR_TRACKS[answers.track].topics : [];
+        return (
+          <CreatorQuestion
+            question="topics"
+            legend={legend}
+            multi
+            options={topics}
+            selected={answers.topics ?? []}
+            onToggle={(id) => {
+              const next = toggle(answers.topics ?? [], id);
+              saveAnswer('topics', next);
+              react({ topics: next });
+            }}
+          />
+        );
+      }
+      case 'experience':
+        return (
+          <CreatorQuestion
+            question="experience"
+            legend={legend}
+            options={EXPERIENCE_OPTIONS}
+            selected={answers.experience ? [answers.experience] : []}
+            onToggle={(id) => {
+              saveAnswer('experience', id as CreatorAnswers['experience']);
+              react({ experience: id as CreatorAnswers['experience'] });
+            }}
+          />
+        );
+      case 'audience':
+        return (
+          <CreatorQuestion
+            question="audience"
+            legend={legend}
+            options={AUDIENCE_OPTIONS}
+            selected={answers.audience ? [answers.audience] : []}
+            onToggle={(id) => {
+              saveAnswer('audience', id as CreatorAnswers['audience']);
+              react({ audience: id as CreatorAnswers['audience'] });
+            }}
+          />
+        );
+      case 'existing':
+        return (
+          <CreatorQuestion
+            question="existing"
+            legend={legend}
+            multi
+            options={EXISTING_CONTENT_OPTIONS}
+            selected={answers.existing ?? []}
+            onToggle={(id) => {
+              const next = toggleExisting(answers.existing ?? [], id as ExistingContent);
+              saveAnswer('existing', next);
+              react({ existing: next });
+            }}
+          />
+        );
+      case 'goal':
+        return (
+          <CreatorQuestion
+            question="goal"
+            legend={legend}
+            options={GOAL_OPTIONS}
+            selected={answers.goal ? [answers.goal] : []}
+            onToggle={(id) => {
+              saveAnswer('goal', id as CreatorAnswers['goal']);
+              react({ goal: id as CreatorAnswers['goal'] });
+            }}
+          />
+        );
+      case 'time':
+        return (
+          <CreatorQuestion
+            question="time"
+            legend={legend}
+            options={WEEKLY_HOURS_OPTIONS}
+            selected={answers.weeklyHours ? [answers.weeklyHours] : []}
+            onToggle={(id) => {
+              saveAnswer('weeklyHours', id as CreatorAnswers['weeklyHours']);
+              react({ weeklyHours: id as CreatorAnswers['weeklyHours'] });
+            }}
+          />
+        );
+      case 'plan':
+        return <CreatorPlanScreen answers={answers} />;
+      case 'account':
+        return (
+          <CreatorAccountScreen
+            session={session}
+            answers={answers}
+            onDone={async () => {
+              captureEvent('creator_account_ready', { signedIn: session.status === 'signed-in' });
+              await refresh();
+              goToStep(PROFILE_STEP, 1);
+            }}
+          />
+        );
+      case 'profile':
+        return session.status === 'signed-in' ? (
+          <CreatorProfileScreen user={session.user} answers={answers} onDone={() => goToStep(READY_STEP, 1)} />
+        ) : (
+          <div className={styles.accountSkeleton} aria-busy="true" aria-label="Loading your profile" />
+        );
+      case 'ready':
+        return <CreatorReadyScreen items={['Studio open', 'Profile set up', 'Plan saved']} />;
+    }
   };
 
-  const progressPercentage = Math.round((currentStep / TOTAL_STEPS) * 100);
+  // ── Footer ────────────────────────────────────────────────────────────────
+
+  const multi = definition.id === 'topics' || definition.id === 'existing';
+
+  let footer: React.ReactNode = null;
+  if (definition.id === 'ready') {
+    const trackParam = answers.track;
+    footer = (
+      <div className={styles.readyActions}>
+        <SecondaryButton
+          type="button"
+          onClick={() => {
+            playSound('navTap', 1);
+            window.location.href = '/creator';
+          }}
+        >
+          Go to my studio
+        </SecondaryButton>
+        <PrimaryButton
+          type="button"
+          tone="green"
+          onClick={() => {
+            playSound('start');
+            playHaptic('medium', false);
+            captureEvent('creator_onboarding_first_course');
+            window.location.href = trackParam ? `/creator/create?track=${trackParam}` : '/creator/create';
+          }}
+        >
+          Create my first course
+        </PrimaryButton>
+      </div>
+    );
+  } else if (!definition.ownsCta) {
+    footer = (
+      <OnboardingFooter
+        onContinue={advance}
+        canContinue={loaded && canAdvanceCreator(definition, answers)}
+        busy={busy}
+        label={definition.id === 'welcome' ? "Let's go" : definition.id === 'plan' ? 'Looks good' : 'Continue'}
+        feedback={reaction}
+        disabledReason={multi ? 'Pick at least one option to continue' : 'Choose an option to continue'}
+      />
+    );
+  }
+
+  const long = definition.id === 'plan' || definition.id === 'account' || definition.id === 'profile' ||
+    ['type', 'existing', 'audience'].includes(definition.id);
 
   return (
-    <div className="relative w-full h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col bg-white select-none">
-      
-      {/* ─── PERSISTENT DUOLINGO HEADER (Never Unmounts) ─── */}
-      <header className="shrink-0 h-[60px] sm:h-[70px] px-4 sm:px-8 flex items-center justify-between border-b-2 border-gray-200 bg-white z-40">
-        
-        {/* Left: Back Button */}
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label="Previous step"
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 active:scale-95 transition-all"
-        >
-          <ArrowLeft size={20} strokeWidth={2.5} />
-        </button>
-
-        {/* Center: 3D Segmented Animated Progress Bar */}
-        <div className="flex-1 max-w-[340px] sm:max-w-[460px] mx-3 sm:mx-6 flex items-center gap-3">
-          <div className="flex-1 h-3.5 sm:h-4 bg-gray-200 rounded-full overflow-hidden relative">
-            <motion.div
-              className="h-full bg-blue-600 rounded-full relative"
-              initial={false}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              {/* Duolingo glossy reflection cap */}
-              <div className="absolute top-0.5 left-1.5 right-1.5 h-1 bg-white/40 rounded-full" />
-            </motion.div>
-          </div>
-          <span className="text-[12px] sm:text-[13px] font-bold text-gray-500 shrink-0">
-            {currentStep}/{TOTAL_STEPS}
-          </span>
-        </div>
-
-        {/* Right: Exit Link */}
-        <Link
-          href="/creator"
-          className="px-3 py-1.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 text-[13px] font-bold flex items-center gap-1 active:scale-95 transition-all"
-        >
-          <X size={16} />
-          <span className="hidden sm:inline">Exit</span>
-        </Link>
-      </header>
-
-      {/* ─── SCROLLABLE CONTENT VIEWPORT (With Edge Fade Masks) ─── */}
-      <div className="flex-1 min-h-0 relative overflow-hidden flex flex-col">
-        {/* Top Fade Edge */}
-        <div className="pointer-events-none absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-white to-transparent z-20" />
-
-        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: 'spring', stiffness: 320, damping: 32, mass: 0.9 },
-              opacity: { duration: 0.15, ease: 'easeOut' },
-            }}
-            className="w-full h-full overflow-y-auto px-4 sm:px-8 lg:px-14 py-3 sm:py-6 flex flex-col"
-            style={{ willChange: 'transform' }}
-          >
-            {currentStep === 1 && (
-              <Step1Content onNext={handleNext} isLoading={isLoading} />
-            )}
-
-            {currentStep === 2 && (
-              <Step2Content
-                selected={step2Type}
-                onSelect={handleStep2Select}
-              />
-            )}
-
-            {currentStep === 3 && (
-              <Step3Content
-                selected={step3Category}
-                onSelect={handleStep3Select}
-              />
-            )}
-
-            {currentStep === 4 && (
-              <Step4Content
-                selected={step4Audience}
-                onSelect={handleStep4Select}
-              />
-            )}
-
-            {currentStep === 5 && (
-              <Step5Content
-                selected={step5Platforms}
-                onToggle={handleStep5Toggle}
-              />
-            )}
-
-            {currentStep === 6 && (
-              <Step6Content
-                selected={step6Content}
-                onToggle={handleStep6Toggle}
-              />
-            )}
-
-            {currentStep === 7 && (
-              <Step7Content
-                selected={step7Challenges}
-                onToggle={handleStep7Toggle}
-              />
-            )}
-
-            {currentStep === 8 && (
-              <Step8Content
-                selected={step8Revenue}
-                onSelect={handleStep8Select}
-              />
-            )}
-
-            {currentStep === 9 && (
-              <Step9Content />
-            )}
-
-            {currentStep === 10 && (
-              <Step10Content />
-            )}
-
-            {currentStep === 11 && (
-              <Step11Content />
-            )}
-
-            {currentStep === 12 && (
-              <Step12Content
-                selected={step12Format}
-                onSelect={handleStep12Select}
-              />
-            )}
-
-            {currentStep === 13 && (
-              <Step13Content
-                selected={step13Community}
-                onSelect={handleStep13Select}
-              />
-            )}
-
-            {currentStep === 14 && (
-              <Step14Content />
-            )}
-
-            {currentStep === 15 && (
-              <Step15Content
-                formData={step15Data}
-                onChange={handleStep15Change}
-                authError={authError}
-                showLoginLink={showLoginLink}
-                onGoogleSuccess={handleGoogleSuccess}
-                onSubmit={handleNext}
-              />
-            )}
-
-            {currentStep === 16 && (
-              <Step16Content
-                creatorName={step15Data.fullName || getCachedUser()?.fullName || ''}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Bottom Fade Edge */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-t from-white to-transparent z-20" />
+    <OnboardingLayout
+      step={step}
+      total={TOTAL_CREATOR_STEPS}
+      percent={creatorProgress(step)}
+      direction={direction}
+      pose={(reaction ?? line).pose}
+      mascot={definition.mascot}
+      layout={definition.layout}
+      mascotSize={long ? 'md' : 'lg'}
+      reactKey={reaction?.text ?? null}
+      beat={line}
+      onBack={handleBack}
+      backDisabled={busy}
+      muted={muted}
+      onToggleSound={toggleMute}
+      footer={footer}
+      footerActive={Boolean(reaction)}
+    >
+      <div ref={headingRef} tabIndex={-1} className="outline-none">
+        {renderScreen()}
       </div>
-
-      {/* ─── PERSISTENT GROUNDED DUOLINGO FOOTER (Never Overlaps Cards) ─── */}
-      {currentStep > 1 && (
-        <footer className="shrink-0 w-full border-t-2 border-gray-100 bg-white px-4 sm:px-8 lg:px-14 py-3 sm:py-4 z-40">
-          <div className="w-full max-w-[1560px] mx-auto flex items-center justify-between gap-3">
-            <div className="text-[11.5px] xs:text-[12.5px] sm:text-[14px] font-bold text-gray-500 leading-tight">
-              {getStatusText()}
-            </div>
-
-            <DuolingoButton3D
-              onClick={handleNext}
-              disabled={isNextDisabled()}
-              isLoading={isLoading}
-              className="h-[48px] sm:h-[52px] px-7 sm:px-12 text-[14.5px] sm:text-[16.5px]"
-            >
-              {getButtonText()}
-            </DuolingoButton3D>
-          </div>
-        </footer>
-      )}
-
-    </div>
+    </OnboardingLayout>
   );
 }
+
+export default CreatorOnboardingShell;

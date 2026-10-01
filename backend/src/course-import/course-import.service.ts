@@ -50,6 +50,12 @@ export class CourseImportService {
   async createImport(
     userId: string,
     driveFolderId: string,
+    options: {
+      autopilot: boolean;
+      courseTitle: string | null;
+      courseCategory: string | null;
+      courseLevel: string | null;
+    } = { autopilot: false, courseTitle: null, courseCategory: null, courseLevel: null },
   ): Promise<CourseImportSummary> {
     const existing = await this.prisma.courseImport.findFirst({
       where: {
@@ -81,6 +87,12 @@ export class CourseImportService {
         sourceDriveFolderName: folderMeta.name,
         status: 'CREATED',
         startedAt: new Date(),
+        // Autopilot needs the settings it will build the course with; without
+        // a title and track it would stall at the last step, so it's off.
+        autopilot: options.autopilot && !!options.courseTitle && !!options.courseCategory,
+        courseTitle: options.courseTitle,
+        courseCategory: options.courseCategory,
+        courseLevel: options.courseLevel,
         files: {
           create: files.map((file, index) => buildFileRow(file, index)),
         },

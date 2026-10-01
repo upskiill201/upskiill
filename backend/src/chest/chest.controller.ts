@@ -15,6 +15,13 @@ export class ChestController {
     return this.chestService.getOrCreateTodayChest(userId, timezoneOffsetMinutes);
   }
 
+  /** Streak chests waiting to be opened (the wheel's replacement). */
+  @Get('pending')
+  async getPendingChests(@Req() req: Request) {
+    const userId = (req.user as any).id;
+    return { chests: await this.chestService.getPendingBonusChests(userId) };
+  }
+
   @Post(':chestId/open')
   async openChest(@Param('chestId') chestId: string, @Req() req: Request) {
     const userId = (req.user as any).id;

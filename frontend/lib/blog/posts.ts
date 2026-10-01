@@ -83,7 +83,7 @@ function loadPostFromFile(fileName: string): BlogPost | null {
   };
 }
 
-export const getAllPosts = cache((): BlogPost[] => {
+function readAllPosts(): BlogPost[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
 
   const posts = fs
@@ -99,6 +99,19 @@ export const getAllPosts = cache((): BlogPost[] => {
       b.frontmatter.publishedDate.localeCompare(a.frontmatter.publishedDate) ||
       a.slug.localeCompare(b.slug)
   );
+}
+
+// React's cache() only lives for ONE render, so during `next build` every
+// blog page re-read and re-parsed every .mdx file — O(posts²), which pushed
+// pages past the 60s static-generation limit once the blog passed ~700
+// posts. Content can't change inside a production process, so it's read once
+// per process there; dev keeps re-reading so new posts appear live.
+let productionPosts: BlogPost[] | null = null;
+
+export const getAllPosts = cache((): BlogPost[] => {
+  if (!isProduction()) return readAllPosts();
+  productionPosts ??= readAllPosts();
+  return productionPosts;
 });
 
 export const getAllPostSlugs = cache((): string[] =>

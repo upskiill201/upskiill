@@ -1,3 +1,4 @@
+import { CourseImportError } from './course-import-error';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonContentGenerationProcessorService } from './lesson-content-generation-processor.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -59,6 +60,50 @@ describe('LessonContentGenerationProcessorService', () => {
     expect(prisma.courseImportLesson.findMany).not.toHaveBeenCalled();
   });
 
+  it('paces AI calls: right after one, the next tick claims nothing', async () => {
+    const lessonRow = {
+      id: 'lesson-1',
+      title: 'Writing Hooks',
+      primaryFileId: 'vid-1',
+      resourceFileIds: [],
+      attempts: 1,
+      primaryFile: {
+        storageUrl: 'https://cdn.example/hooks.mp4',
+        transcript: 'A'.repeat(50),
+        durationMs: null,
+      },
+      module: {
+        import: {
+          id: 'import-1',
+          sourceDriveFolderName: 'Course',
+          status: 'GENERATING_CONTENT',
+        },
+      },
+    };
+    prisma.$queryRaw.mockResolvedValue([{ id: 'lesson-1' }]);
+    prisma.courseImportLesson.findMany.mockResolvedValue([lessonRow]);
+    generation.generate.mockResolvedValue({
+      description: 'd',
+      learnBlocks: [],
+      applyBlocks: [],
+      reflectBlocks: [],
+      deepenBlocks: [],
+    });
+    prisma.courseImport.findUnique.mockResolvedValue({
+      status: 'GENERATING_CONTENT',
+    });
+
+    await service.tick();
+    expect(generation.generate).toHaveBeenCalledTimes(1);
+    const claimsBefore = prisma.$queryRaw.mock.calls.length;
+
+    const second = await service.tick();
+    expect(second).toEqual({ claimed: 0, generated: 0, failed: 0 });
+    expect(generation.generate).toHaveBeenCalledTimes(1);
+    // Nothing was claimed (so nothing sits CLAIMED while it waits).
+    expect(prisma.$queryRaw.mock.calls.length).toBe(claimsBefore);
+  });
+
   it('generates content for a claimed lesson and marks it GENERATED', async () => {
     prisma.$queryRaw.mockResolvedValue([{ id: 'lesson-1' }]);
     prisma.courseImportLesson.findMany.mockResolvedValue([
@@ -99,6 +144,9 @@ describe('LessonContentGenerationProcessorService', () => {
       videoUrl: 'https://cdn.example/hooks.mp4',
       transcript: 'A'.repeat(50),
       resourceNames: ['Hook Cheat Sheet.pdf'],
+      // No track chosen and no Drive duration on this fixture: classic Learn.
+      track: null,
+      videoDurationSec: null,
     });
     const update = updateCallsFor(prisma.courseImportLesson.update).find(
       (c) => c.where.id === 'lesson-1',
@@ -153,6 +201,60 @@ describe('LessonContentGenerationProcessorService', () => {
         'AI returned invalid lesson content (SCHEMA_MISMATCH:reflectPrompt)',
     });
   });
+
+  it.each([
+    ['AI_RATE_LIMIT', 'rate limit'],
+    ['AI_BUDGET_EXCEEDED', "today's AI budget"],
+  ] as const)(
+    'waits (never FAILS, attempt given back) on %s, even at the attempt cap',
+    async (code, words) => {
+      prisma.$queryRaw.mockResolvedValue([{ id: 'lesson-1' }]);
+      prisma.courseImportLesson.findMany.mockResolvedValue([
+        {
+          id: 'lesson-1',
+          title: 'Writing Hooks',
+          primaryFileId: 'vid-1',
+          resourceFileIds: [],
+          attempts: 3,
+          primaryFile: {
+            storageUrl: 'https://cdn.example/hooks.mp4',
+            transcript: 'A'.repeat(50),
+            durationMs: null,
+          },
+          module: {
+            import: {
+              id: 'import-1',
+              sourceDriveFolderName: 'Course',
+              status: 'GENERATING_CONTENT',
+            },
+          },
+        },
+      ]);
+      generation.generate.mockRejectedValue(
+        new CourseImportError(code, 'quota'),
+      );
+      prisma.courseImport.findUnique.mockResolvedValue({
+        status: 'GENERATING_CONTENT',
+      });
+
+      await service.tick();
+
+      // No FAILED write…
+      const failedWrite = updateCallsFor(prisma.courseImportLesson.update).find(
+        (c) => c.data?.status === 'FAILED',
+      );
+      expect(failedWrite).toBeUndefined();
+      // …a raw PENDING write with the attempt given back and a future resume time.
+      const call = prisma.$executeRaw.mock.calls.find((c: unknown[]) =>
+        String((c[0] as string[]).join('?')).includes('"attempts" = GREATEST'),
+      );
+      expect(call).toBeDefined();
+      const values = call!.slice(1);
+      expect(values[0]).toBe(code);
+      expect(String(values[1])).toContain(words);
+      expect((values[2] as Date).getTime()).toBeGreaterThan(Date.now());
+    },
+  );
 
   it('retries automatically (stays PENDING, not FAILED) when a transient failure leaves attempts remaining', async () => {
     prisma.$queryRaw.mockResolvedValue([{ id: 'lesson-1' }]);

@@ -1,1433 +1,855 @@
-/* Duolingo Student UI, Sapphire Blue Focus Card, Real Creator Sidebar & Full-Screen Celebration */
+/* Course page — Duolingo style. Tokens only (docs/08-color-system.md). */
 
-.discoveryWrapper {
-  max-width: 1120px;
+.page {
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 8px 12px 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
 }
 
-/* ─── TOP HEADER ROW (BACK LINK + LIVE STATS) ─── */
-.topHeaderRow {
+.topBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 4px 8px;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 44px;
+  padding: 0 14px 0 10px;
+  border-radius: 14px;
+  color: var(--text-muted);
   font-size: 14px;
-  font-weight: 700;
-  color: #64748B;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   text-decoration: none;
-  padding: 8px 14px;
-  border-radius: 12px;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  transition: all 0.15s ease;
 }
 
 .backLink:hover {
-  color: #0172FD;
-  border-color: #BFDBFE;
-  background: #EFF6FF;
+  background: var(--bg-section);
+  color: var(--text-secondary);
 }
 
-/* ─── LOADING STATE ─── */
-.loadingContainer {
+.desktopStats {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 500px;
-  gap: 18px;
+}
+
+.previewBanner {
+  margin: 0 0 16px;
+  padding: 10px 16px;
+  border: 2px dashed color-mix(in srgb, var(--brand-purple) 45%, var(--bg-card));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--brand-purple) 7%, var(--bg-card));
+  color: var(--brand-purple);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-align: center;
 }
 
-.duoSpinner {
-  width: 52px;
-  height: 52px;
-  border: 5px solid #E2E8F0;
-  border-top-color: #0172FD;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-}
-
-.loadingText {
-  font-size: 16px;
-  font-weight: 800;
-  color: #64748B;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.mascotBounce {
-  animation: gentleBounce 2s ease-in-out infinite;
-}
-
-@keyframes gentleBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.notFoundHeading {
-  font-size: 26px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0;
-}
-
-.notFoundSub {
-  font-size: 15px;
-  color: #64748B;
-  max-width: 440px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.duoButtonGreen {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 28px;
-  background: #22C55E;
-  color: #FFFFFF;
-  font-size: 15px;
-  font-weight: 800;
-  border-radius: 12px;
-  border-bottom: 4px solid #15803D;
-  text-decoration: none;
-}
-
-/* ─── 2-COLUMN MAIN GRID ─── */
-.duoMainGrid {
+.grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 40px;
   align-items: start;
 }
 
-.leftContentCol {
+.main {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* ─── 1. VIBRANT SAPPHIRE BLUE COURSE INFO FOCUS CARD ─── */
-.blueFocusHeroCard {
-  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
-  border-radius: 22px;
-  padding: clamp(18px, 4vw, 30px) clamp(16px, 4vw, 34px);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(16px, 3vw, 24px);
-  box-shadow: 0 12px 36px rgba(1, 114, 253, 0.25);
-  color: #FFFFFF;
-  position: relative;
-  overflow: hidden;
-  min-width: 0;
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
 }
 
-.blueHeroTop {
+.heroCover {
+  width: 220px;
+  aspect-ratio: 1;
+  border-radius: 28px;
+  box-shadow: 0 6px 0 var(--tile-deep);
+}
+
+.heroBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.description {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.byline strong,
+.bylineLink {
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.bylineLink:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+.verified {
+  flex-shrink: 0;
+  color: var(--color-brand);
+}
+
+.chips {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.chip svg {
+  color: var(--text-muted);
+}
+
+.chipGold,
+.chipGold svg {
+  color: var(--warning);
+}
+
+.chipXp {
+  border-color: color-mix(in srgb, var(--warning) 45%, var(--bg-card));
+  background: color-mix(in srgb, var(--warning) 9%, var(--bg-card));
+  color: color-mix(in srgb, var(--warning) 70%, black);
+}
+
+/* ─── Tey ──────────────────────────────────────────────────────────────── */
+.tey {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.teyImg {
+  flex-shrink: 0;
+}
+
+.bubble {
+  position: relative;
+  margin: 0;
+  padding: 14px 18px;
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* The tail, drawn as a rotated square so it shares the bubble's border. */
+.bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-left: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-card);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────── */
+.card {
+  padding: 22px 24px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 22px;
+  background: var(--bg-card);
+}
+
+.cardTitle,
+.sectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.outcomes {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+.outcome {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.check {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--success-green);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--success-green) 72%, black);
+  color: var(--bg-card);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sectionMeta {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ─── Units ────────────────────────────────────────────────────────────── */
+.units {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.pillRow {
+.toneBlue { --unit: var(--color-brand); --unit-deep: var(--color-brand-deep); }
+.toneGreen { --unit: var(--success-green); --unit-deep: color-mix(in srgb, var(--success-green) 72%, black); }
+.tonePurple { --unit: var(--brand-purple); --unit-deep: color-mix(in srgb, var(--brand-purple) 70%, black); }
+.toneOrange { --unit: var(--warning); --unit-deep: color-mix(in srgb, var(--warning) 70%, black); }
+
+.unitBanner {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 18px;
+  background: var(--unit);
+  box-shadow: 0 4px 0 var(--unit-deep);
+  color: var(--bg-card);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.categoryPillLight {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  color: #FFFFFF;
-  font-size: 11px;
+.unitBanner:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.unitText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.unitNumber {
+  font-size: 13px;
   font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 100px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  white-space: nowrap;
+  opacity: 0.85;
 }
 
-.levelPillLight {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  color: #FFFFFF;
-  font-size: 11px;
+.unitTitle {
+  font-size: 18px;
   font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  white-space: nowrap;
-}
-
-.xpPillGold {
-  background: #FEF3C7;
-  color: #D97706;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 100px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-}
-
-.pricePillAmber {
-  background: #FEF3C7;
-  color: #B45309;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 100px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-}
-
-.freeCoursePill {
-  background: #DCFCE7;
-  color: #15803D;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 100px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-}
-
-.blueFocusTitle {
-  font-size: clamp(21px, 5.5vw, 30px);
-  font-weight: 900;
-  color: #FFFFFF;
   line-height: 1.25;
-  margin: 0;
-  letter-spacing: -0.5px;
-  word-break: break-word;
 }
 
-.blueFocusDescription {
-  font-size: clamp(13px, 3vw, 15px);
-  color: #E0E7FF;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.blueSpecsRow {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 12px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  flex-wrap: wrap;
-}
-
-.blueSpecItem {
+.unitCount {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  font-weight: 700;
-  color: #FFFFFF;
+  font-weight: 800;
+  opacity: 0.9;
 }
 
-.blueActionArea {
+.chev {
+  transition: transform 0.2s ease;
+}
+
+.chevOpen {
+  transform: rotate(180deg);
+}
+
+.lessons {
+  list-style: none;
+  margin: 0;
+  padding: 12px 0 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 6px;
+  overflow: hidden;
 }
 
-.duoActionBtnGreen {
+.lesson,
+.chestRow {
   width: 100%;
-  min-height: 56px;
-  height: auto;
-  padding: 10px 12px;
-  background: #22C55E;
-  color: #FFFFFF;
-  border: none;
-  border-bottom: 5px solid #15803D;
-  border-radius: 16px;
-  font-size: clamp(13px, 3.6vw, 16.5px);
-  font-weight: 900;
-  letter-spacing: 0.4px;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  transition: transform 0.1s ease, filter 0.1s ease;
+  gap: 14px;
+  padding: 10px 14px 10px 10px;
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-card);
+  font: inherit;
+  text-align: left;
+  color: inherit;
 }
 
-.duoActionBtnGreen:hover {
-  filter: brightness(1.06);
+.lessonLive {
+  border-bottom-width: 4px;
+  cursor: pointer;
 }
 
-.duoActionBtnGreen:active {
+.lessonLive:hover {
+  border-color: color-mix(in srgb, var(--unit) 40%, var(--border));
+}
+
+.lessonLive:active {
   transform: translateY(2px);
   border-bottom-width: 2px;
 }
 
-.blueActionSub {
-  font-size: 13px;
-  font-weight: 600;
-  color: #DBEAFE;
-  text-align: center;
+.lessonDim {
+  background: var(--bg-section);
 }
 
-.btnContent {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.btnSpinner {
-  width: 18px;
-  height: 18px;
-  border: 2.5px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #FFFFFF;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-}
-
-/* Mascot Dialogue Strip Inside Blue Card */
-.blueMascotStrip {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 18px;
-  padding: clamp(12px, 3vw, 16px) clamp(14px, 3vw, 20px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-}
-
-.speechBubbleWhite {
-  flex: 1;
-  background: #FFFFFF;
-  border-radius: 14px;
-  padding: 14px 18px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-.speechBubbleTitle {
-  display: block;
-  font-size: 13.5px;
-  color: #0F172A;
-  margin-bottom: 4px;
-}
-
-.speechBubbleBody {
-  font-size: 13px;
-  color: #334155;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.speechArrowWhite {
-  position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-  width: 16px;
-  height: 16px;
-  background: #FFFFFF;
-}
-
-.mascotSmallWrap {
-  width: 96px;
-  height: 96px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.node {
   flex-shrink: 0;
-}
-
-.mascotImgBounce {
-  object-fit: contain;
-  animation: gentleBounce 2.5s ease-in-out infinite;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-}
-
-/* ─── 2. WHAT YOU'LL ACHIEVE (BEFORE SECTIONS) ─── */
-.achievementsBlock {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 20px;
-  padding: clamp(16px, 4vw, 24px) clamp(14px, 4vw, 28px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-  min-width: 0;
-}
-
-.blockHeaderRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.achievementsHeading {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0 0 4px;
-}
-
-.achievementsSub {
-  font-size: 13px;
-  color: #64748B;
-  margin: 0;
-}
-
-.xpBonusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #D97706;
-  background: #FEF3C7;
-  border: 1px solid #FDE68A;
-  padding: 6px 12px;
-  border-radius: 100px;
-  flex-shrink: 0;
-}
-
-.achievementsGrid {
+  width: 46px;
+  height: 46px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--unit);
+  box-shadow: 0 4px 0 var(--unit-deep);
+  color: var(--bg-card);
 }
 
-.achieveCard {
-  background: #F0FDF4;
-  border: 1.5px solid #BBF7D0;
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+.nodeLocked {
+  background: var(--border);
+  box-shadow: 0 4px 0 var(--border-strong);
+  color: var(--text-muted);
 }
 
-.achieveCheckCircle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #22C55E;
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.achieveOutcomeText {
-  font-size: 13px;
-  font-weight: 700;
-  color: #166534;
-  line-height: 1.45;
-  margin: 0;
-}
-
-/* ─── 3. COURSE JOURNEY / SECTIONS ROADMAP ─── */
-.roadmapBlock {
+.lessonText {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 2px;
 }
 
-.roadmapHeading {
-  font-size: 20px;
+.lessonTitle {
+  font-size: 15px;
   font-weight: 800;
-  color: #0F172A;
-  margin: 0 0 4px;
+  line-height: 1.3;
+  color: var(--color-ink);
 }
 
-.roadmapSub {
+.lessonDim .lessonTitle {
+  color: var(--text-secondary);
+}
+
+.lessonMeta {
   font-size: 13px;
-  color: #64748B;
-  margin: 0;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
-.unitsCountBadge {
-  display: inline-flex;
+.lessonRight {
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #0172FD;
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
-  padding: 6px 12px;
-  border-radius: 100px;
-  flex-shrink: 0;
 }
 
-.unitsStack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.unitContainer {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-}
-
-.unitBanner {
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #FFFFFF;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.unitBannerActive {
-  background: linear-gradient(135deg, #0172FD 0%, #0056C6 100%);
-}
-
-.unitBannerNext {
-  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-}
-
-.unitBannerLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.unitNumberTag {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: uppercase;
-}
-
-.unitBannerTitle {
-  font-size: clamp(15px, 4vw, 17px);
-  font-weight: 800;
-  color: #FFFFFF;
-  margin: 0;
-  overflow-wrap: break-word;
-}
-
-.unitToggleBtn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.unitToggleBtn:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.unitLessonsCount {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.unitPath {
-  display: flex;
-  flex-direction: column;
-}
-
-.pathNodeRow {
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid #F1F5F9;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.pathNodeRow:hover {
-  background: #F8FAFC;
-}
-
-/* Guest view — curriculum is a read-only preview, nothing is clickable */
-.pathNodeRowStatic,
-.pathNodeRowStatic:hover {
-  cursor: default;
-  background: transparent;
-}
-
-.nodeLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  flex: 1 1 200px;
-}
-
-.nodeCircle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #EFF6FF;
-  border: 2px solid #BFDBFE;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: transform 0.15s ease;
-}
-
-.pathNodeRow:hover .nodeCircle {
-  transform: scale(1.08);
-  background: #0172FD;
-}
-
-.pathNodeRow:hover .nodeCircle svg {
-  fill: #FFFFFF !important;
-  color: #FFFFFF !important;
-}
-
-/* Static rows must not react to hover */
-.pathNodeRowStatic:hover .nodeCircle {
-  transform: none;
-  background: #EFF6FF;
-}
-
-.pathNodeRowStatic:hover .nodeCircle svg {
-  fill: #0172FD !important;
-  color: #0172FD !important;
-}
-
-.nodeCircleLocked {
-  background: #F1F5F9;
-  border-color: #E2E8F0;
-}
-
-.nodeText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.nodeTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0F172A;
-  overflow-wrap: break-word;
-}
-
-.nodeMeta {
-  font-size: 12px;
-  color: #64748B;
-  font-weight: 500;
-}
-
-.nodeRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  margin-left: auto;
-}
-
-.nodeRewardBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #0172FD;
-  background: #EFF6FF;
+.freeTag,
+.xpTag {
   padding: 4px 9px;
-  border-radius: 100px;
-}
-
-.nodeStartBtn {
-  font-weight: 700;
-  font-size: 12px;
-}
-
-/* Real free-preview tag — first two lessons of a paid course (server rule) */
-.freePreviewTag {
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 800;
-  color: #16A34A;
-  background: #DCFCE7;
-  padding: 3px 9px;
-  border-radius: 100px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nodeLockedLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #94A3B8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.chestNodeRow {
-  padding: 14px 18px;
-  background: #FFFBEB;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+.freeTag {
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+  color: color-mix(in srgb, var(--success-green) 75%, black);
 }
 
-.chestLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
+.xpTag {
+  background: color-mix(in srgb, var(--warning) 14%, var(--bg-card));
+  color: color-mix(in srgb, var(--warning) 70%, black);
 }
 
-.chestImgWrap {
-  width: 40px;
-  height: 40px;
-  position: relative;
-  animation: gentleBounce 2.5s ease-in-out infinite;
+.chestRow {
+  border-style: dashed;
 }
 
-.chestImg {
-  object-fit: contain;
-}
-
-.chestTitle {
-  font-size: 13px;
-  font-weight: 800;
-  color: #92400E;
-}
-
-.chestMeta {
-  font-size: 12px;
-  color: #B45309;
-  font-weight: 600;
-}
-
-.chestBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #92400E;
-  background: #FEF3C7;
-  border: 1px solid #FDE68A;
-  padding: 4px 10px;
-  border-radius: 100px;
-}
-
-/* ─── RIGHT SIDEBAR: COURSE SPECS & REAL CREATOR PROFILE CARD ─── */
-.rightSidebarCol {
+/* ─── Rail ─────────────────────────────────────────────────────────────── */
+.rail {
+  position: sticky;
+  top: 16px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.sideQuestCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+.startCard,
+.creatorCard {
+  padding: 22px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 22px;
+  background: var(--bg-card);
 }
 
-.sideThumbnailWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #0F172A;
-}
-
-.sideThumbnailImg {
-  object-fit: cover;
-}
-
-.sideThumbOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.35) 100%);
-}
-
-.fallbackThumb {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #EFF6FF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sideCardBody {
-  padding: 20px;
+.startCard {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.sideCourseTitle {
-  font-size: 17px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.sideCourseDesc {
-  font-size: 13px;
-  color: #64748B;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.specsList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px 0;
-  border-top: 1px solid #F1F5F9;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.specRowItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.specIconWrap {
-  width: 32px;
-  height: 32px;
+.priceTag {
+  align-self: flex-start;
+  padding: 5px 10px;
   border-radius: 8px;
-  background: #F1F5F9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.specTextCol {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.specLabel {
-  font-size: 11px;
-  color: #64748B;
-  font-weight: 600;
-}
-
-.specValue {
+  background: color-mix(in srgb, var(--success-green) 14%, var(--bg-card));
+  color: color-mix(in srgb, var(--success-green) 75%, black);
   font-size: 12px;
   font-weight: 800;
-  color: #0F172A;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.sideCtaButton {
-  width: 100%;
-  height: 48px;
-  background: #22C55E;
-  color: #FFFFFF;
-  border: none;
-  border-bottom: 3.5px solid #15803D;
-  border-radius: 12px;
+.pricePremium {
+  background: color-mix(in srgb, var(--brand-purple) 12%, var(--bg-card));
+  color: var(--brand-purple);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.track {
+  flex: 1;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--warning);
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--warning) 75%, black 10%);
+}
+
+.progressText {
   font-size: 14px;
   font-weight: 800;
-  cursor: pointer;
-  transition: all 0.1s ease;
+  color: var(--text-muted);
 }
 
-.sideCtaButton:hover {
+.ctaBtn,
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 16px;
+  background: var(--success-green);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
+  color: var(--bg-page);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ctaBtn:hover,
+.primaryBtn:hover {
   filter: brightness(1.05);
 }
 
-.sideCtaButton:active {
-  transform: translateY(2px);
-  border-bottom-width: 1.5px;
+.ctaBtn:active,
+.primaryBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
 }
 
-/* ─── DEDICATED REAL CREATOR PROFILE CARD ON SIDEBAR ─── */
-.creatorProfileCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 18px;
-  padding: 20px;
+.ctaBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.primaryBtn {
+  width: auto;
+  min-width: 200px;
+}
+
+.ctaSub {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.includes {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 14px 0 0;
+  border-top: 2px solid var(--bg-section);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+  gap: 10px;
 }
 
-.creatorCardHeader {
+.includes li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.includes svg {
+  flex-shrink: 0;
+  color: var(--color-brand);
+}
+
+.creatorCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.creatorHead {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.creatorInfoBlock {
+.creatorInfo {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.creatorTitleRow {
-  display: flex;
+.creatorLabel {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.creatorName {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-.creatorCardName {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 800;
-  color: #0F172A;
-  margin: 0;
+  color: var(--color-ink);
 }
 
-.creatorHandle {
-  font-size: 12px;
-  color: #64748B;
-  font-weight: 600;
-}
-
-.creatorRoleBadge {
-  font-size: 11px;
-  color: #0172FD;
-  font-weight: 700;
-}
-
-.creatorBioText {
-  font-size: 12.5px;
-  color: #475569;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.creatorStatsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-  gap: 8px;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 10px 8px;
-  text-align: center;
-}
-
-.creatorStatBox {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.creatorStatVal {
+.creatorHeadline {
   font-size: 13px;
-  font-weight: 800;
-  color: #0F172A;
-}
-
-.creatorStatLabel {
-  font-size: 10px;
   font-weight: 600;
-  color: #64748B;
-  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
-.viewCreatorProfileBtn {
+.creatorBio {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.creatorStats {
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.creatorStats strong {
+  color: var(--color-ink);
+  font-weight: 800;
+}
+
+.ghostBtn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 42px;
-  background: #EFF6FF;
-  color: #0172FD;
-  border: 1.5px solid #BFDBFE;
-  border-radius: 12px;
-  font-size: 13px;
+  min-height: 44px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+  font-size: 14px;
   font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: all 0.15s ease;
 }
 
-.viewCreatorProfileBtn:hover {
-  background: #DBEAFE;
-  border-color: #93C5FD;
+.ghostBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
-/* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
-  .duoMainGrid {
-    grid-template-columns: 1fr;
+.stickyCta {
+  display: none;
+}
+
+/* ─── States ───────────────────────────────────────────────────────────── */
+.stateBox {
+  max-width: 460px;
+  margin: 64px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.stateTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.stateText {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.skel,
+.skelTop {
+  border-radius: 22px;
+  background: var(--bg-section);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skelTop {
+  height: 44px;
+  width: 140px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+}
+
+.skelHero {
+  height: 220px;
+}
+
+.skelRow {
+  height: 96px;
+}
+
+.skelRail {
+  height: 360px;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .achievementsGrid {
-    grid-template-columns: 1fr;
+  .rail {
+    position: static;
   }
-  .blueMascotStrip {
-    flex-direction: column;
-    text-align: center;
-  }
-  .speechArrowWhite {
+  .skelRail {
     display: none;
-  }
-  .blueSpecsRow {
-    gap: 12px;
   }
 }
 
 @media (max-width: 768px) {
-  .topHeaderRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 4px 0 8px;
-  }
-
-  .blueFocusHeroCard {
-    padding: 22px 20px;
-  }
-
-  .blueFocusTitle {
-    font-size: 24px;
-  }
-
-  .unitBannerTitle {
-    font-size: 16px;
-  }
-
-  .sideThumbnailWrap,
-  .fallbackThumb {
-    aspect-ratio: 16 / 10;
-  }
-}
-
-@media (max-width: 640px) {
-  .discoveryWrapper {
-    padding: 8px 10px 48px;
-    gap: 18px;
-  }
-
-  .mascotSmallWrap {
-    width: 64px;
-    height: 64px;
-  }
-
-  .speechBubbleWhite {
-    padding: 12px 14px;
-  }
-
-  .roadmapHeading,
-  .achievementsHeading {
-    font-size: 18px;
-  }
-
-  .unitBanner {
-    padding: 12px 14px;
-  }
-
-  .unitLessonsCount {
+  .desktopStats {
     display: none;
   }
-
-  .pathNodeRow {
+  .topBar {
+    margin-bottom: 12px;
+  }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .heroCover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 24px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .description {
+    font-size: 15px;
+  }
+  .outcomes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    padding: 18px;
+  }
+  .unitBanner {
+    padding: 14px 16px;
+  }
+  .unitTitle {
+    font-size: 16px;
+  }
+  .teyImg {
+    width: 56px;
+    height: 56px;
+  }
+  .bubble {
+    font-size: 14px;
     padding: 12px 14px;
   }
 
-  .nodeCircle {
-    width: 34px;
-    height: 34px;
+  /* One CTA on phones: pinned above the bottom nav, the rail's copy hides. */
+  .startCard .ctaBtn,
+  .startCard .ctaSub {
+    display: none;
   }
-
-  .nodeRight {
-    width: 100%;
-    justify-content: space-between;
-    margin-left: 0;
-    padding-left: 48px;
-    box-sizing: border-box;
-  }
-
-  .chestNodeRow {
-    padding: 14px;
-  }
-
-  .chestTitle {
-    font-size: 12.5px;
-  }
-
-  .chestMeta {
-    font-size: 11px;
-  }
-
-  .creatorCardHeader {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 480px) {
-  .blueFocusHeroCard {
-    padding: 18px 16px;
-    border-radius: 18px;
-  }
-
-  .blueFocusTitle {
-    font-size: 21px;
-  }
-
-  .blueFocusDescription {
-    font-size: 14px;
-  }
-
-  .blueSpecsRow {
-    gap: 10px;
-    padding: 10px 0;
-  }
-
-  .blueSpecItem {
-    font-size: 12px;
-  }
-
-  .duoActionBtnGreen {
-    font-size: 13px;
-    letter-spacing: 0.2px;
-    padding: 10px 8px;
-  }
-
-  .pillRow {
+  .stickyCta {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
-  }
-
-  .categoryPillLight,
-  .levelPillLight,
-  .xpPillGold,
-  .pricePillAmber,
-  .freeCoursePill {
-    font-size: 10.5px;
-    padding: 4px 10px;
-  }
-
-  .achievementsBlock,
-  .creatorProfileCard {
-    padding: 16px 14px;
-    border-radius: 16px;
-  }
-
-  .sideCardBody {
-    padding: 16px;
-  }
-
-  .unitContainer {
-    border-radius: 14px;
-  }
-
-  .nodeTitle {
-    font-size: 13px;
-  }
-
-  .nodeMeta {
-    font-size: 11px;
-  }
-
-  .chestImgWrap {
-    width: 32px;
-    height: 32px;
+    position: sticky;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    z-index: 20;
+    margin: 24px -14px 0;
+    padding: 12px 14px 10px;
+    border-top: 2px solid var(--border);
+    background: var(--bg-card);
   }
 }
 
-/* ─── SUB-360px: iPhone SE / small Android / narrow foldables ─── */
-@media (max-width: 360px) {
-  .discoveryWrapper {
-    padding: 6px 8px 40px;
-    gap: 14px;
+@media (prefers-reduced-motion: reduce) {
+  .skel,
+  .skelTop {
+    animation: none;
   }
-
-  .blueFocusHeroCard {
-    padding: 14px 12px;
-    border-radius: 16px;
-    gap: 14px;
-  }
-
-  .blueFocusTitle {
-    font-size: 18px;
-  }
-
-  .pillRow {
-    gap: 5px;
-  }
-
-  .categoryPillLight,
-  .levelPillLight,
-  .xpPillGold,
-  .pricePillAmber,
-  .freeCoursePill {
-    font-size: 9.5px;
-    padding: 3px 8px;
-    gap: 4px;
-  }
-
-  .blueSpecsRow {
-    gap: 8px;
-  }
-
-  .blueSpecItem {
-    font-size: 11px;
-    gap: 4px;
-  }
-
-  .duoActionBtnGreen {
-    font-size: 11.5px;
-    min-height: 48px;
-    border-radius: 14px;
-  }
-
-  .blueActionSub {
-    font-size: 11px;
-  }
-
-  .mascotSmallWrap {
-    width: 48px;
-    height: 48px;
-  }
-
-  .speechBubbleTitle {
-    font-size: 12px;
-  }
-
-  .speechBubbleBody {
-    font-size: 11.5px;
-  }
-
-  .achievementsBlock,
-  .creatorProfileCard,
-  .sideQuestCard {
-    border-radius: 14px;
-  }
-
-  .achievementsBlock {
-    padding: 14px 12px;
-  }
-
-  .achieveCard {
-    padding: 12px;
-    gap: 8px;
-  }
-
-  .achieveOutcomeText {
-    font-size: 12px;
-  }
-
-  .roadmapHeading,
-  .achievementsHeading {
-    font-size: 16.5px;
-  }
-
-  .roadmapSub,
-  .achievementsSub {
-    font-size: 12px;
-  }
-
-  .unitsCountBadge {
-    font-size: 11px;
-    padding: 5px 10px;
-  }
-
-  .unitBanner {
-    padding: 10px 12px;
-  }
-
-  .unitNumberTag {
-    font-size: 10px;
-  }
-
-  .unitBannerTitle {
-    font-size: 14px;
-  }
-
-  .unitToggleBtn {
-    padding: 5px 10px;
-    font-size: 11px;
-  }
-
-  .pathNodeRow {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-
-  .nodeLeft {
-    flex: 1 1 100%;
-    gap: 10px;
-  }
-
-  .nodeCircle {
-    width: 30px;
-    height: 30px;
-  }
-
-  .nodeTitle {
-    font-size: 12.5px;
-  }
-
-  .nodeMeta {
-    font-size: 10.5px;
-  }
-
-  .nodeRight {
-    padding-left: 40px;
-    gap: 8px;
-  }
-
-  .nodeRewardBadge,
-  .freePreviewTag,
-  .nodeLockedLabel {
-    font-size: 10px;
-    padding: 3px 7px;
-  }
-
-  .nodeStartBtn {
-    font-size: 11px;
-  }
-
-  .chestNodeRow {
-    padding: 12px;
-    gap: 8px;
-  }
-
-  .chestImgWrap {
-    width: 28px;
-    height: 28px;
-  }
-
-  .chestTitle {
-    font-size: 11.5px;
-  }
-
-  .chestMeta {
-    font-size: 10px;
-  }
-
-  .chestBadge {
-    font-size: 10.5px;
-    padding: 3px 8px;
-  }
-
-  .sideCardBody {
-    padding: 14px;
-    gap: 10px;
-  }
-
-  .sideCourseTitle {
-    font-size: 15px;
-  }
-
-  .sideCourseDesc {
-    font-size: 12px;
-  }
-
-  .specLabel {
-    font-size: 10px;
-  }
-
-  .specValue {
-    font-size: 11px;
-  }
-
-  .sideCtaButton {
-    font-size: 12.5px;
-    height: 44px;
-  }
-
-  .creatorProfileCard {
-    padding: 14px 12px;
-    gap: 12px;
-  }
-
-  .creatorCardName {
-    font-size: 14px;
-  }
-
-  .creatorBioText {
-    font-size: 11.5px;
-  }
-
-  .creatorStatsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    padding: 8px 6px;
-  }
-
-  .creatorStatVal {
-    font-size: 12px;
-  }
-
-  .creatorStatLabel {
-    font-size: 9px;
-  }
-
-  .viewCreatorProfileBtn {
-    font-size: 12px;
-    height: 40px;
-  }
-
-  .backLink {
-    font-size: 12.5px;
-    padding: 6px 10px;
+  .chev {
+    transition: none;
   }
 }

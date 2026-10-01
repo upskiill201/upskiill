@@ -1,0 +1,81 @@
+.box {
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.box:focus-within {
+  border-color: var(--color-brand);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-section);
+}
+
+.toolbar button {
+  min-width: 34px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  background: var(--bg-card);
+  color: var(--color-ink);
+}
+
+.textBtn {
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.editable {
+  min-height: 120px;
+  padding: 12px 14px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.editable:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+}
+
+.editable h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.editable p {
+  margin: 0 0 8px;
+}
+
+.editable ul,
+.editable ol {
+  margin: 0 0 8px;
+  padding-left: 22px;
+}
+
+.editable code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--bg-section);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}

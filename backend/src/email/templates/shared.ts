@@ -115,6 +115,37 @@ export function smallMuted(text: string): string {
   return `<p style="font-size:13px;color:${COLORS.muted};margin:0 0 12px;">${text}</p>`;
 }
 
+/**
+ * Tey's opening line — the big, short, first-person sentence every lifecycle
+ * email starts with, so the inbox reads as a message from Tey rather than a
+ * newsletter from a company.
+ */
+export function teySays(text: string): string {
+  return `<p style="font-size:24px;line-height:1.3;font-weight:900;color:${COLORS.heading};margin:0 0 16px;letter-spacing:-0.5px;">${text}</p>`;
+}
+
+/** A plain, scannable list — escaped by the caller. */
+export function bulletList(items: string[]): string {
+  if (items.length === 0) return '';
+  const lis = items
+    .map((i) => `<li style="margin:0 0 8px;">${i}</li>`)
+    .join('');
+  return `<ul style="font-size:16px;line-height:1.5;color:${COLORS.text};margin:0 0 16px;padding-left:20px;">${lis}</ul>`;
+}
+
+/** A row of big numbers ("3 sales · 12 new learners"), for digests. */
+export function statRow(stats: { label: string; value: string }[]): string {
+  const cells = stats
+    .map(
+      (s) => `<td style="text-align:center;padding:12px 8px;">
+        <div style="font-size:26px;font-weight:900;color:${COLORS.heading};">${s.value}</div>
+        <div style="font-size:13px;color:${COLORS.muted};margin-top:4px;">${s.label}</div>
+      </td>`,
+    )
+    .join('');
+  return `<table role="presentation" width="100%" style="border-collapse:collapse;background:${COLORS.bg};border-radius:12px;margin:0 0 20px;"><tr>${cells}</tr></table>`;
+}
+
 export function teySignOff(): string {
   return `<p style="font-size:16px;line-height:1.6;color:${COLORS.heading};font-weight:700;margin:24px 0 0;">— Tey 💙</p>`;
 }

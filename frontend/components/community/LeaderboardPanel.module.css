@@ -1,291 +1,468 @@
-/* Leaderboards tab — the level card above three ranked boards.
- * Mirrors Skool's layout: identity + ladder on top, then 7-day / 30-day /
- * all-time side by side, collapsing to one column on narrow screens. */
+/* A community's Leaderboards tab — Duolingo's board, Skool's levels.
+   Tokens only (docs/08-color-system.md). */
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+  font-family: var(--font-jakarta), sans-serif;
 }
 
-/* ── Level card ──────────────────────────────────────────────────────────── */
+.cardTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
 
+/* ─── Your level ───────────────────────────────────────────────────────── */
 .levelCard {
-  display: grid;
-  grid-template-columns: 250px minmax(0, 1fr);
-  gap: 28px;
-  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 24px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 24px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
 }
 
-.identity {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-}
-/* Progress ring drawn as a conic gradient behind a white inset — no SVG,
-   no layout cost, and it animates by changing one custom property. */
 .ring {
   position: relative;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 148px;
-  height: 148px;
+  width: 112px;
+  height: 112px;
   border-radius: 50%;
-  background: conic-gradient(
-    var(--brand-blue) calc(var(--ring-progress, 0) * 360deg),
-    var(--border) 0
-  );
+  background: conic-gradient(var(--color-brand) calc(var(--ring-progress, 0) * 360deg), var(--bg-section) 0);
   transition: background 500ms ease;
 }
+
 .ringInner {
   display: grid;
   place-items: center;
-  width: 132px;
-  height: 132px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   background: var(--bg-card);
   overflow: hidden;
 }
+
 .levelBadge {
   position: absolute;
-  right: 4px;
-  bottom: 4px;
+  right: -2px;
+  bottom: -2px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
+  background: var(--color-brand);
+  color: var(--bg-page);
   font-size: 16px;
   font-weight: 800;
   box-shadow: 0 0 0 4px var(--bg-card);
 }
-.myName {
-  margin: 0;
-  font-size: 19px;
+
+.levelText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.levelEyebrow {
+  font-size: 13px;
   font-weight: 800;
-  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
 }
-.myLevel {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--brand-blue);
+
+.levelName {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-ink);
 }
+
+.levelTrack {
+  height: 16px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  overflow: hidden;
+}
+
+.levelFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--warning);
+  box-shadow: inset 0 -4px 0 color-mix(in srgb, var(--warning) 75%, black 10%);
+  transition: width 0.5s ease;
+}
+
 .toNext {
-  font-size: 13.5px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-secondary);
 }
+
 .toNext b {
-  color: var(--text-primary);
+  font-weight: 800;
+  color: var(--color-ink);
 }
 
-/* ── Ladder ──────────────────────────────────────────────────────────────── */
+/* ─── Board ────────────────────────────────────────────────────────────── */
+.boardCard,
+.ladderCard,
+.scoring {
+  padding: 20px;
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-card);
+}
 
+.switch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--bg-section);
+}
+
+.switchBtn {
+  min-height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.switchOn {
+  background: var(--bg-card);
+  color: var(--color-brand);
+  box-shadow: 0 2px 0 var(--border);
+}
+
+.boardHint {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Podium: 2nd · 1st · 3rd, the winner raised. */
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: end;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+
+.podiumCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 6px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.podiumFirst {
+  padding-bottom: 20px;
+  background: color-mix(in srgb, var(--warning) 12%, var(--bg-card));
+}
+
+.podiumMe .podiumName {
+  color: var(--color-brand);
+}
+
+.podiumAvatar {
+  display: inline-flex;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 5px var(--border);
+}
+
+.podiumFirst .podiumAvatar {
+  box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 6px var(--warning);
+}
+
+.podiumName {
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.podiumPoints {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+
+.row:hover {
+  background: color-mix(in srgb, var(--bg-section) 70%, var(--bg-card));
+}
+
+.rowMe,
+.rowMe:hover {
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-brand) 35%, var(--bg-card));
+}
+
+.rowPinned {
+  margin-top: 8px;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.rowMe .name {
+  color: var(--color-brand);
+}
+
+.creatorTag {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-purple) 14%, var(--bg-card));
+  color: var(--brand-purple);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.points {
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.boardEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 16px 16px;
+  text-align: center;
+}
+
+.boardEmpty p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.boardEmpty span,
+.notRanked {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.notRanked {
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+/* ─── Levels ───────────────────────────────────────────────────────────── */
 .ladder {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 28px;
-  align-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
 }
+
 .rung {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
 }
+
+.rungCurrent {
+  background: color-mix(in srgb, var(--color-brand) 8%, var(--bg-card));
+}
+
 .rungIcon {
-  display: grid;
-  place-items: center;
+  flex-shrink: 0;
   width: 34px;
   height: 34px;
-  flex-shrink: 0;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
   background: var(--bg-section);
   color: var(--text-muted);
   font-size: 14px;
   font-weight: 800;
 }
-/* Reached rungs get the warm "unlocked" fill; the rest stay grey and locked. */
+
 .rungIconReached {
-  background: #fde68a;
-  color: #92660a;
+  background: color-mix(in srgb, var(--color-brand) 16%, var(--bg-card));
+  color: var(--color-brand);
 }
+
 .rungIconCurrent {
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
+  background: var(--color-brand);
+  color: var(--bg-page);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
 }
+
 .rungBody {
   min-width: 0;
 }
+
 .rungName {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.rungNameLocked {
-  color: var(--text-secondary);
-}
-.rungMeta {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-.rungUnlock {
-  color: var(--brand-blue);
-  font-weight: 600;
-}
-
-.updatedLine {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* ── Boards ──────────────────────────────────────────────────────────────── */
-
-.boards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-.board {
-  padding: 18px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-.boardTitle {
-  margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--color-ink);
 }
-.boardHint {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 12px;
+
+.rungNameLocked {
   color: var(--text-muted);
 }
-.rows {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+
+.rungMeta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
-.row {
+
+.rungUnlock {
+  color: var(--color-brand);
+  font-weight: 800;
+}
+
+/* ─── How points work ──────────────────────────────────────────────────── */
+.scoringList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.scoringItem {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 6px;
-  border-radius: 10px;
-}
-.rowMe {
-  background: var(--light-blue-bg);
-}
-.badge {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  border-radius: 999px;
+  padding: 10px 12px;
+  border-radius: 14px;
   background: var(--bg-section);
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 800;
-}
-.rank1 { background: #fde68a; color: #92660a; }
-.rank2 { background: #e2e8f0; color: #475569; }
-.rank3 { background: #f6d0b1; color: #9a4b1a; }
-
-.name {
-  flex: 1;
-  min-width: 0;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.points {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--brand-blue);
-  flex-shrink: 0;
-}
-.boardEmpty {
-  padding: 14px 6px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--text-muted);
 }
 
-/* ── Scoring explainer ───────────────────────────────────────────────────── */
+.scoringItem span {
+  flex: 1;
+}
 
-.scoring {
-  padding: 18px 20px;
-  background: var(--bg-section);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-.scoringTitle {
-  margin: 0 0 10px;
-  font-size: 14.5px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-.scoringList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.scoringItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-card);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
 .scoringItem b {
-  color: var(--brand-blue);
+  font-weight: 800;
+  color: var(--success-green);
 }
 
-/* ── Breakpoints ─────────────────────────────────────────────────────────── */
+/* ─── Loading ──────────────────────────────────────────────────────────── */
+.skeleton {
+  border-radius: 20px;
+  background: var(--bg-section);
+  animation: pulse 1.2s ease-in-out infinite;
+}
 
-@media (max-width: 1023px) {
-  .boards {
-    grid-template-columns: minmax(0, 1fr);
+.skeletonLevel {
+  height: 152px;
+}
+
+.skeletonPodium {
+  height: 220px;
+}
+
+.skeletonRow {
+  height: 60px;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 560px) {
   .levelCard {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 22px;
+    flex-direction: column;
+    text-align: center;
     padding: 20px 16px;
   }
-  .ladder {
-    grid-template-columns: minmax(0, 1fr);
+  .levelText {
+    width: 100%;
+    align-items: center;
   }
+  .levelTrack {
+    width: 100%;
+  }
+  .boardCard,
+  .ladderCard,
+  .scoring {
+    padding: 16px 12px;
+  }
+  .row {
+    gap: 10px;
+    padding: 6px 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+  .levelFill,
   .ring {
-    width: 124px;
-    height: 124px;
-  }
-  .ringInner {
-    width: 110px;
-    height: 110px;
+    transition: none;
   }
 }

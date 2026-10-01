@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand-blue), var(--gradient-purple));
+  background: linear-gradient(135deg, var(--color-brand), var(--brand-purple));
   color: #fff;
   overflow: hidden;
   user-select: none;

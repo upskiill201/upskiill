@@ -9,24 +9,37 @@ interface PlanRowProps {
   plan: PlanPricing;
   selected: boolean;
   onSelect: () => void;
-  /** Gold ribbon chip pinned to the top edge, e.g. MOST POPULAR. */
+  /** Ribbon chip pinned to the top edge, e.g. BEST VALUE · SAVE 50%. Must be true. */
   badge?: { icon: LucideIcon; text: string };
+  /**
+   * What this plan would cost at the other plan's rate — the monthly price ×
+   * 12 on the yearly row — struck through as the price anchor. Real numbers
+   * from the ladder only, never an invented "was" price.
+   */
+  anchorPrice?: number;
   /**
    * Set only when a validated coupon quote applies to THIS plan — the number
    * always comes from the backend's /coupons/validate response, never
-   * computed here. `plan.price` still renders, struck through, so the
-   * discount always reads as a discount off the real price.
+   * computed here. Coupons discount the FIRST payment only, and the row says so.
    */
   discountedPrice?: number;
 }
 
+const money = (n: number) => `$${n.toFixed(2)}`;
+
 /**
- * Duolingo-style selectable plan row — a big tappable radio option used in
- * the course paywall's radiogroup. Savings copy comes straight from the
- * pricing ladder (`plan.savingsText`), never hardcoded.
+ * Duolingo-style selectable plan row. Paywall rules it follows (App Store
+ * paywall practice, and the auto-renewal disclosure laws behind it):
+ *   - Lead with the per-month price, so plans compare like for like.
+ *   - Always state the amount actually billed and how often — no plan may
+ *     hide its real charge behind a per-month figure.
+ *   - Anchors and savings are computed from the real ladder, never invented.
  */
-export default function PlanRow({ plan, selected, onSelect, badge, discountedPrice }: PlanRowProps) {
+export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, discountedPrice }: PlanRowProps) {
   const BadgeIcon = badge?.icon;
+  const isYearly = plan.plan === 'YEARLY';
+  const perMonth = plan.effectiveMonthly ?? plan.price;
+  const hasCoupon = discountedPrice !== undefined && plan.formattedPrice !== 'FREE';
 
   return (
     <motion.button
@@ -44,43 +57,45 @@ export default function PlanRow({ plan, selected, onSelect, badge, discountedPri
         </span>
       )}
 
-      {/* Custom radio circle */}
       <span className={styles.radioCircle} aria-hidden="true">
         {selected && <span className={styles.radioDot} />}
       </span>
 
       <span className={styles.rowInfo}>
-        <span className={styles.planName}>{plan.plan}</span>
-        {plan.savingsText && (
-          <span className={styles.savingsText}>{plan.savingsText}</span>
-        )}
-        {!plan.savingsText && (
-          <span className={styles.savingsTextNeutral}>{plan.periodLabel}</span>
-        )}
+        <span className={styles.planName}>{isYearly ? 'Yearly' : 'Monthly'}</span>
+        <span className={styles.savingsTextNeutral}>
+          {isYearly ? `${money(plan.price)} billed once a year` : 'Billed every month'}
+        </span>
+        {isYearly && plan.savingsPercent ? (
+          <span className={styles.savingsText}>You save {plan.savingsPercent}%</span>
+        ) : null}
       </span>
 
       <span className={styles.priceGroup}>
-        {discountedPrice !== undefined && plan.formattedPrice !== 'FREE' ? (
-          <>
-            <span className={styles.priceOriginal}>${plan.price.toFixed(2)}</span>
-            <span className={`${styles.priceAmount} ${styles.priceDiscounted}`}>
-              ${discountedPrice.toFixed(2)}
-            </span>
-            <span className={styles.couponAppliedChip}>Coupon applied</span>
-          </>
+        {plan.formattedPrice === 'FREE' ? (
+          <span className={styles.priceAmount}>FREE</span>
         ) : (
-          <span className={styles.priceAmount}>
-            {plan.formattedPrice === 'FREE' ? 'FREE' : `$${plan.price.toFixed(2)}`}
-          </span>
-        )}
-        <span className={styles.priceInterval}>{plan.intervalText}</span>
-        {discountedPrice === undefined &&
-          plan.effectiveMonthly !== undefined &&
-          plan.effectiveMonthly !== plan.price && (
-            <span className={styles.effectiveNote}>
-              ≈ ${plan.effectiveMonthly.toFixed(2)}/mo
+          <>
+            <span className={styles.priceAmount}>
+              {money(perMonth)}
+              <span className={styles.perMonth}>/mo</span>
             </span>
-          )}
+            {hasCoupon ? (
+              <>
+                <span className={styles.anchorRow}>
+                  <span className={styles.priceOriginal}>{money(plan.price)}</span>
+                  <span className={`${styles.anchorNow} ${styles.priceDiscounted}`}>{money(discountedPrice!)}</span>
+                </span>
+                <span className={styles.couponAppliedChip}>Coupon · first payment</span>
+              </>
+            ) : isYearly && anchorPrice && anchorPrice > plan.price ? (
+              <span className={styles.anchorRow}>
+                <span className={styles.priceOriginal}>{money(anchorPrice)}</span>
+                <span className={styles.anchorNow}>{money(plan.price)}/yr</span>
+              </span>
+            ) : null}
+          </>
+        )}
       </span>
     </motion.button>
   );

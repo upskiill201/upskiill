@@ -1,47 +1,53 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useGamification } from '@/context/GamificationContext';
 import { useMe } from '@/hooks/useMe';
 import { getCachedUser } from '@/lib/user-cache';
+import { levelProgress } from '@/lib/level';
+import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './LevelProgressionBanner.module.css';
 
 const MASCOT_SRC = '/User onbarding Assets/Step_7_tey_verified_state.webp';
 
+const noopSubscribe = () => () => {};
+
 export default function LevelProgressionBanner() {
-  const { userLevel, xp, xpInCurrentLevel } = useGamification();
+  const { xp, profileLoaded } = useGamification();
   const { me, avatarUrl: resolvedAvatarUrl } = useMe();
 
-  // Paint the cached avatar on first frame so the circle doesn't flash the
-  // mascot before /api/auth/me lands. Read in an effect, not during render —
-  // localStorage isn't available on the server and would desync hydration.
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarFailed, setAvatarFailed] = useState(false);
+  // The cached avatar paints before /api/auth/me lands, so the circle doesn't
+  // flash the mascot. The server snapshot is null, which keeps hydration in
+  // step (localStorage only exists on the client).
+  const cachedAvatar = useSyncExternalStore(
+    noopSubscribe,
+    () => getCachedUser()?.avatarUrl ?? null,
+    () => null,
+  );
+  const avatarUrl = resolvedAvatarUrl !== undefined ? resolvedAvatarUrl : cachedAvatar;
+  // A URL that failed to load falls back to the mascot until the URL changes.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    const cached = getCachedUser();
-    if (cached?.avatarUrl) setAvatarUrl(cached.avatarUrl);
-  }, []);
-
-  useEffect(() => {
-    if (resolvedAvatarUrl !== undefined) {
-      setAvatarUrl(resolvedAvatarUrl);
-      setAvatarFailed(false);
-    }
-  }, [resolvedAvatarUrl]);
-
-  const showAvatar = Boolean(avatarUrl) && !avatarFailed;
+  const showAvatar = Boolean(avatarUrl) && failedUrl !== avatarUrl;
   const userName = (me?.fullName as string | undefined) || 'Your profile';
 
-  // Target XP to next level (typically 1000 XP per level or 100 scaled)
-  const targetXpForLevel = 1000;
-  const currentLevelXp = Math.min(targetXpForLevel, (xp % targetXpForLevel) || 880);
-  const remainingXp = Math.max(0, targetXpForLevel - currentLevelXp);
-  const progressPercent = Math.min(100, Math.round((currentLevelXp / targetXpForLevel) * 100));
+  // The server's curve (lib/level.ts). This used to assume 1,000 XP a level
+  // and fall back to a made-up "880 XP, Level 8" before stats loaded.
+  const { level, inLevel, target, toNext, percent } = levelProgress(xp);
+
+  if (!profileLoaded) {
+    return <div className={`${styles.banner} ${styles.bannerLoading}`} aria-busy="true" aria-label="Loading your level" />;
+  }
 
   return (
-    <div className={styles.banner}>
+    <Link
+      href="/dashboard/level"
+      className={styles.banner}
+      aria-label={`Level ${level}: ${toNext} XP to level ${level + 1}. See your progress`}
+      onClick={() => playSound('navTap', 4)}
+    >
       {/* Left: Profile Photo (mascot fallback) + Hex Level Badge */}
       <div className={styles.avatarGroup}>
         <div className={styles.mascotCircle}>
@@ -52,7 +58,7 @@ export default function LevelProgressionBanner() {
               width={46}
               height={46}
               className={styles.avatarImg}
-              onError={() => setAvatarFailed(true)}
+              onError={() => setFailedUrl(avatarUrl)}
               priority
             />
           ) : (
@@ -69,23 +75,20 @@ export default function LevelProgressionBanner() {
 
         <div className={styles.levelBadge}>
           <span className={styles.levelLabel}>LEVEL</span>
-          <span className={styles.levelNum}>{userLevel || 8}</span>
+          <span className={styles.levelNum}>{level}</span>
         </div>
       </div>
 
       {/* Middle: Level XP Goal + Glowing Amber Progress Track */}
       <div className={styles.progressCol}>
         <span className={styles.progressTitle}>
-          {remainingXp} XP to Level {(userLevel || 8) + 1}
+          {toNext} XP to Level {level + 1}
         </span>
         <div className={styles.progressTrack}>
-          <div
-            className={styles.progressFill}
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className={styles.progressFill} style={{ width: `${Math.max(4, percent)}%` }} />
         </div>
         <span className={styles.progressSub}>
-          {currentLevelXp} / {targetXpForLevel} XP
+          {inLevel} / {target} XP
         </span>
       </div>
 
@@ -93,13 +96,13 @@ export default function LevelProgressionBanner() {
       <div className={styles.chestContainer}>
         <Image
           src="/Tressure box.webp"
-          alt="Treasure Chest"
+          alt=""
           width={52}
           height={48}
           className={styles.chestImg}
           priority
         />
       </div>
-    </div>
+    </Link>
   );
 }

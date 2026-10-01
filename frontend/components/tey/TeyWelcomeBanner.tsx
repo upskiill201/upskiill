@@ -1,121 +1,129 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
-import TeyMascot from '../community/TeyMascot';
-import styles from './TeyWelcomeBanner.module.css';
+/**
+ * Tey's heads-up on home — a notice (lib/awareness/notices.ts), only when
+ * it's worth saying:
+ *
+ *   - a streak just broke and can still be repaired → "Repair it"
+ *   - the streak needs today's lesson ("at risk"), once per session
+ *   - it's evening and it still needs today's lesson → Duolingo's evening
+ *     nudge, once per day, with the hours left
+ *   - the streak reset and can't be repaired → a gentle "start again"
+ *
+ * The streak facts come from /api/streak/me (reconciled server-side); the
+ * course title for the at-risk line comes from Tey's greeting.
+ */
+
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { notify } from '@/lib/awareness/notices';
+import type { StreakStats } from '@/context/StreakContext';
 
 const SESSION_KEY = 'teyro-tey-welcome-shown';
+const EVENING_KEY = 'teyro-evening-nudge';
+const EVENING_HOUR = 18;
 
 interface TeyGreeting {
-  streakDays: number;
-  atRisk: boolean;
   justLost: boolean;
-  daysSinceLastActivity: number | null;
   courseTitle: string | null;
 }
 
-function dayWord(n: number) {
-  return n === 1 ? 'day' : 'days';
+function readStore(store: 'session' | 'local', key: string): string | null {
+  try {
+    return (store === 'session' ? window.sessionStorage : window.localStorage).getItem(key);
+  } catch {
+    return null;
+  }
 }
 
-function copyFor(g: TeyGreeting): { title: string; subtitle: string; tone: string } {
-  if (g.justLost) {
-    return {
-      title: 'Your streak reset',
-      subtitle: 'No big deal — one lesson today starts a new one.',
-      tone: 'justLost',
-    };
+function writeStore(store: 'session' | 'local', key: string, value: string) {
+  try {
+    (store === 'session' ? window.sessionStorage : window.localStorage).setItem(key, value);
+  } catch {
+    // Private mode — worst case a nudge shows once more.
   }
-  if (g.atRisk) {
-    return {
-      title: `Your ${g.streakDays}-${dayWord(g.streakDays)} streak needs today's lesson`,
-      subtitle: g.courseTitle
-        ? `${g.courseTitle} is right where you left it.`
-        : "You haven't done today's lesson yet.",
-      tone: 'atRisk',
-    };
-  }
-  if (g.streakDays > 0) {
-    return {
-      title: `Welcome back — ${g.streakDays}-${dayWord(g.streakDays)} streak going strong`,
-      subtitle: 'Keep it going whenever you’re ready.',
-      tone: 'safe',
-    };
-  }
-  return {
-    title: 'Welcome back',
-    subtitle: g.courseTitle ? `${g.courseTitle} is waiting for you.` : 'Ready when you are.',
-    tone: 'safe',
-  };
 }
 
-/**
- * A one-time-per-session welcome banner showing streak context the instant
- * the learner opens the app — deliberately NOT a push notification (a push
- * makes no sense for something shown while they're already looking at the
- * screen) and deliberately bypassing TeyPolicyService: this is a synchronous
- * UI read on page load, not a scheduled interruption, so no quiet hours, no
- * daily cap, no cooldown apply here. Session-gated instead, matching the
- * sessionStorage pattern already used by lib/tey-track.ts.
- */
 export default function TeyWelcomeBanner() {
-  const [greeting, setGreeting] = useState<TeyGreeting | null>(null);
-  const [dismissed, setDismissed] = useState(false);
+  const pathname = usePathname();
+  const onHome = pathname === '/dashboard';
 
   useEffect(() => {
-    let alreadyShown = false;
-    try {
-      alreadyShown = window.sessionStorage.getItem(SESSION_KEY) === '1';
-    } catch {
-      // Private mode / quota — fall through and show it once for this render.
-    }
-    if (alreadyShown) return;
+    if (!onHome) return;
+    const now = new Date();
+    const today = now.toDateString();
+    const sessionShown = readStore('session', SESSION_KEY) === '1';
+    const eveningShown = readStore('local', EVENING_KEY) === today;
+    const isEvening = now.getHours() >= EVENING_HOUR;
+    if (sessionShown && (eveningShown || !isEvening)) return;
 
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch('/api/tey/me/state', { credentials: 'include' });
-        if (!res.ok || cancelled) return;
-        const data = await res.json();
-        if (!data?.greeting || cancelled) return;
-        setGreeting(data.greeting as TeyGreeting);
-        try {
-          window.sessionStorage.setItem(SESSION_KEY, '1');
-        } catch {
-          // Best effort — worst case it shows again this session.
+        const [streakRes, teyRes] = await Promise.all([
+          fetch(`/api/streak/me?timezoneOffset=${now.getTimezoneOffset()}`, { credentials: 'include' }),
+          fetch('/api/tey/me/state', { credentials: 'include' }).catch(() => null),
+        ]);
+        if (!streakRes.ok || cancelled) return;
+        const s = (await streakRes.json()) as StreakStats;
+        const g = teyRes && teyRes.ok ? ((await teyRes.json())?.greeting as TeyGreeting | undefined) : undefined;
+        if (cancelled) return;
+
+        const atRisk = s.currentStreak > 0 && !s.hasCompletedToday;
+
+        // Evening: its own once-a-day nudge, even if the morning one showed.
+        if (atRisk && isEvening && !eveningShown) {
+          writeStore('local', EVENING_KEY, today);
+          writeStore('session', SESSION_KEY, '1');
+          const hoursLeft = Math.max(1, 24 - now.getHours());
+          notify({
+            id: `evening-risk-${today}`,
+            tone: 'warn',
+            icon: 'streak',
+            title: `${hoursLeft} ${hoursLeft === 1 ? 'hour' : 'hours'} left to keep your ${s.currentStreak}-day streak`,
+            body: g?.courseTitle ? `One lesson of ${g.courseTitle} does it.` : 'One quick lesson does it.',
+          });
+          return;
+        }
+
+        if (sessionShown) return;
+        writeStore('session', SESSION_KEY, '1');
+
+        if (s.repair?.available) {
+          notify({
+            id: `streak-repair-${s.repair.lostStreak}-${today}`,
+            tone: 'warn',
+            icon: 'streak',
+            title: `Your ${s.repair.lostStreak}-day streak broke`,
+            body: 'Repair it now, as if you never missed a day.',
+            action: 'Repair',
+            href: '/dashboard/streak',
+          });
+        } else if (atRisk) {
+          notify({
+            id: `tey-at-risk-${today}`,
+            tone: 'warn',
+            icon: 'streak',
+            title: `Your ${s.currentStreak}-day streak needs today's lesson`,
+            body: g?.courseTitle ? `${g.courseTitle} is right where you left it.` : 'One lesson keeps it alive.',
+          });
+        } else if (g?.justLost) {
+          notify({
+            id: `tey-streak-reset-${today}`,
+            tone: 'info',
+            icon: 'tey',
+            title: 'Your streak reset',
+            body: 'No big deal. One lesson today starts a new one.',
+          });
         }
       } catch {
-        // Best effort. A failed fetch just means no banner this load.
+        // Best effort — no notice this time.
       }
     })();
-
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [onHome]);
 
-  if (!greeting || dismissed) return null;
-
-  const { title, subtitle, tone } = copyFor(greeting);
-
-  return (
-    <div className={styles.banner} data-tone={tone}>
-      <div className={styles.mascotWrap}>
-        <TeyMascot size={40} />
-      </div>
-      <div className={styles.textGroup}>
-        <p className={styles.title}>{title}</p>
-        <p className={styles.subtitle}>{subtitle}</p>
-      </div>
-      <button
-        type="button"
-        className={styles.dismiss}
-        aria-label="Dismiss"
-        onClick={() => setDismissed(true)}
-      >
-        <X size={16} />
-      </button>
-    </div>
-  );
+  return null;
 }

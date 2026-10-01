@@ -3,8 +3,9 @@
 /**
  * LeaderboardRankWatcher — the living Leaderboard Engine. Surfaces every
  * meaningful mid-week leaderboard moment (joined, passed/passed-by a rival,
- * a big jump, entering/escaping the promotion or demotion zone, reaching #1)
- * as a full-page LEADERBOARD celebration scene.
+ * a big jump, entering/escaping the promotion or demotion zone, reaching #1).
+ * Most arrive as a notice ("Amara passed you!"); reaching #1 and entering
+ * the promotion zone get the full-page LEADERBOARD scene.
  *
  * Unlike the original version, this does NOT only react to `lesson:completed`
  * — a rival's XP can change the learner's rank while they're idle or off on
@@ -33,11 +34,15 @@ import {
   classifyLeaderboardEvent,
   toSnapshot,
   windowAround,
+  LEADERBOARD_SNAPSHOT_KEY,
   type LeaderboardSnapshot,
   type MyLeaderboard,
 } from '@/lib/leaderboard/leaderboardEvents';
+import { isLessonFocused } from '@/lib/lesson/lessonFocus';
 import { pickLeaderboardMessage, pickLeaderboardSubhead } from '@/lib/leaderboard/teyMessages';
 import { getLeagueMeta } from '@/lib/leagues';
+import { notify } from '@/lib/awareness/notices';
+import { leagueDelivery } from '@/lib/leaderboard/leagueNotice';
 
 /** Routes where full-page student takeovers must never appear. */
 const SKIP_ROUTE_PREFIXES = [
@@ -66,7 +71,7 @@ const POLL_INTERVAL_MS = 90_000;
  * switching can't hammer the endpoint. */
 const FOCUS_CHECK_THROTTLE_MS = 20_000;
 
-const SNAPSHOT_KEY = 'teyro:leaderboard-snapshot';
+const SNAPSHOT_KEY = LEADERBOARD_SNAPSHOT_KEY;
 
 function readSnapshot(): LeaderboardSnapshot | null {
   try {
@@ -101,6 +106,9 @@ export default function LeaderboardRankWatcher() {
   const runCheck = useCallback(async () => {
     if (!profileLoaded || isLoading) return;
     if (inFlightRef.current) return; // never overlap two in-flight checks
+    // During a lesson the finish screens tell the league story themselves
+    // (and save it as seen); checking now would announce it twice.
+    if (isLessonFocused()) return;
     const path = pathname || window.location.pathname;
     if (SKIP_ROUTE_PREFIXES.some((p) => path.startsWith(p))) return;
 
@@ -124,11 +132,20 @@ export default function LeaderboardRankWatcher() {
       const beforeStandings = event.prevRank !== null && prevSnapshot ? windowAround(prevSnapshot.standings, event.prevRank) : [];
       const afterStandings = windowAround(freshSnapshot.standings, event.myRank);
 
+      // Awareness rules (lib/leaderboard/leagueNotice.ts): every movement is a
+      // notice; only #1 and the promotion zone take the whole screen.
+      const leagueName = getLeagueMeta(event.league).name;
+      const delivery = leagueDelivery(event, leagueName);
+      if (delivery.kind === 'notice') {
+        notify(delivery.notice);
+        return;
+      }
+
       const messageCtx = {
         deltaPositions: event.deltaPositions,
         myRank: event.myRank,
         rivalName: event.rivalName,
-        leagueName: getLeagueMeta(event.league).name,
+        leagueName,
       };
 
       celebrate({
@@ -185,6 +202,15 @@ export default function LeaderboardRankWatcher() {
     };
     schedulePoll();
 
+    // A lesson just closed: look once, after the finish screens have saved
+    // what they showed — anything left is news (e.g. someone passed you).
+    let wasFocused = isLessonFocused();
+    const handleFocusChange = () => {
+      const focused = isLessonFocused();
+      if (wasFocused && !focused) window.setTimeout(() => void runCheck(), LISTENER_SETTLE_MS);
+      wasFocused = focused;
+    };
+    window.addEventListener('celebration:visibility', handleFocusChange);
     window.addEventListener('lesson:completed', handleLessonCompleted);
     window.addEventListener('focus', handleFocusOrVisible);
     document.addEventListener('visibilitychange', handleFocusOrVisible);
@@ -192,6 +218,7 @@ export default function LeaderboardRankWatcher() {
     return () => {
       window.clearTimeout(mountTimer);
       if (pollTimer !== null) window.clearTimeout(pollTimer);
+      window.removeEventListener('celebration:visibility', handleFocusChange);
       window.removeEventListener('lesson:completed', handleLessonCompleted);
       window.removeEventListener('focus', handleFocusOrVisible);
       document.removeEventListener('visibilitychange', handleFocusOrVisible);

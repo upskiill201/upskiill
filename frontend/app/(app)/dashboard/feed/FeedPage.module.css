@@ -1,364 +1,541 @@
-/* Global personalized feed — Skool bones × Duolingo skin */
+/* Community home (feed) — Skool's "all my groups" + Duolingo's friends.
+   Tokens only (docs/08-color-system.md). */
 
 .page {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 20px;
+  --fd-ink: var(--color-ink);
+  --fd-body: var(--text-primary);
+  --fd-soft: var(--text-secondary);
+  --fd-muted: var(--text-muted);
+  --fd-line: var(--border);
+  --fd-well: var(--bg-section);
+  --fd-card: var(--bg-card);
+  --fd-on: var(--bg-page);
+  --fd-blue: var(--color-brand);
+  --fd-blue-deep: var(--color-brand-deep);
+  --fd-blue-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --fd-gold: var(--warning);
+  --fd-orange: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+  --fd-red: var(--error-red);
+  --fd-green: var(--success-green);
+
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
   max-width: 1100px;
   margin: 0 auto;
-  width: 100%;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--fd-body);
 }
 
-.mainCol { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.mainCol {
+  flex: 1;
+  min-width: 0;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-/* ── Header ───────────────────────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 16px;
 }
+
 .pageTitle {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--text-primary);
-  margin: 4px 0 2px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--fd-ink);
 }
+
 .pageSub {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-.liveChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--light-blue-bg);
-  border: 1.5px solid rgba(61, 90, 254, 0.25);
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--brand-blue);
-}
-.liveDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--brand-blue);
-  animation: livePulse 2s ease-in-out infinite;
-}
-@keyframes livePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.75); }
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--fd-soft);
 }
 
-/* ── Mobile communities strip (hidden on desktop) ─────────────────────── */
-.mobileStrip {
-  display: none;
-}
-
-/* ── Filter chips — chunky 3D pills ───────────────────────────────────── */
-.filterRow { display: flex; gap: 8px; flex-wrap: wrap; }
-.filterChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 120ms ease;
-}
-.filterChip:hover { border-color: var(--border-strong); color: var(--text-primary); }
-.filterActive {
-  background: var(--brand-blue);
-  color: #fff;
-  border-color: var(--brand-blue);
-}
-.filterActive:hover { color: #fff; border-color: var(--brand-blue); }
-/* ── Composer-first trigger card (Facebook pattern) ───────────────────── */
+/* ─── Composer trigger ─────────────────────────────────────────────────── */
 .composerCard {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 14px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  cursor: pointer;
+  padding: 12px 12px 12px 16px;
+  border: 2px solid var(--fd-line);
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  background: var(--fd-card);
+  font: inherit;
   text-align: left;
-  font-family: inherit;
-  transition: border-color 120ms ease;
+  cursor: pointer;
+  transition: transform 0.08s ease;
 }
-.composerCard:hover { border-color: var(--border-strong); }
+
+.composerCard:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
 .composerPlaceholder {
   flex: 1;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-muted);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--fd-well);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fd-muted);
 }
+
 .composerCta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
-  font-size: 13px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: var(--fd-blue);
+  box-shadow: 0 4px 0 var(--fd-blue-deep);
+  color: var(--fd-on);
+  font-size: 14px;
   font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
-.feedList { display: flex; flex-direction: column; gap: 16px; }
 
-/* One feed row = a reason label over the shared PostCard. The label used to
-   be a tab floating half over the card border, which only worked because the
-   feed owned its own card; now that both surfaces share PostCard it sits
-   above the card instead of on it. */
-.feedRow {
+/* ─── Filters ──────────────────────────────────────────────────────────── */
+.filterRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 6px;
+}
+
+.filterRow::-webkit-scrollbar {
+  display: none;
+}
+
+.filterChip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 2px solid var(--fd-line);
+  border-bottom-width: 3px;
+  border-radius: 12px;
+  background: var(--fd-card);
+  color: var(--fd-soft);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filterChip:hover {
+  background: var(--fd-well);
+}
+
+.filterChip:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+.filterActive,
+.filterActive:hover {
+  background: var(--fd-ink);
+  border-color: var(--fd-ink);
+  color: var(--fd-on);
+}
+
+/* ─── Feed ─────────────────────────────────────────────────────────────── */
+.feedList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 16px;
+  transition: opacity 0.15s ease;
 }
-.feedRefreshing { opacity: 0.5; pointer-events: none; transition: opacity 150ms ease; }
 
-.loadMoreBtn {
-  align-self: center;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  border-radius: 999px;
-  padding: 10px 26px;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: border-color 120ms ease, color 120ms ease;
+.feedRefreshing {
+  opacity: 0.6;
 }
-.loadMoreBtn:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
-.loadMoreBtn:disabled { opacity: 0.6; cursor: wait; }
 
-/* Reason label above the card — why this post reached your feed. */
+.feedRow {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The reason a post surfaced, as a tab sitting on the card's top edge. */
 .reasonTab {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 11px;
-  border-radius: 999px;
-  font-size: 11px;
+  gap: 4px;
+  margin: 0 0 -2px 16px;
+  padding: 4px 10px;
+  border-radius: 10px 10px 0 0;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
-.tabAnnouncement { background: #fff3cd; color: #92400e; }
-.tabUnanswered { background: #fee2e2; color: #b91c1c; }
-.tabWin { background: #fef3c7; color: #b45309; }
-.tabActive { background: #ffedd5; color: #c2410c; }
-.tabCourse { background: var(--light-blue-bg); color: var(--brand-blue); }
-.tabGeneral { background: var(--bg-section); color: var(--text-secondary); }
 
-/* ── Right rail — titled widget cards ─────────────────────────────────── */
+.tabAnnouncement { background: color-mix(in srgb, var(--fd-red) 14%, var(--fd-card)); color: var(--fd-red); }
+.tabUnanswered { background: var(--fd-blue-tint); color: var(--fd-blue); }
+.tabWin { background: color-mix(in srgb, var(--fd-gold) 18%, var(--fd-card)); color: color-mix(in srgb, var(--fd-gold) 68%, black); }
+.tabActive { background: color-mix(in srgb, var(--fd-orange) 14%, var(--fd-card)); color: var(--fd-orange); }
+.tabCourse { background: var(--fd-blue-tint); color: var(--fd-blue); }
+.tabGeneral { background: var(--fd-well); color: var(--fd-soft); }
+
+.loadMoreBtn {
+  align-self: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 2px solid var(--fd-line);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--fd-card);
+  color: var(--fd-blue);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.loadMoreBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.loadMoreBtn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ─── Rail ─────────────────────────────────────────────────────────────── */
 .rail {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-self: start;
-  position: sticky;
-  top: 24px;
+  gap: 16px;
 }
+
 .railCard {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px;
+  padding: 16px;
+  border: 2px solid var(--fd-line);
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  background: var(--fd-card);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
+
 .railTitle {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.07em;
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--bg-section);
+  color: var(--fd-soft);
 }
+
+.communitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .railItem {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
+  gap: 12px;
   padding: 8px;
+  margin: 0 -8px;
   border-radius: 12px;
   text-decoration: none;
-  color: var(--text-primary);
-  transition: background 120ms ease;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
+  color: inherit;
+  transition: background-color 0.15s ease;
 }
-.railItem:hover { background: var(--bg-section); }
-.railItem:active { transform: scale(0.98); }
+
+.railItem:hover {
+  background: var(--fd-well);
+}
+
 .railThumb {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 12px;
   object-fit: cover;
-  border: 1px solid var(--border);
   flex-shrink: 0;
 }
+
 .railThumbFallback {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  background: var(--gradient-brand);
-  color: #fff;
+  background: var(--fd-blue);
+  color: var(--fd-on);
   font-weight: 900;
-  font-size: 16px;
-  flex-shrink: 0;
 }
-.railItemMain { min-width: 0; flex: 1; }
-.railItemTitle {
-  font-size: 13.5px;
-  font-weight: 700;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-.railItemSub { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); margin-top: 2px; }
-.railChevron { color: var(--text-muted); flex-shrink: 0; }
 
-.progressRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 5px;
-}
-.progressTrack {
+.railItemMain {
   flex: 1;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--bg-section);
-  overflow: hidden;
+  min-width: 0;
 }
-.progressFill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--gradient-brand);
-}
-.progressPct {
-  font-size: 10.5px;
+
+.railItemTitle {
+  font-size: 14px;
   font-weight: 800;
-  color: var(--brand-blue);
-  min-width: 28px;
-  text-align: right;
+  color: var(--fd-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.railItemSub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fd-muted);
+}
+
+.railChevron {
+  flex-shrink: 0;
+  color: var(--fd-muted);
 }
 
 .railIconTile {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
 }
-.tileBlue { background: var(--light-blue-bg); color: var(--brand-blue); }
-.tileFlame { background: #ffedd5; color: #c2410c; }
+
+.tileBlue {
+  background: var(--fd-blue-tint);
+  color: var(--fd-blue);
+}
 
 .answerPill {
   flex-shrink: 0;
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--fd-blue);
+  color: var(--fd-on);
   font-size: 11px;
   font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
-.communitiesList { display: flex; flex-direction: column; gap: 2px; }
 
-/* ── Mobile (≤900px): rail folds under, strip appears ─────────────────── */
-@media (max-width: 900px) {
-  .page { grid-template-columns: 1fr; gap: 16px; }
-  .rail { position: static; order: 2; }
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
 
-  /* Communities become a horizontal chip scroller under the header */
+.progressTrack {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--fd-well);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--fd-green);
+}
+
+.progressPct {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--fd-soft);
+}
+
+/* Friends card */
+.friendRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+a.friendRow:hover {
+  background: var(--fd-well);
+}
+
+.friendName {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--fd-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friendCourse {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fd-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friendStreak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--fd-orange);
+}
+
+.friendStreakOut {
+  color: var(--fd-muted);
+}
+
+.friendStreakOut img {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.suggestLabel {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--fd-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.followSmall,
+.followedBtn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.followSmall {
+  border: none;
+  background: var(--fd-blue);
+  box-shadow: 0 3px 0 var(--fd-blue-deep);
+  color: var(--fd-on);
+}
+
+.followSmall:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.followedBtn {
+  border: 2px solid var(--fd-line);
+  background: var(--fd-card);
+  color: var(--fd-green);
+  cursor: default;
+}
+
+/* ─── Mobile strip ─────────────────────────────────────────────────────── */
+.mobileStrip {
+  display: none;
+}
+
+.stripChip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border: 2px solid var(--fd-line);
+  border-radius: 999px;
+  background: var(--fd-card);
+  text-decoration: none;
+}
+
+.stripThumb {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.stripThumbFallback {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--fd-blue);
+  color: var(--fd-on);
+  font-weight: 900;
+}
+
+.stripName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--fd-ink);
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 680px;
+  }
+  .rail {
+    width: 100%;
+    position: static;
+  }
   .mobileStrip {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     overflow-x: auto;
-    padding: 2px 2px 6px;
     scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
     order: -1;
   }
-  .mobileStrip::-webkit-scrollbar { display: none; }
-  .stripChip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    flex-shrink: 0;
-    padding: 6px 12px 6px 6px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    text-decoration: none;
-    max-width: 200px;
-  }
-  .stripThumb {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-  .stripThumbFallback {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: var(--gradient-brand);
-    color: #fff;
-    font-weight: 900;
-    font-size: 13px;
-    flex-shrink: 0;
-  }
-  .stripName {
-    font-size: 12.5px;
-    font-weight: 800;
-    color: var(--text-primary);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 140px;
-  }
-
-  .pageTitle { font-size: 22px; }
-  .feedList { gap: 18px; }
-  .reasonTab {
-    max-width: calc(100% - 28px);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  .mobileStrip::-webkit-scrollbar {
+    display: none;
   }
 }
 
-/* ── Tiny phones (≤360px) ─────────────────────────────────────────────── */
-@media (max-width: 360px) {
-  .composerCard { padding: 12px; gap: 8px; }
-  .composerCta { padding: 7px 12px; }
-  .filterChip { padding: 7px 12px; font-size: 12.5px; }
+@media (max-width: 560px) {
+  .pageTitle {
+    font-size: 24px;
+  }
+  .composerCta {
+    padding: 0 12px;
+  }
 }

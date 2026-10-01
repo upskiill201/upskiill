@@ -16,8 +16,7 @@ import { TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
-import { playHaptic } from '@/lib/haptics';
-import { playScenePop } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { pickQuestSpeech } from '@/lib/tey/questVoice';
 
 type QuestSceneInput = Extract<CelebrationScene, { kind: 'QUEST' }>;
@@ -42,7 +41,7 @@ export default function QuestScene({ scene, onAdvance }: QuestSceneProps) {
   // Row entrance pops (mirrored in the stagger below)
   useEffect(() => {
     if (reducedMotion) return;
-    const timers = scene.rows.map((_, i) => setTimeout(() => playScenePop(i), i * 170 + 150));
+    const timers = scene.rows.map((_, i) => setTimeout(() => playSound('questFill', i), i * 170 + 150));
     return () => timers.forEach(clearTimeout);
   }, [scene.rows, reducedMotion]);
 
@@ -92,7 +91,7 @@ export default function QuestScene({ scene, onAdvance }: QuestSceneProps) {
               {row.highlight && !reducedMotion && <div className={styles.questShine} />}
               <div className={styles.questRowTop}>
                 <span className={styles.questRowLabel} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  {done && <Check size={16} strokeWidth={3.4} color="#4ade80" aria-hidden />}
+                  {done && <Check size={16} strokeWidth={3.4} color="var(--success-green)" aria-hidden />}
                   {row.label}
                 </span>
                 <span className={styles.questRowEnd}>

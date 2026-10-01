@@ -33,28 +33,66 @@ export interface RenderedMessage {
  * Android and iOS truncate mid-sentence. `truncate()` below is a hard backstop.
  */
 
-type Variants = readonly ((f: TeyContext['facts']) => RenderedMessage)[];
+type Facts = TeyContext['facts'];
+type Variants = readonly ((f: Facts) => RenderedMessage)[];
 
-/** "1 day" not "1 days" — every variant that counts streak days must use this. */
+/** "1 day" not "1 days" — every variant that counts days must use this. */
 const dayWord = (n: number) => (n === 1 ? 'day' : 'days');
+const hoursLeft = (f: Facts) => Math.max(1, Math.round(f.hoursUntilLocalMidnight));
+const inCourse = (f: Facts, fallback: string) =>
+  f.courseTitle ? `${f.courseTitle}` : fallback;
+
+// ── The day's first rung: the practice reminder at the chosen time ─────────
+
+const dailyGoal: Variants = [
+  (f) => ({
+    title: 'Time for today’s lesson',
+    body: f.courseTitle
+      ? `${f.courseTitle} is ready when you are. Five minutes is all it takes.`
+      : 'Your lesson is ready when you are. Five minutes is all it takes.',
+  }),
+  (f) => ({
+    title:
+      f.streakDays > 0
+        ? `Day ${f.streakDays + 1} starts with one lesson`
+        : 'Quick lesson? I’ll keep it short.',
+    body: `One lesson in ${inCourse(f, 'your course')} and today counts.`,
+  }),
+  (f) => ({
+    title: 'Hi, it’s Tey 👋',
+    body: `This is your reminder to learn something today. ${inCourse(f, 'Your lesson')} is waiting.`,
+  }),
+  (f) => ({
+    title: `${Math.max(1, f.dailyGoalXp - f.todayXp)} XP to hit today’s goal`,
+    body: 'One lesson usually covers it. You know what to do.',
+  }),
+];
+
+// ── The evening rung: streak saver ─────────────────────────────────────────
 
 const streakAtRisk: Variants = [
   (f) => ({
-    title: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak needs today's lesson`,
-    body: 'One lesson keeps it alive. That’s the whole ask.',
+    title: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak needs you`,
+    body: 'No lesson today yet. One lesson keeps it alive — that’s the whole ask.',
   }),
   (f) => ({
-    title: `${f.streakDays} ${dayWord(f.streakDays)} — still no lesson today`,
-    body: 'One lesson closes it out. I’ll be dramatic about it if I have to.',
-  }),
-  (f) => ({
-    title: 'Your lesson is still waiting',
-    body: `${f.streakDays}-${dayWord(f.streakDays)} streak on the line. One lesson saves it.`,
+    title: 'Your streak is in danger',
+    body: `${f.streakDays} ${dayWord(f.streakDays)} on the line and no lesson today. One lesson saves it.`,
   }),
   (f) => ({
     title: `Don’t let ${f.streakDays} ${dayWord(f.streakDays)} slip away`,
-    body: 'One lesson, a few minutes. Future you says thanks.',
+    body: 'A few minutes tonight keeps the streak going. Future you says thanks.',
   }),
+  (f) =>
+    f.streakDays >= 30
+      ? {
+          title: `${f.streakDays} days. Don’t you dare.`,
+          body: 'That streak is a monument. One lesson tonight keeps it standing.',
+        }
+      : {
+          title: 'Your lesson is still waiting',
+          body: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak needs one lesson before midnight.`,
+        },
 ];
 
 /** Escalated tone — used only after repeated ignored nudges. Full guilt-trip
@@ -63,7 +101,7 @@ const streakAtRisk: Variants = [
 const streakAtRiskTeasing: Variants = [
   (f) => ({
     title: 'Still waiting on today’s lesson',
-    body: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak is still going — for now. I’m just going to sit here until you do it.`,
+    body: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak is alive — for now. I’ll just sit here until you do it.`,
   }),
   (f) => ({
     title: 'Oh, we’re ignoring me now?',
@@ -71,90 +109,148 @@ const streakAtRiskTeasing: Variants = [
   }),
   (f) => ({
     title: 'I’m not mad. I’m disappointed.',
-    body: `Okay, a little mad. ${f.streakDays} ${dayWord(f.streakDays)}, still no lesson today.`,
+    body: `Okay, a little mad. ${f.streakDays} ${dayWord(f.streakDays)}, and no lesson today.`,
   }),
   (f) => ({
     title: `${f.streakDays} ${dayWord(f.streakDays)}, and I’m talking to a wall`,
-    body: 'One lesson ends this. I’ll just sit here sulking until then.',
+    body: 'One lesson ends this. I’ll be sulking right here until then.',
   }),
 ];
 
+// ── Last call ──────────────────────────────────────────────────────────────
+
 const streakCritical: Variants = [
   (f) => ({
-    title: `${f.streakDays} ${dayWord(f.streakDays)} — ${Math.max(1, Math.round(f.hoursUntilLocalMidnight))}h left tonight`,
-    body: 'Your streak ends at midnight unless you finish one lesson. I’ll wait right here.',
+    title: `${hoursLeft(f)}h left to save your streak`,
+    body: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak ends at midnight. One lesson. I’ll wait right here.`,
   }),
   (f) => ({
-    title: 'Your streak runs out at midnight',
-    body: `${f.streakDays} ${dayWord(f.streakDays)}, about ${Math.max(1, Math.round(f.hoursUntilLocalMidnight))}h left. One lesson keeps it.`,
+    title: 'Your streak ends at midnight',
+    body: `${f.streakDays} ${dayWord(f.streakDays)}, about ${hoursLeft(f)}h left. One lesson keeps it.`,
   }),
   (f) => ({
-    title: 'Last call tonight',
+    title: 'Last call 🔥',
     body: `Your ${f.streakDays}-${dayWord(f.streakDays)} streak needs one lesson before midnight. I mean it.`,
   }),
 ];
 
-const dailyGoal: Variants = [
+// ── The loss, and the way back ─────────────────────────────────────────────
+
+/** A streak that just ended. With a repair open, that offer IS the message. */
+const streakLostRepairable: Variants = [
   (f) => ({
-    title: 'Quick reminder from Tey',
-    body: f.courseTitle
-      ? `You haven’t studied ${f.courseTitle} today yet. One lesson closes it out.`
-      : 'You haven’t done today’s lesson yet. One lesson closes it out.',
+    title: `Your ${f.repairLostStreak}-${dayWord(f.repairLostStreak ?? 0)} streak ended`,
+    body: `You can still repair it for ${f.repairCostCoins} Coins — but only for ${f.repairHoursLeft ?? 48} more hours.`,
   }),
   (f) => ({
-    title: `${Math.max(0, f.dailyGoalXp - f.todayXp)} XP left for today`,
-    body: 'One lesson usually covers it.',
-  }),
-  (f) => ({
-    title: 'Got a minute?',
-    body: f.courseTitle
-      ? `${f.courseTitle} is right where you left it.`
-      : 'Today’s lesson is right where you left it.',
+    title: 'Your streak broke. It’s fixable.',
+    body: `Repair your ${f.repairLostStreak}-${dayWord(f.repairLostStreak ?? 0)} streak on the streak screen before the offer runs out.`,
   }),
 ];
 
-const inactiveReturn: Variants = [
-  (f) => ({
-    title: 'Well look who it is 👀',
-    body: f.courseTitle
-      ? `${f.courseTitle} missed you. So did I, honestly.`
-      : 'Good to see you again. No lecture, promise.',
-  }),
-  (f) => ({
-    title: 'Still here whenever you are',
-    body: f.courseTitle
-      ? `${f.courseTitle} is ${f.courseProgressPct}% done. Pick it back up whenever.`
-      : 'Everything is exactly where you left it.',
-  }),
-  (f) => ({
-    title: 'Long time no learn',
-    body: f.courseTitle
-      ? `Even one lesson in ${f.courseTitle} counts.`
-      : 'Even one lesson counts. Small steps.',
-  }),
-];
-
-/** A streak that has already ended — acknowledged once, warmly, with no
- *  guilt trip. There's nothing left to protect, so the tone stays gentle. */
+/** Acknowledged once, warmly, with no guilt trip — nothing left to protect. */
 const streakLost: Variants = [
   (f) => ({
-    title: 'Your streak reset today',
+    title: 'Your streak reset',
     body:
-      f.longestStreak > 0
-        ? `You've hit ${f.longestStreak} ${dayWord(f.longestStreak)} before — let's start building toward that again.`
-        : 'No big deal. One lesson starts a new one.',
+      f.longestStreak > 1
+        ? `Your best was ${f.longestStreak} ${dayWord(f.longestStreak)}. Let’s start building toward it again — one lesson today.`
+        : 'No big deal. One lesson today starts a new one.',
   }),
   () => ({
     title: 'New streak, who’s this?',
-    body: 'The last one ended, so let’s just start another. One lesson today.',
+    body: 'The old one ended, so let’s start another. Day one is one lesson away.',
   }),
   (f) => ({
-    title: 'Okay, streak’s gone. Moving on.',
+    title: 'Okay, the streak’s gone. Moving on.',
     body: f.courseTitle
-      ? `${f.courseTitle} is still right there. One lesson gets a new streak going.`
+      ? `${f.courseTitle} is right there. One lesson gets a new streak going.`
       : 'One lesson today and we’re back in business.',
   }),
 ];
+
+const streakRepairExpiring: Variants = [
+  (f) => ({
+    title: 'Last chance to repair your streak',
+    body: `Your ${f.repairLostStreak}-${dayWord(f.repairLostStreak ?? 0)} streak can come back for ${f.repairCostCoins} Coins. The offer ends in ${f.repairHoursLeft ?? 1}h.`,
+  }),
+  (f) => ({
+    title: `${f.repairLostStreak} ${dayWord(f.repairLostStreak ?? 0)}, gone forever in ${f.repairHoursLeft ?? 1}h`,
+    body: `Unless you repair it for ${f.repairCostCoins} Coins on the streak screen. I’m just saying.`,
+  }),
+];
+
+// ── Before the first lesson ────────────────────────────────────────────────
+
+const firstLesson: Variants = [
+  (f) => ({
+    title: 'Your first lesson is waiting',
+    body: f.courseTitle
+      ? `${f.courseTitle} starts with a 5-minute lesson. Let’s do the first one together.`
+      : 'It takes about five minutes. Let’s do the first one together.',
+  }),
+  () => ({
+    title: 'Hi, I’m Tey 👋',
+    body: 'I’ll be cheering you on. First step: one short lesson. That’s it.',
+  }),
+  () => ({
+    title: 'Day one is the hardest',
+    body: 'So let’s make it tiny. One lesson, five minutes, and you’ve started.',
+  }),
+];
+
+// ── The win-back ladder, by how long they've been away ─────────────────────
+
+/** Days 1-2: the habit is still warm, so a little drama is allowed. */
+const inactiveEarly: Variants = [
+  (f) => ({
+    title:
+      (f.daysSinceLastActivity ?? 1) <= 1
+        ? 'You didn’t learn yesterday 👀'
+        : `It’s been ${f.daysSinceLastActivity} days 👀`,
+    body: `${inCourse(f, 'Your lesson')} is right where you left it. One lesson gets you back on track.`,
+  }),
+  () => ({
+    title: 'These reminders are from Tey',
+    body: 'You know, the owl you’ve been ignoring. One lesson today makes it right.',
+  }),
+  (f) => ({
+    title: 'Hey, it’s been a couple of days',
+    body: f.courseTitle
+      ? `${f.courseTitle} is ${f.courseProgressPct}% done. Let’s nudge that number today.`
+      : 'A 5-minute lesson today and you’re back in rhythm.',
+  }),
+];
+
+/** Days 3-21: warmth, never a guilt trip. */
+const inactiveWarm: Variants = [
+  (f) => ({
+    title: 'Still here whenever you are',
+    body: f.courseTitle
+      ? `${f.courseTitle} is ${f.courseProgressPct}% done and waiting. Pick it back up anytime.`
+      : 'Everything is exactly where you left it.',
+  }),
+  (f) => ({
+    title: 'I saved your spot',
+    body: f.courseTitle
+      ? `${f.courseTitle} missed you. So did I, honestly.`
+      : 'I saved your spot. No lecture, promise.',
+  }),
+  (f) => ({
+    title: 'Long time no learn',
+    body: `Even one lesson in ${inCourse(f, 'your course')} counts. Small steps.`,
+  }),
+];
+
+/** Day 30: Duolingo's most famous line, because it's honest. */
+const inactiveFinal: Variants = [
+  () => ({
+    title: 'These reminders don’t seem to be working',
+    body: 'So I’ll stop sending them for now. Your progress is saved whenever you want it.',
+  }),
+];
+
+// ── Mid-lesson, progress and celebrations ──────────────────────────────────
 
 /** A lesson opened and left mid-way. Names the specific situation rather than
  *  reading as a generic daily nudge. */
@@ -162,17 +258,16 @@ const lessonAbandoned: Variants = [
   (f) => ({
     title: 'You left a lesson mid-way',
     body: f.courseTitle
-      ? `Pick up where you stopped in ${f.courseTitle}?`
-      : 'Pick up where you stopped?',
+      ? `Pick up where you stopped in ${f.courseTitle}? It’ll only take a minute.`
+      : 'Pick up where you stopped? It’ll only take a minute.',
   }),
   () => ({
     title: 'That lesson is still open',
-    body: 'Finish it now while it’s fresh — should only take a minute.',
+    body: 'Finish it while it’s fresh. You were so close.',
   }),
 ];
 
-/** Course is mostly done and today's lesson isn't finished yet. Names the
- *  actual progress rather than a generic "come back". */
+/** Course is mostly done and today's lesson isn't finished yet. */
 const courseNearCompletion: Variants = [
   (f) => ({
     title: f.courseTitle
@@ -181,7 +276,7 @@ const courseNearCompletion: Variants = [
     body: 'You’re close to the finish line. One more lesson gets you closer.',
   }),
   (f) => ({
-    title: 'The finish line is close',
+    title: 'The finish line is right there',
     body: f.courseTitle
       ? `${f.courseTitle} is ${f.courseProgressPct}% done. Don’t stop now.`
       : 'This course is almost done. Don’t stop now.',
@@ -195,12 +290,11 @@ const milestone: Variants = [
   }),
   (f) => ({
     title: 'Look at that streak 🔥',
-    body: `${f.streakDays} ${dayWord(f.streakDays)}. Genuinely impressive.`,
+    body: `${f.streakDays} ${dayWord(f.streakDays)} in a row. I’m genuinely impressed.`,
   }),
 ];
 
-/** A strong week — different signal from a streak milestone, so it earns its
- *  own copy rather than reusing the streak-count framing. */
+/** A strong week — its own signal, so its own copy. */
 const progressCelebration: Variants = [
   (f) => ({
     title: 'This was a strong week',
@@ -212,16 +306,27 @@ const progressCelebration: Variants = [
   }),
 ];
 
-const TEMPLATES: Record<TeyReason, Variants> = {
-  STREAK_AT_RISK: streakAtRisk,
-  STREAK_CRITICAL: streakCritical,
-  DAILY_GOAL_INCOMPLETE: dailyGoal,
-  INACTIVE_RETURN: inactiveReturn,
-  MILESTONE: milestone,
-  STREAK_LOST: streakLost,
-  LESSON_ABANDONED: lessonAbandoned,
-  COURSE_NEAR_COMPLETION: courseNearCompletion,
-  PROGRESS_CELEBRATION: progressCelebration,
+/**
+ * The pool for a reason. Most reasons have one; a few pick by the facts,
+ * because "your streak broke" reads differently when it can still be fixed,
+ * and day 1 away is a different conversation from day 30.
+ */
+const POOLS: Record<TeyReason, (f: Facts) => Variants> = {
+  DAILY_GOAL_INCOMPLETE: () => dailyGoal,
+  STREAK_AT_RISK: () => streakAtRisk,
+  STREAK_CRITICAL: () => streakCritical,
+  STREAK_LOST: (f) => ((f.repairLostStreak ?? 0) > 0 ? streakLostRepairable : streakLost),
+  STREAK_REPAIR_EXPIRING: () => streakRepairExpiring,
+  FIRST_LESSON: () => firstLesson,
+  INACTIVE_RETURN: (f) => {
+    const d = f.daysSinceLastActivity ?? 1;
+    if (d >= 30) return inactiveFinal;
+    return d <= 2 ? inactiveEarly : inactiveWarm;
+  },
+  LESSON_ABANDONED: () => lessonAbandoned,
+  MILESTONE: () => milestone,
+  COURSE_NEAR_COMPLETION: () => courseNearCompletion,
+  PROGRESS_CELEBRATION: () => progressCelebration,
 };
 
 const TEASING_OVERRIDES: Partial<Record<TeyReason, Variants>> = {
@@ -250,7 +355,7 @@ export function renderTemplate(
 ): RenderedMessage {
   const variants =
     (isTeasing(ctx.tone) ? TEASING_OVERRIDES[ctx.reason] : undefined) ??
-    TEMPLATES[ctx.reason] ??
+    POOLS[ctx.reason]?.(ctx.facts) ??
     dailyGoal;
 
   const variant = variants[pickIndex(userId, localDate, variants.length)];
@@ -271,6 +376,11 @@ function truncate(text: string, max: number): string {
 
 /** Notification tag — collapses repeats of the same reason on the device. */
 export function tagFor(reason: TeyReason): string {
+  // The streak rungs share one tag, so the 22:00 last call REPLACES the
+  // 20:00 saver on the lock screen instead of stacking under it.
+  if (reason === 'STREAK_AT_RISK' || reason === 'STREAK_CRITICAL' || reason === 'DAILY_GOAL_INCOMPLETE') {
+    return 'tey-today';
+  }
   return `tey-${reason}`;
 }
 

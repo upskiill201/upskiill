@@ -359,6 +359,8 @@ describe('GoogleDriveService', () => {
         unsupported: [expect.objectContaining({ id: 'sheet-1' })],
         estimatedVideoDurationSeconds: 90,
         videosMissingDuration: 1,
+        videosOverLimit: 0,
+        modules: 1,
       });
     });
   });

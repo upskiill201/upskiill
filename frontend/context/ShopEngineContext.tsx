@@ -64,6 +64,8 @@ export type ShopScene =
   | {
       kind: 'CHEST_REVEAL';
       chestName: string;
+      /** The chest's own art key (e.g. chest-gold) — drawn from public/art/items. */
+      chestArt?: string;
       accent: string;
       rarity: string;
       coins: number;

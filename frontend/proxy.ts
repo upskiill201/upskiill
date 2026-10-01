@@ -1,5 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { LEARNER_ENTRY, LEARNER_GATE, STUDIO_ENTRY, STUDIO_GATE } from '@/lib/launch';
+
+/**
+ * The app's front doors while it is still closed (see lib/launch.ts). A
+ * logged-out visitor who reaches any of these is sent to the notify-me form
+ * instead of an empty app. Exact match or a sub-path — never a bare prefix, so
+ * /profile does not catch /creator-profile.
+ */
+const LEARNER_DOORS = [
+  '/start', '/login', '/signup', '/join', '/launch', '/onboarding',
+  '/forgot-password', '/reset-password', '/verify-email', '/role-select',
+  '/explore', '/courses', '/learn', '/dashboard', '/cart', '/checkout',
+  '/my-courses', '/my-learning', '/leaderboards', '/quests', '/shop',
+  '/profile', '/certificates', '/student',
+];
+
+const underAny = (path: string, prefixes: string[]) =>
+  prefixes.some((p) => path === p || path.startsWith(`${p}/`));
+
+/** Constant-time compare — the preview key is a secret, so don't leak it by timing. */
+function sameSecret(a: string | undefined, b: string | undefined): boolean {
+  if (!a || !b || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
 
 /**
  * Teyro Middleware — Cookie-presence-only traffic routing.
@@ -9,12 +35,48 @@ import type { NextRequest } from 'next/server';
  * - Profile-level authorization (hasStudentAccess, hasCreatorAccess) is handled
  *   server-side in the respective layout.tsx files which call /api/auth/me.
  *
- * This file's only job: redirect unauthenticated users to the correct login page,
- * and redirect authenticated users away from login/signup pages.
+ * Jobs: (1) hold the launch gate, (2) redirect unauthenticated users to the
+ * correct login page.
  */
 export function proxy(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value;
   const path = request.nextUrl.pathname;
+
+  // ── Launch gate ──────────────────────────────────────────────────────────
+  // Who gets through: anyone already signed in, and anyone holding the private
+  // preview cookie (the team, testers, investors). Set LAUNCH_PREVIEW_KEY in
+  // Vercel and share  https://teyro.app/?preview=<key>  — it sets a 30-day
+  // cookie. It is a soft gate: the app screens still check auth themselves.
+  const previewKey = process.env.LAUNCH_PREVIEW_KEY;
+  if (previewKey && sameSecret(request.nextUrl.searchParams.get('preview') ?? undefined, previewKey)) {
+    const clean = request.nextUrl.clone();
+    clean.searchParams.delete('preview');
+    const res = NextResponse.redirect(clean);
+    res.cookies.set('teyro_preview', previewKey, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    res.headers.set('Cache-Control', 'no-store');
+    return res;
+  }
+  const hasPreview = sameSecret(request.cookies.get('teyro_preview')?.value, previewKey);
+
+  if (!token && !hasPreview) {
+    const isStudioDoor = path === '/creator' || path.startsWith('/creator/');
+    let target: string | null = null;
+    if (STUDIO_GATE && isStudioDoor) target = STUDIO_ENTRY.href;
+    else if (LEARNER_GATE && underAny(path, LEARNER_DOORS)) target = LEARNER_ENTRY.href;
+    // Logged-out visitors headed for the admin/learner login walls also land here.
+    if (target) {
+      const res = NextResponse.redirect(new URL(target, request.url));
+      // Temporary and uncacheable: on launch day the same URLs must work again.
+      res.headers.set('Cache-Control', 'no-store');
+      return res;
+    }
+  }
 
   // Paths that are public and require no token
   const isStudentLogin = path === '/login';
@@ -35,8 +97,10 @@ export function proxy(request: NextRequest) {
   // /admin is new privileged surface.
   const isLearn = path.startsWith('/learn');
   const isAdmin = path.startsWith('/admin');
-  const isTestRoute = path.startsWith('/creator-onboarding-test');
-  const isCreatorStudio = path.startsWith('/creator') && !isCreatorAuthPage && !isTestRoute;
+  // Exactly /creator and /creator/… — a bare prefix match also walled off the
+  // PUBLIC creator pages (/creator-profile/:username) from logged-out visitors.
+  const isCreatorStudio =
+    (path === '/creator' || path.startsWith('/creator/')) && !isCreatorAuthPage;
 
   // 1. No token → enforce login walls on protected routes only
   if (!token) {
@@ -49,7 +113,9 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     if (isCreatorStudio) {
-      return NextResponse.redirect(new URL('/creator/login', request.url));
+      const loginUrl = new URL('/creator/login', request.url);
+      loginUrl.searchParams.set('next', path + (request.nextUrl.search ?? ''));
+      return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
   }

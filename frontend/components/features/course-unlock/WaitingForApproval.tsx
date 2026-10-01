@@ -16,6 +16,8 @@ interface WaitingForApprovalProps {
   amountLabel?: string;
   operatorLabel?: string;
   phoneNational?: string;
+  /** Renewal of access that is still active: wait for the end date to move. */
+  renewedPast?: string | null;
   onUnlocked: () => void;
   onCancel: () => void;
 }
@@ -34,6 +36,7 @@ export default function WaitingForApproval({
   amountLabel,
   operatorLabel,
   phoneNational,
+  renewedPast = null,
   onUnlocked,
   onCancel,
 }: WaitingForApprovalProps) {
@@ -47,6 +50,7 @@ export default function WaitingForApproval({
         <PollWatcher
           key={attempt}
           courseId={courseId}
+          renewedPast={renewedPast}
           onUnlocked={onUnlocked}
           onExhausted={() => setPhase('exhausted')}
         />
@@ -126,10 +130,12 @@ export default function WaitingForApproval({
 /** Headless poll-loop host — renders nothing, owns exactly one loop. */
 function PollWatcher({
   courseId,
+  renewedPast,
   onUnlocked,
   onExhausted,
 }: {
   courseId: string;
+  renewedPast: string | null;
   onUnlocked: () => void;
   onExhausted: () => void;
 }) {
@@ -137,6 +143,7 @@ function PollWatcher({
     enabled: true,
     pollIntervalMs: 3000,
     maxAttempts: 20,
+    renewedPast,
     onUnlocked,
     onExhausted,
   });

@@ -18,12 +18,9 @@ import CelebrationMascot, { MascotPose } from '../CelebrationMascot';
 import { CountUpNumber, StatPillRow, TypewriterBubble, WeekCalendarRow } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playHaptic } from '@/lib/haptics';
-import {
-  playIceCrackle,
-  playLossMotif,
-  playStreakFanfare,
-} from '@/lib/audio/celebrationAudio';
+import { celebrationHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { confettiColors } from '../confetti';
 import { pickStreakSpeech } from '@/lib/tey/streakVoice';
 
 type StreakSceneInput = Extract<CelebrationScene, { kind: 'STREAK' }>;
@@ -33,7 +30,6 @@ interface StreakSceneProps {
   onAdvance: () => void;
 }
 
-const CONFETTI_COLORS = ['#FF8A00', '#FFB020', '#FFD54D', '#3D5AFE', '#FFFFFF'];
 const COUNT_FLIP_DELAY_MS = 950; // flame lands → number counts up
 
 export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
@@ -42,7 +38,8 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
   const isSaved = scene.mode === 'SAVED';
 
   const [speechDone, setSpeechDone] = useState(reducedMotion);
-  const [repairState, setRepairState] = useState<'idle' | 'working'>('idle');
+  const [repairState, setRepairState] = useState<'idle' | 'working' | 'failed'>('idle');
+  const [repairError, setRepairError] = useState<string | null>(null);
   const firedRef = useRef(false);
 
   const previousDays =
@@ -68,17 +65,17 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
     if (firedRef.current) return;
     firedRef.current = true;
     if (isLost) {
-      playLossMotif();
-      playHaptic('heavy');
+      playSound('streakLost');
+      celebrationHaptic('soft');
       return;
     }
     if (isSaved) {
-      playIceCrackle();
-      playHaptic('medium');
+      playSound('streakFreeze');
+      celebrationHaptic('win');
       return;
     }
-    playStreakFanfare();
-    playHaptic('teyroCelebration');
+    playSound(scene.personalBest ? 'streakMilestone' : 'streak');
+    celebrationHaptic('big');
     if (!reducedMotion && typeof window !== 'undefined') {
       const originY = 0.3;
       confetti({
@@ -86,17 +83,19 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
         spread: 75,
         startVelocity: 38,
         origin: { x: 0.5, y: originY },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors('fire'),
         scalar: 0.9,
         disableForReducedMotion: true,
       });
-      const second = setTimeout(() => {
+      // Fire-and-forget (see LevelUpScene): the once-only guard would never
+      // re-arm a cancelled timer.
+      setTimeout(() => {
         confetti({
           particleCount: 55,
           angle: 60,
           spread: 55,
           origin: { x: 0.05, y: originY },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('fire'),
           disableForReducedMotion: true,
         });
         confetti({
@@ -104,13 +103,12 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
           angle: 120,
           spread: 55,
           origin: { x: 0.95, y: originY },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('fire'),
           disableForReducedMotion: true,
         });
       }, 320);
-      return () => clearTimeout(second);
     }
-  }, [isLost, isSaved, reducedMotion]);
+  }, [isLost, isSaved, reducedMotion, scene.personalBest]);
 
   // ── Default speech lines (Tey's voice — pooled, tiered by day count) ──────
   // Lazy initializer, not an effect: picked once per scene instance so a
@@ -126,10 +124,10 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
 
   const statItems = useMemo(() => {
     if (scene.personalBest) {
-      return [{ label: 'NEW RECORD', value: `${scene.days} DAYS`, color: '#FFC800' }];
+      return [{ label: 'NEW RECORD', value: `${scene.days} DAYS`, color: 'var(--warning)' }];
     }
     if (scene.mode !== 'LOST') {
-      return [{ label: 'DAY STREAK', value: `${scene.days}`, color: '#FF8A00' }];
+      return [{ label: 'DAY STREAK', value: `${scene.days}`, color: 'var(--warning)' }];
     }
     return [];
   }, [scene.days, scene.personalBest, scene.mode]);
@@ -142,14 +140,22 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
       onAdvance();
     } catch (e) {
       console.error('Streak repair failed:', e);
-      setRepairState('idle');
+      setRepairError(e instanceof Error && e.message ? e.message : "Couldn't repair your streak just now.");
+      setRepairState('failed');
     }
   };
 
   const cta =
     scene.mode === 'LOST' && scene.onRepair
       ? {
-          text: repairState === 'working' ? 'REPAIRING…' : 'REPAIR STREAK',
+          text:
+            repairState === 'working'
+              ? 'REPAIRING…'
+              : repairState === 'failed'
+                ? 'TRY AGAIN'
+                : scene.repairCost
+                  ? `REPAIR FOR ${scene.repairCost} COINS`
+                  : 'REPAIR STREAK',
           onClick: handleRepair,
           variant: 'gold' as const,
           disabled: repairState === 'working',
@@ -161,7 +167,10 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
         };
 
   return (
-    <SceneShell cta={cta}>
+    <SceneShell
+      cta={cta}
+      secondaryCta={scene.mode === 'LOST' && scene.onRepair ? { text: 'NO THANKS', onClick: onAdvance } : undefined}
+    >
       <h1 className={styles.headline}>{headline}</h1>
 
       <div className={`${styles.flameStage} ${isLost ? styles.streakLost : ''}`}>
@@ -190,6 +199,11 @@ export default function StreakScene({ scene, onAdvance }: StreakSceneProps) {
         {(scene.weekDays?.length ?? 0) > 0 && <WeekCalendarRow days={scene.weekDays!} />}
 
         {statItems.length > 0 && <StatPillRow items={statItems} />}
+        {repairError && (
+          <p className={styles.repairError} role="alert">
+            {repairError}
+          </p>
+        )}
       </div>
 
       {/* Tey + typewriter speech bubble */}

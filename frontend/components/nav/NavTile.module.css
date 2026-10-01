@@ -1,0 +1,63 @@
+/* A nav glyph on a soft tile of its tone. The active tile deepens the tint
+   and gains an outline, so "current" never rests on colour alone. */
+.tile {
+  --tile-size: 40px;
+  --glyph-size: 22px;
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tile-tone) 12%, transparent);
+  color: var(--tile-tone);
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.tile svg {
+  width: var(--glyph-size);
+  height: var(--glyph-size);
+}
+
+.sm {
+  --tile-size: 32px;
+  --glyph-size: 18px;
+  border-radius: 10px;
+}
+
+.lg {
+  --tile-size: 52px;
+  --glyph-size: 28px;
+  border-radius: 14px;
+}
+
+/* The PNG icons carry their own colour, so the tile stays clear until active. */
+.image {
+  background: transparent;
+}
+
+.tile img {
+  width: var(--glyph-size);
+  height: var(--glyph-size);
+  object-fit: contain;
+}
+
+.lg.image {
+  --glyph-size: 32px;
+}
+
+.image {
+  --glyph-size: 28px;
+}
+
+.sm.image {
+  --glyph-size: 20px;
+}
+
+.active {
+  background: color-mix(in srgb, var(--tile-tone) 20%, transparent);
+  border-color: color-mix(in srgb, var(--tile-tone) 55%, transparent);
+}

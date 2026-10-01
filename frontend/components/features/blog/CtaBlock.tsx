@@ -1,11 +1,18 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import type { CtaOverride } from '@/lib/blog/types';
+import { APP_LAUNCHES, gateHref, LEARNER_ENTRY, LEARNER_GATE } from '@/lib/launch';
 import styles from './CtaBlock.module.css';
 
 interface CtaBlockProps {
   cta?: CtaOverride;
 }
+
+const GATED = {
+  title: 'Be first in when Teyro launches',
+  text: `Teyro launches in ${APP_LAUNCHES}: short daily lessons in coding and AI, with streaks, leagues and friends. Leave your email and we’ll tell you the day the doors open.`,
+  label: 'Get notified',
+};
 
 const DEFAULTS = {
   title: 'Turn reading into actually learning',
@@ -14,25 +21,49 @@ const DEFAULTS = {
   label: 'Try Teyro free',
 };
 
-// Soft conversion block at the end of every post. Plain <Link> + CSS module
-// (NOT components/ui/Button — that component is client-only and would break RSC).
+// Conversion panel at the end of every post (and the blog index) — the
+// homepage's final-CTA look: flat brand blue, cheering Tey, white 3D button.
+// Plain <Link> + CSS module (NOT components/ui/Button — that component is
+// client-only and would break RSC).
 export default function CtaBlock({ cta }: CtaBlockProps) {
-  const title = cta?.title ?? DEFAULTS.title;
-  const text = cta?.text ?? DEFAULTS.text;
-  const href = cta?.href ?? DEFAULTS.href;
-  const label = cta?.label ?? DEFAULTS.label;
+  // While the app is closed (lib/launch.ts) any CTA that would have sent the
+  // reader into it points at the notify-me form instead, and says so — a
+  // "Start learning free" label on a waitlist link would be a lie.
+  const href = gateHref(cta?.href ?? DEFAULTS.href) ?? DEFAULTS.href;
+  const toWaitlist = LEARNER_GATE && href === LEARNER_ENTRY.href;
+  const title = toWaitlist ? GATED.title : (cta?.title ?? DEFAULTS.title);
+  const text = toWaitlist ? GATED.text : (cta?.text ?? DEFAULTS.text);
+  const label = toWaitlist ? GATED.label : (cta?.label ?? DEFAULTS.label);
 
   return (
     <aside className={styles.block} aria-label="Call to action">
       <div className={styles.content}>
-        <p className={styles.kicker}>Ready when you are</p>
         <h2 className={styles.title}>{title}</h2>
         <p className={styles.text}>{text}</p>
         <Link href={href} className={styles.button}>
           {label}
-          <ArrowRight size={16} strokeWidth={3} className={styles.buttonIcon} />
         </Link>
-        <p className={styles.fineprint}>Free to start · No credit card needed</p>
+        <p className={styles.fineprint}>
+          {toWaitlist ? 'No spam · One email when it’s live' : 'Free to start · No credit card needed'}
+        </p>
+      </div>
+      <div className={styles.art} aria-hidden="true">
+        <Image
+          src="/User onbarding Assets/tey/cheering.webp"
+          alt=""
+          width={180}
+          height={209}
+          className={styles.tey}
+        />
+      </div>
+      <div className={styles.art} aria-hidden="true">
+        <Image
+          src="/User onbarding Assets/tey/cheering.webp"
+          alt=""
+          width={180}
+          height={209}
+          className={styles.tey}
+        />
       </div>
     </aside>
   );

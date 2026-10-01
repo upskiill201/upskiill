@@ -10,14 +10,16 @@
  */
 
 import React, { useEffect } from 'react';
-import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { playWhoosh } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './Scene.module.css';
 
 export type MascotPose = 'idle' | 'cheer' | 'grab' | 'hold' | 'toss' | 'hug' | 'sad';
 
 const MASCOT_POSES: Partial<Record<MascotPose, { src: string }>> = {
+  // A lost streak must not show Tey cheering — reuse the sad Tey from
+  // onboarding (the same art WelcomeBackScene uses).
+  sad: { src: '/User onbarding Assets/Step_7_tey_skiped_state.webp' },
   // Future pose art slots, e.g. grab: { src: '/Tey Poses/Tey_grab.png' }
 };
 
@@ -78,7 +80,7 @@ export default function CelebrationMascot({
 
   useEffect(() => {
     if (pose === 'grab' || pose === 'toss' || pose === 'cheer') {
-      if (!reducedMotion) playWhoosh('up');
+      if (!reducedMotion) playSound('teyPop');
     }
   }, [pose, reducedMotion]);
 
@@ -106,7 +108,8 @@ export default function CelebrationMascot({
             position: 'absolute',
             inset: '12%',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 68%)',
+            // A soft brand-tinted puff: on the white stage a white one vanished.
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-brand) 16%, transparent) 0%, transparent 68%)',
             pointerEvents: 'none',
           }}
         />

@@ -1,0 +1,63 @@
+/* A drawn lock-screen notification. Tokens only. */
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card) 92%, var(--bg-section));
+  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--color-ink) 30%, transparent);
+  text-align: left;
+}
+
+.icon {
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.app {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.time {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+
+.body {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}

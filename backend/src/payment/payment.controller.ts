@@ -9,6 +9,7 @@ import {
   Headers,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
+import { isPurchasablePlan } from '../course/pricing-engine';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 
@@ -23,7 +24,7 @@ export class PaymentController {
   async subscribeCourse(
     @Req() req: Request,
     @Body('courseId') courseId: string,
-    @Body('plan') plan: 'WEEKLY' | 'MONTHLY' | 'YEARLY',
+    @Body('plan') plan: string,
     @Body('provider') provider?: 'STRIPE' | 'MESOMB',
     @Body('phone') phone?: string,
     @Body('service') service?: string,
@@ -38,8 +39,14 @@ export class PaymentController {
     if (!courseId) {
       throw new BadRequestException('Course ID is required');
     }
-    const validPlans = ['WEEKLY', 'MONTHLY', 'YEARLY'];
-    const chosenPlan = validPlans.includes(plan) ? plan : 'MONTHLY';
+    // Weekly access was retired 2026-09-24. Reject it loudly rather than
+    // silently charging a stale client the (larger) monthly price.
+    if (plan === 'WEEKLY') {
+      throw new BadRequestException(
+        'Weekly access is no longer offered. Please choose Monthly or Yearly.',
+      );
+    }
+    const chosenPlan = isPurchasablePlan(plan) ? plan : 'MONTHLY';
 
     // Only real payment rails are accepted. (The legacy 'MANUAL' instant
     // unlock was a paywall bypass reachable by any logged-in user.)

@@ -1,6 +1,8 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AnalyticsService } from './analytics.service';
+import { CoursePulseService } from './course-pulse.service';
+import { StudioHomeService } from './studio-home.service';
 
 /**
  * Creator-facing course analytics. Every route requires a session AND the
@@ -9,7 +11,26 @@ import { AnalyticsService } from './analytics.service';
 @Controller('analytics/courses')
 @UseGuards(AuthGuard('jwt'))
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly pulse: CoursePulseService,
+  ) {}
+
+  /** The studio's course pulse: the path, Tey's read, activity (range = 7|30|90 days). */
+  @Get(':courseId/pulse')
+  async getPulse(@Req() req: any, @Param('courseId') courseId: string, @Query('range') range?: string) {
+    return this.pulse.getPulse(req.user.id as string, courseId, Number(range) || 30, req.user.role === 'ADMIN');
+  }
+
+  /** One lesson up close: where learners stop, the hardest exercises, who's stuck. */
+  @Get(':courseId/lessons/:lessonId/insight')
+  async getLessonInsight(
+    @Req() req: any,
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+  ) {
+    return this.pulse.getLessonInsight(req.user.id as string, courseId, lessonId, req.user.role === 'ADMIN');
+  }
 
   @Get(':courseId/overview')
   async getOverview(@Req() req: any, @Param('courseId') courseId: string) {
@@ -82,7 +103,23 @@ export class AnalyticsController {
 @Controller('analytics/instructor')
 @UseGuards(AuthGuard('jwt'))
 export class AnalyticsInstructorController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly pulse: CoursePulseService,
+    private readonly home: StudioHomeService,
+  ) {}
+
+  /** The studio home: this week, what needs the creator, every course, live activity. */
+  @Get('home')
+  async getHome(@Req() req: any) {
+    return this.home.getHome(req.user.id as string);
+  }
+
+  /** Red dots for the studio menu: learners to nudge, questions to answer. */
+  @Get('badges')
+  async getBadges(@Req() req: any) {
+    return this.pulse.getBadges(req.user.id as string);
+  }
 
   @Get('overview')
   async getInstructorOverview(@Req() req: any) {

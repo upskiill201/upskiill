@@ -18,6 +18,7 @@ import { ProfileService } from '../profile/profile.service';
 import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { getJwtSecret } from './jwt-secret.util';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 // Precomputed once at boot — lets credential-miss paths burn the same bcrypt
 // cost as a real check so response latency cannot probe for accounts.
@@ -34,7 +35,13 @@ export class AuthService {
     private profileService: ProfileService,
     private authEmails: AuthEmailService,
     private userOnboarding: UserOnboardingService,
+    private events: EventEmitter2,
   ) {}
+
+  /** Tells the earnings module someone became a creator (Founding programme). Idempotent. */
+  private markCreatorJoined(userId: string) {
+    this.events.emit('creator.joined', { userId });
+  }
 
   async signup(dto: SignupDto) {
     let existing = await this.prisma.user.findUnique({
@@ -80,6 +87,8 @@ export class AuthService {
           data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
           include: { studentProfile: true },
         });
+
+        this.markCreatorJoined(existing.id);
 
         // Ensure creator profile row exists
         await this.prisma.profile.upsert({
@@ -263,6 +272,8 @@ export class AuthService {
         );
       }
     }
+
+    if (requestedRole === 'INSTRUCTOR') this.markCreatorJoined(user.id);
 
     // Hydrate the creator profile from onboarding answers if provided
     if (dto.onboarding && requestedRole === 'INSTRUCTOR') {
@@ -494,6 +505,7 @@ export class AuthService {
         where: { id: user.id },
         data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
       });
+      this.markCreatorJoined(user.id);
     } else if (
       dto.role === 'INSTRUCTOR' &&
       user.role === Role.ADMIN &&
@@ -786,6 +798,7 @@ export class AuthService {
         ) {
           updates.role = 'INSTRUCTOR';
           updates.hasCreatorAccess = true;
+          this.markCreatorJoined(user.id);
           // Ensure creator Profile row exists
           await this.prisma.profile.upsert({
             where: { userId: user.id },
@@ -968,6 +981,55 @@ export class AuthService {
     );
   }
 
+  /**
+   * Adds a creator profile to the signed-in account (the learner app's
+   * "Become a creator", and creator onboarding for anyone already signed in).
+   *
+   * The session proves who this is, so unlike the sign-up / login upgrade
+   * paths no password is asked for. Grants creator access, makes INSTRUCTOR
+   * the active role (an ADMIN keeps ADMIN), ensures the Profile row, saves
+   * the onboarding answers onto it and reissues the session token.
+   * Idempotent: an existing creator just gets their answers saved.
+   */
+  async becomeCreator(userId: string, onboarding?: Record<string, unknown>) {
+    let user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('Please sign in again.');
+
+    const needsRole = user.role !== Role.INSTRUCTOR && user.role !== Role.ADMIN;
+    if (!user.hasCreatorAccess || needsRole) {
+      user = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          hasCreatorAccess: true,
+          ...(needsRole ? { role: Role.INSTRUCTOR } : {}),
+        },
+      });
+    }
+
+    this.markCreatorJoined(userId);
+
+    await this.prisma.profile.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
+
+    if (onboarding) {
+      try {
+        await this.profileService.hydrateFromOnboarding(userId, onboarding);
+      } catch (err) {
+        // The studio still opens; the answers can be filled in from the profile.
+        console.warn(`Profile hydration failed for user ${userId}:`, err);
+      }
+    }
+
+    return {
+      ...(await this.signToken(user.id, user.email, user.fullName, user.role)),
+      hasBothRoles: user.hasStudentAccess && user.hasCreatorAccess,
+      redirectTo: '/creator',
+    };
+  }
+
   async getMyEnrollments(userId: string) {
     // Trimmed from `include: { course: true }` (the entire Course row —
     // curriculum Json, description @db.Text, skills/requirements/outcomes
@@ -991,6 +1053,7 @@ export class AuthService {
             level: true,
             shortDescription: true,
             subtitle: true,
+            thumbnailUrl: true,
           },
         },
       },
@@ -1005,28 +1068,88 @@ export class AuthService {
 
     if (enrollments.length === 0) return [];
 
-    // Real per-course lesson totals in ONE grouped query (no N+1) — the
-    // My Learning page renders "LESSON x / total" from this instead of a
-    // hardcoded 25.
+    // Every course's section → published-lesson order in ONE query (no N+1).
+    // It gives two things:
+    //  - real lesson totals ("LESSON x / total" instead of a hardcoded 25);
+    //  - `nextLesson`, so the home screen can send the learner straight to
+    //    their next lesson on the map without first loading the whole course.
+    //
+    // The ordering here MUST match what the learner sees on the map:
+    // `CourseService.findOne` returns every section by `orderIndex` and, for
+    // students, only published lessons by `orderIndex`. `sectionIndex` is the
+    // section's position in that full list, because that is exactly what the
+    // /learn/[id]/section/[sectionIndex] route indexes into.
     const courseIds = enrollments.map((e) => e.courseId);
     const sections = await this.prisma.section.findMany({
       where: { courseId: { in: courseIds } },
-      select: { courseId: true, _count: { select: { lessons: true } } },
+      orderBy: { orderIndex: 'asc' },
+      select: {
+        courseId: true,
+        title: true,
+        lessons: {
+          where: { status: 'published' },
+          orderBy: { orderIndex: 'asc' },
+          select: { id: true, title: true },
+        },
+      },
     });
-    const lessonsByCourse = new Map<string, number>();
+
+    const sectionsByCourse = new Map<string, typeof sections>();
     for (const s of sections) {
-      lessonsByCourse.set(
-        s.courseId,
-        (lessonsByCourse.get(s.courseId) ?? 0) + s._count.lessons,
-      );
+      const list = sectionsByCourse.get(s.courseId) ?? [];
+      list.push(s);
+      sectionsByCourse.set(s.courseId, list);
     }
 
-    return enrollments.map((enrollment) => ({
-      ...enrollment,
-      course: {
-        ...enrollment.course,
-        totalLessons: lessonsByCourse.get(enrollment.courseId) ?? 0,
-      },
-    }));
+    return enrollments.map((enrollment) => {
+      const courseSections = sectionsByCourse.get(enrollment.courseId) ?? [];
+      const done = new Set(
+        Array.isArray(enrollment.completedLessons)
+          ? (enrollment.completedLessons as unknown[]).filter(
+              (id): id is string => typeof id === 'string',
+            )
+          : [],
+      );
+
+      let totalLessons = 0;
+      // Counted against PUBLISHED lessons, from the same `completedLessons`
+      // the map reads — not from the stored `progress` %, which can drift
+      // from it (seeded data shows 64% with an empty array). Home and the
+      // map must never disagree about where the learner is.
+      let completedCount = 0;
+      let nextLesson: {
+        id: string;
+        title: string;
+        sectionIndex: number;
+        sectionTitle: string;
+        /** 1-based position across the whole course, for "Lesson 4 of 25". */
+        number: number;
+      } | null = null;
+
+      courseSections.forEach((section, sectionIndex) => {
+        for (const lesson of section.lessons) {
+          totalLessons += 1;
+          if (done.has(lesson.id)) completedCount += 1;
+          if (!nextLesson && !done.has(lesson.id)) {
+            nextLesson = {
+              id: lesson.id,
+              title: lesson.title,
+              sectionIndex,
+              sectionTitle: section.title,
+              number: totalLessons,
+            };
+          }
+        }
+      });
+
+      return {
+        ...enrollment,
+        // null when every published lesson is done — the course is finished,
+        // or has no published lessons yet. Never guessed.
+        nextLesson,
+        completedCount,
+        course: { ...enrollment.course, totalLessons },
+      };
+    });
   }
 }

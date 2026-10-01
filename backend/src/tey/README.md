@@ -23,8 +23,9 @@ with `AI = language / reasoning / personalization`, never `AI = source of truth`
 | 3 | Web push + deep links | **shipped** |
 | 4 | Admin dashboard | **shipped** |
 | 5 | AI provider abstraction | **shipped (disarmed)** |
-| 6 | WhatsApp | future |
+| 6 | WhatsApp | future (premium) |
 | 7 | Rive mascot states | future |
+| 8 | Duolingo-grade ladder, event hub, unlock journey, creator push | **shipped** (2026-09-28) — see "Notification program" below |
 
 Delivery is **off by default**. With `TEY_DELIVERY_ENABLED` unset the scheduler
 claims due actions, revalidates them, and records what it *would* have sent to
@@ -407,3 +408,101 @@ testing the connection.
 adapter, just a `kind: 'OPENAI_COMPATIBLE'` row pointed at CodeCraft's
 `baseUrl`. Both env vars are seed-time-only: read once by the script, then
 encrypted into the database. Neither is ever read at runtime.
+
+---
+
+## Notification program (2026-09-28)
+
+Duolingo's reminder shape, in Tey's voice, across push, the in-app bell and
+email — for learners and for creators.
+
+### The learner's day (reminder rules)
+
+| Rung | Rule | When (learner-local) |
+|---|---|---|
+| Practice reminder | `DAILY_GOAL_INCOMPLETE` | the hour they chose (`preferredHour`), else habit, else 12:00 on a streak / 18:00 without. Skipped for a streak learner whose hour is after 16:00 — the saver covers them |
+| Streak saver | `STREAK_AT_RISK` | 20:00 (or their later chosen hour, capped 21:00) |
+| Last call | `STREAK_CRITICAL` | 22:00, only with no freeze to cover it |
+| Freeze used | event `streak.freeze.used` | when StreakService spends one |
+| Streak lost | `STREAK_LOST` | the day it's noticed; leads with the repair offer (price + hours left) when one is open |
+| Repair closing | `STREAK_REPAIR_EXPIRING` | once, on the offer's last day |
+| First lesson | `FIRST_LESSON` | account days 0, 1, 3, 6 with no lesson yet |
+| Win-back | `INACTIVE_RETURN` | days 1, 2, 3, 5, 7, 14, 21, 30 — day 30 is "These reminders don't seem to be working, so I'll stop", and nothing sends after it |
+
+The practice reminder, saver and last call share the device tag `tey-today`,
+so each replaces the one before on the lock screen instead of stacking.
+
+**The planner wake-up (`DAY_PLANNER`).** Rules only plan *today*, and they
+used to be planned only by the learner's own activity — so the day after a
+lesson, the day that matters most, was silent unless they opened the app.
+`planFor` now also queues a `DAY_PLANNER` row for 06:00 tomorrow (jittered)
+while the learner is reachable: on a streak, holding a repair offer, within
+30 days of their last lesson, or in their first week. It never delivers; it
+re-projects and plans that day. Past the last rung nobody is woken, so the
+queue still costs nothing for learners who have gone. `reseedPlanners`
+(every 3h) re-seeds any recently-active learner whose chain broke.
+
+### Event notifications (`notify/`)
+
+`TeyNotifyService` is the hub for "something happened": dedupe → bell row
+(always) → push gate → ledger row → push. `notify.catalogue.ts` lists every
+kind with its settings toggle, throttle, push TTL and device tag. Event pushes
+have their own per-audience daily cap (learner 3, creator 8); the reminder
+policy counts only reminder rules (`REMINDER_RULE_IDS`), so a league
+overtake can't swallow the streak saver.
+
+| Kind | Source | Notes |
+|---|---|---|
+| `STREAK_FREEZE_USED` | `StreakService.reconcile` | once per save |
+| `LEAGUE_PASSED` | `LeagueService.announceOvertakes` | to the learner who was passed; names the rival and the new rank, says so if it cost them the promotion zone. Throttled 3h. The passer gets a bell-only `TEY_LEAGUE_CLIMB` row |
+| `LEAGUE_ENDING` | Sunday 15:00 UTC cron | only learners with something at stake: promotion zone, within 3 places of it, or demotion zone |
+| `LEAGUE_RESULT` | `league.settled` | cohorts now settle Monday 00:20 UTC, so results arrive on time. "Held your spot" is bell-only |
+| `COURSE_UNLOCK` | the unlock journey | below |
+| `STUDIO_*` | `studio.notified` (studio listener, course review) | push only; the studio listener keeps writing its own bell rows |
+
+### The lesson-3 unlock journey
+
+`CourseUnlockJourney` starts when a learner finishes the last free lesson of
+a paid course (`common/course-unlock.util.ts` is the single definition of "at
+the paywall", shared with the email processor). Three stages, each re-checked
+against the real paywall state before sending and dropped the moment the
+learner unlocks, starts a checkout (the abandoned-checkout emails own them
+then), or the course goes away:
+
+| Stage | Push + bell | Email |
+|---|---|---|
+| 1 | ~22h later (same time next day) — "Next up: <real lesson title>" | ~3h later — the next lessons by name |
+| 2 | day 3 — lessons left, or a real learner count (≥10) | day 3 — the course's own outcomes |
+| 3 | day 7 — "your progress is saved" | day 7 — says it's the last one |
+
+Night-time stages are moved to 18:00 local. No fake urgency, no invented
+discounts; creator coupons are never auto-published in these messages.
+
+### Email side
+
+* `learning.streak-at-risk` is now the fallback for learners push can't reach
+  (no device, push off, or delivery in dry-run) — one warning, one channel.
+* `reengagement.inactive` is live: days 3/7/14/30, day 30 the goodbye; only
+  lapses that began around the activation date qualify.
+* `conversion.course-unlock-1..3` — the journey's emails.
+* `creator.weekly-digest` — Monday 09:00 UTC: sales, earnings, new learners,
+  lessons done, finishes, and questions still waiting for an answer. Skipped
+  for an all-zero week. Unsubscribe scope `CREATOR_DIGEST`.
+
+### Settings
+
+`tey_notification_prefs` gained `leagueUpdates`, `courseOffers` and
+`creatorActivity` (migration `20260928150000_add_notify_categories`,
+additive, defaults true). Learner settings show League updates and Course
+updates; creator settings show one Studio notifications switch.
+
+### Crons outside the Tey tick
+
+| Cron | Env gate |
+|---|---|
+| `league-week-ending`, `league-settle-week` | `LEAGUE_CRON_ENABLED` (defaults on in production) |
+| `email-reengagement-scan`, `email-creator-digest-scan` | `EMAIL_SCHEDULER_ENABLED` + the flow's own flag |
+| `tey-planner-reseed` | `TEY_SCHEDULER_ENABLED` |
+
+On Render's free plan these only run while the instance is awake; the
+external `POST /tey/scheduler/tick` covers the reminder queue only.

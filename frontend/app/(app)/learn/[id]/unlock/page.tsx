@@ -82,6 +82,17 @@ export default function LearnUnlockPage() {
       ? new URLSearchParams(window.location.search).get('payment')
       : null,
   );
+  // ?renew=1 — from Settings or an "access ending" email. Plans that don't
+  // auto-renew (Mobile Money, cancelled card plans) come back through here.
+  const [renewIntent] = useState<boolean>(() =>
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('renew') === '1'
+      : false,
+  );
+  const [renewing, setRenewing] = useState(false);
+  // End of the access the learner still has — a renewal only counts as done
+  // once this date has moved (see usePollCourseAccess renewedPast).
+  const [accessExpiresAt, setAccessExpiresAt] = useState<string | null>(null);
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [authRequired, setAuthRequired] = useState(false);
@@ -165,6 +176,18 @@ export default function LearnUnlockPage() {
 
         setCourse(courseData);
 
+        const expiresAt = typeof accessData?.expiresAt === 'string' ? accessData.expiresAt : null;
+
+        // Renewing early: access is still active, so skip the success beat
+        // and go straight to the plans.
+        if (unlocked && renewIntent && capturedPayment !== 'success' && courseData) {
+          setAccessExpiresAt(expiresAt);
+          setRenewing(true);
+          setScene('plans');
+          setPhase('journey');
+          return;
+        }
+
         // Already entitled (webhook beat us here): straight to the beat.
         if (unlocked) {
           setPhase('success');
@@ -193,6 +216,13 @@ export default function LearnUnlockPage() {
           return;
         }
 
+        // Access ran out: a returning payer, not someone who just finished
+        // their free lessons — no celebration replay, straight to renewing.
+        if (accessData?.isExpired === true || renewIntent) {
+          setRenewing(true);
+          setScene('plans');
+        }
+
         setPhase('journey');
       } catch {
         if (!cancelled) {
@@ -205,7 +235,7 @@ export default function LearnUnlockPage() {
     return () => {
       cancelled = true;
     };
-  }, [courseId, capturedPayment, router, returnTo]);
+  }, [courseId, capturedPayment, renewIntent, router, returnTo]);
 
   // ── Subscribe ─────────────────────────────────────────────────────────
   const handleSubscribe = useCallback(
@@ -358,6 +388,7 @@ export default function LearnUnlockPage() {
               amountLabel={momoWaitingLabels.amountLabel}
               operatorLabel={momoWaitingLabels.operatorLabel}
               phoneNational={pendingFields?.phone}
+              renewedPast={renewing ? accessExpiresAt : null}
               onUnlocked={() => setPhase('success')}
               onCancel={() => {
                 setSubscribeError(null);
@@ -395,10 +426,12 @@ export default function LearnUnlockPage() {
               <ScenePlans
                 courseId={course?.id || courseId}
                 basePrice={course?.price}
+                renewing={renewing}
+                accessEndsAt={accessExpiresAt}
                 submitting={isSubscribing}
                 errorMsg={subscribeError}
                 onSubmit={handleSubscribe}
-                onBack={() => goToScene('wall')}
+                onBack={renewing ? exitToReturnTo : () => goToScene('wall')}
               />
             )}
           </JourneySceneShell>
@@ -427,14 +460,17 @@ function getOperatorAndAmountLabels(
       : undefined;
   const planPrice = ladder
     ? {
-        WEEKLY: ladder.weekly.price,
         MONTHLY: ladder.monthly.price,
         YEARLY: ladder.yearly.price,
       }
     : undefined;
 
-  if (planPrice && typeof planPrice[fields.plan] === 'number') {
-    result.amountLabel = formatLocalFromUsd(planPrice[fields.plan], country.currency);
+  // Prefer the amount the learner was shown (it includes any coupon); fall
+  // back to the ladder price for the plan.
+  const amountUsd =
+    typeof fields.amountUsd === 'number' ? fields.amountUsd : planPrice?.[fields.plan];
+  if (typeof amountUsd === 'number') {
+    result.amountLabel = formatLocalFromUsd(amountUsd, country.currency);
   }
   if (fields.service) {
     const op = country.operators.find((o) => o.code === fields.service);

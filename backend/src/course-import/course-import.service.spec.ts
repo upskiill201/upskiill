@@ -520,7 +520,8 @@ describe('CourseImportService', () => {
               driveFileId: 'drive-1',
               driveFileName: 'Intro.mp4',
               status: 'UPLOADED',
-              storageUrl: 'https://cdn.example/course-imports/import-1/drive-1-Intro.mp4',
+              storageUrl:
+                'https://cdn.example/course-imports/import-1/drive-1-Intro.mp4',
             },
             {
               id: 'file-2',

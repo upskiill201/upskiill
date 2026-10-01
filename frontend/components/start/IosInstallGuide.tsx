@@ -31,10 +31,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { ArrowLeft, Check, ChevronRight, CircleEllipsis, Share, SquarePlus } from 'lucide-react';
 import Image from 'next/image';
-import { playHaptic } from '@/lib/haptics';
-import { playPentatonicTick } from '@/lib/audio/uiSounds';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
 import { saveInstallFlowState } from '@/lib/pwa/installFlow';
 import {
@@ -42,7 +42,9 @@ import {
   StartCard,
   StartGhostButton,
   StartHeadline,
-  StepDots,
+  StepProgress,
+  TeySays,
+  startStyles,
 } from './StartUi';
 
 export type IosGuideBrowser = 'safari' | 'chrome';
@@ -145,7 +147,7 @@ function safariSteps(): GuideStep[] {
       name: 'Tap Add',
       headline: 'Last one —',
       accent: 'tap Add to install',
-      teyLine: "That's it — Teyro is now installed as an app on your phone. No App Store needed. 😏",
+      teyLine: "That's it — Teyro is now installed as an app on your phone. No App Store needed.",
       instruction: (
         <>
           Tap <strong>Add</strong> in the top-right corner. Teyro installs and appears as an app
@@ -224,7 +226,7 @@ function chromeSteps(): GuideStep[] {
       name: 'Tap Add',
       headline: 'Last one —',
       accent: 'tap Add to install',
-      teyLine: "That's it — Teyro is now installed as an app on your phone. No App Store needed. 😏",
+      teyLine: "That's it — Teyro is now installed as an app on your phone. No App Store needed.",
       instruction: (
         <>
           Tap <strong>Add</strong> in the top-right corner. Teyro installs and appears as an app
@@ -246,23 +248,14 @@ function steps(browser: IosGuideBrowser): GuideStep[] {
   return browser === 'chrome' ? chromeSteps() : safariSteps();
 }
 
-/** The real screenshot, arrow and all. Bordered and labelled so it never
- *  reads as the actual browser chrome rendering live. */
-function ScreenshotMock({ image }: { image: GuideStep['image'] }) {
-  return (
-    <div className="relative w-full rounded-2xl bg-[#F7F8FA] border border-slate-200/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] overflow-hidden">
-      <Image
-        src={image.src}
-        alt={image.alt}
-        width={image.width}
-        height={image.height}
-        sizes="(max-width: 440px) 92vw, 400px"
-        className="w-full h-auto block"
-        priority={false}
-      />
-    </div>
-  );
-}
+/** Every control the learner taps, as a trail of chips. */
+const TRAIL: Record<string, { label: string; icon?: React.ReactNode }> = {
+  'Open the menu': { label: '•••' },
+  'Tap Share': { label: 'Share', icon: <Share size={14} strokeWidth={3} aria-hidden="true" /> },
+  'Tap More': { label: 'More', icon: <CircleEllipsis size={14} strokeWidth={3} aria-hidden="true" /> },
+  'Add to Home Screen': { label: 'Add to Home Screen', icon: <SquarePlus size={14} strokeWidth={3} aria-hidden="true" /> },
+  'Tap Add': { label: 'Add' },
+};
 
 /* ─── Guide ──────────────────────────────────────────────────────────────── */
 
@@ -284,10 +277,8 @@ export default function IosInstallGuide({
   const stepRef = useRef<HTMLDivElement | null>(null);
   const firstStepRef = useRef(true);
 
-  // Each step replaces the card the learner just acted on, so without this a
-  // screen-reader user hears nothing change and a keyboard user is dropped to
-  // the top of the page. The instruction is the thing they need read out, so
-  // focus lands on the card that carries it.
+  // Each step replaces the card the learner just acted on; moving focus to it
+  // is what makes the change perceivable to screen-reader and keyboard users.
   useEffect(() => {
     if (firstStepRef.current) {
       firstStepRef.current = false;
@@ -321,16 +312,14 @@ export default function IosInstallGuide({
 
   const advance = useCallback(() => {
     if (index < all.length - 1) {
-      // Ascending chime: each step lands a note higher, so progress is audible
-      // as well as visible. playHaptic's own sound is suppressed to avoid
-      // stacking two cues on one tap.
+      // Each step lands a note higher, so progress is audible as well as visible.
       playHaptic('light', false);
-      playPentatonicTick(index + 2);
+      playSound('pathCheck', index);
       setIndex((i) => i + 1);
       return;
     }
 
-    playHaptic('teyroCelebration');
+    celebrationHaptic('win');
     trackInstallEvent('ios_install_guide_completed', {
       platform: 'ios',
       install_method: 'ios-share-sheet',
@@ -341,23 +330,45 @@ export default function IosInstallGuide({
   }, [index, all.length, onCompleted, browser]);
 
   const back = useCallback(() => {
-    playHaptic('light');
+    playHaptic('light', false);
+    playSound('cardBack');
     setIndex((i) => Math.max(0, i - 1));
   }, []);
 
   const step = all[index];
+  const last = index === all.length - 1;
 
   return (
-    <div className="w-full max-w-[440px] flex flex-col items-center gap-4">
-      <StepDots
-        total={all.length}
-        current={index}
-        label={`Step ${index + 1} of ${all.length}: ${step.name}`}
-      />
-
-      <div className="w-full text-center">
-        <StartHeadline lead={step.headline} accent={step.accent} className="!text-[clamp(1.6rem,7.5vw,2.1rem)]" />
+    <div className={startStyles.stack}>
+      <div className={startStyles.guideTop}>
+        <button type="button" className={startStyles.back} onClick={back} disabled={index === 0} aria-label="Back a step">
+          <ArrowLeft size={22} strokeWidth={3} />
+        </button>
+        <StepProgress total={all.length} current={index} label={`Step ${index + 1} of ${all.length}: ${step.name}`} />
       </div>
+
+      <ol className={startStyles.trail} aria-label="What you'll tap">
+        {all.map((s, i) => {
+          const chip = TRAIL[s.name] ?? { label: s.name };
+          const state = i < index ? startStyles.trailDone : i === index ? startStyles.trailNow : '';
+          return (
+            <React.Fragment key={s.name}>
+              {i > 0 && (
+                <ChevronRight size={14} strokeWidth={3} className={startStyles.trailArrow} aria-hidden="true" />
+              )}
+              <li className={`${startStyles.trailStep} ${state}`} aria-current={i === index ? 'step' : undefined}>
+                {i < index ? <Check size={14} strokeWidth={4} aria-hidden="true" /> : chip.icon}
+                {chip.label}
+              </li>
+            </React.Fragment>
+          );
+        })}
+      </ol>
+
+      <span className={startStyles.eyebrow}>
+        Step {index + 1} of {all.length}
+      </span>
+      <StartHeadline lead={step.headline} accent={step.accent} size="md" />
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -370,41 +381,36 @@ export default function IosInstallGuide({
           animate={reduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
           exit={reduce ? { opacity: 0 } : { opacity: 0, x: -26 }}
           transition={{ type: 'spring', stiffness: 340, damping: 30 }}
-          className="w-full outline-none"
+          className={startStyles.stack}
+          style={{ outline: 'none' }}
         >
           <StartCard>
-            <ScreenshotMock image={step.image} />
-
-            {/* The real instruction. Always text, always present — the
-                screenshot above it is illustration, not the source of truth. */}
-            <p className="mt-4 text-[0.95rem] font-[600] text-[#071233] leading-snug text-center">
-              {step.instruction}
-            </p>
-            <p className="mt-1.5 text-[0.85rem] font-[600] text-slate-500 text-center">
-              {step.teyLine}
-            </p>
+            {/* The real screenshot, arrow and all. The sentence under it is the
+                accessible source of truth; the image only illustrates. */}
+            <div className={startStyles.shot}>
+              <Image
+                src={step.image.src}
+                alt={step.image.alt}
+                width={step.image.width}
+                height={step.image.height}
+                sizes="(max-width: 440px) 92vw, 400px"
+              />
+            </div>
+            <p className={startStyles.instruction}>{step.instruction}</p>
           </StartCard>
+          <TeySays pose={last ? 'cheering' : 'pointing'}>{step.teyLine}</TeySays>
         </motion.div>
       </AnimatePresence>
 
-      <div className="w-full">
+      <div className={startStyles.actions}>
         <StartButton
           onClick={advance}
-          ariaLabel={
-            index === all.length - 1
-              ? 'I have added Teyro to my Home Screen'
-              : `Continue to step ${index + 2}`
-          }
-          icon={index === all.length - 1 ? <Check className="w-5 h-5 stroke-[3]" aria-hidden="true" /> : undefined}
+          tone={last ? 'green' : 'blue'}
+          ariaLabel={last ? 'I have added Teyro to my Home Screen' : `Continue to step ${index + 2}`}
         >
           {step.cta}
         </StartButton>
-
-        {index > 0 ? (
-          <StartGhostButton onClick={back}>Back a step</StartGhostButton>
-        ) : (
-          <StartGhostButton onClick={onSkip}>I&apos;ll do this later</StartGhostButton>
-        )}
+        <StartGhostButton onClick={onSkip}>I&apos;ll do this later</StartGhostButton>
       </div>
     </div>
   );

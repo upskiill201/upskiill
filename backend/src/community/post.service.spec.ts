@@ -96,6 +96,8 @@ describe('PostService', () => {
             assertModerator: jest.fn().mockResolvedValue({}),
             getCommunityById: jest.fn().mockResolvedValue({ id: communityId, courseId: 'course-1' }),
             getCommunityByCourseId: jest.fn(),
+            assertCanWrite: jest.fn(),
+            creatorIdOf: jest.fn().mockResolvedValue('creator-1'),
           },
         },
         { provide: EventEmitter2, useValue: emitter },

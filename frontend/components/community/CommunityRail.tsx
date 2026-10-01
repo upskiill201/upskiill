@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Lock, Users, GraduationCap, Crown, Trophy } from 'lucide-react';
+import { Users, GraduationCap, Crown, Trophy } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import ProfileLink from './ProfileLink';
+import RankMedal from '@/components/leaderboard/RankMedal';
 import type { CommunityOverview, LeaderboardBoard } from '@/lib/communityApi';
 import shared from './community.module.css';
 import styles from './CommunityRail.module.css';
@@ -30,69 +31,37 @@ export default function CommunityRail({
   currentUserId,
   onSeeLeaderboards,
 }: CommunityRailProps) {
-  const thumb = community.course?.thumbnailUrl;
   const adminCount = Math.max(1, community.membersPreview.filter((m) => m.isCreator).length);
 
   return (
     <>
-      {/* ── About ─────────────────────────────────────────────────────────── */}
+      {/* ── About ── (the page header carries the cover, stats and faces) */}
       <section className={styles.card}>
-        <div className={styles.cover}>
-          {thumb ? (
-            <Image src={thumb} alt="" fill className={styles.coverImg} sizes="328px" />
+        <h3 className={styles.cardTitle}>About</h3>
+        {community.description && <p className={styles.description}>{community.description}</p>}
+        {community.course?.instructor && (
+          <div className={styles.creatorRow}>
+            <Avatar src={community.course.instructor.avatarUrl ?? undefined} name={community.course.instructor.fullName} size="sm" />
+            <span>
+              Run by <strong>{community.course.instructor.fullName}</strong>
+            </span>
+          </div>
+        )}
+        {community.course && (
+          <Link href={`/learn/${community.course.id}`} className={styles.railLink}>
+            <GraduationCap size={16} strokeWidth={2.5} /> Go to the course
+          </Link>
+        )}
+        <div className={styles.rolePill}>
+          {community.isModerator ? (
+            <>
+              <Crown size={15} strokeWidth={2.5} /> You teach this course
+            </>
           ) : (
-            <div className={styles.coverFallback}>{community.name.charAt(0).toUpperCase()}</div>
+            <>
+              <Users size={15} strokeWidth={2.5} /> You&apos;re a member · {adminCount} admin{adminCount === 1 ? '' : 's'}
+            </>
           )}
-        </div>
-
-        <div className={styles.aboutBody}>
-          <h2 className={styles.name}>{community.name}</h2>
-          <span className={styles.visibility}>
-            <Lock size={13} /> Members of this course
-          </span>
-
-          {community.description && <p className={styles.description}>{community.description}</p>}
-
-          {community.course && (
-            <Link href={`/learn/${community.course.id}`} className={styles.railLink}>
-              <GraduationCap size={15} /> Go to the course
-            </Link>
-          )}
-
-          <div className={styles.statStrip}>
-            <div className={styles.stat}>
-              <span className={styles.statValue}>{formatCount(community.stats.totalMembers)}</span>
-              <span className={styles.statLabel}>Members</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statValue}>{formatCount(community.stats.totalPosts)}</span>
-              <span className={styles.statLabel}>Posts</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statValue}>{adminCount}</span>
-              <span className={styles.statLabel}>Admins</span>
-            </div>
-          </div>
-
-          {community.membersPreview.length > 0 && (
-            <div className={styles.facepile}>
-              {community.membersPreview.slice(0, 8).map((m) => (
-                <Avatar key={m.id} src={m.avatarUrl ?? undefined} name={m.fullName} size="sm" />
-              ))}
-            </div>
-          )}
-
-          <div className={styles.rolePill}>
-            {community.isModerator ? (
-              <>
-                <Crown size={15} /> You teach this course
-              </>
-            ) : (
-              <>
-                <Users size={15} /> You’re a member
-              </>
-            )}
-          </div>
         </div>
       </section>
 
@@ -117,9 +86,13 @@ export default function CommunityRail({
                   key={e.userId}
                   className={`${styles.rankRow} ${e.userId === currentUserId ? styles.rankRowMe : ''}`}
                 >
-                  <span className={`${styles.rankBadge} ${podiumClass(e.rank)}`}>{e.rank}</span>
-                  <Avatar src={e.avatarUrl ?? undefined} name={e.fullName} size="xs" />
-                  <span className={styles.rankName}>{e.fullName}</span>
+                  <RankMedal rank={e.rank} size={26} />
+                  <ProfileLink userId={e.userId} label={`${e.fullName}'s profile`}>
+                    <Avatar src={e.avatarUrl ?? undefined} name={e.fullName} size="xs" />
+                  </ProfileLink>
+                  <span className={styles.rankName}>
+                    <ProfileLink userId={e.userId}>{e.fullName}</ProfileLink>
+                  </span>
                   <span className={styles.rankPoints}>+{formatCount(e.points)}</span>
                 </div>
               ))}
@@ -155,13 +128,6 @@ export default function CommunityRail({
       </section>
     </>
   );
-}
-
-function podiumClass(rank: number): string {
-  if (rank === 1) return styles.rank1;
-  if (rank === 2) return styles.rank2;
-  if (rank === 3) return styles.rank3;
-  return '';
 }
 
 /** 15500 → "15.5k" — the rail is 328px wide and long numbers wrap it. */

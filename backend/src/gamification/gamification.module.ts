@@ -10,6 +10,7 @@ import { ProgressModule } from '../progress/progress.module';
 import { ChestModule } from '../chest/chest.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ShopModule } from '../shop/shop.module';
+import { StreakModule } from '../streak/streak.module';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { ShopModule } from '../shop/shop.module';
     PrismaModule,
     // Losing a life first checks for a Perfect Lesson Protection charge.
     ShopModule,
+    // Streaks reconcile in one place: StreakService.
+    StreakModule,
   ],
   controllers: [GamificationController, AchievementsController],
   providers: [GamificationService, AchievementsService, GamificationListener],

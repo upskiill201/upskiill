@@ -75,4 +75,10 @@ export interface CourseImportSummary {
   files: CourseImportFileSummary[];
   modules: CourseImportModuleSummary[];
   createdCourseId: string | null;
+  /** Autopilot: analyze and build the draft course without the admin. */
+  autopilot: boolean;
+  courseTitle: string | null;
+  courseCategory: string | null;
+  courseLevel: string | null;
+  autopilotNote: string | null;
 }

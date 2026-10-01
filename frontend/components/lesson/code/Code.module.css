@@ -1,0 +1,155 @@
+/* Lesson code — a dark ink panel with token-coloured syntax. Tokens only. */
+
+/* A single line on a light tile (ordering exercise): dark ink palette. */
+.inlineLine {
+  --code-fg: var(--color-ink);
+  --code-muted: var(--text-muted);
+  --code-kw: var(--brand-purple);
+  --code-str: color-mix(in srgb, var(--success-green) 70%, var(--color-ink));
+  --code-num: color-mix(in srgb, var(--warning) 75%, var(--color-ink));
+  --code-fn: var(--color-brand);
+  --code-type: color-mix(in srgb, var(--warning) 60%, var(--color-ink));
+}
+
+/* Full blocks, and single lines on a dark panel (find the bug). */
+.block,
+.inlineLine.onDark {
+  --code-bg: var(--color-ink);
+  --code-fg: color-mix(in srgb, var(--bg-card) 92%, var(--color-ink));
+  --code-muted: color-mix(in srgb, var(--bg-card) 55%, var(--color-ink));
+  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, var(--bg-card));
+  --code-str: color-mix(in srgb, var(--success-green) 70%, var(--bg-card));
+  --code-num: color-mix(in srgb, var(--warning) 75%, var(--bg-card));
+  --code-fn: color-mix(in srgb, var(--color-brand) 55%, var(--bg-card));
+  --code-type: color-mix(in srgb, var(--warning) 45%, var(--bg-card));
+}
+
+.block {
+  --code-bg: var(--color-ink);
+  --code-fg: color-mix(in srgb, var(--bg-card) 92%, var(--color-ink));
+  --code-muted: color-mix(in srgb, var(--bg-card) 55%, var(--color-ink));
+  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, var(--bg-card));
+  --code-str: color-mix(in srgb, var(--success-green) 70%, var(--bg-card));
+  --code-num: color-mix(in srgb, var(--warning) 75%, var(--bg-card));
+  --code-fn: color-mix(in srgb, var(--color-brand) 55%, var(--bg-card));
+  --code-type: color-mix(in srgb, var(--warning) 45%, var(--bg-card));
+
+  margin: 0;
+  border-radius: 16px;
+  background: var(--code-bg);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-ink) 70%, black);
+  overflow: hidden;
+  text-align: left;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 0 16px;
+}
+
+.lang {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--code-muted);
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-card) 10%, transparent);
+  color: var(--code-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.copy:hover {
+  color: var(--code-fg);
+}
+
+.pre {
+  margin: 0;
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code,
+.inlineLine {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre;
+  color: var(--code-fg);
+  tab-size: 2;
+}
+
+.compact .pre {
+  padding: 8px 14px 12px;
+}
+
+.compact .code {
+  font-size: 14px;
+}
+
+.caption {
+  padding: 0 16px 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--code-muted);
+}
+
+/* Syntax — hljs class names. */
+.block :global(.hljs-keyword),
+.block :global(.hljs-built_in),
+.block :global(.hljs-selector-tag),
+.block :global(.hljs-literal),
+.inlineLine :global(.hljs-keyword),
+.inlineLine :global(.hljs-built_in),
+.inlineLine :global(.hljs-literal) {
+  color: var(--code-kw);
+}
+
+.block :global(.hljs-string),
+.block :global(.hljs-attr),
+.inlineLine :global(.hljs-string),
+.inlineLine :global(.hljs-attr) {
+  color: var(--code-str);
+}
+
+.block :global(.hljs-number),
+.inlineLine :global(.hljs-number) {
+  color: var(--code-num);
+}
+
+.block :global(.hljs-title),
+.block :global(.hljs-title.function_),
+.block :global(.hljs-name),
+.inlineLine :global(.hljs-title),
+.inlineLine :global(.hljs-name) {
+  color: var(--code-fn);
+}
+
+.block :global(.hljs-type),
+.block :global(.hljs-class),
+.block :global(.hljs-attribute),
+.inlineLine :global(.hljs-type),
+.inlineLine :global(.hljs-attribute) {
+  color: var(--code-type);
+}
+
+.block :global(.hljs-comment),
+.inlineLine :global(.hljs-comment) {
+  color: var(--code-muted);
+  font-style: italic;
+}

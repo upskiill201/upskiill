@@ -5,6 +5,9 @@ import { BarChart3, Check } from 'lucide-react';
 import type { CommunityPost } from '@/lib/communityApi';
 import { votePoll } from '@/lib/communityApi';
 import styles from './PollBlock.module.css';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
+
 
 interface PollBlockProps {
   post: Pick<CommunityPost, 'id' | 'poll'>;
@@ -27,15 +30,19 @@ export default function PollBlock({ post, onChanged }: PollBlockProps) {
   const totalVotes = options.reduce((sum, o) => sum + o.voteCount, 0);
 
   const handleVote = async (optionId: string) => {
+    playSound('select');
+    playHaptic('selection', false);
     setError('');
     setBusyOption(optionId);
     try {
       const res = await votePoll(post.id, optionId);
       setOptions(res.options);
       setMyOptionId(res.votedOptionId);
+      playSound('vote');
       onChanged?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not record your vote.');
+      playSound('nodeLocked');
     } finally {
       setBusyOption(null);
     }

@@ -36,3 +36,31 @@ export function assessCourseReadiness(course: ReadinessCourse): string[] {
 
   return errors;
 }
+
+/** Teyro launches with two tracks; a course must belong to one to go live. */
+export const LAUNCH_CATEGORIES = ['Coding', 'AI'];
+
+/**
+ * The course-level details a reviewer needs before a course can be
+ * submitted: a real title, a launch track, and a description learners can
+ * decide from. Applied on submit-for-review only, so courses that are
+ * already live aren't affected.
+ */
+export function assessCourseDetails(course: {
+  title: string;
+  category: string | null;
+  description: string | null;
+}): string[] {
+  const errors: string[] = [];
+  if ((course.title ?? '').trim().length < 5) {
+    errors.push('Give the course a title of at least 5 characters.');
+  }
+  if (!LAUNCH_CATEGORIES.includes(course.category ?? '')) {
+    errors.push('Choose the course track: Coding or AI.');
+  }
+  const description = (course.description ?? '').replace(/<[^>]*>/g, '').trim();
+  if (description.length < 40 || description === 'New Course Draft') {
+    errors.push('Write a course description of at least 40 characters.');
+  }
+  return errors;
+}

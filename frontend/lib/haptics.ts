@@ -2,8 +2,30 @@ import { emitAudioEvent, AppAudioEvent } from '@/lib/audio/audioEvents';
 
 let hapticsInstance: any = null;
 
+// Vibration is a per-device choice (Settings → Preferences), like Duolingo's.
+const HAPTICS_OFF_KEY = 'teyro_haptics_off';
+
+export function isHapticsEnabled(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    return window.localStorage.getItem(HAPTICS_OFF_KEY) !== '1';
+  } catch {
+    return true;
+  }
+}
+
+export function setHapticsEnabled(enabled: boolean) {
+  try {
+    if (enabled) window.localStorage.removeItem(HAPTICS_OFF_KEY);
+    else window.localStorage.setItem(HAPTICS_OFF_KEY, '1');
+  } catch {
+    // Storage blocked — the switch simply won't persist on this device.
+  }
+}
+
 function getHapticsInstance() {
   if (typeof window === 'undefined') return null;
+  if (!isHapticsEnabled()) return null;
   if (!hapticsInstance) {
     try {
       // Lazy load web-haptics on client side to prevent SSR/Turbopack chunk instantiation issues
@@ -32,6 +54,31 @@ export type HapticType =
   | 'teyroIncorrect'
   | number
   | number[];
+
+/**
+ * The celebration screens' haptic rhythm (vibration only — each scene's
+ * studio cue is the sound):
+ *   big  — "boom-ba… ta": a thump, a sharp knock, then a firm tap as the
+ *          chord lands. Level up, streak, section/course complete.
+ *   win  — a firm tap and a light echo. Achievements, rewards, purchases.
+ *   soft — one soft bump. Welcome back, a lost streak: never an alarm.
+ * Replaces 'teyroCelebration' in scenes, which renders as a flat 1s buzz.
+ */
+export function celebrationHaptic(kind: 'big' | 'win' | 'soft') {
+  if (typeof window === 'undefined') return;
+  if (kind === 'soft') {
+    playHaptic('soft', false);
+    return;
+  }
+  if (kind === 'win') {
+    playHaptic('medium', false);
+    setTimeout(() => playHaptic('light', false), 160);
+    return;
+  }
+  playHaptic('heavy', false);
+  setTimeout(() => playHaptic('rigid', false), 170);
+  setTimeout(() => playHaptic('medium', false), 600);
+}
 
 /**
  * Triggers a web haptic feedback pattern & audio effect synchronously.
@@ -108,7 +155,7 @@ export function playHaptic(type: HapticType, playAudio = true) {
   }
 
   // Fallback to standard vibration API (works on Android, no-op on iOS)
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+  if (isHapticsEnabled() && typeof navigator !== 'undefined' && navigator.vibrate) {
     try {
       if (typeof type === 'number' || Array.isArray(type)) {
         navigator.vibrate(type);

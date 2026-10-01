@@ -1,321 +1,223 @@
-/* ─── Streak Popover (Duolingo 1:1 Aesthetic) ────────────────────────────── */
+/* Streak popover — Duolingo's flame dropdown. Tokens only. */
 
 .popoverCard {
+  --sp-orange: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+  --sp-orange-deep: color-mix(in srgb, var(--sp-orange) 78%, black);
+  --sp-orange-tint: color-mix(in srgb, var(--sp-orange) 12%, var(--bg-page));
+  --sp-ice: var(--color-brand);
+  --sp-ice-tint: color-mix(in srgb, var(--color-brand) 14%, var(--bg-page));
+  --sp-gold: var(--warning);
+  --sp-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --sp-ink: var(--color-ink);
+  --sp-soft: var(--text-secondary);
+  --sp-muted: var(--text-muted);
+  --sp-line: var(--border);
+  --sp-well: var(--bg-section);
+  --sp-on: var(--bg-page);
+
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 8px;
-  width: 340px;
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  width: 344px;
+  background: var(--bg-card);
+  border: 2px solid var(--sp-line);
   border-radius: 20px;
-  box-shadow:
-    0 16px 40px rgba(7, 18, 51, 0.16),
-    0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--sp-ink) 16%, transparent);
   overflow: hidden;
   z-index: 9999;
-  animation: popoverSlideIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: var(--font-jakarta), sans-serif;
+  text-align: left;
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @media (max-width: 640px) {
   .popoverCard {
-    position: fixed !important;
-    top: 75px !important;
-    left: 12px !important;
-    right: 12px !important;
-    width: auto !important;
-    max-width: 360px !important;
-    margin: 0 auto !important;
-    z-index: 10000 !important;
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: 380px;
+    margin: 0 auto;
+    z-index: 10000;
   }
 }
 
-@keyframes popoverSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ─── Top Hero Header (Orange Banner) ──────────────────────────────────── */
-
-.heroHeader {
-  background: linear-gradient(135deg, #FF9600 0%, #FF8A00 100%);
-  padding: 18px 20px 14px 20px;
-  color: #FFFFFF;
-}
-
-.heroTopRow {
+.hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+  padding: 16px 16px 8px;
+  background: var(--sp-well);
 }
 
-.heroTextGroup {
-  flex: 1;
+.heroLit {
+  background: var(--sp-orange-tint);
 }
 
 .heroTitle {
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #FFFFFF;
-  margin: 0 0 4px 0;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-
-.heroSubtitle {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
   margin: 0;
-  line-height: 1.35;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--sp-ink);
 }
 
-.flameIconWrap {
+.heroLit .heroTitle {
+  color: var(--sp-orange-deep);
+}
+
+.heroSub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sp-soft);
+  line-height: 1.4;
+}
+
+.flame {
   flex-shrink: 0;
-  width: 52px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.flameImg {
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+.flameDim {
+  filter: grayscale(1) opacity(0.45);
 }
 
-/* ─── Mini Week Tracker ───────────────────────────────────────────────── */
-
-.miniWeekTracker {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 8px 16px 16px;
+  background: inherit;
 }
 
-.miniDayCell {
+.hero + .week {
+  background: var(--sp-well);
+}
+
+.heroLit + .week {
+  background: var(--sp-orange-tint);
+}
+
+.day {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
-.miniDayLabel {
-  font-size: 0.75rem;
+.letter {
+  font-size: 12px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.85);
-  text-transform: uppercase;
+  color: var(--sp-muted);
 }
 
-.miniDayDot {
-  width: 24px;
-  height: 24px;
+.letterToday {
+  color: var(--sp-orange);
+}
+
+.dot {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  background: color-mix(in srgb, var(--sp-ink) 7%, transparent);
+  color: var(--sp-on);
 }
 
-.miniDotCompleted {
-  background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+.dotLit {
+  background: var(--sp-orange);
+  box-shadow: inset 0 -3px 0 var(--sp-orange-deep);
 }
 
-.miniDotToday {
+.dotIce {
+  background: var(--sp-ice-tint);
+  color: var(--sp-ice);
+}
+
+.dotToday {
   background: transparent;
-  border: 2px solid #FFFFFF;
+  box-shadow: inset 0 0 0 2px var(--sp-orange);
 }
 
-.miniDotEmpty {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-/* ─── Content Cards ───────────────────────────────────────────────────── */
-
-.cardContent {
+.body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #F8FAFC;
+  gap: 16px;
 }
 
-/* Friend Streaks Teaser Card */
-.friendsTeaserCard {
-  background: #FF8A00;
-  border-radius: 16px;
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  box-shadow: 0 4px 14px rgba(255, 138, 0, 0.25);
-}
-
-.friendsTeaserLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.friendsAvatarGroup {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.friendsMascotAvatar {
-  object-fit: contain;
-  border-radius: 10px;
-}
-
-.friendsFlameBadge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  font-size: 12px;
-}
-
-.friendsText {
-  display: flex;
-  flex-direction: column;
-}
-
-.friendsTitle {
-  font-size: 0.88rem;
-  font-weight: 900;
-  color: #FFFFFF;
-  margin: 0;
-}
-
-.friendsSubtitle {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-}
-
-.viewListBtn {
-  height: 32px;
-  padding: 0 12px;
-  background: #FFFFFF;
-  border: none;
-  border-bottom: 3px solid #E2E8F0;
-  border-radius: 10px;
-  color: #FF8A00;
-  font-size: 0.74rem;
-  font-weight: 900;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
-  transition: transform 0.1s ease;
-}
-
-.viewListBtn:hover {
-  filter: brightness(1.05);
-}
-
-.viewListBtn:active {
-  transform: translateY(2px);
-  border-bottom-width: 1px;
-}
-
-/* Streak Society Teaser Card */
-.societyTeaserCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 16px;
-  padding: 14px;
+.row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.societyUnlocked {
-  border-color: #F59E0B;
-  background: #FEF3C7;
-}
-
-.societyIconWrap {
+.rowIcon {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #F1F5F9;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  background: var(--sp-ice-tint);
+  color: var(--sp-ice);
 }
 
-.unlockedBadgeIcon {
-  font-size: 20px;
-}
-
-.societyText {
+.rowText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  min-width: 0;
 }
 
-.societyTitle {
-  font-size: 0.88rem;
-  font-weight: 900;
-  color: #1E293B;
-  margin: 0;
+.rowTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--sp-ink);
 }
 
-.societySubtitle {
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #64748B;
-  margin: 0;
-  line-height: 1.35;
+.rowSub {
+  font-size: 13px;
+  color: var(--sp-soft);
 }
 
-/* Bottom 3D View More Button */
-.viewMoreBtn3D {
-  height: 42px;
+.cta {
   width: 100%;
-  background: #0172FD;
-  border: none;
-  border-bottom: 4px solid #0056C6;
-  border-radius: 12px;
-  color: #FFFFFF;
-  font-size: 0.88rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
+  min-height: 48px;
+  border: 2px solid var(--sp-line);
+  border-radius: 14px;
+  background: var(--bg-card);
+  box-shadow: 0 4px 0 var(--sp-line);
+  color: var(--color-brand);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.1s ease, filter 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(1, 114, 253, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-.viewMoreBtn3D:hover {
-  filter: brightness(1.08);
+.cta:active {
+  transform: translateY(4px);
+  box-shadow: none;
 }
 
-.viewMoreBtn3D:active {
-  transform: translateY(3px);
-  border-bottom-width: 1px;
+.ctaGold {
+  background: var(--sp-gold);
+  border-color: transparent;
+  color: var(--sp-on);
+  box-shadow: 0 4px 0 var(--sp-gold-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popoverCard { animation: none; }
 }

@@ -176,3 +176,33 @@
     height: 38px;
   }
 }
+
+/* It's a link to the level page now: keep it looking like the card it was. */
+a.banner {
+  text-decoration: none;
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+
+a.banner:hover {
+  filter: brightness(1.04);
+}
+
+a.banner:active {
+  transform: translateY(2px);
+}
+
+.bannerLoading {
+  min-height: 84px;
+  background: var(--bg-section);
+  border-color: var(--border);
+  box-shadow: none;
+  animation: bannerPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes bannerPulse {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerLoading { animation: none; }
+}

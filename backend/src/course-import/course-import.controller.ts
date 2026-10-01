@@ -53,6 +53,12 @@ export class CourseImportController {
     const summary = await this.courseImport.createImport(
       user.id,
       dto.driveFolderId,
+      {
+        autopilot: dto.autopilot ?? false,
+        courseTitle: dto.courseTitle?.trim() || null,
+        courseCategory: dto.courseCategory ?? null,
+        courseLevel: dto.courseLevel ?? null,
+      },
     );
     // Kick processing off immediately rather than waiting up to 15s for the
     // next cron tick — fire-and-forget; the cron tick remains the safety net

@@ -379,6 +379,14 @@ export class UpdateProfileDto {
   @MaxLength(120)
   launchGoal?: string;
 
+  // Topics taught within the track (learner interest ids, e.g. web-development).
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(10)
+  @IsString({ each: true })
+  @MaxLength(40, { each: true })
+  subCategories?: string[];
+
   // ── Student settings ─────────────────────────────────────────────────────
   // Daily goal in XP/day (Casual 20 | Regular 50 | Serious 100 | Intense 200).
   // Persisted on StudentProfile, not the creator Profile row.

@@ -1,0 +1,66 @@
+/* Lesson player tokens — scoped to the player, inherited by every screen,
+   footer and sheet inside it. The bright "correct green / soft wrong red"
+   pair is the universal language of a game lesson; brand blue stays the
+   colour of choosing. */
+.player {
+  --lesson-correct:      #58CC02;
+  --lesson-correct-dark: #46A302;
+  --lesson-correct-bg:   #D7FFB8;
+  --lesson-correct-ink:  #3F8F00;
+  --lesson-wrong:        #FF4B4B;
+  --lesson-wrong-dark:   #EA2B2B;
+  --lesson-wrong-bg:     #FFDFE0;
+  --lesson-wrong-ink:    #D92D2D;
+  --lesson-select-bg:    #E6F1FF;
+  --lesson-gold:         #FFC800;
+  --lesson-gold-dark:    #E0A800;
+  --lesson-heart:        #FF4B4B;
+}
+
+/* Creator-written lesson text (sanitised HTML from the editor). */
+.prose {
+  overflow-wrap: break-word;
+}
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: var(--color-ink);
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 1.2em 0 0.5em;
+}
+.prose h1 { font-size: 1.35em; }
+.prose h2 { font-size: 1.22em; }
+.prose h3 { font-size: 1.1em; }
+.prose > :first-child { margin-top: 0; }
+.prose p { margin: 0 0 0.9em; }
+.prose ul,
+.prose ol { padding-left: 1.4em; margin: 0 0 0.9em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li { margin: 0.3em 0; }
+.prose a { color: var(--color-brand); text-decoration: underline; font-weight: 700; }
+.prose strong { font-weight: 800; color: var(--color-ink); }
+.prose img { max-width: 100%; border-radius: 16px; }
+.prose blockquote {
+  margin: 0 0 0.9em;
+  padding: 0.6em 1em;
+  border-left: 4px solid var(--color-brand);
+  background: var(--lesson-select-bg);
+  border-radius: 0 12px 12px 0;
+}
+.prose code {
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  background: var(--bg-section);
+}
+.prose pre {
+  overflow-x: auto;
+  padding: 1em;
+  border-radius: 14px;
+  background: var(--bg-dark-mid);
+  color: white;
+}
+.prose pre code { background: none; padding: 0; color: inherit; }

@@ -8,7 +8,7 @@ import {
 import { AccessPlan, Coupon, CouponDiscountType, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { generatePublicId } from '../earnings/crypto.util';
-import { calculateCoursePricingLadder } from '../course/pricing-engine';
+import { calculateCoursePricingLadder, isPurchasablePlan } from '../course/pricing-engine';
 
 /**
  * Coupons & Discounts engine.
@@ -140,6 +140,16 @@ export class CouponsService {
   }
 
   /* ─── creator CRUD ────────────────────────────────────────────────────── */
+
+  /** Coupons may only target plans a learner can actually buy (no WEEKLY / LIFETIME). */
+  private assertPurchasablePlans(plans: AccessPlan[]) {
+    const bad = plans.filter((p) => !isPurchasablePlan(p));
+    if (bad.length > 0) {
+      throw new BadRequestException(
+        `Coupons can only apply to Monthly or Yearly plans (got ${bad.join(', ')})`,
+      );
+    }
+  }
 
   private async assertOwnsCourses(creatorId: string, courseIds: string[]) {
     if (courseIds.length === 0) {
@@ -431,8 +441,10 @@ export class CouponsService {
     if (!course) return { valid: false, reason: 'NOT_FOUND' };
 
     const ladder = calculateCoursePricingLadder(course.price);
-    const planData =
-      input.plan === 'WEEKLY' ? ladder.weekly : input.plan === 'YEARLY' ? ladder.yearly : ladder.monthly;
+    if (!isPurchasablePlan(input.plan)) {
+      return { valid: false, reason: 'PLAN_NOT_ELIGIBLE' };
+    }
+    const planData = input.plan === 'YEARLY' ? ladder.yearly : ladder.monthly;
     const basePrice = planData.price;
 
     const code = normalizeCode(input.code);

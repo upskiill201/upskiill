@@ -9,15 +9,34 @@ import React, {
   useMemo,
 } from 'react';
 
+export interface StreakRepairOffer {
+  available: boolean;
+  lostStreak: number;
+  costCoins: number;
+  expiresAt: string | null;
+}
+
+export interface StreakGoal {
+  target: number;
+  previous: number;
+  daysLeft: number;
+}
+
 export interface StreakStats {
   currentStreak: number;
   longestStreak: number;
   lastStreakDate: string | null;
   freezesAvailable: number;
+  maxFreezes?: number;
   hasCompletedToday: boolean;
   isNewPersonalBest: boolean;
   streakSocietyUnlocked: boolean;
+  goal?: StreakGoal;
+  repair?: StreakRepairOffer;
 }
+
+/** Why a day counts toward the streak (backend StreakService). */
+export type CalendarDayStatus = 'lesson' | 'frozen' | 'repaired' | 'none';
 
 export interface CalendarDay {
   date: string; // YYYY-MM-DD
@@ -28,6 +47,8 @@ export interface CalendarDay {
   isToday: boolean;
   isFuture: boolean;
   isFreezeUsed?: boolean;
+  status?: CalendarDayStatus;
+  inCurrentStreak?: boolean;
 }
 
 export interface CalendarData {

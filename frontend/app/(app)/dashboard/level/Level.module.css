@@ -1,0 +1,449 @@
+/* Level page. Tokens only (docs/08-color-system.md). */
+
+.page {
+  --lv-blue: var(--color-brand);
+  --lv-blue-deep: var(--color-brand-deep);
+  --lv-blue-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --lv-gold: var(--warning);
+  --lv-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --lv-green: var(--success-green);
+  --lv-green-deep: color-mix(in srgb, var(--success-green) 72%, black);
+  --lv-ink: var(--color-ink);
+  --lv-soft: var(--text-secondary);
+  --lv-muted: var(--text-muted);
+  --lv-line: var(--border);
+  --lv-well: var(--bg-section);
+  --lv-card: var(--bg-card);
+  --lv-on: var(--bg-page);
+
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--lv-ink);
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--lv-blue-tint);
+  border: 2px solid color-mix(in srgb, var(--lv-blue) 25%, var(--bg-page));
+  min-height: 160px;
+}
+
+.hex {
+  flex-shrink: 0;
+  width: 104px;
+  height: 116px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--lv-blue);
+  color: var(--lv-on);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 -8px 0 var(--lv-blue-deep);
+}
+
+.hexLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+}
+
+.hexNum {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.heroBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.heroSub {
+  margin: 4px 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lv-soft);
+}
+
+.bar {
+  position: relative;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--lv-card);
+  border: 2px solid color-mix(in srgb, var(--lv-blue) 18%, var(--bg-page));
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--lv-gold);
+  box-shadow: inset 0 -4px 0 var(--lv-gold-deep), inset 0 4px 0 color-mix(in srgb, var(--lv-on) 35%, transparent);
+}
+
+.barText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--lv-ink);
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--lv-card);
+  border: 2px solid var(--lv-line);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.cardSub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--lv-soft);
+}
+
+.linkBtn {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--lv-blue);
+  text-decoration: none;
+}
+
+.inlineBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--lv-blue);
+  cursor: pointer;
+}
+
+/* ─── Week chart ───────────────────────────────────────────────────────── */
+.chart {
+  margin-top: 32px;
+}
+
+/* Bars and the goal line share this box, so the line's % matches the bars. */
+.plot {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  height: 144px;
+}
+
+.labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--lv-muted);
+}
+
+.goalLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed color-mix(in srgb, var(--lv-green) 55%, var(--bg-page));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.col:disabled {
+  cursor: default;
+}
+
+.colTrack {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  max-width: 40px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 10px;
+  background: var(--lv-well);
+}
+
+.colFill {
+  width: 100%;
+  border-radius: 10px;
+  background: var(--lv-blue);
+  box-shadow: inset 0 -4px 0 var(--lv-blue-deep);
+}
+
+.colGoal {
+  background: var(--lv-green);
+  box-shadow: inset 0 -4px 0 var(--lv-green-deep);
+}
+
+.colValue {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--lv-ink);
+  color: var(--lv-on);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.colToday {
+  color: var(--lv-blue);
+}
+
+/* ─── Road ─────────────────────────────────────────────────────────────── */
+.road {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.stop {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.stop:last-child {
+  padding-bottom: 0;
+}
+
+/* The line between stops. */
+.stop:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 48px;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--lv-well);
+}
+
+.stopNode {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lv-well);
+  color: var(--lv-soft);
+  font-weight: 800;
+  border: 2px solid var(--lv-line);
+}
+
+.stopNext {
+  background: var(--lv-blue);
+  border-color: transparent;
+  color: var(--lv-on);
+  box-shadow: 0 4px 0 var(--lv-blue-deep);
+}
+
+.stopBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.stopTitle {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.stopSub {
+  font-size: 13px;
+  color: var(--lv-soft);
+}
+
+.rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reward {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 2px solid var(--lv-line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--lv-ink);
+}
+
+.reward:hover {
+  background: var(--lv-well);
+}
+
+.rewardName {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.rewardLock {
+  color: var(--lv-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Ways to earn ─────────────────────────────────────────────────────── */
+.ways {
+  list-style: none;
+  margin: 16px 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 15px;
+  color: var(--lv-soft);
+}
+
+.ways li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ways strong {
+  color: var(--lv-ink);
+}
+
+.wayIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lv-blue-tint);
+  color: var(--lv-blue);
+}
+
+.primaryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: 14px;
+  background: var(--lv-green);
+  color: var(--lv-on);
+  box-shadow: 0 4px 0 var(--lv-green-deep);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.primaryBtn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+/* ─── States ───────────────────────────────────────────────────────────── */
+.skeleton {
+  background: var(--lv-well);
+  border-color: var(--lv-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  .heroBody {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* The hero hexagon is the illustrated level-hex (public/art/ui). */
+.hex {
+  width: 112px;
+  height: 118px;
+  clip-path: none;
+  background: url('/art/ui/level-hex.svg') center / contain no-repeat;
+  box-shadow: none;
+  padding-bottom: 8px;
+}

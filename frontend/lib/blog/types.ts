@@ -74,6 +74,9 @@ export interface Category {
   /** Intro copy rendered on /blog/category/[slug] for head-term ranking */
   seoIntro: string;
   accentColor: string;
+  /** Tey poses (public paths) the generated cover picks from, deterministically
+   * per post, so a category's cards don't all look alike. */
+  mascots: string[];
 }
 
 export interface Author {

@@ -20,8 +20,8 @@ import CelebrationMascot from '../../celebration/CelebrationMascot';
 import { TypewriterBubble } from '../../celebration/ScenePrimitives';
 import { rarityStyle } from '@/lib/shop/cosmetics';
 import type { ShopScene } from '@/context/ShopEngineContext';
-import { playClaimArpeggio, playGemChime } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic } from '@/lib/haptics';
 import { pickCollectionCompleteLine } from '@/lib/tey/shopEngineVoice';
 
 type Input = Extract<ShopScene, { kind: 'COLLECTION_COMPLETE' }>;
@@ -38,10 +38,8 @@ export default function CollectionCompleteScene({
   const [teyLine] = useState(() => pickCollectionCompleteLine());
 
   useEffect(() => {
-    playClaimArpeggio();
-    playHaptic('heavy');
-    const timer = setTimeout(() => playGemChime(0), 600);
-    return () => clearTimeout(timer);
+    playSound('collectionComplete');
+    celebrationHaptic('big');
   }, []);
 
   return (

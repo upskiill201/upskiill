@@ -265,3 +265,12 @@
     animation: none;
   }
 }
+
+/* Illustrated items (public/art/items) stand free, with a soft ground shadow. */
+.illustration {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--color-ink) 12%, transparent));
+  user-select: none;
+}

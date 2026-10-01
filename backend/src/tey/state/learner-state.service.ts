@@ -95,7 +95,7 @@ export class LearnerStateService {
   async project(userId: string): Promise<LearnerStateSnapshot> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { timezone: true, timezoneOffsetMinutes: true },
+      select: { timezone: true, timezoneOffsetMinutes: true, createdAt: true },
     });
     const now = resolveLocalNow(user);
 
@@ -107,7 +107,7 @@ export class LearnerStateService {
     );
 
     const weekStart = mondayOf(now.date);
-    const [profile, today, week, existing, stats, openLesson] =
+    const [profile, today, week, existing, stats, openLesson, prefs] =
       await Promise.all([
         this.prisma.studentProfile.findUnique({
           where: { userId },
@@ -131,6 +131,10 @@ export class LearnerStateService {
           select: { lessonsCompleted: true, lastActivityAt: true },
         }),
         this.activityService.findOpenLessonStart(userId, now.date),
+        this.prisma.teyNotificationPrefs.findUnique({
+          where: { userId },
+          select: { preferredHour: true },
+        }),
       ]);
 
     const dailyGoalXp = profile?.dailyGoalXp ?? DEFAULT_DAILY_GOAL_XP;
@@ -218,6 +222,20 @@ export class LearnerStateService {
 
       openLessonId: openLesson?.lessonId ?? null,
       openLessonStartedAt: openLesson?.startedAt ?? null,
+
+      preferredHour: prefs?.preferredHour ?? null,
+      // Copied from StreakService's offer, exactly as the streak screen sees it.
+      repair:
+        streak.repair?.available && streak.repair.expiresAt
+          ? {
+              lostStreak: streak.repair.lostStreak,
+              costCoins: streak.repair.costCoins,
+              expiresAt: new Date(streak.repair.expiresAt),
+            }
+          : null,
+      accountAgeDays: user?.createdAt
+        ? daysBetween(now.date, localDateFor(user, user.createdAt))
+        : null,
     };
 
     await this.persist(snapshot, target.sectionIndex);

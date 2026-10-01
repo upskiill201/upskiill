@@ -708,3 +708,48 @@ describe('EarningsService — CSV export', () => {
     );
   });
 });
+
+describe('EarningsService — Founding Creator programme', () => {
+  const OLD = process.env.FOUNDING_PROGRAM;
+  afterEach(() => {
+    if (OLD === undefined) delete process.env.FOUNDING_PROGRAM;
+    else process.env.FOUNDING_PROGRAM = OLD;
+  });
+
+  function make(existing: unknown = null) {
+    const tx = {
+      creatorEarningsAgreement: {
+        findFirst: jest.fn().mockResolvedValue(existing),
+        create: jest.fn(async ({ data }: any) => ({ id: 'ag1', ...data })),
+      },
+      earningsAuditLog: { create: jest.fn() },
+    };
+    const prisma = {
+      ...tx,
+      $transaction: jest.fn(async (fn: any) => fn(tx)),
+    };
+    const svc = new EarningsService(prisma as never, { emit: jest.fn() } as never);
+    return { svc, tx };
+  }
+
+  it('gives a new creator the Founding 80% agreement while the programme is open', async () => {
+    delete process.env.FOUNDING_PROGRAM;
+    const { svc, tx } = make();
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    const data = tx.creatorEarningsAgreement.create.mock.calls[0][0].data;
+    expect(data).toMatchObject({ userId: 'u1', tier: 'FOUNDING', creatorSharePct: 80, isFounding: true });
+  });
+
+  it('never overrides an existing agreement', async () => {
+    const { svc, tx } = make({ id: 'x', tier: 'STANDARD' });
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    expect(tx.creatorEarningsAgreement.create).not.toHaveBeenCalled();
+  });
+
+  it('grants nothing once the programme is closed (FOUNDING_PROGRAM=off)', async () => {
+    process.env.FOUNDING_PROGRAM = 'off';
+    const { svc, tx } = make();
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    expect(tx.creatorEarningsAgreement.create).not.toHaveBeenCalled();
+  });
+});

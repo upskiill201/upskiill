@@ -23,6 +23,22 @@ import { renderPaymentFailedEmail } from '../templates/payment/payment-failed.te
 import { renderPurchaseConfirmationEmail } from '../templates/payment/purchase-confirmation.template';
 import { EmailCategory } from '../types';
 import { EmailJobRow } from './email-job.repository';
+import { courseUnlockState, SOCIAL_PROOF_MIN_LEARNERS } from '../../common/course-unlock.util';
+import { renderCourseUnlockEmail } from '../templates/conversion/course-unlock.template';
+import {
+  INACTIVE_EMAIL_DAYS,
+  renderInactiveEmail,
+  type InactiveEmailDay,
+} from '../templates/reengagement/inactive.template';
+import {
+  renderCreatorWeeklyDigestEmail,
+  type CreatorWeeklyDigestData,
+} from '../templates/creator/weekly-digest.template';
+import {
+  ACCESS_ENDING_DAYS,
+  renderAccessEndingEmail,
+  type AccessEndingDay,
+} from '../templates/payment/access-ending.template';
 
 export interface ProcessOutcome {
   sent: boolean;
@@ -67,6 +83,14 @@ export class EmailJobProcessorService {
       case 'PAYOUT_COMPLETED':
       case 'PAYOUT_FAILED':
         return this.processPayout(job);
+      case 'COURSE_UNLOCK_STAGE':
+        return this.processCourseUnlock(job);
+      case 'REENGAGEMENT_DUE':
+        return this.processReengagement(job);
+      case 'CREATOR_WEEKLY_DIGEST':
+        return this.processCreatorDigest(job);
+      case 'ACCESS_ENDING':
+        return this.processAccessEnding(job);
       default:
         this.logger.warn(`No handler for email job eventType=${job.eventType}`);
         return { sent: false, skipReason: 'NO_HANDLER' };
@@ -172,6 +196,240 @@ export class EmailJobProcessorService {
     return { sent: false, skipReason: outcome.reason };
   }
 
+  /**
+   * True when Tey's push is live for this person and category — delivery
+   * switched on, a device subscribed, and their push settings allow it. The
+   * email fallbacks step aside for them, so nobody gets the same nudge twice.
+   */
+  private async pushReaches(
+    userId: string,
+    category: 'streakReminders' | 'reengagement',
+  ): Promise<boolean> {
+    if (process.env.TEY_DELIVERY_ENABLED !== 'true') return false;
+    if (process.env.TEY_PUSH_ENABLED === 'false') return false;
+    const [devices, prefs] = await Promise.all([
+      this.prisma.pushSubscription.count({ where: { userId, isActive: true } }),
+      this.prisma.teyNotificationPrefs.findUnique({
+        where: { userId },
+        select: { pushEnabled: true, streakReminders: true, reengagement: true },
+      }),
+    ]);
+    if (devices === 0) return false;
+    if (!prefs) return true; // schema defaults: everything on
+    return prefs.pushEnabled && prefs[category];
+  }
+
+  // ── Conversion: the lesson-3 unlock journey ───────────────────────────────
+  private async processCourseUnlock(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    const payload = job.payload as { courseId?: string; stage?: number } | null;
+    const stage = payload?.stage;
+    if (!payload?.courseId || (stage !== 1 && stage !== 2 && stage !== 3)) {
+      return { sent: false, skipReason: 'BAD_PAYLOAD' };
+    }
+
+    // The same paywall check the push stage runs — unlocked, checking out,
+    // unpublished or no longer at the wall all stop the email too.
+    const state = await courseUnlockState(this.prisma, job.userId, payload.courseId);
+    if (!state.eligible) return { sent: false, skipReason: state.reason };
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: { id: true, email: true, fullName: true },
+    });
+    if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
+
+    const templateKey = `conversion.course-unlock-${stage}`;
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey,
+      category: EmailCategory.CONVERSION,
+      idempotencyKey: `${templateKey}:${user.id}:${payload.courseId}`,
+      metadata: { courseId: payload.courseId, stage },
+      render: () =>
+        renderCourseUnlockEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          stage,
+          courseName: state.course.title,
+          creatorName: state.course.instructorName,
+          nextLessons: state.nextLessonTitles,
+          outcomes: state.course.outcomes,
+          completedLessons: state.completedLessons,
+          totalLessons: state.totalLessons,
+          learners:
+            state.learners >= SOCIAL_PROOF_MIN_LEARNERS ? state.learners : undefined,
+          unlockUrl: `${emailConfig.appUrl}/learn/${state.course.id}/unlock?campaign=unlock-${stage}`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'MARKETING'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  // ── Re-engagement: the win-back ladder ────────────────────────────────────
+  private async processReengagement(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    if (!emailConfig.reengagementEnabled) return { sent: false, skipReason: 'FEATURE_DISABLED' };
+    const payload = job.payload as { daysAway?: number; lastActiveDay?: string } | null;
+    const daysAway = payload?.daysAway as InactiveEmailDay | undefined;
+    if (!daysAway || !INACTIVE_EMAIL_DAYS.includes(daysAway) || !payload?.lastActiveDay) {
+      return { sent: false, skipReason: 'BAD_PAYLOAD' };
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        studentProfile: { select: { lastLessonCompletedAt: true, longestStreak: true } },
+      },
+    });
+    if (!user?.studentProfile) return { sent: false, skipReason: 'NO_PROFILE' };
+    // Came back since the scan queued this? Then there is nothing to win back.
+    const last = user.studentProfile.lastLessonCompletedAt;
+    if (!last || last.toISOString().slice(0, 10) !== payload.lastActiveDay) {
+      return { sent: false, skipReason: 'LEARNER_RETURNED' };
+    }
+
+    const enrollment = await this.prisma.enrollment.findFirst({
+      where: { userId: user.id },
+      orderBy: { updatedAt: 'desc' },
+      select: { courseId: true, progress: true, course: { select: { title: true } } },
+    });
+
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'reengagement.inactive',
+      category: EmailCategory.REENGAGEMENT,
+      idempotencyKey: `reengagement.inactive:${user.id}:${payload.lastActiveDay}:${daysAway}`,
+      metadata: { daysAway },
+      render: () =>
+        renderInactiveEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          daysAway,
+          courseName: enrollment?.course?.title,
+          courseProgressPct: enrollment ? Math.round(enrollment.progress ?? 0) : undefined,
+          longestStreak: user.studentProfile!.longestStreak ?? 0,
+          continueUrl: enrollment
+            ? `${emailConfig.appUrl}/learn/${enrollment.courseId}`
+            : `${emailConfig.appUrl}/dashboard`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'REENGAGEMENT'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  // ── Payment: access ending on a plan that won't renew by itself ───────────
+  private async processAccessEnding(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    if (!emailConfig.accessEndingEnabled) return { sent: false, skipReason: 'FEATURE_DISABLED' };
+    const p = job.payload as { courseId?: string; endDay?: string; daysLeft?: number } | null;
+    const daysLeft = p?.daysLeft as AccessEndingDay | undefined;
+    if (!p?.courseId || !p.endDay || daysLeft === undefined || !ACCESS_ENDING_DAYS.includes(daysLeft)) {
+      return { sent: false, skipReason: 'BAD_PAYLOAD' };
+    }
+
+    const [user, entitlement, course] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: job.userId },
+        select: { id: true, email: true, fullName: true },
+      }),
+      this.prisma.courseAccessEntitlement.findUnique({
+        where: { userId_courseId: { userId: job.userId, courseId: p.courseId } },
+        select: { expiresAt: true, stripeSubscriptionId: true, cancelAtPeriodEnd: true },
+      }),
+      this.prisma.course.findUnique({ where: { id: p.courseId }, select: { id: true, title: true } }),
+    ]);
+    if (!user || !course || !entitlement) return { sent: false, skipReason: 'NOT_FOUND' };
+
+    // Renewed since the scan? expiresAt moved, and there's nothing to remind.
+    if (entitlement.expiresAt.toISOString().slice(0, 10) !== p.endDay) {
+      return { sent: false, skipReason: 'ALREADY_RENEWED' };
+    }
+    // Switched back on to auto-renew (card plan un-cancelled)? Nothing to do.
+    if (entitlement.stripeSubscriptionId && !entitlement.cancelAtPeriodEnd) {
+      return { sent: false, skipReason: 'AUTO_RENEWS' };
+    }
+
+    const [enrollment, totalLessons] = await Promise.all([
+      this.prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId: user.id, courseId: course.id } },
+        select: { completedLessons: true },
+      }),
+      this.prisma.lesson.count({ where: { section: { courseId: course.id } } }),
+    ]);
+    const completedLessons = Array.isArray(enrollment?.completedLessons)
+      ? (enrollment!.completedLessons as unknown[]).length
+      : 0;
+    // Finished the whole course? Don't push a renewal they don't need.
+    if (totalLessons > 0 && completedLessons >= totalLessons) {
+      return { sent: false, skipReason: 'COURSE_FINISHED' };
+    }
+
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'payment.access-ending',
+      category: EmailCategory.PAYMENT,
+      idempotencyKey: `payment.access-ending:${user.id}:${course.id}:${p.endDay}:${daysLeft}`,
+      metadata: { courseId: course.id, daysLeft },
+      render: () =>
+        renderAccessEndingEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          courseName: course.title,
+          daysLeft,
+          endDate: entitlement.expiresAt.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          completedLessons,
+          totalLessons,
+          renewUrl: `${emailConfig.appUrl}/learn/${course.id}/unlock?renew=1&campaign=access-ending-${daysLeft}`,
+          mobileMoney: !entitlement.stripeSubscriptionId,
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  // ── Creator: the Monday digest ────────────────────────────────────────────
+  private async processCreatorDigest(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    if (!emailConfig.creatorDigestEnabled) return { sent: false, skipReason: 'FEATURE_DISABLED' };
+    const p = job.payload as (Omit<CreatorWeeklyDigestData, 'firstName' | 'studioUrl' | 'communityUrl'> & { weekStart: string }) | null;
+    if (!p?.weekStart) return { sent: false, skipReason: 'BAD_PAYLOAD' };
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: { id: true, email: true, fullName: true },
+    });
+    if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
+
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'creator.weekly-digest',
+      category: EmailCategory.DIGEST,
+      idempotencyKey: `creator.weekly-digest:${user.id}:${p.weekStart}`,
+      preferenceOptions: { creatorDigest: true },
+      metadata: { weekStart: p.weekStart },
+      render: () =>
+        renderCreatorWeeklyDigestEmail({
+          ...p,
+          firstName: user.fullName?.split(' ')[0] || '',
+          studioUrl: `${emailConfig.appUrl}/creator`,
+          communityUrl: `${emailConfig.appUrl}/creator/community`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'CREATOR_DIGEST'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
   // ── Learning: streak at risk ──────────────────────────────────────────────
   private async processStreakAtRisk(job: EmailJobRow): Promise<ProcessOutcome> {
     if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
@@ -201,6 +459,11 @@ export class EmailJobProcessorService {
     const today = new Date().toISOString().slice(0, 10);
     if (lastEarned && lastEarned.toISOString().slice(0, 10) === today) {
       return { sent: false, skipReason: 'ALREADY_ACTIVE_TODAY' };
+    }
+    // Push owns the evening streak ladder for anyone it can reach; this
+    // email is the fallback for everyone else. One warning, one channel.
+    if (await this.pushReaches(user.id, 'streakReminders')) {
+      return { sent: false, skipReason: 'PUSH_REACHES_LEARNER' };
     }
 
     const idempotencyKey = `learning.streak-at-risk:${user.id}:${today}`;

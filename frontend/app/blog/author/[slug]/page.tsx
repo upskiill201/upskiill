@@ -47,31 +47,35 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
-        {/* ── Author header ── */}
-        <header className={authorStyles.header}>
-          {author.avatarUrl ? (
-            <Image
-              src={author.avatarUrl}
-              alt=""
-              width={88}
-              height={88}
-              className={authorStyles.avatar}
-              priority
-            />
-          ) : (
-            <span className={`${authorStyles.avatar} ${authorStyles.avatarFallback}`}>
-              {author.name.charAt(0)}
-            </span>
-          )}
-          <div>
-            <p className={styles.kicker}>Author</p>
-            <h1 className={authorStyles.name}>{author.name}</h1>
-            <p className={authorStyles.role}>{author.role}</p>
-          </div>
-        </header>
-        <p className={authorStyles.bio}>{author.bio}</p>
+      <div className={styles.band}>
+        <div className={styles.container}>
+          {/* ── Author header ── */}
+          <header className={authorStyles.header}>
+            {author.avatarUrl ? (
+              <Image
+                src={author.avatarUrl}
+                alt=""
+                width={88}
+                height={88}
+                className={authorStyles.avatar}
+                priority
+              />
+            ) : (
+              <span className={`${authorStyles.avatar} ${authorStyles.avatarFallback}`}>
+                {author.name.charAt(0)}
+              </span>
+            )}
+            <div>
+              <p className={styles.kicker}>Author</p>
+              <h1 className={authorStyles.name}>{author.name}</h1>
+              <p className={authorStyles.role}>{author.role}</p>
+            </div>
+          </header>
+          <p className={authorStyles.bio}>{author.bio}</p>
+        </div>
+      </div>
 
+      <div className={styles.container}>
         {/* ── Posts ── */}
         <section aria-label={`Articles by ${author.name}`}>
           {posts.length > 0 ? (

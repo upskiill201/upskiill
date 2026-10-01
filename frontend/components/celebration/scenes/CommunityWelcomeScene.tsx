@@ -9,7 +9,8 @@
  * nothing until you understand what it's for. A passive "You've joined!"
  * splash gets dismissed and forgotten. So each beat invites one small action
  * — pick why you're here, like a real post from the room — and the room
- * answers. Four beats, all of them short.
+ * answers — and in beat 4 they follow their first classmates. Five beats, all
+ * of them short.
  *
  * Everything here is real and nothing here pretends. The member count, the
  * faces and the sample post all come from the server payload that seated the
@@ -20,11 +21,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import {
-  Users, LifeBuoy, Trophy, HandHeart, Check, ThumbsUp, MessageSquare,
-  MessageCircleQuestion, Sparkles, Handshake,
-} from 'lucide-react';
+import Image from 'next/image';
+import { Users, Check, UserCheck, UserPlus } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import PostTypeArt from '@/components/community/PostTypeArt';
+import { categoryLabel } from '@/components/community/PostCard';
+import { setFollowing } from '@/lib/social';
 import SceneShell from '../SceneShell';
 import CelebrationMascot from '../CelebrationMascot';
 import { CountUpNumber } from '../ScenePrimitives';
@@ -32,8 +34,8 @@ import styles from '../Scene.module.css';
 import local from '../CommunityWelcome.module.css';
 import { togglePostLike } from '@/lib/communityApi';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playScenePop, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 
 type CommunityWelcomeInput = Extract<CelebrationScene, { kind: 'COMMUNITY_WELCOME' }>;
 
@@ -54,7 +56,7 @@ const REASONS: Array<{
 }> = [
   {
     id: 'stuck',
-    icon: <LifeBuoy size={20} />,
+    icon: <PostTypeArt postType="QUESTION" size={42} />,
     title: 'To get unstuck',
     sub: 'Ask when something does not click',
     reply:
@@ -62,7 +64,7 @@ const REASONS: Array<{
   },
   {
     id: 'win',
-    icon: <Trophy size={20} />,
+    icon: <PostTypeArt postType="WIN" size={42} />,
     title: 'To share what I build',
     sub: 'Post the thing you just made',
     reply:
@@ -70,7 +72,7 @@ const REASONS: Array<{
   },
   {
     id: 'help',
-    icon: <HandHeart size={20} />,
+    icon: <PostTypeArt postType="TIP" size={42} />,
     title: 'To help other learners',
     sub: 'Answer questions, share what worked',
     reply:
@@ -95,6 +97,20 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(scene.samplePost?.likeCount ?? 0);
   const likeBusy = useRef(false);
+  // Beat 4's follows are real follows — the same call as a profile's button.
+  const [followed, setFollowed] = useState<Record<string, boolean>>({});
+
+  const toggleFollow = async (id: string) => {
+    const next = !followed[id];
+    setFollowed((f) => ({ ...f, [id]: next }));
+    playSound(next ? 'toggleOn' : 'toggleOff');
+    playHaptic(next ? 'success' : 'light', false);
+    try {
+      await setFollowing(id, next);
+    } catch {
+      setFollowed((f) => ({ ...f, [id]: !next }));
+    }
+  };
 
   /**
    * The like in beat 3 is a REAL like on a REAL post — the learner is already
@@ -111,8 +127,8 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
     const next = !liked;
     setLiked(next);
     setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
-    playSparkle();
-    playHaptic('light');
+    playSound('shine');
+    playHaptic('light', false);
     try {
       const res = await togglePostLike(postId, liked);
       setLiked(res.liked);
@@ -126,13 +142,13 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
   };
 
   useEffect(() => {
-    playHaptic('teyroCelebration');
-    playWhoosh('up');
+    celebrationHaptic('win');
+    playSound('achievement');
   }, []);
 
   const goNext = () => {
-    playScenePop(step + 1);
-    playHaptic('light');
+    playSound('statTick', step + 1);
+    playHaptic('light', false);
     setStep((s) => s + 1);
   };
 
@@ -143,7 +159,7 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
     onAdvance();
   };
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const dots = (
     <div className={local.steps} aria-hidden>
       {Array.from({ length: totalSteps }, (_, i) => (
@@ -244,11 +260,11 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
               aria-pressed={reason === r.id}
               onClick={() => {
                 setReason(r.id);
-                playSparkle();
-                playHaptic('light');
+                playSound('shine');
+                playHaptic('light', false);
               }}
             >
-              <span className={local.choiceIcon}>{r.icon}</span>
+              <span className={`${local.choiceIcon} ${local.artIcon}`}>{r.icon}</span>
               <span className={local.choiceBody}>
                 <span className={local.choiceTitle}>{r.title}</span>
                 <span className={local.choiceSub}>{r.sub}</span>
@@ -312,7 +328,9 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
               />
               <div>
                 <div className={local.postAuthor}>{post.authorName}</div>
-                <div className={local.postMeta}>in {post.postType.toLowerCase()}</div>
+                <div className={local.postMeta}>
+                  <PostTypeArt postType={post.postType} size={16} /> {categoryLabel(post.postType)}
+                </div>
               </div>
             </div>
 
@@ -326,11 +344,11 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
                 aria-pressed={liked}
                 onClick={() => void toggleRealLike(post.id)}
               >
-                <ThumbsUp size={15} fill={liked ? 'currentColor' : 'none'} />
+                <Image src={liked ? '/art/ui/like.svg' : '/art/ui/like-off.svg'} alt="" width={20} height={20} />
                 {likeCount > 0 ? likeCount : 'Like'}
               </button>
               <span className={local.postStat}>
-                <MessageSquare size={15} /> {post.commentCount}
+                <Image src="/art/ui/comment.svg" alt="" width={20} height={20} /> {post.commentCount}
               </span>
             </div>
           </motion.div>
@@ -343,7 +361,70 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
     );
   }
 
-  // ── Beat 4: how to be useful here, then in you go ──────────────────────
+  // ── Beat 4: learning is better with friends (interactive) ──────────────
+  if (step === 3) {
+    const classmates = scene.members.filter((m) => m.id !== scene.instructor?.id).slice(0, 4);
+    const anyFollowed = Object.values(followed).some(Boolean);
+    return (
+      <SceneShell
+        cta={{ text: anyFollowed ? 'NICE — NEXT' : 'CONTINUE', onClick: goNext, variant: 'blue' }}
+        onSkip={onAdvance}
+      >
+        {dots}
+        <h1 className={styles.headline}>
+          Learning is better with <span className={styles.headlineBlue}>friends</span>
+        </h1>
+        <p className={styles.subhead}>
+          Follow the people learning this with you. You&apos;ll keep each other going.
+        </p>
+
+        <div className={local.perks}>
+          <div className={local.perk}>
+            <Image src="/Icons/burn.png" alt="" width={36} height={36} />
+            <span>See their streaks</span>
+          </div>
+          <div className={local.perk}>
+            <Image src="/art/ui/medal-1.svg" alt="" width={36} height={36} />
+            <span>Race them on the leaderboard</span>
+          </div>
+          <div className={local.perk}>
+            <Image src="/art/ui/like.svg" alt="" width={36} height={36} />
+            <span>Cheer each other&apos;s wins</span>
+          </div>
+        </div>
+
+        {classmates.length > 0 ? (
+          <ul className={local.friendList}>
+            {classmates.map((m, i) => (
+              <motion.li
+                key={m.id}
+                className={local.friendRow}
+                initial={reducedMotion ? false : { opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.07, type: 'spring', stiffness: 380, damping: 26 }}
+              >
+                <Avatar src={m.avatarUrl ?? undefined} name={m.fullName} size="sm" />
+                <span className={local.friendName}>{m.fullName}</span>
+                <button
+                  type="button"
+                  className={followed[m.id] ? local.followingBtn : local.followBtn}
+                  aria-pressed={!!followed[m.id]}
+                  onClick={() => void toggleFollow(m.id)}
+                >
+                  {followed[m.id] ? <UserCheck size={16} strokeWidth={2.75} /> : <UserPlus size={16} strokeWidth={2.75} />}
+                  {followed[m.id] ? 'Following' : 'Follow'}
+                </button>
+              </motion.li>
+            ))}
+          </ul>
+        ) : (
+          <p className={local.tapHint}>You&apos;re one of the first here. Invite a friend from the community page.</p>
+        )}
+      </SceneShell>
+    );
+  }
+
+  // ── Beat 5: how to be useful here, then in you go ──────────────────────
   return (
     <SceneShell
       cta={{ text: 'SAY HI', onClick: enterCommunity, variant: 'green' }}
@@ -357,8 +438,8 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
 
       <div className={local.ruleList}>
         <div className={local.rule}>
-          <span className={local.ruleIcon}>
-            <MessageCircleQuestion size={17} />
+          <span className={`${local.ruleIcon} ${local.artIcon}`}>
+            <PostTypeArt postType="QUESTION" size={34} />
           </span>
           <div>
             <div className={local.ruleTitle}>Ask the stuck question</div>
@@ -368,8 +449,8 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
           </div>
         </div>
         <div className={local.rule}>
-          <span className={local.ruleIcon}>
-            <Sparkles size={17} />
+          <span className={`${local.ruleIcon} ${local.artIcon}`}>
+            <PostTypeArt postType="WIN" size={34} />
           </span>
           <div>
             <div className={local.ruleTitle}>Show the work, not the plan</div>
@@ -380,8 +461,8 @@ export default function CommunityWelcomeScene({ scene, onAdvance }: Props) {
           </div>
         </div>
         <div className={local.rule}>
-          <span className={local.ruleIcon}>
-            <Handshake size={17} />
+          <span className={`${local.ruleIcon} ${local.artIcon}`}>
+            <PostTypeArt postType="DISCUSSION" size={34} />
           </span>
           <div>
             <div className={local.ruleTitle}>Answer one before you ask one</div>

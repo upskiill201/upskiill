@@ -6,19 +6,19 @@
 
 import { pickFromPool } from './pool';
 
-const HEADLINE_NORMAL = (level: number) => [`You reached level ${level}!`, `Level ${level}! Keep it up 🔥`, `Level ${level}. Nice climb!`];
+const HEADLINE_NORMAL = (level: number) => [`You reached level ${level}!`, `Level ${level}! Keep it up!`, `Level ${level}. Nice climb!`];
 
 const HEADLINE_MILESTONE = (level: number) => [
-  `LEVEL ${level}?! LOOK AT YOU! 🔥`,
-  `Okay, somebody's leveling up FAST! 😤`,
-  `Level ${level} — that's a big one! 🚀`,
+  `LEVEL ${level}?! LOOK AT YOU!`,
+  `Okay, somebody's leveling up FAST!`,
+  `Level ${level} — that's a big one!`,
 ];
 
-const SPEECH_NORMAL = ['One level closer to whatever you\'re building 💪', 'Onward and upward!', "That's the way to do it."];
+const SPEECH_NORMAL = ['One level closer to whatever you\'re building', 'Onward and upward!', "That's the way to do it."];
 
 const SPEECH_MILESTONE = [
-  'This is the part where I brag about you to the other learners 😤',
-  "I'm not saying I'm proud... okay, I'm saying it. I'm proud. 🥹",
+  'This is the part where I brag about you to the other learners.',
+  "I'm not saying I'm proud... okay, I'm saying it. I'm proud.",
   'Somebody tell the leaderboard we\'re coming.',
 ];
 

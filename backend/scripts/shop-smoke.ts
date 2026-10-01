@@ -8,6 +8,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { ShopService } from '../src/shop/shop.service';
+import { StreakService } from '../src/streak/streak.service';
 
 /**
  * One connection, not a pool. This script runs against a Supabase pooler that
@@ -27,7 +28,7 @@ const dbUrl = singleConnectionUrl();
 const prisma = new PrismaClient(
   dbUrl ? { datasources: { db: { url: dbUrl } } } : undefined,
 );
-const shop = new ShopService(prisma as any);
+const shop = new ShopService(prisma as any, new StreakService(prisma as any));
 
 let pass = 0;
 let fail = 0;

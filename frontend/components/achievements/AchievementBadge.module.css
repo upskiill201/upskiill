@@ -1,0 +1,39 @@
+.badge {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.locked .art {
+  filter: grayscale(1) brightness(1.05);
+  opacity: 0.55;
+}
+
+/* Duolingo's ribbon across the badge's foot. */
+.ribbon {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--bg-page);
+  border: 2px solid var(--border);
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: var(--color-ink);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.locked .ribbon {
+  color: var(--text-muted);
+}

@@ -1,0 +1,859 @@
+/* Teyro homepage (v3) — Coddy's layout, Duolingo's look. Tokens only
+   (docs/08-color-system.md). Headlines use Baloo 2 (--font-celebration),
+   loaded by app/page.tsx. */
+
+.page {
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  overflow-x: clip;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.band {
+  padding: 104px 0;
+}
+
+.tint {
+  background: color-mix(in srgb, var(--color-brand) 5%, var(--bg-page));
+}
+
+.display {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.display em {
+  font-style: normal;
+  color: var(--color-brand);
+}
+
+.h1 {
+  font-size: clamp(40px, 5.6vw, 68px);
+}
+
+.h2 {
+  font-size: clamp(32px, 4.2vw, 50px);
+}
+
+.h3 {
+  font-size: clamp(22px, 2.4vw, 28px);
+}
+
+.lead {
+  margin: 0;
+  font-size: clamp(17px, 1.6vw, 20px);
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.center {
+  text-align: center;
+}
+
+.sectionHead {
+  max-width: 760px;
+  margin: 0 auto 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.btn,
+.btnGhost,
+.btnWhite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 32px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btn {
+  border: none;
+  background: var(--color-brand);
+  box-shadow: 0 5px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+}
+
+.btnGhost {
+  border: 2px solid var(--border);
+  border-bottom-width: 5px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+}
+
+.btnWhite {
+  border: none;
+  background: var(--bg-card);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--color-ink) 25%, transparent);
+  color: var(--color-brand);
+}
+
+@media (hover: hover) {
+  .btn:hover,
+  .btnWhite:hover {
+    filter: brightness(1.06);
+  }
+  .btnGhost:hover {
+    background: var(--bg-section);
+  }
+}
+
+.btn:active,
+.btnWhite:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+.btnGhost:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  padding: 72px 0 96px;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: -20% -10% auto auto;
+  width: 70vw;
+  max-width: 900px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-brand) 14%, transparent), transparent 65%);
+  pointer-events: none;
+}
+
+.heroGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 56px;
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.heroActions {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.heroNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.heroNote span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heroNote svg {
+  color: var(--success-green);
+}
+
+.heroVisual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* Floating outcome chips around the phone. */
+.float {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--color-ink) 45%, transparent);
+  white-space: nowrap;
+}
+
+.floatLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.floatValue {
+  display: block;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+.floatStreak { top: 8%; left: -4%; }
+.floatLeague { top: 42%; right: -6%; }
+.floatXp { bottom: 10%; left: 2%; }
+
+.heroTey {
+  position: absolute;
+  z-index: 2;
+  right: 4%;
+  bottom: -4%;
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 12px 18px color-mix(in srgb, var(--color-ink) 18%, transparent));
+}
+
+/* ─── Phone frame ──────────────────────────────────────────────────────── */
+.phone {
+  position: relative;
+  width: 300px;
+  max-width: 78vw;
+  aspect-ratio: 9 / 18.5;
+  padding: 12px;
+  border-radius: 46px;
+  background: var(--color-ink);
+  box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--color-ink) 70%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--color-ink) 70%, var(--bg-card));
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 36px;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 4;
+  width: 30%;
+  height: 22px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--color-ink);
+}
+
+/* ─── App bits (drawn from the real app) ───────────────────────────────── */
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 44px 16px 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+.hudStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hudStreak { color: var(--warning); }
+.hudCoin { color: color-mix(in srgb, var(--warning) 80%, black); }
+.hudXp { color: var(--color-brand); }
+.hudHeart { color: var(--error-red); }
+
+.unit {
+  margin: 12px 12px 4px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--success-green);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--success-green) 72%, black);
+  color: var(--bg-card);
+}
+
+.unitNum {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.unitTitle {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.path {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.node {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--bg-card);
+}
+
+.nodeDone {
+  background: var(--warning);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--warning) 70%, black);
+}
+
+.nodeNow {
+  width: 64px;
+  height: 64px;
+  background: var(--success-green);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--success-green) 72%, black),
+    0 0 0 8px color-mix(in srgb, var(--success-green) 20%, transparent);
+}
+
+.nodeLocked {
+  background: var(--border);
+  box-shadow: 0 5px 0 var(--border-strong);
+  color: var(--text-muted);
+}
+
+.startTag {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--success-green);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  animation: nudge 1.4s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% { transform: translate(-50%, -4px); }
+}
+
+.tabbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 6px 16px;
+  border-top: 2px solid var(--border);
+}
+
+.tab {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--text-muted);
+}
+
+.tabOn {
+  border: 2px solid color-mix(in srgb, var(--color-brand) 50%, var(--bg-card));
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+  color: var(--color-brand);
+}
+
+/* ─── Tracks ───────────────────────────────────────────────────────────── */
+.tracks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 28px;
+  background: var(--bg-card);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .track:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--tone) 45%, var(--border));
+  }
+}
+
+.trackHead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.trackIcon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 20px;
+  background: var(--tone);
+  box-shadow: 0 5px 0 var(--tone-deep);
+  color: var(--bg-card);
+}
+
+.toneBlue { --tone: var(--color-brand); --tone-deep: var(--color-brand-deep); }
+.tonePurple { --tone: var(--brand-purple); --tone-deep: color-mix(in srgb, var(--brand-purple) 70%, black); }
+
+.trackTitle {
+  margin: 0;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.trackSub {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.topics {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-section);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.topic svg {
+  color: var(--tone);
+}
+
+.trackCta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+/* ─── Why it works (three pillars) ─────────────────────────────────────── */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 24px;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 28px;
+  background: var(--bg-card);
+  text-align: center;
+}
+
+.pillarArt {
+  width: 112px;
+  height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stay inside the box: the base image reset (height: auto) let tall artwork
+   spill over the heading below it. */
+.pillarArt img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Tey poses are portrait, so they get a taller box than square icons. */
+.pillarArtTall {
+  width: 128px;
+  height: 144px;
+}
+
+.pillar p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ─── Split feature sections ───────────────────────────────────────────── */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 72px;
+}
+
+.splitFlip .splitCopy {
+  order: 2;
+}
+
+.splitCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.points {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+.tick {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--success-green);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--success-green) 72%, black);
+  color: var(--bg-card);
+}
+
+.splitVisual {
+  display: flex;
+  justify-content: center;
+}
+
+/* A white app card, like the ones in the app. */
+.card {
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 28px;
+  background: var(--bg-card);
+  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--color-ink) 50%, transparent);
+}
+
+/* ─── Audience ─────────────────────────────────────────────────────────── */
+.audience {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.persona {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+  border: 2px solid var(--border);
+  border-bottom-width: 6px;
+  border-radius: 28px;
+  background: var(--bg-card);
+}
+
+.personaIcon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-brand) 12%, var(--bg-card));
+  color: var(--color-brand);
+}
+
+.persona p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.quote {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 2px solid var(--bg-section);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+/* ─── Creator band ─────────────────────────────────────────────────────── */
+.creator {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  padding: 56px;
+  border-radius: 36px;
+  background: var(--color-brand);
+  box-shadow: 0 8px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+}
+
+.creator .display {
+  color: var(--bg-card);
+}
+
+.creator p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--bg-card) 85%, transparent);
+}
+
+.creatorStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.creatorStat {
+  padding: 18px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-card) 14%, transparent);
+}
+
+.creatorStat strong {
+  display: block;
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.creatorStat span {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* ─── Final CTA ────────────────────────────────────────────────────────── */
+.final {
+  position: relative;
+  padding: 104px 0 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.finalInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.finalStage {
+  position: relative;
+  margin-top: 40px;
+  height: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.finalStage::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -60%;
+  width: 180vw;
+  height: 160%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--color-brand);
+}
+
+.finalStage img {
+  position: relative;
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .band {
+    padding: 72px 0;
+  }
+  .heroGrid,
+  .split,
+  .creator {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+  }
+  .heroCopy {
+    align-items: center;
+    text-align: center;
+  }
+  .heroActions {
+    margin: 8px auto 0;
+  }
+  .heroNote {
+    justify-content: center;
+  }
+  .splitFlip .splitCopy {
+    order: 0;
+  }
+  .tracks,
+  .pillars,
+  .audience {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .creator {
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 16px;
+  }
+  .hero {
+    padding: 40px 0 72px;
+  }
+  .float {
+    padding: 8px 12px 8px 10px;
+  }
+  .floatValue {
+    font-size: 18px;
+  }
+  .floatStreak { left: -2%; }
+  .floatLeague { right: -2%; }
+  .heroTey {
+    width: 104px;
+    right: -2%;
+  }
+  .track,
+  .persona {
+    padding: 22px;
+  }
+  .card {
+    padding: 18px;
+  }
+  .creatorStats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .btn,
+  .btnGhost,
+  .btnWhite {
+    width: 100%;
+    padding: 0 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startTag {
+    animation: none;
+  }
+}

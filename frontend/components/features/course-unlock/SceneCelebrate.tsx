@@ -6,6 +6,7 @@ import { motion, type Variants } from 'framer-motion';
 import { ArrowRight, Check, Lock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 import styles from './unlock.module.css';
 
@@ -114,7 +115,8 @@ export default function SceneCelebrate({
   }, [rows.shown.length, reducedMotion]);
 
   const handleContinue = () => {
-    playHaptic('medium');
+    playHaptic('medium', false);
+    playSound('next');
     onContinue();
   };
 

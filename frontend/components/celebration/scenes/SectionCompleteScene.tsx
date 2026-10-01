@@ -20,11 +20,9 @@ import {
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
-import {
-  playSparkle,
-  playStreakFanfare,
-} from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { confettiColors } from '../confetti';
+import { celebrationHaptic } from '@/lib/haptics';
 import { pickSectionCompleteSpeech } from '@/lib/tey/milestoneVoice';
 
 type SectionCompleteInput = Extract<CelebrationScene, { kind: 'SECTION_COMPLETE' }>;
@@ -34,7 +32,6 @@ interface SectionCompleteSceneProps {
   onAdvance: () => void;
 }
 
-const CONFETTI_COLORS = ['#22C55E', '#3D5AFE', '#FFC800', '#FFFFFF', '#6C8CFF'];
 
 export default function SectionCompleteScene({ scene, onAdvance }: SectionCompleteSceneProps) {
   const reducedMotion = useReducedMotion();
@@ -56,8 +53,8 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
   useEffect(() => {
     if (firedRef.current) return;
     firedRef.current = true;
-    playHaptic('teyroCelebration');
-    playStreakFanfare();
+    celebrationHaptic('big');
+    playSound('unitComplete');
 
     if (!reducedMotion && typeof window !== 'undefined') {
       confetti({
@@ -65,7 +62,7 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
         spread: 105,
         startVelocity: 42,
         origin: { x: 0.5, y: 0.3 },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors('green'),
         disableForReducedMotion: true,
       });
       const sideTimers = setTimeout(() => {
@@ -74,7 +71,7 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
           angle: 60,
           spread: 60,
           origin: { x: 0, y: 0.4 },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('green'),
           disableForReducedMotion: true,
         });
         confetti({
@@ -82,7 +79,7 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
           angle: 120,
           spread: 60,
           origin: { x: 1, y: 0.4 },
-          colors: CONFETTI_COLORS,
+          colors: confettiColors('green'),
           disableForReducedMotion: true,
         });
       }, 350);
@@ -149,7 +146,7 @@ export default function SectionCompleteScene({ scene, onAdvance }: SectionComple
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.55, duration: 0.4, ease: 'easeOut' }}
         onAnimationComplete={() => {
-          if (!reducedMotion) playSparkle();
+          if (!reducedMotion) playSound('shine');
         }}
       >
         <span className={styles.milestoneTitle}>{scene.sectionTitle}</span>

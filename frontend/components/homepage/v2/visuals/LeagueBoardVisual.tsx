@@ -4,9 +4,8 @@
  * LeagueBoardVisual — the weekly league standings, cropped to the rows around
  * you and the promotion cut-off.
  *
- * Reuses the real LeagueBadge (an authored SVG shield, and import-clean — it
- * only pulls lucide and the pure lib/leagues data), so the shield on the
- * homepage is the same artwork learners see in the app.
+ * Reuses the real LeagueBadge (per-tier trophy artwork from lib/leagues),
+ * so the trophy on the homepage is the same artwork learners see in the app.
  *
  * Shows the Gold League rule honestly: top 10 promote, so the divider sits
  * under rank 10. That is why the visible ranks start at 8 rather than 1 —

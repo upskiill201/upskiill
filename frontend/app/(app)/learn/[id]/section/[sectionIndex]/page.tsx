@@ -1,54 +1,30 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Check, Lock, Star, BookOpen, BookText, X, Swords, Info, PanelRightOpen, FileText, Video, Link as LinkIcon, Folder, LayoutTemplate, MessagesSquare, Shield } from 'lucide-react';
-import { fetchInventory, usePowerUp } from '@/lib/shop/api';
+import { ArrowLeft, Check, Lock, Star, BookText, X, PanelRightOpen } from 'lucide-react';
 import { track } from '@/lib/tey-track';
 import { playHaptic } from '@/lib/haptics';
 import StudentShell, { useComingSoon } from '@/components/layout/StudentShell';
-import Skeleton from '@/components/ui/Skeleton';
 import TeyroBrandedLoader from '@/components/ui/TeyroBrandedLoader';
 import LearnSectionSkeleton from './LearnSectionSkeleton';
+import { prefetchLesson, takePrefetchedLesson } from '@/lib/path/lessonPrefetch';
 import { StatsBar } from '@/components/ui/StatsBar';
 import { usePostPaymentUnlock } from '@/hooks/usePostPaymentUnlock';
 import { useCourseDetail, useCourseProgress, useCourseAccess } from '@/hooks/useCourse';
 import { buildUnlockHref } from '@/lib/return-to';
 import { fireConfetti } from '@/lib/confetti';
 import { playAscendingPopSound } from '@/lib/audio/audioEvents';
-import { getComboTier } from '@/lib/lesson/comboTier';
-import {
-  playAnswerWrong,
-  playButtonUnlock,
-  playComboCorrect,
-  playPhaseUnlock,
-} from '@/lib/audio/lessonAudio';
-import { playChestBurst, playSparkle, playWhoosh } from '@/lib/audio/celebrationAudio';
-import {
-  pickComboLine,
-  pickLessonProgressLine,
-  pickLessonReadyToUnlockLine,
-  pickLessonWelcomeLines,
-  pickNodeUnlockLine,
-  pickPhaseUnlockLine,
-  pickUnlockedButtonLine,
-  pickWrongAnswerLine,
-} from '@/lib/tey/lessonVoice';
-import LessonShell from '@/components/learn/LessonShell';
-import PhaseHeader from '@/components/learn/PhaseHeader';
-import PhaseStepper from '@/components/learn/PhaseStepper';
-import PhaseTransition from '@/components/learn/PhaseTransition';
+import { playChestBurst, playSparkle } from '@/lib/audio/celebrationAudio';
+import { pickLessonProgressLine, pickLessonReadyToUnlockLine, pickNodeUnlockLine } from '@/lib/tey/lessonVoice';
+import { LessonPlayer } from '@/components/lesson/LessonPlayer';
 import TeyLessonCoach from '@/components/learn/TeyLessonCoach';
-import LearnProgressBar, { useLearnProgress } from '@/components/learn/LearnProgressBar';
-import WordCountBadge from '@/components/learn/WordCountBadge';
-import { SpeechBubble } from '@/components/onboarding/SpeechBubble';
 import { useGamification } from '@/context/GamificationContext';
 import { CURRENCY_ICONS } from '@/components/celebration/currency';
-import { useCelebration, type CelebrationScene, type CelebrationCurrency } from '@/context/CelebrationContext';
-import DOMPurify from 'dompurify';
+import { useCelebration } from '@/context/CelebrationContext';
 import styles from './SectionView.module.css';
 
 const cleanHtml = (rawStr: string) => {
@@ -60,62 +36,6 @@ const cleanHtml = (rawStr: string) => {
   return cleaned;
 };
 
-/**
- * Sanitiser for anything rendered through dangerouslySetInnerHTML.
- *
- * NOTE: cleanHtml above must NEVER feed innerHTML — its order of operations
- * (strip tags, THEN decode entities) resurrects live tags out of encoded
- * ones (`&lt;img onerror&gt;` becomes a real element), which is precisely
- * the injection vector this closes. cleanHtml stays for plain-text-only
- * contexts such as parsePoint and React text children.
- */
-const sanitizeHtml = (raw: string | null | undefined): string =>
-  DOMPurify.sanitize(raw ?? '', { USE_PROFILES: { html: true } });
-
-const parsePoint = (pointStr: string, index: number) => {
-  const clean = cleanHtml(pointStr);
-  
-  // Regex to extract emoji at the start of the string
-  const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji})/u;
-  const match = clean.match(emojiRegex);
-  
-  let emoji = '';
-  let rest = clean;
-  
-  if (match) {
-    emoji = match[1];
-    rest = clean.slice(emoji.length).trim();
-  }
-  
-  let title = rest;
-  let desc = '';
-  
-  const separators = [' - ', ' : ', ': ', ' -'];
-  for (const sep of separators) {
-    if (rest.includes(sep)) {
-      const parts = rest.split(sep);
-      title = parts[0].trim();
-      desc = parts.slice(1).join(sep).trim();
-      break;
-    }
-  }
-  
-  const defaultEmojis = ['🎯', '💎', '⭐', '🔥', '🚀'];
-  if (!emoji) {
-    emoji = defaultEmojis[index % defaultEmojis.length];
-  }
-  
-  const bgColors: { [key: string]: string } = {
-    '🎯': '#F3E8FF',
-    '💎': '#DCFCE7',
-    '⭐': '#FEF9C3',
-    '🔥': '#FFEDD5',
-    '🚀': '#DBEAFE',
-  };
-  const bg = bgColors[emoji] || '#F1F5F9';
-  
-  return { emoji, title, desc, bg };
-};
 
 const SPRING_BOUNCE = { type: 'spring', stiffness: 400, damping: 22 } as const;
 const SPRING_GENTLE = { type: 'spring', stiffness: 280, damping: 28 } as const;
@@ -161,6 +81,54 @@ const getLessonColorTheme = (index: number) => {
 };
 
 /* ─── SIDEBAR PROGRESS COMPONENT ─────────────────────────────────── */
+/**
+ * What the learner sees between START and the lesson: the lesson start
+ * screen's own header, with the body still loading. Shaped like the lesson,
+ * not the map, so arriving from home never flashes the section map first.
+ * Title is optional — the page-level loading state renders this before the
+ * course (and so the unit title) has arrived.
+ */
+export function LessonEntryLoading({ unitLabel, title }: { unitLabel?: string; title?: string }) {
+  return (
+    <div className={styles.container} aria-busy="true" aria-label="Opening your lesson">
+      <div className={styles.lessonPlayerInnerContainer}>
+        <div className={styles.duolingoHeader}>
+          <div className={styles.headerLeft}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {unitLabel ? (
+                <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: 11, fontWeight: 800, letterSpacing: '0.05em' }}>
+                  {unitLabel}
+                </span>
+              ) : (
+                <span className="block h-3 w-16 rounded-full bg-white/35 animate-pulse" />
+              )}
+              {title ? (
+                <h1 className={styles.headerTitleText} style={{ color: 'white', margin: 0 }}>
+                  {title}
+                </h1>
+              ) : (
+                <span className="block h-5 w-56 rounded-md bg-white/40 animate-pulse" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Learn · Apply · Reflect · Deepen, and the lesson card, pulsing. */}
+        <div className="flex justify-between px-6 pt-6">
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className="block w-12 h-12 rounded-full bg-[var(--border)] animate-pulse" style={{ animationDelay: `${i * 90}ms` }} />
+          ))}
+        </div>
+        <div className="flex flex-col items-center gap-3 px-6 pt-12">
+          <span className="block h-6 w-24 rounded-full bg-[var(--border)] animate-pulse" />
+          <span className="block h-7 w-4/5 max-w-[420px] rounded-lg bg-[var(--border)] animate-pulse" />
+          <span className="block h-4 w-3/5 max-w-[320px] rounded-md bg-[var(--border)] animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface SectionSidebarProps {
   completedCount: number;
   totalLessons: number;
@@ -373,18 +341,14 @@ export function SectionViewContent({
   onReviewLoadError,
 }: SectionViewContentProps) {
   // Use global gamification context for live XP, streak, and lives
-  const { xp: xpPoints, lives: livesCount, loseLife, applyLessonReward, refillLivesWithXp, userLevel, xpInCurrentLevel, streakDays, refresh } = useGamification();
-  const { celebrate, closeAll: closeCelebrations } = useCelebration();
+  const { xp: xpPoints } = useGamification();
+  const { celebrate } = useCelebration();
   const reducedMotion = useReducedMotion();
   const params = useParams();
   const router = useRouter();
   const { triggerComingSoon } = useComingSoon();
   const lessons = section.lessons || [];
   const mapRef = useRef<HTMLDivElement>(null);
-  const startMascotRef = useRef<HTMLDivElement>(null);
-  const xpCardRef = useRef<HTMLDivElement>(null);
-  const coinCardRef = useRef<HTMLDivElement>(null);
-  const lessonStartTimeRef = useRef<number>(Date.now());
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Read from the shared SWR cache (hooks/useCourse.ts) rather than a
@@ -453,12 +417,35 @@ export function SectionViewContent({
   const [unlockRevealed, setUnlockRevealed] = useState(false);
   const [lockedToast, setLockedToast] = useState<{ message: string; key: number } | null>(null);
   const [activeLesson, setActiveLesson] = useState<any>(null);
-  const [lessonPhase, setLessonPhase] = useState<'start' | 'learn' | 'apply' | 'reflect' | 'deepen'>('start');
 
   // ── Tey deep link: /learn/[id]/section/[n]?lesson=<lessonId> ──────────────
   // A push notification points at a specific unfinished lesson rather than the
   // section, so tapping it opens exactly what Tey was talking about.
   const teyDeepLinkAppliedRef = useRef(false);
+
+  // ── Arriving for ONE lesson (START on home, or a Tey push) ────────────────
+  // Captured once, on arrival: the deep-link effect below strips ?lesson=
+  // from the URL right after opening it, and re-reading the URL then would
+  // make the map flash back for a frame.
+  const searchParams = useSearchParams();
+  const [requestedLessonId] = useState<string | null>(() =>
+    adminReviewMode ? null : searchParams.get('lesson'),
+  );
+  const [enteredFromHome] = useState(() => searchParams.get('from') === 'home');
+  /** Set once the requested lesson has opened — or failed to. */
+  const [deepLinkSettled, setDeepLinkSettled] = useState(false);
+
+  /**
+   * Leaving a lesson goes back where the learner came from. Arriving from
+   * home means home — never the section map they didn't see on the way in.
+   */
+  const leaveLesson = useCallback(() => {
+    if (enteredFromHome) {
+      router.push('/dashboard');
+      return;
+    }
+    setActiveLesson(null);
+  }, [enteredFromHome, router]);
   useEffect(() => {
     if (teyDeepLinkAppliedRef.current) return;
     if (lessons.length === 0) return;
@@ -481,7 +468,7 @@ export function SectionViewContent({
     // catalog object directly. Anyone can type ?lesson=<id>, so this path gets
     // the same server-side entitlement check (and 403 → unlock screen) as a
     // normal tap; short-circuiting it made the URL bar a paywall bypass.
-    void openLesson(requestedLessonId);
+    void openLesson(requestedLessonId).finally(() => setDeepLinkSettled(true));
 
     // Strip the param so a refresh does not re-enter the lesson. Rewrite the
     // CURRENT pathname rather than rebuilding it — this component does not have
@@ -489,23 +476,13 @@ export function SectionViewContent({
     // introduce an off-by-one nobody notices until a learner is bounced.
     const search = new URLSearchParams(window.location.search);
     search.delete('lesson');
+    search.delete('from');
     const query = search.toString();
     router.replace(
       `${window.location.pathname}${query ? `?${query}` : ''}`,
       { scroll: false },
     );
   }, [lessons, currentActiveLessonIndex, router]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
-  const [isAnswerChecked, setIsAnswerChecked] = useState(false);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
-
-  // Consecutive correct answers within this lesson. Feedback only — it pitches
-  // the reward sound and drives Tey's reaction, and deliberately does NOT touch
-  // XP or coins, which the server alone calculates on completion.
-  const applyComboRef = useRef(0);
-  const [applyCombo, setApplyCombo] = useState(0);
 
   // Tey's current line. `teyToken` lets the same line re-show (a second wrong
   // answer in a row would otherwise be a no-op, since the string is unchanged).
@@ -519,23 +496,7 @@ export function SectionViewContent({
   }, []);
 
   const isReviewMode = activeLesson ? completedLessons.includes(activeLesson.id) : false;
-  // Picked once per lesson (keyed by id, not re-rolled on every re-render —
-  // SpeechBubble's typewriter would restart mid-sentence otherwise). `id` is
-  // an intentional extra invalidation key, not something the body reads: two
-  // consecutive fresh (non-review) lessons both have isReviewMode === false,
-  // and without `id` here the memo would reuse lesson A's greeting for
-  // lesson B since the referenced dependency never changed.
-  const startWelcomeLines = React.useMemo(
-    () => pickLessonWelcomeLines({ isReviewMode }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeLesson?.id, isReviewMode]
-  );
 
-  useEffect(() => {
-    if (activeLesson) {
-      lessonStartTimeRef.current = Date.now();
-    }
-  }, [activeLesson]);
 
   // PHASE 1 & 3: Camera Auto-Scroll & Lock Shatter Audio Choreography
   //
@@ -555,7 +516,7 @@ export function SectionViewContent({
   // t=1400ms the lock shatters: icon swap, chest-burst sound, confetti, Tey
   // reacts. t=3200ms everything settles back to normal chrome.
   useEffect(() => {
-    if (lessonPhase === 'start' && mapRef.current) {
+    if (!activeLesson && mapRef.current) {
       const targetNodeIdx = justUnlockedIndex !== null ? justUnlockedIndex : currentActiveLessonIndex;
       if (targetNodeIdx !== -1) {
         const nodeElem = nodeRefs.current[targetNodeIdx];
@@ -636,257 +597,8 @@ export function SectionViewContent({
     // useCallback and safe to omit for the same "keep the trigger narrow"
     // reason.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonPhase, currentActiveLessonIndex, justUnlockedIndex]);
+  }, [activeLesson, currentActiveLessonIndex, justUnlockedIndex]);
 
-  const targetLevelXpNeeded = 100 * (userLevel || 1);
-  const targetLevelPct = Math.min(100, Math.max(0, Math.round((xpInCurrentLevel / targetLevelXpNeeded) * 100)));
-
-  let applyData = null;
-  if (activeLesson?.contentBlocks?.apply && Array.isArray(activeLesson.contentBlocks.apply)) {
-    applyData = activeLesson.contentBlocks.apply.find((b: any) => b.type === 'mcqActivity')?.value;
-  }
-
-  // NO fake fallback questions — if a creator hasn't built an Apply activity
-  // for this lesson, we skip the phase entirely instead of quizzing students
-  // on unrelated hardcoded content.
-  const applyQuestions = applyData?.questions && Array.isArray(applyData.questions)
-    ? applyData.questions.filter((q: any) => q?.questionText && Array.isArray(q.options) && q.options.length >= 2)
-    : [];
-  const hasApplyActivity = applyQuestions.length > 0;
-
-  const applyScenario = applyData?.scenario || '';
-  const currentQuestion = applyQuestions[currentQuestionIndex] || applyQuestions[0];
-
-  // Auto-preselect saved correct answer when in Review Mode
-  useEffect(() => {
-    if (isReviewMode && lessonPhase === 'apply' && currentQuestion?.options) {
-      const correctIdx = currentQuestion.options.findIndex((opt: any) => opt.id === currentQuestion.correctOptionId);
-      if (correctIdx !== -1) {
-        setSelectedOptionIndex(correctIdx);
-        setIsAnswerChecked(true);
-        setIsAnswerCorrect(true);
-      }
-    }
-  }, [isReviewMode, lessonPhase, currentQuestionIndex, currentQuestion]);
-
-  // Quiz performance tracking — feeds creator analytics (attempts + accuracy)
-  const applyWrongCountRef = useRef(0);
-
-  /** Set when a Perfect Lesson Protection charge ate a wrong answer. */
-  const [shieldAbsorbed, setShieldAbsorbed] = useState(false);
-  /** Lesson Retry charges held, fetched only when the learner runs dry. */
-  const [retryCharges, setRetryCharges] = useState<number | null>(null);
-  const [usingRetry, setUsingRetry] = useState(false);
-
-  useEffect(() => {
-    if (activeLesson) {
-      applyWrongCountRef.current = 0;
-      // A combo belongs to one lesson; carrying it across would make the first
-      // answer of a fresh lesson sound like the middle of a run.
-      applyComboRef.current = 0;
-      setApplyCombo(0);
-      setTeyLine(null);
-    }
-  }, [activeLesson]);
-
-  useEffect(() => {
-    if (!shieldAbsorbed) return;
-    const timer = setTimeout(() => setShieldAbsorbed(false), 2600);
-    return () => clearTimeout(timer);
-  }, [shieldAbsorbed]);
-
-  // Only ask what's in the locker at the moment it matters — running out of
-  // hearts — rather than on every lesson load.
-  useEffect(() => {
-    if (livesCount !== 0 || lessonPhase !== 'apply' || retryCharges !== null) return;
-    fetchInventory()
-      .then((inv) => {
-        const row = inv.items.find((i) => i.id === 'LESSON_RETRY');
-        setRetryCharges(row?.quantity ?? 0);
-      })
-      .catch(() => setRetryCharges(0));
-  }, [livesCount, lessonPhase, retryCharges]);
-
-  const handleCheckAnswer = () => {
-    if (selectedOptionIndex === null) return;
-    playHaptic('medium');
-    setIsAnswerChecked(true);
-    const selectedOption = currentQuestion.options[selectedOptionIndex];
-    const correct = selectedOption.id === currentQuestion.correctOptionId;
-    setIsAnswerCorrect(correct);
-    if (correct) {
-      // Climb the ladder. The old fixed arpeggio sounded identical on the
-      // tenth correct answer as on the first, which is a fixed reinforcement
-      // schedule — it stops registering. Pitching by the run makes each one a
-      // slightly new outcome.
-      const combo = applyComboRef.current + 1;
-      applyComboRef.current = combo;
-      setApplyCombo(combo);
-      playComboCorrect(combo);
-      if (combo >= 3) sayTey(pickComboLine(combo), 'cheer');
-
-      // Tier 5 (6+ in a row) gets one capped, low-particle confetti burst —
-      // same helper the map's node-unlock uses. Doesn't scale further with
-      // combo, and stays quick so it never competes with the CONTINUE button.
-      if (getComboTier(combo) === 5) {
-        fireConfetti({
-          particleCount: 22,
-          spread: 55,
-          origin: { y: 0.75 },
-          colors: ['#58CC02', '#0172FD', '#EAB308'],
-        });
-      }
-    } else {
-      const brokenStreak = applyComboRef.current;
-      applyComboRef.current = 0;
-      setApplyCombo(0);
-      playAnswerWrong();
-      sayTey(pickWrongAnswerLine(brokenStreak), 'nudge');
-    }
-    if (!correct && !isReviewMode && !adminReviewMode) {
-      applyWrongCountRef.current += 1;
-      // A Perfect Lesson Protection charge may absorb this instead of costing
-      // a heart. The server decides (it holds the charge count); we only
-      // surface it, because a shield that saves you silently is a shield the
-      // learner never knows they got value from.
-      void loseLife().then((result) => {
-        if (result?.shieldAbsorbed) setShieldAbsorbed(true);
-      });
-    }
-  };
-
-  const handleApplyContinue = () => {
-    const isLastQuestion = currentQuestionIndex >= applyQuestions.length - 1;
-
-    // Moving to the next question gets an ordinary button click. Advancing a
-    // phase does NOT — PhaseStepper plays the three-beat unlock for that, and a
-    // click layered underneath it just muddies the seal.
-    playHaptic('medium', !isLastQuestion);
-
-    if (!isLastQuestion) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedOptionIndex(null);
-      setIsAnswerChecked(false);
-      setIsAnswerCorrect(false);
-    } else {
-      const perfectRun = applyWrongCountRef.current === 0 ? applyQuestions.length : 0;
-      sayTey(pickPhaseUnlockLine('reflect', { perfectRun }), perfectRun ? 'cheer' : 'neutral');
-      setLessonPhase('reflect');
-      setCurrentQuestionIndex(0);
-      setSelectedOptionIndex(null);
-      setIsAnswerChecked(false);
-    }
-  };
-
-  // REFLECT STATE & LOGIC
-  const [reflectionText, setReflectionText] = useState('');
-  const [guidedAnswers, setGuidedAnswers] = useState<string[]>([]);
-
-  let reflectData = null;
-  if (activeLesson?.contentBlocks?.reflect && Array.isArray(activeLesson.contentBlocks.reflect)) {
-    reflectData = activeLesson.contentBlocks.reflect.find((b: any) => b.type === 'reflectActivity')?.value;
-  }
-  
-  const reflectPrompt = reflectData?.prompt || "What's one key takeaway from this lesson?";
-  const reflectType = reflectData?.type || 'open';
-  
-  // Open config
-  const reflectOpenConfig = reflectData?.openConfig || { useStarters: true, starters: [], minWordCount: 20 };
-  const reflectMinWords = reflectOpenConfig.minWordCount;
-  const reflectStarters = reflectOpenConfig.useStarters ? reflectOpenConfig.starters : [];
-  
-  // Guided config
-  const reflectGuidedConfig = reflectData?.guidedConfig || { questions: [], minWordCountPerQuestion: 10 };
-  
-  useEffect(() => {
-    if (reflectType === 'guided' && reflectGuidedConfig.questions.length > 0 && guidedAnswers.length === 0) {
-      setGuidedAnswers(new Array(reflectGuidedConfig.questions.length).fill(''));
-    }
-  }, [reflectType, reflectGuidedConfig, guidedAnswers.length]);
-
-  const handleGuidedAnswerChange = (index: number, text: string) => {
-    setGuidedAnswers(prev => {
-      const newArr = [...prev];
-      newArr[index] = text;
-      return newArr;
-    });
-  };
-
-  const handleStarterClick = (starterText: string) => {
-    setReflectionText(prev => {
-      if (prev.includes(starterText)) return prev;
-      return prev ? `${prev}\n${starterText} ` : `${starterText} `;
-    });
-  };
-
-  let canSubmitReflect = false;
-  if (reflectType === 'open') {
-    const wordCount = reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length;
-    canSubmitReflect = wordCount >= reflectMinWords;
-  } else if (reflectType === 'guided') {
-    canSubmitReflect = guidedAnswers.length > 0 && guidedAnswers.every(ans => {
-      const wc = ans.trim().split(/\s+/).filter(w => w.length > 0).length;
-      return wc >= reflectGuidedConfig.minWordCountPerQuestion;
-    });
-  }
-
-  const handleReflectSubmit = () => {
-    if (canSubmitReflect) {
-      // Audio suppressed here on purpose: PhaseStepper owns the advance sound.
-      playHaptic('success', false);
-      sayTey(pickPhaseUnlockLine('deepen'));
-      setLessonPhase('deepen');
-    }
-  };
-
-  const handleStepBack = () => {
-    playHaptic('medium');
-    if (lessonPhase === 'learn') {
-      setLessonPhase('start');
-    } else if (lessonPhase === 'apply') {
-      if (currentQuestionIndex > 0) {
-        setCurrentQuestionIndex(prev => prev - 1);
-        setSelectedOptionIndex(null);
-        setIsAnswerChecked(false);
-        setIsAnswerCorrect(false);
-      } else {
-        setLessonPhase('learn');
-      }
-    } else if (lessonPhase === 'reflect') {
-      // Lessons without an Apply activity step back into Learn instead
-      setLessonPhase(hasApplyActivity ? 'apply' : 'learn');
-      if (hasApplyActivity) {
-        // Go back to the last question of the apply step
-        setCurrentQuestionIndex(applyQuestions.length - 1);
-        setSelectedOptionIndex(null);
-        setIsAnswerChecked(false);
-        setIsAnswerCorrect(false);
-      }
-    } else if (lessonPhase === 'deepen') {
-      setLessonPhase('reflect');
-    }
-  };
-
-  const [selectedResource, setSelectedResource] = useState<any>(null);
-
-  const deepenData = React.useMemo(() => {
-    if (!activeLesson) return null;
-    let parsedBlocks = activeLesson.contentBlocks;
-    if (typeof parsedBlocks === 'string') {
-      try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) {}
-    }
-    const deepenBlocks = parsedBlocks?.deepen;
-    if (Array.isArray(deepenBlocks)) {
-      return deepenBlocks.find((b: any) => b.type === 'deepenActivity')?.value;
-    }
-    return deepenBlocks?.deepenActivity || null;
-  }, [activeLesson]);
-
-  const deepenTitle = deepenData?.collectionTitle || 'More Rabbit Holes! 🐰';
-  const deepenDesc = deepenData?.collectionDescription || 'Explore these helpful resources to master the topic.';
-
-  const [isCompletingLesson, setIsCompletingLesson] = useState(false);
-  const [finishError, setFinishError] = useState<string | null>(null);
 
   /** Close the lesson player and land back on the map with the unlock moment. */
   const returnToMapAfterLesson = () => {
@@ -894,7 +606,6 @@ export function SectionViewContent({
     const newlyUnlockedIdx = currentActiveLessonIndex + 1;
     setJustUnlockedIndex(newlyUnlockedIdx);
     setActiveLesson(null);
-    setLessonPhase('start');
     try {
       playAscendingPopSound(4);
     } catch {}
@@ -907,346 +618,13 @@ export function SectionViewContent({
     sayTey(pickLessonProgressLine(completedInSection, totalLessons), 'cheer');
   };
 
-  const handleDeepenFinish = async () => {
-    if (isCompletingLesson) return;
-    // Admin review: no server write, no payout, no celebration chain — just
-    // the UI act of leaving the lesson. Everything below this guard (the
-    // complete-lesson POST, XP/coin/streak celebration scenes, the
-    // window.dispatchEvent lesson:completed/mission signals, and the
-    // section-chest localStorage writes) must never run for a reviewing admin.
-    if (adminReviewMode) {
-      playHaptic('success', false);
-      onReviewClose?.();
-      return;
-    }
-    setIsCompletingLesson(true);
-    setFinishError(null);
-    // The last rung of the ladder. Finishing is not a phase change, so
-    // PhaseStepper never sees it — this is the one advance the page plays
-    // itself. It resolves, landing "done" a beat before the celebration
-    // scenes confirm it. Haptic only from playHaptic, to keep the note clean.
-    playHaptic('success', false);
-    playPhaseUnlock(3);
-    setTeyLine(null);
-    try {
-      const res = await fetch(`/api/courses/${params.id}/complete-lesson`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lessonId: activeLesson.id,
-          timezoneOffset: new Date().getTimezoneOffset(),
-          // Real wall-clock time + quiz performance — feeds creator analytics
-          timeSpentSeconds: Math.max(
-            0,
-            Math.round((Date.now() - lessonStartTimeRef.current) / 1000),
-          ),
-          ...(hasApplyActivity && applyQuestions.length > 0 && {
-            attemptsCount: applyWrongCountRef.current + 1,
-            quizScorePct: Math.round(
-              ((applyQuestions.length - Math.min(applyWrongCountRef.current, applyQuestions.length)) /
-                applyQuestions.length) * 100,
-            ),
-          }),
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (!completedLessons.includes(activeLesson.id)) {
-          setCompletedLessons(prev => [...prev, activeLesson.id]);
-        }
-        // Instantly update global context with server-confirmed new totals
-        if (data.newXp !== undefined && data.newStreakDays !== undefined) {
-          applyLessonReward(data.newXp, data.newStreakDays, data.newCoins);
-        }
-        // Signal Today's Missions card to re-fetch or merge instantly
-        window.dispatchEvent(new Event('lesson:completed'));
-        if (data.missionsUpdated) {
-          window.dispatchEvent(new CustomEvent('missions:updated', { detail: data.missionsUpdated }));
-        }
-        window.dispatchEvent(new Event('mission:refresh'));
-        // Re-sync level/streak/coins from the server — a level-up here queues a
-        // LEVEL_UP scene behind the payout chain below.
-        void refresh();
-
-        // ── The Celebration Engine owns the entire lesson-complete moment:
-        // CLAIM (XP + coins payout with level progress) → STREAK EXTENDED
-        // (first lesson today) → back to the map. No second victory screen —
-        // that legacy screen double-celebrated and clashed audio with scenes.
-        if (data.isNewCompletion !== false) {
-          const newXp = typeof data.newXp === 'number' ? data.newXp : null;
-          // Pin post-claim balances from the server so the count-up starts at
-          // (total − earned); live balances were already optimistically bumped.
-          const targetBalances: Partial<Record<CelebrationCurrency, number>> = {};
-          if (newXp !== null) targetBalances.XP = newXp;
-          if (typeof data.newCoins === 'number') targetBalances.COINS = data.newCoins;
-
-          const claimScene: CelebrationScene = {
-            kind: 'CLAIM',
-            // No title override here on purpose — this is the real,
-            // everyday lesson-complete moment, so it should get Tey's
-            // pooled voice (lib/tey/xpClaimVoice.ts) instead of the same
-            // fixed string every time.
-            rewards: [
-              { currency: 'XP', amount: data.xpEarned ?? (activeLesson?.xpReward || 20) },
-              { currency: 'COINS', amount: data.coinsEarned ?? 5 },
-            ],
-            targetBalances,
-            ...(newXp !== null && {
-              levelProgress: {
-                current: newXp % 100,
-                target: 100,
-                level: Math.floor(newXp / 100) + 1,
-              },
-            }),
-            progressCaption:
-              newXp !== null
-                ? `LEVEL ${Math.floor(newXp / 100) + 1} · ${newXp % 100} / 100 XP`
-                : undefined,
-          };
-
-          const scenes: CelebrationScene[] = [claimScene];
-          if (data.isFirstStreakOfDay) {
-            const todayIdx = (new Date().getDay() + 6) % 7; // Monday-first index
-            scenes.push({
-              kind: 'STREAK',
-              mode: 'EXTENDED',
-              days: data.newStreakDays ?? streakDays,
-              weekDays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, idx) => ({
-                label,
-                completed: idx <= todayIdx,
-                isToday: idx === todayIdx,
-              })),
-            });
-          }
-
-          // ── Community unlock: the server seats a learner in their course
-          // community on their SECOND completed lesson, and returns this
-          // payload the one time it does. It plays before the section beats so
-          // the chain still ends on a navigation scene.
-          const cu = data.communityUnlock;
-          if (cu) {
-            scenes.push({
-              kind: 'COMMUNITY_WELCOME',
-              communityId: cu.communityId,
-              courseId: cu.courseId,
-              name: cu.name,
-              courseTitle: cu.courseTitle,
-              thumbnailUrl: cu.thumbnailUrl ?? null,
-              memberCount: cu.memberCount,
-              postCount: cu.postCount,
-              instructor: cu.instructor ?? null,
-              members: cu.members ?? [],
-              samplePost: cu.samplePost ?? null,
-              onEnter: () => {
-                // Walking into the community ends the celebration chain — any
-                // section scenes still queued behind this one would otherwise
-                // replay on top of the page the learner just chose to open.
-                closeCelebrations();
-                router.push(`/dashboard/community/${cu.courseId}?compose=1`);
-              },
-              dedupeKey: `community-welcome-${cu.communityId}`,
-            });
-          }
-
-          // ── Section milestone: this lesson was the LAST published lesson of
-          // its section. The server computed the whole summary (progress
-          // before/after, next-section preview), so every number below is
-          // truth, never a client-side guess.
-          const sc = data.sectionCompletion;
-          if (sc) {
-            // Persist the server-computed summary so the section chest can
-            // replay the REAL numbers later (the +100/+50 modal was fiction —
-            // the bonus XP was already paid at this very completion).
-            try {
-              localStorage.setItem(
-                `teyro_section_chest_${sc.section.id}`,
-                JSON.stringify({
-                  courseTitle: sc.course.title,
-                  sectionTitle: sc.section.title,
-                  sectionIndexLabel: `SECTION ${sc.section.index + 1}`,
-                  sectionProgress: {
-                    lessonsCompleted: sc.section.lessonsCompleted,
-                    lessonsTotal: sc.section.lessonsTotal,
-                    ...(sc.section.activitiesTotal > 0 && {
-                      activitiesCompleted: sc.section.activitiesCompleted,
-                      activitiesTotal: sc.section.activitiesTotal,
-                    }),
-                  },
-                  results: {
-                    xpEarned: typeof data.xpEarned === 'number' ? data.xpEarned : 0,
-                    bonusXp: sc.rewards.bonusXp,
-                    coinsEarned: typeof data.coinsEarned === 'number' ? data.coinsEarned : 0,
-                    streakDays: data.newStreakDays ?? streakDays,
-                  },
-                  savedAt: Date.now(),
-                })
-              );
-            } catch {
-              // Storage full/blocked — chest falls back to honest toast.
-            }
-            const next = sc.nextSection;
-            scenes.push({
-              kind: 'SECTION_COMPLETE',
-              courseTitle: sc.course.title,
-              sectionTitle: sc.section.title,
-              sectionIndexLabel: `SECTION ${sc.section.index + 1}`,
-              sectionProgress: {
-                lessonsCompleted: sc.section.lessonsCompleted,
-                lessonsTotal: sc.section.lessonsTotal,
-                ...(sc.section.activitiesTotal > 0 && {
-                  activitiesCompleted: sc.section.activitiesCompleted,
-                  activitiesTotal: sc.section.activitiesTotal,
-                }),
-              },
-              results: {
-                xpEarned: typeof data.xpEarned === 'number' ? data.xpEarned : 0,
-                bonusXp: sc.rewards.bonusXp,
-                coinsEarned: typeof data.coinsEarned === 'number' ? data.coinsEarned : 0,
-                streakDays: data.newStreakDays ?? streakDays,
-              },
-              dedupeKey: `section-complete-${sc.section.id}-${activeLesson.id}`,
-            });
-            scenes.push({
-              kind: 'COURSE_PROGRESS',
-              courseTitle: sc.course.title,
-              from: sc.course.progressBefore,
-              to: sc.course.progressAfter,
-              sectionsCompleted: sc.course.sectionsCompleted,
-              sectionsTotal: sc.course.sectionsTotal,
-              lessonsCompleted: sc.course.lessonsCompleted,
-              lessonsTotal: sc.course.lessonsTotal,
-            });
-
-            if (sc.isFinalSection || !next) {
-              scenes.push({
-                kind: 'COURSE_COMPLETE',
-                courseTitle: sc.course.title,
-                sectionsCompleted: sc.course.sectionsCompleted,
-                sectionsTotal: sc.course.sectionsTotal,
-                lessonsCompleted: sc.course.lessonsCompleted,
-                lessonsTotal: sc.course.lessonsTotal,
-                xpTotal: typeof data.newXp === 'number' ? data.newXp : 0,
-                streakDays: data.newStreakDays ?? streakDays,
-                onContinue: () => router.push(`/learn/${params.id}`),
-              });
-            } else {
-              scenes.push({
-                kind: 'SECTION_UNLOCKED',
-                sectionIndexLabel: `SECTION ${next.index + 1}`,
-                sectionTitle: next.title,
-                description: next.description,
-                lessonCount: next.lessonCount,
-                estimatedMinutes: next.estimatedMinutes,
-                onStartSection: () =>
-                  router.push(`/learn/${params.id}/section/${next.index}`),
-                onBackToCourse: () => router.push(`/learn/${params.id}`),
-                dedupeKey: `section-unlock-${sc.section.id}`,
-              });
-            }
-          }
-
-          // Returning to the map is owned by the LAST scene's completion.
-          const last = scenes[scenes.length - 1] as Extract<CelebrationScene, { onComplete?: () => void }>;
-          last.onComplete = returnToMapAfterLesson;
-          celebrate(scenes);
-        } else {
-          // Repeat completion (review mode): no payout to replay — head
-          // straight back to the map with the unlock shatter.
-          returnToMapAfterLesson();
-        }
-      } else if (res.status === 403) {
-        // Server-side paywall refusal — surface it instead of faking success
-        setFinishError('This lesson is locked. Unlock the full course to save your progress.');
-      } else {
-        setFinishError('Your progress could not be saved just now. Check your connection and tap FINISH LESSON again.');
-      }
-    } catch (e) {
-      console.error('Error completing lesson:', e);
-      setFinishError('Your progress could not be saved just now. Check your connection and tap FINISH LESSON again.');
-    } finally {
-      setIsCompletingLesson(false);
-    }
+  /** A finished lesson goes back where it was started from: home or this map. */
+  const finishedLesson = () => {
+    if (enteredFromHome) router.push('/dashboard');
+    else returnToMapAfterLesson();
   };
 
-  const getSerpentineRows = (items: any[]) => {
-    const rows: any[][] = [];
-    let currentRow: any[] = [];
-    for (let i = 0; i < items.length; i++) {
-      currentRow.push(items[i]);
-      if (currentRow.length === 3 || i === items.length - 1) {
-        const rowIndex = rows.length;
-        if (rowIndex % 2 === 1) {
-          rows.push([...currentRow].reverse());
-        } else {
-          rows.push(currentRow);
-        }
-        currentRow = [];
-      }
-    }
-    return rows;
-  };
 
-  const getResourceIconInfo = (type: string) => {
-    const t = type?.toLowerCase() || 'link';
-    if (t.includes('fig') || t.includes('design') || t.includes('template')) {
-      return {
-        bg: '#A259FF',
-        shadow: '#883EFF',
-        icon: <LayoutTemplate size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Template'
-      };
-    } else if (t.includes('pdf') || t.includes('doc') || t.includes('docx')) {
-      return {
-        bg: '#FF4B4B',
-        shadow: '#EA2B2B',
-        icon: <FileText size={32} strokeWidth={2.5} color="white" />,
-        badge: 'PDF Guide'
-      };
-    } else if (t.includes('video') || t.includes('mp4') || t.includes('youtube')) {
-      return {
-        bg: '#7C5CFF',
-        shadow: '#613EEA',
-        icon: <Video size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Video Tutorial'
-      };
-    } else if (t.includes('xls') || t.includes('xlsx') || t.includes('csv') || t.includes('sheet') || t.includes('data')) {
-      return {
-        bg: '#1EBE5D',
-        shadow: '#119D48',
-        icon: <FileText size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Data Sheet'
-      };
-    } else if (t.includes('link') || t.includes('url') || t.includes('website')) {
-      return {
-        bg: '#FFC800',
-        shadow: '#E6B000',
-        icon: <LinkIcon size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Useful Link'
-      };
-    } else if (t.includes('zip') || t.includes('rar') || t.includes('folder') || t.includes('source') || t.includes('file')) {
-      return {
-        bg: '#1CB0F6',
-        shadow: '#0F9BD8',
-        icon: <Folder size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Source Files'
-      };
-    } else if (t.includes('ppt') || t.includes('pptx') || t.includes('slides') || t.includes('presentation')) {
-      return {
-        bg: '#00C9A7',
-        shadow: '#009E83',
-        icon: <BookText size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Slide Deck'
-      };
-    } else {
-      return {
-        bg: '#FF6B8B',
-        shadow: '#E04B6B',
-        icon: <BookOpen size={32} strokeWidth={2.5} color="white" />,
-        badge: 'Quick Notes'
-      };
-    }
-  };
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   // Close speech bubble when clicking outside the map area
   useEffect(() => {
@@ -1298,112 +676,6 @@ export function SectionViewContent({
     return items;
   }, [lessons, sectionIndex]);
 
-  const wylList = React.useMemo(() => {
-    if (!activeLesson || !activeLesson.contentBlocks) return [];
-    let parsedBlocks = activeLesson.contentBlocks;
-    if (typeof parsedBlocks === 'string') {
-      try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) {}
-    }
-    const learnBlocks = parsedBlocks?.learn;
-    if (Array.isArray(learnBlocks)) {
-      const wylBlock = learnBlocks.find((b: any) => b.type === 'whatYouWillLearn');
-      if (wylBlock && Array.isArray(wylBlock.value)) {
-        return wylBlock.value;
-      }
-    }
-    return [];
-  }, [activeLesson]);
-
-  // CAROUSEL AUTO-PLAY INTERACTION
-  useEffect(() => {
-    if (!wylList || wylList.length <= 1 || lessonPhase !== 'start') return;
-    const slideCount = wylList.filter(Boolean).slice(0, 5).length;
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % slideCount);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [wylList, lessonPhase]);
-
-  const handleDragEnd = (event: any, info: any) => {
-    const offset = info.offset.x;
-    const threshold = 50;
-    const slideCount = wylList.filter(Boolean).slice(0, 5).length;
-    if (offset < -threshold) {
-      setCurrentSlide(prev => (prev + 1) % slideCount);
-    } else if (offset > threshold) {
-      setCurrentSlide(prev => (prev - 1 + slideCount) % slideCount);
-    }
-  };
-
-  const videoUrl = React.useMemo(() => {
-    if (!activeLesson || !activeLesson.contentBlocks) return null;
-    let parsedBlocks = activeLesson.contentBlocks;
-    if (typeof parsedBlocks === 'string') {
-      try { parsedBlocks = JSON.parse(parsedBlocks); } catch (e) {}
-    }
-    const learnBlocks = parsedBlocks?.learn;
-    if (Array.isArray(learnBlocks)) {
-      const videoBlock = learnBlocks.find((b: any) => b.type === 'videoUrl');
-      if (videoBlock && typeof videoBlock.value === 'string' && videoBlock.value.trim() !== '') {
-        return videoBlock.value;
-      }
-    }
-    return null;
-  }, [activeLesson]);
-
-  // Text and audio lessons were previously INVISIBLE — the player only ever
-  // rendered video. Now all three Learn formats are supported.
-  const learnAudioUrl = React.useMemo(() => {
-    const learnBlocks = activeLesson?.contentBlocks?.learn;
-    if (Array.isArray(learnBlocks)) {
-      const b = learnBlocks.find((x: any) => x.type === 'audioUrl');
-      if (b && typeof b.value === 'string' && b.value.trim() !== '') return b.value;
-    }
-    return null;
-  }, [activeLesson]);
-
-  const learnTextHtml = React.useMemo(() => {
-    const learnBlocks = activeLesson?.contentBlocks?.learn;
-    if (Array.isArray(learnBlocks)) {
-      const b = learnBlocks.find((x: any) => x.type === 'text');
-      if (typeof b?.value === 'string' && b.value.trim() !== '' && b.value !== '<p><br></p>') {
-        return b.value;
-      }
-    }
-    return '';
-  }, [activeLesson]);
-
-  // "Watch the full lesson to continue" — now actually enforced: the Learn
-  // phase's Continue unlocks once the video finishes (or instantly when there
-  // is no video). A broken/unloadable video never traps the student.
-  const [videoEnded, setVideoEnded] = useState(false);
-  useEffect(() => {
-    setVideoEnded(false);
-  }, [activeLesson]);
-  const canContinueFromLearn = !videoUrl || videoEnded;
-
-  // Learn-phase progress. This is a *signal*, not a new gate — `canContinueFromLearn`
-  // above still decides when CONTINUE opens, so a text lesson is not suddenly
-  // locked behind scrolling to the bottom.
-  const learnScrollRef = useRef<HTMLDivElement | null>(null);
-  const learnVideoRef = useRef<HTMLVideoElement | null>(null);
-  const learnProgress = useLearnProgress(learnScrollRef, learnVideoRef);
-
-  // Announce the moment the gate opens. Without this the button silently
-  // became enabled and nothing told the learner they had earned it.
-  const continueWasLockedRef = useRef(false);
-  useEffect(() => {
-    if (lessonPhase !== 'learn') return;
-    if (!canContinueFromLearn) {
-      continueWasLockedRef.current = true;
-      return;
-    }
-    if (continueWasLockedRef.current) {
-      continueWasLockedRef.current = false;
-      playButtonUnlock();
-      sayTey(pickUnlockedButtonLine(), 'cheer');
-    }
-  }, [canContinueFromLearn, lessonPhase, sayTey]);
 
   const handleNodeClick = (idx: number, isLocked: boolean, isPaywallLocked = false) => {
     if (isLocked) {
@@ -1465,8 +737,16 @@ export function SectionViewContent({
       const endpoint = adminReviewMode
         ? `/api/admin/courses/${course?.id || params.id}/lessons/${lessonId}`
         : `/api/courses/${course?.id || params.id}/lessons/${lessonId}`;
-      const res = await fetch(endpoint, { credentials: 'include' });
-      if (res.status === 403) {
+      // A lesson prefetched on home (node tap) is handed over here, so START
+      // doesn't wait on a fetch that already happened. Identical status
+      // handling either way — a prefetched 403 still goes to the unlock page.
+      const pending = adminReviewMode
+        ? null
+        : takePrefetchedLesson(String(course?.id || params.id), lessonId);
+      const prefetched = pending ? await pending : null;
+      const res = prefetched ? null : await fetch(endpoint, { credentials: 'include' });
+      const status = prefetched ? prefetched.status : res!.status;
+      if (status === 403) {
         if (adminReviewMode) {
           const msg = 'This lesson could not be loaded (access denied).';
           setReviewLoadError(msg);
@@ -1482,7 +762,7 @@ export function SectionViewContent({
         );
         return;
       }
-      if (!res.ok) {
+      if (status < 200 || status >= 300) {
         if (adminReviewMode) {
           const msg = 'This lesson could not be loaded.';
           setReviewLoadError(msg);
@@ -1492,15 +772,8 @@ export function SectionViewContent({
         triggerComingSoon('This lesson could not be loaded');
         return;
       }
-      const fullLesson = normalizeLesson(await res.json());
-      setSelectedOptionIndex(null);
-      setIsAnswerChecked(false);
-      setIsAnswerCorrect(false);
-      setCurrentQuestionIndex(0);
-      setReflectionText('');
-      setGuidedAnswers([]);
+      const fullLesson = normalizeLesson(prefetched ? prefetched.body : await res!.json());
       setActiveLesson(fullLesson);
-      setLessonPhase('start');
       // Feeds Tey's LESSON_ABANDONED rule — a lesson opened with no later
       // completion. Skipped in admin review: that's an instructor reading
       // content, not a learner's activity signal.
@@ -1653,6 +926,22 @@ export function SectionViewContent({
     );
   }
 
+  // Arrived for one lesson, and it's one this learner may open: show the
+  // lesson's own loading screen — never the map — until it opens. An unknown
+  // or not-yet-unlocked id is ignored by the deep-link effect, so this falls
+  // through to the map exactly as before.
+  const requestedIdx = requestedLessonId
+    ? lessons.findIndex((l: { id: string }) => l.id === requestedLessonId)
+    : -1;
+  const awaitingRequestedLesson =
+    requestedIdx !== -1 &&
+    requestedIdx <= currentActiveLessonIndex &&
+    !activeLesson &&
+    !deepLinkSettled;
+  if (awaitingRequestedLesson) {
+    return <LessonEntryLoading unitLabel={`UNIT ${sectionIndex + 1}`} title={section.title} />;
+  }
+
   return (
     <motion.div
       className={styles.container}
@@ -1673,99 +962,6 @@ export function SectionViewContent({
         </div>
       )}
 
-      {/* Perfect Lesson Protection absorbed a miss — say so, briefly. */}
-      {shieldAbsorbed && (
-        <div
-          role="status"
-          style={{
-            position: 'fixed',
-            top: 80,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 9000,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '10px 20px',
-            borderRadius: 999,
-            background: '#059669',
-            color: '#FFFFFF',
-            fontSize: 14,
-            fontWeight: 800,
-            boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)',
-          }}
-        >
-          <Shield size={16} strokeWidth={2.8} />
-          Perfect Lesson Protection used — no heart lost
-        </div>
-      )}
-
-      {/* Out-of-lives overlay — blocks Apply phase when lives are 0. Not
-          applicable to an admin reviewing content: hearts are never at risk
-          in review mode, so this never renders there. */}
-      {!adminReviewMode && livesCount === 0 && lessonPhase === 'apply' && (
-        <div className={styles.outOfLivesOverlay}>
-          <div className={styles.outOfLivesCard}>
-            <Image src="/Icons/heart.png" width={72} height={72} alt="No lives" priority />
-            <h2 className={styles.outOfLivesTitle}>Out of Lives!</h2>
-            <p className={styles.outOfLivesDesc}>
-              Your lives refill automatically (1 life every 4 hours).
-              Or, restore full lives instantly using your XP!
-            </p>
-
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-              {/* Lesson Retry — only offered when they actually hold one, so
-                  this never advertises something they'd have to go buy first. */}
-              {(retryCharges ?? 0) > 0 && (
-                <button
-                  disabled={usingRetry}
-                  onClick={async () => {
-                    if (usingRetry) return;
-                    setUsingRetry(true);
-                    try {
-                      playHaptic('success');
-                      await usePowerUp('LESSON_RETRY');
-                      setRetryCharges((n) => Math.max(0, (n ?? 1) - 1));
-                      await refresh();
-                    } catch {
-                      // Falls through to the XP refill and the exit below —
-                      // never strand the learner on a failed power-up.
-                    } finally {
-                      setUsingRetry(false);
-                    }
-                  }}
-                  className={styles.outOfLivesBtn}
-                  style={{ width: '100%' }}
-                >
-                  {usingRetry
-                    ? 'USING…'
-                    : `USE LESSON RETRY (${retryCharges} LEFT)`}
-                </button>
-              )}
-
-              <button
-                disabled={xpPoints < 100}
-                onClick={async () => {
-                  playHaptic('success');
-                  await refillLivesWithXp();
-                }}
-                className={xpPoints >= 100 ? styles.outOfLivesBtn : styles.outOfLivesBtnDisabled}
-                style={{ width: '100%' }}
-              >
-                {xpPoints >= 100 ? '⚡ REFILL FULL LIVES (100 XP)' : `🔒 NEED 100 XP (YOU HAVE ${xpPoints} XP)`}
-              </button>
-
-              <button
-                className={styles.outOfLivesBtnSecondary}
-                onClick={() => { playHaptic('light'); setActiveLesson(null); setLessonPhase('start'); }}
-                style={{ width: '100%', backgroundColor: 'transparent', border: '2px solid #CBD5E1', color: '#64748B', borderBottomWidth: '4px' }}
-              >
-                Back to Lessons
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Grid */}
       <div className={styles.grid}>
@@ -1773,806 +969,17 @@ export function SectionViewContent({
         {/* Main Column */}
         <div className={styles.mainColumn}>
           {activeLesson ? (
-          <PhaseTransition phaseKey={lessonPhase === 'start' ? 'start' : 'player'} variant="portal">
-          {lessonPhase === 'start' ? (
-            <div className={styles.lessonPlayerInnerContainer}>
-              {/* Duolingo Green Header matching design */}
-              <div className={styles.duolingoHeader}>
-                <div className={styles.headerLeft}>
-                  <button
-                    onClick={() => { playHaptic('light'); if (adminReviewMode) { onReviewClose?.(); } else { setActiveLesson(null); } }}
-                    className={styles.headerBackBtn}
-                    style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
-                  >
-                    <ArrowLeft size={18} strokeWidth={3} color="white" />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', fontSize: 'clamp(10px, 2.5vw, 11px)', fontWeight: 800, letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span>SECTION {sectionIndex + 1}, UNIT 1</span>
-                        {isReviewMode && (
-                          <span style={{ backgroundColor: '#22C55E', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 900 }}>
-                            REVIEW MODE 🟢
-                          </span>
-                        )}
-                      </span>
-                      <h1 className={styles.headerTitleText} style={{ color: 'white', margin: 0, padding: 0, fontSize: 'clamp(17px, 4vw, 20px)', fontWeight: 800, lineHeight: 1.2 }}>
-                        {section.title}
-                      </h1>
-                    </div>
-                  </button>
-                </div>
-                
-                {/* Guidebook button on the right */}
-                <div className={styles.headerRightGroup} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                  <button 
-                    onClick={() => setShowGuidebook(true)}
-                    className={styles.guidebookBtn}
-                  >
-                    <BookOpen size={18} />
-                    <span>GUIDEBOOK</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Bold 3D Gamified Review Mode Banner */}
-              {isReviewMode && (
-                <div style={{
-                  backgroundColor: '#58CC02',
-                  color: 'white',
-                  padding: '14px 20px',
-                  margin: '16px 24px 0 24px',
-                  borderRadius: '16px',
-                  boxShadow: '0 5px 0 #46A302',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  border: '2px solid #46A302',
-                }}>
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.22)', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
-                    🧪
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ textTransform: 'uppercase', fontSize: '13px', fontWeight: 900, letterSpacing: '0.06em', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span>REPLAY & PRACTICE MODE</span>
-                      <span style={{ backgroundColor: '#10B981', color: 'white', padding: '3px 9px', borderRadius: '8px', fontSize: '10px', fontWeight: 900, boxShadow: '0 2px 0 #059669' }}>
-                        ZERO HEARTS AT RISK 🛡️
-                      </span>
-                    </div>
-                    <p style={{ margin: '3px 0 0 0', fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.96)', lineHeight: 1.3 }}>
-                      You already mastered this lesson! Practice freely without losing any hearts! 🦖✨
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Preview of the four steps. Static — nothing is unlocked yet,
-                  so this shows the shape of the lesson without choreography. */}
-              <PhaseStepper phase="start" staticDisplay />
-
-              {/* Start Screen Body */}
-              <div className={styles.startScreenBody}>
-                {/* Mascot on Left, greeting via SpeechBubble, with a small
-                    ambient sparkle field around it. */}
-                <div className={styles.mascotLeftCol}>
-                  <div className={styles.startBubbleWrap}>
-                    <SpeechBubble lines={startWelcomeLines} tailAlign={0.5} mascotRef={startMascotRef} />
-                  </div>
-                  <div className={styles.mascotContainer} ref={startMascotRef}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles.mascotStar}>
-                      <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#58cc02" />
-                    </svg>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className={styles.mascotStar2}>
-                      <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#0172FD" />
-                    </svg>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={styles.mascotStar3}>
-                      <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z" fill="#EAB308" />
-                    </svg>
-                    <Image
-                      src="/lesson Player/Start_lesson_Tey.webp"
-                      alt="Tey Start Lesson Mascot"
-                      width={360}
-                      height={360}
-                      className={styles.mascotWavingImg}
-                      priority
-                    />
-                  </div>
-                </div>
-
-                {/* Details on Right */}
-                <div className={styles.infoRightCol}>
-                  <span className={styles.lessonIndexBadge}>
-                    LESSON {lessons.findIndex((l: any) => l.id === activeLesson.id) + 1}
-                  </span>
-
-                  <h2 className={styles.lessonPlayerTitle}>
-                    {activeLesson.title}
-                  </h2>
-
-                  {activeLesson.shortDescription && (
-                    <div className={styles.lessonPlayerDesc}>
-                      {cleanHtml(activeLesson.shortDescription)}
-                    </div>
-                  )}
-
-                  {/* Community deep-link — course community pre-filtered to this lesson */}
-                  <Link
-                    href={`/dashboard/community/${course?.id || params.id}?lesson=${activeLesson.id}&lessonTitle=${encodeURIComponent(activeLesson.title ?? '')}`}
-                    className={styles.discussLessonLink}
-                    onClick={() => playHaptic('light')}
-                  >
-                    <MessagesSquare size={15} />
-                    Discuss this lesson
-                  </Link>
-
-                  {/* What you'll learn Carousel Slider */}
-                  {wylList && Array.isArray(wylList) && wylList.filter(Boolean).length > 0 && (
-                    <div className={styles.carouselContainer}>
-                      <h3 className={styles.pointsListHeader}>You&apos;ll learn to:</h3>
-                      <div className={styles.carouselWrapper}>
-                        <AnimatePresence mode="wait">
-                          {wylList.filter(Boolean).slice(0, 5).map((point: string, idx: number) => {
-                            if (idx !== currentSlide) return null;
-                            const { emoji, title, desc, bg } = parsePoint(point, idx);
-
-                            return (
-                              <motion.div
-                                key={idx}
-                                className={styles.carouselCard}
-                                drag="x"
-                                dragConstraints={{ left: 0, right: 0 }}
-                                dragElastic={0.2}
-                                onDragEnd={handleDragEnd}
-                                initial={{ opacity: 0, x: 80, scale: 0.92 }}
-                                animate={{ opacity: 1, x: 0, scale: 1 }}
-                                exit={{ opacity: 0, x: -80, scale: 0.92 }}
-                                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                              >
-                                <div className={styles.emojiCircle} style={{ backgroundColor: bg }}>
-                                  <span style={{ fontSize: '18px' }}>{emoji}</span>
-                                </div>
-                                <div className={styles.carouselTextContainer}>
-                                  <span className={styles.carouselTitle}>{title}</span>
-                                  {desc && <span className={styles.carouselDesc}>{desc}</span>}
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </AnimatePresence>
-                      </div>
-
-                      {/* Dots indicators */}
-                      <div className={styles.carouselDots}>
-                        {wylList.filter(Boolean).slice(0, 5).map((_, idx: number) => (
-                          <button
-                            key={idx}
-                            className={`${styles.carouselDot} ${idx === currentSlide ? styles.carouselDotActive : ''}`}
-                            onClick={() => setCurrentSlide(idx)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Centered 3D Start Button */}
-              <div className={styles.btnContainerCentred}>
-                <button
-                  onClick={() => {
-                    // Audio suppressed on the haptic — the whoosh carries this
-                    // moment, a generic UI click underneath it would muddy it.
-                    playHaptic('medium', false);
-                    playWhoosh('up');
-                    setLessonPhase('learn');
-                  }}
-                  className={styles.startLessonBtn3D}
-                >
-                  START LESSON
-                </button>
-              </div>
-            </div>
-          ) : (
-            <LessonShell
-              phase={lessonPhase}
-              onClose={() => { playHaptic('medium'); if (adminReviewMode) { onReviewClose?.(); } else { setActiveLesson(null); setLessonPhase('start'); } }}
-              // Keeps the legacy hook alive: `.mainColumn`/`.grid` use
-              // `:has(.lessonLearnContainer)` to detect "the player is showing"
-              // and stretch themselves accordingly. LessonShell renders its own
-              // `.shell` class, so without this those selectors would silently
-              // stop matching and the surrounding grid would stop stretching.
-              className={styles.lessonLearnContainer}
-            >
-              <TeyLessonCoach message={teyLine} token={teyToken} tone={teyTone} />
-
-              <PhaseTransition phaseKey={lessonPhase}>
-
-              {/* LEARN PHASE */}
-              {lessonPhase === 'learn' && (
-                <>
-                  <LearnProgressBar progress={learnProgress} />
-                  <div className={styles.learnFixedTop}>
-                    <PhaseHeader eyebrow="Let's learn" title={activeLesson.title} />
-
-                    {videoUrl ? (
-                      <div className={styles.videoPlayerWrap} style={{ background: '#000' }}>
-                        <video
-                          ref={learnVideoRef}
-                          src={videoUrl}
-                          controls
-                          controlsList="nodownload"
-                          onEnded={() => setVideoEnded(true)}
-                          onError={() => setVideoEnded(true)}
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                      </div>
-                    ) : learnAudioUrl ? (
-                      <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', flexDirection: 'column', gap: 16, padding: 24 }}>
-                        <Image src="/Icons/headphones.png" width={64} height={64} alt="Audio lesson" />
-                        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                        <audio
-                          src={learnAudioUrl}
-                          controls
-                          onEnded={() => setVideoEnded(true)}
-                          onError={() => setVideoEnded(true)}
-                          style={{ width: '100%', maxWidth: 480 }}
-                        />
-                      </div>
-                    ) : !learnTextHtml ? (
-                      <div className={styles.videoPlayerWrap} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F5F9', boxShadow: 'none', border: '2px dashed #E2E8F0' }}>
-                        <div style={{ textAlign: 'center', color: '#64748B' }}>
-                          <Info size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-                          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#071233' }}>No lesson content yet</h3>
-                          <p style={{ margin: '8px 0 0', fontSize: '14px' }}>The creator hasn&apos;t attached media or reading material to this lesson yet.</p>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <div className={styles.learnContentScroll} ref={learnScrollRef}>
-                {learnTextHtml && (
-                  <div
-                    className={styles.learnArticleBody}
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(learnTextHtml) }}
-                  />
-                )}
-
-                {/* Long lesson description — distinct from the short card/search
-                    summary; gives learners context before Apply. */}
-                {activeLesson?.description && (
-                  <div className={styles.learnDescriptionSection}>
-                    <h4 className={styles.learnDescriptionHeading}>Lesson description</h4>
-                    <div className={styles.learnDescriptionBody}>
-                      {activeLesson.description
-                        .split(/\n\s*\n/)
-                        .map((para: string, i: number) => para.trim() && (
-                          <p key={i}>{para}</p>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Resources Section */}
-                <div className={styles.resourcesSection}>
-                  <div className={styles.resourcesTitleBox}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#64748B"><path d="M4 6h16v12H4z" /></svg>
-                    <h4>Resources</h4>
-                  </div>
-                  {/* "Download all" button removed — it had no handler; per-resource
-                      downloads below are the real path */}
-
-                  {activeLesson?.resources && activeLesson.resources.length > 0 ? (
-                    <div className={styles.resourcesGrid}>
-                      {activeLesson.resources.map((resource: any) => {
-                        const type = resource.type?.toLowerCase() || 'unknown';
-                        let iconClass = styles.resourceIconImg;
-                        if (type.includes('pdf')) iconClass = styles.resourceIconPdf;
-                        else if (type.includes('doc')) iconClass = styles.resourceIconDoc;
-                        else if (type.includes('png') || type.includes('jpg') || type.includes('jpeg')) iconClass = styles.resourceIconImg;
-
-                        const sizeText = resource.sizeBytes 
-                          ? (resource.sizeBytes > 1024 * 1024 
-                              ? `${(resource.sizeBytes / (1024 * 1024)).toFixed(1)} MB` 
-                              : `${Math.round(resource.sizeBytes / 1024)} KB`)
-                          : 'Unknown size';
-
-                        return (
-                          <a 
-                            key={resource.id}
-                            href={resource.storageUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.resourceCard}
-                            style={{ textDecoration: 'none' }}
-                          >
-                            <div className={iconClass}>{type.substring(0, 4).toUpperCase()}</div>
-                            <div className={styles.resourceInfo}>
-                              <span className={styles.resourceName}>{resource.title || resource.originalName || 'Resource'}</span>
-                              <span className={styles.resourceMeta}>{type.toUpperCase()} • {sizeText}</span>
-                            </div>
-                            <button className={styles.downloadIconBtn} type="button">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m7-5l5 5 5-5m-5 5V3"/></svg>
-                            </button>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div style={{ padding: '24px', textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: '16px', border: '1px dashed #E2E8F0', color: '#64748B' }}>
-                      <p style={{ margin: 0, fontSize: '14px' }}>No resources attached to this lesson.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.stickyBottomBanner}>
-                <div className={styles.bannerLeft}>
-                  <Image src="/lesson Player/Hi there tey.webp" width={100} height={100} alt="Tey" className={styles.bannerMascot} />
-                  <div className={styles.bannerTextGroup}>
-                    <h5>Watch the full lesson to continue</h5>
-                    <p>You&apos;ll unlock the next step once you finish.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className={styles.reflectBottomBtnWrap}>
-                <button
-                  className={`${styles.reflectSubmitBtn} ${!canContinueFromLearn ? styles.reflectBtnDisabled : ''}`}
-                  onClick={() => {
-                    // Audio off: PhaseStepper plays the advance.
-                    playHaptic('medium', false);
-                    // Lessons with a real Apply activity go to the quiz; the
-                    // rest skip straight to Reflect instead of faking one.
-                    sayTey(
-                      hasApplyActivity
-                        ? pickPhaseUnlockLine('apply', { watchedVideo: Boolean(videoUrl) && videoEnded })
-                        : pickPhaseUnlockLine('reflect')
-                    );
-                    setLessonPhase(hasApplyActivity ? 'apply' : 'reflect');
-                  }}
-                  disabled={!canContinueFromLearn}
-                >
-                  {!canContinueFromLearn && <Lock size={18} strokeWidth={2.5} />}
-                  {hasApplyActivity ? 'CONTINUE' : 'CONTINUE TO REFLECTION'}
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* APPLY PHASE */}
-          {lessonPhase === 'apply' && (
-            <>
-              <div className={styles.learnContentScroll}>
-                <div className={styles.applyHeaderRow}>
-                  <span className={styles.applyBadge}>QUESTION {currentQuestionIndex + 1} OF {applyQuestions.length}</span>
-                  {/* The run becomes visible from three, which is where it
-                      starts to feel like something worth protecting. From
-                      tier 4 (4-5 in a row) the pill gets a stronger modifier
-                      class — same element, slightly more emphasis. */}
-                  <AnimatePresence>
-                    {applyCombo >= 3 && (
-                      <motion.span
-                        key={applyCombo}
-                        className={`${styles.comboPill} ${getComboTier(applyCombo) >= 4 ? styles.comboPillStrong : ''}`}
-                        initial={{ opacity: 0, scale: 0.7, y: -6 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 18 }}
-                      >
-                        {applyCombo} IN A ROW 🔥
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </div>
-                {applyScenario && (
-                  <div className={styles.applyScenarioBox}>
-                    <p className={styles.applyScenarioText}>{applyScenario}</p>
-                  </div>
-                )}
-                <div className={styles.applyQuestionContainer}>
-                  <h2 className={styles.applyQuestionTitle}>{currentQuestion?.questionText || 'Question unavailable'}</h2>
-                  <div className={styles.applyMascotWrap}>
-                    <Image src="/lesson Player/Hi there tey.webp" width={160} height={160} alt="Tey Quiz" className={styles.applyMascotImg} />
-                    <div className={styles.questionMarkBubble}>?</div>
-                  </div>
-                </div>
-                <div className={styles.applyOptionsGrid}>
-                  {(currentQuestion?.options || []).map((option: any, idx: number) => {
-                    const isSelected = selectedOptionIndex === idx;
-                    // Only the card they actually picked shakes, and only once
-                    // it has been checked and found wrong.
-                    const isWrongPick = isSelected && isAnswerChecked && !isAnswerCorrect;
-                    return (
-                      <motion.button
-                        key={idx}
-                        className={`${styles.applyOptionCard} ${isSelected ? styles.optionSelected : ''} ${isWrongPick ? styles.optionWrong : ''}`}
-                        animate={isWrongPick ? { x: [0, -8, 8, -5, 5, 0] } : { x: 0 }}
-                        transition={{ duration: 0.24, ease: 'easeInOut' }}
-                        onClick={() => {
-                          if (!isAnswerChecked) {
-                            playHaptic('light');
-                            setSelectedOptionIndex(idx);
-                          }
-                        }}
-                        disabled={isAnswerChecked}
-                      >
-                        <div className={`${styles.optionLetter} ${isSelected ? styles.optionLetterSelected : ''}`}>
-                          {String.fromCharCode(65 + idx)}
-                        </div>
-                        <span className={styles.optionText}>{option.text}</span>
-                        {isReviewMode && isSelected && (
-                          <span className={styles.savedChoicePill}>
-                            Tey&apos;s Saved Choice 🎯
-                          </span>
-                        )}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* CELEBRATION INLINE BANNER & BOTTOM AREA */}
-              <div className={styles.applyBottomArea}>
-                <div 
-                  className={`${styles.applyBottomBtnWrap} ${isAnswerChecked && isAnswerCorrect ? styles.applyBottomBtnWrapCorrect : ''} ${isAnswerChecked && !isAnswerCorrect ? styles.applyBottomBtnWrapWrong : ''}`}
-                >
-                  <AnimatePresence>
-                    {isAnswerChecked && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className={styles.celebrationHeaderRow}
-                      >
-                        <div className={styles.celebrationHeaderLeft}>
-                          <motion.div
-                            className={isAnswerCorrect ? styles.celebrationIconCircleCorrect : styles.celebrationIconCircleWrong}
-                            initial={{ scale: 0.3 }}
-                            animate={{
-                              // Tier 4-5 (4+ in a row) gets a small overshoot
-                              // pulse instead of just settling at 1 — a
-                              // slightly stronger beat for a stronger run.
-                              scale: isAnswerCorrect && getComboTier(applyCombo) >= 4 ? [0.3, 1.18, 1] : 1,
-                            }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                          >
-                            {isAnswerCorrect ? <Check size={20} strokeWidth={4} /> : <X size={20} strokeWidth={4} />}
-                          </motion.div>
-                          <div>
-                            <h4 className={isAnswerCorrect ? styles.celebrationTitleCorrect : styles.celebrationTitleWrong}>
-                              {isAnswerCorrect ? (isReviewMode ? 'Bullseye! You still got it! 🎯' : 'Awesome!') : 'Incorrect'}
-                            </h4>
-                            <p className={isAnswerCorrect ? styles.celebrationExplanation : styles.celebrationExplanationWrong}>
-                              {isAnswerCorrect 
-                                ? currentQuestion.explanation 
-                                : (selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex]?.misconception 
-                                    ? currentQuestion.options[selectedOptionIndex].misconception 
-                                    : currentQuestion.explanation)
-                              }
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  
-                  {!isAnswerChecked ? (
-                    <button 
-                      className={`${styles.checkAnswerBtn} ${selectedOptionIndex === null ? styles.btnDisabled : ''}`}
-                      onClick={handleCheckAnswer}
-                      disabled={selectedOptionIndex === null}
-                    >
-                      CHECK ANSWER
-                    </button>
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '12px' }}>
-                      <button 
-                        className={isAnswerCorrect ? styles.continueBtnCorrect : styles.continueBtnWrong}
-                        onClick={isAnswerCorrect ? handleApplyContinue : () => { setIsAnswerChecked(false); setSelectedOptionIndex(null); }}
-                        style={{ flex: 1 }}
-                      >
-                        {isAnswerCorrect ? 'CONTINUE' : 'GOT IT'}
-                      </button>
-                      {isReviewMode && (
-                        <button
-                          type="button"
-                          className={styles.tryAgainForFunBtn}
-                          onClick={() => {
-                            setSelectedOptionIndex(null);
-                            setIsAnswerChecked(false);
-                            setIsAnswerCorrect(false);
-                          }}
-                        >
-                          ⚡ TRY AGAIN FOR FUN!
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-
-          {lessonPhase === 'reflect' && (
-            <>
-              {/* TOP AND MIDDLE CONTAINERS */}
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                <PhaseHeader
-                  eyebrow={isReviewMode ? "TEY'S MEMORY VAULT 📦" : 'REFLECTION'}
-                  title={isReviewMode ? 'Your Saved Reflections ✨' : 'Take a moment to reflect ✨'}
-                />
-                {isReviewMode && (
-                  <div className={styles.reviewModeNote}>
-                    <span className={styles.reviewModeNoteIcon}>💡</span>
-                    <span>Tey stored your notes from your first completion! Feel free to polish or update your thoughts below.</span>
-                  </div>
-                )}
-                <div className={styles.reflectPrompt} dangerouslySetInnerHTML={{ __html: sanitizeHtml(reflectPrompt) }} />
-
-                {reflectType === 'open' ? (
-                  <>
-                    {reflectStarters.length > 0 && (
-                      <div style={{ marginTop: '24px' }}>
-                        <p className={styles.reflectStartersTitle}>Need a little inspiration? Try these starters</p>
-                        <div className={styles.reflectStartersWrap}>
-                          {reflectStarters.map((starter: any, idx: number) => (
-                            <button key={idx} className={styles.reflectStarterPill} onClick={() => handleStarterClick(starter.text)}>
-                              <span className={styles.reflectStarterIcon}>+</span>
-                              <span>{starter.text}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className={styles.reflectTextareaWrap}>
-                      <textarea 
-                        className={styles.reflectTextarea} 
-                        placeholder="Write your reflection here..."
-                        value={reflectionText}
-                        onChange={(e) => setReflectionText(e.target.value)}
-                      />
-                      <WordCountBadge
-                        count={reflectionText.trim().split(/\s+/).filter(w => w.length > 0).length}
-                        min={reflectMinWords}
-                        className={styles.reflectWordCount}
-                        metClassName={styles.reflectWordCountSuccess}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <div className={styles.guidedQuestionsContainer}>
-                    {reflectGuidedConfig.questions.map((q: any, idx: number) => {
-                      const text = guidedAnswers[idx] || '';
-                      const wc = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-                      return (
-                        <div key={idx} className={styles.guidedQuestionCard}>
-                          <h4 className={styles.guidedQuestionTitle}>
-                            <span className={styles.guidedQuestionNum}>{idx + 1}.</span> {q.text}
-                          </h4>
-                          <div className={styles.reflectTextareaWrap}>
-                            <textarea 
-                              className={styles.reflectTextarea} 
-                              placeholder="Type your answer here..."
-                              value={text}
-                              onChange={(e) => handleGuidedAnswerChange(idx, e.target.value)}
-                            />
-                            <WordCountBadge
-                              count={wc}
-                              min={reflectGuidedConfig.minWordCountPerQuestion}
-                              className={styles.reflectWordCount}
-                              metClassName={styles.reflectWordCountSuccess}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <div className={styles.reflectGrowthBanner}>
-                  <Image
-                    src="/lesson Player/Hi there tey.webp"
-                    alt="Growth Mascot"
-                    width={100}
-                    height={100}
-                    className={styles.reflectGrowthMascot}
-                  />
-                  <p className={styles.reflectGrowthText}>
-                    Your reflection helps you turn knowledge into growth.<br/>
-                    Be honest. Be thoughtful. Be you. 💙
-                  </p>
-                </div>
-              </div>
-
-              {/* BOTTOM CONTAINER (Submit Button) */}
-              <div className={styles.reflectBottomBtnWrap}>
-                <button 
-                  className={`${styles.reflectSubmitBtn} ${!canSubmitReflect ? styles.reflectBtnDisabled : ''}`}
-                  onClick={handleReflectSubmit}
-                  disabled={!canSubmitReflect}
-                >
-                  {!canSubmitReflect && <Lock size={18} strokeWidth={2.5} />}
-                  SUBMIT REFLECTION
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* DEEPEN PHASE */}
-          {lessonPhase === 'deepen' && (
-            <>
-              {/* TOP AND MIDDLE CONTAINERS */}
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }} className={styles.deepenContentScroll}>
-                <PhaseHeader
-                  eyebrow="DEEPEN"
-                  title={deepenTitle}
-                  subtitle={<span dangerouslySetInnerHTML={{ __html: sanitizeHtml(deepenDesc) }} />}
-                />
-
-                {/* Serpentine Pathway Grid */}
-                {activeLesson?.resources && activeLesson.resources.length > 0 ? (
-                  <div className={styles.deepenPathContainer}>
-                    {/* SVG Connector Path Behind Buttons */}
-                    <svg className={styles.deepenPathSvg} viewBox="0 0 600 400" fill="none" preserveAspectRatio="none">
-                      <path 
-                        d="M 100 60 C 250 60, 350 60, 500 60 C 560 60, 560 180, 500 180 C 350 180, 250 180, 100 180 C 40 180, 40 300, 100 300 C 250 300, 350 300, 500 300"
-                        stroke="#E2E8F0"
-                        strokeWidth="4"
-                        strokeDasharray="8 8"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-
-                    {/* Nodes stagger in along the path rather than appearing all
-                        at once — one running index across rows, since map()
-                        runs its callbacks in order within a single render. */}
-                    <div className={styles.deepenGrid}>
-                      {(() => { let nodeIndex = -1; return getSerpentineRows(activeLesson.resources.slice(0, 8)).map((rowItems, rowIndex) => (
-                        <div key={rowIndex} className={styles.deepenGridRow}>
-                          {rowItems.map((res: any) => {
-                            const iconInfo = getResourceIconInfo(res.type);
-                            nodeIndex += 1;
-                            const delay = nodeIndex * 0.06;
-                            return (
-                              <motion.div
-                                key={res.id}
-                                className={styles.deepenGridItem}
-                                initial={{ opacity: 0, y: 16, scale: 0.85 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ delay, type: 'spring', stiffness: 380, damping: 22 }}
-                              >
-                                <motion.button
-                                  type="button"
-                                  onClick={() => { playHaptic('medium'); setSelectedResource(res); }}
-                                  className={styles.deepenNodeBtn}
-                                  style={{
-                                    backgroundColor: iconInfo.bg,
-                                    boxShadow: `0 8px 0 ${iconInfo.shadow}`
-                                  }}
-                                  whileTap={{
-                                    y: 8,
-                                    boxShadow: '0 0px 0 transparent'
-                                  }}
-                                >
-                                  {iconInfo.icon}
-                                </motion.button>
-                                <span className={styles.deepenNodeTitle}>{res.title || 'Resource'}</span>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      )); })()}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ padding: '40px 24px', textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: '16px', border: '1px dashed #E2E8F0', color: '#64748B', margin: '24px 0' }}>
-                    <p style={{ margin: 0, fontSize: '15px' }}>No additional resources uploaded by the creator.</p>
-                  </div>
-                )}
-              </div>
-
-              {/* RECOMMENDED NEXT STEP & FINISH LESSON BOTTOM AREA */}
-              <div className={styles.deepenBottomArea}>
-                {/* Image container carrying the mascot image */}
-                <div className={styles.deepenMascotCol}>
-                  <Image
-                    src="/User onbarding Assets/Step_7_tey_verified_state.webp"
-                    alt="Tey Verified"
-                    width={220}
-                    height={220}
-                    className={styles.deepenMascotImg}
-                    />
-                </div>
-
-                {/* Text container carrying the recommended step banner and finish lesson button */}
-                <div className={styles.deepenTextCol}>
-                  {finishError && (
-                    <div style={{
-                      backgroundColor: '#FEF2F2',
-                      border: '1.5px solid #FECACA',
-                      color: '#B91C1C',
-                      borderRadius: 14,
-                      padding: '12px 16px',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      marginBottom: 12,
-                    }}>
-                      ⚠️ {finishError}
-                    </div>
-                  )}
-                  {/* Finish Lesson Button */}
-                  <button 
-                    className={styles.finishLessonBtn3D}
-                    onClick={handleDeepenFinish}
-                    disabled={isCompletingLesson}
-                    style={isCompletingLesson ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
-                  >
-                    {isCompletingLesson ? 'SAVING PROGRESS...' : 'FINISH LESSON'}
-                  </button>
-                </div>
-              </div>
-
-              {/* Resource Details Pop-up Modal */}
-              <AnimatePresence>
-                {selectedResource && (
-                  <motion.div 
-                    className={styles.modalOverlay}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setSelectedResource(null)}
-                  >
-                    <motion.div 
-                      className={styles.resourceModal}
-                      initial={{ scale: 0.9, y: 20 }}
-                      animate={{ scale: 1, y: 0 }}
-                      exit={{ scale: 0.9, y: 20 }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button className={styles.modalCloseBtn} onClick={() => setSelectedResource(null)}>
-                        <X size={20} strokeWidth={2.5} />
-                      </button>
-
-                      <div className={styles.modalHeaderIcon} style={{ backgroundColor: getResourceIconInfo(selectedResource.type).bg }}>
-                        {getResourceIconInfo(selectedResource.type).icon}
-                      </div>
-
-                      <span className={styles.modalBadge}>
-                        {getResourceIconInfo(selectedResource.type).badge}
-                      </span>
-
-                      <h3 className={styles.modalResourceTitle}>{selectedResource.title || selectedResource.originalName}</h3>
-                      
-                      {selectedResource.description && (
-                        <p className={styles.modalResourceDesc}>{selectedResource.description}</p>
-                      )}
-
-                      <div className={styles.modalMetaInfo}>
-                        {selectedResource.sizeBytes && (
-                          <span>Size: {(selectedResource.sizeBytes / (1024 * 1024)).toFixed(2)} MB</span>
-                        )}
-                        <span>Format: {selectedResource.type?.toUpperCase()}</span>
-                      </div>
-
-                      <a 
-                        href={selectedResource.storageUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.modalDownloadBtn3D}
-                        onClick={() => setSelectedResource(null)}
-                      >
-                        DOWNLOAD RESOURCE
-                      </a>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          )}
-
-              </PhaseTransition>
-        </LessonShell>
-          )}
-          </PhaseTransition>
+            <LessonPlayer
+              key={activeLesson.id}
+              lesson={activeLesson}
+              courseId={String(course?.id || params.id)}
+              isReview={isReviewMode}
+              adminReviewMode={adminReviewMode}
+              onExit={() => { if (adminReviewMode) { onReviewClose?.(); } else { leaveLesson(); } }}
+              onCompleted={(id) => setCompletedLessons((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+              onFinished={() => { if (adminReviewMode) { onReviewClose?.(); } else { finishedLesson(); } }}
+              returnHome={enteredFromHome}
+            />
           ) : (
             <>
               {/* Tey reacting to a node unlocking — fixed variant since the
@@ -2585,7 +992,7 @@ export function SectionViewContent({
                 <div className={styles.headerLeft}>
                   <Link href={`/learn/${params.id}`} className={styles.headerBackBtn}>
                     <ArrowLeft size={18} strokeWidth={3} />
-                    <span>SECTION {sectionIndex + 1}, UNIT 1</span>
+                    <span>UNIT {sectionIndex + 1}</span>
                   </Link>
                   <h1 className={styles.headerTitleText}>
                     {section.title}
@@ -3084,6 +1491,20 @@ export function SectionViewContent({
 export default function SectionViewPage() {
   const params = useParams();
   const router = useRouter();
+  // Arriving for one lesson (START on home): the loading state must look like
+  // the lesson, not the map. useSearchParams (not window) so the server and
+  // client render the same skeleton.
+  const searchParams = useSearchParams();
+  const arrivingForLesson = searchParams.has('lesson');
+
+  // Arriving cold for one lesson (a Tey push, a fresh tab): fetch the lesson
+  // NOW, alongside the course, instead of after it — the two used to run
+  // back to back. SectionViewContent's openLesson picks this up. A no-op when
+  // home already prefetched it on the node tap.
+  const [arrivalLessonId] = useState(() => searchParams.get('lesson'));
+  useEffect(() => {
+    if (arrivalLessonId) prefetchLesson(String(params.id), arrivalLessonId);
+  }, [arrivalLessonId, params.id]);
   // Shared SWR cache (hooks/useCourse.ts): dedupes against the /learn/[id]
   // page's identical /api/courses/:id and /progress fetches, and paints
   // instantly from cache on a repeat visit instead of blocking on network.
@@ -3113,7 +1534,7 @@ export default function SectionViewPage() {
   if (!course && !error) {
     return (
       <StudentShell isWide hideMobileChrome>
-        <LearnSectionSkeleton />
+        {arrivingForLesson ? <LessonEntryLoading /> : <LearnSectionSkeleton />}
       </StudentShell>
     );
   }

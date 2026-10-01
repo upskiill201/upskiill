@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Star } from 'lucide-react';
 import {
   Button,
@@ -77,7 +77,9 @@ export default function AdminCoursesPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
-  const [reviewStatus, setReviewStatus] = useState('');
+  const params = useSearchParams();
+  // ?reviewStatus= (from Teyro HQ's overview) opens the review queue directly.
+  const [reviewStatus, setReviewStatus] = useState(() => params.get('reviewStatus') ?? '');
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [page, setPage] = useState(1);
