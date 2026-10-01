@@ -17,6 +17,7 @@ import { useState, type CSSProperties } from 'react';
 import useSWR from 'swr';
 import {
   Activity,
+  Video,
   BarChart3,
   BookOpen,
   Bot,
@@ -104,6 +105,10 @@ const NAV: NavGroup[] = [
   {
     label: 'Care',
     items: [{ href: '/admin/support', label: 'Support', icon: LifeBuoy, tone: 'var(--color-brand)', badge: (b) => b.support }],
+  },
+  {
+    label: 'Website',
+    items: [{ href: '/admin/site', label: 'Homepage video', icon: Video, tone: 'var(--brand-purple)' }],
   },
   {
     label: 'Automation',

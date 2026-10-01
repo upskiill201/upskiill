@@ -29,6 +29,7 @@ import {
   WhyItWorks,
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
+import IntroVideo from '@/components/homepage/v3/IntroVideo';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -57,6 +58,7 @@ export default function Home() {
         <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
       </noscript>
       <Hero />
+      <IntroVideo />
       <LaunchBadges />
       <LaunchSection />
       <Tracks />

@@ -30,6 +30,7 @@ import { StreakModule } from './streak/streak.module';
 import { ReferralModule } from './referral/referral.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { EarningsModule } from './earnings/earnings.module';
+import { SiteModule } from './site/site.module';
 import { StudentsModule } from './students/students.module';
 import { CommunityModule } from './community/community.module';
 import { NotificationModule } from './notification/notification.module';
@@ -75,6 +76,7 @@ import { EmailModule } from './email/email.module';
     ReferralModule,
     AnalyticsModule,
     EarningsModule,
+    SiteModule,
     StudentsModule,
     CommunityModule,
     NotificationModule,

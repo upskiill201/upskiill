@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { SiteSettingsService } from '../site/site-settings.service';
 import { Role } from '@prisma/client';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { Roles } from '../auth/decorator/roles.decorator';
@@ -67,6 +68,7 @@ export class AdminController {
     private readonly adminPayouts: AdminPayoutsService,
     private readonly adminCoupons: AdminCouponsService,
     private readonly insights: AdminInsightsService,
+    private readonly site: SiteSettingsService,
   ) {}
 
   @Get('summary')
@@ -395,6 +397,16 @@ export class AdminController {
   @Post('coupons/:id/archive')
   archiveCoupon(@GetUser() actor: AuthedUser, @Param('id') id: string) {
     return this.adminCoupons.archive(actor.id, id);
+  }
+
+  @Get('settings/intro-video')
+  getIntroVideo() {
+    return this.site.getIntroVideoAdmin();
+  }
+
+  @Patch('settings/intro-video')
+  setIntroVideo(@GetUser() actor: AuthedUser, @Body() body: { url?: string | null }) {
+    return this.site.setIntroVideo(actor.id, body?.url);
   }
 
   @Get('settings/coupons')
