@@ -212,7 +212,7 @@ export function StayRelevant() {
             Our goal is simple: nobody should be left behind when the way we work changes.
           </p>
           <Link href={START_HREF} className={s.btn}>
-            {START_LABEL}
+            Get Teyro free
           </Link>
         </Reveal>
       </div>
