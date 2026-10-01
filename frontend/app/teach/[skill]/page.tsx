@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import {
   APPLY_HREF,
+  APPLY_LABEL,
   CREATOR_SHARE_PCT,
   SKILL_COPY,
   TEACH_PLACES,
@@ -100,7 +101,7 @@ export default async function TeachSkillHub({ params }: Props) {
               </Link>
             </div>
             <Link href={APPLY_HREF} className={s.btn}>
-              Apply to teach
+              {APPLY_LABEL}
               <ArrowRight size={18} strokeWidth={3} aria-hidden="true" />
             </Link>
           </div>
@@ -155,7 +156,7 @@ export default async function TeachSkillHub({ params }: Props) {
               title: `Teach ${copy.noun} on Teyro`,
               text: `Keep ${CREATOR_SHARE_PCT}% of every payment, get paid in USD, and join as a Founding Creator.`,
               href: APPLY_HREF,
-              label: 'Apply to teach',
+              label: APPLY_LABEL,
             }}
           />
         </div>

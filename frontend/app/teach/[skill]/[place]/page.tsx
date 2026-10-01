@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Crown, Database } from 'lucide-react';
 import {
   APPLY_HREF,
+  APPLY_LABEL,
   CLEARING_DAYS,
   CREATOR_SHARE_PCT,
   EXAMPLE_KEEP_USD,
@@ -31,6 +32,7 @@ import JsonLd from '@/components/features/blog/JsonLd';
 import FaqAccordion from '@/components/features/blog/FaqAccordion';
 import CtaBlock from '@/components/features/blog/CtaBlock';
 import { AnswerCard, Callout, LinkCards, ListCard, SectionHead, SeoHeader } from '@/components/seo/Blocks';
+import { APP_LAUNCHES, FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT, STUDIO_OPENS } from '@/lib/launch';
 import s from '@/components/seo/Seo.module.css';
 
 export const revalidate = 86400;
@@ -152,11 +154,11 @@ export default async function TeachPlacePage({ params }: Props) {
       <div className={s.container}>
         <AnswerCard
           answer={answer}
-          why="Early creators become Founding Creators, with a Founding badge on their profile and founding benefits in Teyro Studio."
+          why={`Early creators become Founding Creators: keep ${FOUNDING_SHARE_PCT}% of every payment (standard is ${STANDARD_SHARE_PCT}%), with a Founding badge and founding benefits in Teyro Studio.`}
           visualNode={<EarningsCard place={p} keep={keep} rails={rails} />}
           caption="A worked example, not a promise of earnings"
-          cta={{ href: APPLY_HREF, label: 'Apply to teach' }}
-          fineprint={`Free to join · Keep ${CREATOR_SHARE_PCT}% · Paid in USD`}
+          cta={{ href: APPLY_HREF, label: APPLY_LABEL }}
+          fineprint={`Free to join · Founding Creators keep ${FOUNDING_SHARE_PCT}% · Paid in USD`}
         />
 
         {/* ── The local data that makes this page this place's page ── */}
@@ -186,7 +188,10 @@ export default async function TeachPlacePage({ params }: Props) {
                 {p.kind === 'metro' && us.state && us.vsState != null
                   ? `Median pay for ${copy.occupation} in ${p.inSentence} is ${Math.abs(us.vsState)}% ${us.vsState >= 0 ? 'above' : 'below'} the ${us.state.name} median. `
                   : ''}
-                {`By headcount, ${p.name} ranks ${ordinal(us.size.rank)} of ${us.size.of}. That is a lot of people who already know ${copy.noun} well enough to teach it — and every one of them started as a beginner who needed a good course.`}
+                {`By headcount, ${p.name} ranks ${ordinal(us.size.rank)} of ${us.size.of}. `}
+                {us.jobs >= 1500
+                  ? `That is a lot of people who already know ${copy.noun} well enough to teach it — and every one of them started as a beginner who needed a good course.`
+                  : `It is a smaller market, and that is fine: Teyro is online, so a course you build from ${p.name} reaches learners everywhere, not just nearby.`}
               </p>
               <p className={s.source}>
                 <Database size={12} aria-hidden="true" /> Source: {TEACH_SOURCES.bls} ({copy.occupation}, SOC{' '}
@@ -290,9 +295,10 @@ export default async function TeachPlacePage({ params }: Props) {
           <section className={s.section} aria-labelledby="founding">
             <SectionHead id="founding" eyebrow="Founding creators" title="Get in early" />
             <Callout>
-              Teyro opens Creator Studio to its first creators before the learner app launches. Early creators become
-              Founding Creators, with a Founding badge on their profile and founding benefits in Studio. If you already
-              have a following, your audience can follow you straight into your course and its community.
+              Teyro Studio opens in {STUDIO_OPENS} and the learner app launches in {APP_LAUNCHES}. Early creators become
+              Founding Creators: they keep {FOUNDING_SHARE_PCT}% of every payment instead of {STANDARD_SHARE_PCT}%, and get a
+              Founding badge and founding benefits in Studio. If you already have a following, your audience can follow
+              you straight into your course and its community.
             </Callout>
           </section>
 
@@ -302,7 +308,7 @@ export default async function TeachPlacePage({ params }: Props) {
               title: `Teach ${copy.noun} from ${p.name}`,
               text: `Keep ${CREATOR_SHARE_PCT}% of every payment, get paid in USD, and join as a Founding Creator.`,
               href: APPLY_HREF,
-              label: 'Apply to teach',
+              label: APPLY_LABEL,
             }}
           />
         </div>

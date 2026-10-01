@@ -29,7 +29,8 @@ import {
   SegmentsVisual,
   WizardVisual,
 } from './HowVisuals';
-import { TEACH_HREF } from './TeachSections';
+import { TEACH_HREF, TEACH_LABEL } from './TeachSections';
+import { FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT } from '@/lib/launch';
 import h from './HowSections.module.css';
 
 const money = (n: number) => `$${n.toFixed(2)}`;
@@ -52,18 +53,18 @@ export function HowHero() {
           </h1>
           <p className={s.lead}>
             Tey plans your first course with you. You build short, hands-on lessons in Teyro Studio. We review it, you
-            launch it to your audience, and Teyro keeps your learners coming back while you keep 70% of every payment.
+            launch it to your audience, and Teyro keeps your learners coming back while you keep {STANDARD_SHARE_PCT}% of every payment ({FOUNDING_SHARE_PCT}% for Founding Creators).
           </p>
           <div className={s.heroActions}>
             <Link href={TEACH_HREF} className={s.btn}>
-              Start teaching
+              {TEACH_LABEL}
             </Link>
             <a href="#journey" className={s.btnGhost}>
               See every step
             </a>
           </div>
           <div className={s.heroNote}>
-            {['Free to publish', 'You keep 70%', 'No camera needed'].map((n) => (
+            {['Free to publish', `Keep up to ${FOUNDING_SHARE_PCT}%`, 'No camera needed'].map((n) => (
               <span key={n}>
                 <Check size={16} strokeWidth={4} aria-hidden="true" /> {n}
               </span>
@@ -79,7 +80,7 @@ export function HowHero() {
 // ─── At a glance ─────────────────────────────────────────────────────────────
 
 const GLANCE = [
-  { big: '70%', line: 'of every payment is yours' },
+  { big: `${STANDARD_SHARE_PCT}%`, line: `of every payment is yours (${FOUNDING_SHARE_PCT}% for Founding Creators)` },
   { big: '2', line: 'free lessons, then learners subscribe' },
   { big: '4', line: 'short steps in every lesson' },
   { big: '$50', line: 'to withdraw, to bank or mobile money' },
@@ -459,6 +460,7 @@ export function Founding() {
           </p>
           <ul className={`${s.points} ${h.foundingList}`}>
             {[
+              `Keep ${FOUNDING_SHARE_PCT}% of every payment (standard creators keep ${STANDARD_SHARE_PCT}%)`,
               'A Founding badge on your public creator page, for good',
               'Founding benefits inside Teyro Studio',
               'Your course ready in Explore when learners arrive',
@@ -524,11 +526,11 @@ export const FACTS: [string, string][] = [
   ['Tracks', 'Coding (web, mobile, programming fundamentals, software development) and AI (AI tools, agents, automations).'],
   ['Lesson format', 'Four steps: Learn (bite-size cards), Apply (instantly checked exercises), Reflect, and an optional Deepen.'],
   ['Pricing', `Free, or a yearly price the creator sets, plus a monthly plan at one sixth of it, so yearly saves learners 50% (a $${EXAMPLE_COURSE_PRICE} course is $${EXAMPLE_YEARLY} a year or ${money(EXAMPLE_MONTHLY)} a month). The first two lessons are free to try.`],
-  ['Creator share', '70% of every payment, including every renewal.'],
+  ['Creator share', `${STANDARD_SHARE_PCT}% of every payment, including every renewal. Founding Creators keep ${FOUNDING_SHARE_PCT}%.`],
   ['Payouts', 'Recorded in USD; each payment clears after 14 days; withdraw from $50 to a bank account or mobile money, in any country.'],
   ['Quality', 'Every course is reviewed before it goes live.'],
   ['Creator tools', 'Course wizard, lesson builder with live phone preview, learner segments, nudges and cheers, analytics, course community, coupons and a public creator page.'],
-  ['Founding Creators', 'Early creators get a Founding badge and founding benefits in Studio.'],
+  ['Founding Creators', `Early creators keep ${FOUNDING_SHARE_PCT}% of every payment instead of ${STANDARD_SHARE_PCT}%, and get a Founding badge and founding benefits in Studio.`],
   ['Dates', 'Creator Studio opens October 2026; the learner app launches November 2026.'],
   ['Apply', 'teyro.app/creator/onboarding'],
 ];
@@ -584,7 +586,7 @@ export const HOW_FAQ = [
   {
     question: 'What is a Founding Creator?',
     answer:
-      'One of the first creators on Teyro. Founding Creators get a Founding badge on their public page and founding benefits in Teyro Studio, and their courses are ready when learners arrive.',
+      'One of the first creators on Teyro. Founding Creators keep 80% of every payment instead of 70%, get a Founding badge on their public page and founding benefits in Teyro Studio, and their courses are ready when learners arrive.',
   },
   {
     question: 'When can I start?',
@@ -618,7 +620,7 @@ export function HowFinal() {
         </h2>
         <p className={s.lead}>Tell Tey what you teach. The plan takes minutes.</p>
         <Link href={TEACH_HREF} className={s.btn}>
-          Start teaching
+          {TEACH_LABEL}
         </Link>
       </div>
       <div className={s.finalStage} aria-hidden="true">

@@ -19,6 +19,7 @@ import ShareButtons from '@/components/features/blog/ShareButtons';
 import AuthorBio from '@/components/features/blog/AuthorBio';
 import PostGrid from '@/components/features/blog/PostGrid';
 import JsonLd from '@/components/features/blog/JsonLd';
+import { GateLink } from '@/components/launch/GateLink';
 import proseStyles from '../prose.module.css';
 import styles from './PostPage.module.css';
 
@@ -244,6 +245,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
               <div className={`${proseStyles.prose} ${styles.articleBody}`}>
                 <MDXRemote
                   source={post.content}
+                  components={{ a: GateLink }}
                   options={{
                     mdxOptions: {
                       remarkPlugins: [remarkGfm],

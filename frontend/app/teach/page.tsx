@@ -23,6 +23,7 @@ import {
   TeachHero,
   WhyTeyro,
 } from '@/components/teach/TeachSections';
+import { ApplySection } from '@/components/launch/LaunchSections';
 import s from '@/components/homepage/v3/Home.module.css';
 
 const baloo2 = Baloo_2({
@@ -88,6 +89,7 @@ export default function TeachPage() {
       </noscript>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
       <TeachHero />
+      <ApplySection />
       <WhyTeyro />
       <Loop />
       <Features />

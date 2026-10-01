@@ -7,8 +7,11 @@
  * the one reader it exists for: the person already deciding to switch.
  */
 
-export const START_HREF = '/start';
-export const START_LABEL = 'Get Teyro free';
+import { LEARNER_ENTRY } from '../launch';
+
+// While the app is gated (lib/launch.ts) every "start" button is a notify-me link.
+export const START_HREF = LEARNER_ENTRY.href;
+export const START_LABEL = LEARNER_ENTRY.gated ? 'Get notified at launch' : 'Get Teyro free';
 
 export const TEYRO = {
   name: 'Teyro',
