@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotificationsService } from '../../notification/notification.service';
+import { NotificationsService, type CreateNotificationInput } from '../../notification/notification.service';
 import { CommunityService } from '../community.service';
 import {
   CommentCreatedEvent,
@@ -96,7 +96,7 @@ export class CommunityListener {
         recipients.push({ userId: event.postAuthorId, type: 'COMMENT' });
       }
 
-      await this.notifications.createMany(
+      await this.deliver(
         recipients.map((r) => ({
           userId: r.userId,
           actorId: event.authorId,
@@ -106,6 +106,7 @@ export class CommunityListener {
           title: event.excerpt.slice(0, 80),
           body: r.type === 'REPLY' ? 'replied to your comment' : 'commented on your post',
         })),
+        event.postId,
       );
 
       if (event.mentionedUserIds.length > 0) {
@@ -131,17 +132,26 @@ export class CommunityListener {
   @OnEvent('community.content.liked', { async: true })
   async handleContentLiked(event: ContentLikedEvent) {
     try {
-      await this.notifications.createMany([
-        {
-          userId: event.ownerId,
-          actorId: event.actorId,
-          type: event.entityType === 'POST' ? 'POST_LIKE' : 'COMMENT_LIKE',
-          entityType: event.entityType === 'POST' ? 'POST' : 'COMMENT',
-          entityId: event.entityId,
-          title: event.excerpt.slice(0, 80),
-          body: 'liked your ' + (event.entityType === 'POST' ? 'post' : 'comment'),
-        },
-      ]);
+      const postId =
+        event.entityType === 'POST'
+          ? event.entityId
+          : ((
+              await this.prisma.comment.findUnique({ where: { id: event.entityId }, select: { postId: true } })
+            )?.postId ?? null);
+      await this.deliver(
+        [
+          {
+            userId: event.ownerId,
+            actorId: event.actorId,
+            type: event.entityType === 'POST' ? 'POST_LIKE' : 'COMMENT_LIKE',
+            entityType: event.entityType === 'POST' ? 'POST' : 'COMMENT',
+            entityId: event.entityId,
+            title: event.excerpt.slice(0, 80),
+            body: 'liked your ' + (event.entityType === 'POST' ? 'post' : 'comment'),
+          },
+        ],
+        postId,
+      );
     } catch (err) {
       this.logger.error('community.content.liked handler failed', err as Error);
     }
@@ -159,7 +169,7 @@ export class CommunityListener {
       where: { communityId, userId: { in: mentionedUserIds }, NOT: { userId: actorId } },
       select: { userId: true },
     });
-    await this.notifications.createMany(
+    await this.deliver(
       valid.map((m) => ({
         userId: m.userId,
         actorId,
@@ -169,6 +179,31 @@ export class CommunityListener {
         title: excerpt.slice(0, 80),
         body: 'mentioned you',
       })),
+      postId,
+    );
+  }
+
+  /**
+   * Inside a course community the course's creator is its admin, and their
+   * replies, likes and mentions belong in the studio bell, opening the post
+   * in the studio's community page. Everyone else's rows go out unchanged.
+   */
+  private async deliver(rows: CreateNotificationInput[], postId: string | null) {
+    if (rows.length === 0) return;
+    const post = postId
+      ? await this.prisma.post.findUnique({
+          where: { id: postId },
+          select: { community: { select: { courseId: true, course: { select: { instructorId: true } } } } },
+        })
+      : null;
+    const courseId = post?.community?.courseId;
+    const creatorId = post?.community?.course?.instructorId;
+    await this.notifications.createMany(
+      rows.map((r) =>
+        creatorId && courseId && r.userId === creatorId
+          ? { ...r, type: `STUDIO_${r.type}`, deepLink: `/creator/community?course=${courseId}&post=${postId}` }
+          : r,
+      ),
     );
   }
 }

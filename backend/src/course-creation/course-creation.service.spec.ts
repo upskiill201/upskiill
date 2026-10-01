@@ -111,6 +111,8 @@ describe('CourseCreationService', () => {
     createSection: jest.Mock;
     createLesson: jest.Mock;
     getFullCurriculum: jest.Mock;
+    publishCourse: jest.Mock;
+    updateCourse: jest.Mock;
   };
   let lessonService: {
     fullSave: jest.Mock;
@@ -124,6 +126,11 @@ describe('CourseCreationService', () => {
       createSection: jest.fn(),
       createLesson: jest.fn(),
       getFullCurriculum: jest.fn(),
+      // Not used by this service — present so the draft-only test can assert
+      // it is never reached, rather than passing only because the mock
+      // happens to lack the method.
+      publishCourse: jest.fn(),
+      updateCourse: jest.fn(),
     };
     lessonService = {
       fullSave: jest.fn(),
@@ -312,6 +319,25 @@ describe('CourseCreationService', () => {
         'user-1',
         spec.course,
       );
+
+      // Hard product rule: programmatic creation produces a DRAFT and
+      // nothing else. Publishing stays a deliberate human action through
+      // the existing review workflow, so this service must never reach for
+      // it — no matter how complete the generated content looks.
+      expect(courseService.publishCourse).not.toHaveBeenCalled();
+      expect(courseService.createCourse).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ published: true }),
+      );
+      expect(courseService.createCourse).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ reviewStatus: expect.anything() }),
+      );
+      // Lessons DO get published inside that draft — a draft course whose
+      // lessons sat in 'draft' would render empty in the player once the
+      // course is later approved. Course-level and lesson-level publishing
+      // are different things; only the former is forbidden here.
+      expect(lessonService.fullSaveAndPublish).toHaveBeenCalled();
       expect(courseService.createSection).toHaveBeenCalledWith(
         'user-1',
         'course-1',

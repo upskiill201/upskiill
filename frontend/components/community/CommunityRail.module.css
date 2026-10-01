@@ -258,3 +258,24 @@
   gap: 12px;
   padding: 16px 18px;
 }
+
+/* ── Duolingo pass: chunky cards, creator row ── */
+.card {
+  border-width: 2px;
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.creatorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.creatorRow strong {
+  color: var(--color-ink);
+}

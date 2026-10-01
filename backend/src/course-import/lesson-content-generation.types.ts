@@ -1,5 +1,23 @@
 import { z } from 'zod';
 
+/** Hard product rule: every lesson's Apply step carries 5-15 questions.
+ *  Declared once and referenced by all three places that must agree — the
+ *  Zod schema (what we validate), the JSON Schema (what the model is told),
+ *  and the system prompt (what the model is asked in prose). Those three
+ *  drifting apart is not hypothetical: `maxItems` missing from the JSON
+ *  Schema is exactly why Groq once returned 6 whatYouWillLearn items
+ *  against a Zod max of 5. */
+export const APPLY_QUESTIONS_MIN = 5;
+export const APPLY_QUESTIONS_MAX = 15;
+
+/** Same reasoning as the Apply bounds above, and learned the same way: a
+ *  live run returned 6 outcomes against a JSON-Schema `maxItems: 5`,
+ *  because an OpenAI-compatible provider in json_object mode treats the
+ *  schema as a shape hint, not a contract. Every array bound the model has
+ *  to respect must also be stated in prose in the system prompt. */
+export const WHAT_YOU_WILL_LEARN_MIN = 2;
+export const WHAT_YOU_WILL_LEARN_MAX = 5;
+
 /**
  * What the AI is actually asked to produce — deliberately narrow. Every
  * structural/preference field a real lesson's Apply/Reflect/Deepen blocks
@@ -21,8 +39,8 @@ export const AiLessonContentSchema = z.object({
     ),
   whatYouWillLearn: z
     .array(z.string().trim().min(3).max(150))
-    .min(2)
-    .max(5)
+    .min(WHAT_YOU_WILL_LEARN_MIN)
+    .max(WHAT_YOU_WILL_LEARN_MAX)
     .describe(
       'Concrete outcomes a learner will be able to do after this lesson.',
     ),
@@ -35,8 +53,8 @@ export const AiLessonContentSchema = z.object({
         explanation: z.string().trim().min(5).max(300),
       }),
     )
-    .min(1)
-    .max(3)
+    .min(APPLY_QUESTIONS_MIN)
+    .max(APPLY_QUESTIONS_MAX)
     .describe(
       'Practical/application questions grounded in the transcript — never generic trivia.',
     ),
@@ -61,21 +79,42 @@ export type AiLessonContent = z.infer<typeof AiLessonContentSchema>;
 /** Hand-written JSON Schema alongside the Zod schema above (not auto-derived
  *  — same split TeyAiService's NUDGE_SCHEMA/NudgeCopySchema uses), since
  *  GeminiAdapter#toGeminiSchema needs a plain JSON-Schema object to send as
- *  responseSchema, not a Zod type. */
+ *  responseSchema, not a Zod type.
+ *
+ *  Every bound here (minLength/maxLength/minItems/maxItems) must mirror the
+ *  Zod schema's own min()/max() calls exactly — this is the only copy of
+ *  those numbers a model actually reads. Confirmed live: without
+ *  `maxItems: 5` here, Groq had no reason not to return 6 whatYouWillLearn
+ *  items, which then failed our own stricter Zod validation on a field
+ *  the model was never told had a limit. A `type`-only schema tells a
+ *  provider "produce valid JSON," not "produce JSON that will pass our
+ *  validation" — those aren't the same ask. */
 export const AI_LESSON_CONTENT_JSON_SCHEMA = {
   type: 'object',
   properties: {
-    description: { type: 'string' },
-    whatYouWillLearn: { type: 'array', items: { type: 'string' } },
+    description: { type: 'string', minLength: 20, maxLength: 1000 },
+    whatYouWillLearn: {
+      type: 'array',
+      items: { type: 'string', minLength: 3, maxLength: 150 },
+      minItems: WHAT_YOU_WILL_LEARN_MIN,
+      maxItems: WHAT_YOU_WILL_LEARN_MAX,
+    },
     applyQuestions: {
       type: 'array',
+      minItems: APPLY_QUESTIONS_MIN,
+      maxItems: APPLY_QUESTIONS_MAX,
       items: {
         type: 'object',
         properties: {
-          questionText: { type: 'string' },
-          options: { type: 'array', items: { type: 'string' } },
-          correctOptionIndex: { type: 'integer' },
-          explanation: { type: 'string' },
+          questionText: { type: 'string', minLength: 5, maxLength: 300 },
+          options: {
+            type: 'array',
+            items: { type: 'string', minLength: 1, maxLength: 150 },
+            minItems: 2,
+            maxItems: 4,
+          },
+          correctOptionIndex: { type: 'integer', minimum: 0 },
+          explanation: { type: 'string', minLength: 5, maxLength: 300 },
         },
         required: [
           'questionText',
@@ -85,9 +124,9 @@ export const AI_LESSON_CONTENT_JSON_SCHEMA = {
         ],
       },
     },
-    reflectPrompt: { type: 'string' },
-    deepenTitle: { type: 'string' },
-    deepenSummary: { type: 'string' },
+    reflectPrompt: { type: 'string', minLength: 10, maxLength: 400 },
+    deepenTitle: { type: 'string', minLength: 3, maxLength: 100 },
+    deepenSummary: { type: 'string', minLength: 10, maxLength: 400 },
   },
   required: [
     'description',
@@ -194,6 +233,35 @@ export function mapToLessonBlocks(
   };
 }
 
+/**
+ * The top-level string limits, written out for the prompt and derived from
+ * the JSON Schema rather than retyped.
+ *
+ * The array bounds above had to be stated in prose because an
+ * OpenAI-compatible provider in json_object mode treats the schema as a
+ * hint. String `maxLength` behaves exactly the same way — a live run failed
+ * with SCHEMA_MISMATCH:reflectPrompt because the model wrote a reflection
+ * prompt longer than its 400-character limit, which the schema stated and
+ * the prompt did not. Generating this from the schema means a future field
+ * cannot be added to one without the other.
+ */
+const STRING_LENGTH_RULE = Object.entries(
+  AI_LESSON_CONTENT_JSON_SCHEMA.properties,
+)
+  .filter(
+    ([, schema]) =>
+      (schema as { type?: string }).type === 'string' &&
+      (schema as { maxLength?: number }).maxLength !== undefined,
+  )
+  .map(([field, schema]) => {
+    const { minLength, maxLength } = schema as {
+      minLength: number;
+      maxLength: number;
+    };
+    return `${field} ${minLength}-${maxLength} characters`;
+  })
+  .join('; ');
+
 export const COURSE_GENERATION_SYSTEM_PROMPT = `You are Teyro's Course Creation AI.
 
 You turn an existing lesson video's transcript into a Teyro lesson's Apply, \
@@ -207,8 +275,23 @@ something up.
 - Preserve the instructor's own voice. If they speak in first person \
 ("I'll show you..."), write in first person. Never write "the instructor \
 says" or "the instructor shows you."
+- Length limits are hard. Every one of these is rejected if exceeded, so \
+write to fit rather than trusting a long answer to be trimmed: \
+${STRING_LENGTH_RULE}
+- Give between ${WHAT_YOU_WILL_LEARN_MIN} and ${WHAT_YOU_WILL_LEARN_MAX} \
+whatYouWillLearn outcomes. Never more than ${WHAT_YOU_WILL_LEARN_MAX}; pick \
+the most important ones rather than listing everything.
+- Generate between ${APPLY_QUESTIONS_MIN} and ${APPLY_QUESTIONS_MAX} Apply \
+questions. Never fewer than ${APPLY_QUESTIONS_MIN}, never more than \
+${APPLY_QUESTIONS_MAX}. If the transcript is thin, write broader questions \
+about what it does cover rather than dropping below ${APPLY_QUESTIONS_MIN}.
 - Apply questions must test practical application of what THIS lesson \
 taught, not generic trivia about the topic.
+- Every Apply question must be distinct. Never ask the same fact twice in \
+different words, and never ask about material the transcript never covers.
+- Exactly one option per question is correct. The wrong options must be \
+plausible but unambiguously wrong — never two defensible answers, never a \
+trick question, never "all of the above".
 - The Reflect prompt must ask the learner to connect the lesson to their own \
 situation, make a decision, or plan an action — never a generic "what did \
 you learn today?"

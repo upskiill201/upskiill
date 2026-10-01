@@ -171,6 +171,69 @@ export function Tracks() {
 
 // ─── Why it works ────────────────────────────────────────────────────────────
 
+// ─── Stay relevant: the vision ──────────────────────────────────────────────
+//
+// Teyro's purpose, said plainly: people stay relevant as work changes. Copy
+// rule (same as everywhere on this page): no job guarantees, no invented
+// statistics, nothing Teyro doesn't do (there are no certificates or job
+// placement). What it does do is teach coding and AI through daily practice.
+
+const RELEVANT = [
+  {
+    art: '/User onbarding Assets/tey/thinking.webp',
+    title: 'Learn what work needs now',
+    line: 'Coding and AI are changing how a lot of jobs get done. Learn to use them, build with them and automate your own work.',
+  },
+  {
+    art: '/User onbarding Assets/tey/tablet.webp',
+    title: 'Practise, don’t just watch',
+    line: 'Every lesson has you use the idea straight away, so you come away able to do something, not just knowing about it.',
+  },
+  {
+    art: '/User onbarding Assets/tey/flame.webp',
+    title: 'Keep up as it keeps changing',
+    line: 'New tools will keep arriving. A daily streak turns keeping up into a habit, instead of a panic every few years.',
+  },
+];
+
+export function StayRelevant() {
+  return (
+    <section className={s.band} id="stay-relevant" aria-labelledby="relevant-title">
+      <div className={s.wrap}>
+        <Reveal className={s.sectionHead}>
+          <span className={s.eyebrow}>Learn for the job market</span>
+          <h2 id="relevant-title" className={`${s.display} ${s.h2}`}>
+            Work is changing fast. <em>Keep your skills up with it.</em>
+          </h2>
+          <p className={s.lead}>
+            AI is changing which skills matter and how jobs get done. Teyro exists so you stay relevant: build the coding
+            and AI skills that keep you useful as your work changes, a few minutes a day, without starting over.
+          </p>
+        </Reveal>
+        <div className={s.pillars}>
+          {RELEVANT.map((p, i) => (
+            <Reveal key={p.title} delay={i * 0.1} className={s.pillar}>
+              <span className={`${s.pillarArt} ${s.pillarArtTall}`}>
+                <Image src={p.art} alt="" width={112} height={144} style={{ objectFit: 'contain' }} />
+              </span>
+              <h3 className={`${s.display} ${s.h3}`}>{p.title}</h3>
+              <p>{p.line}</p>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal className={s.center} delay={0.2}>
+          <p className={s.lead} style={{ margin: '40px auto 24px', maxWidth: 640 }}>
+            Our goal is simple: nobody should be left behind when the way we work changes.
+          </p>
+          <Link href={START_HREF} className={s.btn}>
+            {START_LABEL}
+          </Link>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 const PILLARS = [
   {
     art: '/User onbarding Assets/tey/clock.webp',

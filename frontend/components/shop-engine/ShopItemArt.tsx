@@ -45,6 +45,22 @@ const POWER_UP_GLYPHS: Record<string, LucideIcon> = {
   'chest-gold': Gift,
 };
 
+/** Items drawn in the Duolingo-style set (public/art/items/<art>.svg). */
+const ILLUSTRATED = new Set([
+  'heart',
+  'freeze',
+  'retry',
+  'boost-xp',
+  'boost-xp2',
+  'boost-coin',
+  'repair',
+  'shield',
+  'vault',
+  'chest-bronze',
+  'chest-silver',
+  'chest-gold',
+]);
+
 export type ArtSize = 'sm' | 'md' | 'lg' | 'hero';
 
 interface ShopItemArtProps {
@@ -126,7 +142,18 @@ export default function ShopItemArt({
     );
   }
 
-  // ── Power-ups and chests: a gradient tile behind a lucide glyph ───────────
+  // ── Power-ups and chests: the illustrated art (public/art/items, made by
+  // scripts/gen-art.mjs), standing free like Duolingo's shop icons ─────────
+  if (ILLUSTRATED.has(art)) {
+    return (
+      <div className={wrapperClass} aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element -- static SVG art, no optimisation needed */}
+        <img src={`/art/items/${art}.svg`} alt="" className={styles.illustration} draggable={false} />
+      </div>
+    );
+  }
+
+  // ── Anything without art yet: a gradient tile behind a lucide glyph ──────
   return (
     <div className={wrapperClass} aria-hidden>
       <div className={styles.tile} style={{ background: visual.gradient }}>

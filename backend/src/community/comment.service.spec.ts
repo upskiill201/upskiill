@@ -15,8 +15,9 @@ describe('CommentService', () => {
 
   beforeEach(async () => {
     prisma = {
+      // Batched ([create, update]) or interactive (callback) — both supported.
       $transaction: jest.fn((cb) =>
-        cb({
+        Array.isArray(cb) ? Promise.all(cb) : cb({
           comment: {
             create: jest.fn().mockResolvedValue({
               id: 'comment-new',
@@ -56,6 +57,18 @@ describe('CommentService', () => {
         update: jest.fn(),
       },
       comment: {
+        create: jest.fn().mockResolvedValue({
+          id: 'comment-new',
+          postId,
+          parentId: null,
+          userId: 'learner-2',
+          contentText: 'Great question — here is how I did it.',
+          likeCount: 0,
+          status: 'ACTIVE',
+          editedAt: null,
+          createdAt: new Date(),
+          user: { id: 'learner-2', fullName: 'B', avatarUrl: null, studentProfile: { streakDays: 4 } },
+        }),
         findUnique: jest.fn(),
         count: jest.fn().mockResolvedValue(0),
         findMany: jest.fn().mockResolvedValue([]),
@@ -77,6 +90,8 @@ describe('CommentService', () => {
               .fn()
               .mockResolvedValue({ membership: { role: 'MEMBER' }, isModerator: false }),
             assertModerator: jest.fn().mockRejectedValue(new ForbiddenException()),
+            assertCanWrite: jest.fn(),
+            creatorIdOf: jest.fn().mockResolvedValue('creator-1'),
           },
         },
         { provide: EventEmitter2, useValue: emitter },
@@ -99,12 +114,18 @@ describe('CommentService', () => {
       });
     });
 
-    it('creates the comment, bumps counters, pays capped XP and emits', async () => {
+    it('creates the comment, bumps counters, pays capped XP (after replying) and emits', async () => {
       const result = await service.addComment(postId, { id: 'learner-2' }, {
         contentText: 'Great question — here is how I did it.',
       } as any);
 
-      expect(result.xpAwarded).toEqual({ xp: 5, coins: 2 });
+      expect(result.id).toBe('comment-new');
+      expect(prisma.post.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ commentCount: { increment: 1 } }) }),
+      );
+      // The reward settles in the background.
+      await new Promise((r) => setImmediate(r));
+      expect(emitter.emit).toHaveBeenCalledWith('xp.awarded', expect.objectContaining({ amount: 5 }));
       expect(emitter.emit).toHaveBeenCalledWith(
         'community.comment.created',
         expect.objectContaining({

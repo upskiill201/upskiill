@@ -101,4 +101,18 @@ export interface LearnerStateSnapshot {
    *  Null once it's finished (or once the local day rolls over). */
   openLessonId: string | null;
   openLessonStartedAt: Date | null;
+
+  /*
+   * Filled by a FRESH projection only — the cached row does not carry them.
+   * Every send path (scheduler revalidation, planning after a fire, the
+   * activity listener) projects fresh, so a rule treats `undefined` as "not
+   * known" and falls back.
+   */
+
+  /** The reminder hour the learner chose (TeyNotificationPrefs.preferredHour). */
+  preferredHour?: number | null;
+  /** StreakService's open repair offer, copied — never recomputed here. */
+  repair?: { lostStreak: number; costCoins: number; expiresAt: Date } | null;
+  /** Whole days since the account was created, for first-lesson nudges. */
+  accountAgeDays?: number | null;
 }

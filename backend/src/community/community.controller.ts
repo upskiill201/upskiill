@@ -114,10 +114,14 @@ export class CommunityController {
     @Query('pageSize') pageSize?: string,
     @Query('q') q?: string,
   ) {
-    return this.communityService.getMembers(communityId, {
-      page: page ? parseInt(page, 10) : undefined,
-      pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
-      q,
-    });
+    return this.communityService.getMembers(
+      communityId,
+      {
+        page: page ? parseInt(page, 10) : undefined,
+        pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
+        q,
+      },
+      { id: req.user.id, role: req.user.role },
+    );
   }
 }

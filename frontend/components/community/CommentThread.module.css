@@ -174,3 +174,58 @@
   .replyInput { padding: 10px 14px; font-size: 16px; } /* 16px kills iOS zoom-on-focus */
   .textarea { font-size: 16px; } /* same — no autofocus zoom */
 }
+
+/* ── Duolingo pass: chunky comment box and send button ── */
+.textarea {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+  font-size: 15px;
+  padding: 12px 16px;
+  min-height: 56px;
+}
+
+.textarea:focus {
+  background: var(--bg-card);
+  border-color: color-mix(in srgb, var(--color-brand) 42%, var(--bg-page));
+  outline: none;
+}
+
+.sendBtn {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sendBtn3d {
+  min-height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sendBtn3d:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.bubble {
+  border-radius: 16px;
+}
+
+/* Optimistic comment waiting on the server — present, but quietly so. */
+.pending {
+  opacity: 0.6;
+}
+
+.sendingLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}

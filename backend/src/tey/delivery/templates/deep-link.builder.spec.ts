@@ -16,7 +16,7 @@ describe('buildDeepLink', () => {
 
   it.each<[string, TeyTarget, string]>([
     ['COURSE', { type: 'COURSE', courseId: 'c1' }, '/learn/c1?tey=d1'],
-    ['STREAK', { type: 'STREAK' }, '/dashboard?tey=d1'],
+    ['STREAK', { type: 'STREAK' }, '/dashboard/streak?tey=d1'],
     ['HOME', { type: 'HOME' }, '/dashboard?tey=d1'],
   ])('handles a %s target', (_label, target, expected) => {
     expect(buildDeepLink(target, 'd1')).toBe(expected);
@@ -196,6 +196,13 @@ describe('message templates', () => {
 
   it('namespaces inbox rows and notification tags', () => {
     expect(inboxTypeFor('STREAK_AT_RISK')).toBe('TEY_STREAK_AT_RISK');
-    expect(tagFor('STREAK_AT_RISK')).toBe('tey-STREAK_AT_RISK');
+    expect(tagFor('MILESTONE')).toBe('tey-MILESTONE');
+  });
+
+  it('lets the day’s later rungs replace the earlier one on the lock screen', () => {
+    // Reminder → streak saver → last call is one conversation, not a stack.
+    expect(tagFor('DAILY_GOAL_INCOMPLETE')).toBe('tey-today');
+    expect(tagFor('STREAK_AT_RISK')).toBe('tey-today');
+    expect(tagFor('STREAK_CRITICAL')).toBe('tey-today');
   });
 });

@@ -1,7 +1,7 @@
 export interface CreateSubscriptionInput {
   userId: string;
   courseId: string;
-  plan: 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+  plan: 'MONTHLY' | 'YEARLY';
   price: number;
   customerEmail?: string;
   customerName?: string;

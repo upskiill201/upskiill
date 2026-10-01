@@ -8,7 +8,7 @@ import React from 'react';
 import Link from 'next/link';
 import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok, FaXTwitter } from 'react-icons/fa6';
 import { TeyMark } from '@/components/brand/TeyMark';
-import { LEARNER_ENTRY, STUDIO_ENTRY } from '@/lib/launch';
+import { FOUNDING_OPEN, LEARNER_ENTRY, STUDIO_ENTRY } from '@/lib/launch';
 import styles from './WaitlistFooter.module.css';
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
@@ -29,7 +29,7 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
       ['How teaching works', '/teach/how-it-works'],
       ['Teach coding online', '/teach/coding'],
       ['Teach AI online', '/teach/ai'],
-      [STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : 'Become a creator', STUDIO_ENTRY.href],
+      [STUDIO_ENTRY.gated ? 'Apply as a Founding Creator' : FOUNDING_OPEN ? 'Join as a Founding Creator' : 'Become a creator', STUDIO_ENTRY.href],
       // No Studio login to offer until Studio opens (lib/launch.ts).
       ...(STUDIO_ENTRY.gated ? [] : ([['Creator log in', '/creator/login']] as [string, string][])),
     ],

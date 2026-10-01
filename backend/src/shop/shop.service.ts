@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { StreakService } from '../streak/streak.service';
 import {
   COSMETIC_CATEGORIES,
   RARITY_ORDER,
@@ -34,7 +35,8 @@ export type ShopBlockReasonCode =
   | 'FREEZE_BANK_FULL'
   | 'AT_MAX'
   | 'INSUFFICIENT_COINS'
-  | 'GRANTED_BY_COLLECTION';
+  | 'GRANTED_BY_COLLECTION'
+  | 'NOTHING_TO_REPAIR';
 import {
   dayKey,
   getActiveEvent,
@@ -60,7 +62,6 @@ import { CHEST_TIERS, chestOdds, getChestTier, rollChest } from './shop.chests';
 const BASE_FREEZE_CAP = 2;
 
 /** How long after a break a streak can still be bought back. */
-const STREAK_REPAIR_WINDOW_DAYS = 2;
 
 /** Daily shop-visit reward, scaling with consecutive visits (index = streak-1). */
 const VISIT_REWARD_LADDER = [10, 15, 20, 25, 30, 40, 60];
@@ -119,7 +120,12 @@ export interface ShopItemView {
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    // Streak Repair restores through the streak engine's ledger, so a repair
+    // bought here and one bought from the streak screen are the same thing.
+    private streakService: StreakService,
+  ) {}
 
   // ═══ Metrics ═══════════════════════════════════════════════════════════════
 
@@ -202,6 +208,8 @@ export class ShopService {
     const today = dayKey(now, timezoneOffset);
     const week = weekKey(now, timezoneOffset);
 
+    const repairable = (await this.streakService.getRepairOffer(userId, profile.streakDays)).available;
+
     const toView = (item: ShopItemDef, overridePrice?: number): ShopItemView =>
       this.buildItemView(item, {
         profile,
@@ -210,6 +218,7 @@ export class ShopService {
         owned,
         event,
         overridePrice,
+        repairable,
       });
 
     const rotationItems = getDailyRotation(today, event);
@@ -352,9 +361,11 @@ export class ShopService {
       >;
       event: ReturnType<typeof getActiveEvent>;
       overridePrice?: number;
+      /** False when no streak just broke — Streak Repair has nothing to do. */
+      repairable?: boolean;
     },
   ): ShopItemView {
-    const { profile, state, metrics, owned, event, overridePrice } = ctx;
+    const { profile, state, metrics, owned, event, overridePrice, repairable } = ctx;
     const pricing = priceFor(item, event);
     const price = overridePrice ?? pricing.price;
     const unlock = evaluateUnlock(item.unlock, metrics);
@@ -377,6 +388,9 @@ export class ShopService {
     } else if (!unlock.unlocked) {
       blockedReason = unlock.label;
       blockedReasonCode = 'LOCKED';
+    } else if (item.effect.kind === 'REPAIR_STREAK' && repairable === false) {
+      blockedReason = 'Nothing to repair: your streak is intact';
+      blockedReasonCode = 'NOTHING_TO_REPAIR';
     } else if (
       item.effect.kind === 'REFILL_HEARTS' &&
       profile.lives >= profile.maxLives
@@ -958,7 +972,7 @@ export class ShopService {
       }
 
       case 'REPAIR_STREAK': {
-        const restored = await this.repairStreak(tx, userId, profile);
+        const { restoredStreak: restored } = await this.streakService.applyRepair(tx, userId);
         return {
           message: `Streak repaired — you're back to ${restored} days 🔥`,
           effect: { kind: 'STREAK', days: restored },
@@ -1045,69 +1059,6 @@ export class ShopService {
         throw new BadRequestException('Unsupported item effect.');
       }
     }
-  }
-
-  /**
-   * Rebuild the streak the learner lost, from their actual activity history.
-   *
-   * The streak counter is zeroed the moment a break is detected, so the old
-   * value is gone by the time anyone buys a repair — but `user_daily_activity`
-   * still holds the days themselves, which is a better source anyway: it
-   * cannot be inflated, and it repairs to the truth rather than to a number
-   * someone remembered.
-   */
-  private async repairStreak(
-    tx: Prisma.TransactionClient,
-    userId: string,
-    profile: { streakDays: number; longestStreak: number },
-  ): Promise<number> {
-    const rows = await tx.userDailyActivity.findMany({
-      where: { userId, lessonsCompleted: { gt: 0 } },
-      orderBy: { date: 'desc' },
-      take: 120,
-      select: { date: true },
-    });
-
-    if (rows.length === 0) {
-      throw new BadRequestException(
-        'No recent activity to repair a streak from.',
-      );
-    }
-
-    const days = rows.map((r) => r.date);
-    const today = new Date().toISOString().slice(0, 10);
-    const daysBetween = (a: string, b: string) =>
-      Math.round((Date.parse(a) - Date.parse(b)) / 86_400_000);
-
-    const gap = daysBetween(today, days[0]);
-    if (gap > STREAK_REPAIR_WINDOW_DAYS) {
-      throw new BadRequestException(
-        `Streak Repair only works within ${STREAK_REPAIR_WINDOW_DAYS} days of the break.`,
-      );
-    }
-    if (profile.streakDays > 0) {
-      throw new BadRequestException(
-        'Your streak is still going — nothing to repair.',
-      );
-    }
-
-    // Walk back while each day is exactly one day before the last.
-    let restored = 1;
-    for (let i = 1; i < days.length; i++) {
-      if (daysBetween(days[i - 1], days[i]) === 1) restored++;
-      else break;
-    }
-
-    await tx.studentProfile.update({
-      where: { userId },
-      data: {
-        streakDays: restored,
-        longestStreak: Math.max(profile.longestStreak, restored),
-        lastStreakEarnedAt: new Date(),
-      },
-    });
-
-    return restored;
   }
 
   // ═══ Chests ════════════════════════════════════════════════════════════════

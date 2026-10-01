@@ -1,0 +1,26 @@
+/* The quest chest's own palette — a warm wooden chest with gold trim. */
+.chest {
+  --chest-wood: #B85A2E;
+  --chest-wood-dark: #8C3F1D;
+  --chest-gold: #FFC83D;
+  --chest-gold-dark: #E09A00;
+  --chest-lock: #FFF1B8;
+  --chest-inside: #5A2410;
+  --chest-glow: #FFE07A;
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.locked {
+  filter: grayscale(1) opacity(0.45);
+}
+
+.glow {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--chest-glow) 0%, transparent 65%);
+  pointer-events: none;
+}

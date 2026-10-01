@@ -6,6 +6,7 @@ import type { LearnerStateSnapshot } from '../contracts/tey-state.types';
 import { TeyActionRepository } from './tey-action.repository';
 import { TeySchedulerService } from './tey-scheduler.service';
 import { TeyDeliveryService } from '../delivery/tey-delivery.service';
+import { CourseUnlockJourney } from '../notify/course-unlock.journey';
 
 const learner = (
   over: Partial<LearnerStateSnapshot> = {},
@@ -65,6 +66,7 @@ describe('TeySchedulerService', () => {
     recordIgnoredNudge: jest.Mock;
   };
   let prisma: any;
+  let unlockJourney: { process: jest.Mock };
   const originalEnv = { ...process.env };
 
   beforeEach(async () => {
@@ -96,7 +98,9 @@ describe('TeySchedulerService', () => {
         }),
       },
       teyDelivery: { create: jest.fn().mockResolvedValue({}) },
+      teyNotificationPrefs: { findUnique: jest.fn().mockResolvedValue(null) },
     };
+    unlockJourney = { process: jest.fn().mockResolvedValue({ sent: true }) };
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -106,6 +110,7 @@ describe('TeySchedulerService', () => {
         { provide: TeyActionRepository, useValue: actions },
         { provide: LearnerStateService, useValue: learnerState },
         { provide: TeyDeliveryService, useValue: delivery },
+        { provide: CourseUnlockJourney, useValue: unlockJourney },
       ],
     }).compile();
 
@@ -283,7 +288,7 @@ describe('TeySchedulerService', () => {
       );
     });
 
-    it('queues nothing for a learner who is already done today', async () => {
+    it('queues no reminder for a learner who is already done today — only tomorrow’s planner', async () => {
       const count = await service.planFor(
         'u1',
         learner({
@@ -293,7 +298,62 @@ describe('TeySchedulerService', () => {
         }),
       );
       expect(count).toBe(0);
-      expect(actions.upsertIntent).not.toHaveBeenCalled();
+      const queued = (actions.upsertIntent as jest.Mock).mock.calls.map((c) => c[1].ruleId);
+      expect(queued).toEqual(['DAY_PLANNER']);
+    });
+
+    it('schedules tomorrow morning’s planner wake-up, keyed to tomorrow’s date', async () => {
+      await service.planFor('u1', learner());
+      const planner = (actions.upsertIntent as jest.Mock).mock.calls
+        .map((c) => c[1])
+        .find((i) => i.ruleId === 'DAY_PLANNER');
+      expect(planner).toBeDefined();
+      expect(planner.dedupeKey).toMatch(/^DAY_PLANNER:u1:\d{4}-\d{2}-\d{2}$/);
+      expect(planner.dueAt.getTime()).toBeGreaterThan(Date.now());
+    });
+
+    it('stops waking a learner who has gone quiet past the final win-back rung', async () => {
+      await service.planFor(
+        'u1',
+        learner({
+          streakDays: 0,
+          engagementState: 'DORMANT',
+          streakState: 'NO_STREAK',
+          daysSinceLastActivity: 45,
+          repair: null,
+        }),
+      );
+      const queued = (actions.upsertIntent as jest.Mock).mock.calls.map((c) => c[1].ruleId);
+      expect(queued).not.toContain('DAY_PLANNER');
+    });
+
+    it('reads the chosen reminder hour when handed a cached snapshot without it', async () => {
+      prisma.teyNotificationPrefs.findUnique.mockResolvedValue({ preferredHour: 9 });
+      await service.planFor('u1', learner());
+      expect(prisma.teyNotificationPrefs.findUnique).toHaveBeenCalled();
+    });
+  });
+
+  describe('special actions', () => {
+    it('a DAY_PLANNER wake-up re-plans and never delivers', async () => {
+      (actions.claimDue as jest.Mock).mockResolvedValue([
+        dueAction({ ruleId: 'DAY_PLANNER', dedupeKey: 'DAY_PLANNER:u1:2026-09-05' }),
+      ]);
+      const summary = await service.tick();
+      expect(delivery.deliver).not.toHaveBeenCalled();
+      expect(learnerState.project).toHaveBeenCalledWith('u1');
+      expect(actions.markSkipped).toHaveBeenCalledWith('a1', 'PLANNED');
+      expect(summary.skipReasons.PLANNED).toBe(1);
+    });
+
+    it('routes COURSE_UNLOCK steps to the unlock journey, not the reminder rules', async () => {
+      (actions.claimDue as jest.Mock).mockResolvedValue([
+        dueAction({ ruleId: 'COURSE_UNLOCK', context: { courseId: 'c1', stage: 1 } }),
+      ]);
+      const summary = await service.tick();
+      expect(unlockJourney.process).toHaveBeenCalledTimes(1);
+      expect(delivery.deliver).not.toHaveBeenCalled();
+      expect(summary.sent).toBe(1);
     });
   });
 

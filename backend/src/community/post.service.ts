@@ -107,10 +107,13 @@ export class PostService {
     // extra full round trips stacked behind the list itself. They share no
     // inputs beyond the post ids, so they go together.
     const postIds = posts.map((p) => p.id);
-    const [viewerLikes, viewerVotes, discussion] = await Promise.all([
+    const authorIds = [...new Set(posts.map((p) => p.userId))];
+    const [viewerLikes, viewerVotes, discussion, levels, creatorId] = await Promise.all([
       this.resolveViewerLikes(viewer.id, postIds),
       this.resolveViewerVotes(viewer.id, postIds),
       this.communityService.getPostDiscussion(postIds),
+      this.communityService.levelsFor(communityId, authorIds),
+      this.communityService.creatorIdOf(communityId),
     ]);
 
     return {
@@ -118,7 +121,7 @@ export class PostService {
       page,
       pageSize,
       posts: posts.map((p) =>
-        this.serializePost(p, viewerLikes, viewerVotes, discussion.get(p.id)),
+        this.serializePost(p, viewerLikes, viewerVotes, discussion.get(p.id), levels.get(p.userId), creatorId),
       ),
     };
   }
@@ -156,14 +159,15 @@ export class PostService {
       .update({ where: { id: postId }, data: { viewCount: { increment: 1 } } })
       .catch(() => undefined);
 
-    const [likes, votes] = await Promise.all([
+    const [likes, votes, isModerator, levels] = await Promise.all([
       this.resolveViewerLikes(viewer.id, [postId]),
       this.resolveViewerVotes(viewer.id, [postId]),
+      this.isModeratorOf(post.communityId!, viewer),
+      this.communityService.levelsFor(post.communityId!, [post.userId]),
     ]);
-    const isModerator = await this.isModeratorOf(post.communityId!, viewer);
 
     return {
-      ...this.serializePost(post, likes, votes),
+      ...this.serializePost(post, likes, votes, undefined, levels.get(post.userId), post.community?.course?.instructorId ?? null),
       canModerate: isModerator || post.userId === viewer.id,
       community: post.community
         ? {
@@ -198,6 +202,7 @@ export class PostService {
     ) {
       throw new ForbiddenException('Only the course creator can post announcements or challenges.');
     }
+    this.communityService.assertCanWrite(membership, isModerator);
 
     if (postType === 'POLL') {
       if (!dto.pollOptions || dto.pollOptions.length < 2) {
@@ -371,20 +376,18 @@ export class PostService {
     const post = await this.getExistingPost(postId);
     await this.communityService.assertMember(post.communityId!, userId, userRole);
 
-    const created = await this.prisma.$transaction(async (tx) => {
-      try {
-        await tx.like.create({
-          data: { userId, entityType: 'POST', entityId: postId },
-        });
-      } catch {
-        return false; // already liked — unique constraint
-      }
-      await tx.post.update({
-        where: { id: postId },
-        data: { likeCount: { increment: 1 } },
-      });
-      return true;
-    });
+    // One batched round trip: a second like fails on the unique constraint
+    // and rolls the counter back with it.
+    let created = false;
+    try {
+      await this.prisma.$transaction([
+        this.prisma.like.create({ data: { userId, entityType: 'POST', entityId: postId } }),
+        this.prisma.post.update({ where: { id: postId }, data: { likeCount: { increment: 1 } } }),
+      ]);
+      created = true;
+    } catch {
+      created = false; // already liked
+    }
 
     if (created && post.userId !== userId) {
       this.eventEmitter.emit(
@@ -565,6 +568,10 @@ export class PostService {
       lastCommentAt: Date | null;
       commenters: { id: string; fullName: string; avatarUrl: string | null }[];
     },
+    /** The author's community level (Skool's number on the avatar). */
+    authorLevel?: number,
+    /** The course creator: their posts carry the CREATOR badge. */
+    creatorId?: string | null,
   ) {
     return {
       id: p.id,
@@ -588,6 +595,8 @@ export class PostService {
         fullName: p.user?.fullName ?? 'Community member',
         avatarUrl: p.user?.avatarUrl ?? null,
         streakDays: p.user?.studentProfile?.streakDays ?? 0,
+        level: authorLevel ?? 1,
+        isCreator: !!creatorId && (p.user?.id ?? p.userId) === creatorId,
       },
       lesson: p.lesson ? { id: p.lesson.id, title: p.lesson.title } : null,
       attachments: p.attachments ?? [],

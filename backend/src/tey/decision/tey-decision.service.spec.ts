@@ -471,3 +471,123 @@ describe('scheduling helpers', () => {
     expect(jitterSeconds('u1')).not.toBe(jitterSeconds('some-other-user'));
   });
 });
+
+describe('the Duolingo-shaped day (reminder ladder)', () => {
+  const service = new TeyDecisionService();
+  const plan = (s: LearnerStateSnapshot, n: TeyLocalNow) => service.evaluate(s, n);
+  const find = (s: LearnerStateSnapshot, n: TeyLocalNow, id: string) =>
+    plan(s, n).find((i) => i.ruleId === id);
+  const localHour = (d: Date) => new Date(d.getTime() - -60 * 60_000).getUTCHours();
+
+  it('sends a streak learner their reminder at the hour they chose, then the evening saver', () => {
+    const s = learner({ preferredHour: 9 });
+    const reminder = find(s, now(7), 'DAILY_GOAL_INCOMPLETE');
+    const saver = find(s, now(7), 'STREAK_AT_RISK');
+    expect(reminder && localHour(reminder.dueAt)).toBe(9);
+    expect(saver && localHour(saver.dueAt)).toBe(20);
+  });
+
+  it('leaves an evening-chosen reminder to the streak saver instead of pinging twice', () => {
+    expect(find(learner({ preferredHour: 19 }), now(7), 'DAILY_GOAL_INCOMPLETE')).toBeUndefined();
+  });
+
+  it('keeps the saver at 20:00 without habit data, and never after 21:00', () => {
+    const def = find(learner({ usualHourLocal: null }), now(7), 'STREAK_AT_RISK');
+    const owl = find(learner({ preferredHour: 23 }), now(7), 'STREAK_AT_RISK');
+    expect(def && localHour(def.dueAt)).toBe(20);
+    expect(owl && localHour(owl.dueAt)).toBe(21);
+  });
+
+  describe('a broken streak', () => {
+    const lost = (over: Partial<LearnerStateSnapshot> = {}) =>
+      learner({
+        streakDays: 0,
+        streakState: 'STREAK_LOST',
+        daysSinceLastActivity: 2,
+        lastStreakEarnedDate: '2026-09-02',
+        ...over,
+      });
+
+    it('is told once on the day it is noticed — and the win-back ping steps aside', () => {
+      const ids = plan(lost(), now(7)).map((i) => i.ruleId);
+      expect(ids).toContain('STREAK_LOST');
+      expect(ids).not.toContain('INACTIVE_RETURN');
+    });
+
+    it('stops being news after a few days, handing over to the win-back ladder', () => {
+      const ids = plan(lost({ daysSinceLastActivity: 5 }), now(7)).map((i) => i.ruleId);
+      expect(ids).not.toContain('STREAK_LOST');
+      expect(ids).toContain('INACTIVE_RETURN');
+    });
+
+    it('leads with the repair when one is open', () => {
+      const repair = { lostStreak: 23, costCoins: 450, expiresAt: new Date('2026-09-05T06:00:00Z') };
+      const check = service.revalidate('STREAK_LOST', lost({ repair }), now(19));
+      expect(check.context?.target).toEqual({ type: 'STREAK' });
+      expect(check.context?.facts.repairLostStreak).toBe(23);
+      expect(check.context?.facts.repairCostCoins).toBe(450);
+    });
+
+    it('reminds once on the offer’s last day, not on the day of the loss', () => {
+      const closesTomorrowMorning = { lostStreak: 23, costCoins: 450, expiresAt: new Date('2026-09-05T06:00:00Z') };
+      expect(find(lost({ repair: closesTomorrowMorning, daysSinceLastActivity: 3 }), now(7), 'STREAK_REPAIR_EXPIRING')).toBeDefined();
+      expect(find(lost({ repair: closesTomorrowMorning, daysSinceLastActivity: 2 }), now(7), 'STREAK_REPAIR_EXPIRING')).toBeUndefined();
+    });
+
+    it('does not remind when the offer is days away from closing', () => {
+      const farOff = { lostStreak: 23, costCoins: 450, expiresAt: new Date('2026-09-07T06:00:00Z') };
+      expect(find(lost({ repair: farOff, daysSinceLastActivity: 3 }), now(7), 'STREAK_REPAIR_EXPIRING')).toBeUndefined();
+    });
+  });
+
+  describe('first lesson', () => {
+    const fresh = (age: number) =>
+      learner({
+        engagementState: 'NEW',
+        streakDays: 0,
+        streakState: 'NO_STREAK',
+        daysSinceLastActivity: null,
+        lastActivityAt: null,
+        accountAgeDays: age,
+      });
+
+    it('nudges a new learner on day 0, 1, 3 and 6 — and not in between', () => {
+      const fires = [0, 1, 2, 3, 4, 5, 6, 7].filter((d) => !!find(fresh(d), now(9), 'FIRST_LESSON'));
+      expect(fires).toEqual([0, 1, 3, 6]);
+    });
+
+    it('never nudges on signup day before the evening', () => {
+      const i = find(fresh(0), now(9), 'FIRST_LESSON');
+      expect(i && localHour(i.dueAt)).toBeGreaterThanOrEqual(18);
+    });
+  });
+
+  describe('win-back ladder', () => {
+    const away = (days: number) =>
+      learner({
+        streakDays: 0,
+        streakState: 'NO_STREAK',
+        engagementState: 'INACTIVE_7_DAYS',
+        daysSinceLastActivity: days,
+      });
+
+    it('fires on every rung up to day 30, then goes silent', () => {
+      for (const d of [1, 2, 3, 5, 7, 14, 21, 30]) {
+        expect(find(away(d), now(7), 'INACTIVE_RETURN')).toBeDefined();
+      }
+      expect(find(away(31), now(7), 'INACTIVE_RETURN')).toBeUndefined();
+    });
+
+    it('keys each rung once per lapse, so a late planner catches up instead of doubling', () => {
+      const day3 = find(away(3), now(7), 'INACTIVE_RETURN');
+      const day4 = find(away(4), now(7), 'INACTIVE_RETURN');
+      expect(day3?.dedupeKey).toBe(day4?.dedupeKey);
+      expect(find(away(5), now(7), 'INACTIVE_RETURN')?.dedupeKey).not.toBe(day3?.dedupeKey);
+    });
+
+    it('says an honest goodbye on the final rung', () => {
+      const check = service.revalidate('INACTIVE_RETURN', away(30), now(19));
+      expect(check.context?.tone).toBe('NEUTRAL');
+    });
+  });
+});

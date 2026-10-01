@@ -1,9 +1,20 @@
 'use client';
 
+/**
+ * The top bar's streak card — Duolingo's flame dropdown. The count and the
+ * flame (lit once today is done), this week's seven days as the calendar
+ * records them (lesson, freeze, repair), freezes equipped, the repair offer
+ * when a streak just broke, and a way into the full streak screen.
+ */
+
 import React from 'react';
 import Image from 'next/image';
-import { Lock, Crown, Shield } from 'lucide-react';
-import { useStreakModal } from '@/context/StreakContext';
+import { useRouter } from 'next/navigation';
+import { Check, Snowflake, Wrench } from 'lucide-react';
+import { dayKey, monthOf, shiftMonth, useStreakCalendar, useStreakStats } from '@/hooks/useStreak';
+import { useGamification } from '@/context/GamificationContext';
+import type { CalendarDay } from '@/context/StreakContext';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import styles from './StreakPopover.module.css';
 
@@ -11,184 +22,113 @@ interface StreakPopoverProps {
   onClose?: () => void;
 }
 
+const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
 export default function StreakPopover({ onClose }: StreakPopoverProps) {
-  const { streakData, calendarData, openStreakModal } = useStreakModal();
+  const router = useRouter();
+  const { streakDays } = useGamification();
+  const { data: stats } = useStreakStats();
 
-  const currentStreak = streakData?.currentStreak ?? 0;
-  const isNewPersonalBest = streakData?.isNewPersonalBest ?? false;
-  const streakSocietyUnlocked = streakData?.streakSocietyUnlocked ?? (currentStreak >= 7);
-  const freezesAvailable = streakData?.freezesAvailable ?? 0;
-
-  // Generate 7-day mini row (Sun-Sat) for current week
-  const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-  // Match calendarData days or generate current week days
+  // This week, Sunday first. If it started last month, read that month too.
   const now = new Date();
-  const currentDayOfWeek = now.getDay(); // 0 = Sun, 6 = Sat
-
-  // Map calendarData days if matching current date
-  const calendarMap = new Map<string, boolean>();
-  if (calendarData?.days) {
-    calendarData.days.forEach((d) => {
-      calendarMap.set(d.date, d.isCompleted);
-    });
-  }
-
-  const weekDayStatus = daysOfWeek.map((label, idx) => {
-    const diff = idx - currentDayOfWeek;
-    const targetDate = new Date(now.getTime() + diff * 24 * 60 * 60 * 1000);
-    const yyyy = targetDate.getFullYear();
-    const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(targetDate.getDate()).padStart(2, '0');
-    const dateStr = `${yyyy}-${mm}-${dd}`;
-
-    const isToday = idx === currentDayOfWeek;
-    let isCompleted = calendarMap.get(dateStr) ?? false;
-
-    if (!isCompleted && currentStreak > 0) {
-      if (isToday) {
-        isCompleted = streakData?.hasCompletedToday ?? false;
-      } else if (diff < 0 && Math.abs(diff) < currentStreak) {
-        isCompleted = true;
-      }
-    }
-
-    return {
-      label,
-      dateStr,
-      isToday,
-      isCompleted,
-    };
+  const week = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(now.getDate() - now.getDay() + i);
+    return d;
   });
+  const thisMonth = monthOf(now);
+  const startsLastMonth = monthOf(week[0]) !== thisMonth;
+  const { data: cal } = useStreakCalendar(thisMonth);
+  const { data: prevCal } = useStreakCalendar(startsLastMonth ? shiftMonth(thisMonth, -1) : thisMonth);
 
-  const handleOpenPersonalModal = (e: React.MouseEvent) => {
+  const byDate = new Map<string, CalendarDay>();
+  for (const d of [...(prevCal?.days ?? []), ...(cal?.days ?? [])]) byDate.set(d.date, d);
+
+  const streak = stats?.currentStreak ?? streakDays;
+  const done = stats?.hasCompletedToday ?? false;
+  const freezes = stats?.freezesAvailable ?? 0;
+  const maxFreezes = stats?.maxFreezes ?? 2;
+  const repair = stats?.repair?.available ? stats.repair : null;
+
+  const open = (e: React.MouseEvent) => {
     e.stopPropagation();
-    playHaptic('medium');
-    if (onClose) onClose();
-    openStreakModal('PERSONAL');
+    playHaptic('light', false);
+    playSound('navTap', 2);
+    onClose?.();
+    router.push('/dashboard/streak');
   };
 
   return (
-    <div
-      className={styles.popoverCard}
-      role="dialog"
-      aria-label="Streak Popover"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Top Hero Banner */}
-      <div className={styles.heroHeader}>
-        <div className={styles.heroTopRow}>
-          <div className={styles.heroTextGroup}>
-            <h3 className={styles.heroTitle}>
-              {currentStreak} day streak
-            </h3>
-            <p className={styles.heroSubtitle}>
-              {isNewPersonalBest || (currentStreak > 0 && currentStreak === streakData?.longestStreak)
-                ? "You've earned your longest streak ever!"
-                : "Complete a lesson today to extend your streak!"}
-            </p>
-          </div>
-
-          <div className={styles.flameIconWrap}>
-            <Image
-              src="/Icons/burn.png"
-              alt="Streak Flame"
-              width={48}
-              height={48}
-              className={styles.flameImg}
-              priority
-            />
-          </div>
+    <div className={styles.popoverCard} role="dialog" aria-label="Your streak" onClick={(e) => e.stopPropagation()}>
+      <div className={`${styles.hero} ${done ? styles.heroLit : ''}`}>
+        <div className={styles.heroText}>
+          <h3 className={styles.heroTitle}>
+            {streak} day streak
+          </h3>
+          <p className={styles.heroSub}>
+            {repair
+              ? `Your ${repair.lostStreak}-day streak broke. You can still repair it.`
+              : done
+                ? 'You extended your streak today!'
+                : streak > 0
+                  ? 'Do a lesson today to keep it alive.'
+                  : 'Do a lesson today to start a streak.'}
+          </p>
         </div>
-
-        {/* 7-Day Mini Tracker Row */}
-        <div className={styles.miniWeekTracker}>
-          {weekDayStatus.map((dayItem, idx) => (
-            <div key={idx} className={styles.miniDayCell}>
-              <span className={styles.miniDayLabel}>{dayItem.label}</span>
-              <div
-                className={`${styles.miniDayDot} ${
-                  dayItem.isCompleted
-                    ? styles.miniDotCompleted
-                    : dayItem.isToday
-                    ? styles.miniDotToday
-                    : styles.miniDotEmpty
-                }`}
-              >
-                {dayItem.isCompleted ? (
-                  <Image
-                    src="/Icons/burn.png"
-                    alt="Maintained Streak"
-                    width={14}
-                    height={14}
-                    style={{ objectFit: 'contain' }}
-                  />
-                ) : dayItem.isToday ? (
-                  <div className={styles.todayInnerPulse} />
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Image
+          src="/Icons/burn.png"
+          alt=""
+          width={56}
+          height={56}
+          className={`${styles.flame} ${done ? '' : styles.flameDim}`}
+          priority
+        />
       </div>
 
-      {/* Popover Content Cards */}
-      <div className={styles.cardContent}>
-        {/* Card 1: Streak Freeze Status */}
-        <div className={styles.friendsTeaserCard}>
-          <div className={styles.friendsTeaserLeft}>
-            <div className={styles.friendsAvatarGroup} style={{ backgroundColor: '#EFF6FF', border: '1.5px solid #BAE6FD' }}>
-              <Shield size={20} className="text-[#0172FD]" />
+      <div className={styles.week} aria-label="This week">
+        {week.map((d, i) => {
+          const key = dayKey(d);
+          const rec = byDate.get(key);
+          const isToday = key === dayKey(now);
+          const status = rec?.status ?? (rec?.isCompleted ? 'lesson' : 'none');
+          return (
+            <div key={key} className={styles.day}>
+              <span className={`${styles.letter} ${isToday ? styles.letterToday : ''}`}>{LETTERS[i]}</span>
+              <span
+                className={`${styles.dot} ${
+                  status === 'lesson' || status === 'repaired'
+                    ? styles.dotLit
+                    : status === 'frozen'
+                      ? styles.dotIce
+                      : isToday
+                        ? styles.dotToday
+                        : ''
+                }`}
+              >
+                {status === 'lesson' && <Check size={14} strokeWidth={3.5} aria-label="Practiced" />}
+                {status === 'repaired' && <Wrench size={12} strokeWidth={3} aria-label="Repaired" />}
+                {status === 'frozen' && <Snowflake size={14} strokeWidth={3} aria-label="Freeze used" />}
+              </span>
             </div>
-            <div className={styles.friendsText}>
-              <h4 className={styles.friendsTitle}>Streak Freeze</h4>
-              <p className={styles.friendsSubtitle}>
-                {freezesAvailable > 0
-                  ? `${freezesAvailable} of 2 freezes active`
-                  : 'No active freezes equipped'}
-              </p>
-            </div>
-          </div>
+          );
+        })}
+      </div>
 
-          <button
-            type="button"
-            className={styles.viewListBtn}
-            onClick={handleOpenPersonalModal}
-          >
-            {freezesAvailable > 0 ? 'VIEW' : 'EQUIP'}
-          </button>
+      <div className={styles.body}>
+        <div className={styles.row}>
+          <span className={styles.rowIcon} aria-hidden="true">
+            <Snowflake size={20} strokeWidth={2.5} />
+          </span>
+          <span className={styles.rowText}>
+            <span className={styles.rowTitle}>Streak freeze</span>
+            <span className={styles.rowSub}>
+              {freezes > 0 ? `${freezes} of ${maxFreezes} equipped` : 'None equipped: a missed day ends your streak'}
+            </span>
+          </span>
         </div>
 
-        {/* Card 2: Streak Society */}
-        <div
-          className={`${styles.societyTeaserCard} ${
-            streakSocietyUnlocked ? styles.societyUnlocked : ''
-          }`}
-        >
-          <div className={styles.societyIconWrap}>
-            {streakSocietyUnlocked ? (
-              <Crown size={20} className="text-[#EAB308]" />
-            ) : (
-              <Lock size={20} color="#94A3B8" />
-            )}
-          </div>
-          <div className={styles.societyText}>
-            <h4 className={styles.societyTitle}>Streak Society</h4>
-            <p className={styles.societySubtitle}>
-              {streakSocietyUnlocked
-                ? "You've unlocked the exclusive Streak Society!"
-                : "Reach a 7 day streak to join the Streak Society and earn exclusive rewards."}
-            </p>
-          </div>
-        </div>
-
-        {/* Bottom CTA Button */}
-        <button
-          type="button"
-          className={styles.viewMoreBtn3D}
-          onClick={handleOpenPersonalModal}
-        >
-          VIEW STREAK CALENDAR
+        <button type="button" className={`${styles.cta} ${repair ? styles.ctaGold : ''}`} onClick={open}>
+          {repair ? 'Repair streak' : 'View more'}
         </button>
       </div>
     </div>

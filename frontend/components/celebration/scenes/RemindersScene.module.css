@@ -1,0 +1,25 @@
+/* RemindersScene extras — the rest comes from Scene.module.css. */
+
+.preview {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.bellTey {
+  width: clamp(110px, min(36vw, 26vh), 200px);
+}
+
+.phone {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.guide {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: left;
+}

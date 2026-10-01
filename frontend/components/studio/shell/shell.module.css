@@ -1,0 +1,825 @@
+/* Creator studio frame — menu, header, bell, account, phone tabs.
+   Same chunky language as studio.module.css: 2px borders with a lip,
+   800-weight labels, one tone per destination. Tokens only. */
+
+.frame {
+  min-height: 100dvh;
+  background: var(--bg-page);
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--color-ink);
+}
+
+/* ── Menu ───────────────────────────────────────────────────────────── */
+
+.side {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 256px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 14px 16px;
+  background: var(--bg-card);
+  border-right: 2px solid var(--border);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  text-decoration: none;
+}
+
+.brandWord {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-brand);
+}
+
+.newBtn,
+.moreNew {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: 16px;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: filter 0.12s ease;
+}
+
+.newBtn:hover,
+.moreNew:hover {
+  filter: brightness(1.06);
+}
+
+.newBtn:active,
+.moreNew:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navGroupAccount {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 2px solid var(--border);
+}
+
+.navGroupLabel {
+  padding: 0 14px 2px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.navRow {
+  --tone: var(--color-brand);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 50px;
+  padding: 0 12px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.12s ease;
+}
+
+.navRow:hover {
+  background: var(--bg-section);
+}
+
+.navRowOn,
+.navRowOn:hover {
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 9%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
+}
+
+.navLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.navDot {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--error-red);
+  color: var(--bg-card);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.sideFoot {
+  padding-top: 4px;
+}
+
+/* ── Main column + header ───────────────────────────────────────────── */
+
+.mainCol {
+  margin-left: 256px;
+  min-width: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 72px;
+  padding: 0 24px;
+  background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--border);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.headerMark {
+  display: none;
+}
+
+/* The page's own menu tile, echoed next to its title (hidden on phones). */
+.titleTile {
+  width: 40px;
+  height: 40px;
+}
+
+.titleText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.titleMain {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titleBlurb {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.headerNew {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.headerNew:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.headerIconBtn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.headerIconBtn:hover,
+.headerIconBtnOn {
+  color: var(--color-brand);
+  border-color: color-mix(in srgb, var(--color-brand) 40%, var(--border));
+}
+
+.headerIconBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.bellCount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--error-red);
+  color: var(--bg-card);
+  border: 2px solid var(--bg-card);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 8px 24px 40px;
+  box-sizing: border-box;
+}
+
+/* ── Account menu ───────────────────────────────────────────────────── */
+
+.acctWrap,
+.bellWrap {
+  position: relative;
+}
+
+.acctBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px 3px 3px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.acctBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.acctName {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acctChevron {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.acctMenu,
+.panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 70;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lift);
+  transform-origin: top right;
+}
+
+.acctMenu {
+  width: 264px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acctHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 12px;
+  margin-bottom: 4px;
+  border-bottom: 2px solid var(--border);
+}
+
+.acctHead strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.acctRole {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.acctItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.acctItem:hover {
+  background: var(--bg-section);
+  color: var(--color-brand);
+}
+
+.acctLogout:hover {
+  color: var(--error-red);
+  background: color-mix(in srgb, var(--error-red) 8%, var(--bg-card));
+}
+
+/* ── Notifications panel ────────────────────────────────────────────── */
+
+.panel {
+  width: 420px;
+  max-height: min(640px, calc(100dvh - 96px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panelHead {
+  padding: 16px 18px 4px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.panelBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 10px 10px;
+}
+
+.panelFoot {
+  display: block;
+  padding: 14px;
+  text-align: center;
+  border-top: 2px solid var(--border);
+  color: var(--color-brand);
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.panelFoot:hover {
+  background: var(--bg-section);
+}
+
+.nList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nTools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.nMarkAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  padding: 6px 4px;
+  color: var(--color-brand);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nGroupLabel {
+  margin: 0;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.nUl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nRow {
+  --tone: var(--color-brand);
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nRow:hover:not(:disabled) {
+  background: var(--bg-section);
+}
+
+.nRow:disabled {
+  cursor: default;
+}
+
+.nUnread {
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--bg-card));
+}
+
+.nIconWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nIcon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, var(--bg-card));
+  border: 2px solid color-mix(in srgb, var(--tone) 28%, var(--border));
+}
+
+.nIconBadge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--bg-card);
+  border: 2px solid var(--bg-card);
+}
+
+.nText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nHeadline {
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.nDetail {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nTime {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.nDot {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--color-brand);
+}
+
+.nSkels {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 8px;
+}
+
+.nSkelRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Phone tabs + More sheet ────────────────────────────────────────── */
+
+.tabs {
+  display: none;
+}
+
+.tab {
+  --tone: var(--color-brand);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tabIcon {
+  position: relative;
+  width: 44px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+
+.tabOn {
+  color: var(--tone);
+}
+
+
+.tabLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tabDot {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--error-red);
+  color: var(--bg-card);
+  border: 2px solid var(--bg-card);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.moreGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.moreItem {
+  --tone: var(--color-brand);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.moreItemOn {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--border));
+  background: color-mix(in srgb, var(--color-brand) 7%, var(--bg-card));
+}
+
+.moreLabel {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.moreFoot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.logoutRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: var(--error-red);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ── Breakpoints ────────────────────────────────────────────────────── */
+
+@media (max-width: 1279px) {
+  .side {
+    width: 232px;
+  }
+
+  .mainCol {
+    margin-left: 232px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .side {
+    display: none;
+  }
+
+  .mainCol {
+    margin-left: 0;
+  }
+
+  .header {
+    min-height: 64px;
+    padding: 0 12px;
+  }
+
+  .headerMark {
+    display: inline-flex;
+  }
+
+  .titleTile {
+    display: none;
+  }
+
+  .headerNew {
+    display: inline-flex;
+  }
+
+  .content {
+    padding: 4px 8px calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .tabs {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 4px 4px env(safe-area-inset-bottom);
+    background: var(--bg-card);
+    border-top: 2px solid var(--border);
+  }
+}
+
+@media (max-width: 640px) {
+  .titleBlurb,
+  .acctName,
+  .acctChevron,
+  .headerNew span {
+    display: none;
+  }
+
+  .headerNew {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .acctBtn {
+    padding: 2px;
+  }
+
+  .headerRight {
+    gap: 8px;
+  }
+
+  .panel {
+    position: fixed;
+    top: 72px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-height: calc(100dvh - 72px - 96px);
+  }
+}

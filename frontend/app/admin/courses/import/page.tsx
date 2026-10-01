@@ -1,29 +1,53 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+/**
+ * Import a course — turn a finished course sitting in Google Drive into a
+ * Teyro draft. Three steps: connect Drive, pick the course's folder, check
+ * what will be made and choose the course's title, track and level. With
+ * autopilot on, the importer plans the course and builds the draft by itself;
+ * the admin comes back only to review it.
+ *
+ * Folder convention (GoogleDriveService#walkFolder): the course folder's
+ * direct subfolders become modules; every video becomes a lesson; documents
+ * attach to the video before them.
+ */
+
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  ArrowRight,
+  Check,
+  ChevronRight,
+  Clock,
   File as FileIcon,
   FileText,
   Folder,
+  FolderOpen,
+  HardDrive,
   Image as ImageIcon,
   Presentation,
+  Sparkles,
+  TriangleAlert,
   Video,
+  Wand2,
 } from 'lucide-react';
+import { adminMutate, useAdminData } from '@/components/admin/AdminUI';
+import { Hero, hq } from '@/components/admin/hq/HQ';
+import { computeStages, overallPercent } from './[importId]/importProgress';
 import {
-  Banner,
-  Button,
-  Card,
-  Empty,
-  ErrorState,
-  Loading,
-  Metric,
-  PageHeader,
-  Pill,
-  adminMutate,
-  useAdminData,
-} from '@/components/admin/AdminUI';
-import styles from './page.module.css';
+  LEVELS,
+  TRACKS,
+  formatBytes,
+  formatDuration,
+  humanizeDriveError,
+  statusInfo,
+  type CourseImport,
+  type DriveFile,
+  type DriveFileCategory,
+  type FolderPreview,
+} from './importer';
+import m from './importer.module.css';
 
 interface ConnectionStatus {
   connected: boolean;
@@ -31,57 +55,12 @@ interface ConnectionStatus {
   connectedAt?: string;
 }
 
-type DriveFileCategory = 'folder' | 'video' | 'document' | 'presentation' | 'image' | 'other';
-
-interface DriveFile {
-  id: string;
-  name: string;
-  mimeType: string;
-  category: DriveFileCategory;
-  sizeBytes?: number;
-  durationMs?: number;
-  modifiedTime?: string;
-}
-
-interface FolderPreview {
-  folderId: string;
-  folderName: string;
-  totalFiles: number;
-  videos: number;
-  documents: number;
-  presentations: number;
-  images: number;
-  unsupported: DriveFile[];
-  estimatedVideoDurationSeconds: number;
-  videosMissingDuration: number;
-}
-
-interface CourseImportSummary {
-  id: string;
-  sourceDriveFolderName: string;
-  status: string;
-  counts: { total: number; pending: number; claimed: number; uploaded: number; failed: number; skipped: number };
-  createdAt: string;
-}
-
-const IMPORT_STATUS_TONE: Record<string, 'neutral' | 'good' | 'warn' | 'bad' | 'brand'> = {
-  CREATED: 'brand',
-  PROCESSING_FILES: 'brand',
-  READY_FOR_GENERATION: 'brand',
-  TRANSCRIBING: 'brand',
-  GENERATING_CONTENT: 'brand',
-  READY_FOR_REVIEW: 'good',
-  COURSE_CREATED: 'good',
-  FAILED: 'bad',
-  CANCELLED: 'neutral',
-};
-
 interface Crumb {
   id: string;
   name: string;
 }
 
-const CATEGORY_ICON: Record<DriveFileCategory, typeof Folder> = {
+const ICON: Record<DriveFileCategory, typeof Folder> = {
   folder: Folder,
   video: Video,
   document: FileText,
@@ -90,85 +69,62 @@ const CATEGORY_ICON: Record<DriveFileCategory, typeof Folder> = {
   other: FileIcon,
 };
 
-function formatDuration(totalSeconds: number): string {
-  if (totalSeconds <= 0) return '0m';
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.round((totalSeconds % 3600) / 60);
-  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-}
+const ICON_TONE: Record<DriveFileCategory, string> = {
+  folder: 'var(--warning)',
+  video: 'var(--error-red)',
+  document: 'var(--color-brand)',
+  presentation: 'var(--brand-purple)',
+  image: 'var(--success-green)',
+  other: 'var(--text-muted)',
+};
 
-function formatBytes(bytes?: number): string {
-  if (!bytes) return '—';
-  const units = ['B', 'KB', 'MB', 'GB'];
-  let value = bytes;
-  let unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
-  return `${value.toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
-}
-
-function humanizeDriveError(code: string): string {
-  switch (code) {
-    case 'access_denied':
-      return 'You declined the Google consent screen.';
-    case 'missing_code_or_state':
-    case 'invalid_state':
-    case 'state_mismatch':
-      return 'The connection request could not be verified. Please try again.';
-    case 'state_expired':
-      return 'That consent screen took too long — please try connecting again.';
-    default:
-      return code;
-  }
+function StepHead({ n, title, done, sub }: { n: number; title: string; done?: boolean; sub?: string }) {
+  return (
+    <div className={m.stepHead}>
+      <span className={`${m.stepNum} ${done ? m.stepDone : ''}`}>{done ? <Check size={16} strokeWidth={4} /> : n}</span>
+      <span>
+        <h2 className={m.stepTitle}>{title}</h2>
+        {sub && <p className={m.stepSub}>{sub}</p>}
+      </span>
+    </div>
+  );
 }
 
 export default function ImportCoursePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: status, error: statusError, mutate: refreshStatus } = useAdminData<ConnectionStatus>('/api/admin/google-drive/status');
+  const { data: imports, error: importsError } = useAdminData<CourseImport[]>('/api/admin/course-imports');
 
-  const {
-    data: status,
-    error: statusError,
-    isLoading: statusLoading,
-    mutate: refreshStatus,
-  } = useAdminData<ConnectionStatus>('/api/admin/google-drive/status');
-
-  const [breadcrumbs, setBreadcrumbs] = useState<Crumb[]>([{ id: 'root', name: 'My Drive' }]);
-  const currentFolder = breadcrumbs[breadcrumbs.length - 1];
-  const [analyzeFolderId, setAnalyzeFolderId] = useState<string | null>(null);
-  const [disconnecting, setDisconnecting] = useState(false);
-  const [startingImport, setStartingImport] = useState(false);
+  const [crumbs, setCrumbs] = useState<Crumb[]>([{ id: 'root', name: 'My Drive' }]);
+  const folder = crumbs[crumbs.length - 1];
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
+  const [track, setTrack] = useState<(typeof TRACKS)[number] | null>(null);
+  const [level, setLevel] = useState<(typeof LEVELS)[number]>('Beginner');
+  const [autopilot, setAutopilot] = useState(true);
+  const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
-  const { data: recentImports } = useAdminData<CourseImportSummary[]>('/api/admin/course-imports');
-
-  const {
-    data: children,
-    error: childrenError,
-    isLoading: childrenLoading,
-  } = useAdminData<DriveFile[]>(
-    status?.connected ? `/api/admin/google-drive/folders?parentId=${currentFolder.id}` : null,
+  const { data: children, error: childrenError, isLoading: childrenLoading } = useAdminData<DriveFile[]>(
+    status?.connected ? `/api/admin/google-drive/folders?parentId=${folder.id}` : null,
+  );
+  const { data: preview, error: previewError, isLoading: previewLoading } = useAdminData<FolderPreview>(
+    previewId ? `/api/admin/google-drive/folders/${previewId}/preview` : null,
   );
 
-  const {
-    data: preview,
-    error: previewError,
-    isLoading: previewLoading,
-  } = useAdminData<FolderPreview>(
-    analyzeFolderId ? `/api/admin/google-drive/folders/${analyzeFolderId}/preview` : null,
-  );
-
-  // A preview only ever describes the exact folder it was generated for —
-  // clear it the moment the admin navigates anywhere else in the browser.
+  // A preview only describes the folder it was made for.
   useEffect(() => {
-    setAnalyzeFolderId(null);
-  }, [currentFolder.id]);
+    setPreviewId(null);
+  }, [folder.id]);
 
-  // The OAuth callback redirects back here with a one-time status in the
-  // query string. Consume it once, then strip it so a refresh doesn't
-  // re-show a stale "connected" banner.
+  // Name the course after the folder until the admin types their own.
+  useEffect(() => {
+    if (preview) setTitle((t) => (t && t !== preview.folderName ? t : preview.folderName));
+  }, [preview]);
+
+  // The OAuth callback lands here with a one-time status in the URL.
   const driveConnected = searchParams.get('driveConnected');
   const driveError = searchParams.get('driveError');
   useEffect(() => {
@@ -178,210 +134,348 @@ export default function ImportCoursePage() {
     url.searchParams.delete('driveConnected');
     url.searchParams.delete('driveError');
     router.replace(url.pathname + url.search);
-    // Only re-run when the redirect params themselves change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driveConnected, driveError]);
 
-  const connect = () => {
-    window.location.href = '/api/admin/google-drive/connect';
-  };
+  const subfolders = useMemo(() => (children ?? []).filter((f) => f.category === 'folder'), [children]);
+  const filesHere = useMemo(() => (children ?? []).filter((f) => f.category !== 'folder'), [children]);
 
   const disconnect = async () => {
     setDisconnecting(true);
     try {
       await adminMutate('/api/admin/google-drive/disconnect', { method: 'POST' });
-      setBreadcrumbs([{ id: 'root', name: 'My Drive' }]);
-      setAnalyzeFolderId(null);
+      setCrumbs([{ id: 'root', name: 'My Drive' }]);
+      setPreviewId(null);
       await refreshStatus();
     } finally {
       setDisconnecting(false);
     }
   };
 
-  const openFolder = (folder: DriveFile) => {
-    setBreadcrumbs((prev) => [...prev, { id: folder.id, name: folder.name }]);
-  };
-
-  const jumpTo = (index: number) => {
-    setBreadcrumbs((prev) => prev.slice(0, index + 1));
-  };
-
-  const startImport = async () => {
+  const start = async () => {
     if (!preview) return;
-    setStartingImport(true);
+    if (autopilot && (!title.trim() || !track)) {
+      setStartError('Autopilot needs a course title and a track to build the course with.');
+      return;
+    }
+    setStarting(true);
     setStartError(null);
     try {
       const created = await adminMutate<{ id: string }>('/api/admin/course-imports', {
         method: 'POST',
-        body: { driveFolderId: preview.folderId },
+        body: {
+          driveFolderId: preview.folderId,
+          autopilot,
+          ...(title.trim() ? { courseTitle: title.trim() } : {}),
+          ...(track ? { courseCategory: track } : {}),
+          courseLevel: level,
+        },
       });
       router.push(`/admin/courses/import/${created.id}`);
     } catch (err) {
       setStartError((err as Error).message);
-    } finally {
-      setStartingImport(false);
+      setStarting(false);
     }
   };
 
-  if (statusError) return <ErrorState error={statusError as Error} />;
+  const connected = !!status?.connected;
+  const running = (imports ?? []).filter((i) => !['CANCELLED'].includes(i.status));
 
   return (
-    <>
-      <PageHeader
-        title="Import Course"
-        subtitle="Bring a finished course in from Google Drive and turn it into a Teyro draft — reviewed and published the same way as anything built by hand."
+    <div className={hq.page}>
+      <Hero
+        pose="tablet"
+        title="Import a course"
+        sub="Turn a finished course in Google Drive into a Teyro draft. Videos become lessons, Tey writes the practice, and you review before anything goes live."
       />
 
-      {driveError && !status?.connected && (
-        <Banner tone="warn">Google Drive connection failed: {humanizeDriveError(driveError)}</Banner>
-      )}
+      <div className={m.layout}>
+        <div className={m.steps}>
+          {/* 1 — Drive */}
+          <section className={m.step}>
+            <StepHead n={1} title="Connect Google Drive" done={connected} />
+            {driveError && !connected && (
+              <p className={m.warn}>
+                <TriangleAlert size={16} aria-hidden="true" /> Connection failed: {humanizeDriveError(driveError)}
+              </p>
+            )}
+            {statusError && !status ? (
+              <p className={m.warn}>
+                <TriangleAlert size={16} aria-hidden="true" /> Couldn’t check your Drive connection. It retries on its own.
+              </p>
+            ) : !status ? (
+              <div className={m.skel} />
+            ) : connected ? (
+              <div className={m.connected}>
+                <span className={m.driveIcon} aria-hidden="true">
+                  <HardDrive size={20} />
+                </span>
+                <span className={m.grow}>
+                  <strong>Connected</strong>
+                  <span>{status.email}</span>
+                </span>
+                <button type="button" className={m.ghostBtn} onClick={() => void disconnect()} disabled={disconnecting}>
+                  {disconnecting ? 'Disconnecting…' : 'Disconnect'}
+                </button>
+              </div>
+            ) : (
+              <div className={m.connectBox}>
+                <p>Teyro reads only the folder you pick, and copies its files into Teyro’s own storage.</p>
+                <button type="button" className={m.primaryBtn} onClick={() => (window.location.href = '/api/admin/google-drive/connect')}>
+                  <HardDrive size={18} aria-hidden="true" /> Connect Google Drive
+                </button>
+              </div>
+            )}
+          </section>
 
-      <Card title="1. Connect Google Drive">
-        {statusLoading || !status ? (
-          <Loading />
-        ) : status.connected ? (
-          <div className={styles.connectRow}>
-            <Pill tone="good">Connected</Pill>
-            <span>{status.email}</span>
-            <Button variant="secondary" size="sm" onClick={() => void disconnect()} disabled={disconnecting}>
-              {disconnecting ? 'Disconnecting…' : 'Disconnect'}
-            </Button>
-          </div>
-        ) : (
-          <div className={styles.connectRow}>
-            <Pill tone="neutral">Not connected</Pill>
-            <Button onClick={connect}>Connect Google Drive</Button>
-          </div>
-        )}
-      </Card>
+          {/* 2 — Folder */}
+          <section className={`${m.step} ${!connected ? m.stepLocked : ''}`}>
+            <StepHead
+              n={2}
+              title="Pick the course folder"
+              done={!!preview}
+              sub="Open the folder that holds one whole course. Its subfolders become modules."
+            />
+            {connected && (
+              <>
+                <nav className={m.crumbs} aria-label="Folder path">
+                  {crumbs.map((c, i) => (
+                    <span key={c.id} className={m.crumb}>
+                      {i > 0 && <ChevronRight size={14} aria-hidden="true" />}
+                      {i === crumbs.length - 1 ? (
+                        <strong>{c.name}</strong>
+                      ) : (
+                        <button type="button" onClick={() => setCrumbs((p) => p.slice(0, i + 1))}>
+                          {c.name}
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </nav>
 
-      {status?.connected && (
-        <Card title="2. Select a course folder">
-          <nav className={styles.breadcrumbs}>
-            {breadcrumbs.map((crumb, index) => (
-              <span key={crumb.id}>
-                {index > 0 && <span className={styles.breadcrumbSeparator}>/</span>}
-                {index === breadcrumbs.length - 1 ? (
-                  <span className={styles.breadcrumbCurrent}>{crumb.name}</span>
+                {childrenError ? (
+                  <p className={m.warn}>
+                    <TriangleAlert size={16} aria-hidden="true" /> This folder didn’t load. {(childrenError as Error).message}
+                  </p>
+                ) : childrenLoading || !children ? (
+                  <div className={m.skel} style={{ height: 180 }} />
+                ) : children.length === 0 ? (
+                  <p className={m.muted}>This folder is empty.</p>
                 ) : (
-                  <button type="button" onClick={() => jumpTo(index)} className={styles.breadcrumbLink}>
-                    {crumb.name}
-                  </button>
+                  <ul className={m.files}>
+                    {subfolders.map((f) => (
+                      <li key={f.id}>
+                        <button type="button" className={m.fileRow} onClick={() => setCrumbs((p) => [...p, { id: f.id, name: f.name }])}>
+                          <span className={m.fileIcon} style={{ '--tone': ICON_TONE.folder } as CSSProperties} aria-hidden="true">
+                            <Folder size={18} />
+                          </span>
+                          <span className={m.fileName}>{f.name}</span>
+                          <ChevronRight size={18} className={m.chev} aria-hidden="true" />
+                        </button>
+                      </li>
+                    ))}
+                    {filesHere.slice(0, 40).map((f) => {
+                      const Icon = ICON[f.category];
+                      return (
+                        <li key={f.id} className={m.fileRow} data-static="true">
+                          <span className={m.fileIcon} style={{ '--tone': ICON_TONE[f.category] } as CSSProperties} aria-hidden="true">
+                            <Icon size={18} />
+                          </span>
+                          <span className={m.fileName}>{f.name}</span>
+                          <span className={m.fileMeta}>{formatBytes(f.sizeBytes)}</span>
+                        </li>
+                      );
+                    })}
+                    {filesHere.length > 40 && <li className={m.muted}>…and {filesHere.length - 40} more files</li>}
+                  </ul>
                 )}
-              </span>
-            ))}
-          </nav>
 
-          {childrenError ? (
-            <ErrorState error={childrenError as Error} />
-          ) : childrenLoading || !children ? (
-            <Loading />
-          ) : children.length === 0 ? (
-            <Empty>This folder is empty.</Empty>
-          ) : (
-            <ul className={styles.fileList}>
-              {children.map((file) => {
-                const Icon = CATEGORY_ICON[file.category];
-                const isFolder = file.category === 'folder';
-                return (
-                  <li
-                    key={file.id}
-                    className={`${styles.fileRow} ${isFolder ? styles.fileRowFolder : ''}`}
-                    onClick={isFolder ? () => openFolder(file) : undefined}
+                <div className={m.useRow}>
+                  <button
+                    type="button"
+                    className={m.primaryBtn}
+                    onClick={() => setPreviewId(folder.id)}
+                    disabled={folder.id === 'root' || previewLoading}
                   >
-                    <Icon size={16} />
-                    <span className={styles.fileName}>{file.name}</span>
-                    {!isFolder && <span className={styles.fileSize}>{formatBytes(file.sizeBytes)}</span>}
+                    <FolderOpen size={18} aria-hidden="true" />
+                    {previewLoading && previewId === folder.id ? 'Looking inside…' : `Use “${folder.name}”`}
+                  </button>
+                  {folder.id === 'root' && <span className={m.muted}>Open the course’s own folder first. My Drive itself can’t be imported.</span>}
+                </div>
+              </>
+            )}
+          </section>
+
+          {/* 3 — Check and start */}
+          <section className={`${m.step} ${!preview ? m.stepLocked : ''}`}>
+            <StepHead n={3} title="Check it and start" sub="What Teyro will make, and the course it builds." />
+            {previewError && (
+              <p className={m.warn}>
+                <TriangleAlert size={16} aria-hidden="true" /> {(previewError as Error).message}
+              </p>
+            )}
+            {preview && (
+              <>
+                <div className={m.make}>
+                  <span className={m.makeItem} style={{ '--tone': 'var(--error-red)' } as CSSProperties}>
+                    <strong>{preview.videos}</strong>
+                    <span>lesson{preview.videos === 1 ? '' : 's'}</span>
+                    <em>
+                      in {preview.modules} module{preview.modules === 1 ? '' : 's'}
+                    </em>
+                  </span>
+                  <span className={m.makeItem} style={{ '--tone': 'var(--color-brand)' } as CSSProperties}>
+                    <strong>{preview.documents + preview.presentations + preview.images}</strong>
+                    <span>resources</span>
+                    <em>docs, slides, images</em>
+                  </span>
+                  <span className={m.makeItem} style={{ '--tone': 'var(--warning)' } as CSSProperties}>
+                    <strong>{formatDuration(preview.estimatedVideoDurationSeconds)}</strong>
+                    <span>of video</span>
+                    <em>{preview.videosMissingDuration > 0 ? `${preview.videosMissingDuration} without a length` : 'to transcribe'}</em>
+                  </span>
+                </div>
+
+                {preview.videos === 0 && (
+                  <p className={m.warn}>
+                    <TriangleAlert size={16} aria-hidden="true" /> There are no videos here, so there’s nothing to build lessons from.
+                  </p>
+                )}
+                {preview.videos > 0 && (
+                  <p className={m.note}>
+                    Each lesson gets Tey-written Learn cards (key ideas, a tip, a quick check, code when the video shows code) and 5–12
+                    hands-on exercises of different kinds.
+                  </p>
+                )}
+                {preview.videosOverLimit + preview.videosMissingDuration > 0 && (
+                  <p className={m.warn}>
+                    <TriangleAlert size={16} aria-hidden="true" />
+                    <span>
+                      {preview.videosOverLimit > 0 &&
+                        `${preview.videosOverLimit} video${preview.videosOverLimit === 1 ? ' is' : 's are'} over 15 minutes. `}
+                      {preview.videosMissingDuration > 0 &&
+                        `${preview.videosMissingDuration} video${preview.videosMissingDuration === 1 ? ' has' : 's have'} no length in Drive. `}
+                      Those lessons keep the classic Learn layout (the video plus reading) and still get the full exercises. Splitting long videos
+                      into shorter ones gives learners the card layout.
+                    </span>
+                  </p>
+                )}
+                {preview.unsupported.length > 0 && (
+                  <p className={m.note}>
+                    Skipped (not a supported type): {preview.unsupported.map((f) => f.name).join(', ')}
+                  </p>
+                )}
+
+                <div className={m.form}>
+                  <label className={m.field}>
+                    <span className={m.label}>Course title</span>
+                    <input className={m.input} value={title} maxLength={200} onChange={(e) => setTitle(e.target.value)} />
+                  </label>
+                  <div className={m.field}>
+                    <span className={m.label}>Track</span>
+                    <div className={m.chips} role="radiogroup" aria-label="Track">
+                      {TRACKS.map((t) => (
+                        <button key={t} type="button" role="radio" aria-checked={track === t} className={`${m.chip} ${track === t ? m.chipOn : ''}`} onClick={() => setTrack(t)}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={m.field}>
+                    <span className={m.label}>Level</span>
+                    <div className={m.chips} role="radiogroup" aria-label="Level">
+                      {LEVELS.map((l) => (
+                        <button key={l} type="button" role="radio" aria-checked={level === l} className={`${m.chip} ${level === l ? m.chipOn : ''}`} onClick={() => setLevel(l)}>
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={autopilot}
+                    className={`${m.autopilot} ${autopilot ? m.autopilotOn : ''}`}
+                    onClick={() => setAutopilot((v) => !v)}
+                  >
+                    <span className={m.autoIcon} aria-hidden="true">
+                      <Wand2 size={20} />
+                    </span>
+                    <span className={m.grow}>
+                      <strong>Autopilot</strong>
+                      <span>
+                        {autopilot
+                          ? 'Tey plans the modules and builds the draft course when every lesson is written. You only come back to review.'
+                          : 'You’ll plan the course and build the draft yourself from the import’s page.'}
+                      </span>
+                    </span>
+                    <span className={m.toggle} aria-hidden="true">
+                      <span />
+                    </span>
+                  </button>
+                </div>
+
+                {startError && (
+                  <p className={m.warn}>
+                    <TriangleAlert size={16} aria-hidden="true" /> {startError}
+                  </p>
+                )}
+                <button type="button" className={`${m.primaryBtn} ${m.bigBtn}`} onClick={() => void start()} disabled={starting || preview.videos === 0}>
+                  <Sparkles size={18} aria-hidden="true" /> {starting ? 'Starting…' : 'Start the import'}
+                </button>
+                <p className={m.note}>
+                  Videos are copied and transcribed one at a time so the server never runs out of memory, so large courses take hours. On
+                  free hosting the server sleeps after about 15 quiet minutes: keep the import’s page open while it runs (it keeps the server
+                  awake). If it does sleep, nothing is lost; the import carries on from where it stopped.
+                </p>
+              </>
+            )}
+          </section>
+        </div>
+
+        <aside className={m.side} aria-label="Your imports">
+          <h2 className={m.sideTitle}>Your imports</h2>
+          {importsError && !imports ? (
+            <p className={m.warn}>
+              <TriangleAlert size={16} aria-hidden="true" /> Couldn’t load your imports. Anything running is unaffected.
+            </p>
+          ) : !imports ? (
+            <div className={m.skel} style={{ height: 120 }} />
+          ) : running.length === 0 ? (
+            <p className={m.muted}>No imports yet. Your first one will show up here with its progress.</p>
+          ) : (
+            <ul className={m.importList}>
+              {running.map((imp) => {
+                const st = statusInfo(imp);
+                const pct = overallPercent(computeStages(imp));
+                return (
+                  <li key={imp.id}>
+                    <Link href={`/admin/courses/import/${imp.id}`} className={m.importCard}>
+                      <span className={m.importTop}>
+                        <strong>{imp.courseTitle || imp.sourceDriveFolderName}</strong>
+                        <span className={m.status} style={{ '--tone': st.tone } as CSSProperties}>
+                          {st.label}
+                        </span>
+                      </span>
+                      <span className={m.bar}>
+                        <span style={{ width: `${pct}%` }} />
+                      </span>
+                      <span className={m.importMeta}>
+                        <Clock size={13} aria-hidden="true" /> {new Date(imp.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        {' · '}
+                        {pct}%{imp.autopilot ? ' · autopilot' : ''}
+                        {imp.counts.failed > 0 ? ` · ${imp.counts.failed} failed` : ''}
+                        <ArrowRight size={14} className={m.chev} aria-hidden="true" />
+                      </span>
+                    </Link>
                   </li>
                 );
               })}
             </ul>
           )}
-
-          <div>
-            <Button
-              onClick={() => setAnalyzeFolderId(currentFolder.id)}
-              disabled={currentFolder.id === 'root' || previewLoading}
-            >
-              {previewLoading && analyzeFolderId === currentFolder.id
-                ? 'Analyzing…'
-                : `Use "${currentFolder.name}" as the course`}
-            </Button>
-            {currentFolder.id === 'root' && (
-              <p className={styles.selectFolderHint}>
-                Navigate into the course&apos;s own folder first — My Drive itself can&apos;t be imported.
-              </p>
-            )}
-          </div>
-        </Card>
-      )}
-
-      {previewError && <ErrorState error={previewError as Error} />}
-
-      {preview && (
-        <Card title="3. Course preview">
-          <h3 className={styles.previewTitle}>{preview.folderName}</h3>
-          <div className={styles.previewMetrics}>
-            <Metric label="Total files" value={preview.totalFiles} />
-            <Metric label="Videos" value={preview.videos} />
-            <Metric label="Documents" value={preview.documents} />
-            <Metric label="Presentations" value={preview.presentations} />
-            <Metric label="Images" value={preview.images} />
-            <Metric label="Est. video runtime" value={formatDuration(preview.estimatedVideoDurationSeconds)} />
-          </div>
-
-          {(preview.unsupported.length > 0 || preview.videosMissingDuration > 0) && (
-            <div className={styles.warnings}>
-              <h4>Warnings</h4>
-              <ul>
-                {preview.videosMissingDuration > 0 && (
-                  <li>
-                    {preview.videosMissingDuration} video{preview.videosMissingDuration === 1 ? '' : 's'} without a
-                    Drive-reported duration — runtime estimate is incomplete.
-                  </li>
-                )}
-                {preview.unsupported.length > 0 && (
-                  <li>
-                    {preview.unsupported.length} file{preview.unsupported.length === 1 ? '' : 's'} Teyro doesn&apos;t
-                    know how to use yet: {preview.unsupported.map((f) => f.name).join(', ')}
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
-
-          <div className={styles.continueRow}>
-            <Button onClick={() => void startImport()} disabled={startingImport}>
-              {startingImport ? 'Starting…' : `Import "${preview.folderName}"`}
-            </Button>
-            <p className={styles.selectFolderHint}>
-              This moves the videos and documents above into Teyro&apos;s storage, transcribes each video, and
-              generates Learn/Apply/Reflect/Deepen content for every lesson — then you review it and create the
-              course draft from the import&apos;s own page.
-            </p>
-            {startError && <Banner tone="warn">{startError}</Banner>}
-          </div>
-        </Card>
-      )}
-
-      {recentImports && recentImports.length > 0 && (
-        <Card title="Recent imports">
-          <ul className={styles.fileList}>
-            {recentImports.map((imp) => (
-              <li key={imp.id} className={styles.fileRow}>
-                <span className={styles.fileName}>{imp.sourceDriveFolderName}</span>
-                <Pill tone={IMPORT_STATUS_TONE[imp.status] ?? 'neutral'}>{imp.status}</Pill>
-                <span className={styles.fileSize}>
-                  {imp.counts.uploaded}/{imp.counts.total} uploaded
-                </span>
-                <Button variant="secondary" size="sm" onClick={() => router.push(`/admin/courses/import/${imp.id}`)}>
-                  View
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      )}
-    </>
+        </aside>
+      </div>
+    </div>
   );
 }

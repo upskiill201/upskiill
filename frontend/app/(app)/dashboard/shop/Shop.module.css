@@ -1,93 +1,119 @@
-/*
- * Shop page layout. Item cards bring their own styling
- * (components/shop/ShopItemCard.module.css) — this file is the page frame:
- * sections, the weekly hero, collections, and the loading/error states.
- */
+/* The Shop — Duolingo's list layout. Tokens only (docs/08-color-system.md).
+ * Desktop: a list column and a right rail ("Your stuff", goals, locker).
+ * Phone: one column; the rail's cards slot into the list via `order`. */
 
-.pageWrapper {
+.shop {
+  --sh-ink: var(--color-ink);
+  --sh-body: var(--text-primary);
+  --sh-soft: var(--text-secondary);
+  --sh-muted: var(--text-muted);
+  --sh-line: var(--border);
+  --sh-well: var(--bg-section);
+  --sh-card: var(--bg-card);
+  --sh-on: var(--bg-page);
+  --sh-blue: var(--color-brand);
+  --sh-blue-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --sh-green: var(--success-green);
+  --sh-green-deep: color-mix(in srgb, var(--success-green) 72%, black);
+  --sh-red: var(--error-red);
+  --sh-gold: var(--warning);
+  --sh-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+
   display: flex;
-  flex-direction: column;
-  gap: 32px;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: center;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--sh-body);
   padding-bottom: 48px;
 }
 
-/* ── Header ───────────────────────────────────────────────────────────────── */
-
-.shopHeader {
+.main {
+  width: 100%;
+  max-width: 640px;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 8px;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.shopTitle {
+.rail {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.title {
   margin: 0;
-  font-size: clamp(26px, 5vw, 34px);
+  font-size: 28px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--sh-ink);
 }
 
-.balancePill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #fffbeb;
-  border: 1px solid rgba(234, 179, 8, 0.35);
-  font-size: 16px;
-  font-weight: 800;
-  color: #b45309;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Sections ─────────────────────────────────────────────────────────────── */
-
+/* ─── Sections & rows ──────────────────────────────────────────────────── */
 .section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 8px;
 }
 
 .sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 8px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--sh-ink);
 }
 
-.sectionTitle svg {
-  color: var(--brand-blue);
+.sectionHead .sectionTitle {
+  margin: 0;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+.list {
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── Event banner ─────────────────────────────────────────────────────────── */
+.heartRow {
+  display: inline-flex;
+  gap: 4px;
+}
 
+.heartOn {
+  color: var(--sh-red);
+}
+
+.heartOff {
+  color: var(--sh-line);
+}
+
+.iceIcon {
+  color: var(--sh-blue);
+}
+
+.boxIcon {
+  color: var(--sh-gold-deep);
+}
+
+/* ─── Event banner ─────────────────────────────────────────────────────── */
 .eventBanner {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
+  gap: 16px;
+  padding: 16px 24px;
   border-radius: 16px;
-  background: color-mix(in srgb, var(--accent) 12%, var(--bg-card));
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--sh-card));
+  border: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
   color: var(--accent);
 }
 
@@ -95,213 +121,78 @@
   margin: 0;
   font-size: 16px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--sh-ink);
 }
 
 .eventTagline {
   margin: 2px 0 0;
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--sh-soft);
 }
 
 .eventDiscount {
   margin-left: auto;
-  padding: 6px 14px;
+  padding: 4px 16px;
   border-radius: 999px;
   background: var(--accent);
-  color: #ffffff;
+  color: var(--sh-on);
   font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
 }
 
-/* ── Goals ────────────────────────────────────────────────────────────────── */
-
-.goalList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* ─── Chests ───────────────────────────────────────────────────────────── */
+.chestRow {
+  border-bottom: 2px solid var(--sh-well);
+  padding-bottom: 16px;
 }
 
-.goal {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.chestRow:last-child {
+  border-bottom: none;
 }
 
-.goalTop {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+.chestRow > article {
+  border-bottom: none;
+  padding-bottom: 8px;
 }
 
-.goalLabel {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.goalCount {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.goalTrack {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--bg-section);
-  overflow: hidden;
-}
-
-.goalFill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--gradient-brand);
-  transition: width 500ms ease;
-}
-
-/* ── Weekly special hero ──────────────────────────────────────────────────── */
-
-.weeklyHero {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 22px;
-  border-radius: 16px;
-  background: var(--wash);
-  border: 2px solid var(--rarity);
-  box-shadow: 0 6px 24px rgba(31, 42, 68, 0.08);
-}
-
-.weeklyArt {
-  flex-shrink: 0;
-}
-
-.weeklyBody {
-  flex: 1;
-  min-width: 0;
-}
-
-.weeklyTag {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--success-green);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.weeklyName {
-  margin: 10px 0 4px;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.weeklyDesc {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-secondary);
-}
-
-.weeklyLocked {
-  margin: 8px 0 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--warning);
-}
-
-.weeklyAction {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.weeklyStrike {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-decoration: line-through;
-}
-
-.weeklyBuy {
+.oddsToggle {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 13px 26px;
-  border-radius: 10px;
+  gap: 4px;
+  margin-left: 88px;
   border: none;
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
-  font-size: 16px;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
   font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sh-blue);
   cursor: pointer;
-  box-shadow: 0 3px 0 0 var(--brand-blue-hover);
-  transition:
-    transform 100ms ease,
-    filter 150ms ease;
 }
 
-.weeklyBuy:hover:not(:disabled) {
-  filter: brightness(1.06);
+.oddsToggle svg {
+  transition: transform 0.18s ease;
 }
 
-.weeklyBuy:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 0 var(--brand-blue-hover);
-}
-
-.weeklyBuy:disabled {
-  background: var(--bg-section);
-  color: var(--text-muted);
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-.weeklyBlocked {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  max-width: 18ch;
-  text-align: center;
-  line-height: 1.35;
-}
-
-/* ── Chest odds ───────────────────────────────────────────────────────────── */
-
-.chestWrap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.chevOpen {
+  transform: rotate(180deg);
 }
 
 .odds {
-  margin: 0;
-  padding: 12px 14px;
+  margin: 8px 0 0 88px;
+  padding: 12px 16px;
   list-style: none;
   border-radius: 12px;
-  background: var(--bg-section);
-  border: 1px solid var(--border);
+  background: var(--sh-well);
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--text-secondary);
+  gap: 4px;
+  font-size: 13px;
+  color: var(--sh-soft);
+  overflow: hidden;
 }
 
 .odds li {
@@ -314,19 +205,63 @@
 
 .odds strong {
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--sh-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .oddsFloor {
   font-weight: 700;
-  color: var(--success-green);
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--border);
+  color: var(--sh-green-deep);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--sh-line);
 }
 
-/* ── Collections ──────────────────────────────────────────────────────────── */
+/* ─── Style tabs & grid ────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scrollbar-width: none;
+}
 
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab,
+.tabOn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--sh-line);
+  background: var(--sh-card);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--sh-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tab:hover {
+  background: var(--sh-well);
+}
+
+.tabOn {
+  background: var(--sh-blue-tint);
+  border-color: color-mix(in srgb, var(--sh-blue) 42%, var(--bg-page));
+  color: var(--sh-blue);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: 16px;
+}
+
+/* ─── Collections ──────────────────────────────────────────────────────── */
 .collectionList {
   display: flex;
   flex-direction: column;
@@ -334,14 +269,14 @@
 }
 
 .collection {
-  padding: 20px;
+  padding: 16px;
   border-radius: 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--accent);
+  background: var(--sh-card);
+  border: 2px solid var(--sh-line);
+  border-left: 6px solid var(--accent);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .collectionHead {
@@ -353,20 +288,20 @@
 
 .collectionName {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--sh-ink);
 }
 
 .collectionDesc {
   margin: 4px 0 0;
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--sh-soft);
   line-height: 1.45;
 }
 
 .collectionCount {
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   color: var(--accent);
@@ -377,9 +312,9 @@
 }
 
 .collectionTrack {
-  height: 8px;
+  height: 12px;
   border-radius: 999px;
-  background: var(--bg-section);
+  background: var(--sh-well);
   overflow: hidden;
 }
 
@@ -401,252 +336,304 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 76px;
+  gap: 4px;
+  width: 80px;
 }
 
 .collectionItemName {
   font-size: 11px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--sh-soft);
   text-align: center;
   line-height: 1.3;
 }
 
 .claimBtn {
-  padding: 13px 20px;
-  border-radius: 10px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 14px;
   border: none;
-  background: var(--success-green);
-  color: #ffffff;
+  background: var(--sh-green);
+  color: var(--sh-on);
+  font: inherit;
   font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  box-shadow: 0 3px 0 0 #15803d;
-  transition: transform 100ms ease;
+  box-shadow: 0 4px 0 var(--sh-green-deep);
+  transition: transform 80ms ease, box-shadow 80ms ease;
 }
 
 .claimBtn:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 0 #15803d;
+  transform: translateY(4px);
+  box-shadow: none;
 }
 
 .claimBtn:disabled {
   opacity: 0.7;
-  cursor: not-allowed;
+  cursor: wait;
 }
 
 .collectionClaimed,
 .collectionHint {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
 }
 
 .collectionClaimed {
-  color: var(--success-green);
+  color: var(--sh-green-deep);
 }
 
 .collectionHint {
-  color: var(--text-muted);
+  color: var(--sh-muted);
 }
 
-/* ── Category pills ───────────────────────────────────────────────────────── */
+/* ─── Rail: shop stats, goals, locker ──────────────────────────────────── */
+.statsCard,
+.railCard {
+  padding: 16px;
+  border: 2px solid var(--sh-line);
+  border-radius: 16px;
+  background: var(--sh-card);
+}
 
-.categoryPills {
-  display: flex;
+.railTitle {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sh-ink);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
 }
 
-.categoryPills::-webkit-scrollbar {
-  display: none;
+.stat {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 2px solid var(--sh-well);
 }
 
-.pill,
-.pillActive {
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  font-size: 13px;
+.stat > :first-child {
+  grid-row: span 2;
+  justify-self: center;
+}
+
+.statNum {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sh-ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-size: 12px;
   font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
+  color: var(--sh-soft);
 }
 
-.pill:hover {
-  border-color: var(--border-strong);
+.boostRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sh-gold) 12%, var(--bg-page));
+  color: var(--sh-gold-deep);
+  font-size: 14px;
+  font-weight: 800;
 }
 
-.pillActive {
-  background: var(--brand-blue);
-  border-color: var(--brand-blue);
-  color: var(--text-on-blue);
+.boostRow span {
+  flex: 1;
 }
 
-/* ── Loading & error ──────────────────────────────────────────────────────── */
-
-.skeletonHeader,
-.skeletonBar,
-.skeletonCard {
-  border-radius: 14px;
-  background: linear-gradient(
-    90deg,
-    var(--bg-section) 25%,
-    #eef2f7 37%,
-    var(--bg-section) 63%
-  );
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
-}
-
-.skeletonHeader {
-  height: 44px;
-  width: 60%;
+.goal + .goal {
   margin-top: 16px;
 }
 
-.skeletonBar {
-  height: 74px;
-}
-
-.skeletonRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.skeletonCard {
-  height: 210px;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0 50%;
-  }
-}
-
-.errorState {
-  margin: 48px auto;
-  max-width: 380px;
-  text-align: center;
+.goalTop {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-secondary);
-}
-
-.errorState svg {
-  color: var(--error-red);
-}
-
-.errorState h2 {
-  margin: 4px 0 0;
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.errorState p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.retryBtn {
-  margin-top: 8px;
-  display: inline-flex;
-  align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 11px 22px;
-  border-radius: 10px;
-  border: none;
-  background: var(--brand-blue);
-  color: var(--text-on-blue);
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
+  margin-bottom: 8px;
 }
 
-/* ── Toast ────────────────────────────────────────────────────────────────── */
+.goalLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sh-ink);
+}
 
+.goalCount {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sh-soft);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalTrack {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--sh-well);
+  overflow: hidden;
+}
+
+.goalFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--sh-gold);
+  box-shadow: inset 0 -3px 0 var(--sh-gold-deep);
+  transition: width 500ms ease;
+}
+
+/* ─── Toast ────────────────────────────────────────────────────────────── */
 .toast,
 .toastBad {
   position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(90vw, 440px);
   z-index: 9000;
-  padding: 13px 24px;
-  border-radius: 999px;
-  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #ffffff;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.28);
-  max-width: min(90vw, 420px);
   text-align: center;
+  color: var(--sh-on);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--sh-ink) 28%, transparent);
 }
 
 .toast {
-  background: var(--text-primary);
+  background: var(--sh-green-deep);
 }
 
 .toastBad {
-  background: var(--error-red);
+  background: var(--sh-ink);
 }
 
-/* ── Responsive ───────────────────────────────────────────────────────────── */
+/* ─── Loading / error ──────────────────────────────────────────────────── */
+.skeletonTitle,
+.skeletonStats,
+.skeletonRow {
+  border-radius: 16px;
+  background: var(--sh-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
 
-@media (max-width: 640px) {
-  .weeklyHero {
+.skeletonTitle { height: 36px; width: 120px; }
+.skeletonStats { height: 136px; }
+.skeletonRow { height: 88px; }
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--sh-soft);
+}
+
+.errorState svg:first-child {
+  color: var(--sh-red);
+}
+
+.errorState h2 {
+  margin: 8px 0 0;
+  font-size: 20px;
+  color: var(--sh-ink);
+}
+
+.errorState p {
+  margin: 0 0 16px;
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 14px;
+  border: 2px solid var(--sh-line);
+  border-bottom-width: 4px;
+  background: var(--sh-card);
+  color: var(--sh-blue);
+  font: inherit;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+/* ─── Narrower screens: one column, rail cards slot into the list ───────── */
+@media (max-width: 1100px) {
+  .shop {
+    display: flex;
     flex-direction: column;
-    text-align: center;
+    align-items: stretch;
+    gap: 32px;
+    max-width: 640px;
+    margin: 0 auto;
   }
+  .main,
+  .rail {
+    display: contents;
+  }
+  .oTitle { order: 1; }
+  .oEvent { order: 2; }
+  .oStats { order: 3; }
+  .oRecs { order: 4; }
+  .oHearts { order: 5; }
+  .oPower { order: 6; }
+  .oLimited { order: 7; }
+  .oGoals { order: 8; }
+  .oChests { order: 9; }
+  .oStyle { order: 10; }
+  .oCollections { order: 11; }
+  .oLocker { order: 12; }
+  .statsCard,
+  .railCard {
+    position: static;
+  }
+}
 
-  .weeklyAction {
-    width: 100%;
-  }
-
-  .weeklyBuy {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .grid,
-  .skeletonRow {
-    grid-template-columns: 1fr;
-  }
-
-  .collectionHead {
-    flex-direction: column;
-    gap: 8px;
-  }
+@media (max-width: 560px) {
+  .title { font-size: 24px; }
+  .sectionTitle { font-size: 20px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .oddsToggle,
+  .odds { margin-left: 84px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeletonHeader,
-  .skeletonBar,
-  .skeletonCard {
-    animation: none;
-  }
+  .skeletonTitle,
+  .skeletonStats,
+  .skeletonRow { animation: none; }
+  .oddsToggle svg { transition: none; }
+}
 
-  .goalFill,
-  .collectionFill,
-  .weeklyBuy,
-  .pill,
-  .pillActive {
-    transition: none;
-  }
+.heartEmpty {
+  filter: grayscale(1);
+  opacity: 0.35;
 }

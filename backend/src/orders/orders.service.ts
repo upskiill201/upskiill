@@ -18,8 +18,9 @@ export class OrdersService {
    * used to accept paid courses too (and create accounts for any email as a
    * "guest"), which let anyone mint fake orders, enrollments and inflated
    * student counts for paid courses without paying. Paid courses are only
-   * sold through PaymentService (server-priced subscription + entitlement),
-   * so this method now refuses them and requires a signed-in learner.
+   * sold through PaymentService.subscribeCourse (server-priced subscription
+   * + entitlement), so this method now refuses them and requires a signed-in
+   * learner.
    */
   async checkout(userId: string | null, checkoutDto: CheckoutDto) {
     const { courseIds } = checkoutDto;

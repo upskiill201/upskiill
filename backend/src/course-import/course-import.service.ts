@@ -50,6 +50,12 @@ export class CourseImportService {
   async createImport(
     userId: string,
     driveFolderId: string,
+    options: {
+      autopilot: boolean;
+      courseTitle: string | null;
+      courseCategory: string | null;
+      courseLevel: string | null;
+    } = { autopilot: false, courseTitle: null, courseCategory: null, courseLevel: null },
   ): Promise<CourseImportSummary> {
     const existing = await this.prisma.courseImport.findFirst({
       where: {
@@ -81,6 +87,12 @@ export class CourseImportService {
         sourceDriveFolderName: folderMeta.name,
         status: 'CREATED',
         startedAt: new Date(),
+        // Autopilot needs the settings it will build the course with; without
+        // a title and track it would stall at the last step, so it's off.
+        autopilot: options.autopilot && !!options.courseTitle && !!options.courseCategory,
+        courseTitle: options.courseTitle,
+        courseCategory: options.courseCategory,
+        courseLevel: options.courseLevel,
         files: {
           create: files.map((file, index) => buildFileRow(file, index)),
         },
@@ -105,7 +117,18 @@ export class CourseImportService {
     userId: string,
     importId: string,
   ): Promise<CourseImportSummary> {
-    return toCourseImportSummary(await this.findOwned(userId, importId));
+    const found = await this.findOwned(userId, importId);
+
+    // Settle a pending pause on read as well as from the processors. The
+    // processors are the authoritative path, but if none happens to tick
+    // (nothing left to claim), this is what stops the UI showing
+    // "stopping..." forever. Guarded so a normal read costs nothing extra.
+    if (found.status === 'PAUSED' && found.pauseRequestedAt && !found.pausedAt) {
+      await this.reconcilePauseState(importId);
+      return toCourseImportSummary(await this.findOwned(userId, importId));
+    }
+
+    return toCourseImportSummary(found);
   }
 
   async retryFile(
@@ -258,6 +281,141 @@ export class CourseImportService {
     return this.getImport(userId, importId);
   }
 
+  /** Statuses where there is still work left for the processors to do, so
+   *  pausing is meaningful. Deliberately includes COURSE_CREATED: a large
+   *  course is imported in batches, and the run that fills in the remaining
+   *  lessons is just as pausable as the first one. */
+  private static readonly PAUSABLE_STATUSES = [
+    'CREATED',
+    'PROCESSING_FILES',
+    'READY_FOR_GENERATION',
+    'TRANSCRIBING',
+    'GENERATING_CONTENT',
+    'COURSE_CREATED',
+  ] as const;
+
+  /**
+   * Stops the processors claiming any new work for this import, without
+   * destroying anything. The opposite of cancelImport, which deletes the
+   * uploaded R2 objects — pausing keeps every completed upload, transcript
+   * and lesson so resuming continues from the last checkpoint.
+   *
+   * Two-step by design: the status flips immediately (so nothing new is
+   * claimed), but `pausedAt` is only set once nothing is still in flight.
+   * A 200MB download already running is allowed to finish and persist its
+   * result rather than being killed halfway, which would waste the transfer
+   * and leave a half-written object behind.
+   */
+  async pauseImport(
+    userId: string,
+    importId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+
+    if (found.status === 'PAUSED') return this.getImport(userId, importId);
+
+    if (
+      !(
+        CourseImportService.PAUSABLE_STATUSES as readonly string[]
+      ).includes(found.status)
+    ) {
+      throw new BadRequestException(
+        `An import that is ${found.status} has no remaining work to pause.`,
+      );
+    }
+
+    await this.prisma.courseImport.update({
+      where: { id: importId },
+      data: {
+        status: 'PAUSED',
+        // Remembered so resume returns to the stage that was actually
+        // running rather than re-deriving it from row counts.
+        statusBeforePause: found.status,
+        pauseRequestedAt: new Date(),
+        // Left null on purpose — reconcilePauseState() sets it once the
+        // in-flight operation (if any) has finished.
+        pausedAt: null,
+      },
+    });
+
+    return this.getImport(userId, importId);
+  }
+
+  /**
+   * Puts the import back to whatever stage it was in and lets the
+   * processors claim work again. Completed work is untouched, so this
+   * continues from the last checkpoint rather than restarting.
+   */
+  async resumeImport(
+    userId: string,
+    importId: string,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+
+    if (found.status !== 'PAUSED') {
+      // Idempotent: a double-click on Resume must not error or double-queue.
+      return this.getImport(userId, importId);
+    }
+
+    await this.prisma.courseImport.update({
+      where: { id: importId },
+      data: {
+        status: found.statusBeforePause ?? 'PROCESSING_FILES',
+        statusBeforePause: null,
+        pauseRequestedAt: null,
+        pausedAt: null,
+      },
+    });
+
+    return this.getImport(userId, importId);
+  }
+
+  /**
+   * Marks a pause as fully settled once nothing is still claimed for it.
+   *
+   * Driven from reads (getImport) rather than from the processors. That is
+   * deliberate: `pausedAt` only exists so the UI can say "stopping..."
+   * instead of "paused" while a big download finishes, and the page polls
+   * while an import is active, so it settles within one poll of anyone
+   * actually looking. Resume does not depend on it, so there is no
+   * correctness reason to inject this service into all three processors
+   * (which would also risk a circular module dependency).
+   */
+  async reconcilePauseState(importId: string): Promise<void> {
+    const found = await this.prisma.courseImport.findUnique({
+      where: { id: importId },
+      select: { status: true, pauseRequestedAt: true, pausedAt: true },
+    });
+    if (
+      !found ||
+      found.status !== 'PAUSED' ||
+      !found.pauseRequestedAt ||
+      found.pausedAt
+    ) {
+      return;
+    }
+
+    const stillRunning = await this.prisma.courseImportFile.count({
+      where: {
+        importId,
+        OR: [{ status: 'CLAIMED' }, { transcriptStatus: 'CLAIMED' }],
+      },
+    });
+    const lessonsRunning =
+      stillRunning > 0
+        ? 0
+        : await this.prisma.courseImportLesson.count({
+            where: { module: { importId }, status: 'CLAIMED' },
+          });
+
+    if (stillRunning === 0 && lessonsRunning === 0) {
+      await this.prisma.courseImport.update({
+        where: { id: importId },
+        data: { pausedAt: new Date() },
+      });
+    }
+  }
+
   private async cleanUpUploadedFiles(
     found: CourseImportWithFilesAndModules,
   ): Promise<void> {
@@ -314,6 +472,8 @@ function buildFileRow(file: DriveFile, orderIndex: number) {
     mimeType: file.mimeType,
     category: file.category,
     orderIndex,
+    sectionFolderId: file.sectionFolderId ?? null,
+    sectionFolderName: file.sectionFolderName ?? null,
     sizeBytes:
       file.sizeBytes !== undefined ? BigInt(Math.round(file.sizeBytes)) : null,
     durationMs:

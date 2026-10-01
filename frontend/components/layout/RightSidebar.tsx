@@ -4,15 +4,15 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Lock, BookOpen, Target, Check, Trophy, ChevronRight } from 'lucide-react';
-import { getLeagueMeta } from '@/lib/leagues';
+import { Bot, Lock, BookOpen, Target, Check, ChevronRight } from 'lucide-react';
+import LeagueBadge from '@/components/leaderboard/LeagueBadge';
+import { getLeagueMeta, LeagueTier } from '@/lib/leagues';
 import { playHaptic } from '@/lib/haptics';
 import { fetcher } from '@/lib/swr';
 import { useComingSoon } from '@/components/layout/StudentShell';
 import { useGamification } from '@/context/GamificationContext';
-import { useRewardAnimation } from '@/context/RewardAnimationContext';
+import { useCelebration } from '@/context/CelebrationContext';
 import LearningStatsCard from '@/components/dashboard/v2/LearningStatsCard';
-import WeeklyLuckySpinCard from '@/components/dashboard/v2/WeeklyLuckySpinCard';
 import MonthlyQuestWidget from '@/components/quests/MonthlyQuestWidget';
 import styles from './RightSidebar.module.css';
 
@@ -32,12 +32,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
     claimQuest,
     lastRewardClaimedAt,
     dailyRewardCyclePosition,
+    dailyRewardSchedule,
     isEligibleForReward,
     nextRewardClaimInMs,
     claimDailyReward,
     refresh,
   } = useGamification();
-  const { openClaimModal } = useRewardAnimation();
+  const { celebrate } = useCelebration();
 
   const [countdownStr, setCountdownStr] = useState('');
 
@@ -99,31 +100,17 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
       e.stopPropagation();
     }
     if (!isEligibleForReward) return;
-    playHaptic('success');
-    const isDay7 = dailyRewardCyclePosition === 7;
-
-    // Full-page Celebration scene — onClaim (the real daily-reward API, which
-    // throws on failure) runs server-first inside the scene.
-    openClaimModal({
-      title: isDay7 ? '+30 COINS  +50 XP' : '+20 COINS  +10 XP',
-      subtitle: isDay7 ? 'Day 7 Mystery Chest Unlocked!' : `Day ${dailyRewardCyclePosition} Daily Reward Claimed!`,
-      // Mirrors the backend grant: 20 coins + 10 XP (30 + 50 on day 7)
-      rewards: isDay7
-        ? [
-            { currency: 'COINS', amount: 30 },
-            { currency: 'XP', amount: 50 },
-          ]
-        : [
-            { currency: 'COINS', amount: 20 },
-            { currency: 'XP', amount: 10 },
-          ],
-      skipBackendPersist: true,
-      onClaim: async () => {
-        await claimDailyReward();
-      },
+    playHaptic('light', false);
+    // Same Duolingo week-ladder scene as the automatic one, paid server-first.
+    celebrate({
+      kind: 'DAILY_REWARD',
+      day: dailyRewardCyclePosition,
+      schedule: dailyRewardSchedule,
+      claim: () => claimDailyReward(),
       onComplete: () => {
         void refresh();
       },
+      dedupeKey: `daily-reward-manual-${dailyRewardCyclePosition}`,
     });
   };
 
@@ -567,11 +554,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         <Link href="/dashboard/leaderboards" className={styles.leaderboardsCard} style={{ textDecoration: 'none' }}>
           {leagueStanding?.joined ? (
             <>
-              <div className={styles.lockIconOuter} style={{ backgroundColor: '#FFF7E0' }}>
-                <div className={styles.lockIconInner} style={{ backgroundColor: '#FFEDB8' }}>
-                  <Trophy size={18} color="#B98A00" />
-                </div>
-              </div>
+              <LeagueBadge tier={leagueStanding.league as LeagueTier} size="sm" className={styles.leagueCardBadge} />
               <h4 className={styles.leaderboardCardTitle}>{getLeagueMeta(leagueStanding.league).name.toUpperCase()}</h4>
               <p className={styles.leaderboardCardDesc}>
                 {leagueStanding.myRank
@@ -596,8 +579,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ course, completedLes
         </Link>
       )}
 
-      {/* LUCKY SPIN CARD */}
-      <WeeklyLuckySpinCard />
     </div>
   );
 };

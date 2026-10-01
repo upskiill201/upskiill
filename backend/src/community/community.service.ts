@@ -27,6 +27,10 @@ export type MemberRow = {
   isCreator: boolean;
   streakDays: number;
   xp: number;
+  /** Community level (Skool's number on the avatar). */
+  level?: number;
+  /** Whether the viewer follows them (Members tab follow button). */
+  isFollowing?: boolean;
 };
 
 /**
@@ -54,6 +58,22 @@ export interface CommunityUnlockPayload {
     authorAvatarUrl: string | null;
   } | null;
 }
+
+/** All-time community points per member, per community (see levelsFor). */
+const levelPointsCache = new Map<string, { points: Map<string, number>; expiresAt: number }>();
+
+/** Granted community access, reused for this long (see assertMember). */
+const ACCESS_CACHE_TTL_MS = 30_000;
+
+/**
+ * A learner earns their seat in a course's community by finishing this many
+ * of its lessons — they arrive with something to say, and the welcome scene
+ * (seatAfterSecondLesson) plays the moment it happens.
+ */
+export const COMMUNITY_UNLOCK_LESSONS = 2;
+type AccessResult = Awaited<ReturnType<CommunityService['resolveAccess']>>;
+const accessCache = new Map<string, { value: AccessResult; expiresAt: number }>();
+const creatorCache = new Map<string, { id: string | null; expiresAt: number }>();
 
 @Injectable()
 export class CommunityService {
@@ -115,24 +135,96 @@ export class CommunityService {
    * Returns the caller's effective membership row (null for platform admin).
    */
   async assertMember(communityId: string, userId: string, userRole?: string) {
-    const community = await this.getCommunityById(communityId);
+    // Every like, comment, vote and page runs this first; on a distant DB its
+    // 2–4 sequential lookups were most of an action's latency. A granted
+    // answer is reused briefly — the same trade the JWT user cache makes. A
+    // refusal is never cached, so a learner who just enrolled gets in at once.
+    const key = `${communityId}:${userId}:${userRole ?? ''}`;
+    const hit = accessCache.get(key);
+    if (hit && hit.expiresAt > Date.now()) return hit.value;
+
+    const value = await this.resolveAccess(communityId, userId, userRole);
+    accessCache.set(key, { value, expiresAt: Date.now() + ACCESS_CACHE_TTL_MS });
+    if (accessCache.size > 5000) {
+      const now = Date.now();
+      for (const [k, v] of accessCache) if (v.expiresAt <= now) accessCache.delete(k);
+    }
+    return value;
+  }
+
+  /** The course creator of a community (for the CREATOR badge). Rarely changes, so cached. */
+  async creatorIdOf(communityId: string): Promise<string | null> {
+    const hit = creatorCache.get(communityId);
+    if (hit && hit.expiresAt > Date.now()) return hit.id;
+    const row = await this.prisma.community.findUnique({
+      where: { id: communityId },
+      select: { course: { select: { instructorId: true } } },
+    });
+    const id = row?.course?.instructorId ?? null;
+    creatorCache.set(communityId, { id, expiresAt: Date.now() + 10 * 60_000 });
+    return id;
+  }
+
+  /**
+   * A muted member can read, like and vote, but not post or comment until
+   * the creator's mute runs out. Moderators are never muted.
+   */
+  assertCanWrite(membership: { mutedUntil?: Date | null } | null, isModerator: boolean) {
+    if (isModerator || !membership?.mutedUntil) return;
+    if (membership.mutedUntil.getTime() > Date.now()) {
+      throw new ForbiddenException({
+        message: `The creator has paused your posting here until ${membership.mutedUntil.toDateString()}.`,
+        code: 'COMMUNITY_MUTED',
+        mutedUntil: membership.mutedUntil,
+      });
+    }
+  }
+
+  /** Forget cached access for a learner (after they're removed or banned). */
+  forgetAccess(communityId: string, userId: string) {
+    for (const k of accessCache.keys()) if (k.startsWith(`${communityId}:${userId}:`)) accessCache.delete(k);
+  }
+
+  // Public only so the module-level cache can name its type.
+  async resolveAccess(communityId: string, userId: string, userRole?: string) {
+    const [community, existing] = await Promise.all([
+      this.getCommunityById(communityId),
+      this.prisma.communityMembership.findUnique({
+        where: { userId_communityId: { userId, communityId } },
+      }),
+    ]);
 
     if (userRole === 'ADMIN') return { community, membership: null, isModerator: true };
     if (community.course && community.course.instructorId === userId) {
-      // Creator without a membership row yet (edge case) — seat them as ADMIN.
-      const membership = await this.ensureMembership(communityId, userId, 'ADMIN');
+      // The creator is always a moderator. Seat them only if they aren't
+      // already an ADMIN member — this used to run an upsert, a count and an
+      // update on every single request a creator made.
+      const membership =
+        existing?.role === 'ADMIN' ? existing : await this.ensureMembership(communityId, userId, 'ADMIN');
       return { community, membership, isModerator: true };
     }
 
-    const membership = await this.prisma.communityMembership.findUnique({
-      where: { userId_communityId: { userId, communityId } },
-    });
-    if (membership) return { community, membership, isModerator: membership.role === 'ADMIN' };
+    if (existing) return { community, membership: existing, isModerator: existing.role === 'ADMIN' };
 
-    // Not seated yet but holds valid access? Join them up automatically.
-    if (await this.hasCourseAccess(userId, community.courseId)) {
+    // Not seated yet: learners with access get in once they've finished
+    // enough lessons (normally seatAfterSecondLesson already seated them —
+    // this catches anyone who crossed the line before that existed).
+    // Before that, the page shows how close they are instead of a wall.
+    const access = await this.courseAccessProgress(userId, community.courseId);
+    if (access.hasAccess && access.lessonsDone >= COMMUNITY_UNLOCK_LESSONS) {
       const created = await this.ensureMembership(communityId, userId, 'MEMBER');
       return { community, membership: created, isModerator: false };
+    }
+    if (access.hasAccess) {
+      throw new ForbiddenException({
+        message: `Finish ${COMMUNITY_UNLOCK_LESSONS} lessons to join this community.`,
+        code: 'COMMUNITY_LOCKED',
+        lessonsDone: access.lessonsDone,
+        lessonsNeeded: COMMUNITY_UNLOCK_LESSONS,
+        courseId: community.courseId,
+        communityName: community.name,
+        memberCount: community.memberCount,
+      });
     }
 
     throw new ForbiddenException('You are not a member of this community.');
@@ -147,17 +239,20 @@ export class CommunityService {
     return ctx;
   }
 
-  /** True when the user holds an enrollment or an unexpired access entitlement. */
-  private async hasCourseAccess(
+  /**
+   * Whether the user can take the course (an enrollment or an unexpired
+   * access entitlement), and how many of its lessons they've finished.
+   */
+  private async courseAccessProgress(
     userId: string,
     courseId: string | null,
-  ): Promise<boolean> {
-    if (!courseId) return false;
+  ): Promise<{ hasAccess: boolean; lessonsDone: number }> {
+    if (!courseId) return { hasAccess: false, lessonsDone: 0 };
 
     const [enrollment, entitlement] = await Promise.all([
       this.prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId } },
-        select: { id: true },
+        select: { id: true, completedLessons: true },
       }),
       this.prisma.courseAccessEntitlement.findFirst({
         where: {
@@ -169,7 +264,10 @@ export class CommunityService {
         select: { id: true },
       }),
     ]);
-    return Boolean(enrollment || entitlement);
+    const done = Array.isArray(enrollment?.completedLessons)
+      ? (enrollment!.completedLessons as unknown[]).filter((id) => typeof id === 'string').length
+      : 0;
+    return { hasAccess: Boolean(enrollment || entitlement), lessonsDone: done };
   }
 
   /** Idempotent membership creation; keeps the denormalized memberCount honest. */
@@ -245,10 +343,10 @@ export class CommunityService {
       if (!membership) effective = await this.ensureMembership(communityId, userId, 'ADMIN');
     } else if (membership) {
       isModerator = membership.role === 'ADMIN';
-    } else if (await this.hasCourseAccess(userId, community.courseId)) {
-      effective = await this.ensureMembership(communityId, userId, 'MEMBER');
     } else {
-      throw new ForbiddenException('You are not a member of this community.');
+      // Not seated: the one access rule (lessons gate, COMMUNITY_LOCKED)
+      // lives in resolveAccess. Only non-members pay for the extra lookup.
+      effective = (await this.resolveAccess(communityId, userId, userRole)).membership;
     }
 
     return {
@@ -332,8 +430,12 @@ export class CommunityService {
   async getMembers(
     communityId: string,
     opts: { page?: number; pageSize?: number; q?: string } = {},
+    viewer?: { id: string; role?: string },
   ) {
-    await this.getCommunityById(communityId); // must exist
+    // Only members see who else is in a private community. (This used to
+    // check only that the community existed.)
+    if (viewer) await this.assertMember(communityId, viewer.id, viewer.role);
+    else await this.getCommunityById(communityId);
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(50, Math.max(1, opts.pageSize ?? 20));
     const where = {
@@ -354,6 +456,18 @@ export class CommunityService {
       }),
     ]);
 
+    const ids = rows.map((m) => m.user.id);
+    const [levels, follows] = await Promise.all([
+      this.levelsFor(communityId, ids),
+      viewer && ids.length > 0
+        ? this.prisma.userFollow.findMany({
+            where: { followerId: viewer.id, followingId: { in: ids } },
+            select: { followingId: true },
+          })
+        : Promise.resolve([] as { followingId: string }[]),
+    ]);
+    const followed = new Set(follows.map((f) => f.followingId));
+
     const members: MemberRow[] = rows.map((m) => ({
       id: m.user.id,
       fullName: m.user.fullName,
@@ -361,6 +475,8 @@ export class CommunityService {
       isCreator: m.role === 'ADMIN',
       streakDays: m.user.studentProfile?.streakDays ?? 0,
       xp: m.user.studentProfile?.xp ?? 0,
+      level: levels.get(m.user.id) ?? 1,
+      isFollowing: followed.has(m.user.id),
     }));
 
     return { total, page, pageSize, members };
@@ -373,6 +489,47 @@ export class CommunityService {
    * is *who* is in it and *how recently*, not the raw comment count. One
    * windowed query covers the whole page — a per-post query would be N+1.
    */
+  /**
+   * Each member's Skool-style level (from all-time community points), for the
+   * number on their avatar. The whole community's points come from one query,
+   * reused for a minute: levels move slowly, and a post list asks for many
+   * authors at once.
+   */
+  async levelsFor(communityId: string, userIds: string[]): Promise<Map<string, number>> {
+    const out = new Map<string, number>();
+    if (userIds.length === 0) return out;
+    let cached = levelPointsCache.get(communityId);
+    if (!cached || cached.expiresAt <= Date.now()) {
+      const rows = await this.prisma.$queryRaw<{ userId: string; points: number }[]>(Prisma.sql`
+        WITH scoped_posts AS (
+          SELECT p."id", p."userId" FROM "posts" p
+          WHERE p."communityId" = ${communityId} AND p."status" = 'ACTIVE'
+        ),
+        scoped_comments AS (
+          SELECT c."id", c."userId" FROM "comments" c
+          JOIN scoped_posts sp ON sp."id" = c."postId"
+          WHERE c."status" = 'ACTIVE'
+        ),
+        contributions AS (
+          SELECT sp."userId" AS "userId", 3 AS pts FROM scoped_posts sp
+          UNION ALL
+          SELECT sc."userId", 1 FROM scoped_comments sc
+          UNION ALL
+          SELECT sp."userId", 2 FROM "likes" l JOIN scoped_posts sp ON sp."id" = l."entityId"
+          WHERE l."entityType" = 'POST' AND l."userId" <> sp."userId"
+          UNION ALL
+          SELECT sc."userId", 1 FROM "likes" l JOIN scoped_comments sc ON sc."id" = l."entityId"
+          WHERE l."entityType" = 'COMMENT' AND l."userId" <> sc."userId"
+        )
+        SELECT "userId", SUM(pts)::int AS "points" FROM contributions GROUP BY "userId"
+      `);
+      cached = { points: new Map(rows.map((r) => [r.userId, r.points])), expiresAt: Date.now() + 60_000 };
+      levelPointsCache.set(communityId, cached);
+    }
+    for (const id of userIds) out.set(id, levelForPoints(cached.points.get(id) ?? 0).level);
+    return out;
+  }
+
   async getPostDiscussion(postIds: string[]) {
     const empty = new Map<
       string,
@@ -443,7 +600,7 @@ export class CommunityService {
     userId: string,
     completedLessonCount: number,
   ): Promise<CommunityUnlockPayload | null> {
-    if (completedLessonCount < 2) return null;
+    if (completedLessonCount < COMMUNITY_UNLOCK_LESSONS) return null;
     try {
       const community = await this.prisma.community.findUnique({
         where: { courseId },

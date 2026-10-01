@@ -14,8 +14,8 @@ import { BookOpen, Clock, Lock, LockOpen } from 'lucide-react';
 import SceneShell from '../SceneShell';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { playChestBurst, playWhoosh } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { pickSectionUnlockedHeadline } from '@/lib/tey/milestoneVoice';
 
 type SectionUnlockedInput = Extract<CelebrationScene, { kind: 'SECTION_UNLOCKED' }>;
@@ -42,21 +42,27 @@ export default function SectionUnlockedScene({ scene, onAdvance }: SectionUnlock
   const [headline] = useState(() => pickSectionUnlockedHeadline());
 
   useEffect(() => {
-    playHaptic('teyroCelebration');
-    if (reducedMotion) return;
-
-    playWhoosh('down');
+    if (reducedMotion) {
+      playSound('pathUnlock');
+      celebrationHaptic('win');
+      return;
+    }
+    // The "unlock" cue rattles for ~0.5s and then gives — start it so the
+    // give lands exactly on the reveal.
+    const soundTimer = setTimeout(() => playSound('unlock'), REVEAL_AT_MS - 500);
     const shakeTimer = setTimeout(() => {
       setShakeBeat(true);
-      playHaptic('medium');
+      playHaptic('selection', false);
     }, SHAKE_AT_MS);
+    const rattleTimer = setTimeout(() => playHaptic('rigid', false), REVEAL_AT_MS - 260);
     const revealTimer = setTimeout(() => {
       setUnlockBeat(true);
-      playChestBurst();
-      playHaptic('success');
+      celebrationHaptic('big');
     }, REVEAL_AT_MS);
     return () => {
+      clearTimeout(soundTimer);
       clearTimeout(shakeTimer);
+      clearTimeout(rattleTimer);
       clearTimeout(revealTimer);
     };
   }, [reducedMotion]);

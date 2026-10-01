@@ -1,29 +1,15 @@
-/* LEADERBOARDS — Duolingo-style weekly league screen, Teyro-blue skin. */
+/* LEADERBOARDS — Duolingo's weekly league screen. Tokens only
+   (docs/08-color-system.md). */
 
 .page {
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 16px 16px 140px; /* bottom padding clears the sticky "you" bar + mobile nav */
+  padding: 8px 16px 140px; /* clears the sticky "you" bar + mobile nav */
   display: flex;
   flex-direction: column;
   align-items: stretch;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  align-self: flex-start;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text-secondary, #64748b);
-  text-decoration: none;
-  padding: 6px 0;
-  transition: color 0.15s ease;
-}
-.backLink:hover {
-  color: var(--brand-blue, #3d5afe);
+  font-family: var(--font-jakarta), sans-serif;
 }
 
 /* ── Header: hero badge + ladder strip ──────────────────────────────────── */
@@ -33,13 +19,14 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .heroBadge {
-  filter: drop-shadow(0 6px 14px rgba(31, 42, 68, 0.25));
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--color-ink) 22%, transparent));
   animation: heroRise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
 @keyframes heroRise {
   from {
     opacity: 0;
@@ -52,21 +39,20 @@
 }
 
 .title {
-  margin-top: 12px;
-  font-size: 1.5rem;
+  margin: 12px 0 0;
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--text-primary, #1f2a44);
+  color: var(--color-ink);
 }
 
 .tournamentWins {
-  margin-top: 2px;
+  margin: 4px 0 0;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 800;
-  color: #b98a00;
+  color: color-mix(in srgb, var(--warning) 70%, black);
 }
 
 .ladderStrip {
@@ -79,135 +65,119 @@
 }
 
 .currentRung {
-  transform: scale(1.28);
+  transform: scale(1.35);
   filter: none !important;
   opacity: 1 !important;
   z-index: 1;
 }
 
+.passedRung {
+  opacity: 0.9;
+}
+
 /* ── Week status ────────────────────────────────────────────────────────── */
 
 .weekStatus {
-  margin-top: 14px;
+  margin: 16px 0 16px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   text-align: center;
 }
 
 .zoneLine {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text-secondary, #64748b);
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .countdown {
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 15px;
   font-weight: 800;
-  color: #ff9600;
+  color: var(--warning);
 }
 
 .startCta {
   display: inline-block;
-  margin-top: 4px;
-  padding: 12px 28px;
-  border-radius: 14px;
-  background: var(--brand-blue, #3d5afe);
-  border-bottom: 4px solid var(--brand-blue-hover, #2d4aee);
-  color: #ffffff;
-  font-size: 0.85rem;
+  margin-top: 8px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-page);
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-decoration: none;
-  transition: filter 0.15s ease, transform 0.1s ease;
 }
-.startCta:hover {
-  filter: brightness(1.06);
-}
+
 .startCta:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  transform: translateY(4px);
+  box-shadow: none;
 }
 
 /* ── Standings board ────────────────────────────────────────────────────── */
 
 .board {
-  margin-top: 20px;
-  border: 1px solid var(--border, #e2e8f0);
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  min-height: 56px;
-  border-bottom: 1px solid var(--border, #e2e8f0);
-  background: #ffffff;
-}
-.row:last-of-type {
-  border-bottom: none;
+  gap: 14px;
+  min-height: 68px;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: var(--bg-card);
 }
 
-.rowPromo {
-  background: #eef4ff;
+.row:hover {
+  background: color-mix(in srgb, var(--bg-section) 70%, var(--bg-card));
 }
 
-.rowDemotion {
-  background: #fef1f1;
-}
+/* .rowPromo / .rowDemotion carry no band: zones read from the number colour
+   and the dividers, like Duolingo. */
 
-.rowMe {
-  background: #e4ebff;
-  box-shadow: inset 3px 0 0 var(--brand-blue, #3d5afe);
-}
-
-.rank {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--text-secondary, #64748b);
-}
-.rowPromo .rank:not([style]) {
-  color: var(--brand-blue, #3d5afe);
-}
-.rowDemotion .rank:not([style]) {
-  color: #ef4444;
-}
-.rank[style] {
-  color: #ffffff;
+.rowMe,
+.rowMe:hover {
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--bg-card));
+  border: 2px solid color-mix(in srgb, var(--color-brand) 35%, var(--bg-card));
+  padding: 6px 12px;
 }
 
 .name {
   flex: 1;
   min-width: 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary, #1f2a44);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.rowMe .name {
+  color: var(--color-brand);
+}
+
 .xp {
   flex-shrink: 0;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary, #64748b);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
+
 .xp strong {
   font-weight: 800;
-  color: var(--text-primary, #1f2a44);
+  color: var(--color-ink);
 }
 
 /* ── Zone dividers ──────────────────────────────────────────────────────── */
@@ -216,40 +186,38 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 16px;
-  border-bottom: 1px solid var(--border, #e2e8f0);
-}
-.zonePromo {
-  background: #f4f7ff;
-}
-.zoneDemotion {
-  background: #fdf4f4;
+  padding: 10px 4px;
 }
 
 .zoneLine2 {
   flex: 1;
-  height: 1px;
+  height: 2px;
+  border-radius: 2px;
 }
+
 .zonePromo .zoneLine2 {
-  background: rgba(61, 90, 254, 0.25);
+  background: color-mix(in srgb, var(--success-green) 35%, transparent);
 }
+
 .zoneDemotion .zoneLine2 {
-  background: rgba(239, 68, 68, 0.25);
+  background: color-mix(in srgb, var(--error-red) 35%, transparent);
 }
 
 .zoneLabel {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.66rem;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
+
 .zonePromo .zoneLabel {
-  color: var(--brand-blue, #3d5afe);
+  color: var(--success-green);
 }
+
 .zoneDemotion .zoneLabel {
-  color: #ef4444;
+  color: var(--error-red);
 }
 
 /* ── Sticky "you" bar ───────────────────────────────────────────────────── */
@@ -260,19 +228,20 @@
   margin-top: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding: 12px 16px;
-  border-radius: 16px;
-  background: #f1f4f9;
-  border: 1px solid var(--border, #e2e8f0);
-  box-shadow: 0 -6px 24px rgba(31, 42, 68, 0.12);
+  border-radius: 18px;
+  background: var(--bg-card);
+  border: 2px solid color-mix(in srgb, var(--color-brand) 35%, var(--border));
+  border-bottom-width: 4px;
+  box-shadow: 0 -6px 24px color-mix(in srgb, var(--color-ink) 12%, transparent);
   z-index: 30;
 }
+
 .meBar .name {
-  font-weight: 800;
+  color: var(--color-brand);
 }
 
-/* Mobile: clear the bottom nav bar */
 @media (max-width: 768px) {
   .meBar {
     bottom: 84px;
@@ -291,16 +260,19 @@
   gap: 6px;
   padding: 48px 24px;
   text-align: center;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
 }
+
 .emptyBoard p {
+  margin: 0;
   font-weight: 700;
-  color: var(--text-primary, #1f2a44);
+  color: var(--color-ink);
 }
+
 .emptyHint {
-  font-size: 0.85rem;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
 }
 
 .errorState {
@@ -310,30 +282,41 @@
   align-items: center;
   gap: 12px;
   text-align: center;
-  color: #ef4444;
+  color: var(--error-red);
 }
+
 .errorState p {
+  margin: 0;
   font-weight: 700;
-  color: var(--text-primary, #1f2a44);
+  color: var(--color-ink);
 }
 
 .weekRange {
-  margin-top: 14px;
+  margin-top: 16px;
   text-align: center;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
 /* ── Skeletons ──────────────────────────────────────────────────────────── */
+
+.skeletonHero,
+.skeletonTitle,
+.skeletonStrip,
+.skeletonRank,
+.skeletonAvatar,
+.skeletonName,
+.skeletonXp {
+  background: var(--bg-section);
+  animation: pulse 1.4s ease-in-out infinite;
+}
 
 .skeletonHero {
   width: 108px;
   height: 108px;
   margin: 12px auto 0;
   border-radius: 32% 32% 46% 46%;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonTitle {
@@ -341,73 +324,180 @@
   height: 24px;
   margin: 16px auto 0;
   border-radius: 8px;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonStrip {
   width: 70%;
   height: 26px;
-  margin: 16px auto 0;
+  margin: 16px auto 24px;
   border-radius: 8px;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border, #e2e8f0);
+  gap: 14px;
+  min-height: 68px;
+  padding: 8px 14px;
 }
 
 .skeletonRank {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonAvatar {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonName {
-  height: 14px;
-  border-radius: 7px;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
+  height: 16px;
+  border-radius: 8px;
 }
 
 .skeletonXp {
   margin-left: auto;
-  width: 56px;
-  height: 14px;
-  border-radius: 7px;
-  background: #f1f5f9;
-  animation: pulse 1.4s ease-in-out infinite;
+  width: 60px;
+  height: 16px;
+  border-radius: 8px;
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
   50% {
     opacity: 0.55;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .heroBadge {
-    animation: none;
+/* ── Movement since last visit (▲2 / ▼1) ─────────────────────────────── */
+.movement {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* ── "Your race" — rank, what to beat next, how far promotion is ────── */
+.yourRace {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 4px 0 var(--border);
+}
+
+.yourRace[data-tone='promo'] {
+  border-color: var(--success-green);
+  box-shadow: 0 4px 0 var(--success-green);
+  background: color-mix(in srgb, var(--success-green) 8%, var(--bg-card));
+}
+
+.yourRace[data-tone='danger'] {
+  border-color: var(--error-red);
+  box-shadow: 0 4px 0 var(--error-red);
+  background: color-mix(in srgb, var(--error-red) 7%, var(--bg-card));
+}
+
+.yourRaceRank {
+  flex-shrink: 0;
+  min-width: 52px;
+  height: 52px;
+  padding: 0 8px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-brand);
+  color: var(--bg-page);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.yourRace[data-tone='promo'] .yourRaceRank {
+  background: var(--success-green);
+}
+
+.yourRace[data-tone='danger'] .yourRaceRank {
+  background: var(--error-red);
+}
+
+.yourRaceText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.yourRaceText strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.yourRaceCta {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--color-brand);
+  color: var(--bg-page);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+}
+
+.yourRaceCta:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--color-brand-deep);
+}
+
+/* ── Shared week explainer ──────────────────────────────────────────── */
+.sharedNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--light-blue-bg);
+  color: var(--color-brand-deep);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.sharedNote svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+@media (max-width: 480px) {
+  .row {
+    gap: 10px;
+    padding: 8px 10px;
   }
+  .name {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroBadge,
   .skeletonHero,
   .skeletonTitle,
   .skeletonStrip,
@@ -416,6 +506,5 @@
   .skeletonName,
   .skeletonXp {
     animation: none;
-    opacity: 0.7;
   }
 }

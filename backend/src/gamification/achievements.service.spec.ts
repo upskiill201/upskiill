@@ -20,9 +20,11 @@ describe('AchievementsService', () => {
     },
   };
 
+  const eventEmitter = { emit: jest.fn() };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new AchievementsService(prisma as any);
+    service = new AchievementsService(prisma as any, eventEmitter as any);
 
     // Default: an empty slate student
     prisma.studentProfile.upsert.mockResolvedValue({

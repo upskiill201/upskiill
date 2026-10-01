@@ -78,6 +78,11 @@ export interface SectionCompletionSummary {
   };
 }
 
+/** Lesson block ids (v2 cards and exercises, v1 question ids). */
+const BLOCK_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+/** Where a learner stopped: a Learn card position, an exercise, or a phase. */
+const QUIT_STEP_RE = /^(learn:\d{1,3}:\d{1,3}|apply:[A-Za-z0-9_-]{1,64}|reflect|deepen)$/;
+
 @Injectable()
 export class CourseService {
   constructor(
@@ -508,6 +513,103 @@ export class CourseService {
     return ordered;
   }
 
+  /**
+   * Rule: the first 2 lessons of the course (in map order, published only) or
+   * any explicitly flagged `isFreePreview` are free preview. Shared by
+   * getCourseAccess and getLearningPath so the two can never disagree about
+   * which lessons a non-paying learner may open.
+   */
+  private freePreviewIdsFor(orderedLessons: { id: string; isFreePreview: boolean }[]): string[] {
+    return orderedLessons.filter((l, idx) => idx < 2 || l.isFreePreview).map((l) => l.id);
+  }
+
+  /**
+   * The learner's home path for one course, in ONE request: sections and
+   * their published lessons in map order, which lessons are done, and what
+   * they may open.
+   *
+   * Exists because the map used to need three requests — course detail,
+   * progress, access — and course detail is the heaviest read in the app
+   * (instructor profile, every review, instructor stats: ~8 round trips before
+   * the first node could draw). The path needs none of that.
+   *
+   * Access here is the same rule getCourseAccess applies (shared helper for
+   * free preview; same entitlement test), and it only decides what the map
+   * DRAWS. Opening a lesson still goes through the guarded lesson endpoint.
+   */
+  async getLearningPath(userId: string, idOrSlug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        category: true,
+        published: true,
+        instructorId: true,
+        price: true,
+        sections: {
+          orderBy: { orderIndex: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            lessons: {
+              where: { status: 'published' },
+              orderBy: { orderIndex: 'asc' },
+              select: {
+                id: true,
+                title: true,
+                shortDescription: true,
+                lessonType: true,
+                xpReward: true,
+                durationMinutes: true,
+                isFreePreview: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const isInstructor = !!course && course.instructorId === userId;
+    // Same answer as a missing course — never reveal that a draft exists.
+    if (!course || (!course.published && !isInstructor)) {
+      throw new NotFoundException('Course not found');
+    }
+
+    const [enrollment, entitlement] = await Promise.all([
+      this.prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId: course.id } },
+        select: { completedLessons: true },
+      }),
+      this.prisma.courseAccessEntitlement.findUnique({
+        where: { userId_courseId: { userId, courseId: course.id } },
+        select: { status: true, expiresAt: true },
+      }),
+    ]);
+
+    const hasActiveEntitlement =
+      !!entitlement && entitlement.status === 'ACTIVE' && entitlement.expiresAt > new Date();
+
+    const orderedLessons = course.sections.flatMap((s) => s.lessons);
+    const completedLessons = Array.isArray(enrollment?.completedLessons)
+      ? (enrollment.completedLessons as unknown[]).filter((id): id is string => typeof id === 'string')
+      : [];
+
+    const { sections, instructorId: _i, price, published: _p, ...rest } = course;
+    return {
+      course: rest,
+      sections,
+      enrolled: !!enrollment,
+      completedLessons,
+      access: {
+        hasAccess: isInstructor || hasActiveEntitlement || price === 0,
+        freePreviewLessonIds: this.freePreviewIdsFor(orderedLessons),
+      },
+    };
+  }
+
   async getCourseAccess(userId: string, idOrSlug: string) {
     const course = await this.prisma.course.findFirst({
       where: {
@@ -517,11 +619,7 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
 
     const orderedLessons = await this.getCourseLessonOrder(course.id);
-
-    // Rule: First 2 lessons of the course (index 0 & 1) or any explicitly flagged isFreePreview are free preview
-    const freePreviewLessonIds = orderedLessons
-      .filter((l, idx) => idx < 2 || l.isFreePreview)
-      .map((l) => l.id);
+    const freePreviewLessonIds = this.freePreviewIdsFor(orderedLessons);
 
     // Instructor has full creator access
     if (course.instructorId === userId) {
@@ -662,6 +760,60 @@ export class CourseService {
     return lesson;
   }
 
+  /* ─── Lesson insight pings (creator analytics) ───────────────────────── */
+
+  /**
+   * The published lesson, if it belongs to a published course this learner
+   * is enrolled in. The pings below only ever touch that learner's own row.
+   */
+  private async seatedLesson(userId: string, idOrSlug: string, lessonId: string) {
+    if (typeof lessonId !== 'string' || !BLOCK_ID_RE.test(lessonId)) return null;
+    return this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+        status: 'published',
+        section: {
+          course: {
+            OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+            published: true,
+            enrollments: { some: { userId } },
+          },
+        },
+      },
+      select: { id: true },
+    });
+  }
+
+  /**
+   * The player opened a lesson. The server can't see this moment otherwise:
+   * it's what turns "finished" counts into finish RATES in the studio, and
+   * what the Students attention rules call a started lesson. Best effort.
+   */
+  async recordLessonOpen(userId: string, idOrSlug: string, lessonId: string): Promise<void> {
+    const lesson = await this.seatedLesson(userId, idOrSlug, lessonId);
+    if (!lesson) return;
+    await this.prisma.userLessonProgress.upsert({
+      where: { userId_lessonId: { userId, lessonId: lesson.id } },
+      create: { userId, lessonId: lesson.id, status: 'in_progress', startedAt: new Date(), openCount: 1 },
+      update: { openCount: { increment: 1 } },
+    });
+  }
+
+  /**
+   * The learner left part-way (quit, out of hearts, closed the tab). `step`
+   * says where: a Learn card position, an exercise id, or a phase. A replay
+   * of a finished lesson isn't a drop-off, so finished rows are left alone.
+   */
+  async recordLessonQuit(userId: string, idOrSlug: string, lessonId: string, step: unknown): Promise<void> {
+    if (typeof step !== 'string' || !QUIT_STEP_RE.test(step)) return;
+    const lesson = await this.seatedLesson(userId, idOrSlug, lessonId);
+    if (!lesson) return;
+    await this.prisma.userLessonProgress.updateMany({
+      where: { userId, lessonId: lesson.id, completedAt: null },
+      data: { quitCount: { increment: 1 }, lastStepId: step },
+    });
+  }
+
   async getProgress(userId: string, idOrSlug: string) {
     const course = await this.prisma.course.findFirst({
       where: {
@@ -698,6 +850,8 @@ export class CourseService {
     timeSpentSeconds?: number,
     attemptsCount?: number,
     quizScorePct?: number,
+    correctAnswers?: number,
+    missedBlockIds?: string[],
   ) {
     if (!lessonId) {
       throw new BadRequestException('lessonId is required');
@@ -994,6 +1148,12 @@ export class CourseService {
         typeof quizScorePct === 'number'
           ? Math.max(0, Math.min(100, Math.round(quizScorePct)))
           : undefined;
+      // Daily quests count right answers ("Get 15 answers right"); a lesson
+      // can't honestly have more than a few dozen.
+      const clampedCorrect =
+        typeof correctAnswers === 'number'
+          ? Math.max(0, Math.min(50, Math.round(correctAnswers)))
+          : undefined;
 
       // Publish LessonCompletedEvent — all secondary writes (missions, chests,
       // heatmaps, achievements, audit logs) run asynchronously in GamificationListener
@@ -1011,6 +1171,7 @@ export class CourseService {
           txResult.isFirstStreakOfDay,
           clampedTimeSpent,
           clampedQuizScore,
+          clampedCorrect,
         ),
       );
 
@@ -1020,6 +1181,13 @@ export class CourseService {
         new XpAwardedEvent(userId, txResult.xpEarned, 'LESSON'),
       );
       const now = new Date();
+      // First-try misses for the creator's "hardest exercises" view. Only ids
+      // shaped like block ids survive; unknown ones are ignored on read.
+      const cleanMissed = Array.isArray(missedBlockIds)
+        ? Array.from(
+            new Set(missedBlockIds.filter((id) => typeof id === 'string' && BLOCK_ID_RE.test(id))),
+          ).slice(0, 40)
+        : [];
       void this.prisma.userLessonProgress
         .upsert({
           where: { userId_lessonId: { userId, lessonId } },
@@ -1033,6 +1201,7 @@ export class CourseService {
             ...(clampedTimeSpent !== undefined && { timeSpentSeconds: clampedTimeSpent }),
             ...(clampedAttempts !== undefined && { attemptsCount: clampedAttempts }),
             ...(clampedQuizScore !== undefined && { quizScore: clampedQuizScore }),
+            missedBlockIds: cleanMissed,
           },
           update: {
             status: 'completed',
@@ -1040,6 +1209,7 @@ export class CourseService {
             ...(clampedTimeSpent !== undefined && { timeSpentSeconds: { increment: clampedTimeSpent } }),
             ...(clampedAttempts !== undefined && { attemptsCount: clampedAttempts }),
             ...(clampedQuizScore !== undefined && { quizScore: clampedQuizScore }),
+            missedBlockIds: cleanMissed,
           },
         })
         .catch(() => {});
@@ -1235,7 +1405,7 @@ export class CourseService {
 
   async createCourse(
     userId: string,
-    data: { title: string; category: string; creatorTimeWeekly?: string },
+    data: { title: string; category: string; level?: string; creatorTimeWeekly?: string },
   ) {
     // Basic slug generation: lowercasing and replacing non-alphanumeric with hyphens
     const baseSlug = data.title
@@ -1258,6 +1428,7 @@ export class CourseService {
           title: data.title,
           slug: slug,
           category: data.category,
+          ...(data.level ? { level: data.level } : {}),
           creatorTimeWeekly: data.creatorTimeWeekly,
           instructorId: userId,
           description: 'New Course Draft',
@@ -1285,7 +1456,7 @@ export class CourseService {
           include: {
             _count: { select: { lessons: true } },
             lessons: {
-              select: { id: true, title: true, durationMinutes: true, contentBlocks: true },
+              select: { id: true, title: true, status: true, durationMinutes: true, contentBlocks: true },
             },
           },
         },

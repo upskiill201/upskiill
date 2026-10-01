@@ -56,6 +56,15 @@ export default function CtaBlock({ cta }: CtaBlockProps) {
           className={styles.tey}
         />
       </div>
+      <div className={styles.art} aria-hidden="true">
+        <Image
+          src="/User onbarding Assets/tey/cheering.webp"
+          alt=""
+          width={180}
+          height={209}
+          className={styles.tey}
+        />
+      </div>
     </aside>
   );
 }

@@ -27,6 +27,7 @@ import { LearnerAnalyticsModule } from './learner-analytics/learner-analytics.mo
 import { ChestModule } from './chest/chest.module';
 import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
+import { ReferralModule } from './referral/referral.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { EarningsModule } from './earnings/earnings.module';
 import { StudentsModule } from './students/students.module';
@@ -35,7 +36,9 @@ import { NotificationModule } from './notification/notification.module';
 import { LeagueModule } from './league/league.module';
 import { TeyModule } from './tey/tey.module';
 import { AdminModule } from './admin/admin.module';
+import { SupportModule } from './support/support.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -69,6 +72,7 @@ import { CouponsModule } from './coupons/coupons.module';
     ChestModule,
     SpinModule,
     StreakModule,
+    ReferralModule,
     AnalyticsModule,
     EarningsModule,
     StudentsModule,
@@ -78,6 +82,8 @@ import { CouponsModule } from './coupons/coupons.module';
     TeyModule,
     AdminModule,
     CouponsModule,
+    SupportModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [

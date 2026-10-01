@@ -326,6 +326,40 @@ export class AiConfigService {
     }
   }
 
+  /**
+   * Raw credentials for the same `COURSE_IMPORT_PROVIDER_NAME` row
+   * `resolveForCourseImport()` uses — for the one caller that, like
+   * transcription, can't go through `AiProvider.complete()`: Groq's Whisper
+   * endpoint is a multipart file upload, not a chat-completions call. Reuses
+   * whichever OPENAI_COMPATIBLE key is already configured for lesson
+   * generation rather than asking an admin to set up a second credential —
+   * Groq bills/rate-limits audio transcription separately from chat
+   * completions under the same account key. Never expose this through any
+   * controller; it hands back a plaintext key.
+   */
+  async resolveRawCourseImportCredentials(): Promise<{
+    apiKey: string;
+    baseUrl: string;
+    model: string;
+    providerId: string;
+    inputCostPer1k: number;
+    outputCostPer1k: number;
+  } | null> {
+    const row = await this.prisma.teyAiProviderConfig.findFirst({
+      where: { isActive: true, name: COURSE_IMPORT_PROVIDER_NAME },
+    });
+    if (!row || !row.baseUrl) return null;
+    const { apiKey } = decryptJson<{ apiKey: string }>(row.encryptedApiKey);
+    return {
+      apiKey,
+      baseUrl: row.baseUrl,
+      model: row.model,
+      providerId: row.id,
+      inputCostPer1k: Number(row.inputCostPer1k),
+      outputCostPer1k: Number(row.outputCostPer1k),
+    };
+  }
+
   /** Also called by tests and by any write, so config edits take effect at once. */
   invalidate(): void {
     this.cache = null;

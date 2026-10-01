@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { EarningsService } from './earnings.service';
 
@@ -17,7 +21,12 @@ function makeService(prismaOverrides: Record<string, unknown> = {}) {
     },
     ...prismaOverrides,
   };
-  return { svc: new EarningsService(prisma as never), prisma };
+  const eventEmitter = { emit: jest.fn() };
+  return {
+    svc: new EarningsService(prisma as never, eventEmitter as never),
+    prisma,
+    eventEmitter,
+  };
 }
 
 describe('EarningsService — split engine', () => {
@@ -171,9 +180,9 @@ describe('EarningsService — refunds', () => {
     expect(row.grossMinor).toBe(-2999); // per-row gross stays consistent with debits
     expect(row.creatorAmountMinor + row.teyroAmountMinor).toBe(row.netMinor);
     // Proportional split preserved on the reversal
-    expect(Math.abs(Math.round(row.netMinor * row.creatorSharePct / 100))).toBe(
-      Math.abs(row.creatorAmountMinor),
-    );
+    expect(
+      Math.abs(Math.round((row.netMinor * row.creatorSharePct) / 100)),
+    ).toBe(Math.abs(row.creatorAmountMinor));
     // Dedupe reference is per original row so replays collide deterministically
     expect(row.providerReference).toBe('re_1:orig1');
     expect(row.relatedTransactionId).toBe('orig1');
@@ -271,22 +280,44 @@ describe('EarningsService — refunds', () => {
 
     expect(createdRows).toHaveLength(2);
     const bigRow = createdRows.find((r) => r.relatedTransactionId === 'big');
-    const smallRow = createdRows.find((r) => r.relatedTransactionId === 'small');
+    const smallRow = createdRows.find(
+      (r) => r.relatedTransactionId === 'small',
+    );
     expect(bigRow.netMinor).toBe(-750); // 75% of the refund
     expect(bigRow.creatorAmountMinor).toBe(-525);
     expect(smallRow.netMinor).toBe(-250); // 25%
     expect(smallRow.creatorAmountMinor).toBe(-175);
     // Allocations sum to exactly the refunded amount — no dust lost
     expect(bigRow.netMinor + smallRow.netMinor).toBe(-1000);
-    expect(bigRow.creatorAmountMinor + bigRow.teyroAmountMinor).toBe(bigRow.netMinor);
-    expect(smallRow.creatorAmountMinor + smallRow.teyroAmountMinor).toBe(smallRow.netMinor);
+    expect(bigRow.creatorAmountMinor + bigRow.teyroAmountMinor).toBe(
+      bigRow.netMinor,
+    );
+    expect(smallRow.creatorAmountMinor + smallRow.teyroAmountMinor).toBe(
+      smallRow.netMinor,
+    );
   });
 
   it('hands rounding dust to the largest fractional share (sum invariant)', async () => {
     // Two equal rows, odd refund: floors lose 1 minor — it must land somewhere.
     const originals = [
-      { id: 'r1', creatorId: 'c', netMinor: 1000, creatorAmountMinor: 700, teyroAmountMinor: 300, creatorSharePct: 70, nativeCurrency: null },
-      { id: 'r2', creatorId: 'c', netMinor: 1000, creatorAmountMinor: 700, teyroAmountMinor: 300, creatorSharePct: 70, nativeCurrency: null },
+      {
+        id: 'r1',
+        creatorId: 'c',
+        netMinor: 1000,
+        creatorAmountMinor: 700,
+        teyroAmountMinor: 300,
+        creatorSharePct: 70,
+        nativeCurrency: null,
+      },
+      {
+        id: 'r2',
+        creatorId: 'c',
+        netMinor: 1000,
+        creatorAmountMinor: 700,
+        teyroAmountMinor: 300,
+        creatorSharePct: 70,
+        nativeCurrency: null,
+      },
     ];
     const { prisma, createdRows } = makeMultiSalePrisma(originals);
     const { svc } = makeService(prisma);
@@ -298,7 +329,9 @@ describe('EarningsService — refunds', () => {
       reason: 'dust',
     });
 
-    expect(createdRows.map((r) => -r.netMinor).sort((a, b) => b - a)).toEqual([2, 1]);
+    expect(createdRows.map((r) => -r.netMinor).sort((a, b) => b - a)).toEqual([
+      2, 1,
+    ]);
     expect(createdRows.reduce((sum, r) => sum + r.netMinor, 0)).toBe(-3);
   });
 
@@ -310,7 +343,9 @@ describe('EarningsService — refunds', () => {
         aggregate: jest.fn(),
       },
       creatorPayout: { aggregate: jest.fn() },
-      earningsAuditLog: { create: jest.fn(async ({ data }: any) => auditCreated.push(data)) },
+      earningsAuditLog: {
+        create: jest.fn(async ({ data }: any) => auditCreated.push(data)),
+      },
     };
     const { svc } = makeService(prisma);
 
@@ -327,7 +362,15 @@ describe('EarningsService — refunds', () => {
 
   it('treats a P2002 mid-fan-out as an already-recorded replay', async () => {
     const originals = [
-      { id: 's1', creatorId: 'c', netMinor: 1000, creatorAmountMinor: 700, teyroAmountMinor: 300, creatorSharePct: 70, nativeCurrency: null },
+      {
+        id: 's1',
+        creatorId: 'c',
+        netMinor: 1000,
+        creatorAmountMinor: 700,
+        teyroAmountMinor: 300,
+        creatorSharePct: 70,
+        nativeCurrency: null,
+      },
     ];
     const prisma = {
       earningsTransaction: {
@@ -358,8 +401,24 @@ describe('EarningsService — refunds', () => {
   it('restores EVERY chargeback row when a dispute is won (regression)', async () => {
     const createdRows: any[] = [];
     const chargebacks = [
-      { id: 'cb1', creatorId: 'c1', grossMinor: -1500, netMinor: -1500, creatorAmountMinor: -1050, teyroAmountMinor: -450, creatorSharePct: 70 },
-      { id: 'cb2', creatorId: 'c2', grossMinor: -500, netMinor: -500, creatorAmountMinor: -350, teyroAmountMinor: -150, creatorSharePct: 70 },
+      {
+        id: 'cb1',
+        creatorId: 'c1',
+        grossMinor: -1500,
+        netMinor: -1500,
+        creatorAmountMinor: -1050,
+        teyroAmountMinor: -450,
+        creatorSharePct: 70,
+      },
+      {
+        id: 'cb2',
+        creatorId: 'c2',
+        grossMinor: -500,
+        netMinor: -500,
+        creatorAmountMinor: -350,
+        teyroAmountMinor: -150,
+        creatorSharePct: 70,
+      },
     ];
     const tx = {
       earningsTransaction: {
@@ -385,7 +444,9 @@ describe('EarningsService — refunds', () => {
     expect(createdRows).toHaveLength(2);
     expect(createdRows.every((r) => r.type === 'REVERSAL')).toBe(true);
     // Each restore mirrors its own chargeback row exactly
-    expect(createdRows.map((r) => r.netMinor).sort((a, b) => a - b)).toEqual([500, 1500]);
+    expect(createdRows.map((r) => r.netMinor).sort((a, b) => a - b)).toEqual([
+      500, 1500,
+    ]);
     expect(new Set(createdRows.map((r) => r.providerReference))).toEqual(
       new Set(['dp_1:won:cb1', 'dp_1:won:cb2']),
     );
@@ -396,24 +457,20 @@ describe('EarningsService — balances', () => {
   it('computes available = lifetime − pendingClearing − reserved', async () => {
     const prisma = {
       earningsTransaction: {
-        aggregate: jest
-          .fn()
-          .mockImplementation(({ where }: any) => {
-            if (where.occurredAt) {
-              return Promise.resolve({ _sum: { creatorAmountMinor: 3000 } }); // still clearing
-            }
-            return Promise.resolve({ _sum: { creatorAmountMinor: 12000 } }); // lifetime
-          }),
+        aggregate: jest.fn().mockImplementation(({ where }: any) => {
+          if (where.occurredAt) {
+            return Promise.resolve({ _sum: { creatorAmountMinor: 3000 } }); // still clearing
+          }
+          return Promise.resolve({ _sum: { creatorAmountMinor: 12000 } }); // lifetime
+        }),
       },
       creatorPayout: {
-        aggregate: jest
-          .fn()
-          .mockImplementation(({ where }: any) => {
-            if ((where.status as any).in) {
-              return Promise.resolve({ _sum: { amountMinor: 2500 } }); // reserved
-            }
-            return Promise.resolve({ _sum: { amountMinor: 4000 } }); // paid out
-          }),
+        aggregate: jest.fn().mockImplementation(({ where }: any) => {
+          if (where.status.in) {
+            return Promise.resolve({ _sum: { amountMinor: 2500 } }); // reserved
+          }
+          return Promise.resolve({ _sum: { amountMinor: 4000 } }); // paid out
+        }),
       },
     };
     const { svc } = makeService(prisma);
@@ -432,7 +489,9 @@ describe('EarningsService — payout state machine', () => {
     const prisma = {
       creatorPayout: {
         findUnique: jest.fn().mockResolvedValue({
-          id: 'p1', userId: 'u1', status: 'REQUESTED',
+          id: 'p1',
+          userId: 'u1',
+          status: 'REQUESTED',
         }),
       },
     };
@@ -447,7 +506,9 @@ describe('EarningsService — payout state machine', () => {
     const prisma = {
       creatorPayout: {
         findUnique: jest.fn().mockResolvedValue({
-          id: 'p1', userId: 'u1', status: 'REQUESTED',
+          id: 'p1',
+          userId: 'u1',
+          status: 'REQUESTED',
         }),
       },
     };
@@ -473,7 +534,9 @@ describe('EarningsService — payout state machine', () => {
     const prisma = {
       creatorPayout: {
         findUnique: jest.fn().mockResolvedValue({
-          id: 'p1', userId: 'u1', status: 'REQUESTED',
+          id: 'p1',
+          userId: 'u1',
+          status: 'REQUESTED',
         }),
       },
       $transaction: jest.fn(async (fn: any) => fn(tx)),
@@ -498,9 +561,11 @@ describe('EarningsService — payout state machine', () => {
         creatorPayout: {
           updateMany: jest.fn().mockResolvedValue({ count: updateCount }),
           findFirst: jest.fn().mockResolvedValue(existing),
-          findUniqueOrThrow: jest.fn().mockResolvedValue(
-            existing ? { ...existing, status: 'CANCELLED' } : undefined,
-          ),
+          findUniqueOrThrow: jest
+            .fn()
+            .mockResolvedValue(
+              existing ? { ...existing, status: 'CANCELLED' } : undefined,
+            ),
         },
         earningsAuditLog: { create: jest.fn().mockResolvedValue({}) },
       };
@@ -511,7 +576,11 @@ describe('EarningsService — payout state machine', () => {
     }
 
     it('conditionally cancels only still-open payouts, under the user lock', async () => {
-      const { prisma, tx } = makeCancelPrisma(1, { id: 'p1', userId: 'u1', status: 'REQUESTED' });
+      const { prisma, tx } = makeCancelPrisma(1, {
+        id: 'p1',
+        userId: 'u1',
+        status: 'REQUESTED',
+      });
       const { svc } = makeService(prisma);
 
       const result = await svc.cancelOwnPayout('u1', 'p1');
@@ -531,23 +600,33 @@ describe('EarningsService — payout state machine', () => {
       expect(tx.$queryRaw).toHaveBeenCalled();
       expect(tx.earningsAuditLog.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ action: 'PAYOUT_CANCELLED_BY_CREATOR' }),
+          data: expect.objectContaining({
+            action: 'PAYOUT_CANCELLED_BY_CREATOR',
+          }),
         }),
       );
     });
 
     it('refuses to cancel a payout that already moved on', async () => {
-      const { prisma } = makeCancelPrisma(0, { id: 'p1', userId: 'u1', status: 'PROCESSING' });
+      const { prisma } = makeCancelPrisma(0, {
+        id: 'p1',
+        userId: 'u1',
+        status: 'PROCESSING',
+      });
       const { svc } = makeService(prisma);
 
-      await expect(svc.cancelOwnPayout('u1', 'p1')).rejects.toThrow(ConflictException);
+      await expect(svc.cancelOwnPayout('u1', 'p1')).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('reports missing payouts as NotFound', async () => {
       const { prisma } = makeCancelPrisma(0, null);
       const { svc } = makeService(prisma);
 
-      await expect(svc.cancelOwnPayout('u1', 'nope')).rejects.toThrow(NotFoundException);
+      await expect(svc.cancelOwnPayout('u1', 'nope')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -555,11 +634,19 @@ describe('EarningsService — payout state machine', () => {
     const { svc } = makeService();
 
     await expect(
-      svc.createAdjustment('admin1', { creatorId: 'c1', amountMinor: 0, reason: 'x' }),
+      svc.createAdjustment('admin1', {
+        creatorId: 'c1',
+        amountMinor: 0,
+        reason: 'x',
+      }),
     ).rejects.toThrow(BadRequestException);
 
     await expect(
-      svc.createAdjustment('admin1', { creatorId: 'c1', amountMinor: 100, reason: '   ' }),
+      svc.createAdjustment('admin1', {
+        creatorId: 'c1',
+        amountMinor: 100,
+        reason: '   ',
+      }),
     ).rejects.toThrow(BadRequestException);
   });
 });
@@ -592,18 +679,20 @@ describe('EarningsService — CSV export', () => {
       reason: null,
     });
 
-    const spy = jest.spyOn(svc, 'listTransactions').mockImplementation(
-      async (_userId: string, opts: { page?: number; pageSize?: number }) => {
-        const page = opts.page ?? 1;
-        const pageSize = opts.pageSize ?? 25;
-        const start = (page - 1) * pageSize;
-        const items = Array.from(
-          { length: Math.max(0, Math.min(pageSize, TOTAL - start)) },
-          (_, k) => makeItem(start + k),
-        );
-        return { items, page, pageSize, total: TOTAL } as never;
-      },
-    );
+    const spy = jest
+      .spyOn(svc, 'listTransactions')
+      .mockImplementation(
+        async (_userId: string, opts: { page?: number; pageSize?: number }) => {
+          const page = opts.page ?? 1;
+          const pageSize = opts.pageSize ?? 25;
+          const start = (page - 1) * pageSize;
+          const items = Array.from(
+            { length: Math.max(0, Math.min(pageSize, TOTAL - start)) },
+            (_, k) => makeItem(start + k),
+          );
+          return { items, page, pageSize, total: TOTAL } as never;
+        },
+      );
 
     const { csv } = await svc.buildTransactionsCsv('creator1', {});
 
@@ -617,5 +706,50 @@ describe('EarningsService — CSV export', () => {
       'creator1',
       expect.objectContaining({ page: 3, pageSize: 100 }),
     );
+  });
+});
+
+describe('EarningsService — Founding Creator programme', () => {
+  const OLD = process.env.FOUNDING_PROGRAM;
+  afterEach(() => {
+    if (OLD === undefined) delete process.env.FOUNDING_PROGRAM;
+    else process.env.FOUNDING_PROGRAM = OLD;
+  });
+
+  function make(existing: unknown = null) {
+    const tx = {
+      creatorEarningsAgreement: {
+        findFirst: jest.fn().mockResolvedValue(existing),
+        create: jest.fn(async ({ data }: any) => ({ id: 'ag1', ...data })),
+      },
+      earningsAuditLog: { create: jest.fn() },
+    };
+    const prisma = {
+      ...tx,
+      $transaction: jest.fn(async (fn: any) => fn(tx)),
+    };
+    const svc = new EarningsService(prisma as never, { emit: jest.fn() } as never);
+    return { svc, tx };
+  }
+
+  it('gives a new creator the Founding 80% agreement while the programme is open', async () => {
+    delete process.env.FOUNDING_PROGRAM;
+    const { svc, tx } = make();
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    const data = tx.creatorEarningsAgreement.create.mock.calls[0][0].data;
+    expect(data).toMatchObject({ userId: 'u1', tier: 'FOUNDING', creatorSharePct: 80, isFounding: true });
+  });
+
+  it('never overrides an existing agreement', async () => {
+    const { svc, tx } = make({ id: 'x', tier: 'STANDARD' });
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    expect(tx.creatorEarningsAgreement.create).not.toHaveBeenCalled();
+  });
+
+  it('grants nothing once the programme is closed (FOUNDING_PROGRAM=off)', async () => {
+    process.env.FOUNDING_PROGRAM = 'off';
+    const { svc, tx } = make();
+    await svc.grantFoundingOnJoin({ userId: 'u1' });
+    expect(tx.creatorEarningsAgreement.create).not.toHaveBeenCalled();
   });
 });

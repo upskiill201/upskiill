@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LeagueService } from './league.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -59,7 +60,9 @@ describe('League ladder mechanics', () => {
         outcome: 'CHAMPION',
         newTier: 'DIAMOND',
       });
-      expect(resolveOutcome('DIAMOND_TOURNAMENT', 3, 30).outcome).toBe('CHAMPION');
+      expect(resolveOutcome('DIAMOND_TOURNAMENT', 3, 30).outcome).toBe(
+        'CHAMPION',
+      );
       expect(resolveOutcome('DIAMOND_TOURNAMENT', 4, 30)).toEqual({
         outcome: 'TOURNAMENT_EXIT',
         newTier: 'DIAMOND',
@@ -88,14 +91,24 @@ describe('League ladder mechanics', () => {
   describe('UTC weeks', () => {
     it('snaps any date to its Monday', () => {
       // 2024-01-01 was a Monday.
-      expect(getUtcWeekStart(new Date('2024-01-01T00:00:00Z'))).toBe('2024-01-01');
-      expect(getUtcWeekStart(new Date('2024-01-03T15:34:00Z'))).toBe('2024-01-01'); // Wed
-      expect(getUtcWeekStart(new Date('2024-01-07T23:59:00Z'))).toBe('2024-01-01'); // Sun
-      expect(getUtcWeekStart(new Date('2024-01-08T00:00:00Z'))).toBe('2024-01-08'); // next Mon
+      expect(getUtcWeekStart(new Date('2024-01-01T00:00:00Z'))).toBe(
+        '2024-01-01',
+      );
+      expect(getUtcWeekStart(new Date('2024-01-03T15:34:00Z'))).toBe(
+        '2024-01-01',
+      ); // Wed
+      expect(getUtcWeekStart(new Date('2024-01-07T23:59:00Z'))).toBe(
+        '2024-01-01',
+      ); // Sun
+      expect(getUtcWeekStart(new Date('2024-01-08T00:00:00Z'))).toBe(
+        '2024-01-08',
+      ); // next Mon
     });
 
     it('ends a week exactly at the next Monday 00:00 UTC', () => {
-      expect(getWeekEndDate('2024-01-01')).toEqual(new Date('2024-01-08T00:00:00.000Z'));
+      expect(getWeekEndDate('2024-01-01')).toEqual(
+        new Date('2024-01-08T00:00:00.000Z'),
+      );
     });
   });
 });
@@ -106,22 +119,32 @@ describe('LeagueService', () => {
   let service: LeagueService;
   let prisma: any;
 
-  const makeCohort = (league: string, members: Array<{ userId: string; weeklyXp: number }>) => ({
+  const makeCohort = (
+    league: string,
+    members: Array<{ userId: string; weeklyXp: number }>,
+  ) => ({
     id: 'cohort-1',
     league,
     weekStart: '2024-01-01',
     status: 'SETTLING',
+    cohortIndex: 0,
     members: members.map((m, i) => ({
       id: `member-${i}`,
+      league,
       userId: m.userId,
       weeklyXp: m.weeklyXp,
       xpUpdatedAt: new Date(2024, 0, 2 + i),
     })),
   });
 
+  let emitter: { emit: jest.Mock };
+
   beforeEach(async () => {
+    emitter = { emit: jest.fn() };
     prisma = {
       leagueCohort: {
+        count: jest.fn().mockResolvedValue(0),
+        create: jest.fn().mockResolvedValue({ id: 'new-cohort' }),
         updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         findUnique: jest.fn(),
         update: jest.fn().mockResolvedValue({}),
@@ -134,6 +157,9 @@ describe('LeagueService', () => {
         findFirst: jest.fn().mockResolvedValue(null),
         findUnique: jest.fn().mockResolvedValue(null),
         groupBy: jest.fn().mockResolvedValue([]),
+        // Plenty of learners last week → tiered weeks by default; the
+        // shared-week tests below lower it.
+        count: jest.fn().mockResolvedValue(500),
       },
       studentProfile: {
         findUnique: jest.fn().mockResolvedValue({ leagueTier: 'BRONZE' }),
@@ -144,7 +170,11 @@ describe('LeagueService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LeagueService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        LeagueService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: EventEmitter2, useValue: emitter },
+      ],
     }).compile();
 
     service = module.get<LeagueService>(LeagueService);
@@ -189,12 +219,16 @@ describe('LeagueService', () => {
         userId: `u${i + 1}`,
         weeklyXp: 500 - i * 10,
       }));
-      prisma.leagueCohort.findUnique.mockResolvedValue(makeCohort('GOLD', members));
+      prisma.leagueCohort.findUnique.mockResolvedValue(
+        makeCohort('GOLD', members),
+      );
 
       await service.settleCohort('cohort-1');
 
       const calls = prisma.leagueMember.update.mock.calls;
-      const outcomesByRank = new Map(calls.map((c: any[]) => [c[0].data.rank, c[0].data.outcome]));
+      const outcomesByRank = new Map(
+        calls.map((c: any[]) => [c[0].data.rank, c[0].data.outcome]),
+      );
       // Gold promo zone 10 in a 12-member cohort (full-size rules).
       expect(outcomesByRank.get(1)).toBe('PROMOTED');
       expect(outcomesByRank.get(10)).toBe('PROMOTED');
@@ -259,7 +293,9 @@ describe('LeagueService', () => {
   describe('ensureSettled — inactivity demotion', () => {
     it('drops one tier per fully-elapsed week without a membership row', async () => {
       // Latest membership 2 weeks ago; no rows since → 2 missed weeks.
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
       prisma.studentProfile.findUnique
         .mockResolvedValueOnce({ leagueTier: 'GOLD' }) // week 1 demotion
         .mockResolvedValueOnce({ leagueTier: 'SILVER' }); // week 2 demotion
@@ -268,11 +304,21 @@ describe('LeagueService', () => {
 
       expect(prisma.leagueMember.createMany).toHaveBeenCalledTimes(2);
       expect(prisma.leagueMember.createMany).toHaveBeenNthCalledWith(1, {
-        data: [expect.objectContaining({ weekStart: '2024-01-08', outcome: 'INACTIVE_DEMOTED' })],
+        data: [
+          expect.objectContaining({
+            weekStart: '2024-01-08',
+            outcome: 'INACTIVE_DEMOTED',
+          }),
+        ],
         skipDuplicates: true,
       });
       expect(prisma.leagueMember.createMany).toHaveBeenNthCalledWith(2, {
-        data: [expect.objectContaining({ weekStart: '2024-01-15', outcome: 'INACTIVE_DEMOTED' })],
+        data: [
+          expect.objectContaining({
+            weekStart: '2024-01-15',
+            outcome: 'INACTIVE_DEMOTED',
+          }),
+        ],
         skipDuplicates: true,
       });
       expect(prisma.studentProfile.update).toHaveBeenNthCalledWith(1, {
@@ -286,8 +332,12 @@ describe('LeagueService', () => {
     });
 
     it('never demotes below Bronze and stops at the current week', async () => {
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'BRONZE' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'BRONZE',
+      });
 
       await service.ensureSettled('u1', new Date('2024-01-22T12:00:00Z'));
 
@@ -309,7 +359,9 @@ describe('LeagueService', () => {
     });
 
     it('skips weeks that already have a membership row', async () => {
-      prisma.leagueMember.findFirst.mockResolvedValue({ weekStart: '2024-01-01' });
+      prisma.leagueMember.findFirst.mockResolvedValue({
+        weekStart: '2024-01-01',
+      });
       prisma.leagueMember.findUnique.mockResolvedValue({ id: 'existing' }); // week present
 
       await service.ensureSettled('u1', new Date('2024-01-15T12:00:00Z'));
@@ -322,10 +374,17 @@ describe('LeagueService', () => {
   describe('joinOrIncrement (via recordXp)', () => {
     it('joins the current week cohort on first XP of the week', async () => {
       prisma.leagueMember.findUnique.mockResolvedValue(null); // no membership yet
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'GOLD' });
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'GOLD',
+      });
       prisma.$queryRaw.mockResolvedValue([{ id: 'cohort-9', cohortIndex: 0 }]);
 
-      await service.recordXp('u1', 25, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+      await service.recordXp(
+        'u1',
+        25,
+        new Date('2024-01-03T12:00:00Z'),
+        'LESSON',
+      );
 
       expect(prisma.leagueMember.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -341,15 +400,73 @@ describe('LeagueService', () => {
       prisma.leagueMember.findUnique
         .mockResolvedValueOnce({ id: 'member-1' }) // membership exists
         .mockResolvedValue(null);
-      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'GOLD' });
-
-      await service.recordXp('u1', 15, new Date('2024-01-03T12:00:00Z'), 'LESSON');
-
-      expect(prisma.leagueMember.update).toHaveBeenCalledWith({
-        where: { id: 'member-1' },
-        data: { weeklyXp: { increment: 15 }, xpUpdatedAt: new Date('2024-01-03T12:00:00Z') },
+      prisma.studentProfile.findUnique.mockResolvedValue({
+        leagueTier: 'GOLD',
       });
+
+      await service.recordXp(
+        'u1',
+        15,
+        new Date('2024-01-03T12:00:00Z'),
+        'LESSON',
+      );
+
+      expect(prisma.leagueMember.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'member-1' },
+          data: {
+            weeklyXp: { increment: 15 },
+            xpUpdatedAt: new Date('2024-01-03T12:00:00Z'),
+          },
+        }),
+      );
       expect(prisma.leagueMember.create).not.toHaveBeenCalled();
+    });
+
+    it('tells every learner the award jumped past — and only them', async () => {
+      prisma.leagueMember.findUnique.mockResolvedValueOnce({ id: 'member-1' });
+      prisma.leagueMember.update.mockResolvedValue({ weeklyXp: 120, cohortId: 'c1' });
+      prisma.leagueCohort.findUnique.mockResolvedValue({
+        cohortIndex: 0,
+        league: 'SILVER',
+        weekStart: '2024-01-01',
+      });
+      // Passed: 'amara' (at 100, now under 120). Board after the award:
+      const board = [
+        { userId: 'top', weeklyXp: 300, league: 'SILVER', user: { fullName: 'Top Dog' } },
+        { userId: 'u1', weeklyXp: 120, league: 'SILVER', user: { fullName: 'Sam Doe' } },
+        { userId: 'amara', weeklyXp: 100, league: 'SILVER', user: { fullName: 'Amara K' } },
+      ];
+      prisma.leagueMember.findMany.mockImplementation(async (args: any) => {
+        if (args?.where?.weeklyXp) return [{ userId: 'amara' }]; // who was passed
+        if (args?.where?.cohortId && args?.orderBy) return board; // the board
+        return []; // ensureSettled's unsettled scan
+      });
+
+      await service.recordXp('u1', 30, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      const passedQuery = prisma.leagueMember.findMany.mock.calls.find(
+        (c: any[]) => c[0]?.where?.weeklyXp,
+      )[0];
+      expect(passedQuery.where).toEqual(
+        expect.objectContaining({ cohortId: 'c1', weeklyXp: { gte: 90, lt: 120 } }),
+      );
+      const overtaken = emitter.emit.mock.calls.filter((c) => c[0] === 'league.overtaken');
+      expect(overtaken).toHaveLength(1);
+      expect(overtaken[0][1]).toEqual(
+        expect.objectContaining({ userId: 'amara', rivalName: 'Sam', rank: 3 }),
+      );
+      const climb = emitter.emit.mock.calls.find((c) => c[0] === 'league.passed.others');
+      expect(climb?.[1]).toEqual(expect.objectContaining({ userId: 'u1', passedNames: ['Amara'], rank: 2 }));
+    });
+
+    it('announces nothing when nobody was passed', async () => {
+      prisma.leagueMember.findUnique.mockResolvedValueOnce({ id: 'member-1' });
+      prisma.leagueMember.update.mockResolvedValue({ weeklyXp: 40, cohortId: 'c1' });
+
+      await service.recordXp('u1', 10, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(emitter.emit).not.toHaveBeenCalledWith('league.overtaken', expect.anything());
     });
 
     it('swallows failures so the award flow never breaks', async () => {
@@ -359,5 +476,85 @@ describe('LeagueService', () => {
         service.recordXp('u1', 10, new Date('2024-01-03T12:00:00Z'), 'LESSON'),
       ).resolves.toBeUndefined();
     });
+  });
+
+  describe('shared weeks (few learners: everyone on one board)', () => {
+    it('is a shared week when fewer than 60 learners competed last week', async () => {
+      prisma.leagueMember.count.mockResolvedValue(12);
+      await expect(service.isSharedWeek('2024-01-08')).resolves.toBe(true);
+      expect(prisma.leagueMember.count).toHaveBeenCalledWith({
+        where: { weekStart: '2024-01-01', cohortId: { not: null } },
+      });
+      prisma.leagueMember.count.mockResolvedValue(60);
+      await expect(service.isSharedWeek('2024-01-15')).resolves.toBe(false);
+    });
+
+    it("puts every tier on the shared board, keeping each learner's own tier", async () => {
+      prisma.leagueMember.count.mockResolvedValue(3);
+      prisma.leagueMember.findUnique.mockResolvedValue(null);
+      prisma.studentProfile.findUnique.mockResolvedValue({ leagueTier: 'RUBY' });
+      prisma.$queryRaw.mockResolvedValue([{ id: 'shared-1', cohortIndex: -1 }]);
+
+      await service.recordXp('u1', 20, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(prisma.leagueMember.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ cohortId: 'shared-1', league: 'RUBY' }),
+      });
+    });
+
+    it('opens the first shared board with a negative index', async () => {
+      prisma.leagueMember.count.mockResolvedValue(0);
+      prisma.leagueMember.findUnique.mockResolvedValue(null);
+      prisma.$queryRaw.mockResolvedValue([]);
+
+      await service.recordXp('u1', 20, new Date('2024-01-03T12:00:00Z'), 'LESSON');
+
+      expect(prisma.leagueCohort.create).toHaveBeenCalledWith({
+        data: { league: 'BRONZE', weekStart: '2024-01-01', cohortIndex: -1 },
+        select: { id: true },
+      });
+    });
+
+    it("settles a shared board from each member's own tier", async () => {
+      const cohort = {
+        ...makeCohort('BRONZE', [
+          { userId: 'u1', weeklyXp: 500 },
+          { userId: 'u2', weeklyXp: 300 },
+        ]),
+        cohortIndex: -1,
+      };
+      cohort.members[0].league = 'RUBY';
+      cohort.members[1].league = 'SILVER';
+      prisma.leagueCohort.findUnique.mockResolvedValue(cohort);
+
+      await service.settleCohort('cohort-1');
+
+      // Tiny board: top 3 promote — each from their own tier.
+      expect(prisma.studentProfile.update).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        data: { leagueTier: 'EMERALD' },
+      });
+      expect(prisma.studentProfile.update).toHaveBeenCalledWith({
+        where: { userId: 'u2' },
+        data: { leagueTier: 'GOLD' },
+      });
+    });
+  });
+});
+
+describe('Shared-board rules', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getSharedPromotionZone, resolveSharedOutcome } = require('./league.config');
+
+  it('promotes the top 3 on a small board, the top 20% on a bigger one', () => {
+    expect(getSharedPromotionZone(2)).toBe(2);
+    expect(getSharedPromotionZone(8)).toBe(3);
+    expect(getSharedPromotionZone(40)).toBe(8);
+  });
+
+  it('demotes the bottom five of a big board, but never out of Bronze', () => {
+    expect(resolveSharedOutcome('GOLD', 38, 40)).toEqual({ outcome: 'DEMOTED', newTier: 'SILVER' });
+    expect(resolveSharedOutcome('BRONZE', 40, 40)).toEqual({ outcome: 'STAYED', newTier: 'BRONZE' });
+    expect(resolveSharedOutcome('GOLD', 8, 9)).toEqual({ outcome: 'STAYED', newTier: 'GOLD' });
   });
 });

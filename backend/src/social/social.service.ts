@@ -20,6 +20,9 @@ export class SocialService {
       throw new NotFoundException("User to follow not found.");
     }
 
+    const existing = await this.prisma.userFollow.findUnique({
+      where: { followerId_followingId: { followerId, followingId } },
+    });
     await this.prisma.userFollow.upsert({
       where: {
         followerId_followingId: {
@@ -33,6 +36,31 @@ export class SocialService {
       },
       update: {},
     });
+
+    // "Kemi started following you" — Duolingo's friend nudge. Only for a new
+    // follow, and at most once a day per pair, so follow/unfollow toggling
+    // can't spam anyone.
+    if (!existing) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const recent = await this.prisma.notification.findFirst({
+        where: { userId: followingId, actorId: followerId, type: "FOLLOW", createdAt: { gte: since } },
+        select: { id: true },
+      });
+      if (!recent) {
+        await this.prisma.notification
+          .create({
+            data: {
+              userId: followingId,
+              actorId: followerId,
+              type: "FOLLOW",
+              entityType: "USER",
+              entityId: followerId,
+              deepLink: `/dashboard/u/${followerId}`,
+            },
+          })
+          .catch(() => undefined);
+      }
+    }
 
     return this.getSocialCounts(followerId);
   }
@@ -154,6 +182,92 @@ export class SocialService {
       xp: r.following.studentProfile?.xp ?? 0,
       isFollowing: currentUserFollowingIds.has(r.following.id),
     }));
+  }
+
+  /**
+   * A learner's public card — what a classmate sees when they tap someone's
+   * avatar in a community, feed or leaderboard (Duolingo's friend profile).
+   * Signed-in viewers only, looked up by id only, and it never carries an
+   * email, so it can't be used to probe who has an account.
+   */
+  async getLearnerProfile(targetUserId: string, viewerId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: {
+        id: true,
+        fullName: true,
+        avatarUrl: true,
+        createdAt: true,
+        profile: { select: { username: true, bio: true, location: true, avatarUrl: true } },
+        studentProfile: {
+          select: {
+            xp: true,
+            streakDays: true,
+            longestStreak: true,
+            leagueTier: true,
+            tournamentWins: true,
+            achievements: true,
+          },
+        },
+      },
+    });
+    if (!user) throw new NotFoundException("Learner not found.");
+
+    const [counts, iFollow, followsMe, theirCourses, myCourses] = await Promise.all([
+      this.getSocialCounts(targetUserId),
+      viewerId === targetUserId
+        ? Promise.resolve(null)
+        : this.prisma.userFollow.findUnique({
+            where: { followerId_followingId: { followerId: viewerId, followingId: targetUserId } },
+            select: { followerId: true },
+          }),
+      viewerId === targetUserId
+        ? Promise.resolve(null)
+        : this.prisma.userFollow.findUnique({
+            where: { followerId_followingId: { followerId: targetUserId, followingId: viewerId } },
+            select: { followerId: true },
+          }),
+      this.prisma.enrollment.findMany({
+        where: { userId: targetUserId },
+        select: { courseId: true, progress: true, course: { select: { id: true, title: true, thumbnailUrl: true } } },
+        orderBy: { updatedAt: "desc" },
+        take: 50,
+      }),
+      this.prisma.enrollment.findMany({ where: { userId: viewerId }, select: { courseId: true } }),
+    ]);
+
+    const mine = new Set(myCourses.map((e) => e.courseId));
+    const sp = user.studentProfile;
+    const unlocked = Array.isArray(sp?.achievements) ? (sp!.achievements as unknown[]).length : 0;
+
+    return {
+      id: user.id,
+      fullName: user.fullName,
+      username: user.profile?.username ?? null,
+      avatarUrl: user.profile?.avatarUrl ?? user.avatarUrl ?? null,
+      bio: user.profile?.bio ?? null,
+      location: user.profile?.location ?? null,
+      joinedAt: user.createdAt,
+      isMe: viewerId === targetUserId,
+      isFollowing: !!iFollow,
+      followsYou: !!followsMe,
+      followersCount: counts.followersCount,
+      followingCount: counts.followingCount,
+      stats: {
+        xp: sp?.xp ?? 0,
+        streakDays: sp?.streakDays ?? 0,
+        longestStreak: sp?.longestStreak ?? 0,
+        leagueTier: sp?.leagueTier ?? "BRONZE",
+        tournamentWins: sp?.tournamentWins ?? 0,
+        achievementsUnlocked: unlocked,
+        coursesCount: theirCourses.length,
+      },
+      // Courses you're both taking — the reason to follow a classmate.
+      sharedCourses: theirCourses
+        .filter((e) => mine.has(e.courseId))
+        .slice(0, 6)
+        .map((e) => ({ id: e.course.id, title: e.course.title, thumbnailUrl: e.course.thumbnailUrl, progress: e.progress })),
+    };
   }
 
   /**

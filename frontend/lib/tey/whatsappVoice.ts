@@ -1,5 +1,10 @@
 /**
- * Tey's voice for the Step 7 WhatsApp outcome screen (`Step7Content.tsx`) —
+ * Tey's voice for the WhatsApp verification outcome screen.
+
+CURRENTLY UNUSED: onboarding v2 removed the WhatsApp step from the flow (the
+OTP backend, `whatsapp_otps` and the signup-time reconciliation are all
+still in place). Kept so the copy is not lost if phone verification returns
+somewhere else —
  * the reaction to step 6's connect-or-skip choice, right before the demo
  * challenge. Previously a single fixed 4-5 line speech (all paragraphs
  * accumulate in one bubble — see SpeechBubble.tsx), which learners reported

@@ -6,7 +6,7 @@ import { AchievementsService } from '../achievements.service';
 import { MissionsService } from '../../missions/missions.service';
 import { MonthlyQuestService } from '../../monthly-quest/monthly-quest.service';
 import { ProgressService } from '../../progress/progress.service';
-import { ChestService } from '../../chest/chest.service';
+import { ChestService, isStreakChestDay } from '../../chest/chest.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -44,6 +44,24 @@ export class GamificationListener {
       await this.missionsService.updateMissionProgress(userId, 'XP_EARNED', xpEarned || 10, timezoneOffsetMinutes);
       if (isFirstStreakOfDay) {
         await this.missionsService.updateMissionProgress(userId, 'STREAK_ACTIVE', 1, timezoneOffsetMinutes);
+      }
+      // Quality quests — only from a lesson that actually had a quiz.
+      if (typeof event.quizScorePct === 'number') {
+        if (event.quizScorePct >= 100) {
+          await this.missionsService.updateMissionProgress(userId, 'PERFECT_LESSON', 1, timezoneOffsetMinutes);
+        }
+        if (event.quizScorePct >= 90) {
+          await this.missionsService.updateMissionProgress(userId, 'ACCURATE_LESSON', 1, timezoneOffsetMinutes);
+        }
+      }
+      if (event.correctAnswers && event.correctAnswers > 0) {
+        await this.missionsService.updateMissionProgress(userId, 'CORRECT_ANSWERS', event.correctAnswers, timezoneOffsetMinutes);
+      }
+      // Minutes learned: real time in the lesson, capped so a tab left open
+      // for an hour can't complete a quest on its own.
+      const minutes = Math.min(30, Math.round((event.timeSpentSeconds ?? 0) / 60));
+      if (minutes > 0) {
+        await this.missionsService.updateMissionProgress(userId, 'LEARN_MINUTES', minutes, timezoneOffsetMinutes);
       }
     } catch (err) {
       this.logger.error(`[Event Error] Failed updating missions in background listener`, err);
@@ -116,16 +134,11 @@ export class GamificationListener {
           },
         });
 
-        // 3-Day streak spin milestone check
-        if (isFirstStreakOfDay && streakDays > 0 && streakDays % 3 === 0) {
-          await this.prisma.spinClaim.create({
-            data: {
-              userId,
-              rewardType: 'SPIN_EARNED',
-              rewardVal: 1,
-            },
-          });
-          this.logger.log(`[Event] Awarded Lucky Wheel Spin to user ${userId} for ${streakDays}-day streak!`);
+        // Streak milestone → a streak chest (the lucky wheel was folded into
+        // chests; the old "spin" rows here were never consumed by anything).
+        if (isFirstStreakOfDay && streakDays > 0 && isStreakChestDay(streakDays)) {
+          await this.chestService.grantStreakChest(userId, streakDays, timezoneOffsetMinutes);
+          this.logger.log(`[Event] Awarded a ${streakDays}-day streak chest to user ${userId}`);
         }
       }
     } catch (err) {

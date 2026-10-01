@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { CourseImportCounts, CourseImportSummary } from './course-import.types';
+import { isRetryableStoredCode } from './course-import-error';
 
 export const WITH_FILES_AND_MODULES = {
   files: { orderBy: { orderIndex: 'asc' as const } },
@@ -56,6 +57,11 @@ export function toCourseImportSummary(
     error: courseImport.error,
     createdAt: courseImport.createdAt.toISOString(),
     updatedAt: courseImport.updatedAt.toISOString(),
+    pausePending:
+      courseImport.status === 'PAUSED' &&
+      !!courseImport.pauseRequestedAt &&
+      !courseImport.pausedAt,
+    pausedAt: courseImport.pausedAt?.toISOString() ?? null,
     counts,
     files: courseImport.files.map((f) => ({
       id: f.id,
@@ -66,8 +72,11 @@ export function toCourseImportSummary(
       status: f.status,
       storageUrl: f.storageUrl,
       error: f.error,
+      errorCode: f.errorCode,
       transcriptStatus: f.transcriptStatus,
       transcriptError: f.transcriptError,
+      transcriptErrorCode: f.transcriptErrorCode,
+      transcriptRetryable: isRetryableStoredCode(f.transcriptErrorCode),
       hasTranscript: !!f.transcript,
     })),
     modules: courseImport.modules.map((m) => ({
@@ -81,6 +90,9 @@ export function toCourseImportSummary(
         primaryFileId: l.primaryFileId,
         status: l.status,
         error: l.error,
+        errorCode: l.errorCode,
+        retryable: isRetryableStoredCode(l.errorCode),
+        addedToCourse: !!l.createdLessonId,
         description: l.description,
         learnBlocks: l.learnBlocks as unknown[] | null,
         applyBlocks: l.applyBlocks as unknown[] | null,
@@ -89,5 +101,10 @@ export function toCourseImportSummary(
       })),
     })),
     createdCourseId: courseImport.createdCourseId,
+    autopilot: courseImport.autopilot,
+    courseTitle: courseImport.courseTitle,
+    courseCategory: courseImport.courseCategory,
+    courseLevel: courseImport.courseLevel,
+    autopilotNote: courseImport.autopilotNote,
   };
 }

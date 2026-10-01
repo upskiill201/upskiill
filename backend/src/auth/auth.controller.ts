@@ -18,6 +18,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { BecomeCreatorDto } from './dto/become-creator.dto';
 import { GetUser } from './decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -179,6 +180,25 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.switchRole(user.id, role);
+    this.setCookie(res, result.access_token);
+    return this.withoutToken(result);
+  }
+
+  /**
+   * POST /auth/become-creator
+   * Adds a creator profile to the signed-in account (no second account, no
+   * password prompt) and reissues the session cookie with the INSTRUCTOR role.
+   */
+  @Throttle({ default: { limit: 10, ttl: 900000 } }) // 10 per 15 mins
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @Post('become-creator')
+  async becomeCreator(
+    @GetUser() user: User,
+    @Body() dto: BecomeCreatorDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.becomeCreator(user.id, dto.onboarding);
     this.setCookie(res, result.access_token);
     return this.withoutToken(result);
   }

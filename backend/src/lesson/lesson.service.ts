@@ -16,6 +16,11 @@ import {
   FullSaveLessonDto,
 } from './dto/update-lesson.dto';
 import { CourseReviewService } from '../course-review/course-review.service';
+import {
+  applySaveErrors,
+  learnSaveErrors,
+  phaseStateFromBlocks,
+} from './lesson-blocks.util';
 
 const VALID_PHASES = ['learn', 'apply', 'reflect', 'deepen'];
 
@@ -83,7 +88,7 @@ export class LessonService {
         section: {
           select: {
             title: true,
-            course: { select: { id: true, title: true } },
+            course: { select: { id: true, title: true, category: true, subcategory: true, reviewStatus: true } },
           },
         },
         resources: {
@@ -152,6 +157,8 @@ export class LessonService {
     const lesson = await this.prisma.lesson.findUnique({ where: { id } });
     if (!lesson) throw new NotFoundException(`Lesson with ID ${id} not found`);
 
+    this.assertSavable({ [phase]: updateData.contentBlocks });
+
     const blocks = this.parseJsonObject(lesson.contentBlocks);
     const updatedBlocks = {
       ...blocks,
@@ -160,13 +167,13 @@ export class LessonService {
 
     // Merge completion state
     const currentCompletion = this.parseJsonObject(lesson.stepCompletion);
-    const updatedCompletion = {
+    const updatedCompletion = this.withServerCompletion(updatedBlocks, {
       ...currentCompletion,
       [phase]:
         updateData.isCompleted !== undefined
           ? updateData.isCompleted
           : currentCompletion[phase] || false,
-    };
+    });
 
     const result = await this.prisma.lesson.updateMany({
       where: { id, version: updateData.version },
@@ -264,8 +271,12 @@ export class LessonService {
     const lesson = await this.getOwnedLesson(id, user);
     await this.assertLessonEditable(lesson);
 
+    this.assertSavable({ learn: data.learnBlocks, apply: data.applyBlocks });
     const updatedBlocks = this.mergeBlocks(lesson.contentBlocks, data);
-    const updatedCompletion = this.mergeCompletion(lesson.stepCompletion, data);
+    const updatedCompletion = this.withServerCompletion(
+      updatedBlocks,
+      this.mergeCompletion(lesson.stepCompletion, data),
+    );
 
     const result = await this.prisma.lesson.updateMany({
       where: {
@@ -317,20 +328,16 @@ export class LessonService {
     const lesson = await this.getOwnedLesson(id, user);
     await this.assertLessonEditable(lesson);
 
+    this.assertSavable({ learn: saveData.learnBlocks, apply: saveData.applyBlocks });
     const updatedBlocks = this.mergeBlocks(lesson.contentBlocks, saveData);
-    const updatedCompletion = this.mergeCompletion(
-      lesson.stepCompletion,
-      saveData,
+    const updatedCompletion = this.withServerCompletion(
+      updatedBlocks,
+      this.mergeCompletion(lesson.stepCompletion, saveData),
     );
 
-    // Validate before publishing — check the MERGED completion state
-    const errors: string[] = [];
-    if (!updatedCompletion.learn)
-      errors.push('Learn phase is incomplete or missing content.');
-    if (!updatedCompletion.apply)
-      errors.push('Apply phase requires at least 1 valid activity.');
-    if (!updatedCompletion.reflect)
-      errors.push('Reflect phase requires a prompt.');
+    // Validate before publishing — check the MERGED completion state.
+    // Deepen is optional: resources are a bonus, never a requirement.
+    const errors = this.publishErrors(updatedBlocks, updatedCompletion);
 
     if (errors.length > 0) {
       throw new UnprocessableEntityException({
@@ -391,16 +398,12 @@ export class LessonService {
     await this.assertLessonEditable(lesson);
 
     if (publishData.publishOption !== 'draft') {
-      const currentCompletion = this.parseJsonObject(lesson.stepCompletion);
-
-      const errors: string[] = [];
-
-      if (currentCompletion.learn !== true)
-        errors.push('Learn phase is incomplete or missing content.');
-      if (currentCompletion.apply !== true)
-        errors.push('Apply phase requires at least 1 valid activity.');
-      if (currentCompletion.reflect !== true)
-        errors.push('Reflect phase requires a prompt.');
+      const blocks = this.parseJsonObject(lesson.contentBlocks);
+      const currentCompletion = this.withServerCompletion(
+        blocks,
+        this.parseJsonObject(lesson.stepCompletion),
+      );
+      const errors = this.publishErrors(blocks, currentCompletion);
 
       if (errors.length > 0) {
         throw new UnprocessableEntityException({
@@ -444,6 +447,50 @@ export class LessonService {
   }
 
   /* ── helpers ── */
+
+  /** Hard content limits (e.g. the 15-minute video cap) reject the save itself. */
+  private assertSavable(phases: { learn?: unknown; apply?: unknown }) {
+    const errors = [
+      ...(phases.learn !== undefined ? learnSaveErrors(phases.learn) : []),
+      ...(phases.apply !== undefined ? applySaveErrors(phases.apply) : []),
+    ];
+    if (errors.length > 0) {
+      throw new BadRequestException({ message: errors[0], errors });
+    }
+  }
+
+  /**
+   * For v2 blocks the server decides whether Learn/Apply are complete —
+   * the client's flag only stands for v1 lessons.
+   */
+  private withServerCompletion(
+    blocks: Record<string, unknown>,
+    completion: Record<string, any>,
+  ): Record<string, any> {
+    const state = phaseStateFromBlocks(blocks);
+    return {
+      ...completion,
+      ...(state.learn && { learn: state.learn.complete }),
+      ...(state.apply && { apply: state.apply.complete }),
+    };
+  }
+
+  private publishErrors(
+    blocks: Record<string, unknown>,
+    completion: Record<string, any>,
+  ): string[] {
+    const state = phaseStateFromBlocks(blocks);
+    const errors: string[] = [];
+    if (state.learn) errors.push(...state.learn.errors);
+    else if (completion.learn !== true)
+      errors.push('Learn phase is incomplete or missing content.');
+    if (state.apply) errors.push(...state.apply.errors);
+    else if (completion.apply !== true)
+      errors.push('Apply phase requires at least 1 valid activity.');
+    if (completion.reflect !== true)
+      errors.push('Reflect phase requires a prompt.');
+    return errors;
+  }
 
   private parseJsonObject(value: unknown): Record<string, any> {
     if (!value) return {};

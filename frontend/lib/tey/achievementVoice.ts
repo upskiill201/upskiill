@@ -8,13 +8,13 @@
 
 import { pickFromPool } from './pool';
 
-const HEADLINE_NORMAL = ['Achievement unlocked!', 'Look at you go! 🔥', "Okayyy, I see you! 👀"];
+const HEADLINE_NORMAL = ['Achievement unlocked!', 'Look at you go!', "Okayyy, I see you!"];
 
-const HEADLINE_MAX_TIER = ['YOU MAXED IT OUT! 🏆🔥', 'EVERYBODY LOOK! WE HAVE A CHAMPION! 🎉', 'This deserves a celebration! 🎊'];
+const HEADLINE_MAX_TIER = ['YOU MAXED IT OUT!', 'EVERYBODY LOOK! WE HAVE A CHAMPION!', 'This deserves a celebration!'];
 
-const SPEECH_NORMAL = ["One more for the collection.", "That's going straight to the trophy case 🏆", 'Keep this up and I\'ll run out of things to say.'];
+const SPEECH_NORMAL = ["One more for the collection.", "That's going straight to the trophy case", 'Keep this up and I\'ll run out of things to say.'];
 
-const SPEECH_MAX_TIER = ['I KNEW YOU HAD IT IN YOU!!! 😤🔥', 'Top tier. Literally.', 'Somebody tell the others — we have a legend here.'];
+const SPEECH_MAX_TIER = ['I KNEW YOU HAD IT IN YOU!!!', 'Top tier. Literally.', 'Somebody tell the others — we have a legend here.'];
 
 export function pickAchievementVoice(tier: number, maxTier: number): { headline: string; speech: string } {
   const isMax = maxTier > 1 && tier >= maxTier;

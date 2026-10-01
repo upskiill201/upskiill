@@ -12,7 +12,6 @@ import {
   Lock,
   RotateCcw,
   ShieldCheck,
-  Star,
   Zap,
 } from 'lucide-react';
 import {
@@ -24,6 +23,7 @@ import {
   FaCreditCard,
 } from 'react-icons/fa';
 import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
 import {
   calculateCoursePricingLadder,
   AccessPlanType,
@@ -37,6 +37,7 @@ import CountryOperatorPicker from './CountryOperatorPicker';
 import PhoneField from './PhoneField';
 import CouponField, { COUPON_REASON_COPY, type CouponQuoteValid } from './CouponField';
 import styles from './unlock.module.css';
+import { pendingCouponCode } from '@/lib/coupons/pendingCode';
 
 export type PaymentProvider = 'STRIPE' | 'MESOMB';
 
@@ -50,6 +51,9 @@ export interface SubscribeFields {
    *  backend re-validates and recomputes the price itself — this is never
    *  trusted as the charge amount. */
   couponCode?: string;
+  /** What the learner was shown they'd pay (after any coupon). Display only —
+   *  for the "approve on your phone" screen; never sent to the backend. */
+  amountUsd?: number;
 }
 
 interface ScenePlansProps {
@@ -57,6 +61,10 @@ interface ScenePlansProps {
   courseId?: string;
   /** Course base value in USD from the API — never guessed client-side. */
   basePrice?: number;
+  /** A returning learner renewing (expired, or a plan that doesn't auto-renew). */
+  renewing?: boolean;
+  /** ISO end of the access they still have, when renewing early. */
+  accessEndsAt?: string | null;
   submitting: boolean;
   errorMsg: string | null;
   onSubmit: (fields: SubscribeFields) => void;
@@ -72,6 +80,8 @@ interface ScenePlansProps {
 export default function ScenePlans({
   courseId,
   basePrice,
+  renewing = false,
+  accessEndsAt = null,
   submitting,
   errorMsg,
   onSubmit,
@@ -79,7 +89,10 @@ export default function ScenePlans({
 }: ScenePlansProps) {
   const { countries, defaultCountry } = useMesombConfig();
 
-  const [selectedPlan, setSelectedPlan] = useState<AccessPlanType>('MONTHLY');
+  // Yearly is the default: it's the creator's own price, the best deal for the
+  // learner (the saving is real, from the ladder) and the plan that keeps them
+  // learning long enough to finish. Monthly stays one tap away.
+  const [selectedPlan, setSelectedPlan] = useState<AccessPlanType>('YEARLY');
   const [provider, setProvider] = useState<PaymentProvider>('STRIPE');
   const [countryCode, setCountryCode] = useState<string>(defaultCountry);
   const [operatorCode, setOperatorCode] = useState<string>('MTN');
@@ -125,7 +138,8 @@ export default function ScenePlans({
   );
 
   const applyCoupon = () => {
-    playHaptic('light');
+    playHaptic('light', false);
+    playSound('select');
     void validateCoupon(couponCode, selectedPlan);
   };
 
@@ -135,6 +149,19 @@ export default function ScenePlans({
     setCouponError(null);
     setCouponExpanded(false);
   };
+
+  // A code that came in a creator's share link: filled in and checked for
+  // the default plan, so the discount is already on screen.
+  useEffect(() => {
+    if (!courseId) return;
+    const pending = pendingCouponCode(courseId);
+    if (!pending) return;
+    setCouponCode(pending);
+    setCouponExpanded(true);
+    void validateCoupon(pending, selectedPlan);
+    // Once, when the plans open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId]);
 
   // Plan-switch revalidation: a coupon valid for Monthly must not silently
   // keep discounting once the learner switches to Yearly. Clear immediately
@@ -155,12 +182,16 @@ export default function ScenePlans({
   );
   const priceKnown = typeof basePrice === 'number';
 
-  const currentPlan =
-    selectedPlan === 'WEEKLY'
-      ? ladder.weekly
-      : selectedPlan === 'YEARLY'
-        ? ladder.yearly
-        : ladder.monthly;
+  const currentPlan = selectedPlan === 'YEARLY' ? ladder.yearly : ladder.monthly;
+  // Real numbers from the ladder — the anchor and the saving are never invented.
+  const yearAtMonthlyRate = Math.round(ladder.monthly.price * 12 * 100) / 100;
+  const yearlySavingUsd = ladder.isFree ? 0 : Math.round((yearAtMonthlyRate - ladder.yearly.price) * 100) / 100;
+
+  const choosePlan = (plan: AccessPlanType) => {
+    playHaptic('light', false);
+    playSound('select');
+    setSelectedPlan(plan);
+  };
 
   // Defensive: only trust the quote if it was computed for the plan
   // currently selected — by construction the revalidation effect above keeps
@@ -184,7 +215,8 @@ export default function ScenePlans({
   };
 
   const selectRail = (next: PaymentProvider, service?: string) => {
-    playHaptic('light');
+    playHaptic('light', false);
+    playSound('navTap', next === 'STRIPE' ? 1 : 3);
     setProvider(next);
     if (service) setOperatorCode(service);
   };
@@ -201,14 +233,16 @@ export default function ScenePlans({
       const result = normalizeMomoPhone(phone, countryMeta);
       if (!result.ok) {
         setPhoneError(result.error ?? 'Enter a valid Mobile Money number.');
-        playHaptic('warning');
+        playHaptic('warning', false);
+        playSound('nodeLocked');
         return;
       }
       setPhoneError(null);
       nationalPhone = result.national;
     }
 
-    playHaptic('medium');
+    playHaptic('medium', false);
+    playSound('start');
     onSubmit({
       plan: selectedPlan,
       provider,
@@ -222,18 +256,38 @@ export default function ScenePlans({
       // subscribeCourse() re-validates this server-side at charge time —
       // never trusts this earlier /coupons/validate response.
       ...(activeCouponQuote ? { couponCode } : {}),
+      amountUsd: effectivePrice,
     });
   };
 
   const isMomo = !isFree && provider === 'MESOMB';
+  const isYearly = selectedPlan === 'YEARLY';
   const priceLabel = effectivePrice > 0 ? `$${effectivePrice.toFixed(2)}` : 'Free';
   const ctaLabel = submitting
     ? 'Unlocking…'
     : priceKnown
       ? isFree
         ? 'Enroll for Free'
-        : `Unlock Course (${priceLabel})`
-      : 'Unlock Course';
+        : `${renewing ? 'Renew' : 'Unlock'} ${isYearly ? '12 months' : '1 month'} · ${priceLabel}`
+      : renewing
+        ? 'Renew'
+        : 'Unlock Course';
+  // Renewing before access runs out adds the new period on top (the backend
+  // stacks it onto expiresAt), so say so — it removes the "I'll lose days" worry.
+  const endsLabel =
+    accessEndsAt && Date.parse(accessEndsAt) > Date.now()
+      ? new Date(accessEndsAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      : null;
+
+  // Exactly what happens to the learner's money — required for auto-renewing
+  // plans, and it removes the hesitation that stops people at checkout. Only
+  // card (Stripe) subscriptions renew; Mobile Money buys one period.
+  const period = isYearly ? 'year' : 'month';
+  const billingLine = isFree
+    ? 'No payment required. Enjoy the course!'
+    : isMomo
+      ? `One payment of ${priceLabel} for ${isYearly ? '12 months' : '30 days'} of access. It won’t renew automatically.`
+      : `${priceLabel} today, then ${`$${currentPlan.price.toFixed(2)}`} every ${period} until you cancel. Cancel anytime in Settings.`;
 
   return (
     <>
@@ -271,47 +325,59 @@ export default function ScenePlans({
 
           <div className={styles.plansColumn}>
           <h1 className={styles.headline} style={{ textAlign: 'left', maxWidth: 'none' }}>
-            Pick the plan that <span className={styles.titleAccent}>works for you</span>
+            {renewing ? (
+              <>
+                Renew and <span className={styles.titleAccent}>keep going</span>
+              </>
+            ) : (
+              <>
+                Pick the plan that <span className={styles.titleAccent}>works for you</span>
+              </>
+            )}
           </h1>
+          {renewing && (
+            <p className={styles.renewNote}>
+              {endsLabel
+                ? `Your access runs until ${endsLabel}. Renew now and the new period starts then, so you don’t lose a day.`
+                : 'Your progress and streak are saved. Renew and pick up exactly where you left off.'}
+            </p>
+          )}
 
-          {/* PLAN RADIOGROUP */}
+          {/* PLAN RADIOGROUP — yearly first: the anchor is the real monthly
+              rate × 12, and the saving comes straight from the ladder. */}
           <div role="radiogroup" aria-label="Choose your plan" className={styles.planGroup}>
-            <PlanRow
-              plan={ladder.monthly}
-              selected={selectedPlan === 'MONTHLY'}
-              onSelect={() => {
-                playHaptic('light');
-                setSelectedPlan('MONTHLY');
-              }}
-              badge={{ icon: Star, text: 'Most popular' }}
-              discountedPrice={
-                activeCouponQuote && selectedPlan === 'MONTHLY' ? activeCouponQuote.finalPriceUsd : undefined
-              }
-            />
             <PlanRow
               plan={ladder.yearly}
               selected={selectedPlan === 'YEARLY'}
-              onSelect={() => {
-                playHaptic('light');
-                setSelectedPlan('YEARLY');
+              onSelect={() => choosePlan('YEARLY')}
+              badge={{
+                icon: Crown,
+                text: ladder.yearly.savingsPercent ? `Best value · save ${ladder.yearly.savingsPercent}%` : 'Best value',
               }}
-              badge={{ icon: Crown, text: 'Best value' }}
+              anchorPrice={ladder.isFree ? undefined : yearAtMonthlyRate}
               discountedPrice={
                 activeCouponQuote && selectedPlan === 'YEARLY' ? activeCouponQuote.finalPriceUsd : undefined
               }
             />
             <PlanRow
-              plan={ladder.weekly}
-              selected={selectedPlan === 'WEEKLY'}
-              onSelect={() => {
-                playHaptic('light');
-                setSelectedPlan('WEEKLY');
-              }}
+              plan={ladder.monthly}
+              selected={selectedPlan === 'MONTHLY'}
+              onSelect={() => choosePlan('MONTHLY')}
               discountedPrice={
-                activeCouponQuote && selectedPlan === 'WEEKLY' ? activeCouponQuote.finalPriceUsd : undefined
+                activeCouponQuote && selectedPlan === 'MONTHLY' ? activeCouponQuote.finalPriceUsd : undefined
               }
             />
           </div>
+
+          {/* One honest nudge back to yearly, with the real dollar saving. */}
+          {selectedPlan === 'MONTHLY' && yearlySavingUsd > 0 && (
+            <button type="button" className={styles.switchNudge} onClick={() => choosePlan('YEARLY')}>
+              <Crown size={14} strokeWidth={2.75} aria-hidden="true" />
+              <span>
+                Switch to yearly and keep <strong>${yearlySavingUsd.toFixed(2)}</strong> a year
+              </span>
+            </button>
+          )}
 
           {/* COUPON CODE */}
           {courseId && (
@@ -362,7 +428,8 @@ export default function ScenePlans({
                 onCountryChange={handleCountryChange}
                 operatorCode={operatorCode}
                 onOperatorChange={(code) => {
-                  playHaptic('light');
+                  playHaptic('light', false);
+                  playSound('select');
                   setOperatorCode(code);
                   setPhoneError(null);
                 }}
@@ -457,11 +524,10 @@ export default function ScenePlans({
         <p className={styles.billingNotice}>
           <CircleCheck size={11} />
           <span>
-            {isFree ? (
-              'No payment required — enjoy the course!'
-            ) : (
+            {billingLine}
+            {!isFree && (
               <>
-                Recurring billing until you cancel.{' '}
+                {' '}
                 <Link href="/terms" target="_blank" className={styles.refundLink}>
                   Refund policy
                 </Link>

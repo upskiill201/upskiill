@@ -13,7 +13,9 @@
 
 import React, { useState } from 'react';
 import { useCelebration } from '@/context/CelebrationContext';
+import { useShopEngine } from '@/context/ShopEngineContext';
 import { pickAchievementVoice } from '@/lib/tey/achievementVoice';
+import TreasureChestBench from '@/components/dashboard/v2/TreasureChestBench';
 
 const btn: React.CSSProperties = {
   display: 'block',
@@ -31,6 +33,7 @@ const btn: React.CSSProperties = {
 
 export default function TeyScenesDevPage() {
   const { celebrate } = useCelebration();
+  const { shopScene } = useShopEngine();
   const [rawPicks, setRawPicks] = useState<string[]>([]);
 
   if (process.env.NODE_ENV !== 'development') {
@@ -108,6 +111,87 @@ export default function TeyScenesDevPage() {
         }
       >
         Achievement — MAX tier (5 of 5)
+      </button>
+
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Level / welcome back / reward (mock — nothing persists)</h2>
+      <button style={btn} onClick={() => celebrate({ kind: 'LEVEL_UP', oldLevel: 11, newLevel: 12, bonusCoins: 50 })}>
+        Level up — 11 → 12 (+50 Coins)
+      </button>
+      <button style={btn} onClick={() => celebrate({ kind: 'WELCOME_BACK', days: 4 })}>
+        Welcome back — 4 days
+      </button>
+      {/* Real permission prompt / install prompt — these DO persist (browser-owned). */}
+      <button style={btn} onClick={() => celebrate({ kind: 'REMINDERS', variant: 'enable', streakDays: 4 })}>
+        Reminders — turn on (real prompt)
+      </button>
+      <button style={btn} onClick={() => celebrate({ kind: 'REMINDERS', variant: 'install', streakDays: 4 })}>
+        Reminders — install first
+      </button>
+      <button
+        style={btn}
+        onClick={() =>
+          celebrate({
+            kind: 'CLAIM',
+            title: '+30 Coins',
+            subtitle: 'Mock claim',
+            rewards: [{ currency: 'COINS', amount: 30 }, { currency: 'XP', amount: 20 }],
+          })
+        }
+      >
+        Reward claim — 30 Coins + 20 XP
+      </button>
+
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Shop (mock — nothing persists)</h2>
+      <button
+        style={btn}
+        onClick={() =>
+          shopScene({
+            kind: 'PURCHASE_SUCCESS',
+            itemId: 'dev-freeze',
+            itemName: 'Streak Freeze',
+            rarity: 'common',
+            art: 'freeze',
+            slot: null,
+            price: 200,
+            coinsBefore: 1250,
+            coinsAfter: 1050,
+            message: 'Protects your streak for one missed day.',
+          })
+        }
+      >
+        Shop — Purchase success
+      </button>
+      <button
+        style={btn}
+        onClick={() =>
+          shopScene({
+            kind: 'CHEST_REVEAL',
+            chestName: 'Gold Chest',
+            accent: 'var(--warning)',
+            rarity: 'rare',
+            coins: 120,
+            substituted: false,
+            item: null,
+            coinsAfter: 1170,
+          })
+        }
+      >
+        Shop — Chest reveal
+      </button>
+      <button
+        style={btn}
+        onClick={() =>
+          shopScene({
+            kind: 'COLLECTION_COMPLETE',
+            collectionName: 'Space Collection',
+            accent: 'var(--brand-purple)',
+            rewardCoins: 300,
+            rewardItem: null,
+            coinsAfter: 1350,
+          })
+        }
+      >
+        Shop — Collection complete
       </button>
 
       <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Streak (no override, so the pool actually fires)</h2>
@@ -280,10 +364,57 @@ export default function TeyScenesDevPage() {
         League — Demoted
       </button>
 
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Community</h2>
+      <button
+        style={btn}
+        onClick={() =>
+          celebrate({
+            kind: 'COMMUNITY_WELCOME',
+            communityId: 'cm1',
+            courseId: 'course1',
+            name: 'Copywriting that Sells',
+            courseTitle: 'Copywriting that Sells',
+            thumbnailUrl: null,
+            memberCount: 184,
+            postCount: 212,
+            instructor: { id: 'c1', fullName: 'Joel Mensah', avatarUrl: null },
+            members: [
+              { id: 'c1', fullName: 'Joel Mensah', avatarUrl: null },
+              { id: 'u2', fullName: 'Kemi Adeyemi', avatarUrl: null },
+              { id: 'u3', fullName: 'Luis Ortega', avatarUrl: null },
+              { id: 'u4', fullName: 'Amara Diallo', avatarUrl: null },
+              { id: 'u5', fullName: 'Priya Nair', avatarUrl: null },
+            ],
+            samplePost: {
+              id: 'p2',
+              postType: 'WIN',
+              title: 'Landed my first paid client!',
+              excerpt: 'Used the AIDA framework from lesson 4 on a cold email. They said yes to a $300 landing page.',
+              commentCount: 4,
+              likeCount: 31,
+              authorName: 'Kemi Adeyemi',
+              authorAvatarUrl: null,
+            },
+            onEnter: () => undefined,
+          })
+        }
+      >
+        Community welcome (after 2nd lesson)
+      </button>
+
       <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Chest (real server-first open)</h2>
       <button style={btn} onClick={() => celebrate({ kind: 'CHEST' })}>
         Open today&apos;s chest
       </button>
+
+      {/* The same TreasureChestBench the dashboard shows, mounted here too so
+          the Rive chest can be exercised for every reward type without a
+          backend, a logged-in session or a real Daily Chest row. Identical
+          component, mocked claim — grants nothing. */}
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>
+        Chest (Rive, every reward type — no backend needed)
+      </h2>
+      <TreasureChestBench />
     </div>
   );
 }

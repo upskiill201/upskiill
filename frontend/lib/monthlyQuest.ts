@@ -10,8 +10,6 @@
 
 import { mutate } from 'swr';
 import { dedupeInFlight } from '@/lib/in-flight';
-import type { CelebrationScene, QuestRow } from '@/context/CelebrationContext';
-import type { CelebrationCurrency } from '@/components/celebration/currency';
 import { fetcher } from '@/lib/swr';
 
 // ─── Types (mirror the backend payload) ─────────────────────────────────────
@@ -141,61 +139,4 @@ export async function claimMilestoneApi(
     throw new Error(body?.message || 'Could not claim this milestone.');
   }
   return res.json();
-}
-
-// ─── Celebration wiring ─────────────────────────────────────────────────────
-
-function milestoneCurrency(reward: QuestMilestone['reward']): CelebrationCurrency {
-  return reward.type === 'FREEZE' ? 'FREEZE' : 'COINS';
-}
-
-/** QuestRow per milestone — progress clamped to each checkpoint's threshold. */
-export function buildQuestRows(quest: MonthlyQuest, highlightId?: QuestMilestoneId): QuestRow[] {
-  return quest.milestones.map((m) => ({
-    id: m.id,
-    label: m.label,
-    current: Math.min(quest.goalDays, m.requiredDays),
-    target: m.requiredDays,
-    highlight: m.id === highlightId,
-    reward: { currency: milestoneCurrency(m.reward), amount: m.reward.amount },
-  }));
-}
-
-/**
- * Full claim sequence for a milestone: QUEST recap scene (rows slide in, the
- * claimed milestone shines) → server-first Treasure Chest reveal. Mirrors
- * TodaysMissionsCard.handleClaim's grammar; the chest's `claim` mirrors the
- * old CLAIM scene's `claim` pattern — server-first, failures degrade to the
- * scene's error state instead of celebrating an unpersisted reward.
- */
-export function buildMilestoneClaimScenes(
-  quest: MonthlyQuest,
-  milestone: QuestMilestone,
-): CelebrationScene[] {
-  const isFinal = milestone.kind === 'FINAL';
-  // QuestMilestone.reward.type is 'COINS' | 'FREEZE' — normalize to the
-  // backend's raw reward-type spelling the chest's currency helpers expect.
-  const rawRewardType = milestone.reward.type === 'FREEZE' ? 'STREAK_FREEZE' : 'COINS';
-
-  return [
-    {
-      kind: 'QUEST',
-      headline: isFinal ? `${quest.monthLabel.split(' ')[0]} Champion!` : `${milestone.label}!`,
-      subhead: `${quest.monthLabel} Quest · ${quest.goalDays} / ${quest.targetDays} goal days`,
-      ctaText: 'CLAIM',
-      rows: buildQuestRows(quest, milestone.id),
-      dedupeKey: `mq-beat:${quest.monthKey}:${milestone.id}:${quest.goalDays}`,
-      onComplete: () => window.dispatchEvent(new Event(QUEST_REFRESH_EVENT)),
-    },
-    {
-      kind: 'CHEST',
-      source: 'monthly_quest',
-      claim: async () => {
-        const data = await claimMilestoneApi(milestone.id);
-        return { type: rawRewardType, amount: data.claimedReward.amount };
-      },
-      onComplete: () => window.dispatchEvent(new Event(QUEST_REFRESH_EVENT)),
-      dedupeKey: `mq-claim:${quest.monthKey}:${milestone.id}`,
-    },
-  ];
 }

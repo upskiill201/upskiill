@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 
 // ─── Achievement Registry (Duolingo-style milestone collection) ─────────────
@@ -49,7 +50,12 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Milestone',
     badgeBg: '#0172FD',
     tiers: [
-      { level: 1, target: 1, name: 'Novice', description: 'Complete onboarding and start your journey' },
+      {
+        level: 1,
+        target: 1,
+        name: 'Novice',
+        description: 'Complete onboarding and start your journey',
+      },
     ],
   },
   {
@@ -58,11 +64,36 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Streak',
     badgeBg: '#FF4B4B',
     tiers: [
-      { level: 1, target: 3, name: 'Spark', description: 'Reach a 3-day streak' },
-      { level: 2, target: 7, name: 'On Fire', description: 'Reach a 7-day streak' },
-      { level: 3, target: 14, name: 'Blaze', description: 'Reach a 14-day streak' },
-      { level: 4, target: 30, name: 'Wildfire', description: 'Reach a 30-day streak' },
-      { level: 5, target: 50, name: 'Inferno', description: 'Reach a 50-day streak' },
+      {
+        level: 1,
+        target: 3,
+        name: 'Spark',
+        description: 'Reach a 3-day streak',
+      },
+      {
+        level: 2,
+        target: 7,
+        name: 'On Fire',
+        description: 'Reach a 7-day streak',
+      },
+      {
+        level: 3,
+        target: 14,
+        name: 'Blaze',
+        description: 'Reach a 14-day streak',
+      },
+      {
+        level: 4,
+        target: 30,
+        name: 'Wildfire',
+        description: 'Reach a 30-day streak',
+      },
+      {
+        level: 5,
+        target: 50,
+        name: 'Inferno',
+        description: 'Reach a 50-day streak',
+      },
     ],
   },
   {
@@ -75,7 +106,12 @@ export const BADGE_REGISTRY: BadgeDef[] = [
       { level: 2, target: 250, name: 'Scholar', description: 'Earn 250 XP' },
       { level: 3, target: 500, name: 'Sage', description: 'Earn 500 XP' },
       { level: 4, target: 1000, name: 'Mentor', description: 'Earn 1,000 XP' },
-      { level: 5, target: 2500, name: 'Luminary', description: 'Earn 2,500 XP' },
+      {
+        level: 5,
+        target: 2500,
+        name: 'Luminary',
+        description: 'Earn 2,500 XP',
+      },
     ],
   },
   {
@@ -84,11 +120,36 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Lessons',
     badgeBg: '#8B5CF6',
     tiers: [
-      { level: 1, target: 1, name: 'First Step', description: 'Complete your first lesson' },
-      { level: 2, target: 5, name: 'Warming Up', description: 'Complete 5 lessons' },
-      { level: 3, target: 10, name: 'Getting Serious', description: 'Complete 10 lessons' },
-      { level: 4, target: 25, name: 'Unstoppable', description: 'Complete 25 lessons' },
-      { level: 5, target: 50, name: 'Legend', description: 'Complete 50 lessons' },
+      {
+        level: 1,
+        target: 1,
+        name: 'First Step',
+        description: 'Complete your first lesson',
+      },
+      {
+        level: 2,
+        target: 5,
+        name: 'Warming Up',
+        description: 'Complete 5 lessons',
+      },
+      {
+        level: 3,
+        target: 10,
+        name: 'Getting Serious',
+        description: 'Complete 10 lessons',
+      },
+      {
+        level: 4,
+        target: 25,
+        name: 'Unstoppable',
+        description: 'Complete 25 lessons',
+      },
+      {
+        level: 5,
+        target: 50,
+        name: 'Legend',
+        description: 'Complete 50 lessons',
+      },
     ],
   },
   {
@@ -97,9 +158,24 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Accuracy',
     badgeBg: '#0172FD',
     tiers: [
-      { level: 1, target: 10, name: 'Sharpshooter', description: 'Answer 10 questions correctly on the first try' },
-      { level: 2, target: 25, name: 'Marksman', description: 'Answer 25 questions correctly on the first try' },
-      { level: 3, target: 75, name: 'Deadshot', description: 'Answer 75 questions correctly on the first try' },
+      {
+        level: 1,
+        target: 10,
+        name: 'Sharpshooter',
+        description: 'Answer 10 questions correctly on the first try',
+      },
+      {
+        level: 2,
+        target: 25,
+        name: 'Marksman',
+        description: 'Answer 25 questions correctly on the first try',
+      },
+      {
+        level: 3,
+        target: 75,
+        name: 'Deadshot',
+        description: 'Answer 75 questions correctly on the first try',
+      },
     ],
   },
   {
@@ -108,10 +184,30 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Courses',
     badgeBg: '#F59E0B',
     tiers: [
-      { level: 1, target: 1, name: 'Explorer', description: 'Enroll in your first course' },
-      { level: 2, target: 3, name: 'Trailblazer', description: 'Enroll in 3 courses' },
-      { level: 3, target: 6, name: 'Pathfinder', description: 'Enroll in 6 courses' },
-      { level: 4, target: 10, name: 'Globetrotter', description: 'Enroll in 10 courses' },
+      {
+        level: 1,
+        target: 1,
+        name: 'Explorer',
+        description: 'Enroll in your first course',
+      },
+      {
+        level: 2,
+        target: 3,
+        name: 'Trailblazer',
+        description: 'Enroll in 3 courses',
+      },
+      {
+        level: 3,
+        target: 6,
+        name: 'Pathfinder',
+        description: 'Enroll in 6 courses',
+      },
+      {
+        level: 4,
+        target: 10,
+        name: 'Globetrotter',
+        description: 'Enroll in 10 courses',
+      },
     ],
   },
   {
@@ -120,14 +216,31 @@ export const BADGE_REGISTRY: BadgeDef[] = [
     category: 'Consistency',
     badgeBg: '#EC4899',
     tiers: [
-      { level: 1, target: 7, name: 'Warm-Up', description: 'Study on 7 different days' },
-      { level: 2, target: 30, name: 'Marathoner', description: 'Study on 30 different days' },
-      { level: 3, target: 100, name: 'Relentless', description: 'Study on 100 different days' },
+      {
+        level: 1,
+        target: 7,
+        name: 'Warm-Up',
+        description: 'Study on 7 different days',
+      },
+      {
+        level: 2,
+        target: 30,
+        name: 'Marathoner',
+        description: 'Study on 30 different days',
+      },
+      {
+        level: 3,
+        target: 100,
+        name: 'Relentless',
+        description: 'Study on 100 different days',
+      },
     ],
   },
 ];
 
-const BADGE_MAP = new Map<string, BadgeDef>(BADGE_REGISTRY.map((b) => [b.id, b]));
+const BADGE_MAP = new Map<string, BadgeDef>(
+  BADGE_REGISTRY.map((b) => [b.id, b]),
+);
 
 /** Shape of one unseen (unlocked but not yet viewed) achievement tier. */
 export interface UnseenAchievement {
@@ -144,7 +257,10 @@ export interface UnseenAchievement {
 
 @Injectable()
 export class AchievementsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   // ─── Metrics ────────────────────────────────────────────────────────────────
 
@@ -182,14 +298,18 @@ export class AchievementsService {
     const completedLessonSet = new Set<string>();
     for (const e of enrollments) {
       if (Array.isArray(e.completedLessons)) {
-        for (const id of e.completedLessons as string[]) completedLessonSet.add(id);
+        for (const id of e.completedLessons as string[])
+          completedLessonSet.add(id);
       }
     }
 
     // Novice: earned by reaching the step-13 badge moment (or finishing onboarding).
     const onboardingStep = onboardingSession?.currentStep ?? 0;
     const novice =
-      onboardingSession?.onboardingComplete || onboardingStep >= NOVICE_BADGE_STEP ? 1 : 0;
+      onboardingSession?.onboardingComplete ||
+      onboardingStep >= NOVICE_BADGE_STEP
+        ? 1
+        : 0;
 
     return {
       novice,
@@ -225,9 +345,12 @@ export class AchievementsService {
       where: { userId },
       select: { achievementId: true, tier: true },
     });
-    const haveKeys = new Set(existing.map((u) => `${u.achievementId}_${u.tier}`));
+    const haveKeys = new Set(
+      existing.map((u) => `${u.achievementId}_${u.tier}`),
+    );
 
-    const toCreate: { userId: string; achievementId: string; tier: number }[] = [];
+    const toCreate: { userId: string; achievementId: string; tier: number }[] =
+      [];
     for (const badge of BADGE_REGISTRY) {
       const val = metrics[badge.id] ?? 0;
       for (const t of badge.tiers) {
@@ -240,7 +363,10 @@ export class AchievementsService {
 
     // skipDuplicates makes concurrent evaluations race-safe (unique index on
     // userId+achievementId+tier) without throwing P2002.
-    await this.prisma.userAchievement.createMany({ data: toCreate, skipDuplicates: true });
+    await this.prisma.userAchievement.createMany({
+      data: toCreate,
+      skipDuplicates: true,
+    });
 
     const after = await this.prisma.userAchievement.findMany({
       where: { userId },
@@ -248,19 +374,33 @@ export class AchievementsService {
     });
     const afterKeys = new Set(after.map((u) => `${u.achievementId}_${u.tier}`));
 
-    return toCreate
+    const unlocked = toCreate
       .filter((c) => afterKeys.has(`${c.achievementId}_${c.tier}`))
       .map((c) => {
         const badge = BADGE_MAP.get(c.achievementId)!;
         const tier = badge.tiers.find((t) => t.level === c.tier)!;
         return {
-          achievementId: badge.id as BadgeId,
+          achievementId: badge.id,
           title: badge.title,
           tier: c.tier,
           name: tier.name,
           description: tier.description,
         };
       });
+
+    // One email per newly-unlocked tier. Fire-and-forget: a failure here
+    // must never affect the achievement itself, which is already committed.
+    for (const u of unlocked) {
+      this.eventEmitter.emit('achievement.unlocked', {
+        userId,
+        achievementId: u.achievementId,
+        tier: u.tier,
+        name: u.name,
+        description: u.description,
+      });
+    }
+
+    return unlocked;
   }
 
   // ─── Reads ──────────────────────────────────────────────────────────────────
@@ -287,10 +427,15 @@ export class AchievementsService {
 
     const unlocks = await this.prisma.userAchievement.findMany({
       where: { userId },
-      select: { achievementId: true, tier: true, unlockedAt: true, seenAt: true },
+      select: {
+        achievementId: true,
+        tier: true,
+        unlockedAt: true,
+        seenAt: true,
+      },
     });
     const unlockedMap = new Map(
-      unlocks.map((u) => [`${u.achievementId}_${u.tier}`, u])
+      unlocks.map((u) => [`${u.achievementId}_${u.tier}`, u]),
     );
 
     const achievements = BADGE_REGISTRY.map((badge) => {
@@ -298,10 +443,13 @@ export class AchievementsService {
 
       let currentTier = 0;
       for (const t of badge.tiers) {
-        if (unlockedMap.has(`${badge.id}_${t.level}`)) currentTier = Math.max(currentTier, t.level);
+        if (unlockedMap.has(`${badge.id}_${t.level}`))
+          currentTier = Math.max(currentTier, t.level);
       }
 
-      const nextGoal = badge.tiers.find((t) => !unlockedMap.has(`${badge.id}_${t.level}`)) ?? null;
+      const nextGoal =
+        badge.tiers.find((t) => !unlockedMap.has(`${badge.id}_${t.level}`)) ??
+        null;
       const maxTier = badge.tiers.length;
       const isCompleted = nextGoal === null;
 
@@ -315,8 +463,12 @@ export class AchievementsService {
         currentTier,
         maxTier,
         isCompleted,
-        nextTarget: nextGoal ? nextGoal.target : badge.tiers[maxTier - 1].target,
-        nextDescription: nextGoal ? nextGoal.description : badge.tiers[maxTier - 1].description,
+        nextTarget: nextGoal
+          ? nextGoal.target
+          : badge.tiers[maxTier - 1].target,
+        nextDescription: nextGoal
+          ? nextGoal.description
+          : badge.tiers[maxTier - 1].description,
         tiers: badge.tiers.map((t) => {
           const unlock = unlockedMap.get(`${badge.id}_${t.level}`);
           return {
@@ -358,7 +510,9 @@ export class AchievementsService {
    * notification banner is built on. Viewing the celebration scene or the
    * collection marks them seen (markAchievementsSeen).
    */
-  async getUnseenAchievements(userId: string): Promise<{ unseen: UnseenAchievement[] }> {
+  async getUnseenAchievements(
+    userId: string,
+  ): Promise<{ unseen: UnseenAchievement[] }> {
     await this.checkAndAwardAchievements(userId);
 
     const unlocks = await this.prisma.userAchievement.findMany({

@@ -1,0 +1,978 @@
+/* The profile — Duolingo's layout. Tokens only (docs/08-color-system.md). */
+
+.page {
+  --pf-ink: var(--color-ink);
+  --pf-body: var(--text-primary);
+  --pf-soft: var(--text-secondary);
+  --pf-muted: var(--text-muted);
+  --pf-line: var(--border);
+  --pf-well: var(--bg-section);
+  --pf-card: var(--bg-card);
+  --pf-on: var(--bg-page);
+  --pf-blue: var(--color-brand);
+  --pf-blue-deep: var(--color-brand-deep);
+  --pf-blue-tint: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --pf-green: var(--success-green);
+  --pf-green-deep: color-mix(in srgb, var(--success-green) 72%, black);
+  --pf-gold: var(--warning);
+  --pf-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --pf-red: var(--error-red);
+
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: 48px;
+  font-family: var(--font-jakarta), sans-serif;
+  color: var(--pf-body);
+}
+
+.main {
+  width: 100%;
+  max-width: 640px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.rail {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.linkBtn {
+  border: none;
+  background: none;
+  padding: 4px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pf-blue);
+  cursor: pointer;
+}
+
+.card {
+  background: var(--pf-card);
+  border: 2px solid var(--pf-line);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────── */
+.header {
+  border: 2px solid var(--pf-line);
+  border-radius: 20px;
+  background: var(--pf-card);
+  overflow: hidden;
+}
+
+.banner {
+  position: relative;
+  height: 128px;
+  background: var(--pf-blue-tint);
+}
+
+.bannerActions {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 2px solid var(--pf-line);
+  border-bottom-width: 4px;
+  background: var(--pf-card);
+  color: var(--pf-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.08s ease;
+}
+
+.iconBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.identity {
+  padding: 0 24px 24px;
+}
+
+.avatarRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: -56px;
+}
+
+.avatarWrap {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 4px solid var(--pf-card);
+  background: var(--pf-card);
+}
+
+.avatarImg,
+.avatarInitial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarInitial {
+  display: grid;
+  place-items: center;
+  background: var(--pf-blue);
+  color: var(--pf-on);
+  font-size: 44px;
+  font-weight: 900;
+}
+
+.cameraBtn {
+  position: absolute;
+  right: -4px;
+  bottom: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--pf-card);
+  background: var(--pf-blue);
+  color: var(--pf-on);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.cameraBtn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 2px solid var(--pf-line);
+  border-bottom-width: 4px;
+  background: var(--pf-card);
+  color: var(--pf-blue);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.editBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.name {
+  margin: 16px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--pf-ink);
+  line-height: 1.2;
+}
+
+.handle {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--pf-soft);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pf-muted);
+}
+
+.metaRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bio {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--pf-body);
+}
+
+.countsRow {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.countBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pf-soft);
+  cursor: pointer;
+}
+
+.countBtn strong {
+  color: var(--pf-blue);
+  font-weight: 800;
+}
+
+.inlineError {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-red);
+}
+
+/* ─── Statistics ───────────────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--pf-line);
+  border-radius: 16px;
+  background: var(--pf-card);
+  min-width: 0;
+}
+
+.statIcon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.statText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.statNum {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--pf-ink);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-muted);
+}
+
+/* ─── Achievements ─────────────────────────────────────────────────────── */
+.achvList {
+  border: 2px solid var(--pf-line);
+  border-radius: 16px;
+  background: var(--pf-card);
+  overflow: hidden;
+}
+
+.achvRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: none;
+  border-bottom: 2px solid var(--pf-well);
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.achvRow:last-child {
+  border-bottom: none;
+}
+
+.achvRow:hover {
+  background: var(--pf-well);
+}
+
+.achvBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.achvTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.achvTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.newPill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pf-red);
+  color: var(--pf-on);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.achvDesc {
+  font-size: 14px;
+  color: var(--pf-soft);
+}
+
+.achvTrack {
+  position: relative;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--pf-well);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.achvFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pf-gold);
+  box-shadow: inset 0 -3px 0 var(--pf-gold-deep);
+}
+
+.achvCount {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.achvDone {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pf-green-deep);
+}
+
+/* Detail modal */
+.tierGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.tierName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.tierSub {
+  font-size: 12px;
+  color: var(--pf-muted);
+}
+
+.modalLead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modalText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--pf-soft);
+}
+
+/* ─── Invite friends ───────────────────────────────────────────────────── */
+.invite {
+  border: 2px solid color-mix(in srgb, var(--pf-green) 40%, var(--pf-line));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--pf-green) 8%, var(--pf-card));
+  padding: 16px;
+  scroll-margin-top: 88px;
+}
+
+.inviteHead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.inviteArt {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.inviteTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.inviteSub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--pf-soft);
+}
+
+.linkBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 4px 4px 4px 12px;
+  border: 2px solid var(--pf-line);
+  border-radius: 14px;
+  background: var(--pf-card);
+}
+
+.linkText {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pf-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--pf-blue);
+  box-shadow: 0 3px 0 var(--pf-blue-deep);
+  color: var(--pf-on);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.copyBtn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.shareRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 2px solid var(--pf-line);
+  border-bottom-width: 4px;
+  background: var(--pf-card);
+  color: var(--pf-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.shareBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.shareWa {
+  color: color-mix(in srgb, var(--pf-green) 80%, black);
+}
+
+.inviteStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.inviteStat {
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--pf-card);
+  border: 2px solid var(--pf-well);
+  text-align: center;
+}
+
+.inviteStatNum {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--pf-ink);
+}
+
+.inviteStatLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pf-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.friendList {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── People rows (friends card, modal, invites) ───────────────────────── */
+.personRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.personAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--pf-blue-tint);
+  color: var(--pf-blue);
+  font-weight: 900;
+}
+
+.personText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.personName {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pf-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personSub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pf-muted);
+}
+
+.followBtn,
+.followingBtn {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.followBtn {
+  border: none;
+  background: var(--pf-blue);
+  box-shadow: 0 3px 0 var(--pf-blue-deep);
+  color: var(--pf-on);
+}
+
+.followingBtn {
+  border: 2px solid var(--pf-line);
+  background: var(--pf-card);
+  color: var(--pf-soft);
+}
+
+.followBtn:disabled,
+.followingBtn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.statusPill {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--pf-well);
+  color: var(--pf-muted);
+}
+
+.statusDone {
+  background: color-mix(in srgb, var(--pf-green) 16%, var(--pf-card));
+  color: var(--pf-green-deep);
+}
+
+/* Friends card */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--pf-well);
+  margin: -16px -16px 16px;
+}
+
+.tab,
+.tabOn {
+  padding: 16px 8px 12px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pf-muted);
+  cursor: pointer;
+}
+
+.tabOn {
+  color: var(--pf-blue);
+  border-bottom-color: var(--pf-blue);
+}
+
+.peopleList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  text-align: center;
+  color: var(--pf-soft);
+  font-size: 14px;
+}
+
+.findBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-top: 16px;
+  border: 2px solid var(--pf-line);
+  border-radius: 14px;
+  background: var(--pf-card);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.findBtn:hover {
+  background: var(--pf-well);
+}
+
+.findIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--pf-blue-tint);
+  color: var(--pf-blue);
+  flex-shrink: 0;
+}
+
+/* ─── Forms (edit modal) ───────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pf-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--pf-line);
+  border-radius: 12px;
+  background: var(--pf-well);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--pf-ink);
+  outline: none;
+}
+
+.textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: color-mix(in srgb, var(--pf-blue) 42%, var(--bg-page));
+  background: var(--pf-card);
+}
+
+.inputBad {
+  border-color: var(--pf-red);
+}
+
+.fieldHint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pf-muted);
+}
+
+.fieldError {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-red);
+}
+
+.fieldOk {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-green-deep);
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: 14px;
+  border: none;
+  background: var(--pf-blue);
+  box-shadow: 0 4px 0 var(--pf-blue-deep);
+  color: var(--pf-on);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.primaryBtn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.primaryBtn:disabled {
+  background: var(--pf-line);
+  color: var(--pf-muted);
+  box-shadow: 0 4px 0 var(--border-strong);
+  cursor: not-allowed;
+}
+
+/* ─── States ───────────────────────────────────────────────────────────── */
+.skeleton {
+  border-radius: 16px;
+  background: var(--pf-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.55; }
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border: 2px solid var(--pf-line);
+  border-radius: 16px;
+  color: var(--pf-soft);
+  font-weight: 700;
+}
+
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(90vw, 420px);
+  z-index: 9000;
+  padding: 12px 24px;
+  border-radius: 16px;
+  background: var(--pf-ink);
+  color: var(--pf-on);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ─── Narrower screens: one column; rail cards after the main ones ──────── */
+@media (max-width: 1100px) {
+  .page {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 640px;
+    margin: 0 auto;
+    gap: 32px;
+  }
+  .rail {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 560px) {
+  .identity {
+    padding: 0 16px 16px;
+  }
+  .name {
+    font-size: 24px;
+  }
+  .statsGrid {
+    gap: 8px;
+  }
+  .stat {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* The avatar + name half of a person row opens their profile. */
+.personLink {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.personLink:hover .personName {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

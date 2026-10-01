@@ -6,12 +6,10 @@ import TeyWelcomeBanner from "../../components/tey/TeyWelcomeBanner";
 import { GamificationProvider } from "../../context/GamificationContext";
 import { RewardAnimationProvider } from "../../context/RewardAnimationContext";
 import { HeraldProvider } from "../../context/HeraldContext";
-import HeraldOverlay from "../../components/herald/HeraldOverlay";
+import NoticeHost from "../../components/awareness/NoticeHost";
 import { StreakProvider } from "../../context/StreakContext";
 import {
   DeferredRewardAnimationOverlay,
-  DeferredHeraldReveals,
-  DeferredStreakModal,
 } from "../../components/providers/DeferredOverlays";
 import { AudioProvider } from "../../context/AudioContext";
 import BackgroundMusicManager from "../../components/audio/BackgroundMusicManager";
@@ -22,13 +20,14 @@ import CelebrationEngine from "../../components/celebration/CelebrationEngine";
 // Auto-surfaces the Daily Login Reward as a scene on app entry / unlock
 import DailyRewardWatcher from "../../components/gamification/DailyRewardWatcher";
 // Surfaces Monthly Quest beats + claim deposits after lessons
-import QuestProgressWatcher from "../../components/quests/QuestProgressWatcher";
 // Weekly league settlement + mid-week leaderboard moments
 import LeagueResultWatcher from "../../components/leaderboard/LeagueResultWatcher";
 import LeaderboardRankWatcher from "../../components/leaderboard/LeaderboardRankWatcher";
+import ReminderAskWatcher from "../../components/push/ReminderAskWatcher";
 // Shop Engine — unlock announcements + purchase/chest/collection takeovers
 import { ShopEngineProvider } from "../../context/ShopEngineContext";
 import ShopEngine from "../../components/shop-engine/ShopEngine";
+import ReferralClaimer from "../../components/referral/ReferralClaimer";
 
 /**
  * Rounded display font for the Celebration Engine scenes (Duolingo-style bubbly
@@ -100,13 +99,12 @@ export default function AppGroupLayout({
                     <CelebrationEngine />
                     <ShopEngine />
                     <DailyRewardWatcher />
-                    <QuestProgressWatcher />
+                    <ReferralClaimer />
                     <LeagueResultWatcher />
                     <LeaderboardRankWatcher />
-                    {/* Herald & Streak portals — router-independent, render into document.body */}
-                    <HeraldOverlay />
-                    <DeferredHeraldReveals />
-                    <DeferredStreakModal />
+                    <ReminderAskWatcher />
+                    {/* Notices (lib/awareness) and the streak/spin reveal portals */}
+                    <NoticeHost />
                     <TeyroLoaderProvider>{children}</TeyroLoaderProvider>
                   </ShopEngineProvider>
                 </StreakProvider>

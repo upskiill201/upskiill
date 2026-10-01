@@ -60,6 +60,8 @@ export const ALLOWED_CONTENT_TYPES = [
   'video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm', 'video/avi', 'video/mpeg',
   // Audio
   'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/x-m4a', 'audio/m4a',
+  // Images (Learn image cards)
+  'image/png', 'image/jpeg', 'image/webp', 'image/gif',
   // Resources
   'application/pdf', 'application/zip', 'application/x-zip-compressed',
   'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -71,16 +73,19 @@ export const ALLOWED_CONTENT_TYPES = [
 export const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 export const MAX_AUDIO_SIZE = 500 * 1024 * 1024; // 500MB
 export const MAX_RESOURCE_SIZE = 100 * 1024 * 1024; // 100MB
+export const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
 function maxSizeFor(contentType: string): number {
   if (contentType.startsWith('video/')) return MAX_VIDEO_SIZE;
   if (contentType.startsWith('audio/')) return MAX_AUDIO_SIZE;
+  if (contentType.startsWith('image/')) return MAX_IMAGE_SIZE;
   return MAX_RESOURCE_SIZE;
 }
 
 function humanLimit(contentType: string): string {
   if (contentType.startsWith('video/')) return '2GB';
   if (contentType.startsWith('audio/')) return '500MB';
+  if (contentType.startsWith('image/')) return '10MB';
   return '100MB';
 }
 

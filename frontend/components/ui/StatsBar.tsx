@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { StatPill, StatType } from './StatPill';
 import { useGamification } from '@/context/GamificationContext';
-import { useStreakModal } from '@/context/StreakContext';
 import { playHaptic } from '@/lib/haptics';
 import StreakPopover from '@/components/streak/StreakPopover';
 import CoinsPopover from '@/components/coins/CoinsPopover';
@@ -31,6 +32,12 @@ export interface StatsBarProps {
   onXpClick?: () => void;
   onLivesClick?: () => void;
   onLevelClick?: () => void;
+  /**
+   * Which pills to show, in order. Defaults to all five. The home screen's
+   * mobile HUD shows four, like Duolingo's — five plus the course picker,
+   * menu and bell do not fit a 360px phone.
+   */
+  show?: StatType[];
 }
 
 /**
@@ -46,10 +53,10 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   onXpClick,
   onLivesClick,
   onLevelClick,
+  show,
 }) => {
   const router = useRouter();
   const { streakDays, coins, xp, lives, userLevel } = useGamification();
-  const { openStreakModal } = useStreakModal();
 
   // Streak popover hover & pin state
   const [isStreakHovered, setIsStreakHovered] = useState(false);
@@ -87,6 +94,8 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   // Close popovers when clicking anywhere outside on screen
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
+      // Popovers render in a portal (see PopoverPortal), outside these refs.
+      if ((e.target as Element | null)?.closest?.('[data-stats-popover]')) return;
       if (streakRef.current && !streakRef.current.contains(e.target as Node)) {
         setIsStreakPinned(false);
         setIsStreakHovered(false);
@@ -163,13 +172,14 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   const showLivesPopover = isLivesHovered || isLivesPinned;
   const showLevelPopover = isLevelHovered || isLevelPinned;
 
-  const stats: { type: StatType; value: number | string; onClick?: () => void }[] = [
+  const allStats: { type: StatType; value: number | string; onClick?: () => void }[] = [
     { type: 'streak', value: streakDays, onClick: handleStreakClick },
     { type: 'coin', value: coins, onClick: handleCoinClick },
     { type: 'gem', value: xp, onClick: handleXpClick },
     { type: 'lives', value: lives, onClick: handleLivesClick },
     { type: 'level', value: `Lvl ${userLevel}`, onClick: handleLevelClick },
   ];
+  const stats = show ? allStats.filter((s) => show.includes(s.type)) : allStats;
 
   return (
     <div
@@ -218,57 +228,69 @@ export const StatsBar: React.FC<StatsBarProps> = ({
             onMouseLeave={setHovered ? () => setHovered(false) : undefined}
             className={variant === 'pill' ? styles.pill : undefined}
           >
-            <StatPill
-              type={s.type}
-              value={s.value}
-              compact={compact}
-              variant={variant === 'pill' ? 'candy' : 'flat'}
-              onClick={s.onClick}
-            />
+            <StatChange value={s.value} lossIsBad={isLives}>
+              <StatPill
+                type={s.type}
+                value={s.value}
+                compact={compact}
+                variant={variant === 'pill' ? 'candy' : 'flat'}
+                onClick={s.onClick}
+              />
+            </StatChange>
 
             {isStreak && showStreakPopover && (
+              <PopoverPortal anchor={streakRef}>
               <StreakPopover
                 onClose={() => {
                   setIsStreakHovered(false);
                   setIsStreakPinned(false);
                 }}
               />
+              </PopoverPortal>
             )}
 
             {isCoin && showCoinPopover && (
+              <PopoverPortal anchor={coinRef}>
               <CoinsPopover
                 onClose={() => {
                   setIsCoinHovered(false);
                   setIsCoinPinned(false);
                 }}
               />
+              </PopoverPortal>
             )}
 
             {isXp && showXpPopover && (
+              <PopoverPortal anchor={xpRef}>
               <XpPopover
                 onClose={() => {
                   setIsXpHovered(false);
                   setIsXpPinned(false);
                 }}
               />
+              </PopoverPortal>
             )}
 
             {isLives && showLivesPopover && (
+              <PopoverPortal anchor={livesRef}>
               <HeartsPopover
                 onClose={() => {
                   setIsLivesHovered(false);
                   setIsLivesPinned(false);
                 }}
               />
+              </PopoverPortal>
             )}
 
             {isLevel && showLevelPopover && (
+              <PopoverPortal anchor={levelRef}>
               <LevelPopover
                 onClose={() => {
                   setIsLevelHovered(false);
                   setIsLevelPinned(false);
                 }}
               />
+              </PopoverPortal>
             )}
           </div>
         );
@@ -276,5 +298,99 @@ export const StatsBar: React.FC<StatsBarProps> = ({
     </div>
   );
 };
+
+/**
+ * Renders a popover in document.body, pinned under its stat. The stats bar
+ * lives inside scrolling containers (the home page's right rail scrolls on
+ * its own), and any overflow there clipped the popover — the streak card was
+ * cut in half on desktop home. A fixed layer can't be clipped.
+ * The popovers keep their own CSS: absolute, top:100%, right:0 — so this
+ * layer is a zero-height box whose right edge sits on the stat's right edge.
+ */
+function PopoverPortal({ anchor, children }: { anchor: React.RefObject<HTMLDivElement | null>; children: React.ReactNode }) {
+  const [box, setBox] = useState<{ top: number; right: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const place = () => {
+      const el = anchor.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      // Keep a 344px card on screen: its left edge never past 16px.
+      const right = Math.min(window.innerWidth - r.right, window.innerWidth - 16 - 344);
+      setBox({ top: r.bottom, right: Math.max(16, right) });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [anchor]);
+
+  if (!box || typeof document === 'undefined') return null;
+  return createPortal(
+    <div data-stats-popover style={{ position: 'fixed', top: box.top, right: box.right, width: 0, height: 0, zIndex: 9999 }}>
+      <div style={{ position: 'relative', width: 0, height: 0 }}>{children}</div>
+    </div>,
+    document.body,
+  );
+}
+
+/**
+ * Makes a change to a stat visible where the learner is already looking:
+ * a bounce and a floating "+5" when it goes up, a shake when hearts go down.
+ * (Duolingo's top bar reacts the same way — the number never just swaps.)
+ */
+function StatChange({ value, lossIsBad, children }: { value: number | string; lossIsBad: boolean; children: React.ReactNode }) {
+  const reducedMotion = useReducedMotion();
+  const [last, setLast] = useState(value);
+  const [change, setChange] = useState<{ delta: number; key: number } | null>(null);
+  const [seq, setSeq] = useState(0);
+  if (value !== last) {
+    if (typeof value === 'number' && typeof last === 'number' && value !== last) {
+      setSeq(seq + 1);
+      setChange({ delta: value - last, key: seq + 1 });
+    }
+    setLast(value);
+  }
+  const up = (change?.delta ?? 0) > 0;
+  const hurt = !up && lossIsBad && change !== null;
+
+  return (
+    <motion.div
+      key={change?.key ?? 'steady'}
+      style={{ position: 'relative' }}
+      animate={
+        reducedMotion || !change
+          ? undefined
+          : up
+            ? { scale: [1, 1.18, 1] }
+            : hurt
+              ? { x: [0, -4, 4, -3, 3, 0] }
+              : undefined
+      }
+      transition={{ duration: 0.45 }}
+    >
+      {children}
+      <AnimatePresence>
+        {change && up && !reducedMotion && (
+          <motion.span
+            key={change.key}
+            aria-hidden="true"
+            className="absolute left-1/2 -top-1 -translate-x-1/2 pointer-events-none text-[13px] font-extrabold whitespace-nowrap"
+            style={{ color: 'var(--success-green)', fontFamily: 'var(--font-jakarta)' }}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: [0, 1, 1, 0], y: -18 }}
+            transition={{ duration: 1.3, times: [0, 0.15, 0.7, 1] }}
+            onAnimationComplete={() => setChange(null)}
+          >
+            +{change.delta}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
 export default StatsBar;

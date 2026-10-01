@@ -3,6 +3,10 @@ import { Cron } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LessonContentGenerationService } from './lesson-content-generation.service';
+import {
+  CourseImportError,
+  toCourseImportError,
+} from './course-import-error';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -13,6 +17,15 @@ const MAX_AUTO_ATTEMPTS = 3;
 /** Retry delay grows with each attempt (2min, 4min, ...) so a retry doesn't
  *  land in the same "model overloaded" window that caused the failure. */
 const RETRY_BACKOFF_MINUTES = 2;
+/** How long a lesson waits after hitting the AI provider's rate limit. */
+const QUOTA_WAIT_MINUTES = 2;
+/**
+ * Minimum time between two AI lesson calls. A rich lesson is ~5k tokens and
+ * Groq's free tier allows 8k tokens a minute, so back-to-back calls just
+ * earn rate-limit errors. One a minute keeps a free-tier import moving
+ * steadily; lower it with COURSE_IMPORT_AI_MIN_GAP_SECONDS on a paid tier.
+ */
+const AI_MIN_GAP_MS = Math.max(0, Number(process.env.COURSE_IMPORT_AI_MIN_GAP_SECONDS ?? 60)) * 1000;
 
 interface ClaimedIdRow {
   id: string;
@@ -37,6 +50,8 @@ export class LessonContentGenerationProcessorService {
   );
   private readonly instanceId = `${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
   private isTicking = false;
+  /** When the last AI lesson call finished (success or failure). */
+  private lastAiCallAt = 0;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -75,6 +90,11 @@ export class LessonContentGenerationProcessorService {
       );
     }
 
+    // Pacing: wait out the gap before claiming, so nothing sits CLAIMED
+    // while it waits.
+    if (Date.now() - this.lastAiCallAt < AI_MIN_GAP_MS) {
+      return { claimed: 0, generated: 0, failed: 0 };
+    }
     const claimedIds = await this.claimBatch(limit, importId);
     const summary: LessonGenerationTickSummary = {
       claimed: claimedIds.length,
@@ -89,7 +109,13 @@ export class LessonContentGenerationProcessorService {
         module: {
           include: {
             import: {
-              select: { id: true, sourceDriveFolderName: true, status: true },
+              select: {
+                id: true,
+                sourceDriveFolderName: true,
+                status: true,
+                courseTitle: true,
+                courseCategory: true,
+              },
             },
           },
         },
@@ -115,7 +141,10 @@ export class LessonContentGenerationProcessorService {
           continue;
         }
         if (!lesson.primaryFile?.storageUrl) {
-          throw new Error("This lesson's video has no storage URL yet.");
+          throw new CourseImportError(
+            'FILE_NOT_UPLOADED',
+            "This lesson's video has no storage URL yet.",
+          );
         }
 
         const resourceFileIds =
@@ -127,12 +156,21 @@ export class LessonContentGenerationProcessorService {
             })
           : [];
 
+        const durationMs = lesson.primaryFile.durationMs;
+        // Stamped before the call: even a failed call spent the provider's
+        // per-minute allowance.
+        this.lastAiCallAt = Date.now();
         const generated = await this.generation.generate({
-          courseTitle: courseImport.sourceDriveFolderName,
+          courseTitle: courseImport.courseTitle || courseImport.sourceDriveFolderName.trim(),
           lessonTitle: lesson.title,
           videoUrl: lesson.primaryFile.storageUrl,
           transcript: lesson.primaryFile.transcript,
           resourceNames: resourceFiles.map((f) => f.driveFileName),
+          track:
+            courseImport.courseCategory === 'Coding' || courseImport.courseCategory === 'AI'
+              ? courseImport.courseCategory
+              : null,
+          videoDurationSec: durationMs !== null && durationMs !== undefined ? Number(durationMs) / 1000 : null,
         });
 
         await this.prisma.courseImportLesson.update({
@@ -140,6 +178,10 @@ export class LessonContentGenerationProcessorService {
           data: {
             status: 'GENERATED',
             error: null,
+            // Cleared too, or a lesson that failed once and then succeeded
+            // on retry keeps a stale code and the admin UI reports an error
+            // on a lesson that is actually fine.
+            errorCode: null,
             description: generated.description,
             learnBlocks: generated.learnBlocks as Prisma.InputJsonValue,
             applyBlocks: generated.applyBlocks as Prisma.InputJsonValue,
@@ -155,20 +197,58 @@ export class LessonContentGenerationProcessorService {
         });
         summary.generated += 1;
       } catch (err) {
+        const failure = toCourseImportError(err);
         this.logger.error(
-          `Lesson generation failed for lesson ${lesson.id} (${lesson.title})`,
-          err as Error,
+          `Lesson generation failed for lesson ${lesson.id} (${lesson.title}) [${failure.code}]`,
+          failure,
         );
         // attempts was already incremented by claimBatch's UPDATE — retry
         // automatically (transient provider overload/rate-limit is common
         // and shouldn't need a manual click) until MAX_AUTO_ATTEMPTS is hit,
         // matching the cap claimBatch's WHERE clause already enforces.
-        const willRetry = lesson.attempts < MAX_AUTO_ATTEMPTS;
+        // Terminal codes (no transcript, no provider configured, budget
+        // spent) skip the remaining attempts — none of them can resolve
+        // without a human changing something first.
+        // Quota, not content: the provider's rate limit or today's AI
+        // budget. On a free tier these hit every big course, and they clear
+        // on their own — so the lesson waits instead of burning its
+        // attempts and landing in FAILED for the admin to retry by hand.
+        // The attempt this claim spent is given back, and the row's
+        // updatedAt is pushed forward, which is what the claim query's
+        // backoff reads.
+        if (failure.code === 'AI_RATE_LIMIT' || failure.code === 'AI_BUDGET_EXCEEDED') {
+          const now = new Date();
+          const resumeAt =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 5))
+              : new Date(now.getTime() + QUOTA_WAIT_MINUTES * 60_000);
+          const when = resumeAt.toISOString().slice(11, 16);
+          const message =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? `Waiting: today's AI budget is used up. This lesson continues automatically after ${when} UTC.`
+              : `Waiting: the AI provider's rate limit was reached. This lesson continues automatically around ${when} UTC.`;
+          await this.prisma.$executeRaw`
+            UPDATE "course_import_lessons"
+               SET "status" = 'PENDING',
+                   "attempts" = GREATEST("attempts" - 1, 0),
+                   "errorCode" = ${failure.code},
+                   "error" = ${message},
+                   "claimedAt" = NULL,
+                   "claimedBy" = NULL,
+                   "updatedAt" = ${resumeAt}
+             WHERE "id" = ${lesson.id}`;
+          summary.failed += 1;
+          continue;
+        }
+
+        const willRetry =
+          failure.retryable && lesson.attempts < MAX_AUTO_ATTEMPTS;
         await this.prisma.courseImportLesson.update({
           where: { id: lesson.id },
           data: {
             status: willRetry ? 'PENDING' : 'FAILED',
-            error: (err as Error).message.slice(0, 500),
+            errorCode: failure.code,
+            error: failure.message.slice(0, 500),
             claimedAt: null,
             claimedBy: null,
           },
@@ -206,11 +286,20 @@ export class LessonContentGenerationProcessorService {
             JOIN "course_import_files" f ON f."id" = l2."primaryFileId"
            WHERE l2."status" = 'PENDING'
              AND f."transcriptStatus" = 'TRANSCRIBED'
-             AND ci."status" = 'GENERATING_CONTENT'
+             -- COURSE_CREATED keeps generating lessons for later batches
+             -- after a first partial course exists; PAUSED is excluded so a
+             -- paused import stops claiming new lessons.
+             AND ci."status" IN ('GENERATING_CONTENT', 'COURSE_CREATED')
              AND l2."attempts" < ${MAX_AUTO_ATTEMPTS}
              AND l2."updatedAt" < NOW() - (l2."attempts" * ${RETRY_BACKOFF_MINUTES} * INTERVAL '1 minute')
              ${importFilter}
-           ORDER BY l2."orderIndex"
+           -- createdAt first so two concurrent imports queue behind each
+           -- other instead of interleaving lesson-by-lesson (ordering by
+           -- orderIndex alone would run every import's lesson 0 before any
+           -- import's lesson 1, so neither course finishes first). Lessons
+           -- within one import share a createdAt from their createMany, so
+           -- orderIndex still decides their order.
+           ORDER BY l2."createdAt", l2."orderIndex"
            LIMIT ${limit}
              FOR UPDATE SKIP LOCKED
         ) d

@@ -15,10 +15,10 @@ import CelebrationMascot from '../CelebrationMascot';
 import { TypewriterBubble } from '../ScenePrimitives';
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
-import { BadgeGlyph } from '@/components/achievements/badgeArt';
+import AchievementBadge from '@/components/achievements/AchievementBadge';
 import { markAchievementSeen } from '@/lib/achievements';
-import { playClaimArpeggio } from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { celebrationHaptic } from '@/lib/haptics';
 import { pickAchievementVoice } from '@/lib/tey/achievementVoice';
 
 type AchievementSceneInput = Extract<CelebrationScene, { kind: 'ACHIEVEMENT' }>;
@@ -41,8 +41,8 @@ export default function AchievementScene({ scene, onAdvance }: AchievementSceneP
     markAchievementSeen(scene.badgeId, scene.tier).then((ok) => {
       if (ok) window.dispatchEvent(new CustomEvent('achievement:refresh'));
     });
-    playClaimArpeggio();
-    playHaptic('medium');
+    playSound('achievement');
+    celebrationHaptic('win');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -66,17 +66,12 @@ export default function AchievementScene({ scene, onAdvance }: AchievementSceneP
         animate={{ scale: 1, opacity: 1, rotate: 0 }}
         transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 16 }}
       >
-        <div
-          className={styles.achvMedal}
-          style={{
-            background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.35) 0%, transparent 42%), ${scene.badgeBg}`,
-            boxShadow: `0 10px 0 0 rgba(0,0,0,0.22), 0 22px 48px rgba(0,0,0,0.45)`,
-          }}
-        >
+        {/* The badge itself — the same illustrated art as the profile. */}
+        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 24 }}>
           {scene.iconSrc ? (
-            <Image src={scene.iconSrc} alt="" width={52} height={52} style={{ objectFit: 'contain' }} />
+            <Image src={scene.iconSrc} alt="" width={132} height={145} style={{ objectFit: 'contain' }} />
           ) : (
-            <BadgeGlyph badgeId={scene.badgeId} size={44} />
+            <AchievementBadge badgeId={scene.badgeId} level={scene.tier} size={132} />
           )}
           {/* Shine sweep */}
           {!reducedMotion && (

@@ -1,11 +1,9 @@
 'use client';
 
 /**
- * Level popover — same XP number as XpPopover, different angle: not "how
- * much have I earned" but "what does levelling up actually unlock". Pulls
- * the nearest still-locked level-gated item straight out of the shop
- * registry (via the already-prefetched catalog) instead of inventing
- * flavor text the backend has no concept of.
+ * Level popover — Duolingo's card: your level on the hexagon, the bar to the
+ * next one, and the nearest level-gated shop reward (straight from the
+ * prefetched catalogue, never invented), with a way into the level page.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -16,25 +14,25 @@ import { prefetchCatalog } from '@/lib/shop/previewCache';
 import type { ShopItem } from '@/lib/shop/types';
 import ShopItemArt from '@/components/shop-engine/ShopItemArt';
 import { playHaptic } from '@/lib/haptics';
-import styles from './LevelPopover.module.css';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { levelProgress } from '@/lib/level';
+import styles from '../ui/StatPopover.module.css';
 
 interface LevelPopoverProps {
   onClose?: () => void;
 }
 
-const XP_PER_LEVEL = 100;
-
 export default function LevelPopover({ onClose }: LevelPopoverProps) {
   const router = useRouter();
-  const { userLevel, xpInCurrentLevel } = useGamification();
-
+  const { xp } = useGamification();
+  const { level, inLevel, target, toNext, percent } = levelProgress(xp);
   const [nextUnlock, setNextUnlock] = useState<ShopItem | null>(null);
 
   useEffect(() => {
     prefetchCatalog()
       .then((catalog) => {
-        const allItems = catalog.categories.flatMap((c) => c.items);
-        const levelLocked = allItems
+        const levelLocked = catalog.categories
+          .flatMap((c) => c.items)
           .filter((item) => !item.unlock.unlocked && item.unlock.label.startsWith('Reach level'))
           .sort((a, b) => a.unlock.target - b.unlock.target);
         setNextUnlock(levelLocked[0] ?? null);
@@ -42,65 +40,61 @@ export default function LevelPopover({ onClose }: LevelPopoverProps) {
       .catch(() => {});
   }, []);
 
-  const toNextLevel = Math.max(0, XP_PER_LEVEL - xpInCurrentLevel);
-  const fillPct = Math.min(100, Math.round((xpInCurrentLevel / XP_PER_LEVEL) * 100));
-
-  const goToShop = (e: React.MouseEvent) => {
+  const go = (e: React.MouseEvent, href: string) => {
     e.stopPropagation();
-    playHaptic('medium');
-    if (onClose) onClose();
-    router.push('/dashboard/shop');
+    playHaptic('light', false);
+    playSound('navTap', 4);
+    onClose?.();
+    router.push(href);
   };
 
   return (
     <div
-      className={styles.popoverCard}
+      className={`${styles.popoverCard} ${styles.level}`}
       role="dialog"
-      aria-label="Level Popover"
+      aria-label="Your level"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Top Hero Banner */}
       <div className={styles.heroHeader}>
         <div className={styles.heroTopRow}>
           <div className={styles.heroTextGroup}>
-            <h3 className={styles.heroTitle}>Level {userLevel}</h3>
+            <h3 className={styles.heroTitle}>Level {level}</h3>
             <p className={styles.heroSubtitle}>
-              {toNextLevel} XP to Level {userLevel + 1}
+              {toNext} XP to Level {level + 1}
             </p>
           </div>
+          <span className={styles.heroArt} aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static SVG art */}
+            <img src="/art/ui/level-hex.svg" alt="" />
+            <span className={styles.heroArtNum}>{level}</span>
+          </span>
         </div>
-
         <div className={styles.progressTrack}>
-          <div className={styles.progressFill} style={{ width: `${fillPct}%` }} />
+          <div className={styles.progressFill} style={{ width: `${Math.max(6, percent)}%` }} />
+          <span className={styles.progressLabel}>
+            {inLevel} / {target} XP
+          </span>
         </div>
       </div>
 
-      {/* Popover Content Cards */}
       <div className={styles.cardContent}>
         {nextUnlock && (
-          <div className={styles.unlockCard}>
-            <div className={styles.unlockArt}>
-              <ShopItemArt
-                art={nextUnlock.art}
-                category={nextUnlock.category}
-                rarity={nextUnlock.rarity}
-                size="sm"
-                locked
-              />
-            </div>
-            <div className={styles.unlockText}>
-              <h4 className={styles.unlockTitle}>{nextUnlock.name}</h4>
-              <p className={styles.unlockSubtitle}>
-                <Lock size={12} strokeWidth={2.6} />
+          <button type="button" className={styles.infoCard} onClick={(e) => go(e, '/dashboard/shop')}>
+            <span className={styles.infoArt}>
+              <ShopItemArt art={nextUnlock.art} category={nextUnlock.category} rarity={nextUnlock.rarity} size="sm" locked />
+            </span>
+            <span className={styles.infoText}>
+              <span className={styles.infoTitle}>{nextUnlock.name}</span>
+              <span className={styles.infoSub}>
+                <Lock size={12} strokeWidth={2.75} aria-hidden />
                 Unlocks at Level {nextUnlock.unlock.target}
-              </p>
-            </div>
-          </div>
+              </span>
+            </span>
+          </button>
         )}
 
-        {/* Bottom CTA Button */}
-        <button type="button" className={styles.viewMoreBtn3D} onClick={goToShop}>
-          VIEW SHOP
+        <button type="button" className={styles.cta} onClick={(e) => go(e, '/dashboard/level')}>
+          View progress
         </button>
       </div>
     </div>

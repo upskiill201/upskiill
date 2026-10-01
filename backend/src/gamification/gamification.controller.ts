@@ -59,7 +59,7 @@ export class GamificationController {
 
   /**
    * POST /api/gamification/repair-streak
-   * Restores a lost streak using 150 Coins or 100 XP.
+   * Repairs a streak that just broke — coins only, once, within 48h.
    */
   @Post('repair-streak')
   async repairStreak(

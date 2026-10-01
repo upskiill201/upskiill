@@ -46,6 +46,8 @@ const ALL_REASONS: TeyReason[] = [
   'LESSON_ABANDONED',
   'COURSE_NEAR_COMPLETION',
   'PROGRESS_CELEBRATION',
+  'STREAK_REPAIR_EXPIRING',
+  'FIRST_LESSON',
 ];
 
 /** Renders the same reason across many userIds on a fixed date, collecting
@@ -154,5 +156,54 @@ describe('renderTemplate', () => {
     const first = renderTemplate(ctx(), 'u1', '2026-09-04');
     const second = renderTemplate(ctx(), 'u1', '2026-09-04');
     expect(first).toEqual(second);
+  });
+
+  const render = (reason: TeyReason, facts: Partial<TeyContext['facts']>) =>
+    renderTemplate(ctx({ reason, facts: { ...baseFacts, ...facts } }), 'u1', '2026-09-04');
+
+  it('leads a broken streak with the repair when one is open — real price, real window', () => {
+    for (let i = 0; i < 10; i++) {
+      const { title, body } = renderTemplate(
+        ctx({ reason: 'STREAK_LOST', facts: { ...baseFacts, repairLostStreak: 23, repairCostCoins: 450, repairHoursLeft: 40 } }),
+        `user-${i}`,
+        '2026-09-04',
+      );
+      expect(`${title} ${body}`).toMatch(/repair/i);
+      expect(`${title} ${body}`).toMatch(/23/);
+    }
+  });
+
+  it('never mentions a repair when there is none to offer', () => {
+    for (let i = 0; i < 10; i++) {
+      const { title, body } = renderTemplate(
+        ctx({ reason: 'STREAK_LOST', facts: { ...baseFacts, repairLostStreak: 0 } }),
+        `user-${i}`,
+        '2026-09-04',
+      );
+      expect(`${title} ${body}`).not.toMatch(/repair/i);
+    }
+  });
+
+  it('says the honest goodbye on day 30 of the win-back ladder', () => {
+    const { title, body } = render('INACTIVE_RETURN', { daysSinceLastActivity: 30 });
+    expect(title).toMatch(/don’t seem to be working/);
+    expect(body).toMatch(/stop sending/);
+  });
+
+  it('only says "yesterday" when it really was yesterday', () => {
+    for (let i = 0; i < 20; i++) {
+      const { title } = renderTemplate(
+        ctx({ reason: 'INACTIVE_RETURN', facts: { ...baseFacts, daysSinceLastActivity: 2 } }),
+        `user-${i}`,
+        '2026-09-04',
+      );
+      expect(title).not.toMatch(/yesterday/);
+    }
+  });
+
+  it('calls the currency Coins, never gems', () => {
+    const { title, body } = render('STREAK_REPAIR_EXPIRING', { repairLostStreak: 9, repairCostCoins: 450, repairHoursLeft: 5 });
+    expect(`${title} ${body}`).toMatch(/Coins/);
+    expect(`${title} ${body}`).not.toMatch(/gem/i);
   });
 });

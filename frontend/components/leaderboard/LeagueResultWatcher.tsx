@@ -69,12 +69,8 @@ export default function LeagueResultWatcher() {
 
         const scenes: CelebrationScene[] = [];
         for (const result of results) {
-          // STAYED weeks don't warrant a full-page takeover — mark seen quietly.
-          if (result.outcome === 'STAYED' || result.outcome === 'TOURNAMENT_EXIT') {
-            ack(result.weekStart);
-            continue;
-          }
-
+          // Every week ends with its result — staying is news too (Duolingo
+          // always tells you how the week finished).
           const outcome = result.outcome as LeagueResultOutcome;
           const toLeagueName = getLeagueMeta(result.toTier).name;
           const fromLeagueName = getLeagueMeta(result.league).name;

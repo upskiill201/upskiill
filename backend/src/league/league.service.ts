@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   COHORT_CAPACITY,
@@ -13,6 +15,12 @@ import {
   getUtcWeekStart,
   outcomeNewTier,
   resolveOutcome,
+  resolveSharedOutcome,
+  getSharedPromotionZone,
+  isSharedCohortIndex,
+  SHARED_COHORT_CAPACITY,
+  SHARED_COHORT_TIER,
+  SHARED_LEAGUE_UNTIL,
 } from './league.config';
 
 // ─── Public response shapes ──────────────────────────────────────────────────
@@ -24,6 +32,8 @@ export interface LeaderboardRow {
   avatarUrl: string | null;
   weeklyXp: number;
   isMe: boolean;
+  /** The member's own tier — on a shared board, members come from many. */
+  league: LeagueTier;
 }
 
 export interface MyLeaderboard {
@@ -40,6 +50,8 @@ export interface MyLeaderboard {
   promotionCutoff: number | null;
   demotionStartRank: number | null;
   cohortSize: number;
+  /** A shared week: everyone active on one board (see league.config.ts). */
+  shared: boolean;
   standings: LeaderboardRow[];
 }
 
@@ -72,8 +84,13 @@ export class LeagueService {
   // Instance-scoped (not module-level) so each NestJS DI container — and
   // each fresh `LeagueService` built in tests — starts with a clean cache.
   private readonly ensureSettledCheckedAt = new Map<string, number>();
+  /** weekStart → shared? Fixed once the week has begun (last week is over). */
+  private readonly sharedWeekCache = new Map<string, boolean>();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   // ─── XP recording (called from LeagueListener on 'xp.awarded') ─────────────
 
@@ -82,14 +99,22 @@ export class LeagueService {
    * joining them to a cohort in their current tier on their first award of
    * the week ("complete a lesson to join this week's leaderboard").
    */
-  async recordXp(userId: string, amount: number, awardedAt: Date, source: string) {
+  async recordXp(
+    userId: string,
+    amount: number,
+    awardedAt: Date,
+    source: string,
+  ) {
     if (amount <= 0) return;
     try {
       await this.ensureSettled(userId, awardedAt);
       await this.joinOrIncrement(userId, amount, awardedAt);
     } catch (err) {
       // League tracking must never break the award flow that triggered it.
-      this.logger.error(`recordXp failed for user ${userId} (${source})`, err as Error);
+      this.logger.error(
+        `recordXp failed for user ${userId} (${source})`,
+        err as Error,
+      );
     }
   }
 
@@ -102,23 +127,287 @@ export class LeagueService {
     });
 
     if (existing) {
-      await this.prisma.leagueMember.update({
+      const updated = await this.prisma.leagueMember.update({
         where: { id: existing.id },
         data: { weeklyXp: { increment: amount }, xpUpdatedAt: at },
+        select: { weeklyXp: true, cohortId: true },
       });
+      // Read-after-increment, so two awards racing each see their own window.
+      await this.announceOvertakes(
+        userId,
+        updated.cohortId,
+        weekStart,
+        updated.weeklyXp - amount,
+        updated.weeklyXp,
+      ).catch((err) =>
+        this.logger.warn(`overtake announce failed: ${(err as Error).message}`),
+      );
       return;
     }
 
-    // First XP of the week — join a cohort in the user's current tier.
+    // First XP of the week — join a cohort: the shared board while Teyro is
+    // small, otherwise one in the user's current tier.
     const profile = await this.prisma.studentProfile.findUnique({
       where: { userId },
       select: { leagueTier: true },
     });
     const league = profile?.leagueTier ?? 'BRONZE';
-    const cohortId = await this.assignCohort(league, weekStart);
+    const cohortId = (await this.isSharedWeek(weekStart))
+      ? await this.assignSharedCohort(weekStart)
+      : await this.assignCohort(league, weekStart);
 
     await this.prisma.leagueMember.create({
-      data: { userId, cohortId, weekStart, league, weeklyXp: amount, xpUpdatedAt: at },
+      data: {
+        userId,
+        cohortId,
+        weekStart,
+        league,
+        weeklyXp: amount,
+        xpUpdatedAt: at,
+      },
+    });
+  }
+
+  /**
+   * Emits `league.overtaken` for every cohort member this award just jumped
+   * past — Duolingo's "Sam passed you!", which works because it names a real
+   * person and a real rank. The passer hears about it in the app (the
+   * after-lesson league screen and LeaderboardRankWatcher); the passed learner
+   * is the one who isn't looking, so they are the one who gets told.
+   *
+   * "Passed" = was at or above the passer's old XP, is now below the new XP.
+   */
+  private async announceOvertakes(
+    passerId: string,
+    cohortId: string | null,
+    weekStart: string,
+    oldXp: number,
+    newXp: number,
+  ) {
+    if (!cohortId || newXp <= oldXp) return;
+    const passed = await this.prisma.leagueMember.findMany({
+      where: {
+        cohortId,
+        userId: { not: passerId },
+        weeklyXp: { gte: oldXp, lt: newXp },
+      },
+      select: { userId: true },
+    });
+    if (passed.length === 0) return;
+
+    const board = await this.cohortBoard(cohortId);
+    if (!board) return;
+    const passer = board.rows.find((r) => r.userId === passerId);
+    if (passer) {
+      this.eventEmitter.emit('league.passed.others', {
+        userId: passerId,
+        weekStart,
+        passedNames: board.rows
+          .filter((r) => passed.some((p) => p.userId === r.userId))
+          .map((r) => r.name),
+        rank: passer.rank,
+        weeklyXp: passer.weeklyXp,
+        league: passer.league,
+        inPromotionZone:
+          board.promotionCutoff !== null && passer.rank <= board.promotionCutoff,
+      });
+    }
+
+    for (const { userId } of passed) {
+      const me = board.rows.find((r) => r.userId === userId);
+      if (!me || !passer) continue;
+      this.eventEmitter.emit('league.overtaken', {
+        userId,
+        weekStart,
+        rivalId: passerId,
+        rivalName: passer.name,
+        rank: me.rank,
+        weeklyXp: me.weeklyXp,
+        league: me.league,
+        // They were one place higher a moment ago.
+        leftPromotionZone:
+          board.promotionCutoff !== null &&
+          me.rank - 1 <= board.promotionCutoff &&
+          me.rank > board.promotionCutoff,
+        enteredDemotionZone:
+          board.demotionStartRank !== null &&
+          me.rank >= board.demotionStartRank &&
+          me.rank - 1 < board.demotionStartRank,
+      });
+    }
+  }
+
+  /**
+   * One cohort's live standings with its zones — the same numbers
+   * getMyLeaderboard shows, for server-side notifications.
+   */
+  private async cohortBoard(cohortId: string) {
+    const cohort = await this.prisma.leagueCohort.findUnique({
+      where: { id: cohortId },
+      select: { cohortIndex: true, league: true, weekStart: true },
+    });
+    if (!cohort) return null;
+    const members = await this.prisma.leagueMember.findMany({
+      where: { cohortId },
+      orderBy: [{ weeklyXp: 'desc' }, { xpUpdatedAt: 'asc' }],
+      select: {
+        userId: true,
+        weeklyXp: true,
+        league: true,
+        user: { select: { fullName: true } },
+      },
+    });
+    const shared = isSharedCohortIndex(cohort.cohortIndex);
+    const total = members.length;
+    const tier = cohort.league as LeagueTier;
+    return {
+      shared,
+      weekStart: cohort.weekStart,
+      promotionCutoff: shared ? getSharedPromotionZone(total) : getPromotionZoneFor(tier, total),
+      demotionStartRank:
+        !shared && tier !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION
+          ? total - DEMOTION_ZONE_SIZE + 1
+          : null,
+      rows: members.map((m, i) => ({
+        rank: i + 1,
+        userId: m.userId,
+        name: (m.user.fullName ?? '').trim().split(/\s+/)[0] || 'Someone',
+        weeklyXp: m.weeklyXp,
+        league: m.league as LeagueTier,
+      })),
+    };
+  }
+
+  private get cronEnabled(): boolean {
+    if (process.env.LEAGUE_CRON_ENABLED === 'true') return true;
+    if (process.env.LEAGUE_CRON_ENABLED === 'false') return false;
+    return process.env.NODE_ENV === 'production';
+  }
+
+  /**
+   * Sunday afternoon: "the league ends tonight". Emits `league.week.ending`
+   * for everyone whose result is actually in play — holding a promotion
+   * spot, within reach of one, or in the demotion zone. The comfortable
+   * middle of the table hears nothing; "9 hours left" with nothing at stake
+   * is noise.
+   */
+  @Cron('0 0 15 * * 0', { name: 'league-week-ending', timeZone: 'UTC' })
+  async announceWeekEnding(now = new Date()): Promise<number> {
+    if (!this.cronEnabled) return 0;
+    const weekStart = getUtcWeekStart(now);
+    const hoursLeft = Math.max(
+      1,
+      Math.round((getWeekEndDate(weekStart).getTime() - now.getTime()) / 3_600_000),
+    );
+    const cohorts = await this.prisma.leagueCohort.findMany({
+      where: { weekStart, status: 'ACTIVE' },
+      select: { id: true },
+    });
+
+    let announced = 0;
+    for (const { id } of cohorts) {
+      const board = await this.cohortBoard(id).catch(() => null);
+      if (!board || board.rows.length < 2) continue;
+      const cutoff = board.promotionCutoff ?? 0;
+      const cutoffXp = cutoff > 0 ? board.rows[cutoff - 1]?.weeklyXp ?? 0 : 0;
+
+      for (const row of board.rows) {
+        const zone =
+          row.rank <= cutoff
+            ? 'PROMOTION'
+            : board.demotionStartRank !== null && row.rank >= board.demotionStartRank
+              ? 'DEMOTION'
+              : row.rank <= cutoff + 3
+                ? 'CHASING'
+                : null;
+        if (!zone) continue;
+        this.eventEmitter.emit('league.week.ending', {
+          userId: row.userId,
+          weekStart,
+          rank: row.rank,
+          league: row.league,
+          zone,
+          hoursLeft,
+          xpToPromotion: zone === 'CHASING' ? Math.max(1, cutoffXp - row.weeklyXp + 1) : 0,
+        });
+        announced++;
+      }
+    }
+    this.logger.log(`league week-ending: ${announced} learners across ${cohorts.length} cohorts`);
+    return announced;
+  }
+
+  /**
+   * Monday, just after the week closes: settle every finished cohort now,
+   * rather than lazily on each member's next visit. Results were already
+   * correct either way — this only makes them arrive on time, so the
+   * "You've been promoted!" push and email go out Monday morning instead of
+   * whenever someone happens to open the app. settleCohort's CAS keeps a
+   * concurrent lazy settle from double-settling.
+   */
+  @Cron('0 20 0 * * 1', { name: 'league-settle-week', timeZone: 'UTC' })
+  async settleFinishedWeek(now = new Date()): Promise<number> {
+    if (!this.cronEnabled) return 0;
+    const cohorts = await this.prisma.leagueCohort.findMany({
+      where: { weekStart: { lt: getUtcWeekStart(now) }, status: 'ACTIVE' },
+      select: { id: true },
+    });
+    for (const { id } of cohorts) {
+      await this.settleCohort(id).catch((err) =>
+        this.logger.error(`settle ${id} failed`, err as Error),
+      );
+    }
+    return cohorts.length;
+  }
+
+  /**
+   * A week is shared when fewer than SHARED_LEAGUE_UNTIL learners competed
+   * the week before. Last week is finished by the time anyone joins this one,
+   * so the answer never changes mid-week and is cached.
+   */
+  async isSharedWeek(weekStart: string): Promise<boolean> {
+    const cached = this.sharedWeekCache.get(weekStart);
+    if (cached !== undefined) return cached;
+    const d = new Date(weekStart + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() - 7);
+    const lastWeek = d.toISOString().split('T')[0];
+    const active = await this.prisma.leagueMember.count({
+      where: { weekStart: lastWeek, cohortId: { not: null } },
+    });
+    const shared = active < SHARED_LEAGUE_UNTIL;
+    this.sharedWeekCache.set(weekStart, shared);
+    return shared;
+  }
+
+  /**
+   * The week's shared board with room, or a new one. Shared cohorts sit under
+   * SHARED_COHORT_TIER with negative indexes (-1, -2, …), so they can never
+   * collide with a tiered cohort of the same tier. Locked like assignCohort.
+   */
+  private async assignSharedCohort(weekStart: string): Promise<string> {
+    return this.prisma.$transaction(async (tx) => {
+      const cohorts = await tx.$queryRaw<{ id: string; cohortIndex: number }[]>`
+        SELECT "id", "cohortIndex" FROM "league_cohorts"
+        WHERE "league" = ${SHARED_COHORT_TIER}::"LeagueTier" AND "weekStart" = ${weekStart}
+          AND "status" = 'ACTIVE' AND "cohortIndex" < 0
+        ORDER BY "cohortIndex" DESC
+        FOR UPDATE`;
+      const counts = cohorts.length
+        ? await tx.leagueMember.groupBy({
+            by: ['cohortId'],
+            where: { cohortId: { in: cohorts.map((c) => c.id) } },
+            _count: true,
+          })
+        : [];
+      const countByCohort = new Map(counts.map((c) => [c.cohortId, c._count]));
+      for (const cohort of cohorts) {
+        if ((countByCohort.get(cohort.id) ?? 0) < SHARED_COHORT_CAPACITY) return cohort.id;
+      }
+      const created = await tx.leagueCohort.create({
+        data: { league: SHARED_COHORT_TIER, weekStart, cohortIndex: -(cohorts.length + 1) },
+        select: { id: true },
+      });
+      return created.id;
     });
   }
 
@@ -127,13 +416,17 @@ export class LeagueService {
    * creating one when none qualify. Cohort rows are locked FOR UPDATE inside
    * the transaction so two simultaneous joiners can't overflow the 30 slots.
    */
-  private async assignCohort(league: LeagueTier, weekStart: string): Promise<string> {
+  private async assignCohort(
+    league: LeagueTier,
+    weekStart: string,
+  ): Promise<string> {
     return this.prisma.$transaction(async (tx) => {
       // Lock every cohort row for this (league, week) — serializes placement
       // and cohort creation between concurrent joiners.
       const cohorts = await tx.$queryRaw<{ id: string; cohortIndex: number }[]>`
         SELECT "id", "cohortIndex" FROM "league_cohorts"
         WHERE "league" = ${league}::"LeagueTier" AND "weekStart" = ${weekStart} AND "status" = 'ACTIVE'
+          AND "cohortIndex" >= 0
         ORDER BY "cohortIndex" ASC
         FOR UPDATE`;
 
@@ -144,16 +437,21 @@ export class LeagueService {
             _count: true,
           })
         : [];
-      const countByCohort = new Map(counts.map((c) => [c.cohortId, c._count as number]));
+      const countByCohort = new Map(counts.map((c) => [c.cohortId, c._count]));
 
       for (const cohort of cohorts) {
-        if ((countByCohort.get(cohort.id) ?? 0) < COHORT_CAPACITY) return cohort.id;
+        if ((countByCohort.get(cohort.id) ?? 0) < COHORT_CAPACITY)
+          return cohort.id;
       }
 
       // All full (or none exist) — open the next cohort. Index = number of
       // existing rows; we hold their locks, so concurrent creators can't clash.
+      // Count every tiered cohort (settled too) so a new index never repeats.
+      const existing = await tx.leagueCohort.count({
+        where: { league, weekStart, cohortIndex: { gte: 0 } },
+      });
       const created = await tx.leagueCohort.create({
-        data: { league, weekStart, cohortIndex: cohorts.length },
+        data: { league, weekStart, cohortIndex: existing },
         select: { id: true },
       });
       return created.id;
@@ -179,7 +477,12 @@ export class LeagueService {
     // 1. Settle the user's finished cohorts (CAS-guarded, so concurrent calls
     //    for different users in the same cohort are safe).
     const unsettled = await this.prisma.leagueMember.findMany({
-      where: { userId, weekStart: { lt: currentWeek }, outcome: null, cohortId: { not: null } },
+      where: {
+        userId,
+        weekStart: { lt: currentWeek },
+        outcome: null,
+        cohortId: { not: null },
+      },
       select: { cohortId: true },
     });
     for (const m of unsettled) {
@@ -200,7 +503,11 @@ export class LeagueService {
       return;
     }
 
-    for (let week = getNextWeekStart(latest.weekStart); week < currentWeek; week = getNextWeekStart(week)) {
+    for (
+      let week = getNextWeekStart(latest.weekStart);
+      week < currentWeek;
+      week = getNextWeekStart(week)
+    ) {
       const existing = await this.prisma.leagueMember.findUnique({
         where: { userId_weekStart: { userId, weekStart: week } },
         select: { id: true },
@@ -229,7 +536,15 @@ export class LeagueService {
       // createMany + skipDuplicates: if a concurrent call already recorded
       // this week, count === 0 and the demotion is skipped (idempotent).
       const created = await tx.leagueMember.createMany({
-        data: [{ userId, weekStart, league: profile.leagueTier, weeklyXp: 0, outcome: 'INACTIVE_DEMOTED' }],
+        data: [
+          {
+            userId,
+            weekStart,
+            league: profile.leagueTier,
+            weeklyXp: 0,
+            outcome: 'INACTIVE_DEMOTED',
+          },
+        ],
         skipDuplicates: true,
       });
       if (created.count === 0) return;
@@ -263,13 +578,18 @@ export class LeagueService {
       if (!cohort) return;
 
       const total = cohort.members.length;
-      const isTournament = cohort.league === 'DIAMOND_TOURNAMENT';
+      const shared = isSharedCohortIndex(cohort.cohortIndex);
+      const isTournament = !shared && cohort.league === 'DIAMOND_TOURNAMENT';
 
       await this.prisma.$transaction(async (tx) => {
         for (let i = 0; i < total; i++) {
           const member = cohort.members[i];
           const rank = i + 1;
-          const { outcome, newTier } = resolveOutcome(cohort.league, rank, total);
+          // Shared board: the board decides, each learner moves from their
+          // own tier. Tiered cohort: everyone shares the cohort's tier.
+          const { outcome, newTier } = shared
+            ? resolveSharedOutcome(member.league as LeagueTier, rank, total)
+            : resolveOutcome(cohort.league, rank, total);
 
           await tx.leagueMember.update({
             where: { id: member.id },
@@ -280,7 +600,9 @@ export class LeagueService {
             where: { userId: member.userId },
             data: {
               leagueTier: newTier,
-              ...(outcome === 'CHAMPION' ? { tournamentWins: { increment: 1 } } : {}),
+              ...(outcome === 'CHAMPION'
+                ? { tournamentWins: { increment: 1 } }
+                : {}),
             },
           });
         }
@@ -291,13 +613,26 @@ export class LeagueService {
         });
 
         this.logger.log(
-          `Settled ${isTournament ? 'Diamond Tournament' : cohort.league} cohort ${cohortId} (${total} members)`,
+          `Settled ${shared ? 'shared' : isTournament ? 'Diamond Tournament' : cohort.league} cohort ${cohortId} (${total} members)`,
         );
       });
+
+      // No event previously existed for "a cohort settled" — clients only
+      // ever discovered results by polling getPendingResults(). This is the
+      // hook the email system (and any future push notification) needs.
+      for (const member of cohort.members) {
+        this.eventEmitter.emit('league.settled', {
+          leagueMemberId: member.id,
+          userId: member.userId,
+        });
+      }
     } catch (err) {
       // Release the claim so a later read can retry the settlement.
       await this.prisma.leagueCohort
-        .updateMany({ where: { id: cohortId, status: 'SETTLING' }, data: { status: 'ACTIVE' } })
+        .updateMany({
+          where: { id: cohortId, status: 'SETTLING' },
+          data: { status: 'ACTIVE' },
+        })
         .catch(() => undefined);
       throw err;
     }
@@ -309,7 +644,10 @@ export class LeagueService {
   async getMyLeaderboard(userId: string): Promise<MyLeaderboard> {
     const now = new Date();
     await this.ensureSettled(userId, now).catch((err) =>
-      this.logger.error(`ensureSettled failed during leaderboard read for ${userId}`, err as Error),
+      this.logger.error(
+        `ensureSettled failed during leaderboard read for ${userId}`,
+        err as Error,
+      ),
     );
 
     const weekStart = getUtcWeekStart(now);
@@ -330,14 +668,16 @@ export class LeagueService {
       promotionCutoff: null,
       demotionStartRank: null,
       cohortSize: COHORT_CAPACITY,
+      shared: await this.isSharedWeek(weekStart),
       standings: [],
     };
 
     const membership = await this.prisma.leagueMember.findUnique({
       where: { userId_weekStart: { userId, weekStart } },
-      select: { cohortId: true },
+      select: { cohortId: true, cohort: { select: { cohortIndex: true } } },
     });
     if (!membership?.cohortId) return base; // hasn't joined this week yet
+    const shared = membership.cohort ? isSharedCohortIndex(membership.cohort.cohortIndex) : false;
 
     const members = await this.prisma.leagueMember.findMany({
       where: { cohortId: membership.cohortId },
@@ -345,6 +685,7 @@ export class LeagueService {
       select: {
         userId: true,
         weeklyXp: true,
+        league: true,
         user: { select: { fullName: true, avatarUrl: true } },
       },
     });
@@ -356,17 +697,22 @@ export class LeagueService {
       avatarUrl: m.user.avatarUrl,
       weeklyXp: m.weeklyXp,
       isMe: m.userId === userId,
+      league: m.league as LeagueTier,
     }));
 
     const total = standings.length;
     return {
       ...base,
       joined: true,
+      shared,
+      cohortSize: shared ? SHARED_COHORT_CAPACITY : COHORT_CAPACITY,
       cohortId: membership.cohortId,
       myRank: standings.find((s) => s.isMe)?.rank ?? null,
-      promotionCutoff: getPromotionZoneFor(league, total),
+      promotionCutoff: shared ? getSharedPromotionZone(total) : getPromotionZoneFor(league, total),
       demotionStartRank:
-        league !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION ? total - DEMOTION_ZONE_SIZE + 1 : null,
+        league !== 'BRONZE' && total >= MIN_COHORT_FOR_DEMOTION
+          ? total - DEMOTION_ZONE_SIZE + 1
+          : null,
       standings,
     };
   }
@@ -377,14 +723,24 @@ export class LeagueService {
    * learner who was away for two weekly settlements gets both queued and
    * played in order, rather than only ever seeing the most recent one.
    */
-  async getPendingResults(userId: string): Promise<{ results: PendingLeagueResult[] }> {
+  async getPendingResults(
+    userId: string,
+  ): Promise<{ results: PendingLeagueResult[] }> {
     const currentWeek = getUtcWeekStart();
     await this.ensureSettled(userId).catch((err) =>
-      this.logger.error(`ensureSettled failed during pending-results read for ${userId}`, err as Error),
+      this.logger.error(
+        `ensureSettled failed during pending-results read for ${userId}`,
+        err as Error,
+      ),
     );
 
     const pendingRows = await this.prisma.leagueMember.findMany({
-      where: { userId, weekStart: { lt: currentWeek }, seenAt: null, outcome: { not: null } },
+      where: {
+        userId,
+        weekStart: { lt: currentWeek },
+        seenAt: null,
+        outcome: { not: null },
+      },
       orderBy: { weekStart: 'asc' },
     });
     if (pendingRows.length === 0) return { results: [] };
@@ -406,6 +762,7 @@ export class LeagueService {
               userId: true,
               rank: true,
               weeklyXp: true,
+              league: true,
               user: { select: { fullName: true, avatarUrl: true } },
             },
           })
@@ -417,6 +774,7 @@ export class LeagueService {
         avatarUrl: m.user.avatarUrl,
         weeklyXp: m.weeklyXp,
         isMe: m.userId === userId,
+        league: m.league as LeagueTier,
       }));
 
       results.push({

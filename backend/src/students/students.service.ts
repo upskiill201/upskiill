@@ -564,9 +564,6 @@ export class StudentsService {
     const ctx = await this.getRosterContext(creatorId);
     const allRows = [...ctx.aggs.values()].map((agg) => this.toRosterRow(ctx, agg));
 
-    const summary = emptySummary();
-    for (const r of allRows) summary[r.segment] += 1;
-
     let rows = allRows;
 
     if (opts.courseId) {
@@ -576,6 +573,11 @@ export class StudentsService {
         [...ctx.aggs.get(r.id)!.courses].some((c) => c.courseId === opts.courseId),
       );
     }
+
+    // Segment counts for the chips: within the chosen course, before the
+    // segment and search filters narrow the list.
+    const summary = emptySummary();
+    for (const r of rows) summary[r.segment] += 1;
 
     if (opts.segment && opts.segment !== 'ALL') {
       rows = rows.filter((r) => r.segment === opts.segment);

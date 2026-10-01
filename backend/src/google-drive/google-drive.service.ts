@@ -45,7 +45,10 @@ interface DriveFileListEntry {
   videoMediaMetadata?: { durationMillis?: string | null } | null;
 }
 
-function mapEntry(entry: DriveFileListEntry): DriveFile {
+function mapEntry(
+  entry: DriveFileListEntry,
+  section: { id: string; name: string } | null,
+): DriveFile {
   const mimeType = entry.mimeType ?? 'application/octet-stream';
   return {
     id: entry.id ?? '',
@@ -57,6 +60,8 @@ function mapEntry(entry: DriveFileListEntry): DriveFile {
       ? Number(entry.videoMediaMetadata.durationMillis)
       : undefined,
     modifiedTime: entry.modifiedTime ?? undefined,
+    sectionFolderId: section?.id,
+    sectionFolderName: section?.name,
   };
 }
 
@@ -257,7 +262,7 @@ export class GoogleDriveService {
         orderBy: 'folder,name_natural',
         pageToken,
       });
-      files.push(...(res.data.files ?? []).map(mapEntry));
+      files.push(...(res.data.files ?? []).map((e) => mapEntry(e, null)));
       pageToken = res.data.nextPageToken ?? undefined;
     } while (pageToken);
     return files;
@@ -282,15 +287,20 @@ export class GoogleDriveService {
       );
     }
 
-    const allFiles = await this.walkFolder(drive, folderId, 0);
+    const allFiles = await this.walkFolder(drive, folderId, 0, null);
     const nonFolders = allFiles.filter((f) => f.category !== 'folder');
 
     let estimatedVideoDurationSeconds = 0;
     let videosMissingDuration = 0;
+    let videosOverLimit = 0;
+    const sections = new Set<string>();
     for (const file of nonFolders) {
       if (file.category !== 'video') continue;
+      sections.add(file.sectionFolderId ?? '(root)');
       if (typeof file.durationMs === 'number') {
         estimatedVideoDurationSeconds += Math.round(file.durationMs / 1000);
+        // Over Teyro's bite-size limit: imported with the classic Learn layout.
+        if (file.durationMs > 15 * 60 * 1000) videosOverLimit += 1;
       } else {
         videosMissingDuration += 1;
       }
@@ -308,6 +318,8 @@ export class GoogleDriveService {
       unsupported: nonFolders.filter((f) => f.category === 'other'),
       estimatedVideoDurationSeconds,
       videosMissingDuration,
+      videosOverLimit,
+      modules: sections.size,
     };
   }
 
@@ -330,7 +342,7 @@ export class GoogleDriveService {
    *  CourseImportService uses to create one CourseImportFile row per file. */
   async listAllFiles(userId: string, folderId: string): Promise<DriveFile[]> {
     const drive = await this.driveClient(userId);
-    const all = await this.walkFolder(drive, folderId, 0);
+    const all = await this.walkFolder(drive, folderId, 0, null);
     return all.filter((f) => f.category !== 'folder');
   }
 
@@ -363,10 +375,18 @@ export class GoogleDriveService {
     };
   }
 
+  /**
+   * @param section The first-level subfolder this walk is currently inside,
+   *   or null while still at the selected course root. Deliberately stays
+   *   the SAME object as recursion goes deeper than one level — a course's
+   *   sections are its root's direct subfolders; anything nested further
+   *   still belongs to that same section, not a new one per nesting level.
+   */
   private async walkFolder(
     drive: drive_v3.Drive,
     folderId: string,
     depth: number,
+    section: { id: string; name: string } | null,
   ): Promise<DriveFile[]> {
     if (depth > MAX_WALK_DEPTH) {
       this.logger.warn(
@@ -389,14 +409,19 @@ export class GoogleDriveService {
         orderBy: 'name_natural',
         pageToken,
       });
-      children.push(...(res.data.files ?? []).map(mapEntry));
+      children.push(...(res.data.files ?? []).map((e) => mapEntry(e, section)));
       pageToken = res.data.nextPageToken ?? undefined;
     } while (pageToken);
 
     let all = children;
     const subfolders = children.filter((f) => f.category === 'folder');
     for (const sub of subfolders) {
-      all = all.concat(await this.walkFolder(drive, sub.id, depth + 1));
+      // Only the root's direct children start a new section; deeper
+      // subfolders inherit whatever section they're already inside.
+      const childSection = section ?? { id: sub.id, name: sub.name };
+      all = all.concat(
+        await this.walkFolder(drive, sub.id, depth + 1, childSection),
+      );
     }
     return all;
   }

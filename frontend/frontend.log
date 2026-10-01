@@ -1,8 +1,16 @@
+⚠ Port 3000 is in use by process 14800, using available port 3001 instead.
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.156:3001
+- Environments: .env.local
+✓ Ready in 9.7s
+Setting up rewrites. Target Backend: http://localhost:3001
+⨯ Another next dev server is already running.
 
-> frontend@0.1.0 start
-> next start
+- Local:        http://localhost:3000
+- PID:          14800
+- Dir:          C:\Users\HP\upskiill\frontend
+- Log:          .next\dev\logs\next-development.log
 
-▲ Next.js 16.2.1
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
-✓ Ready in 196ms
+Run taskkill /PID 14800 /F to stop it.
+[?25h

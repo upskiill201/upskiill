@@ -2,13 +2,13 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, BellOff } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import {
   AppNotification,
-  getNotifications,
   markNotificationsRead,
   timeAgo,
 } from '@/lib/communityApi';
@@ -16,15 +16,19 @@ import {
   groupFor,
   isActorPhrased,
   phraseFor,
+  secondaryLine,
   typeChipKey,
   typeIcon,
   type NotificationGroup,
 } from '@/lib/notificationCopy';
 import { fetcher } from '@/lib/swr';
 import shared from './community.module.css';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { playHaptic } from '@/lib/haptics';
 import styles from './NotificationBell.module.css';
 
-const POLL_INTERVAL_MS = 60_000;
+const POLL_INTERVAL_MS = 30_000;
+const listKey = (unreadOnly: boolean) => `/api/notifications?scope=learner&page=1${unreadOnly ? '&unreadOnly=true' : ''}`;
 const GROUP_ORDER: NotificationGroup[] = ['Today', 'This week', 'Earlier'];
 
 interface NotificationBellProps {
@@ -36,10 +40,9 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
   const router = useRouter();
   const wrapRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<AppNotification[]>([]);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const reducedMotion = useReducedMotion();
+  const bell = useAnimationControls();
 
   // SWR's localStorage-seeded cache (lib/swr.ts) can populate `data` with a
   // stale unread count on the very first client render, before hydration —
@@ -54,11 +57,37 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
   // component simultaneously (one is only CSS-hidden, not unmounted) — SWR
   // dedupes them into a single request + a single poll interval.
   const { data, mutate: refreshUnread } = useSWR<{ unreadCount: number }>(
-    '/api/notifications/unread-count',
+    '/api/notifications/unread-count?scope=learner',
     fetcher,
-    { refreshInterval: POLL_INTERVAL_MS },
+    { refreshInterval: POLL_INTERVAL_MS, revalidateOnFocus: true },
   );
   const unreadCount = mounted ? (data?.unreadCount ?? 0) : 0;
+
+  // The list is cached too, so the panel opens instantly on what's already
+  // known and refreshes underneath — it used to show a skeleton every time.
+  const list = useSWR<{ total: number; items: AppNotification[] }>(listKey(filter === 'unread'), fetcher, {
+    revalidateOnFocus: false,
+  });
+  const items = useMemo(() => list.data?.items ?? [], [list.data]);
+  const loading = !list.data && !list.error;
+  const error = list.error && !list.data ? 'Could not load notifications.' : null;
+  const setItems = (update: (prev: AppNotification[]) => AppNotification[]) =>
+    void list.mutate((cur) => (cur ? { ...cur, items: update(cur.items) } : cur), { revalidate: false });
+
+  // Something new arrived: the bell rings (a shake and a chime) and the list
+  // quietly refreshes, so opening it shows the new row straight away.
+  const lastCount = useRef<number | null>(null);
+  useEffect(() => {
+    if (!mounted || data?.unreadCount === undefined) return;
+    const prev = lastCount.current;
+    lastCount.current = data.unreadCount;
+    if (prev === null || data.unreadCount <= prev) return;
+    playSound('noticeGood');
+    playHaptic('light', false);
+    void list.mutate();
+    if (!reducedMotion) void bell.start({ rotate: [0, -16, 14, -10, 8, -4, 0], transition: { duration: 0.7 } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- react to the count only
+  }, [mounted, data?.unreadCount]);
   const setUnreadCount = (updater: number | ((c: number) => number)) => {
     refreshUnread(
       (current) => {
@@ -87,31 +116,27 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
     };
   }, [isOpen]);
 
-  const load = async (unreadOnly: boolean) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await getNotifications(1, unreadOnly);
-      setItems(res.items);
-    } catch {
-      setError('Could not load notifications.');
-    } finally {
-      setLoading(false);
-    }
+  const openPanel = () => {
+    playSound('menuOpen');
+    playHaptic('light', false);
+    setIsOpen(true);
+    void list.mutate();
   };
 
-  const openPanel = () => {
-    setIsOpen(true);
-    void load(filter === 'unread');
+  const closePanel = () => {
+    playSound('menuClose');
+    setIsOpen(false);
   };
 
   const switchFilter = (next: 'all' | 'unread') => {
     if (next === filter) return;
+    playSound('navTap', next === 'all' ? 1 : 2);
     setFilter(next);
-    void load(next === 'unread');
   };
 
   const markAllRead = async () => {
+    playSound('toggleOn');
+    playHaptic('light', false);
     // Optimistic — panel stays open, count drops immediately.
     setItems((prev) =>
       filter === 'unread' ? [] : prev.map((n) => ({ ...n, isRead: true })),
@@ -125,6 +150,7 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
   };
 
   const onItemClick = (n: AppNotification) => {
+    playSound('navTap', 3);
     if (!n.isRead) {
       setItems((prev) => prev.map((i) => (i.id === n.id ? { ...i, isRead: true } : i)));
       setUnreadCount((c) => Math.max(0, c - 1));
@@ -142,14 +168,24 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
     <div className={styles.wrap} ref={wrapRef}>
       <button
         className={styles.bellBtn}
-        onClick={() => (isOpen ? setIsOpen(false) : openPanel())}
+        onClick={() => (isOpen ? closePanel() : openPanel())}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
         aria-expanded={isOpen}
         type="button"
       >
-        <Bell size={19} />
+        <motion.span animate={bell} style={{ display: 'inline-flex', transformOrigin: '50% 10%' }}>
+          <Bell size={20} strokeWidth={2.5} />
+        </motion.span>
         {unreadCount > 0 && (
-          <span className={styles.badgeCount}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+          <motion.span
+            key={unreadCount}
+            className={styles.badgeCount}
+            initial={reducedMotion ? false : { scale: 0.4 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 700, damping: 14 }}
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </motion.span>
         )}
       </button>
 
@@ -231,7 +267,10 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
           <Link
             href="/dashboard/notifications"
             className={styles.panelFooter}
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              playSound('navTap', 4);
+              setIsOpen(false);
+            }}
           >
             See all notifications
           </Link>
@@ -274,7 +313,7 @@ export function NotificationRow({
           )}
           {phraseFor(n)}
         </span>
-        {n.title && <span className={styles.itemText}>{n.title}</span>}
+        {secondaryLine(n) && <span className={styles.itemText}>{secondaryLine(n)}</span>}
         <span className={styles.itemTime}>{timeAgo(n.createdAt)}</span>
       </span>
 

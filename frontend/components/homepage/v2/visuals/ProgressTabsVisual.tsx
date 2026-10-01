@@ -1,43 +1,31 @@
 'use client';
 
 /**
- * ProgressTabsVisual — one card, four tabs, all real Teyro reward UI,
+ * ProgressTabsVisual — one card, three tabs, all real Teyro reward UI,
  * recreated in code (not a screenshot) so it sits directly on the page the
  * way Coddy's own mockups do — no device frame, no phone bezel.
  *
- * Each tab keeps its REAL component's own background, not one shared box:
- * Celebrate, Monthly Quest and the Treasure Chest reveal are all genuinely
- * dark navy in the product (the Celebration Engine's stage and
- * MonthlyQuestCard's own card both run on #101a2e), but the Weekly Lucky
- * Spin's dashboard card is a plain white card (WeeklyLuckySpinCard.tsx /
- * WeeklyLuckySpin.module.css .card) — forcing it onto the same dark card as
- * the others would misrepresent the real UI, so the wrapper's background
- * switches per tab to match whichever real component is showing.
+ * Each tab keeps its own background. (The Lucky Wheel tab was removed on
+ * 2026-09-24 — the wheel was folded into streak chests.)
  */
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { SegmentedTabs, useAutoAdvancingTabs } from '../SegmentedTabs';
 
 const TABS = [
   { id: 'celebrate', label: 'Celebrate', accent: '#3D5AFE' },
-  { id: 'quest', label: 'Monthly Quest', accent: '#FFC800', textOnAccent: '#101a2e' },
-  { id: 'wheel', label: 'Lucky Wheel', accent: '#EC4899' },
+  { id: 'quest', label: 'Monthly Challenge', accent: '#FFC800', textOnAccent: '#101a2e' },
   { id: 'chest', label: 'Treasure Chest', accent: '#22C55E' },
 ];
 
-// Real per-tab card background — dark navy for the three Celebration Engine
-// surfaces, plain white for the Lucky Spin's actual dashboard card.
+// Per-tab card background.
 const CARD_BG: Record<string, string> = {
   celebrate: 'radial-gradient(120% 90% at 50% -10%, rgba(61,90,254,0.22) 0%, rgba(16,26,46,0) 55%), #101a2e',
   quest: 'radial-gradient(120% 90% at 50% -10%, rgba(61,90,254,0.18) 0%, rgba(16,26,46,0) 55%), #101a2e',
-  wheel: '#FFFFFF',
   chest: 'radial-gradient(120% 90% at 50% -10%, rgba(34,197,94,0.16) 0%, rgba(16,26,46,0) 55%), #101a2e',
 };
-
-// The real 8 segment colors from WeeklyLuckySpinCard.tsx.
-const WHEEL_COLORS = ['#3B82F6', '#EC4899', '#EAB308', '#22C55E', '#A855F7', '#EF4444', '#3B82F6', '#EAB308'];
 
 function CelebrateBody() {
   return (
@@ -68,7 +56,7 @@ function QuestBody() {
   return (
     <div className="px-5 py-6">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#8FA3BD]">Monthly Quest</span>
+        <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#8FA3BD]">Monthly Challenge</span>
         <span className="text-[10px] font-extrabold text-[#8FA3BD]">12d left</span>
       </div>
       <div className="mt-2 flex items-baseline justify-between">
@@ -98,46 +86,11 @@ function QuestBody() {
   );
 }
 
-/** The real WeeklyLuckySpinCard dashboard preview — white card, gold-rimmed
- *  wheel, green availability pill, blue SPIN NOW button — not the full-screen
- *  spin modal, since this tab is showing the card as it sits on /dashboard. */
-function WheelBody() {
-  const reducedMotion = useReducedMotion();
-  return (
-    <div className="flex flex-col items-center gap-4 px-5 py-6 text-center">
-      <div className="flex w-full items-center justify-between">
-        <h3 className="text-[15px] font-extrabold uppercase tracking-wide text-[#374151]">Weekly Lucky Spin</h3>
-        <span className="rounded-lg bg-[#D1FAE5] px-2 py-1 text-xs font-extrabold text-[#10B981]">
-          Available this week!
-        </span>
-      </div>
-
-      <div className="relative flex h-[100px] w-[100px] items-center justify-center">
-        <motion.div
-          className="flex h-[90px] w-[90px] items-center justify-center rounded-full border-4 border-[#FCD34D]"
-          style={{ background: `conic-gradient(${WHEEL_COLORS.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(',')})`, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }}
-          animate={reducedMotion ? undefined : { rotate: 360 }}
-          transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-        >
-          <div className="h-4 w-4 rounded-full border-2 border-[#F59E0B] bg-white" />
-        </motion.div>
-      </div>
-
-      <button
-        type="button"
-        className="w-full rounded-lg bg-[#3B82F6] py-3 text-[15px] font-bold text-white"
-      >
-        SPIN NOW 🎉
-      </button>
-    </div>
-  );
-}
-
 function ChestBody() {
   return (
     <div className="flex flex-col items-center px-4 py-7 text-center">
       <Image src="/Tressure box.webp" alt="Teyro treasure chest" width={150} height={135} className="h-[135px] w-[150px] object-contain" />
-      <p className="mt-3 text-sm font-semibold text-[#b7c4d6]">Finish your first lesson each day to unlock one.</p>
+      <p className="mt-3 text-sm font-semibold text-[#b7c4d6]">Finish your first lesson each day to unlock one. Keep your streak going for bonus chests.</p>
     </div>
   );
 }
@@ -145,12 +98,11 @@ function ChestBody() {
 const BODIES: Record<string, () => React.JSX.Element> = {
   celebrate: CelebrateBody,
   quest: QuestBody,
-  wheel: WheelBody,
   chest: ChestBody,
 };
 
 export default function ProgressTabsVisual() {
-  const { active, select, containerRef } = useAutoAdvancingTabs(4, 4200);
+  const { active, select, containerRef } = useAutoAdvancingTabs(TABS.length, 4200);
   const tab = TABS[active];
   const Body = BODIES[tab.id];
   const inRef = useRef<HTMLDivElement>(null);

@@ -5,14 +5,21 @@
  * the full ladder strip, a live week countdown, and the cohort standings with
  * promotion/demotion zones. Settlement results play as a full-page LEAGUE
  * celebration scene via LeagueResultWatcher (mounted in the dashboard layout).
+ *
+ * Live: re-reads every 30s and on returning to the tab, and rows glide to
+ * their new places when the order changes. Arrows mark who moved since the
+ * learner last looked; the "your race" card says exactly what to beat next.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw, ShieldAlert, ShieldCheck, Trophy } from 'lucide-react';
+import { LayoutGroup, motion, useReducedMotion } from 'framer-motion';
+import { ChevronDown, ChevronUp, RefreshCw, ShieldAlert, ShieldCheck, Trophy, Users } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import LeagueBadge from '@/components/leaderboard/LeagueBadge';
+import RankMedal from '@/components/leaderboard/RankMedal';
+import ProfileLink from '@/components/community/ProfileLink';
 import Button from '@/components/ui/Button';
 import { playHaptic } from '@/lib/haptics';
 import {
@@ -32,6 +39,8 @@ interface LeaderboardRow {
   avatarUrl: string | null;
   weeklyXp: number;
   isMe: boolean;
+  /** The member's own tier — shared boards mix tiers. */
+  league?: LeagueTier;
 }
 
 interface MyLeaderboard {
@@ -44,17 +53,31 @@ interface MyLeaderboard {
   promotionCutoff: number | null;
   demotionStartRank: number | null;
   cohortSize: number;
+  /** Everyone active this week shares one board (see backend league.config). */
+  shared?: boolean;
   standings: LeaderboardRow[];
 }
 
-const RANK_MEDAL_COLORS: Record<number, string> = {
-  1: '#EDB514', // gold
-  2: '#98A2AE', // silver
-  3: '#B4713E', // bronze
-};
+/** Ranks from the learner's last visit — where the movement arrows come from. */
+const LAST_VISIT_KEY = 'teyro:leaderboard-last-visit';
+const REFRESH_MS = 30_000;
+
+function readLastVisit(weekStart: string): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(LAST_VISIT_KEY);
+    const saved = raw ? (JSON.parse(raw) as { weekStart: string; ranks: Record<string, number> }) : null;
+    return saved?.weekStart === weekStart ? saved.ranks : {};
+  } catch {
+    return {};
+  }
+}
 
 export default function LeaderboardsPage() {
+  const reducedMotion = useReducedMotion();
   const [data, setData] = useState<MyLeaderboard | null>(null);
+  // Ranks as they were on the previous visit (captured once per load), then
+  // this visit's ranks are saved for next time.
+  const [lastVisit, setLastVisit] = useState<Record<string, number> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -79,7 +102,35 @@ export default function LeaderboardsPage() {
 
   useEffect(() => {
     void refresh();
+    // Live board: a rival's XP moves ranks while you watch.
+    const timer = setInterval(() => {
+      if (document.visibilityState === 'visible') void refresh();
+    }, REFRESH_MS);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void refresh();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [refresh]);
+
+  // First data of this visit: remember the last visit's ranks for the
+  // arrows, and save this visit's for next time.
+  useEffect(() => {
+    if (!data?.joined || lastVisit !== null) return;
+    const previous = readLastVisit(data.weekStart);
+    try {
+      localStorage.setItem(
+        LAST_VISIT_KEY,
+        JSON.stringify({ weekStart: data.weekStart, ranks: Object.fromEntries(data.standings.map((r) => [r.userId, r.rank])) }),
+      );
+    } catch {
+      // Storage blocked — no arrows, nothing else changes.
+    }
+    queueMicrotask(() => setLastVisit(previous));
+  }, [data, lastVisit]);
 
   // Live countdown — tick every second under a day, every 30s otherwise.
   //
@@ -124,11 +175,6 @@ export default function LeaderboardsPage() {
 
   return (
     <div className={styles.page}>
-      <Link href="/dashboard" className={styles.backLink}>
-        <ArrowLeft size={15} strokeWidth={2.8} />
-        Back to Dashboard
-      </Link>
-
       {loading ? (
         <LoadingState />
       ) : error ? (
@@ -137,7 +183,7 @@ export default function LeaderboardsPage() {
         <>
           {/* ── League badge + ladder strip ─────────────────────────────── */}
           <header className={styles.header}>
-            <LeagueBadge tier={data.league} size="xl" className={styles.heroBadge} />
+            <LeagueBadge tier={data.league} size="xl" className={styles.heroBadge} priority />
             <h1 className={styles.title}>{meta.name}</h1>
             {data.tournamentWins > 0 && (
               <p className={styles.tournamentWins}>
@@ -147,15 +193,20 @@ export default function LeaderboardsPage() {
             )}
 
             <div className={styles.ladderStrip} aria-label="League ladder">
-              {LEAGUE_LADDER.map((l) => (
-                <LeagueBadge
-                  key={l.tier}
-                  tier={l.tier}
-                  size="xs"
-                  locked={l.tier !== data.league}
-                  className={l.tier === data.league ? styles.currentRung : undefined}
-                />
-              ))}
+              {/* Leagues you've climbed through keep their colour; the ones
+                  ahead stay locked — Duolingo's ladder. */}
+              {LEAGUE_LADDER.map((l, i) => {
+                const mine = LEAGUE_LADDER.findIndex((x) => x.tier === data.league);
+                return (
+                  <LeagueBadge
+                    key={l.tier}
+                    tier={l.tier}
+                    size="xs"
+                    locked={i > mine}
+                    className={i === mine ? styles.currentRung : i < mine ? styles.passedRung : undefined}
+                  />
+                );
+              })}
             </div>
           </header>
 
@@ -163,7 +214,9 @@ export default function LeaderboardsPage() {
           <section className={styles.weekStatus} aria-live="polite">
             {data.joined ? (
               <>
-                <p className={styles.zoneLine}>{meta.zone}</p>
+                <p className={styles.zoneLine}>
+                  {data.promotionCutoff ? `Top ${data.promotionCutoff} advance to the next league` : meta.zone}
+                </p>
                 <p className={styles.countdown}>{countdown} remaining</p>
               </>
             ) : (
@@ -178,10 +231,19 @@ export default function LeaderboardsPage() {
             )}
           </section>
 
+          {data.joined && data.myRank !== null && <YourRace data={data} />}
+
+          {data.shared && data.joined && (
+            <p className={styles.sharedNote}>
+              <Users size={15} strokeWidth={2.6} />
+              Teyro is growing — this week everyone active races on one board. You move up or down from your own league.
+            </p>
+          )}
+
           {/* ── Standings ─────────────────────────────────────────────────── */}
           <section className={styles.board} aria-label="Weekly standings">
             {data.joined && data.standings.length > 0 ? (
-              <>
+              <LayoutGroup>
                 {data.standings.map((row) => {
                   const inPromotion =
                     data.promotionCutoff !== null && row.rank <= data.promotionCutoff;
@@ -197,7 +259,9 @@ export default function LeaderboardsPage() {
                           icon={<ShieldAlert size={13} strokeWidth={2.6} />}
                         />
                       )}
-                      <div
+                      <motion.div
+                        layout={!reducedMotion}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         ref={row.isMe ? meRowRef : undefined}
                         className={[
                           styles.row,
@@ -208,24 +272,21 @@ export default function LeaderboardsPage() {
                           .filter(Boolean)
                           .join(' ')}
                       >
-                        <span
-                          className={styles.rank}
-                          style={
-                            RANK_MEDAL_COLORS[row.rank]
-                              ? { backgroundColor: RANK_MEDAL_COLORS[row.rank] }
-                              : undefined
-                          }
-                        >
-                          {row.rank}
+                        <RankMedal rank={row.rank} zone={inPromotion ? 'promo' : inDemotion ? 'demotion' : null} />
+                        <ProfileLink userId={row.isMe ? null : row.userId} label={`${row.name}'s profile`}>
+                          <CosmeticFrame userId={row.userId} thickness={2}>
+                            <Avatar src={row.avatarUrl ?? undefined} name={row.name} size="md" />
+                          </CosmeticFrame>
+                        </ProfileLink>
+                        <span className={styles.name}>
+                          {row.isMe ? row.name : <ProfileLink userId={row.userId}>{row.name}</ProfileLink>}
                         </span>
-                        <CosmeticFrame userId={row.userId} thickness={2}>
-                          <Avatar src={row.avatarUrl ?? undefined} name={row.name} size="sm" />
-                        </CosmeticFrame>
-                        <span className={styles.name}>{row.name}</span>
+                        {data.shared && row.league && <LeagueBadge tier={row.league} size="xs" />}
+                        <Movement from={lastVisit?.[row.userId]} to={row.rank} />
                         <span className={styles.xp}>
-                          <strong>{row.weeklyXp.toLocaleString()}</strong> XP
+                          {row.weeklyXp.toLocaleString()} XP
                         </span>
-                      </div>
+                      </motion.div>
                       {data.promotionCutoff === row.rank && (
                         <ZoneDivider
                           kind="promotion"
@@ -236,7 +297,7 @@ export default function LeaderboardsPage() {
                     </React.Fragment>
                   );
                 })}
-              </>
+              </LayoutGroup>
             ) : data.joined ? (
               <EmptyBoard />
             ) : (
@@ -260,11 +321,7 @@ export default function LeaderboardsPage() {
           {/* ── Pinned "you" bar — only while my row is scrolled out of view ─ */}
           {data.joined && data.standings.length > 0 && !meRowVisible && (
             <div className={styles.meBar} aria-label="Your standing">
-              <span className={styles.rank} style={data.myRank && RANK_MEDAL_COLORS[data.myRank]
-                ? { backgroundColor: RANK_MEDAL_COLORS[data.myRank] }
-                : undefined}>
-                {data.myRank ?? '–'}
-              </span>
+              <RankMedal rank={data.myRank} />
               <Avatar
                 src={data.standings.find((s) => s.isMe)?.avatarUrl ?? undefined}
                 name={data.standings.find((s) => s.isMe)?.name ?? 'You'}
@@ -288,6 +345,69 @@ export default function LeaderboardsPage() {
 }
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
+
+/** ▲2 / ▼1 since the learner's last visit — how the board moved without them. */
+function Movement({ from, to }: { from: number | undefined; to: number }) {
+  if (from === undefined || from === to) return null;
+  const up = to < from;
+  return (
+    <span
+      className={styles.movement}
+      style={{ color: up ? 'var(--success-green)' : 'var(--error-red)' }}
+      aria-label={`${up ? 'Up' : 'Down'} ${Math.abs(from - to)} since your last visit`}
+    >
+      {up ? <ChevronUp size={14} strokeWidth={3} /> : <ChevronDown size={14} strokeWidth={3} />}
+      {Math.abs(from - to)}
+    </span>
+  );
+}
+
+/**
+ * The learner's race in one card: where they are, the XP it takes to pass
+ * the next person, and how far promotion (or safety) is.
+ */
+function YourRace({ data }: { data: MyLeaderboard }) {
+  const me = data.standings.find((r) => r.isMe);
+  if (!me || data.myRank === null) return null;
+  const above = data.standings.find((r) => r.rank === data.myRank! - 1);
+  const inPromo = data.promotionCutoff !== null && data.myRank <= data.promotionCutoff;
+  const inDanger = data.demotionStartRank !== null && data.myRank >= data.demotionStartRank;
+  const cutoffRow = data.promotionCutoff !== null ? data.standings.find((r) => r.rank === data.promotionCutoff) : undefined;
+
+  const headline = inPromo
+    ? "You're in the promotion zone"
+    : inDanger
+      ? "You're in the demotion zone"
+      : `You're #${data.myRank} this week`;
+  const detail = above
+    ? `${above.weeklyXp - me.weeklyXp + 1} XP to pass ${above.name.split(' ')[0]}`
+    : 'Everyone is chasing you — keep your lead.';
+  const zoneLine = inPromo
+    ? 'Stay here until the week ends to move up a league.'
+    : cutoffRow
+      ? `${Math.max(1, cutoffRow.weeklyXp - me.weeklyXp + 1)} XP to reach the promotion zone`
+      : null;
+
+  return (
+    <section
+      className={styles.yourRace}
+      data-tone={inPromo ? 'promo' : inDanger ? 'danger' : 'neutral'}
+      aria-label="Your race this week"
+    >
+      <span className={styles.yourRaceRank}>#{data.myRank}</span>
+      <span className={styles.yourRaceText}>
+        <strong>{headline}</strong>
+        <span>{detail}</span>
+        {zoneLine && <span>{zoneLine}</span>}
+      </span>
+      {!inPromo && (
+        <Link href="/dashboard" className={styles.yourRaceCta} onClick={() => playHaptic('light')}>
+          Earn XP
+        </Link>
+      )}
+    </section>
+  );
+}
 
 function ZoneDivider({
   kind,

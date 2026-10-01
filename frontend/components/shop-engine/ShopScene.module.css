@@ -6,6 +6,9 @@
  * feels like part of the same product as a level-up, not a different app.
  * Only what is specific to shop scenes lives here: the item pedestal, rarity
  * ribbon, price ledger and unlock receipt.
+ *
+ * Bright stage (2026-09-24): every colour is a --sc-* token from
+ * .sceneBackdrop (Scene.module.css), so shop scenes can't drift from it.
  */
 
 /* ── Item pedestal ────────────────────────────────────────────────────────── */
@@ -24,7 +27,7 @@
   height: min(62vw, 240px);
   border-radius: 999px;
   box-shadow: var(--glow);
-  opacity: 0.9;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -33,7 +36,7 @@
   height: 16px;
   margin-top: 10px;
   border-radius: 999px;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.45) 0%, transparent 72%);
+  background: radial-gradient(ellipse, var(--sc-shadow) 0%, transparent 72%);
 }
 
 /* ── Rarity ribbon ────────────────────────────────────────────────────────── */
@@ -49,7 +52,8 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   border: 2px solid currentColor;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--sc-bg);
+  box-shadow: 0 3px 0 currentColor;
 }
 
 .raritySparkle {
@@ -63,7 +67,7 @@
   margin: 12px 0 6px;
   font-size: clamp(22px, 6vw, 30px);
   font-weight: 800;
-  color: #ffffff;
+  color: var(--sc-ink);
   text-align: center;
   line-height: 1.2;
 }
@@ -72,18 +76,19 @@
   margin: 0 auto;
   max-width: 34ch;
   font-size: 15px;
+  font-weight: 600;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--sc-soft);
   text-align: center;
 }
 
 .slotHint {
   margin-top: 10px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--sc-muted);
   text-align: center;
 }
 
@@ -94,8 +99,9 @@
   padding: 12px 18px;
   max-width: 32ch;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -105,14 +111,14 @@
 .receiptIcon {
   width: 18px;
   height: 18px;
-  color: #22c55e;
+  color: var(--sc-green);
   flex-shrink: 0;
 }
 
 .receiptText {
   font-size: 14px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--sc-body);
 }
 
 /* ── Price ledger ─────────────────────────────────────────────────────────── */
@@ -131,25 +137,25 @@
   gap: 8px;
   padding: 10px 20px;
   border-radius: 999px;
-  background: rgba(234, 179, 8, 0.14);
-  border: 2px solid rgba(234, 179, 8, 0.45);
+  background: color-mix(in srgb, var(--sc-gold) 12%, var(--sc-bg));
+  border: 2px solid color-mix(in srgb, var(--sc-gold) 45%, transparent);
   font-size: 20px;
   font-weight: 800;
-  color: #fde68a;
+  color: var(--sc-gold-deep);
 }
 
 .priceStruck {
   font-size: 15px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--sc-muted);
   text-decoration: line-through;
 }
 
 .discountChip {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #22c55e;
-  color: #052e16;
+  background: var(--sc-green);
+  color: var(--sc-on-color);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -162,8 +168,9 @@
   max-width: 300px;
   padding: 14px 18px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -178,8 +185,8 @@
 }
 
 .ledgerLabel {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
+  color: var(--sc-soft);
+  font-weight: 700;
 }
 
 .ledgerValue {
@@ -187,17 +194,17 @@
   align-items: center;
   gap: 6px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--sc-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .ledgerSpend {
-  color: #fca5a5;
+  color: var(--sc-red);
 }
 
 .ledgerDivider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  height: 2px;
+  background: var(--sc-line);
 }
 
 /* ── Chest reveal ─────────────────────────────────────────────────────────── */
@@ -217,8 +224,8 @@
   height: min(58vh, 320px);
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.12) 45%,
+    color-mix(in srgb, var(--sc-gold) 40%, transparent) 0%,
+    color-mix(in srgb, var(--sc-gold) 12%, transparent) 45%,
     transparent 100%
   );
   clip-path: polygon(38% 100%, 62% 100%, 88% 0%, 12% 0%);
@@ -232,15 +239,15 @@
   display: grid;
   place-items: center;
   box-shadow:
-    0 12px 0 0 rgba(0, 0, 0, 0.28),
-    0 26px 50px rgba(0, 0, 0, 0.5);
+    0 10px 0 0 color-mix(in srgb, var(--sc-ink) 20%, transparent),
+    0 18px 30px var(--sc-shadow);
 }
 
 .chestGlyph {
   width: 48%;
   height: 48%;
-  color: rgba(255, 255, 255, 0.95);
-  filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.5));
+  color: var(--sc-on-color);
+  filter: drop-shadow(0 3px 4px color-mix(in srgb, var(--sc-ink) 30%, transparent));
 }
 
 .rewardRow {
@@ -258,17 +265,19 @@
   gap: 8px;
   padding: 10px 18px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  box-shadow: 0 4px 0 var(--sc-line);
   font-size: 17px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--sc-ink);
 }
 
 .substituteNote {
   margin-top: 14px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  color: var(--sc-soft);
   text-align: center;
   max-width: 32ch;
   margin-left: auto;
@@ -290,12 +299,12 @@
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--sc-line);
 }
 
 .collectionDotFilled {
   background: currentColor;
-  box-shadow: 0 0 12px currentColor;
+  box-shadow: 0 2px 0 color-mix(in srgb, currentColor 70%, black);
 }
 
 .exclusiveTag {
@@ -305,11 +314,39 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.16);
-  border: 1px solid rgba(245, 158, 11, 0.5);
+  background: color-mix(in srgb, var(--sc-gold) 12%, var(--sc-bg));
+  border: 2px solid color-mix(in srgb, var(--sc-gold) 45%, transparent);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #fde68a;
+  color: var(--sc-gold-deep);
+}
+
+/* Tap-to-open chest (ChestRevealScene). */
+.chestTapTarget {
+  position: relative;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chestArt {
+  position: relative;
+  width: min(48vw, 184px);
+  height: min(48vw, 184px);
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px var(--sc-shadow));
+  user-select: none;
+}
+
+.chestGlow {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--sc-gold) 70%, transparent) 0%, transparent 65%);
+  transition: opacity 0.25s ease;
+  pointer-events: none;
 }

@@ -29,12 +29,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Bell, Compass, Flame, Rocket, Sparkles } from 'lucide-react';
+import { Bell, Flame, Sparkles, WifiOff, Zap } from 'lucide-react';
 
-import { MascotBackground } from '@/components/onboarding/MascotBackground';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { resolveAppEntry, type AppEntry } from '@/lib/pwa/entry';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
@@ -51,8 +49,11 @@ import {
   StartGhostButton,
   StartHeadline,
   StartSubtitle,
+  TeySays,
   panelVariants,
+  startStyles,
 } from './StartUi';
+import { HomeScreenMock } from './HomeScreenMock';
 
 /**
  * Both guides are lazy: an Android learner never downloads the iOS mocks and
@@ -85,16 +86,16 @@ type Phase = 'intro' | 'android' | 'ios' | 'manual' | 'unsupported' | 'installed
 function PhaseSkeleton() {
   return (
     <div className="w-full max-w-[440px] flex flex-col gap-4" aria-hidden="true">
-      <div className="h-8 w-2/3 mx-auto rounded-xl bg-white/60 animate-pulse" />
-      <div className="h-44 w-full rounded-[1.75rem] bg-white/60 animate-pulse" />
-      <div className="h-14 w-full rounded-2xl bg-white/60 animate-pulse" />
+      <div className="h-4 w-full rounded-full bg-[var(--bg-section)] animate-pulse" />
+      <div className="h-8 w-2/3 mx-auto rounded-xl bg-[var(--bg-section)] animate-pulse" />
+      <div className="h-56 w-full rounded-[22px] bg-[var(--bg-section)] animate-pulse" />
+      <div className="h-14 w-full rounded-2xl bg-[var(--bg-section)] animate-pulse" />
     </div>
   );
 }
 
 export default function StartExperience() {
   const router = useRouter();
-  const reduce = useReducedMotion() ?? false;
   const install = usePwaInstall();
 
   const [phase, setPhase] = useState<Phase>('intro');
@@ -295,125 +296,72 @@ export default function StartExperience() {
   // ── Render ───────────────────────────────────────────────────────────────
   // `ready` gates the branching UI only. The intro renders immediately with no
   // platform-dependent copy, so first paint never waits on detection.
-  //
-  // Tey stays full-size on the intro AND on the installed/success screen —
-  // both are moments where Tey IS the content. Everywhere in between (the
-  // guides, the dismissed/manual/unsupported panels) shrinks Tey to a small
-  // chip up top, because a card full of instructions is what the learner
-  // needs to look at there, and on a short phone a large mascot is what
-  // pushes the CTA off the bottom.
-  const bigMascot = phase === 'intro' || phase === 'installed';
-
   return (
-    // A <div>, not a <main>: the root layout already wraps every route in one,
-    // and nesting a second landmark hides this content from screen readers
-    // navigating by landmark.
-    <div
-      className="relative w-full min-h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#EBF3FE] via-[#F4F8FF] to-[#FFFFFF]"
-      style={{
-        paddingTop: 'max(env(safe-area-inset-top), 12px)',
-        paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
-      }}
-    >
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <MascotBackground variant="soft" />
-      </div>
-
-      {/* ── Mascot ── full-size on intro + installed, a small chip elsewhere ── */}
-      <motion.div
-        layout={!reduce}
-        transition={{ type: 'spring', stiffness: 300, damping: 32 }}
-        className={`relative z-10 w-full flex items-center justify-center shrink-0 ${
-          bigMascot ? 'flex-1 min-h-[30dvh]' : 'h-[13dvh] min-h-[86px]'
-        }`}
-      >
+    // A <div>, not a <main>: the root layout already wraps every route in one.
+    <div className={startStyles.screen}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          initial={reduce ? false : { scale: 0.88, opacity: 0, y: 14 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-          className={`relative ${bigMascot ? 'w-[88vw] max-w-[420px] md:max-w-[440px] aspect-square' : 'h-full aspect-square'}`}
+          key={phase}
+          ref={panelRef}
+          tabIndex={-1}
+          variants={panelVariants}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+          className={startStyles.panel}
         >
-          <Image
-            src="/User onbarding Assets/Tey_welcome.webp"
-            alt="Tey, the Teyro mascot, waving hello"
-            fill
-            priority
-            sizes="(max-width: 768px) 88vw, 440px"
-            className="object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)]"
-          />
+          {phase === 'intro' && (
+            <IntroPanel
+              busy={busy}
+              nagged={nagged}
+              entryReason={entry.reason}
+              onStart={startLearning}
+              onInstallAnyway={() => {
+                setNagged(false);
+                trackInstallEvent('install_flow_started', {
+                  platform: install.platform,
+                  browser: install.browser,
+                  install_method: install.installMethod,
+                  reopened_after_dismissals: true,
+                });
+                if (install.installMethod === 'ios-share-sheet') setPhase('ios');
+                else if (install.installMethod === 'native-prompt') void retryPrompt();
+                else if (install.installMethod === 'browser-menu') setPhase('manual');
+                else setPhase('unsupported');
+              }}
+            />
+          )}
+
+          {phase === 'android' && <DismissedPanel busy={busy} onRetry={retryPrompt} onSkip={enterApp} />}
+
+          {phase === 'ios' && (
+            <IosInstallGuide
+              browser={install.browser === 'chrome' ? 'chrome' : 'safari'}
+              onCompleted={reportManualInstall}
+              onSkip={enterApp}
+            />
+          )}
+
+          {phase === 'manual' && (
+            <ManualInstallGuide
+              platform={install.platform}
+              browser={install.browser}
+              onDone={reportManualInstall}
+              onSkip={enterApp}
+            />
+          )}
+
+          {phase === 'unsupported' && (
+            <UnsupportedPanel
+              browser={browserLabel(install.browser)}
+              isInAppBrowser={install.isInAppBrowser}
+              onContinue={enterApp}
+            />
+          )}
+
+          {phase === 'installed' && <InstalledPanel verified={installVerified} onContinue={enterApp} />}
         </motion.div>
-      </motion.div>
-
-      {/* ── Content ─────────────────────────────────────────────────────── */}
-      <div className="relative z-10 w-full flex-1 flex flex-col items-center justify-end md:justify-center px-5 pb-2">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={phase}
-            ref={panelRef}
-            tabIndex={-1}
-            variants={panelVariants}
-            initial="hidden"
-            animate="show"
-            exit="exit"
-            className="w-full flex flex-col items-center outline-none"
-          >
-            {phase === 'intro' && (
-              <IntroPanel
-                busy={busy}
-                nagged={nagged}
-                entryReason={entry.reason}
-                onStart={startLearning}
-                onInstallAnyway={() => {
-                  setNagged(false);
-                  trackInstallEvent('install_flow_started', {
-                    platform: install.platform,
-                    browser: install.browser,
-                    install_method: install.installMethod,
-                    reopened_after_dismissals: true,
-                  });
-                  if (install.installMethod === 'ios-share-sheet') setPhase('ios');
-                  else if (install.installMethod === 'native-prompt') void retryPrompt();
-                  else if (install.installMethod === 'browser-menu') setPhase('manual');
-                  else setPhase('unsupported');
-                }}
-              />
-            )}
-
-            {phase === 'android' && (
-              <DismissedPanel busy={busy} onRetry={retryPrompt} onSkip={enterApp} />
-            )}
-
-            {phase === 'ios' && (
-              <IosInstallGuide
-                browser={install.browser === 'chrome' ? 'chrome' : 'safari'}
-                onCompleted={reportManualInstall}
-                onSkip={enterApp}
-              />
-            )}
-
-            {phase === 'manual' && (
-              <ManualInstallGuide
-                platform={install.platform}
-                browser={install.browser}
-                onDone={reportManualInstall}
-                onSkip={enterApp}
-              />
-            )}
-
-            {phase === 'unsupported' && (
-              <UnsupportedPanel
-                browser={browserLabel(install.browser)}
-                isInAppBrowser={install.isInAppBrowser}
-                onContinue={enterApp}
-              />
-            )}
-
-            {phase === 'installed' && (
-              <InstalledPanel verified={installVerified} onContinue={enterApp} />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      </AnimatePresence>
     </div>
   );
 }
@@ -436,75 +384,64 @@ function IntroPanel({
   const returning = entryReason !== 'fresh';
 
   return (
-    <div className="w-full max-w-[440px] flex flex-col items-center text-center gap-3">
-      <StartHeadline
-        lead={returning ? 'Back for' : "Let's make this"}
-        accent={returning ? 'more.' : 'a habit.'}
-      />
+    <div className={startStyles.stack}>
+      <div className={startStyles.grow} />
+      <HomeScreenMock />
+      <StartHeadline lead={returning ? 'Back for' : 'Put Teyro'} accent={returning ? 'more?' : 'in your pocket.'} />
       <StartSubtitle>
         {returning
           ? 'Your streak missed you. Pick up exactly where you stopped.'
-          : "One tap and we're off. I'll handle the boring setup — you bring the curiosity."}
+          : 'One tap and Teyro lives on your Home Screen, like any other app.'}
       </StartSubtitle>
+      <ul className={startStyles.chips} aria-label="What you get">
+        <li className={startStyles.chipBenefit}>
+          <Flame size={15} strokeWidth={2.75} aria-hidden="true" /> Streak reminders
+        </li>
+        <li className={startStyles.chipBenefit}>
+          <Zap size={15} strokeWidth={2.75} aria-hidden="true" /> Opens instantly
+        </li>
+        <li className={startStyles.chipBenefit}>
+          <WifiOff size={15} strokeWidth={2.75} aria-hidden="true" /> Works offline
+        </li>
+      </ul>
+      <div className={startStyles.grow} />
 
-      <div className="w-full mt-3">
+      <div className={startStyles.actions}>
         <StartButton
           onClick={onStart}
           busy={busy}
           ariaLabel={returning ? 'Continue learning with Teyro' : 'Start learning with Teyro'}
-          icon={<Rocket className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />}
         >
-          {returning ? 'Continue Learning' : 'Start Learning'}
+          {returning ? 'Continue learning' : 'Start learning'}
         </StartButton>
-
-        {nagged && (
-          <StartGhostButton onClick={onInstallAnyway}>
-            Actually, put Teyro on my Home Screen
-          </StartGhostButton>
-        )}
+        {nagged && <StartGhostButton onClick={onInstallAnyway}>Put Teyro on my Home Screen</StartGhostButton>}
       </div>
     </div>
   );
 }
 
-function DismissedPanel({
-  busy,
-  onRetry,
-  onSkip,
-}: {
-  busy: boolean;
-  onRetry: () => void;
-  onSkip: () => void;
-}) {
+function DismissedPanel({ busy, onRetry, onSkip }: { busy: boolean; onRetry: () => void; onSkip: () => void }) {
   return (
-    <div className="w-full max-w-[440px] flex flex-col items-center gap-4">
-      <div className="text-center">
-        <StartHeadline lead="Playing" accent="hard to get?" className="!text-[clamp(1.7rem,8vw,2.2rem)]" />
-      </div>
-
+    <div className={startStyles.stack}>
+      <div className={startStyles.grow} />
+      <StartHeadline lead="Playing" accent="hard to get?" size="md" />
+      <TeySays>
+        On your Home Screen I open instantly, work offline, and can actually nudge you. In a browser tab I&apos;m
+        just a tab.
+      </TeySays>
       <StartCard>
-        <p className="text-[0.95rem] font-[600] text-[#071233] leading-snug mb-4">
-          On your Home Screen I load instantly, work offline, and can actually nudge you. In a browser
-          tab I&apos;m just… a tab.
-        </p>
-        <ul className="flex flex-col gap-3">
-          <StartBenefit icon={<Flame className="w-4 h-4" aria-hidden="true" />}>
-            Keep your streak alive
-          </StartBenefit>
-          <StartBenefit icon={<Bell className="w-4 h-4" aria-hidden="true" />}>
-            Reminders that actually reach you
-          </StartBenefit>
-          <StartBenefit icon={<Sparkles className="w-4 h-4" aria-hidden="true" />}>
-            Opens in a tap, no address bar
-          </StartBenefit>
+        <ul className={startStyles.benefits}>
+          <StartBenefit icon={<Flame size={20} strokeWidth={2.5} />}>Keep your streak alive</StartBenefit>
+          <StartBenefit icon={<Bell size={20} strokeWidth={2.5} />}>Reminders that reach you</StartBenefit>
+          <StartBenefit icon={<Sparkles size={20} strokeWidth={2.5} />}>Opens in a tap, no address bar</StartBenefit>
         </ul>
       </StartCard>
-
-      <div className="w-full">
+      <div className={startStyles.grow} />
+      <div className={startStyles.actions}>
         <StartButton onClick={onRetry} busy={busy} ariaLabel="Install Teyro">
           Alright, install it
         </StartButton>
-        <StartGhostButton onClick={onSkip}>No thanks — keep going in my browser</StartGhostButton>
+        <StartGhostButton onClick={onSkip}>No thanks, keep going here</StartGhostButton>
       </div>
     </div>
   );
@@ -520,35 +457,29 @@ function UnsupportedPanel({
   onContinue: () => void;
 }) {
   return (
-    <div className="w-full max-w-[440px] flex flex-col items-center gap-4">
-      <div className="text-center">
-        <StartHeadline lead="Straight in" accent="it is." className="!text-[clamp(1.7rem,8vw,2.2rem)]" />
-      </div>
-
+    <div className={startStyles.stack}>
+      <div className={startStyles.grow} />
+      <StartHeadline lead="Straight in" accent="it is." size="md" />
+      <TeySays pose="welcome">
+        {isInAppBrowser ? (
+          <>
+            You opened me inside another app, and {browser} won&apos;t let me onto your Home Screen from here. Not
+            your fault, not mine.
+          </>
+        ) : (
+          <>{browser} can&apos;t add me to your Home Screen, so let&apos;s not waste your time.</>
+        )}
+      </TeySays>
       <StartCard>
-        <p className="text-[0.95rem] font-[600] text-[#071233] leading-snug">
-          {isInAppBrowser ? (
-            <>
-              You opened me from inside another app, and {browser} won&apos;t let me onto your Home
-              Screen from here. Not your fault, not mine.
-            </>
-          ) : (
-            <>{browser} can&apos;t add me to your Home Screen — so let&apos;s not waste your time.</>
-          )}
-        </p>
-        <p className="mt-3 text-[0.87rem] font-[600] text-slate-500 leading-snug">
+        <p className={startStyles.cardText}>
           {isInAppBrowser
-            ? 'Open teyro.app in Safari or Chrome any time and I’ll offer again. Everything below works right here in the meantime.'
+            ? 'Open teyro.app in Safari or Chrome any time and I’ll offer again. Everything works right here meanwhile.'
             : 'Everything works right here. Open teyro.app on your phone later and I’ll offer the Home Screen version.'}
         </p>
       </StartCard>
-
-      <div className="w-full">
-        <StartButton
-          onClick={onContinue}
-          icon={<Compass className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />}
-          ariaLabel="Continue to Teyro in this browser"
-        >
+      <div className={startStyles.grow} />
+      <div className={startStyles.actions}>
+        <StartButton onClick={onContinue} ariaLabel="Continue to Teyro in this browser">
           Let&apos;s go anyway
         </StartButton>
       </div>
@@ -567,52 +498,25 @@ function InstalledPanel({
   const reduce = useReducedMotion() ?? false;
 
   return (
-    <div className="relative w-full max-w-[440px] flex flex-col items-center gap-4 text-center">
-      {/* Decorative only — suppressed under prefers-reduced-motion, and never
-          the carrier of any information the copy does not also state. */}
+    <div className={`${startStyles.stack} ${startStyles.center}`}>
+      {/* Decorative only — never the carrier of anything the copy doesn't say. */}
       {!reduce && <ConfettiBurst active />}
-
+      <div className={startStyles.grow} />
+      <HomeScreenMock landed />
       <StartHeadline
-        lead={verified ? 'Look at us —' : 'Go on then —'}
-        accent={verified ? 'roommates.' : 'check your Home Screen.'}
-        className="!text-[clamp(1.7rem,8vw,2.2rem)]"
+        lead={verified ? 'Look at us,' : 'Now check'}
+        accent={verified ? 'roommates!' : 'your Home Screen.'}
+        size="md"
       />
-
-      <StartCard>
-        <div className="flex items-center gap-3.5">
-          <motion.span
-            className="relative w-14 h-14 rounded-[1rem] overflow-hidden bg-white border border-slate-200 flex-shrink-0 shadow-[0_8px_20px_-8px_rgba(1,114,253,0.55)]"
-            animate={reduce ? undefined : { y: [0, -5, 0] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <Image src="/Icons/icon-192.png" alt="" fill sizes="56px" className="object-contain" />
-          </motion.span>
-          <p className="text-left text-[0.95rem] font-[600] text-[#071233] leading-snug">
-            {verified ? (
-              <>
-                I&apos;m installed — this icon is now an app on your Home Screen. Open me from
-                there from now on, that&apos;s the real Teyro, and it&apos;s where your reminders
-                will land.
-              </>
-            ) : (
-              <>
-                Look for this icon on your Home Screen — that means Teyro installed. Open me from
-                there from now on, that&apos;s the real Teyro, and it&apos;s where your reminders
-                will land. Didn&apos;t work? Start here and we&apos;ll sort it out later.
-              </>
-            )}
-          </p>
-        </div>
-      </StartCard>
-
-      {/* Not a dead end: the Home Screen icon is the better door, but this one
-          still opens. A learner who taps here is not blocked from onboarding. */}
-      <div className="w-full">
-        <StartButton
-          onClick={onContinue}
-          icon={<ArrowRight className="w-5 h-5 stroke-[3]" aria-hidden="true" />}
-          ariaLabel="Continue in this browser instead"
-        >
+      <StartSubtitle>
+        {verified
+          ? 'Teyro is on your Home Screen. Open me from there from now on: that’s where your reminders land.'
+          : 'Look for this icon. Open Teyro from there from now on. Didn’t work? Start here and we’ll sort it out later.'}
+      </StartSubtitle>
+      <div className={startStyles.grow} />
+      {/* Not a dead end: the Home Screen icon is the better door, but this one still opens. */}
+      <div className={startStyles.actions}>
+        <StartButton onClick={onContinue} tone="green" ariaLabel="Continue in this browser instead">
           Or start here
         </StartButton>
       </div>

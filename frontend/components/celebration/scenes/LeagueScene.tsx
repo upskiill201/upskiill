@@ -21,7 +21,7 @@ import LeagueBadge from '@/components/leaderboard/LeagueBadge';
 import styles from '../Leaderboard.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { getLeagueMeta } from '@/lib/leagues';
-import { playLossMotif, playSparkle, playStreakFanfare, playWhoosh } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 
 type LeagueSceneInput = Extract<CelebrationScene, { kind: 'LEAGUE' }>;
@@ -42,12 +42,13 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
   // so this only needs evaluating once, at mount.
   const [showBadge, setShowBadge] = React.useState(() => scene.finalStandings.length === 0);
   const promoted = scene.outcome === 'PROMOTED' || scene.outcome === 'CHAMPION';
+  const stayed = scene.outcome === 'STAYED' || scene.outcome === 'TOURNAMENT_EXIT';
   const toMeta = getLeagueMeta(scene.toTier);
   const fromMeta = getLeagueMeta(scene.fromTier);
 
   const playBadgeSounds = () => {
     if (promoted) {
-      playStreakFanfare();
+      playSound('leaguePromoted');
       if (!reducedMotion && typeof window !== 'undefined') {
         confetti({
           particleCount: 150,
@@ -62,9 +63,10 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
           confetti({ particleCount: 70, angle: 120, spread: 60, origin: { x: 1, y: 0.4 }, colors: CONFETTI_COLORS, disableForReducedMotion: true });
         }, 350);
       }
+    } else if (scene.outcome === 'STAYED' || scene.outcome === 'TOURNAMENT_EXIT') {
+      playSound('leagueStayed');
     } else {
-      playLossMotif();
-      playWhoosh('down');
+      playSound('leagueDemoted');
     }
   };
 
@@ -78,14 +80,15 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
   useEffect(() => {
     if (firedRef.current) return;
     firedRef.current = true;
-    playHaptic('teyroCelebration');
+    playHaptic('teyroCelebration', false);
     // No rank list was rendered (badge already showing via the lazy
     // initializer above) — still need its sounds/confetti to actually play.
     if (scene.finalStandings.length === 0) playBadgeSounds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const headline = scene.teyLine ?? (
+  // The headline always states what happened; Tey's line reacts under it.
+  const headline = (
     scene.outcome === 'PROMOTED' ? (
       <>
         You advanced to <span className={styles.headlineAccent}>{toMeta.name}!</span>
@@ -93,6 +96,14 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
     ) : scene.outcome === 'CHAMPION' ? (
       <>
         Diamond Tournament <span className={styles.headlineAccent}>Champion!</span>
+      </>
+    ) : scene.outcome === 'STAYED' ? (
+      <>
+        You finished #{scene.rank ?? '—'} — staying in <span className={styles.headlineAccent}>{fromMeta.name}</span>
+      </>
+    ) : scene.outcome === 'TOURNAMENT_EXIT' ? (
+      <>
+        Tournament over — back to <span className={styles.headlineAccent}>{toMeta.name}</span>
       </>
     ) : scene.outcome === 'INACTIVE_DEMOTED' ? (
       <>
@@ -113,6 +124,7 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
         : `${scene.totalXp.toLocaleString()} XP earned${scene.rank ? ` · #${scene.rank} in ${fromMeta.name}` : ''}`;
 
   const subhead = scene.teySubhead ?? fallbackSubhead;
+  const teyLine = scene.teyLine;
 
   return (
     <LeaderboardSceneShell
@@ -145,16 +157,14 @@ export default function LeagueScene({ scene, onAdvance }: LeagueSceneProps) {
             initial={reducedMotion ? false : { scale: 0.4, opacity: 0, y: promoted ? -30 : 30 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 17, delay: 0.05 }}
-            onAnimationComplete={() => {
-              if (!reducedMotion) playSparkle();
-            }}
           >
-            <LeagueBadge tier={promoted ? scene.toTier : scene.fromTier} size="xl" />
+            <LeagueBadge tier={promoted || stayed ? scene.toTier : scene.fromTier} size="xl" />
           </motion.div>
 
           <p className={styles.subhead}>{subhead}</p>
+          {teyLine && <p className={styles.subhead}>{teyLine}</p>}
 
-          <CelebrationMascot pose={promoted ? 'cheer' : 'sad'} entrance="puff" />
+          <CelebrationMascot pose={promoted || stayed ? 'cheer' : 'sad'} entrance="puff" />
         </>
       )}
     </LeaderboardSceneShell>

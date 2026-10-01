@@ -2,68 +2,50 @@
 
 import React, { useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, BrainCircuit, ChevronLeft, ChevronRight, CodeXml, type LucideIcon } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
+import { nextLessonHref, preloadCourse, type Enrollment } from '@/hooks/useCourse';
 import styles from './ContinueLearningCarousel.module.css';
 
-interface CourseItem {
-  id: string;
-  title: string;
-  category: string;
-  icon: string;
-  progressPct: number;
-  completedLessons: number;
-  totalLessons: number;
-}
-
 interface ContinueLearningCarouselProps {
-  enrollments?: any[];
+  /** The learner's OTHER courses — the current one is already the hero card. */
+  enrollments?: Enrollment[];
 }
 
+/** A category icon, so each card is recognisable at a glance (no emoji). */
+function iconFor(category: string | null): LucideIcon {
+  const c = (category ?? '').toLowerCase();
+  if (/(ai|artificial|machine|data)/.test(c)) return BrainCircuit;
+  if (/develop|software|code|coding|programming|it/.test(c)) return CodeXml;
+  return BookOpen;
+}
+
+/**
+ * Real enrollments only. This used to invent three demo courses ("Digital
+ * Marketing Mastery 2025", 48%…) when the list was empty, fake every real
+ * card's "Lesson x / 25", and treat any course id starting with "c" as one of
+ * those demos — sending real courses like `c1-joel` to the catalogue instead.
+ * With nothing to show, it now renders nothing.
+ */
 export default function ContinueLearningCarousel({ enrollments = [] }: ContinueLearningCarouselProps) {
   const router = useRouter();
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // Use enrollments if present, or provide default high-fidelity game cards matching mockup
-  const coursesToRender = enrollments.length > 0
-    ? enrollments.slice(0, 5).map((e: any, idx: number) => ({
-        id: e.course?.id || String(idx),
-        title: e.course?.title || 'Enrolled Course',
-        category: e.course?.category || 'General',
-        icon: idx === 0 ? '📚' : idx === 1 ? '💻' : '🤖',
-        progressPct: e.progress || 0,
-        completedLessons: Math.round(((e.progress || 0) / 100) * 25) || 1,
-        totalLessons: 25,
-      }))
-    : [
-        {
-          id: 'c1',
-          title: 'Digital Marketing Mastery 2025',
-          category: 'Marketing',
-          icon: '📚',
-          progressPct: 48,
-          completedLessons: 12,
-          totalLessons: 25,
-        },
-        {
-          id: 'c2',
-          title: 'Full-Stack Web Development',
-          category: 'Development',
-          icon: '💻',
-          progressPct: 22,
-          completedLessons: 4,
-          totalLessons: 18,
-        },
-        {
-          id: 'c3',
-          title: 'AI for Business',
-          category: 'AI & Data',
-          icon: '🤖',
-          progressPct: 0,
-          completedLessons: 0,
-          totalLessons: 16,
-        },
-      ];
+  if (enrollments.length === 0) return null;
+
+  const coursesToRender = enrollments.slice(0, 8).map((e) => {
+    const total = e.course.totalLessons;
+    const done = Math.min(e.completedCount ?? 0, total);
+    return {
+      enrollment: e,
+      id: e.course.id,
+      title: e.course.title,
+      Icon: iconFor(e.course.category),
+      total,
+      done,
+      progressPct: total > 0 ? Math.round((done / total) * 100) : 0,
+    };
+  });
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (!trackRef.current) return;
@@ -72,13 +54,9 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
     trackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
-  const handleCourseClick = (courseId: string) => {
+  const handleCourseClick = (enrollment: Enrollment) => {
     playHaptic('medium');
-    if (courseId && !courseId.startsWith('c')) {
-      router.push(`/learn/${courseId}`);
-    } else {
-      router.push('/courses');
-    }
+    router.push(nextLessonHref(enrollment));
   };
 
   return (
@@ -86,12 +64,13 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
           <h2 className={styles.title}>CONTINUE LEARNING</h2>
-          <span
+          <button
+            type="button"
             onClick={() => router.push('/dashboard/my-learning')}
             className={styles.viewAllLink}
           >
             View all
-          </span>
+          </button>
         </div>
         <div className={styles.navControls}>
           <button
@@ -117,21 +96,25 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
         {coursesToRender.map((c, idx) => {
           const isActive = idx === 0;
           return (
-            <div
+            <button
+              type="button"
               key={c.id}
-              className={`${styles.courseCard} ${isActive ? styles.courseCardActive : ''}`}
-              onClick={() => handleCourseClick(c.id)}
+              className={`${styles.courseCard} ${isActive ? styles.courseCardActive : ''} text-left`}
+              onClick={() => handleCourseClick(c.enrollment)}
+              // Warm the map on intent, so the tap opens it from cache.
+              onPointerEnter={() => preloadCourse(c.id)}
+              onFocus={() => preloadCourse(c.id)}
             >
               <div className={styles.cardTop}>
                 <div className={styles.iconBox}>
-                  <span>{c.icon}</span>
+                  <c.Icon size={18} strokeWidth={2.4} aria-hidden="true" />
                 </div>
                 <h3 className={styles.courseTitle}>{c.title}</h3>
               </div>
 
               <div className={styles.cardBottom}>
                 <div className={styles.progressLabelRow}>
-                  <span>Lesson {c.completedLessons} / {c.totalLessons}</span>
+                  <span>{c.total > 0 ? `${c.done} / ${c.total} lessons` : 'Lessons coming soon'}</span>
                   <span>{c.progressPct}%</span>
                 </div>
                 <div className={styles.progressTrack}>
@@ -141,7 +124,7 @@ export default function ContinueLearningCarousel({ enrollments = [] }: ContinueL
                   />
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

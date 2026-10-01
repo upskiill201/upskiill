@@ -1,0 +1,309 @@
+/* Streak calendar. Streak orange is mixed from the amber and red tokens,
+   ice from the brand blue — no hardcoded hex (docs/08-color-system.md). */
+
+.card {
+  --sk-orange: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+  --sk-orange-deep: color-mix(in srgb, var(--sk-orange) 78%, black);
+  --sk-orange-band: color-mix(in srgb, var(--sk-orange) 22%, var(--bg-page));
+  --sk-ice: color-mix(in srgb, var(--color-brand) 16%, var(--bg-page));
+  --sk-ice-ink: var(--color-brand);
+  --sk-ice-band: color-mix(in srgb, var(--color-brand) 9%, var(--bg-page));
+  --sk-ink: var(--color-ink);
+  --sk-soft: var(--text-secondary);
+  --sk-muted: var(--text-muted);
+  --sk-line: var(--border);
+  --sk-well: var(--bg-section);
+  --sk-on: var(--bg-page);
+
+  background: var(--bg-card);
+  border: 2px solid var(--sk-line);
+  border-radius: 16px;
+  padding: 16px;
+  font-family: var(--font-jakarta), sans-serif;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.month {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sk-ink);
+  text-transform: capitalize;
+}
+
+.navBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 2px solid var(--sk-line);
+  background: var(--bg-card);
+  color: var(--sk-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: var(--sk-well);
+}
+
+.navBtn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.navBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  border: 2px solid var(--sk-line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.statNum {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--sk-orange);
+}
+
+.statIce {
+  color: var(--sk-ice-ink);
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sk-soft);
+}
+
+.weekdays,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays {
+  margin-bottom: 8px;
+}
+
+.weekdays span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sk-muted);
+}
+
+.grid {
+  row-gap: 8px;
+}
+
+.blank {
+  height: 40px;
+}
+
+/* A day: a circle, sitting on a band that joins it to its neighbours. */
+.cell {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cell::before,
+.cell::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 50%;
+  background: var(--sk-orange-band);
+  opacity: 0;
+}
+
+.cell::before { left: 0; }
+.cell::after { right: 0; }
+
+.joinL::before,
+.joinR::after {
+  opacity: 1;
+}
+
+.bandIce::before,
+.bandIce::after {
+  background: var(--sk-ice-band);
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sk-soft);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.cell:active .dot {
+  transform: scale(0.9);
+}
+
+.lit {
+  background: var(--sk-orange);
+  color: var(--sk-on);
+  font-weight: 800;
+  box-shadow: inset 0 -3px 0 var(--sk-orange-deep);
+}
+
+.frozen {
+  background: var(--sk-ice);
+  color: var(--sk-ice-ink);
+}
+
+.today:not(.lit):not(.frozen) {
+  box-shadow: inset 0 0 0 2px var(--sk-orange);
+  color: var(--sk-orange);
+  font-weight: 800;
+}
+
+.future {
+  color: var(--sk-muted);
+  opacity: 0.7;
+}
+
+.picked {
+  outline: 3px solid color-mix(in srgb, var(--sk-ink) 20%, transparent);
+  outline-offset: 2px;
+}
+
+.repairMark {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--sk-on);
+  color: var(--sk-orange-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px var(--sk-orange);
+}
+
+.skeletonCell {
+  height: 36px;
+  width: 36px;
+  margin: 2px auto;
+  border-radius: 50%;
+  background: var(--sk-well);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.5; }
+}
+
+.detail {
+  margin: 16px 0 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--sk-well);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sk-ink);
+  text-align: center;
+}
+
+.emptyNote {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--sk-soft);
+  text-align: center;
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 0;
+  color: var(--sk-soft);
+  font-weight: 700;
+}
+
+.retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sk-soft);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.key {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: none;
+}
+
+.keyRepair {
+  box-shadow: 0 0 0 2px var(--sk-on), 0 0 0 3px var(--sk-orange-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonCell { animation: none; }
+}

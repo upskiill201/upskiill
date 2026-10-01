@@ -4,11 +4,55 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
+import { HeavyTransferLockService } from './heavy-transfer-lock.service';
+import { CourseImportError, toCourseImportError } from './course-import-error';
 
-/** Files claimed per tick. Kept small — each one is a multi-hundred-MB to
- *  multi-GB video streamed Drive -> R2, not a cheap row update like Tey's
- *  scheduler batch. */
-const FILE_BATCH_SIZE = 2;
+/** Ceiling for one Drive→R2 transfer. Generous, because a legitimate 2GB
+ *  video on a slow link genuinely takes a while — this exists to catch a
+ *  transfer that has *stopped progressing*, not to rush a slow one. */
+const FILE_TRANSFER_TIMEOUT_MS = 30 * 60 * 1000;
+
+/** Rejects if `work` has not settled within `ms`.
+ *
+ *  Note this does not cancel the underlying transfer — it releases *us* so
+ *  the heavy-transfer lock is freed and the importer keeps moving. The
+ *  abandoned stream is garbage collected when its socket eventually dies;
+ *  the file itself returns to PENDING and is retried cleanly. */
+async function withTimeout<T>(
+  work: Promise<T>,
+  ms: number,
+  description: string,
+): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      work,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () =>
+            reject(
+              new CourseImportError(
+                'STORAGE_TIMEOUT',
+                `${description} stopped making progress after ${Math.round(ms / 60000)} minutes.`,
+              ),
+            ),
+          ms,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+/** Files claimed per tick. One at a time, matching transcription's and
+ *  lesson-generation's own batch size — a real 40+ video import showed
+ *  multiple large (300-700MB) file transfers running at once across this
+ *  processor and the transcription processor (separate cron jobs, no
+ *  shared concurrency limit between them) was enough concurrent memory
+ *  pressure to crash a free-tier Render instance repeatedly. Slower
+ *  throughput, but the whole import failing outright is worse. */
+const FILE_BATCH_SIZE = 1;
 /** A CLAIMED row still unresolved after this long is presumed crashed
  *  mid-transfer (process restart, Render instance recycle) — generous
  *  compared to TeyScheduledAction's 5 minutes because a single file here can
@@ -49,6 +93,7 @@ export class CourseImportProcessorService {
     private readonly prisma: PrismaService,
     private readonly googleDrive: GoogleDriveService,
     private readonly r2: R2StorageService,
+    private readonly heavyTransferLock: HeavyTransferLockService,
   ) {}
 
   private get enabled(): boolean {
@@ -86,6 +131,27 @@ export class CourseImportProcessorService {
       );
     }
 
+    // Shared with TranscriptionProcessorService — never let two large file
+    // streams (an upload and a transcription) run at once. See
+    // HeavyTransferLockService's doc comment: this is exactly what let a
+    // real 40+ video import OOM-crash a free-tier Render instance
+    // repeatedly. Skip this tick entirely rather than wait, so nothing is
+    // claimed that this instance can't actually act on yet.
+    if (!this.heavyTransferLock.tryAcquire()) {
+      return { claimed: 0, uploaded: 0, failed: 0 };
+    }
+
+    try {
+      return await this.claimAndUpload(limit, importId);
+    } finally {
+      this.heavyTransferLock.release();
+    }
+  }
+
+  private async claimAndUpload(
+    limit: number,
+    importId?: string,
+  ): Promise<TickSummary> {
     const claimedIds = await this.claimBatch(limit, importId);
     const summary: TickSummary = {
       claimed: claimedIds.length,
@@ -114,19 +180,30 @@ export class CourseImportProcessorService {
           continue;
         }
 
-        const { stream, mimeType } = await this.googleDrive.downloadFile(
-          file.import.createdById,
-          file.driveFileId,
-        );
         const key = buildObjectKey(
           file.importId,
           file.driveFileId,
           file.driveFileName,
         );
-        const { url } = await this.r2.uploadStream(
-          key,
-          stream,
-          mimeType || file.mimeType,
+
+        // Bounded, because neither the Drive stream nor the R2 upload has a
+        // timeout of its own. A stalled transfer (a half-open connection, a
+        // network blip mid-stream) would otherwise never settle: this await
+        // would hang forever, the `finally` that releases the heavy-transfer
+        // lock would never run, and the whole importer would deadlock with
+        // nothing to show for it — the DB reaper cannot help, because the
+        // lock is in process memory, not in the database. Observed exactly
+        // that during a Supabase outage before this was added.
+        const { url } = await withTimeout(
+          (async () => {
+            const { stream, mimeType } = await this.googleDrive.downloadFile(
+              file.import.createdById,
+              file.driveFileId,
+            );
+            return this.r2.uploadStream(key, stream, mimeType || file.mimeType);
+          })(),
+          FILE_TRANSFER_TIMEOUT_MS,
+          `Transferring "${file.driveFileName.trim()}" from Google Drive to storage`,
         );
 
         await this.prisma.courseImportFile.update({
@@ -136,6 +213,7 @@ export class CourseImportProcessorService {
             storageKey: key,
             storageUrl: url,
             error: null,
+            errorCode: null,
             claimedAt: null,
             claimedBy: null,
           },
@@ -143,15 +221,26 @@ export class CourseImportProcessorService {
         summary.uploaded += 1;
       } catch (err) {
         // One bad file must never take down the batch.
+        const failure = toCourseImportError(err);
         this.logger.error(
-          `Course import file ${file.id} (${file.driveFileName}) failed`,
-          err as Error,
+          `Course import file ${file.id} (${file.driveFileName}) failed [${failure.code}]`,
+          failure,
         );
+        // Auto-retry a transient failure instead of stranding the file until
+        // someone clicks Retry, matching what transcription and lesson
+        // generation already do. The point of this whole feature is an
+        // import you can leave running overnight; a single network blip at
+        // 3am should not silently park a video until morning. `attempts` was
+        // already incremented by claimBatch, and claimBatch's own
+        // `attempts < MAX_AUTO_ATTEMPTS` clause bounds the loop. A terminal
+        // failure (missing Drive file, revoked access) still stops at once.
+        const willRetry = failure.retryable && file.attempts < MAX_AUTO_ATTEMPTS;
         await this.prisma.courseImportFile.update({
           where: { id: file.id },
           data: {
-            status: 'FAILED',
-            error: (err as Error).message.slice(0, 500),
+            status: willRetry ? 'PENDING' : 'FAILED',
+            errorCode: failure.code,
+            error: failure.message.slice(0, 500),
             claimedAt: null,
             claimedBy: null,
           },
@@ -190,7 +279,11 @@ export class CourseImportProcessorService {
             FROM "course_import_files" f2
             JOIN "course_imports" ci ON ci."id" = f2."importId"
            WHERE f2."status" = 'PENDING'
-             AND ci."status" IN ('CREATED', 'PROCESSING_FILES')
+             -- COURSE_CREATED included so a large course imported in
+             -- batches keeps uploading its remaining files after the first
+             -- batch has already produced a course. PAUSED is absent on
+             -- purpose: that is exactly what stops new work being claimed.
+             AND ci."status" IN ('CREATED', 'PROCESSING_FILES', 'COURSE_CREATED')
              AND f2."attempts" < ${MAX_AUTO_ATTEMPTS}
              ${importFilter}
            ORDER BY f2."createdAt"
@@ -223,7 +316,22 @@ export class CourseImportProcessorService {
       where: { id: importId },
       select: { status: true },
     });
-    if (!current || current.status === 'CANCELLED') return;
+    // Statuses this must never overwrite:
+    //  - CANCELLED / PAUSED are deliberate admin decisions; recomputing from
+    //    row counts would silently restart a paused import.
+    //  - COURSE_CREATED means a real course already exists for this import.
+    //    A later batch still uploads and transcribes under that status, so
+    //    regressing it to READY_FOR_GENERATION would lose the one signal
+    //    that tells the publish path to APPEND rather than create a second
+    //    course.
+    if (
+      !current ||
+      current.status === 'CANCELLED' ||
+      current.status === 'PAUSED' ||
+      current.status === 'COURSE_CREATED'
+    ) {
+      return;
+    }
 
     const grouped = await this.prisma.courseImportFile.groupBy({
       by: ['status'],
@@ -261,9 +369,16 @@ export function buildObjectKey(
   driveFileId: string,
   fileName: string,
 ): string {
-  const dotIndex = fileName.lastIndexOf('.');
-  const ext = dotIndex > 0 ? fileName.slice(dotIndex + 1).toLowerCase() : 'bin';
-  const base = (dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName)
+  // Drive file names can carry stray leading/trailing whitespace (seen in
+  // real course exports, e.g. "Drama Editing.mp4 "). Trimmed up front so it
+  // never leaks into `ext` below — an untrimmed extension produced object
+  // keys/URLs with a literal trailing space, which R2 stored fine but which
+  // fetch()'s WHATWG URL parser silently strips, turning every later
+  // download of that file into a 404.
+  const trimmed = fileName.trim();
+  const dotIndex = trimmed.lastIndexOf('.');
+  const ext = dotIndex > 0 ? trimmed.slice(dotIndex + 1).toLowerCase() : 'bin';
+  const base = (dotIndex > 0 ? trimmed.slice(0, dotIndex) : trimmed)
     .replace(/[^a-zA-Z0-9-_]/g, '_')
     .slice(0, 80);
   return `course-imports/${importId}/${driveFileId}-${base}.${ext}`;

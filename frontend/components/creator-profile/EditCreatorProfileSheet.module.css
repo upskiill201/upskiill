@@ -1,0 +1,257 @@
+/* Edit-profile sheet: a bottom sheet on phones, a centred card on desktop.
+   Tokens only. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  /* Above the studio header and sidebar. */
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+}
+
+@media (min-width: 768px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+}
+
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px 24px 0 0;
+  background: var(--bg-card);
+  font-family: var(--font-jakarta), sans-serif;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .sheet {
+    border-radius: 24px;
+    max-height: 88dvh;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 16px 8px 24px;
+}
+
+.head h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.close {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.body h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  color: var(--text-muted);
+}
+
+.ok {
+  color: var(--success-green);
+}
+
+.bad {
+  color: var(--error-red);
+}
+
+.hintBad {
+  margin: 8px 4px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--error-red);
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.textareaWrap {
+  display: block;
+}
+
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-ink);
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background: var(--bg-card);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips + .chips {
+  margin-top: 12px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.chip:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.chipSmall {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 13.5px;
+}
+
+.chipOn {
+  border-color: var(--color-brand);
+  background: var(--color-band);
+  color: var(--color-brand);
+}
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 24px max(env(safe-area-inset-bottom), 16px);
+  border-top: 2px solid var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}
+
+/* Labelled rows in one grouped box (Duolingo's settings fields). */
+.group {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+}
+
+.row + .row {
+  border-top: 2px solid var(--border);
+}
+
+.row:focus-within {
+  background: var(--bg-card);
+}
+
+.rowLabel {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.rowLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rowInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rowInput:focus {
+  outline: none;
+}
+
+.rowInput::placeholder {
+  font-weight: 600;
+  color: var(--text-muted);
+}

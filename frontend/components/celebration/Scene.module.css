@@ -1,10 +1,31 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Celebration Engine — shared scene styles
-   Full-page dark scene takeovers (Duolingo grammar), Teyro-branded.
+   Full-page takeovers in the Duolingo look (2026-09-24): a bright white
+   stage, a warm glow behind the hero, ink headlines, chunky 3D buttons.
+   Every colour is a --sc-* token defined on .sceneBackdrop, resolved from
+   the app's palette in app/globals.css — no raw hex below this block.
    Fluid clamp() sizing from 320px up; one 320px floor query.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .sceneBackdrop {
+  --sc-bg: var(--bg-page);
+  --sc-ink: var(--color-ink);
+  --sc-body: var(--text-primary);
+  --sc-soft: var(--text-secondary);
+  --sc-muted: var(--text-muted);
+  --sc-line: var(--border);
+  --sc-well: var(--bg-section);
+  --sc-on-color: var(--bg-page);
+  --sc-gold: var(--warning);
+  --sc-gold-deep: color-mix(in srgb, var(--warning) 70%, black);
+  --sc-gold-light: color-mix(in srgb, var(--warning) 55%, white);
+  --sc-blue: var(--color-brand);
+  --sc-blue-deep: var(--color-brand-deep);
+  --sc-green: var(--success-green);
+  --sc-green-deep: color-mix(in srgb, var(--success-green) 72%, black);
+  --sc-purple: var(--brand-purple);
+  --sc-red: var(--error-red);
+  --sc-shadow: color-mix(in srgb, var(--color-ink) 14%, transparent);
   position: fixed;
   inset: 0;
   z-index: 100200;
@@ -12,10 +33,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  background:
-    radial-gradient(120% 90% at 50% -10%, rgba(61, 90, 254, 0.16) 0%, rgba(16, 26, 46, 0) 55%),
-    #101a2e;
-  color: #ffffff;
+  background: radial-gradient(90% 60% at 50% 40%, color-mix(in srgb, var(--warning) 10%, var(--bg-page)) 0%, var(--bg-page) 70%);
+  color: var(--sc-ink);
   overflow: hidden;
   user-select: none;
   padding: clamp(16px, 4vh, 36px) clamp(16px, 5vw, 40px);
@@ -28,8 +47,8 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(42% 30% at 50% 38%, rgba(61, 90, 254, 0.14) 0%, transparent 70%),
-    radial-gradient(30% 22% at 50% 60%, rgba(250, 204, 21, 0.05) 0%, transparent 70%);
+    radial-gradient(40% 28% at 50% 40%, color-mix(in srgb, var(--sc-gold) 18%, transparent) 0%, transparent 72%),
+    radial-gradient(60% 40% at 50% 110%, color-mix(in srgb, var(--sc-blue) 6%, transparent) 0%, transparent 70%);
 }
 
 /* Skip hatch (top-left) — shown while the bottom CTA is hidden so a slow
@@ -45,16 +64,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.07);
-  color: #b7c4d6;
+  border: 2px solid var(--sc-line);
+  background: var(--sc-bg);
+  color: var(--sc-muted);
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
 .skipButton:hover {
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: var(--sc-well);
+  color: var(--sc-ink);
 }
 
 .skipButton:active {
@@ -139,15 +158,15 @@
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: var(--sc-ink);
 }
 
 .headlineAccent {
-  color: #ffc800;
+  color: var(--sc-gold);
 }
 
 .headlineBlue {
-  color: #6c8cff;
+  color: var(--sc-blue);
 }
 
 .subhead {
@@ -156,7 +175,7 @@
   font-size: clamp(13px, min(3.6vw, 3.2vh), 17px);
   font-weight: 600;
   line-height: 1.4;
-  color: #b7c4d6;
+  color: var(--sc-soft);
   max-width: 42ch;
 }
 
@@ -167,15 +186,15 @@
   min-height: clamp(52px, 7vh, 62px);
   border: none;
   border-radius: 16px;
-  background: #3d5afe;
-  color: #ffffff;
+  background: var(--sc-blue);
+  color: var(--sc-on-color);
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: clamp(15px, 4vw, 17px);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 6px 0 #2a45e0;
+  box-shadow: 0 6px 0 var(--sc-blue-deep);
   transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -189,7 +208,7 @@
 
 .ctaButton:active:not(:disabled) {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 #2a45e0;
+  box-shadow: 0 2px 0 var(--sc-blue-deep);
 }
 
 .ctaButton:disabled {
@@ -198,26 +217,26 @@
 }
 
 .ctaGreen {
-  background: #22c55e;
-  box-shadow: 0 6px 0 #15803d;
+  background: var(--sc-green);
+  box-shadow: 0 6px 0 var(--sc-green-deep);
 }
 
 .ctaGreen:active:not(:disabled) {
-  box-shadow: 0 2px 0 #15803d;
+  box-shadow: 0 2px 0 var(--sc-green-deep);
 }
 
 .ctaGold {
-  background: #f59e0b;
-  box-shadow: 0 6px 0 #b45309;
+  background: var(--sc-gold);
+  box-shadow: 0 6px 0 var(--sc-gold-deep);
 }
 
 .ctaGold:active:not(:disabled) {
-  box-shadow: 0 2px 0 #b45309;
+  box-shadow: 0 2px 0 var(--sc-gold-deep);
 }
 
 .ctaGhost {
   background: transparent;
-  color: #8fa3bd;
+  color: var(--sc-soft);
   box-shadow: none;
   min-height: 44px;
 }
@@ -243,9 +262,9 @@
   gap: 8px;
   padding: 8px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 3px solid rgba(0, 0, 0, 0.35);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
   font-family: var(--font-jakarta), sans-serif;
 }
 
@@ -254,7 +273,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8fa3bd;
+  color: var(--sc-soft);
 }
 
 .statPillValue {
@@ -264,7 +283,7 @@
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 16px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--sc-ink);
 }
 
 /* ─── Balance row (deposit target) ───────────────────────────────────────── */
@@ -280,7 +299,7 @@
   width: clamp(34px, min(11vw, 6vh), 54px);
   height: clamp(34px, min(11vw, 6vh), 54px);
   object-fit: contain;
-  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 3px 6px var(--sc-shadow));
 }
 
 .balanceValue {
@@ -288,7 +307,7 @@
   font-size: clamp(32px, min(12vw, 7.5vh), 68px);
   font-weight: 800;
   line-height: 1;
-  color: #ffffff;
+  color: var(--sc-ink);
   font-variant-numeric: tabular-nums;
   min-width: 2.2ch;
   text-align: left;
@@ -310,13 +329,11 @@
 .progressTrack {
   position: relative;
   width: 100%;
-  height: clamp(12px, 2.6vh, 22px);
+  height: clamp(14px, 2.6vh, 22px);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
-  box-shadow:
-    inset 0 3px 6px rgba(0, 0, 0, 0.55),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--sc-well);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--sc-ink) 6%, transparent);
+  border: 2px solid var(--sc-line);
   overflow: hidden;
 }
 
@@ -325,12 +342,9 @@
   inset: 2px auto 2px 2px;
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
-  box-shadow:
-    0 0 12px rgba(74, 222, 128, 0.55),
-    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-green) 75%, white) 0%, var(--sc-green) 60%, var(--sc-green-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-green-deep) 60%, transparent);
   transition: width 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
   overflow: hidden;
 }
@@ -354,12 +368,9 @@
 
 .progressFillBlue {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
-  box-shadow:
-    0 0 12px rgba(108, 140, 255, 0.55),
-    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-blue) 75%, white) 0%, var(--sc-blue) 60%, var(--sc-blue-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-blue-deep) 60%, transparent);
 }
 
 @keyframes fluidDrift {
@@ -374,22 +385,22 @@
 .progressCaption {
   font-family: var(--font-jakarta), sans-serif;
   font-size: 13px;
-  font-weight: 600;
-  color: #8fa3bd;
+  font-weight: 700;
+  color: var(--sc-soft);
 }
 
 /* ─── Speech bubble (typewriter) ─────────────────────────────────────────── */
 
 .speechBubble {
   position: relative;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-radius: 16px;
   padding: 10px 16px;
   font-family: var(--font-jakarta), sans-serif;
   font-size: clamp(14px, 3.8vw, 16px);
   font-weight: 700;
-  color: #e6edf6;
+  color: var(--sc-body);
   max-width: 34ch;
   min-height: 1.5em;
 }
@@ -397,14 +408,14 @@
 .speechBubble::after {
   content: '';
   position: absolute;
-  bottom: -7px;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.07);
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  width: 13px;
+  height: 13px;
+  background: var(--sc-bg);
+  border-right: 2px solid var(--sc-line);
+  border-bottom: 2px solid var(--sc-line);
 }
 
 /* ─── Week calendar row ──────────────────────────────────────────────────── */
@@ -428,11 +439,11 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #8fa3bd;
+  color: var(--sc-soft);
 }
 
 .weekDayLabelToday {
-  color: #ffb020;
+  color: var(--sc-gold);
 }
 
 .weekDayCell {
@@ -442,24 +453,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--sc-well);
+  border: 2px solid var(--sc-line);
 }
 
 .weekDayCellDone {
-  background: #0ea5e9;
-  border-color: #0284c7;
-  box-shadow: 0 3px 0 rgba(2, 132, 199, 0.55);
+  background: var(--sc-gold);
+  border-color: var(--sc-gold-deep);
+  box-shadow: 0 3px 0 var(--sc-gold-deep);
 }
 
 .weekDayCellToday {
-  background: #f59e0b;
-  border-color: #d97706;
-  box-shadow: 0 3px 0 rgba(180, 83, 9, 0.55);
+  background: var(--sc-gold);
+  border-color: var(--sc-gold-deep);
+  box-shadow: 0 3px 0 var(--sc-gold-deep), 0 0 0 4px color-mix(in srgb, var(--sc-gold) 25%, transparent);
 }
 
 .weekDayCheck {
-  color: #ffffff;
+  color: var(--sc-on-color);
 }
 
 /* ─── Chest stage ────────────────────────────────────────────────────────── */
@@ -479,16 +490,16 @@
   width: clamp(130px, min(48vw, 32vh), 210px);
   height: clamp(14px, 3vh, 24px);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.45);
-  filter: blur(4px);
+  background: var(--sc-shadow);
+  filter: blur(3px);
   margin-top: -10px;
   transition: opacity 0.3s ease;
 }
 
 .chestArtWrap {
   position: relative;
-  width: clamp(260px, min(82vw, 38vh), 380px);
-  height: clamp(260px, min(82vw, 38vh), 380px);
+  width: clamp(300px, min(94vw, 46vh), 460px);
+  height: clamp(300px, min(94vw, 46vh), 460px);
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   display: flex;
@@ -504,29 +515,180 @@
   height: auto;
   max-height: clamp(110px, 32vh, 200px);
   object-fit: contain;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 10px 16px var(--sc-shadow));
 }
 
-.chestIdleSparkle {
+/* ─── Chest aura ──────────────────────────────────────────────────────────
+   The "this is a moment" layer behind the chest: a breathing glow, slow
+   rotating god-rays, a ring of twinkling sparkles, drifting motes, and a
+   shockwave on every tap. Everything here is transform/opacity only and sits
+   behind the chest (pointer-events: none), so none of it can intercept a tap
+   or knock the Rive canvas off the compositor.
+
+   Intensity is driven by --aura-energy (0 → 1), which ChestScene raises as
+   the learner taps — the scene visibly winds up towards the reveal. */
+
+.chestAura {
   position: absolute;
-  color: #ffd54d;
-  font-size: 20px;
+  inset: 0;
+  display: grid;
+  place-items: center;
   pointer-events: none;
-  animation: chestIdleSparkle 1.7s ease-in-out infinite;
+  z-index: 0;
 }
 
-@keyframes chestIdleSparkle {
-  0% {
-    opacity: 0;
-    transform: scale(0.4);
+.auraGlow {
+  position: absolute;
+  width: 116%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--sc-gold) calc(0.26 + var(--aura-energy, 0) * 0.3 * 100%), transparent) 0%,
+    color-mix(in srgb, var(--sc-gold) calc(0.12 + var(--aura-energy, 0) * 0.16 * 100%), transparent) 38%,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 68%
+  );
+  animation: auraBreathe 3.1s ease-in-out infinite;
+}
+
+@keyframes auraBreathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.82;
   }
   50% {
+    transform: scale(1.06);
     opacity: 1;
-    transform: scale(1);
+  }
+}
+
+/* Conic god-rays. Masked to a soft disc so the rays fade out rather than
+   ending in a hard circular edge. */
+.auraRays {
+  position: absolute;
+  width: 150%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  opacity: calc(0.24 + var(--aura-energy, 0) * 0.3);
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 0deg 5deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 5deg 30deg,
+    color-mix(in srgb, var(--sc-gold) 38%, transparent) 30deg 34deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 34deg 60deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 60deg 65deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 65deg 90deg,
+    color-mix(in srgb, var(--sc-gold) 34%, transparent) 90deg 94deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 94deg 120deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 120deg 125deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 125deg 150deg,
+    color-mix(in srgb, var(--sc-gold) 38%, transparent) 150deg 154deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 154deg 180deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 180deg 185deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 185deg 210deg,
+    color-mix(in srgb, var(--sc-gold) 34%, transparent) 210deg 214deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 214deg 240deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 240deg 245deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 245deg 270deg,
+    color-mix(in srgb, var(--sc-gold) 38%, transparent) 270deg 274deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 274deg 300deg,
+    color-mix(in srgb, var(--sc-gold) 50%, transparent) 300deg 305deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 305deg 330deg,
+    color-mix(in srgb, var(--sc-gold) 34%, transparent) 330deg 334deg,
+    color-mix(in srgb, var(--sc-gold) 0%, transparent) 334deg 360deg
+  );
+  -webkit-mask-image: radial-gradient(circle, black 12%, color-mix(in srgb, black 55%, transparent) 40%, transparent 66%);
+  mask-image: radial-gradient(circle, black 12%, color-mix(in srgb, black 55%, transparent) 40%, transparent 66%);
+  animation: auraSpin 26s linear infinite;
+}
+
+@keyframes auraSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ring of sparkles. Each one is positioned by inline custom properties so the
+   ring geometry lives in the component and the animation lives here. */
+.auraSparkle {
+  position: absolute;
+  color: var(--sc-gold-light);
+  pointer-events: none;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--sc-gold) 85%, transparent);
+  transform: translate(var(--sx), var(--sy)) scale(0);
+  animation: auraTwinkle var(--sdur, 2s) ease-in-out infinite;
+  animation-delay: var(--sdelay, 0s);
+}
+
+@keyframes auraTwinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx), var(--sy)) scale(0.3) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(var(--sx), var(--sy)) scale(1) rotate(35deg);
+  }
+  70% {
+    opacity: 0.55;
+    transform: translate(var(--sx), var(--sy)) scale(0.8) rotate(55deg);
+  }
+}
+
+/* Slow upward motes — the "warm air rising off something valuable" cue. */
+.auraMote {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sc-gold) 95%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--sc-gold) 80%, transparent);
+  animation: auraMoteRise var(--mdur, 4s) ease-in-out infinite;
+  animation-delay: var(--mdelay, 0s);
+}
+
+@keyframes auraMoteRise {
+  0% {
+    opacity: 0;
+    transform: translate(var(--mx), 40px) scale(0.5);
+  }
+  25% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.55;
   }
   100% {
     opacity: 0;
-    transform: scale(0.5);
+    transform: translate(calc(var(--mx) + var(--mdrift, 0px)), -120px) scale(1);
+  }
+}
+
+/* Expanding ring on each tap — keyed on tap index in the component so it
+   remounts and replays per tap rather than needing an imperative trigger. */
+.auraShock {
+  position: absolute;
+  /* Starts wider than the chest so the ring reads as expanding *past* it
+     rather than emerging from underneath it. */
+  width: 72%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--sc-gold) 90%, transparent);
+  animation: auraShockwave 0.62s cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes auraShockwave {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.55);
+    border-width: 4px;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+    border-width: 1px;
   }
 }
 
@@ -542,16 +704,15 @@
   background: conic-gradient(
     from 180deg at 50% 100%,
     transparent 0%,
-    rgba(250, 204, 21, 0.06) 12%,
-    rgba(253, 230, 138, 0.38) 32%,
+    color-mix(in srgb, var(--sc-gold) 6%, transparent) 12%,
+    color-mix(in srgb, var(--sc-gold) 38%, transparent) 32%,
     rgba(255, 255, 255, 0.55) 50%,
-    rgba(253, 230, 138, 0.38) 68%,
-    rgba(250, 204, 21, 0.06) 88%,
+    color-mix(in srgb, var(--sc-gold) 38%, transparent) 68%,
+    color-mix(in srgb, var(--sc-gold) 6%, transparent) 88%,
     transparent 100%
   );
   clip-path: polygon(50% 100%, 0 0, 100% 0);
   filter: blur(2px);
-  mix-blend-mode: screen;
 }
 
 /* ─── Rarity label ───────────────────────────────────────────────────────── */
@@ -565,21 +726,21 @@
 }
 
 .rarityCommon {
-  color: #ffc800;
+  color: var(--sc-gold);
 }
 
 .rarityRare {
-  color: #38bdf8;
+  color: var(--sc-blue);
 }
 
 .rarityEpic {
-  color: #a855f7;
+  color: var(--sc-purple);
 }
 
 .raritySpark {
   display: block;
   margin-top: 2px;
-  color: #ffc800;
+  color: var(--sc-gold);
   font-size: 14px;
   letter-spacing: 0.4em;
 }
@@ -608,14 +769,15 @@
   gap: 8px;
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
   text-align: left;
 }
 
 .questRowHighlight {
-  border-color: rgba(250, 204, 21, 0.55);
-  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.3), 0 6px 22px rgba(250, 204, 21, 0.12);
+  border-color: var(--sc-gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sc-gold) 18%, transparent);
 }
 
 .questRowTop {
@@ -628,8 +790,8 @@
 .questRowLabel {
   font-family: var(--font-jakarta), sans-serif;
   font-size: 15px;
-  font-weight: 700;
-  color: #e6edf6;
+  font-weight: 800;
+  color: var(--sc-ink);
   min-width: 0;
   flex: 1 1 auto;
   overflow: hidden;
@@ -651,13 +813,13 @@
   gap: 5px;
   padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--sc-gold) 12%, var(--sc-bg));
+  border: 2px solid color-mix(in srgb, var(--sc-gold) 35%, transparent);
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: #ffc800;
+  color: var(--sc-gold-deep);
   white-space: nowrap;
 }
 
@@ -671,12 +833,12 @@
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 14px;
   font-weight: 800;
-  color: #8fa3bd;
+  color: var(--sc-soft);
   white-space: nowrap;
 }
 
 .questRowCountDone {
-  color: #4ade80;
+  color: var(--sc-green);
 }
 
 /* Mini progress bar inside a quest row */
@@ -685,13 +847,11 @@
 .questBarTrack {
   position: relative;
   width: 100%;
-  height: clamp(9px, 1.8vh, 13px);
+  height: clamp(10px, 1.8vh, 14px);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--sc-well);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--sc-ink) 6%, transparent);
+  border: 2px solid var(--sc-line);
   overflow: hidden;
 }
 
@@ -700,12 +860,9 @@
   height: 100%;
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
-  box-shadow:
-    0 0 10px rgba(74, 222, 128, 0.5),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-green) 75%, white) 0%, var(--sc-green) 60%, var(--sc-green-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-green-deep) 60%, transparent);
   transition: width 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
   overflow: hidden;
 }
@@ -729,12 +886,9 @@
 
 .questBarFillGold {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
-  box-shadow:
-    0 0 10px rgba(251, 191, 36, 0.5),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-gold) 75%, white) 0%, var(--sc-gold) 60%, var(--sc-gold-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-gold-deep) 60%, transparent);
 }
 
 /* Shine sweep across a just-completed row */
@@ -746,7 +900,7 @@
     115deg,
     transparent 30%,
     rgba(255, 255, 255, 0.16) 48%,
-    rgba(250, 204, 21, 0.22) 52%,
+    color-mix(in srgb, var(--sc-gold) 22%, transparent) 52%,
     transparent 70%
   );
   transform: translateX(-110%);
@@ -763,18 +917,20 @@
 
 .levelBadge {
   position: relative;
-  width: clamp(110px, min(38vw, 30vh), 190px);
-  height: clamp(110px, min(38vw, 30vh), 190px);
+  width: clamp(120px, min(40vw, 30vh), 190px);
+  height: clamp(120px, min(40vw, 30vh), 190px);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 32% 26%, #3d5afe 0%, #2a45e0 62%, #1d34b8 100%);
-  border: 5px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--sc-blue) 70%, white) 0%, var(--sc-blue) 55%, var(--sc-blue-deep) 100%);
+  border: 6px solid var(--sc-gold);
   box-shadow:
-    0 18px 50px rgba(61, 90, 254, 0.45),
-    inset 0 -8px 0 rgba(0, 0, 0, 0.22);
+    0 8px 0 var(--sc-gold-deep),
+    0 0 0 10px color-mix(in srgb, var(--sc-gold) 16%, transparent),
+    inset 0 -8px 0 color-mix(in srgb, var(--sc-blue-deep) 60%, transparent);
 }
 
 .levelBadgeLabel {
@@ -783,7 +939,7 @@
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #c3d0ff;
+  color: color-mix(in srgb, var(--sc-on-color) 80%, var(--sc-blue));
 }
 
 .levelBadgeValue {
@@ -791,7 +947,7 @@
   font-size: clamp(38px, min(15vw, 11vh), 76px);
   font-weight: 800;
   line-height: 1;
-  color: #ffffff;
+  color: var(--sc-on-color);
   font-variant-numeric: tabular-nums;
 }
 
@@ -819,7 +975,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 8px 12px var(--sc-shadow));
   will-change: transform;
 }
 
@@ -834,12 +990,13 @@
   gap: 7px;
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  box-shadow: 0 3px 0 var(--sc-line);
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 16px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--sc-ink);
   z-index: 4;
   font-variant-numeric: tabular-nums;
 }
@@ -864,7 +1021,7 @@
   width: clamp(80px, min(24vw, 20vh), 132px);
   height: clamp(80px, min(24vw, 20vh), 132px);
   object-fit: contain;
-  filter: drop-shadow(0 0 34px rgba(255, 138, 0, 0.55)) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 0 26px color-mix(in srgb, var(--sc-gold) 45%, transparent)) drop-shadow(0 8px 12px var(--sc-shadow));
 }
 
 .streakCountRow {
@@ -876,17 +1033,22 @@
   font-size: clamp(36px, min(14vw, 11vh), 76px);
   font-weight: 800;
   line-height: 1;
-  color: #ffffff;
+  color: var(--sc-gold);
   font-variant-numeric: tabular-nums;
 }
 
 .streakDaysLabel {
   font-size: clamp(15px, min(4.4vw, 3.6vh), 24px);
-  color: #ffb020;
+  color: var(--sc-gold-deep);
+}
+
+.streakLost .streakCountRow,
+.streakLost .streakDaysLabel {
+  color: var(--sc-muted);
 }
 
 .streakLost .flameImg {
-  filter: grayscale(1) brightness(0.55) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+  filter: grayscale(1) opacity(0.55) drop-shadow(0 8px 12px var(--sc-shadow));
 }
 
 /* Inline error note (server-first claim failure) */
@@ -895,7 +1057,7 @@
   font-family: var(--font-jakarta), sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #fca5a5;
+  color: var(--sc-red);
   max-width: 40ch;
 }
 
@@ -906,7 +1068,7 @@
   font-size: clamp(17px, 4.6vw, 21px);
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #ffc800;
+  color: var(--sc-gold-deep);
   animation: tapHintPulse 1.4s ease-in-out infinite;
 }
 
@@ -922,41 +1084,6 @@
   }
 }
 
-/* ─── Tap progress pips (bottom, Duolingo-style "you're building momentum") */
-
-.tapProgressRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.tapProgressPip {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.tapProgressPipFilled {
-  background: #ffc800;
-  transform: scale(1.2);
-  animation: tapProgressPipPop 0.3s ease-out;
-}
-
-@keyframes tapProgressPipPop {
-  0% {
-    transform: scale(0.6);
-  }
-  60% {
-    transform: scale(1.4);
-  }
-  100% {
-    transform: scale(1.2);
-  }
-}
-
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -969,8 +1096,24 @@
     animation: none;
   }
 
-  .tapProgressPipFilled {
+  /* The aura keeps its glow (it's what makes the chest feel special) but
+     stops moving: no spin, no twinkle, no rising motes, no shockwave. */
+  .auraGlow,
+  .auraRays,
+  .auraSparkle,
+  .auraMote,
+  .auraShock {
     animation: none;
+  }
+
+  .auraSparkle {
+    opacity: 0.85;
+    transform: translate(var(--sx), var(--sy)) scale(1);
+  }
+
+  .auraMote,
+  .auraShock {
+    display: none;
   }
 
   .progressFill {
@@ -1075,20 +1218,17 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.25);
+  background: var(--sc-line);
 }
 
 .achvTierDotDone {
-  box-shadow:
-    inset 0 -2px 0 rgba(0, 0, 0, 0.18),
-    0 1px 4px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--sc-ink) 18%, transparent);
 }
 
 .achvTierDotCurrent {
   width: 18px;
   height: 18px;
-  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline: 3px solid var(--sc-gold);
   outline-offset: 2px;
 }
 
@@ -1107,7 +1247,7 @@
 .secondaryCta {
   border: none;
   background: transparent;
-  color: #8fa3bd;
+  color: var(--sc-blue);
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: clamp(12px, 3.2vw, 14px);
   font-weight: 800;
@@ -1119,7 +1259,7 @@
 }
 
 .secondaryCta:hover {
-  color: #ffffff;
+  color: var(--sc-blue-deep);
 }
 
 .secondaryCta:active {
@@ -1133,13 +1273,11 @@
 .barTrack {
   position: relative;
   width: min(100%, 340px);
-  height: clamp(12px, 2.6vh, 22px);
+  height: clamp(14px, 2.6vh, 22px);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.16) 100%);
-  box-shadow:
-    inset 0 3px 6px rgba(0, 0, 0, 0.55),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--sc-well);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--sc-ink) 6%, transparent);
+  border: 2px solid var(--sc-line);
   overflow: hidden;
 }
 
@@ -1169,32 +1307,23 @@
 
 .barFillGreen {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #4ade80 0%, #22c55e 65%, #16a34a 100%);
-  box-shadow:
-    0 0 12px rgba(74, 222, 128, 0.55),
-    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-green) 75%, white) 0%, var(--sc-green) 60%, var(--sc-green-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-green-deep) 60%, transparent);
 }
 
 .barFillBlue {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #6c8cff 0%, #3d5afe 65%, #2a45e0 100%);
-  box-shadow:
-    0 0 12px rgba(108, 140, 255, 0.55),
-    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-blue) 75%, white) 0%, var(--sc-blue) 60%, var(--sc-blue-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-blue-deep) 60%, transparent);
 }
 
 .barFillGold {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(180deg, #fbbf24 0%, #f59e0b 65%, #b45309 100%);
-  box-shadow:
-    0 0 12px rgba(251, 191, 36, 0.55),
-    inset 0 -3px 3px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sc-gold) 75%, white) 0%, var(--sc-gold) 60%, var(--sc-gold-deep) 100%);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sc-gold-deep) 60%, transparent);
 }
 
 /* One shine crossing the track right after the fill lands */
@@ -1241,9 +1370,9 @@
   gap: clamp(8px, 1.6vh, 12px);
   padding: clamp(16px, 3vw, 22px);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
 }
 
 .milestoneKicker {
@@ -1252,7 +1381,7 @@
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8fa3bd;
+  color: var(--sc-soft);
 }
 
 .milestoneTitle {
@@ -1261,7 +1390,7 @@
   font-size: clamp(19px, 5vw, 24px);
   font-weight: 800;
   line-height: 1.15;
-  color: #ffffff;
+  color: var(--sc-ink);
 }
 
 .milestoneBarWrap {
@@ -1275,8 +1404,8 @@
 .milestoneCaption {
   font-family: var(--font-jakarta), sans-serif;
   font-size: clamp(13px, 3.4vw, 14px);
-  font-weight: 700;
-  color: #e6edf6;
+  font-weight: 800;
+  color: var(--sc-body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1296,7 +1425,7 @@
   font-family: var(--font-jakarta), sans-serif;
   font-size: clamp(13px, 3.4vw, 14px);
   font-weight: 700;
-  color: #b7c4d6;
+  color: var(--sc-soft);
 }
 
 .previewDesc {
@@ -1305,7 +1434,7 @@
   font-size: clamp(13px, 3.6vw, 15px);
   font-weight: 600;
   line-height: 1.45;
-  color: #b7c4d6;
+  color: var(--sc-soft);
   max-width: 34ch;
 }
 
@@ -1331,20 +1460,18 @@
 }
 
 .lockCircleLocked {
-  background: rgba(255, 255, 255, 0.07);
-  border: 2px solid rgba(255, 255, 255, 0.16);
-  color: #8fa3bd;
-  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
+  background: var(--sc-well);
+  border: 3px solid var(--sc-line);
+  color: var(--sc-muted);
 }
 
 .lockCircleUnlocked {
-  background: linear-gradient(160deg, #22c55e 0%, #16a34a 100%);
+  background: var(--sc-green);
   border: none;
-  color: #ffffff;
+  color: var(--sc-on-color);
   box-shadow:
-    0 0 0 6px rgba(34, 197, 94, 0.18),
-    0 0 28px rgba(74, 222, 128, 0.45),
-    inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+    0 6px 0 var(--sc-green-deep),
+    0 0 0 8px color-mix(in srgb, var(--sc-green) 18%, transparent);
 }
 
 .lockStateLabel {
@@ -1353,11 +1480,11 @@
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8fa3bd;
+  color: var(--sc-soft);
 }
 
 .lockStateLabelUnlocked {
-  color: #4ade80;
+  color: var(--sc-green);
 }
 
 /* Pre-unlock rattle */
@@ -1377,9 +1504,9 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.4) 38%,
-    rgba(255, 255, 255, 0) 68%
+    color-mix(in srgb, var(--sc-gold) 45%, transparent) 0%,
+    color-mix(in srgb, var(--sc-gold) 15%, transparent) 38%,
+    transparent 68%
   );
   pointer-events: none;
 }
@@ -1387,17 +1514,170 @@
 /* ─── Course-complete trophy crest ──────────────────────────────────────────── */
 
 .trophyCrest {
-  width: clamp(74px, min(22vw, 18vh), 110px);
-  height: clamp(74px, min(22vw, 18vh), 110px);
+  width: clamp(80px, min(24vw, 18vh), 116px);
+  height: clamp(80px, min(24vw, 18vh), 116px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
-  color: #ffffff;
+  background: var(--sc-gold);
+  color: var(--sc-on-color);
   box-shadow:
-    0 0 0 8px rgba(251, 191, 36, 0.14),
-    0 0 32px rgba(245, 158, 11, 0.4),
-    inset 0 -5px 0 rgba(180, 83, 9, 0.55),
-    inset 0 3px 0 rgba(255, 255, 255, 0.35);
+    0 7px 0 var(--sc-gold-deep),
+    0 0 0 10px color-mix(in srgb, var(--sc-gold) 16%, transparent),
+    inset 0 4px 0 color-mix(in srgb, var(--sc-on-color) 35%, transparent);
+}
+
+/* The reward, after the lid gives: a big pill that pops in under the pile. */
+.rewardChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 14px;
+  border-radius: 999px;
+  background: var(--sc-bg);
+  border: 2px solid var(--sc-line);
+  box-shadow: 0 4px 0 var(--sc-line);
+  font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
+  font-size: clamp(20px, 5.6vw, 26px);
+  font-weight: 800;
+  color: var(--sc-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rewardChip img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+/* Streak lost → repair didn't go through (e.g. not enough coins). */
+.repairError {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sc-red);
+  text-align: center;
+}
+
+/* ─── Daily reward: the week ladder ─────────────────────────────────────── */
+.drWeek {
+  list-style: none;
+  margin: 24px auto 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.drDay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px;
+  border-radius: 14px;
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
+  background: var(--sc-bg);
+}
+
+.drDayLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--sc-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.drDayIcon {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drDayAmount {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sc-gold-deep);
+}
+
+.drDayDone {
+  background: var(--sc-well);
+  border-color: var(--sc-line);
+}
+
+.drDayDone .drDayIcon {
+  color: var(--sc-green);
+}
+
+.drDayDone .drDayAmount {
+  color: var(--sc-muted);
+}
+
+.drDayToday {
+  border-color: var(--sc-gold);
+  background: color-mix(in srgb, var(--sc-gold) 14%, var(--sc-bg));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sc-gold) 22%, transparent);
+}
+
+.drDayToday .drDayLabel {
+  color: var(--sc-gold-deep);
+}
+
+.drDayChest:not(.drDayDone) {
+  border-color: color-mix(in srgb, var(--sc-purple) 45%, var(--sc-line));
+}
+
+.drPrize {
+  margin: 24px auto 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.drPills {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.drPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--sc-line);
+  border-bottom-width: 4px;
+  background: var(--sc-bg);
+}
+
+.drPillNum {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--sc-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.drPillLabel {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sc-soft);
+  text-transform: uppercase;
+}
+
+@media (max-width: 420px) {
+  .drWeek {
+    gap: 4px;
+  }
+  .drDayLabel {
+    font-size: 9px;
+  }
+  .drDayAmount {
+    font-size: 12px;
+  }
 }

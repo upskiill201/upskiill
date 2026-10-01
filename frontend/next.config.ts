@@ -136,6 +136,15 @@ const nextConfig: NextConfig = {
       // e.g. legacy /api/social/* paths with no local route handler.
       fallback: [
         {
+          // Community, feed, posts, comments and notifications used to go
+          // through pass-through route handlers (browser → Next function →
+          // NestJS): two hops and a serverless cold start on every tap. The
+          // rewrite proxies at the edge instead. Only /api/community needs
+          // its own rule — the backend calls it /communities.
+          source: '/api/community/:path*',
+          destination: `${backendUrl}/communities/:path*`,
+        },
+        {
           // Proxy remaining /api/* calls to the NestJS backend.
           source: '/api/:path*',
           destination: `${backendUrl}/:path*`,

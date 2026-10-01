@@ -1,60 +1,39 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Check, Gift, Lock } from 'lucide-react';
 import { playHaptic } from '@/lib/haptics';
 import { useCelebration } from '@/context/CelebrationContext';
+import type { Enrollment } from '@/hooks/useCourse';
 import styles from './JourneyPathMap.module.css';
 
 interface JourneyPathMapProps {
-  currentEnrollment?: any;
-  currentLessonIndex?: number;
-  totalLessons?: number;
-  onNodeClick?: (lessonNum: number) => void;
+  enrollment: Enrollment;
+  /** Opens the map at the learner's next lesson. */
+  onContinue: () => void;
 }
 
-export default function JourneyPathMap({
-  currentEnrollment,
-  currentLessonIndex,
-  totalLessons: totalLessonsProp,
-  onNodeClick,
-}: JourneyPathMapProps) {
-  const router = useRouter();
+/**
+ * A compact strip of the path around the learner's real position.
+ *
+ * Built only from `nextLesson.number` and `totalLessons`, both computed
+ * server-side from the same completed-lessons list the map reads. It used to
+ * fall back to "Step 12 of 25" for anyone without progress data — every new
+ * learner saw themselves twelve lessons into a course they had not started.
+ */
+export default function JourneyPathMap({ enrollment, onContinue }: JourneyPathMapProps) {
   const { celebrate } = useCelebration();
   const [lockedTooltip, setLockedTooltip] = useState<number | null>(null);
 
-  // Real per-course lesson count (auth.service.ts getMyEnrollments) — falls
-  // back to the caller's prop, then 25, only if the enrollment truly has none.
-  const totalLessons = currentEnrollment?.course?.totalLessons || totalLessonsProp || 25;
+  const totalLessons = enrollment.course.totalLessons;
+  const courseComplete = !enrollment.nextLesson;
+  // Finished course: the "current" position is past the last lesson.
+  const activeLessonNum = enrollment.nextLesson?.number ?? totalLessons;
 
-  // Compute actual completed lessons from enrollment. `currentLessonIndex`
-  // (derived from the enrollment's real `progress` %) is the source of truth
-  // when passed — `completedLessons` alone under/over-counts whenever a
-  // student skips ahead or a lesson is re-opened, so it's only a fallback.
-  const completedLessons = Array.isArray(currentEnrollment?.completedLessons)
-    ? currentEnrollment.completedLessons
-    : [];
-  const completedCount = completedLessons.length;
-  const activeLessonNum = Math.min(
-    totalLessons,
-    currentLessonIndex ?? completedCount + 1
-  );
-  // 100%-complete course: the clamp above pins activeLessonNum to the final
-  // lesson, which would otherwise render as "current" (You are here) on a
-  // lesson the student already finished.
-  const courseComplete = (currentEnrollment?.progress ?? 0) >= 100;
-
-  // Generate 6 display nodes as a sliding window CENTERED on the user's real
-  // position (activeLessonNum), not a fixed lesson-1-through-6 range — a
-  // student on lesson 16/25 must see lessons ~14-19 (2 completed behind them,
-  // "you are here", then locked ahead), never a wall of 6 checkmarks because
-  // the window itself was hardcoded to 1-6 regardless of actual progress.
+  // A window of up to 6 lessons centred on the learner — two done behind
+  // them, "you are here", then what's ahead.
   const windowSize = 6;
-  const windowStart = Math.max(
-    1,
-    Math.min(activeLessonNum - 2, totalLessons - windowSize + 1)
-  );
+  const windowStart = Math.max(1, Math.min(activeLessonNum - 2, totalLessons - windowSize + 1));
   const lessonNodes = Array.from({ length: Math.min(windowSize, totalLessons) }, (_, i) => {
     const num = windowStart + i;
     const type =
@@ -65,17 +44,12 @@ export default function JourneyPathMap({
           : 'locked';
     return { type, num, label: String(num) };
   });
-  // Finish-line milestone — always the last slot, reachable once every
-  // lesson before it (i.e. the whole course) is done.
-  const nodes = [
-    ...lessonNodes,
-    { type: 'reward', num: totalLessons, label: 'gift' },
-  ];
+  // Finish-line milestone — always the last slot.
+  const nodes = [...lessonNodes, { type: 'reward', num: totalLessons, label: 'gift' }];
 
   const handleNodeClick = (node: (typeof nodes)[0]) => {
-    playHaptic('medium');
-
     if (node.type === 'reward') {
+      playHaptic('medium');
       // Milestone Gift Chest — self-fetches /chest/today, same underlying
       // resource as the dashboard card and Herald banner (one Daily Chest
       // per user per day server-side). Shared dedupeKey so this can't queue
@@ -85,34 +59,23 @@ export default function JourneyPathMap({
     }
 
     if (node.type === 'locked') {
-      // Locked node alert
+      playHaptic('light');
       setLockedTooltip(node.num);
       setTimeout(() => setLockedTooltip(null), 2500);
       return;
     }
 
-    // Interactive navigation to lesson
-    if (onNodeClick) {
-      onNodeClick(node.num);
-      return;
-    }
-
-    // No per-lesson deep link available here (this enrollment payload has no
-    // section/lesson breakdown) — route into the course root and let the
-    // learn page's own resume logic pick up wherever the student left off,
-    // instead of hardcoding section 1 (wrong for anyone past section 1).
-    const courseId = currentEnrollment?.courseId || currentEnrollment?.course?.id;
-    if (courseId) {
-      router.push(`/learn/${courseId}`);
-    }
+    // Done or current: open the map at the learner's next lesson. The
+    // handler owns the haptic, so this tap doesn't buzz twice.
+    onContinue();
   };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.headerRow}>
         <span className={styles.title}>YOUR JOURNEY</span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B' }}>
-          Step {activeLessonNum} of {totalLessons}
+        <span className="text-[11px] font-bold text-slate-500">
+          {courseComplete ? 'Course complete!' : `Lesson ${activeLessonNum} of ${totalLessons}`}
         </span>
       </div>
 
@@ -135,7 +98,7 @@ export default function JourneyPathMap({
                 {node.type === 'completed' ? (
                   <Check size={15} strokeWidth={3} />
                 ) : node.type === 'reward' ? (
-                  <Gift size={16} className="text-[#9333EA]" />
+                  <Gift size={16} className="text-purple-600" />
                 ) : node.type === 'locked' ? (
                   <Lock size={13} strokeWidth={2.5} />
                 ) : (
@@ -148,7 +111,7 @@ export default function JourneyPathMap({
               )}
 
               {lockedTooltip === node.num && node.type === 'locked' && (
-                <span className={styles.hereTooltip} style={{ backgroundColor: '#EF4444', color: '#FFFFFF' }}>
+                <span className={`${styles.hereTooltip} !bg-red-500 !text-white`}>
                   Complete previous lessons to unlock
                 </span>
               )}

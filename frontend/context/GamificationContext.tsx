@@ -13,7 +13,26 @@ import React, {
 // would invert the provider order (ShopEngineProvider nests inside this one).
 import { requestShopUnlockCheck } from './ShopEngineContext';
 
+/** Days away before the full-screen welcome back plays. */
+const WELCOME_BACK_MIN_DAYS = 3;
+
 // ─── Types ──────────────────────────────────────────────────────────────────
+
+/** One day of the 7-day login ladder (backend gamification/daily-reward.ts). */
+export interface DailyRewardDay {
+  day: number;
+  coins: number;
+  xp: number;
+  chest: boolean;
+}
+
+/** What a daily claim actually paid, straight from the server. */
+export interface DailyRewardClaim {
+  day: number;
+  coins: number;
+  xp: number;
+  balances: { coins: number; xp: number };
+}
 
 export interface GamificationState {
   xp: number;
@@ -34,6 +53,8 @@ export interface GamificationState {
   // Daily Reward (Login Chest)
   lastRewardClaimedAt: string | null;
   dailyRewardCyclePosition: number;
+  /** The ladder the server pays from (empty until /me answers). */
+  dailyRewardSchedule: DailyRewardDay[];
   isEligibleForReward: boolean;
   nextRewardClaimInMs: number;
   userLevel?: number;
@@ -58,7 +79,7 @@ interface GamificationContextValue extends GamificationState {
   buyStreakFreeze: () => Promise<void>;
   buyShopItem: (itemKey: 'REFILL_HEARTS' | 'STREAK_FREEZE') => Promise<{ success: boolean; message: string }>;
   refillLivesWithXp: () => Promise<void>;
-  claimDailyReward: () => Promise<void>;
+  claimDailyReward: () => Promise<DailyRewardClaim>;
   dismissStreakModal: () => void;
   userLevel: number;
   xpInCurrentLevel: number;
@@ -86,6 +107,7 @@ const DEFAULT_STATE: GamificationState = {
   // Daily Reward
   lastRewardClaimedAt: null,
   dailyRewardCyclePosition: 1,
+  dailyRewardSchedule: [],
   isEligibleForReward: true,
   nextRewardClaimInMs: 0,
   isLoading: true,
@@ -152,6 +174,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
               mode: serverStreakStatus === 'SAVED' ? 'SAVED' : 'LOST',
               days: data.streakDays ?? 0,
               lostCount: data.lostStreakCount ?? 0,
+              repair: data.streakRepair ?? null,
             },
           })
         );
@@ -165,7 +188,9 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       // "you missed days" scenes for the same gap; the STREAK scene already
       // carries that beat in that case.
       const daysSinceLastLesson = typeof data.daysSinceLastLesson === 'number' ? data.daysSinceLastLesson : 0;
-      if (daysSinceLastLesson > 0 && serverStreakStatus === 'NORMAL') {
+      // A full "We missed you!" screen is for a real absence (3+ days) —
+      // Duolingo doesn't stop a learner who skipped one day at the door.
+      if (daysSinceLastLesson >= WELCOME_BACK_MIN_DAYS && serverStreakStatus === 'NORMAL') {
         window.dispatchEvent(
           new CustomEvent('teyro:welcome-back', {
             detail: { days: daysSinceLastLesson },
@@ -191,6 +216,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         // Daily Reward
         lastRewardClaimedAt: data.lastRewardClaimedAt ?? null,
         dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
+        dailyRewardSchedule: Array.isArray(data.dailyRewardSchedule) ? data.dailyRewardSchedule : [],
         isEligibleForReward: data.isEligibleForReward ?? true,
         nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
         userLevel: data.userLevel,
@@ -205,6 +231,14 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     fetchStats();
+  }, [fetchStats]);
+
+  // Anything that changes balances outside this context (a streak repair, a
+  // purchase made elsewhere) can ask for a fresh read.
+  useEffect(() => {
+    const onRefresh = () => void fetchStats();
+    window.addEventListener('teyro:gamification-refresh', onRefresh);
+    return () => window.removeEventListener('teyro:gamification-refresh', onRefresh);
   }, [fetchStats]);
 
   const refresh = useCallback(async () => {
@@ -252,6 +286,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       streakDays: newStreakDays,
       coins: newCoins !== undefined ? newCoins : (prev.coins + 5),
       gems: newCoins !== undefined ? newCoins : (prev.gems + 5),
+      // True the moment a lesson is saved; ReminderAskWatcher keys off it.
+      lastLessonCompletedAt: new Date().toISOString(),
     }));
 
     // A finished lesson is the single most likely moment for a shop item to
@@ -351,6 +387,12 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
       streakFreezeBank: data.streakFreezeBank ?? prev.streakFreezeBank,
     }));
+    return {
+      day: data.justClaimedCycleDay ?? 1,
+      coins: data.justClaimedCoins ?? 0,
+      xp: data.justClaimedXp ?? 0,
+      balances: { coins: data.coins ?? 0, xp: data.xp ?? 0 },
+    };
   }, []);
 
   const awardTestReward = useCallback((delta: { coins?: number; xp?: number; lives?: number; streakDays?: number }) => {

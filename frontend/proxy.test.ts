@@ -77,20 +77,35 @@ describe('proxy middleware', () => {
       });
     });
 
-    it('should redirect to /creator/login when accessing /creator', () => {
+    it('should redirect to /creator/login when accessing /creator, preserving the destination', () => {
       const req = createMockRequest('/creator');
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator/login', 'http://localhost/creator'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator/login' });
+      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator/login?next=%2Fcreator' });
     });
 
     it('should redirect to /creator/login when accessing /creator/settings', () => {
       const req = createMockRequest('/creator/settings');
       const res = proxy(req);
 
-      expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/creator/login', 'http://localhost/creator/settings'));
-      expect(res).toEqual({ type: 'redirect', url: 'http://localhost/creator/login' });
+      expect(res).toEqual({
+        type: 'redirect',
+        url: 'http://localhost/creator/login?next=%2Fcreator%2Fsettings',
+      });
+    });
+
+    it('leaves public creator pages open to logged-out visitors', () => {
+      // /creator-profile/:username shares the /creator prefix; a bare
+      // startsWith walled it off behind the creator login.
+      const res = proxy(createMockRequest('/creator-profile/ada'));
+
+      expect(NextResponse.redirect).not.toHaveBeenCalled();
+      expect(res).toEqual({ type: 'next' });
+    });
+
+    it('lets logged-out visitors into creator onboarding and sign-up', () => {
+      expect(proxy(createMockRequest('/creator/onboarding/3'))).toEqual({ type: 'next' });
+      expect(proxy(createMockRequest('/creator/signup'))).toEqual({ type: 'next' });
     });
 
     it('should allow access to public routes like /', () => {

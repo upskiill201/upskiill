@@ -25,7 +25,10 @@ export const StreakCriticalRule: TeyRule = {
   // stages of the same evening. Suppressing the earlier one would mean the
   // at-risk nudge never fires for a learner with no freeze — precisely the
   // learner it exists for. Not over-messaging is the policy layer's job.
-  supersedes: ['DAILY_GOAL_INCOMPLETE'],
+  // Nor the daily reminder: that is the first rung of the same day, planned
+  // hours earlier. Suppressing it would leave a streak learner with no
+  // freeze silent until 20:00.
+  supersedes: [],
 
   plan(state, now): ScheduleIntent | null {
     if (state.streakDays < 1) return null;

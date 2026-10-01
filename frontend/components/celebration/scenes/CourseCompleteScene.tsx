@@ -18,11 +18,9 @@ import { AnimatedProgressBar, StatPillRow, TypewriterBubble } from '../ScenePrim
 import styles from '../Scene.module.css';
 import type { CelebrationScene } from '@/context/CelebrationContext';
 import { CURRENCY_ICONS } from '../currency';
-import {
-  playLevelUpFanfare,
-  playSparkle,
-} from '@/lib/audio/celebrationAudio';
-import { playHaptic } from '@/lib/haptics';
+import { playSound } from '@/lib/audio/lessonSounds';
+import { confettiColors } from '../confetti';
+import { celebrationHaptic } from '@/lib/haptics';
 import { pickCourseCompleteSpeech } from '@/lib/tey/milestoneVoice';
 
 type CourseCompleteInput = Extract<CelebrationScene, { kind: 'COURSE_COMPLETE' }>;
@@ -32,7 +30,6 @@ interface CourseCompleteSceneProps {
   onAdvance: () => void;
 }
 
-const CONFETTI_COLORS = ['#FFC800', '#F59E0B', '#3D5AFE', '#22C55E', '#FFFFFF'];
 
 export default function CourseCompleteScene({ scene, onAdvance }: CourseCompleteSceneProps) {
   const reducedMotion = useReducedMotion();
@@ -54,8 +51,8 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
   useEffect(() => {
     if (firedRef.current) return;
     firedRef.current = true;
-    playHaptic('teyroCelebration');
-    playLevelUpFanfare();
+    celebrationHaptic('big');
+    playSound('courseComplete');
 
     if (reducedMotion || typeof window === 'undefined') return;
     // Three volleys — center burst then both flanks (bigger than a section).
@@ -64,7 +61,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
       spread: 115,
       startVelocity: 48,
       origin: { x: 0.5, y: 0.3 },
-      colors: CONFETTI_COLORS,
+      colors: confettiColors('gold'),
       disableForReducedMotion: true,
     });
     const flankTimers = setTimeout(() => {
@@ -73,7 +70,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
         angle: 60,
         spread: 65,
         origin: { x: 0, y: 0.45 },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors('gold'),
         disableForReducedMotion: true,
       });
       confetti({
@@ -81,7 +78,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
         angle: 120,
         spread: 65,
         origin: { x: 1, y: 0.45 },
-        colors: CONFETTI_COLORS,
+        colors: confettiColors('gold'),
         disableForReducedMotion: true,
       });
     }, 400);
@@ -108,7 +105,7 @@ export default function CourseCompleteScene({ scene, onAdvance }: CourseComplete
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 15 }}
         onAnimationComplete={() => {
-          if (!reducedMotion) playSparkle();
+          if (!reducedMotion) playSound('shine');
         }}
       >
         <Trophy size={46} strokeWidth={2.2} />

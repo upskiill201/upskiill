@@ -1,0 +1,958 @@
+/* Course importer (Teyro HQ) — guided steps, chunky Duolingo cards. Tokens only. */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 22px;
+  align-items: start;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 22px;
+  background: var(--bg-card);
+}
+
+.stepLocked {
+  opacity: 0.55;
+}
+
+.stepHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stepNum {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--color-brand);
+  box-shadow: 0 3px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+  font-weight: 800;
+}
+
+.stepDone {
+  background: var(--success-green);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--success-green) 70%, var(--color-ink));
+}
+
+.stepTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.stepSub {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.muted {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid color-mix(in srgb, var(--warning) 45%, var(--border));
+  background: color-mix(in srgb, var(--warning) 9%, var(--bg-card));
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.warn svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--warning);
+}
+
+.skel {
+  height: 64px;
+  border-radius: 16px;
+  background: var(--bg-section);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+
+.primaryBtn,
+.ghostBtn,
+.dangerGhost,
+.smallBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  align-self: flex-start;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--color-brand);
+  box-shadow: 0 4px 0 var(--color-brand-deep);
+  color: var(--bg-card);
+  font-size: 13.5px;
+}
+
+.primaryBtn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.bigBtn {
+  align-self: stretch;
+  min-height: 54px;
+  font-size: 15px;
+}
+
+.ghostBtn,
+.dangerGhost {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+  font-size: 12.5px;
+}
+
+.dangerGhost {
+  color: var(--error-red);
+}
+
+.smallBtn {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 2px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--color-brand);
+  font-size: 11px;
+}
+
+.ghostBtn:active:not(:disabled),
+.dangerGhost:active:not(:disabled),
+.smallBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.primaryBtn:disabled,
+.ghostBtn:disabled,
+.dangerGhost:disabled,
+.smallBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Step 1: Drive ──────────────────────────────────────────────────── */
+
+.connected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--success-green) 8%, var(--bg-card));
+  border: 2px solid color-mix(in srgb, var(--success-green) 30%, var(--border));
+}
+
+.connected strong {
+  font-size: 14.5px;
+  color: var(--success-green);
+}
+
+.connected span span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.driveIcon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--success-green);
+  color: var(--bg-card);
+}
+
+.connectBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.connectBox p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ── Step 2: folder browser ─────────────────────────────────────────── */
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  font-size: 13.5px;
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-muted);
+}
+
+.crumb button {
+  border: 0;
+  background: none;
+  padding: 2px 4px;
+  border-radius: 6px;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.crumb strong {
+  padding: 2px 4px;
+  color: var(--color-ink);
+}
+
+.files {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-section);
+}
+
+.fileRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+button.fileRow:hover {
+  background: var(--bg-card);
+}
+
+.fileRow[data-static='true'] {
+  cursor: default;
+}
+
+.fileIcon {
+  --tone: var(--color-brand);
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, var(--bg-card));
+}
+
+.fileName {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileMeta {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.chev {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.useRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Step 3: what we'll make ────────────────────────────────────────── */
+
+.make {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.makeItem {
+  --tone: var(--color-brand);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 2px solid color-mix(in srgb, var(--tone) 30%, var(--border));
+  background: color-mix(in srgb, var(--tone) 7%, var(--bg-card));
+}
+
+.makeItem strong {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--tone);
+}
+
+.makeItem span {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.makeItem em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.input {
+  min-height: 46px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-section);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background: var(--bg-card);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chipOn {
+  color: var(--color-brand);
+  border-color: color-mix(in srgb, var(--color-brand) 55%, var(--border));
+  background: color-mix(in srgb, var(--color-brand) 9%, var(--bg-card));
+}
+
+.autopilot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 18px;
+  background: var(--bg-card);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.autopilot strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.autopilot .grow span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.autopilotOn {
+  border-color: color-mix(in srgb, var(--brand-purple) 50%, var(--border));
+  background: color-mix(in srgb, var(--brand-purple) 7%, var(--bg-card));
+}
+
+.autoIcon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--brand-purple) 14%, var(--bg-card));
+  color: var(--brand-purple);
+}
+
+.toggle {
+  width: 46px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background 0.15s ease;
+}
+
+.toggle span {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  transition: transform 0.15s ease;
+}
+
+.autopilotOn .toggle {
+  background: var(--brand-purple);
+}
+
+.autopilotOn .toggle span {
+  transform: translateX(18px);
+}
+
+/* ── Side: your imports ─────────────────────────────────────────────── */
+
+.side {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sideTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.importList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.importCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 18px;
+  background: var(--bg-card);
+  color: inherit;
+  text-decoration: none;
+}
+
+.importCard:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 40%, var(--border));
+}
+
+.importTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.importTop strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.importMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.importMeta .chev {
+  margin-left: auto;
+}
+
+.status {
+  --tone: var(--text-muted);
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 13%, var(--bg-card));
+  white-space: nowrap;
+}
+
+.bar {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-section);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--success-green);
+  transition: width 0.4s ease;
+}
+
+.barBig {
+  height: 16px;
+}
+
+/* ── Import page ────────────────────────────────────────────────────── */
+
+.back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.detailHead {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: -8px;
+}
+
+.headTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detailTitle {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.progressTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pct {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--success-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.activity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}
+
+.stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stage {
+  --tone: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--bg-section);
+}
+
+.stage[data-state='active'] {
+  background: color-mix(in srgb, var(--tone) 9%, var(--bg-card));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--tone) 40%, transparent);
+}
+
+.stageDot {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid var(--tone);
+  color: var(--bg-card);
+}
+
+.stage[data-state='done'] .stageDot,
+.stage[data-state='failed'] .stageDot {
+  background: var(--tone);
+}
+
+.stage[data-state='active'] .stageDot {
+  color: var(--tone);
+}
+
+.stageText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stageText strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.stageText span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.next {
+  border-color: color-mix(in srgb, var(--brand-purple) 40%, var(--border));
+  background: color-mix(in srgb, var(--brand-purple) 5%, var(--bg-card));
+}
+
+.nextText {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.nextText strong {
+  color: var(--color-ink);
+}
+
+.autoNote {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-purple);
+}
+
+.sectionHead,
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary .chev {
+  margin-left: auto;
+}
+
+details[open] > .summary .chev {
+  transform: rotate(180deg);
+}
+
+.module {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moduleTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.moduleNum {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--color-brand);
+  color: var(--bg-card);
+  font-size: 12px;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 2px solid var(--border);
+  min-width: 0;
+}
+
+.rows > .itemRow:first-child {
+  border-top: 0;
+}
+
+.itemMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemMain > strong {
+  font-size: 14px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.err {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--error-red);
+}
+
+.err svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--bg-section);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.preview p {
+  margin: 0;
+}
+
+.preview strong {
+  display: inline-block;
+  min-width: 64px;
+  color: var(--color-ink);
+}
+
+/* ── Breakpoints ────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side {
+    position: static;
+  }
+
+  .stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .make {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stages {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .itemRow {
+    flex-wrap: wrap;
+  }
+}

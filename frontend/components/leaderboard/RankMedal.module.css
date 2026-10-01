@@ -1,0 +1,40 @@
+/* Leaderboard rank: medal art for the podium, a bold number otherwise. */
+
+.medal {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.medalNum {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* The medal's face sits in the lower 60% of the art. */
+  top: 50%;
+  bottom: 6%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  line-height: 1;
+}
+
+.num {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.promo {
+  color: var(--success-green);
+}
+
+.demotion {
+  color: var(--error-red);
+}

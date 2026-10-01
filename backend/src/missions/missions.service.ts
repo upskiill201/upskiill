@@ -10,7 +10,101 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
 
-export type ObjectiveType = 'LESSON_COUNT' | 'XP_EARNED' | 'STREAK_ACTIVE';
+export type ObjectiveType =
+  | 'LESSON_COUNT'
+  | 'XP_EARNED'
+  | 'STREAK_ACTIVE'
+  | 'CORRECT_ANSWERS'
+  | 'ACCURATE_LESSON'
+  | 'PERFECT_LESSON'
+  | 'LEARN_MINUTES';
+
+type Tier = 'easy' | 'medium' | 'hard';
+
+/**
+ * A quest's title always says its real target — built here, never stored
+ * loose, so a target scaled up for a busy learner can't read "Complete 1
+ * lesson · 2/2".
+ */
+export function questTitle(objectiveType: string, target: number): string {
+  switch (objectiveType) {
+    case 'LESSON_COUNT':
+      return target === 1 ? 'Complete a lesson' : `Complete ${target} lessons`;
+    case 'XP_EARNED':
+      return `Earn ${target} XP`;
+    case 'STREAK_ACTIVE':
+      return 'Extend your streak';
+    case 'CORRECT_ANSWERS':
+      return `Get ${target} answers right`;
+    case 'ACCURATE_LESSON':
+      return target === 1 ? 'Score 90% or more in a lesson' : `Score 90% or more in ${target} lessons`;
+    case 'PERFECT_LESSON':
+      return target === 1 ? 'Finish a lesson with no mistakes' : `Finish ${target} lessons with no mistakes`;
+    case 'LEARN_MINUTES':
+      return `Learn for ${target} minutes`;
+    default:
+      return 'Daily quest';
+  }
+}
+
+/**
+ * The quest pool — Duolingo's shape: every day gets one easy, one medium and
+ * one hard quest, never two of the same kind, rewards scaling with effort.
+ */
+export const QUEST_POOL: {
+  code: string;
+  objectiveType: ObjectiveType;
+  defaultTarget: number;
+  defaultRewardType: 'XP' | 'COINS';
+  defaultRewardAmount: number;
+  difficultyTier: Tier;
+}[] = [
+  // easy
+  { code: 'COMPLETE_LESSONS', objectiveType: 'LESSON_COUNT', defaultTarget: 1, defaultRewardType: 'XP', defaultRewardAmount: 20, difficultyTier: 'easy' },
+  { code: 'EARN_XP', objectiveType: 'XP_EARNED', defaultTarget: 20, defaultRewardType: 'COINS', defaultRewardAmount: 10, difficultyTier: 'easy' },
+  { code: 'MAINTAIN_STREAK', objectiveType: 'STREAK_ACTIVE', defaultTarget: 1, defaultRewardType: 'COINS', defaultRewardAmount: 10, difficultyTier: 'easy' },
+  { code: 'CORRECT_5', objectiveType: 'CORRECT_ANSWERS', defaultTarget: 5, defaultRewardType: 'XP', defaultRewardAmount: 15, difficultyTier: 'easy' },
+  { code: 'LEARN_5_MIN', objectiveType: 'LEARN_MINUTES', defaultTarget: 5, defaultRewardType: 'COINS', defaultRewardAmount: 10, difficultyTier: 'easy' },
+  // medium
+  { code: 'COMPLETE_2_LESSONS', objectiveType: 'LESSON_COUNT', defaultTarget: 2, defaultRewardType: 'XP', defaultRewardAmount: 35, difficultyTier: 'medium' },
+  { code: 'EARN_50_XP', objectiveType: 'XP_EARNED', defaultTarget: 50, defaultRewardType: 'COINS', defaultRewardAmount: 25, difficultyTier: 'medium' },
+  { code: 'CORRECT_15', objectiveType: 'CORRECT_ANSWERS', defaultTarget: 15, defaultRewardType: 'XP', defaultRewardAmount: 30, difficultyTier: 'medium' },
+  { code: 'ACCURATE_1', objectiveType: 'ACCURATE_LESSON', defaultTarget: 1, defaultRewardType: 'COINS', defaultRewardAmount: 25, difficultyTier: 'medium' },
+  { code: 'LEARN_10_MIN', objectiveType: 'LEARN_MINUTES', defaultTarget: 10, defaultRewardType: 'XP', defaultRewardAmount: 30, difficultyTier: 'medium' },
+  // hard
+  { code: 'POWER_LEARNER', objectiveType: 'LESSON_COUNT', defaultTarget: 3, defaultRewardType: 'COINS', defaultRewardAmount: 40, difficultyTier: 'hard' },
+  { code: 'PERFECT_1', objectiveType: 'PERFECT_LESSON', defaultTarget: 1, defaultRewardType: 'COINS', defaultRewardAmount: 45, difficultyTier: 'hard' },
+  { code: 'EARN_100_XP', objectiveType: 'XP_EARNED', defaultTarget: 100, defaultRewardType: 'COINS', defaultRewardAmount: 50, difficultyTier: 'hard' },
+  { code: 'LEARN_20_MIN', objectiveType: 'LEARN_MINUTES', defaultTarget: 20, defaultRewardType: 'XP', defaultRewardAmount: 50, difficultyTier: 'hard' },
+  { code: 'ACCURATE_3', objectiveType: 'ACCURATE_LESSON', defaultTarget: 3, defaultRewardType: 'COINS', defaultRewardAmount: 45, difficultyTier: 'hard' },
+];
+
+/**
+ * Today's three: one per tier, skipping recently used templates when there's
+ * room, and never two quests of the same kind. Pure (random comes in), so
+ * the rule is tested.
+ */
+export function pickDailyQuests<T extends { id: string; objectiveType: string; difficultyTier: string }>(
+  templates: T[],
+  recentIds: string[],
+  random: () => number = Math.random,
+): T[] {
+  const picked: T[] = [];
+  const shuffle = (list: T[]) =>
+    list
+      .map((t) => ({ t, k: random() }))
+      .sort((a, b) => a.k - b.k)
+      .map((x) => x.t);
+  for (const tier of ['easy', 'medium', 'hard'] as const) {
+    const inTier = templates.filter((t) => t.difficultyTier === tier);
+    const usedKinds = new Set(picked.map((p) => p.objectiveType));
+    const fresh = inTier.filter((t) => !recentIds.includes(t.id) && !usedKinds.has(t.objectiveType));
+    const anyKind = inTier.filter((t) => !usedKinds.has(t.objectiveType));
+    const choice = shuffle(fresh)[0] ?? shuffle(anyKind)[0] ?? shuffle(inTier)[0];
+    if (choice) picked.push(choice);
+  }
+  return picked;
+}
 export type RewardType = 'XP' | 'COINS' | 'GEMS';
 
 @Injectable()
@@ -50,85 +144,22 @@ export class MissionsService {
   private async ensureDefaultTemplates() {
     if (this.templatesSeeded) return;
 
-    const count = await this.prisma.missionTemplate.count();
-    if (count >= 6) {
-      this.templatesSeeded = true;
-      return;
-    }
-
-    this.logger.log('Seeding default mission templates pool...');
-    const defaults = [
-      {
-        code: 'COMPLETE_LESSONS',
-        title: 'Complete 1 lesson',
-        description: 'Finish 1 interactive lesson today',
-        objectiveType: 'LESSON_COUNT',
-        defaultTarget: 1,
-        defaultRewardType: 'XP',
-        defaultRewardAmount: 20,
-        difficultyTier: 'easy',
-      },
-      {
-        code: 'EARN_XP',
-        title: 'Earn 20 XP',
-        description: 'Earn 20 XP from quizzes and lessons',
-        objectiveType: 'XP_EARNED',
-        defaultTarget: 20,
-        defaultRewardType: 'COINS',
-        defaultRewardAmount: 10,
-        difficultyTier: 'easy',
-      },
-      {
-        code: 'MAINTAIN_STREAK',
-        title: 'Stay on your streak',
-        description: 'Keep your daily learning streak active',
-        objectiveType: 'STREAK_ACTIVE',
-        defaultTarget: 1,
-        defaultRewardType: 'COINS',
-        defaultRewardAmount: 5,
-        difficultyTier: 'easy',
-      },
-      {
-        code: 'COMPLETE_2_LESSONS',
-        title: 'Complete 2 lessons',
-        description: 'Finish 2 interactive lessons today',
-        objectiveType: 'LESSON_COUNT',
-        defaultTarget: 2,
-        defaultRewardType: 'XP',
-        defaultRewardAmount: 35,
-        difficultyTier: 'medium',
-      },
-      {
-        code: 'EARN_50_XP',
-        title: 'Earn 50 XP',
-        description: 'Earn 50 XP from lessons and practice',
-        objectiveType: 'XP_EARNED',
-        defaultTarget: 50,
-        defaultRewardType: 'COINS',
-        defaultRewardAmount: 25,
-        difficultyTier: 'medium',
-      },
-      {
-        code: 'POWER_LEARNER',
-        title: 'Complete 3 lessons',
-        description: 'Finish 3 lessons for a major boost',
-        objectiveType: 'LESSON_COUNT',
-        defaultTarget: 3,
-        defaultRewardType: 'COINS',
-        defaultRewardAmount: 40,
-        difficultyTier: 'hard',
-      },
-    ];
-
-    for (const item of defaults) {
+    // Upsert the whole pool on first use per process: new quest kinds appear
+    // without a migration, and existing rows pick up tier/reward changes.
+    for (const item of QUEST_POOL) {
+      const data = {
+        title: questTitle(item.objectiveType, item.defaultTarget),
+        description: questTitle(item.objectiveType, item.defaultTarget),
+        objectiveType: item.objectiveType,
+        defaultTarget: item.defaultTarget,
+        defaultRewardType: item.defaultRewardType,
+        defaultRewardAmount: item.defaultRewardAmount,
+        difficultyTier: item.difficultyTier,
+      };
       await this.prisma.missionTemplate.upsert({
         where: { code: item.code },
-        update: {
-          defaultRewardType: item.defaultRewardType,
-          defaultRewardAmount: item.defaultRewardAmount,
-          difficultyTier: item.difficultyTier,
-        },
-        create: item,
+        update: data,
+        create: { code: item.code, ...data },
       });
     }
 
@@ -190,13 +221,10 @@ export class MissionsService {
         });
       }
 
-      // Anchor selection: Ensure at least 1 COMPLETE_LESSONS mission is included
-      const anchorTemplate = availableTemplates.find((t) => t.objectiveType === 'LESSON_COUNT') || availableTemplates[0];
-      const remainingTemplates = availableTemplates.filter((t) => t.id !== anchorTemplate.id);
-      
-      // Shuffle remaining templates and pick 2
-      const shuffled = [...remainingTemplates].sort(() => 0.5 - Math.random());
-      const selectedTemplates = [anchorTemplate, ...shuffled.slice(0, 2)];
+      // One easy, one medium, one hard — never two of the same kind.
+      const allActive = await this.prisma.missionTemplate.findMany({ where: { isActive: true } });
+      const selectedTemplates = pickDailyQuests(allActive, recentTemplateIds);
+      void availableTemplates;
 
       // Query 7-day user activity average for dynamic target scaling
       const sevenDaysAgo = this.getLocalDayString(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), timezoneOffsetMinutes);
@@ -247,7 +275,7 @@ export class MissionsService {
                 dailyMissionSetId: set.id,
                 templateId: t.id,
                 missionDate: todayStr,
-                title: t.title,
+                title: questTitle(t.objectiveType, scaledTarget),
                 objectiveType: t.objectiveType,
                 targetValue: scaledTarget,
                 rewardType: t.defaultRewardType,
@@ -371,8 +399,9 @@ export class MissionsService {
         const isDone = m.isCompleted || m.currentProgress >= m.targetValue;
         return {
           id: m.id,
-          title: m.title,
+          title: questTitle(m.objectiveType, m.targetValue),
           objectiveType: m.objectiveType,
+          difficulty: m.template?.difficultyTier ?? 'medium',
           currentProgress: m.currentProgress,
           targetValue: m.targetValue,
           status: m.isClaimed ? 'CLAIMED' : isDone ? 'COMPLETED' : m.status || 'IN_PROGRESS',

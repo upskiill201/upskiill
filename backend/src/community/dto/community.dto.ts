@@ -57,7 +57,8 @@ export class PollOptionInputDto {
 
 export class CreatePostDto {
   @IsOptional()
-  @IsIn(USER_POST_TYPES)
+  // Every type validates here; PostService rejects ANNOUNCEMENT/CHALLENGE from non-moderators.
+  @IsIn(ALL_POST_TYPES)
   postType?: string;
 
   @IsOptional()

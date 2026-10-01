@@ -1,18 +1,20 @@
 /**
  * Teyro Course Access Pricing Engine (Backend)
  *
- * Converts a creator's single Course Base Value (e.g. $30) into an automated,
- * psychology-backed subscription ladder (Weekly, Monthly, Yearly).
+ * Converts the price a creator sets into a two-plan subscription ladder:
+ * Monthly and Yearly. There is no weekly plan — it was removed 2026-09-24.
+ * Legacy WEEKLY subscriptions still renew server-side, but no new ones can be
+ * bought.
  *
- * Formulas (since 2026-09-28 — the creator's price IS the yearly plan):
+ * Formulas (since 2026-09-28 — the price the creator types IS the yearly plan):
  *  - Yearly (365 days): the creator's price (min $9.99)
- *  - Monthly (30 days): Yearly ÷ 6, rounded up — yearly saves 50% (min $2.99)
- *  - Weekly (7 days):   Base Price ÷ 10 (min $0.99) — legacy tier, removed in
- *    the upcoming app release
- * Keep in lockstep with frontend/lib/pricing-engine.ts.
+ *  - Monthly (30 days): Yearly ÷ 6, so paying yearly saves 50% (min $2.99)
+ *
+ * Existing Stripe subscriptions keep the amount they were created with; only
+ * new checkouts use this ladder. Keep in lockstep with frontend/lib/pricing-engine.ts.
  */
 
-export type AccessPlanType = 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+export type AccessPlanType = 'MONTHLY' | 'YEARLY';
 
 export interface PlanPricing {
   plan: AccessPlanType;
@@ -32,15 +34,15 @@ export interface PlanPricing {
 export interface CoursePricingLadder {
   baseValue: number;
   isFree: boolean;
-  weekly: PlanPricing;
   monthly: PlanPricing;
   yearly: PlanPricing;
   plans: PlanPricing[];
 }
 
-const MIN_WEEKLY_FLOOR = 0.99;
 const MIN_MONTHLY_FLOOR = 2.99;
 const MIN_YEARLY_FLOOR = 9.99;
+/** Months of monthly billing a yearly plan costs: 6 → yearly saves 50%. */
+export const YEARLY_IN_MONTHS = 6;
 
 export function roundToCleanPrice(amount: number): number {
   return Math.round(amount * 100) / 100;
@@ -68,42 +70,21 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
     return {
       baseValue: 0,
       isFree: true,
-      weekly: { ...freePlan, plan: 'WEEKLY', durationDays: 7 },
       monthly: freePlan,
       yearly: { ...freePlan, plan: 'YEARLY', durationDays: 365 },
       plans: [
-        { ...freePlan, plan: 'WEEKLY', durationDays: 7, periodLabel: '7 days access' },
         { ...freePlan, plan: 'MONTHLY', durationDays: 30, periodLabel: '30 days access', isDefault: true },
         { ...freePlan, plan: 'YEARLY', durationDays: 365, periodLabel: '365 days access', isBestValue: true },
       ],
     };
   }
 
-  // 1. Weekly Calculation (7 Days)
-  const rawWeekly = cleanBase / 10;
-  const weeklyPrice = roundToCleanPrice(Math.max(MIN_WEEKLY_FLOOR, rawWeekly));
-
-  // 2. Yearly Calculation (365 Days) — since 2026-09-28 the creator's price
-  //    IS the yearly plan.
   const yearlyPrice = roundToCleanPrice(Math.max(MIN_YEARLY_FLOOR, cleanBase));
+  // Rounded UP to the cent, so "save 50%" is always true, never 49.9%.
+  const monthlyPrice = Math.max(MIN_MONTHLY_FLOOR, Math.ceil((yearlyPrice / YEARLY_IN_MONTHS) * 100 - 1e-9) / 100);
 
-  // 3. Monthly Calculation (30 Days) — yearly ÷ 6, rounded UP to the cent, so
-  //    paying yearly always saves at least 50%.
-  const monthlyPrice = Math.max(MIN_MONTHLY_FLOOR, Math.ceil((yearlyPrice / 6) * 100 - 1e-9) / 100);
-
-  const monthlySavingsVsWeekly = Math.round(((weeklyPrice * 4 - monthlyPrice) / (weeklyPrice * 4)) * 100);
-  // The real saving — shown to learners, so it is never rounded up.
+  // The real saving — shown to learners, so it must never be rounded up.
   const yearlySavingsVsMonthly = Math.floor(((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100);
-
-  const weekly: PlanPricing = {
-    plan: 'WEEKLY',
-    durationDays: 7,
-    price: weeklyPrice,
-    formattedPrice: formatCurrency(weeklyPrice),
-    periodLabel: '7 days of access',
-    intervalText: '/week',
-    effectiveMonthly: roundToCleanPrice(weeklyPrice * 4.33),
-  };
 
   const monthly: PlanPricing = {
     plan: 'MONTHLY',
@@ -113,9 +94,7 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
     periodLabel: '30 days of access',
     intervalText: '/month',
     isDefault: true,
-    badge: '⭐ Best for learning',
-    savingsText: `Save ${Math.max(15, monthlySavingsVsWeekly)}% vs weekly`,
-    savingsPercent: Math.max(15, monthlySavingsVsWeekly),
+    badge: 'Most flexible',
     effectiveMonthly: monthlyPrice,
   };
 
@@ -127,7 +106,7 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
     periodLabel: '365 days of access',
     intervalText: '/year',
     isBestValue: true,
-    badge: '🏆 Best value',
+    badge: 'Best value',
     savingsText: `Save ${yearlySavingsVsMonthly}% vs monthly`,
     savingsPercent: yearlySavingsVsMonthly,
     effectiveMonthly: roundToCleanPrice(yearlyPrice / 12),
@@ -136,9 +115,15 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
   return {
     baseValue: cleanBase,
     isFree: false,
-    weekly,
     monthly,
     yearly,
-    plans: [weekly, monthly, yearly],
+    plans: [monthly, yearly],
   };
+}
+
+/** Plans a learner can buy today. WEEKLY survives only in the DB enum for legacy renewals. */
+export const PURCHASABLE_PLANS: readonly AccessPlanType[] = ['MONTHLY', 'YEARLY'];
+
+export function isPurchasablePlan(plan: unknown): plan is AccessPlanType {
+  return typeof plan === 'string' && (PURCHASABLE_PLANS as readonly string[]).includes(plan);
 }

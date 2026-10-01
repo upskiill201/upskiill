@@ -97,8 +97,14 @@ export class R2StorageService {
     this.logger.log(`Deleted ${key}`);
   }
 
+  /** Percent-encodes each path segment — a raw key (e.g. one built from a
+   *  Drive file name with stray whitespace) must never reach fetch() as a
+   *  literal space: the WHATWG URL parser silently trims leading/trailing
+   *  whitespace from a URL string, which would request a DIFFERENT key than
+   *  the one actually stored in R2 and 404. */
   publicUrlFor(key: string): string {
     const base = CLOUDFRONT_URL!;
-    return `${base.endsWith('/') ? base.slice(0, -1) : base}/${key}`;
+    const encodedKey = key.split('/').map(encodeURIComponent).join('/');
+    return `${base.endsWith('/') ? base.slice(0, -1) : base}/${encodedKey}`;
   }
 }

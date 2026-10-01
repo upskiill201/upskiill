@@ -12,6 +12,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { OptionalJwtAuthGuard } from '../auth/guard/optional-jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -29,6 +30,10 @@ export class ProfileController {
    * tighter rate limit than the global default on top of the ThrottlerGuard.
    */
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  // Optional auth: without a guard req.user was never set, so a signed-in
+  // viewer always saw FOLLOW (never FOLLOWING) and the page never knew it was
+  // the creator's own.
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('creator/:identifier')
   async getCreatorProfile(@Param('identifier') identifier: string, @Req() req: any) {
     // Optional viewer id from token if attached
@@ -41,6 +46,7 @@ export class ProfileController {
    * Alias for public profile lookup.
    */
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('public/:identifier')
   async getPublicProfile(@Param('identifier') identifier: string, @Req() req: any) {
     const viewerId = req.user?.id;

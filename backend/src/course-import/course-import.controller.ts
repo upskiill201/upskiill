@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Logger,
   Param,
   Post,
@@ -52,6 +53,12 @@ export class CourseImportController {
     const summary = await this.courseImport.createImport(
       user.id,
       dto.driveFolderId,
+      {
+        autopilot: dto.autopilot ?? false,
+        courseTitle: dto.courseTitle?.trim() || null,
+        courseCategory: dto.courseCategory ?? null,
+        courseLevel: dto.courseLevel ?? null,
+      },
     );
     // Kick processing off immediately rather than waiting up to 15s for the
     // next cron tick — fire-and-forget; the cron tick remains the safety net
@@ -65,12 +72,19 @@ export class CourseImportController {
     return summary;
   }
 
+  // Express attaches an ETag but no Cache-Control. With a validator and no
+  // stated policy a browser may cache heuristically — which is why this list
+  // could show stale data on a normal reload and only correct itself after a
+  // hard refresh. This is authenticated, per-admin, constantly-changing
+  // state; it must never come from a cache.
   @Get()
+  @Header('Cache-Control', 'no-store')
   list(@GetUser() user: AuthedUser) {
     return this.courseImport.listImports(user.id);
   }
 
   @Get(':id')
+  @Header('Cache-Control', 'no-store')
   get(@GetUser() user: AuthedUser, @Param('id') id: string) {
     return this.courseImport.getImport(user.id, id);
   }
@@ -155,6 +169,19 @@ export class CourseImportController {
   @Post(':id/cancel')
   cancel(@GetUser() user: AuthedUser, @Param('id') id: string) {
     return this.courseImport.cancelImport(user.id, id);
+  }
+
+  /** Stops the processors picking up new work for this import. Keeps every
+   *  completed upload/transcript/lesson — unlike cancel, which also deletes
+   *  the uploaded R2 objects. */
+  @Post(':id/pause')
+  pause(@GetUser() user: AuthedUser, @Param('id') id: string) {
+    return this.courseImport.pauseImport(user.id, id);
+  }
+
+  @Post(':id/resume')
+  resume(@GetUser() user: AuthedUser, @Param('id') id: string) {
+    return this.courseImport.resumeImport(user.id, id);
   }
 
   /** Phase 5: builds the real (DRAFT) Course/Section/Lesson tree from this

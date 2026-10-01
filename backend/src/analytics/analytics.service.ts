@@ -323,7 +323,7 @@ export class AnalyticsService {
       userIds.length > 0
         ? await this.prisma.learningEvent.findMany({
             where: {
-              entityType: 'LESSON_COMPLETED',
+              eventType: 'LESSON_COMPLETED',
               userId: { in: userIds },
               createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
             },
@@ -653,7 +653,7 @@ export class AnalyticsService {
         take: 35,
       }),
       this.prisma.learningEvent.findMany({
-        where: { userId: studentId, entityType: 'LESSON_COMPLETED' },
+        where: { userId: studentId, eventType: 'LESSON_COMPLETED' },
         orderBy: { createdAt: 'desc' },
         take: 12,
         select: { entityId: true, createdAt: true },
@@ -832,7 +832,7 @@ export class AnalyticsService {
       studentIds.length > 0
         ? await this.prisma.learningEvent.findMany({
             where: {
-              entityType: 'LESSON_COMPLETED',
+              eventType: 'LESSON_COMPLETED',
               userId: { in: studentIds },
               createdAt: { gte: new Date(nowT - 60 * DAY_MS) },
             },

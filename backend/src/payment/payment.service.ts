@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-import { Injectable, BadRequestException, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
@@ -8,11 +14,12 @@ import { EarningsService } from '../earnings/earnings.service';
 import { CouponsService, CouponQuoteValid } from '../coupons/coupons.service';
 import { calculateCoursePricingLadder } from '../course/pricing-engine';
 import { resolveReturnUrl } from './return-url.util';
+import { MESOMB_COUNTRIES, getDefaultMesombCountry } from './mesomb-countries';
 import {
-  MESOMB_COUNTRIES,
-  getDefaultMesombCountry,
-} from './mesomb-countries';
-import { PaymentProviderType, SubscriptionStatus, AccessPlan } from '@prisma/client';
+  PaymentProviderType,
+  SubscriptionStatus,
+  AccessPlan,
+} from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
 
@@ -132,8 +139,7 @@ export class PaymentService {
    * enabled:false (NOT omitted) so the UI can grey them honestly.
    */
   async getMesombConfig() {
-    const envOverride = process.env.MESOMB_ACCOUNT_COUNTRIES
-      ?.split(',')
+    const envOverride = process.env.MESOMB_ACCOUNT_COUNTRIES?.split(',')
       .map((s) => s.trim().toUpperCase())
       .filter(Boolean);
     const accountCountries =
@@ -155,7 +161,10 @@ export class PaymentService {
         dialCode: c.dialCode,
         currency: c.currency,
         phoneExample: c.phoneExample,
-        operators: c.operators.map((op) => ({ code: op.code, label: op.label })),
+        operators: c.operators.map((op) => ({
+          code: op.code,
+          label: op.label,
+        })),
         enabled: supported ? supported.has(c.code.toUpperCase()) : true,
       })),
     };
@@ -176,86 +185,103 @@ export class PaymentService {
     },
   ) {
     let newlyEnrolledIds: string[] = [];
-    return this.prisma.$transaction(async (tx) => {
-      const order = await tx.order.create({
-        data: {
-          userId,
-          totalAmount,
-          status: 'COMPLETED',
-          items: {
-            create: courses.map((c) => ({
-              courseId: c.id,
-              price: c.price,
-            })),
+    return this.prisma
+      .$transaction(async (tx) => {
+        const order = await tx.order.create({
+          data: {
+            userId,
+            totalAmount,
+            status: 'COMPLETED',
+            items: {
+              create: courses.map((c) => ({
+                courseId: c.id,
+                price: c.price,
+              })),
+            },
           },
-        },
-      });
+        });
 
-      const courseIds = courses.map((c) => c.id);
-      const existingEnrollments = await tx.enrollment.findMany({
-        where: {
-          userId,
-          courseId: { in: courseIds },
-        },
-      });
+        const courseIds = courses.map((c) => c.id);
+        const existingEnrollments = await tx.enrollment.findMany({
+          where: {
+            userId,
+            courseId: { in: courseIds },
+          },
+        });
 
-      const existingCourseIds = new Set(
-        existingEnrollments.map((e) => e.courseId),
-      );
+        const existingCourseIds = new Set(
+          existingEnrollments.map((e) => e.courseId),
+        );
 
-      const coursesToEnroll = courses.filter(
-        (c) => !existingCourseIds.has(c.id),
-      );
+        const coursesToEnroll = courses.filter(
+          (c) => !existingCourseIds.has(c.id),
+        );
 
-      if (coursesToEnroll.length > 0) {
-        await tx.enrollment.createMany({
-          data: coursesToEnroll.map((c) => ({
+        if (coursesToEnroll.length > 0) {
+          await tx.enrollment.createMany({
+            data: coursesToEnroll.map((c) => ({
+              userId,
+              courseId: c.id,
+              progress: 0,
+            })),
+          });
+
+          await tx.course.updateMany({
+            where: {
+              id: { in: coursesToEnroll.map((c) => c.id) },
+            },
+            data: {
+              studentsCount: { increment: 1 },
+            },
+          });
+          newlyEnrolledIds = coursesToEnroll.map((c) => c.id);
+        }
+
+        // Earnings ledger — one SALE row per course, same transaction as the
+        // order. Composite reference keeps sibling rows unique AND makes a
+        // webhook replay dedupe to nothing.
+        if (earningsRef?.providerReferenceBase) {
+          for (const c of courses) {
+            await this.earnings.recordSaleInTx(tx, {
+              creatorId: c.instructorId,
+              courseId: c.id,
+              studentId: userId,
+              orderId: order.id,
+              grossMinor: Math.round(c.price * 100),
+              type: 'SALE',
+              provider: earningsRef.provider,
+              providerReference: `${earningsRef.providerReferenceBase}:${c.id}`,
+              nativeCurrency: earningsRef.nativeCurrency,
+              nativeAmountMinor: earningsRef.nativeAmountMinor,
+            });
+          }
+        }
+
+        return order;
+      })
+      .then((order) => {
+        // Community auto-join for freshly enrolled learners (idempotent upsert
+        // on the listener side; a failed join never fails the payment).
+        for (const courseId of newlyEnrolledIds) {
+          this.eventEmitter.emit(
+            'enrollment.created',
+            new EnrollmentCreatedEvent(userId, courseId),
+          );
+        }
+        // Purchase confirmation + creator new-student notice — fire-and-forget,
+        // queued for background delivery (see EmailLifecycleListener).
+        for (const c of courses) {
+          this.eventEmitter.emit('payment.completed', {
             userId,
             courseId: c.id,
-            progress: 0,
-          })),
-        });
-
-        await tx.course.updateMany({
-          where: {
-            id: { in: coursesToEnroll.map((c) => c.id) },
-          },
-          data: {
-            studentsCount: { increment: 1 },
-          },
-        });
-        newlyEnrolledIds = coursesToEnroll.map((c) => c.id);
-      }
-
-      // Earnings ledger — one SALE row per course, same transaction as the
-      // order. Composite reference keeps sibling rows unique AND makes a
-      // webhook replay dedupe to nothing.
-      if (earningsRef?.providerReferenceBase) {
-        for (const c of courses) {
-          await this.earnings.recordSaleInTx(tx, {
-            creatorId: c.instructorId,
-            courseId: c.id,
-            studentId: userId,
-            orderId: order.id,
-            grossMinor: Math.round(c.price * 100),
-            type: 'SALE',
-            provider: earningsRef.provider,
-            providerReference: `${earningsRef.providerReferenceBase}:${c.id}`,
-            nativeCurrency: earningsRef.nativeCurrency,
-            nativeAmountMinor: earningsRef.nativeAmountMinor,
+            amountUsd: c.price,
+            currency: 'USD',
+            transactionId: order.id,
+            instructorId: c.instructorId,
           });
         }
-      }
-
-      return order;
-    }).then((order) => {
-      // Community auto-join for freshly enrolled learners (idempotent upsert
-      // on the listener side; a failed join never fails the payment).
-      for (const courseId of newlyEnrolledIds) {
-        this.eventEmitter.emit('enrollment.created', new EnrollmentCreatedEvent(userId, courseId));
-      }
-      return order;
-    });
+        return order;
+      });
   }
 
   // ─── SUBSCRIPTION ENGINE (MULTI-PROVIDER ABSTRACTION) ────────────────────────
@@ -274,7 +300,7 @@ export class PaymentService {
   async subscribeCourse(
     userId: string,
     courseId: string,
-    plan: 'WEEKLY' | 'MONTHLY' | 'YEARLY',
+    plan: 'MONTHLY' | 'YEARLY',
     provider: 'STRIPE' | 'MESOMB',
     extra?: {
       phone?: string;
@@ -290,7 +316,13 @@ export class PaymentService {
     try {
       course = await this.prisma.course.findUnique({
         where: { id: courseId },
-        select: { id: true, title: true, price: true, published: true, instructorId: true },
+        select: {
+          id: true,
+          title: true,
+          price: true,
+          published: true,
+          instructorId: true,
+        },
       });
     } catch (err) {
       this.assertDatabaseReachable(err);
@@ -328,7 +360,10 @@ export class PaymentService {
         await this.prisma.enrollment.create({
           data: { userId, courseId, progress: 0, completedLessons: [] },
         });
-        this.eventEmitter.emit('enrollment.created', new EnrollmentCreatedEvent(userId, courseId));
+        this.eventEmitter.emit(
+          'enrollment.created',
+          new EnrollmentCreatedEvent(userId, courseId),
+        );
       }
       return {
         success: true,
@@ -340,12 +375,7 @@ export class PaymentService {
 
     // Server-authoritative price from the pricing ladder
     const ladder = calculateCoursePricingLadder(course.price);
-    const planData =
-      plan === 'WEEKLY'
-        ? ladder.weekly
-        : plan === 'YEARLY'
-          ? ladder.yearly
-          : ladder.monthly;
+    const planData = plan === 'YEARLY' ? ladder.yearly : ladder.monthly;
     let actualPrice = planData.price;
 
     // Coupon re-validated HERE, at charge time — never trust an earlier
@@ -354,7 +384,11 @@ export class PaymentService {
     // one), which is what makes "first payment only" true by omission.
     let couponQuote: CouponQuoteValid | undefined;
     if (extra?.couponCode) {
-      const quote = await this.coupons.quote({ courseId, plan, code: extra.couponCode });
+      const quote = await this.coupons.quote({
+        courseId,
+        plan,
+        code: extra.couponCode,
+      });
       if (!quote.valid) {
         throw new BadRequestException(`Coupon error: ${quote.reason}`);
       }
@@ -492,198 +526,232 @@ export class PaymentService {
       throw new BadRequestException('Course not found');
     }
 
+    // WEEKLY is legacy-only (renewals of subscriptions bought before 2026-09-24).
+    // WEEKLY is legacy-only: renewals of subscriptions bought before 2026-09-24.
     const durationDays = plan === 'WEEKLY' ? 7 : plan === 'MONTHLY' ? 30 : 365;
 
-    let subscriptionEnrollmentIds: string[] = [];
-    return this.prisma.$transaction(async (tx) => {
-      const existing = await tx.courseAccessEntitlement.findUnique({
-        where: { userId_courseId: { userId, courseId } },
-      });
-
-      const now = new Date();
-      let expiresAt: Date;
-      if (existing && existing.status === 'ACTIVE' && existing.expiresAt > now) {
-        expiresAt = new Date(
-          existing.expiresAt.getTime() + durationDays * 24 * 60 * 60 * 1000,
-        );
-      } else {
-        expiresAt = new Date(
-          now.getTime() + durationDays * 24 * 60 * 60 * 1000,
-        );
-      }
-
-      // 1. Upsert CourseAccessEntitlement
-      const entitlement = await tx.courseAccessEntitlement.upsert({
-        where: { userId_courseId: { userId, courseId } },
-        create: {
-          userId,
-          courseId,
-          plan,
-          status: 'ACTIVE',
-          startDate: now,
-          expiresAt,
-          cancelAtPeriodEnd: false,
-          stripeSubscriptionId: providerSubscriptionId,
-          stripeCustomerId: providerCustomerId,
-          pricePaid,
-        },
-        update: {
-          plan,
-          status: 'ACTIVE',
-          expiresAt,
-          cancelAtPeriodEnd: false,
-          stripeSubscriptionId:
-            providerSubscriptionId || existing?.stripeSubscriptionId,
-          stripeCustomerId: providerCustomerId || existing?.stripeCustomerId,
-          pricePaid: pricePaid !== undefined ? pricePaid : existing?.pricePaid,
-        },
-      });
-
-      // 2. Create or Update CourseSubscription record
-      await tx.courseSubscription.create({
-        data: {
-          userId,
-          courseId,
-          provider,
-          providerSubscriptionId,
-          providerCustomerId,
-          plan: plan as AccessPlan,
-          status: 'ACTIVE',
-          startedAt: now,
-          currentPeriodStart: now,
-          currentPeriodEnd: expiresAt,
-          autoRenew: provider === 'STRIPE',
-          pricePaid,
-        },
-      });
-
-      // 3. Ensure Enrollment exists (learning progress separated from access)
-      const existingEnrollment = await tx.enrollment.findUnique({
-        where: { userId_courseId: { userId, courseId } },
-      });
-
-      if (!existingEnrollment) {
-        await tx.enrollment.create({
-          data: {
-            userId,
-            courseId,
-            progress: 0,
-            completedLessons: [],
-          },
+    const subscriptionEnrollmentIds: string[] = [];
+    return this.prisma
+      .$transaction(async (tx) => {
+        const existing = await tx.courseAccessEntitlement.findUnique({
+          where: { userId_courseId: { userId, courseId } },
         });
 
-        await tx.course.update({
-          where: { id: courseId },
-          data: { studentsCount: { increment: 1 } },
-        });
-        subscriptionEnrollmentIds.push(courseId);
-      }
-
-      // 4. Create Order record if price paid
-      let order: { id: string } | null = null;
-      if (pricePaid !== undefined && pricePaid > 0) {
-        order = await tx.order.create({
-          data: {
-            userId,
-            totalAmount: pricePaid,
-            status: 'COMPLETED',
-            items: {
-              create: [
-                {
-                  courseId,
-                  price: pricePaid,
-                },
-              ],
-            },
-          },
-        });
-      }
-
-      // 5. Earnings ledger entry — SAME transaction as the entitlement and
-      // order, so a payment can never commit without its ledger row.
-      // SALE vs RENEWAL follows the same predicate as the extension branch
-      // above: an already-ACTIVE entitlement being extended is a renewal.
-      // A coupon-driven $0 grant (couponContext present, pricePaid === 0)
-      // still needs its redemption slot claimed and snapshot recorded here —
-      // otherwise a free coupon's maxRedemptions/audit trail would silently
-      // never update. A plain zero-price grant with no coupon (shouldn't
-      // happen, but is not this method's business to assume) still skips.
-      if (pricePaid !== undefined && (pricePaid > 0 || couponContext)) {
-        const wasActiveRenewal =
-          !!existing && existing.status === 'ACTIVE' && existing.expiresAt > now;
-        // provider already carries the real rail (STRIPE/MESOMB/MANUAL) —
-        // no need to collapse MANUAL into STRIPE here.
-        const ledgerProvider = provider;
-        const providerReference =
-          earningsRef?.providerReference ||
-          `${provider === 'MESOMB' ? 'mesomb' : 'grant'}_${order?.id ?? Date.now()}`;
-
-        // Coupon slot is claimed BEFORE the ledger write — grossMinor and
-        // discountMinor below depend on whether the claim actually succeeded,
-        // not the other way round. A duplicate webhook delivery for the same
-        // charge is checked first so a retry can never double-decrement the
-        // usage limit (layered idempotency, same spirit as claimWebhookEvent
-        // + recordSaleInTx's own P2002 guard).
-        let couponClaimed = false;
-        if (couponContext) {
-          const already = await this.coupons.findRedemptionByReference(
-            tx,
-            ledgerProvider,
-            providerReference,
+        const now = new Date();
+        let expiresAt: Date;
+        if (
+          existing &&
+          existing.status === 'ACTIVE' &&
+          existing.expiresAt > now
+        ) {
+          expiresAt = new Date(
+            existing.expiresAt.getTime() + durationDays * 24 * 60 * 60 * 1000,
           );
-          couponClaimed = !already && (await this.coupons.claimRedemptionSlot(tx, couponContext.couponId));
+        } else {
+          expiresAt = new Date(
+            now.getTime() + durationDays * 24 * 60 * 60 * 1000,
+          );
         }
 
-        const grossMinor = couponClaimed
-          ? Math.round(couponContext!.originalPriceUsd * 100)
-          : Math.round(pricePaid * 100);
-        const discountMinor = couponClaimed ? Math.round(couponContext!.discountAmountUsd * 100) : 0;
-
-        const sale = await this.earnings.recordSaleInTx(tx, {
-          creatorId: course.instructorId,
-          courseId,
-          studentId: userId,
-          orderId: order?.id,
-          grossMinor,
-          discountMinor,
-          type: wasActiveRenewal ? 'RENEWAL' : 'SALE',
-          provider: ledgerProvider,
-          providerReference,
-          nativeCurrency: earningsRef?.nativeCurrency,
-          nativeAmountMinor: earningsRef?.nativeAmountMinor,
-        });
-
-        if (couponClaimed) {
-          await this.coupons.recordRedemptionSnapshot(tx, {
-            couponId: couponContext!.couponId,
+        // 1. Upsert CourseAccessEntitlement
+        const entitlement = await tx.courseAccessEntitlement.upsert({
+          where: { userId_courseId: { userId, courseId } },
+          create: {
             userId,
             courseId,
+            plan,
+            status: 'ACTIVE',
+            startDate: now,
+            expiresAt,
+            cancelAtPeriodEnd: false,
+            stripeSubscriptionId: providerSubscriptionId,
+            stripeCustomerId: providerCustomerId,
+            pricePaid,
+          },
+          update: {
+            plan,
+            status: 'ACTIVE',
+            expiresAt,
+            cancelAtPeriodEnd: false,
+            stripeSubscriptionId:
+              providerSubscriptionId || existing?.stripeSubscriptionId,
+            stripeCustomerId: providerCustomerId || existing?.stripeCustomerId,
+            pricePaid:
+              pricePaid !== undefined ? pricePaid : existing?.pricePaid,
+          },
+        });
+
+        // 2. Create or Update CourseSubscription record
+        await tx.courseSubscription.create({
+          data: {
+            userId,
+            courseId,
+            provider,
+            providerSubscriptionId,
+            providerCustomerId,
             plan: plan as AccessPlan,
-            originalPriceUsd: couponContext!.originalPriceUsd,
-            discountAmountUsd: couponContext!.discountAmountUsd,
-            finalPriceUsd: pricePaid,
-            creatorSharePct: sale.creatorSharePct,
-            provider: ledgerProvider,
-            providerReference,
-            orderId: order?.id,
-            earningsTransactionId: sale.earningsTransactionId,
+            status: 'ACTIVE',
+            startedAt: now,
+            currentPeriodStart: now,
+            currentPeriodEnd: expiresAt,
+            autoRenew: provider === 'STRIPE',
+            pricePaid,
+          },
+        });
+
+        // 3. Ensure Enrollment exists (learning progress separated from access)
+        const existingEnrollment = await tx.enrollment.findUnique({
+          where: { userId_courseId: { userId, courseId } },
+        });
+
+        if (!existingEnrollment) {
+          await tx.enrollment.create({
+            data: {
+              userId,
+              courseId,
+              progress: 0,
+              completedLessons: [],
+            },
+          });
+
+          await tx.course.update({
+            where: { id: courseId },
+            data: { studentsCount: { increment: 1 } },
+          });
+          subscriptionEnrollmentIds.push(courseId);
+        }
+
+        // 4. Create Order record if price paid
+        let order: { id: string } | null = null;
+        if (pricePaid !== undefined && pricePaid > 0) {
+          order = await tx.order.create({
+            data: {
+              userId,
+              totalAmount: pricePaid,
+              status: 'COMPLETED',
+              items: {
+                create: [
+                  {
+                    courseId,
+                    price: pricePaid,
+                  },
+                ],
+              },
+            },
           });
         }
-      }
 
-      return {
-        success: true,
-        entitlement,
-        message: `Unlocked ${durationDays} days of course access!`,
-      };
-    }).then((result) => {
-      // Community auto-join for subscription learners seeing this course
-      // for the first time.
-      for (const courseId of subscriptionEnrollmentIds) {
-        this.eventEmitter.emit('enrollment.created', new EnrollmentCreatedEvent(userId, courseId));
-      }
-      return result;
-    });
+        // 5. Earnings ledger entry — SAME transaction as the entitlement and
+        // order, so a payment can never commit without its ledger row.
+        // SALE vs RENEWAL follows the same predicate as the extension branch
+        // above: an already-ACTIVE entitlement being extended is a renewal.
+        // A coupon-driven $0 grant (couponContext present, pricePaid === 0)
+        // still needs its redemption slot claimed and snapshot recorded here —
+        // otherwise a free coupon's maxRedemptions/audit trail would silently
+        // never update. A plain zero-price grant with no coupon (shouldn't
+        // happen, but is not this method's business to assume) still skips.
+        if (pricePaid !== undefined && (pricePaid > 0 || couponContext)) {
+          const wasActiveRenewal =
+            !!existing &&
+            existing.status === 'ACTIVE' &&
+            existing.expiresAt > now;
+          // provider already carries the real rail (STRIPE/MESOMB/MANUAL) —
+          // no need to collapse MANUAL into STRIPE here.
+          const ledgerProvider = provider;
+          const providerReference =
+            earningsRef?.providerReference ||
+            `${provider === 'MESOMB' ? 'mesomb' : 'grant'}_${order?.id ?? Date.now()}`;
+
+          // Coupon slot is claimed BEFORE the ledger write — grossMinor and
+          // discountMinor below depend on whether the claim actually succeeded,
+          // not the other way round. A duplicate webhook delivery for the same
+          // charge is checked first so a retry can never double-decrement the
+          // usage limit (layered idempotency, same spirit as claimWebhookEvent
+          // + recordSaleInTx's own P2002 guard).
+          let couponClaimed = false;
+          if (couponContext) {
+            const already = await this.coupons.findRedemptionByReference(
+              tx,
+              ledgerProvider,
+              providerReference,
+            );
+            couponClaimed =
+              !already &&
+              (await this.coupons.claimRedemptionSlot(
+                tx,
+                couponContext.couponId,
+              ));
+          }
+
+          const grossMinor = couponClaimed
+            ? Math.round(couponContext!.originalPriceUsd * 100)
+            : Math.round(pricePaid * 100);
+          const discountMinor = couponClaimed
+            ? Math.round(couponContext!.discountAmountUsd * 100)
+            : 0;
+
+          const sale = await this.earnings.recordSaleInTx(tx, {
+            creatorId: course.instructorId,
+            courseId,
+            studentId: userId,
+            orderId: order?.id,
+            grossMinor,
+            discountMinor,
+            type: wasActiveRenewal ? 'RENEWAL' : 'SALE',
+            provider: ledgerProvider,
+            providerReference,
+            nativeCurrency: earningsRef?.nativeCurrency,
+            nativeAmountMinor: earningsRef?.nativeAmountMinor,
+          });
+
+          if (couponClaimed) {
+            await this.coupons.recordRedemptionSnapshot(tx, {
+              couponId: couponContext!.couponId,
+              userId,
+              courseId,
+              plan: plan as AccessPlan,
+              originalPriceUsd: couponContext!.originalPriceUsd,
+              discountAmountUsd: couponContext!.discountAmountUsd,
+              finalPriceUsd: pricePaid,
+              creatorSharePct: sale.creatorSharePct,
+              provider: ledgerProvider,
+              providerReference,
+              orderId: order?.id,
+              earningsTransactionId: sale.earningsTransactionId,
+            });
+          }
+        }
+
+        return {
+          success: true,
+          entitlement,
+          message: `Unlocked ${durationDays} days of course access!`,
+        };
+      })
+      .then((result) => {
+        // Community auto-join for subscription learners seeing this course
+        // for the first time.
+        for (const courseId of subscriptionEnrollmentIds) {
+          this.eventEmitter.emit(
+            'enrollment.created',
+            new EnrollmentCreatedEvent(userId, courseId),
+          );
+        }
+        // Only a genuine purchase/redemption (a real charge or a coupon
+        // redemption) gets a receipt — a plain manual grant with no pricePaid
+        // argument at all is not a purchase.
+        if (pricePaid !== undefined) {
+          this.eventEmitter.emit('payment.completed', {
+            userId,
+            courseId,
+            amountUsd: pricePaid,
+            currency: 'USD',
+            transactionId: result.entitlement.id,
+            instructorId: course.instructorId,
+          });
+        }
+        return result;
+      });
   }
 
   /**
@@ -766,7 +834,8 @@ export class PaymentService {
 
     return subscriptions.map((sub) => {
       const ent = entitlementMap.get(sub.courseId);
-      const isStillActive = ent && ent.status === 'ACTIVE' && ent.expiresAt > new Date();
+      const isStillActive =
+        ent && ent.status === 'ACTIVE' && ent.expiresAt > new Date();
 
       return {
         id: sub.id,
@@ -788,7 +857,7 @@ export class PaymentService {
   // ─── STRIPE WEBHOOKS ─────────────────────────────────────────────────────────
 
   async createStripeIntent(userId: string, courseIds: string[]) {
-    const { totalAmount } = await this.getCoursesTotal(courseIds);
+    const { courses, totalAmount } = await this.getCoursesTotal(courseIds);
 
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100),
@@ -798,6 +867,20 @@ export class PaymentService {
         courseIds: JSON.stringify(courseIds),
       },
     });
+
+    // Real purchase intent, not mere course interest (spec §10): the user
+    // reached the actual payment step. One CheckoutIntent per course in the
+    // cart — each is tracked and recovered independently.
+    for (const course of courses) {
+      this.eventEmitter.emit('checkout.started', {
+        userId,
+        courseId: course.id,
+        provider: 'STRIPE',
+        checkoutRef: paymentIntent.id,
+        amountMinor: Math.round(course.price * 100),
+        currency: 'USD',
+      });
+    }
 
     return { clientSecret: paymentIntent.client_secret as string };
   }
@@ -841,22 +924,27 @@ export class PaymentService {
           `Stripe webhook verification failed: ${err}`,
         );
       }
-    } else if (
-      !webhookSecret &&
-      process.env.NODE_ENV !== 'production'
-    ) {
+    } else if (!webhookSecret && process.env.NODE_ENV !== 'production') {
       // Local development only: no webhook secret configured, accept the raw
       // body so the flow can be exercised without the Stripe CLI.
-      this.logger.warn('Stripe webhook accepted WITHOUT signature verification (development mode).');
+      this.logger.warn(
+        'Stripe webhook accepted WITHOUT signature verification (development mode).',
+      );
       event = rawBody as unknown as StripeEvent;
     } else {
       // Production with a missing secret/header is never acceptable — an
       // unsigned payload here means someone forging entitlements.
-      throw new BadRequestException('Stripe webhook signature missing or verification not configured.');
+      throw new BadRequestException(
+        'Stripe webhook signature missing or verification not configured.',
+      );
     }
 
     // Idempotency: skip deliveries we've already handled
-    const isNew = await this.claimWebhookEvent('STRIPE', (event as any)?.id, event.type);
+    const isNew = await this.claimWebhookEvent(
+      'STRIPE',
+      (event as any)?.id,
+      event.type,
+    );
     if (!isNew) {
       return { received: true, duplicate: true };
     }
@@ -883,7 +971,10 @@ export class PaymentService {
     const obj = event.data?.object;
 
     // 1. Subscription Checkout Completed
-    if (event.type === 'checkout.session.completed' && obj?.mode === 'subscription') {
+    if (
+      event.type === 'checkout.session.completed' &&
+      obj?.mode === 'subscription'
+    ) {
       const meta = obj.metadata;
       if (meta?.userId && meta?.courseId && meta?.plan) {
         const amountTotal = (obj.amount_total || 0) / 100;
@@ -898,7 +989,8 @@ export class PaymentService {
           ? {
               couponId: meta.couponId,
               discountAmountUsd: Number(meta.couponDiscountUsd || 0),
-              originalPriceUsd: amountTotal + Number(meta.couponDiscountUsd || 0),
+              originalPriceUsd:
+                amountTotal + Number(meta.couponDiscountUsd || 0),
             }
           : undefined;
         await this.grantCourseAccess(
@@ -927,11 +1019,14 @@ export class PaymentService {
         // arrive for the initial period. Extending twice gave new subscribers
         // ~2x their first period. Only renew when the latest recorded grant is
         // meaningfully old (75% of its billed duration).
-        const durationDays = sub.plan === 'WEEKLY' ? 7 : sub.plan === 'YEARLY' ? 365 : 30;
+        const durationDays =
+          sub.plan === 'WEEKLY' ? 7 : sub.plan === 'YEARLY' ? 365 : 30;
         const minRenewalGapMs = durationDays * 24 * 60 * 60 * 1000 * 0.75;
         const lastGrantAt = sub.createdAt.getTime();
         if (Date.now() - lastGrantAt < minRenewalGapMs) {
-          this.logger.log(`Skipping premature invoice renewal for subscription ${obj.subscription} (first period already granted).`);
+          this.logger.log(
+            `Skipping premature invoice renewal for subscription ${obj.subscription} (first period already granted).`,
+          );
         } else {
           const amountPaid = (obj.amount_paid || 0) / 100;
           await this.grantCourseAccess(
@@ -978,10 +1073,14 @@ export class PaymentService {
     if (event.type === 'charge.refunded') {
       const charge = obj;
       const refunds = charge?.refunds?.data ?? [];
-      const latest = [...refunds].sort((a: any, b: any) => (b.created || 0) - (a.created || 0))[0];
+      const latest = [...refunds].sort(
+        (a: any, b: any) => (b.created || 0) - (a.created || 0),
+      )[0];
       if (charge && latest) {
         await this.earnings.recordStripeRefund({
-          chargeProviderRefs: [charge.payment_intent, charge.invoice].filter(Boolean),
+          chargeProviderRefs: [charge.payment_intent, charge.invoice].filter(
+            Boolean,
+          ),
           refundProviderReference: latest.id, // re_… — per-refund dedupe
           refundGrossMinor: Math.round(latest.amount ?? 0),
           reason: `Customer refund (${latest.reason || 'requested'})`,
@@ -1009,7 +1108,11 @@ export class PaymentService {
     }
 
     // 7. Dispute Closed in Creator's Favor — restore what was held
-    if (event.type === 'charge.dispute.closed' && obj?.status === 'won' && obj?.id) {
+    if (
+      event.type === 'charge.dispute.closed' &&
+      obj?.status === 'won' &&
+      obj?.id
+    ) {
       await this.earnings.recordDisputeWon(obj.id);
     }
 
@@ -1021,8 +1124,27 @@ export class PaymentService {
         obj?.subscription ?? null,
         { subscription: obj?.subscription, attempt: obj?.attempt ?? null },
       );
+
+      if (obj?.subscription) {
+        const sub = await this.prisma.courseSubscription.findFirst({
+          where: { providerSubscriptionId: obj.subscription },
+          select: { userId: true, courseId: true },
+        });
+        if (sub) {
+          this.eventEmitter.emit('payment.failed', {
+            userId: sub.userId,
+            courseId: sub.courseId,
+            reason:
+              'Your card was declined. Update your payment method to keep your access.',
+            dedupeKey: `${obj.subscription}:${event.type}:${obj.attempt ?? Date.now()}`,
+          });
+        }
+      }
     }
-    if (event.type === 'customer.subscription.updated' && obj?.status === 'canceled') {
+    if (
+      event.type === 'customer.subscription.updated' &&
+      obj?.status === 'canceled'
+    ) {
       await this.earnings.auditSystem(
         'SUBSCRIPTION_CANCELLED',
         'CourseSubscription',
@@ -1086,7 +1208,9 @@ export class PaymentService {
 
     const age = Math.abs(Math.floor(Date.now() / 1000) - timestamp);
     if (age > 300) {
-      throw reject('signature timestamp is outside the 5-minute replay window.');
+      throw reject(
+        'signature timestamp is outside the 5-minute replay window.',
+      );
     }
 
     const expected = crypto
@@ -1098,7 +1222,9 @@ export class PaymentService {
     const a = Buffer.from(expected, 'hex');
     const b = Buffer.from(received, 'hex');
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-      throw reject('signature mismatch — is MESOMB_WEBHOOK_SECRET the endpoint\'s signing secret?');
+      throw reject(
+        "signature mismatch — is MESOMB_WEBHOOK_SECRET the endpoint's signing secret?",
+      );
     }
 
     try {
@@ -1132,7 +1258,11 @@ export class PaymentService {
 
       // Idempotency ledger — the Mesomb path previously had none, so a
       // provider retry would stack another free period onto the entitlement.
-      const isNew = await this.claimWebhookEvent('MESOMB', pk, 'mesomb.callback');
+      const isNew = await this.claimWebhookEvent(
+        'MESOMB',
+        pk,
+        'mesomb.callback',
+      );
       if (!isNew) {
         return { received: true, duplicate: true };
       }
@@ -1152,7 +1282,9 @@ export class PaymentService {
           // ÷600 = the legacy approximate XAF→USD rate used before rate
           // snapshots were embedded in the reference. The raw native amount
           // travels alongside untouched.
-          const amount = nativeAmountMinor / (hasRateSnapshot ? Number(parsed.rate) : 600) || 0;
+          const amount =
+            nativeAmountMinor / (hasRateSnapshot ? Number(parsed.rate) : 600) ||
+            0;
           // couponId/couponDiscountUsd survive here for the PENDING/webhook
           // confirmation path only — the synchronous ACTIVE path in
           // subscribeCourse() threads couponContext straight through instead.
@@ -1160,7 +1292,8 @@ export class PaymentService {
             ? {
                 couponId: parsed.couponId,
                 discountAmountUsd: Number(parsed.couponDiscountUsd || 0),
-                originalPriceUsd: amount + Number(parsed.couponDiscountUsd || 0),
+                originalPriceUsd:
+                  amount + Number(parsed.couponDiscountUsd || 0),
               }
             : undefined;
           await this.grantCourseAccess(

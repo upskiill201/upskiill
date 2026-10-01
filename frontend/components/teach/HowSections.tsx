@@ -455,8 +455,8 @@ export function Founding() {
             Be here <em>on day one.</em>
           </h2>
           <p className={s.lead}>
-            Teyro Studio opens to creators in October 2026, a month before the learner app launches in November. The
-            first creators become Founding Creators.
+            Teyro Studio opens to creators in October 2026, a month before the learner app launches in November. Everyone
+            who joins before the learner app launches becomes a Founding Creator.
           </p>
           <ul className={`${s.points} ${h.foundingList}`}>
             {[

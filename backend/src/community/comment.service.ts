@@ -36,7 +36,10 @@ export class CommentService {
       select: { id: true, communityId: true, status: true },
     });
     if (!post || post.status === 'REMOVED') throw new NotFoundException('Post not found.');
-    await this.communityService.assertMember(post.communityId!, viewer.id, viewer.role);
+    const [, creatorId] = await Promise.all([
+      this.communityService.assertMember(post.communityId!, viewer.id, viewer.role),
+      this.communityService.creatorIdOf(post.communityId!),
+    ]);
 
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(50, Math.max(1, opts.pageSize ?? 20));
@@ -83,7 +86,7 @@ export class CommentService {
       total,
       page,
       pageSize,
-      comments: comments.map((c) => this.serializeComment(c, likedSet)),
+      comments: comments.map((c) => this.serializeComment(c, likedSet, creatorId)),
     };
   }
 
@@ -92,8 +95,18 @@ export class CommentService {
     author: { id: string; role?: string },
     dto: CreateCommentDto,
   ) {
-    const post = await this.getOpenPost(postId);
-    const { isModerator } = await this.communityService.assertMember(
+    // The post and (for a reply) its parent load together; the access check
+    // is cached (CommunityService.assertMember).
+    const [post, parent] = await Promise.all([
+      this.getOpenPost(postId),
+      dto.parentId
+        ? this.prisma.comment.findUnique({
+            where: { id: dto.parentId },
+            select: { id: true, postId: true, parentId: true, userId: true, status: true },
+          })
+        : Promise.resolve(null),
+    ]);
+    const { isModerator, membership } = await this.communityService.assertMember(
       post.communityId!,
       author.id,
       author.role,
@@ -101,14 +114,11 @@ export class CommentService {
     if (post.isLocked && !isModerator) {
       throw new ForbiddenException('Comments are closed on this post.');
     }
+    this.communityService.assertCanWrite(membership, isModerator);
 
     // Replies attach only to top-level comments (one thread level).
     let parentAuthorId: string | null = null;
     if (dto.parentId) {
-      const parent = await this.prisma.comment.findUnique({
-        where: { id: dto.parentId },
-        select: { id: true, postId: true, parentId: true, userId: true, status: true },
-      });
       if (!parent || parent.postId !== postId || parent.status !== 'ACTIVE') {
         throw new BadRequestException('Invalid comment to reply to.');
       }
@@ -118,8 +128,11 @@ export class CommentService {
       parentAuthorId = parent.userId;
     }
 
-    const result = await this.prisma.$transaction(async (tx) => {
-      const comment = await tx.comment.create({
+    // One batched round trip for the comment and the post's counter. This used
+    // to be an interactive transaction that also paid XP — seven sequential
+    // round trips to a distant DB before the learner saw their comment.
+    const [comment] = await this.prisma.$transaction([
+      this.prisma.comment.create({
         data: {
           postId,
           userId: author.id,
@@ -136,35 +149,17 @@ export class CommentService {
             },
           },
         },
-      });
-      await Promise.all([
-        tx.post.update({
-          where: { id: postId },
-          data: {
-            commentCount: { increment: 1 },
-            lastActivityAt: new Date(),
-          },
-        }),
-        ...(dto.parentId
-          ? [] // reply counts ride on the post's total; per-parent counts are derived
-          : []),
-      ]);
-
-      const xpAwarded = await this.awardXpWithCap(
-        tx,
-        author.id,
-        COMMUNITY_COMMENT_SOURCE,
-        COMMENT_XP,
-        COMMENT_COINS,
-        MAX_PAID_COMMENTS_PER_DAY,
-      );
-      return { comment, xpAwarded };
-    });
+      }),
+      this.prisma.post.update({
+        where: { id: postId },
+        data: { commentCount: { increment: 1 }, lastActivityAt: new Date() },
+      }),
+    ]);
 
     this.eventEmitter.emit(
       'community.comment.created',
       new CommentCreatedEvent(
-        result.comment.id,
+        comment.id,
         postId,
         author.id,
         post.userId,
@@ -174,18 +169,25 @@ export class CommentService {
       ),
     );
 
-    // Credit the weekly league standings (async, non-blocking).
-    if (result.xpAwarded.xp > 0) {
-      this.eventEmitter.emit(
-        'xp.awarded',
-        new XpAwardedEvent(author.id, result.xpAwarded.xp, 'COMMUNITY_COMMENT'),
-      );
-    }
+    // The capped XP/coin reward settles after the reply — nothing on screen
+    // waits for it. It's still its own transaction, so the daily cap holds.
+    void this.prisma
+      .$transaction((tx) =>
+        this.awardXpWithCap(tx, author.id, COMMUNITY_COMMENT_SOURCE, COMMENT_XP, COMMENT_COINS, MAX_PAID_COMMENTS_PER_DAY),
+      )
+      .then((xpAwarded) => {
+        // Credit the weekly league standings.
+        if (xpAwarded.xp > 0) {
+          this.eventEmitter.emit('xp.awarded', new XpAwardedEvent(author.id, xpAwarded.xp, 'COMMUNITY_COMMENT'));
+        }
+      })
+      .catch(() => undefined);
 
-    return {
-      ...this.serializeComment(result.comment as any),
-      xpAwarded: result.xpAwarded,
-    };
+    return this.serializeComment(
+      comment as any,
+      undefined,
+      await this.communityService.creatorIdOf(post.communityId!),
+    );
   }
 
   async updateComment(
@@ -261,23 +263,18 @@ export class CommentService {
       userRole,
     );
 
+    // One batched round trip: a second like fails on the unique constraint
+    // and rolls the counter back with it.
     let created = false;
-    await this.prisma.$transaction(async (tx) => {
-      try {
-        await tx.like.create({
-          data: { userId, entityType: 'COMMENT', entityId: commentId },
-        });
-        created = true;
-      } catch {
-        created = false;
-      }
-      if (created) {
-        await tx.comment.update({
-          where: { id: commentId },
-          data: { likeCount: { increment: 1 } },
-        });
-      }
-    });
+    try {
+      await this.prisma.$transaction([
+        this.prisma.like.create({ data: { userId, entityType: 'COMMENT', entityId: commentId } }),
+        this.prisma.comment.update({ where: { id: commentId }, data: { likeCount: { increment: 1 } } }),
+      ]);
+      created = true;
+    } catch {
+      created = false; // already liked
+    }
 
     if (created && comment.userId !== userId) {
       this.eventEmitter.emit(
@@ -393,7 +390,7 @@ export class CommentService {
     ]);
     return { xp, coins };
   }
-  private serializeComment(c: any, likedByMe?: Set<string>) {
+  private serializeComment(c: any, likedByMe?: Set<string>, creatorId?: string | null) {
     return {
       id: c.id,
       postId: c.postId,
@@ -407,14 +404,15 @@ export class CommentService {
         fullName: c.user.fullName,
         avatarUrl: c.user.avatarUrl,
         streakDays: c.user.studentProfile?.streakDays ?? 0,
+        isCreator: !!creatorId && c.user.id === creatorId,
       },
       likedByMe: likedByMe ? likedByMe.has(c.id) : false,
       userId: c.userId,
-      replies: c.replies ? c.replies.map((r: any) => this.serializeReply(r, likedByMe)) : [],
+      replies: c.replies ? c.replies.map((r: any) => this.serializeReply(r, likedByMe, creatorId)) : [],
     };
   }
 
-  private serializeReply(r: any, likedByMe?: Set<string>) {
+  private serializeReply(r: any, likedByMe?: Set<string>, creatorId?: string | null) {
     return {
       id: r.id,
       postId: r.postId,
@@ -428,6 +426,7 @@ export class CommentService {
         fullName: r.user.fullName,
         avatarUrl: r.user.avatarUrl,
         streakDays: r.user.studentProfile?.streakDays ?? 0,
+        isCreator: !!creatorId && r.user.id === creatorId,
       },
       likedByMe: likedByMe ? likedByMe.has(r.id) : false,
       userId: r.userId,

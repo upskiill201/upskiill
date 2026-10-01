@@ -158,6 +158,7 @@ import { ServiceWorkerRegistrar } from "../components/providers/ServiceWorkerReg
 import { TeyPushNavigation } from "../components/providers/TeyPushProvider";
 import { CartProvider } from "../context/CartContext";
 import { PostHogProvider } from "../components/PostHogProvider";
+import ReferralCapture from "../components/referral/ReferralCapture";
 
 /**
  * Root layout — deliberately light.
@@ -192,6 +193,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ServiceWorkerRegistrar />
+        <ReferralCapture />
         <TeyPushNavigation />
         <SWRProvider>
           <PostHogProvider>
