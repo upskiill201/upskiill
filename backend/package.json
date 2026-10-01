@@ -13,7 +13,7 @@
     "start": "nest start",
     "start:dev": "cross-env NODE_OPTIONS=--max-old-space-size=3072 nest start --watch",
     "start:debug": "cross-env NODE_OPTIONS=--max-old-space-size=3072 nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
