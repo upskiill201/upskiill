@@ -27,12 +27,12 @@ import {
   StudioHeroVisual,
 } from './TeachVisuals';
 import { EarningsCalculator } from './EarningsCalculator';
-import { APP_LAUNCHES, FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT, STUDIO_ENTRY, STUDIO_OPENS } from '@/lib/launch';
+import { APP_LAUNCHES, FOUNDING_OPEN, FOUNDING_SHARE_PCT, STANDARD_SHARE_PCT, STUDIO_ENTRY, STUDIO_OPENS } from '@/lib/launch';
 import t from './Teach.module.css';
 
 // While Teyro Studio is closed (lib/launch.ts) these point at the apply form.
 export const TEACH_HREF = STUDIO_ENTRY.href;
-export const TEACH_LABEL = STUDIO_ENTRY.gated ? STUDIO_ENTRY.label : 'Start teaching';
+export const TEACH_LABEL = STUDIO_ENTRY.label;
 export const CREATOR_LOGIN_HREF = '/creator/login';
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ export function TeachHero() {
       <div className={`${s.wrap} ${s.heroGrid}`}>
         <div className={s.heroCopy}>
           <span className={s.eyebrow} style={{ marginBottom: 0 }}>
-            {STUDIO_ENTRY.gated ? `Teyro Studio opens ${STUDIO_OPENS}` : 'Teyro for creators'}
+            {STUDIO_ENTRY.gated ? `Teyro Studio opens ${STUDIO_OPENS}` : FOUNDING_OPEN ? 'Founding Creators wanted' : 'Teyro for creators'}
           </span>
           <h1 id="teach-hero-title" className={`${s.display} ${s.h1}`}>
             Teach coding or AI. <em>Earn every month</em> they keep learning.
@@ -52,7 +52,7 @@ export function TeachHero() {
           <p className={s.lead}>
             Build your course in Teyro Studio. Learners try two lessons free, then subscribe, and our streaks, leagues and
             community keep them coming back. More of them finish, and you keep {STANDARD_SHARE_PCT}% of every payment
-            {STUDIO_ENTRY.gated ? ` — ${FOUNDING_SHARE_PCT}% if you join as a Founding Creator` : ''}.
+            {FOUNDING_OPEN ? ` — ${FOUNDING_SHARE_PCT}% if you join as a Founding Creator` : ''}.
           </p>
           <div className={s.heroActions}>
             <Link href={TEACH_HREF} className={s.btn}>
@@ -73,7 +73,7 @@ export function TeachHero() {
               <Check size={16} strokeWidth={4} aria-hidden="true" /> Free to publish
             </span>
             <span>
-              <Check size={16} strokeWidth={4} aria-hidden="true" /> You keep {STUDIO_ENTRY.gated ? `${FOUNDING_SHARE_PCT}% as a Founding Creator` : `${STANDARD_SHARE_PCT}%`}
+              <Check size={16} strokeWidth={4} aria-hidden="true" /> You keep {FOUNDING_OPEN ? `${FOUNDING_SHARE_PCT}% as a Founding Creator` : `${STANDARD_SHARE_PCT}%`}
             </span>
             <span>
               <Check size={16} strokeWidth={4} aria-hidden="true" /> Paid to bank or mobile money
@@ -505,7 +505,9 @@ export function Audience() {
 export const TEACH_FAQ = [
   {
     question: 'When does Teyro Studio open?',
-    answer: `Teyro Studio opens to creators in ${STUDIO_OPENS}, a month before the learner app launches in ${APP_LAUNCHES}. Apply as a Founding Creator on this page and we’ll invite you the day it opens.`,
+    answer: STUDIO_ENTRY.gated
+      ? `Teyro Studio opens to creators in ${STUDIO_OPENS}, a month before the learner app launches in ${APP_LAUNCHES}. Apply as a Founding Creator on this page and we’ll invite you the day it opens.`
+      : `Teyro Studio is open. Everyone who joins before the learner app launches in ${APP_LAUNCHES} is a Founding Creator and keeps ${FOUNDING_SHARE_PCT}% of every payment.`,
   },
   {
     question: 'Does it cost anything to teach on Teyro?',
