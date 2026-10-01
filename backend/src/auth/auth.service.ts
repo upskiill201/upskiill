@@ -18,6 +18,7 @@ import { ProfileService } from '../profile/profile.service';
 import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { getJwtSecret } from './jwt-secret.util';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 // Precomputed once at boot — lets credential-miss paths burn the same bcrypt
 // cost as a real check so response latency cannot probe for accounts.
@@ -34,7 +35,13 @@ export class AuthService {
     private profileService: ProfileService,
     private authEmails: AuthEmailService,
     private userOnboarding: UserOnboardingService,
+    private events: EventEmitter2,
   ) {}
+
+  /** Tells the earnings module someone became a creator (Founding programme). Idempotent. */
+  private markCreatorJoined(userId: string) {
+    this.events.emit('creator.joined', { userId });
+  }
 
   async signup(dto: SignupDto) {
     let existing = await this.prisma.user.findUnique({
@@ -80,6 +87,8 @@ export class AuthService {
           data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
           include: { studentProfile: true },
         });
+
+        this.markCreatorJoined(existing.id);
 
         // Ensure creator profile row exists
         await this.prisma.profile.upsert({
@@ -263,6 +272,8 @@ export class AuthService {
         );
       }
     }
+
+    if (requestedRole === 'INSTRUCTOR') this.markCreatorJoined(user.id);
 
     // Hydrate the creator profile from onboarding answers if provided
     if (dto.onboarding && requestedRole === 'INSTRUCTOR') {
@@ -494,6 +505,7 @@ export class AuthService {
         where: { id: user.id },
         data: { role: 'INSTRUCTOR', hasCreatorAccess: true },
       });
+      this.markCreatorJoined(user.id);
     } else if (
       dto.role === 'INSTRUCTOR' &&
       user.role === Role.ADMIN &&
@@ -786,6 +798,7 @@ export class AuthService {
         ) {
           updates.role = 'INSTRUCTOR';
           updates.hasCreatorAccess = true;
+          this.markCreatorJoined(user.id);
           // Ensure creator Profile row exists
           await this.prisma.profile.upsert({
             where: { userId: user.id },
@@ -992,6 +1005,8 @@ export class AuthService {
         },
       });
     }
+
+    this.markCreatorJoined(userId);
 
     await this.prisma.profile.upsert({
       where: { userId },

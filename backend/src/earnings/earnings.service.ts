@@ -4,7 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import {
+  FOUNDING_NOTE,
+  FOUNDING_SHARE_PCT,
+  STANDARD_SHARE_PCT,
+  isFoundingProgramOpen,
+} from './founding.config';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   EarningsEntryType,
@@ -87,7 +93,44 @@ export class EarningsService {
 
   /* ─── agreements ─────────────────────────────────────────────────────── */
 
-  /** Active agreement for a creator; lazily seeds the STANDARD 70% default. */
+  /**
+   * Founding Creator programme: a new creator gets the FOUNDING agreement the
+   * moment they join, while the programme is open. Never touches a creator
+   * who already has an agreement (an admin choice always wins).
+   */
+  @OnEvent('creator.joined')
+  async grantFoundingOnJoin(payload: { userId: string }) {
+    if (!isFoundingProgramOpen()) return;
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        const has = await tx.creatorEarningsAgreement.findFirst({
+          where: { userId: payload.userId, effectiveUntil: null },
+        });
+        if (has) return;
+        const created = await tx.creatorEarningsAgreement.create({
+          data: {
+            userId: payload.userId,
+            tier: 'FOUNDING',
+            creatorSharePct: FOUNDING_SHARE_PCT,
+            isFounding: true,
+            notes: FOUNDING_NOTE,
+          },
+        });
+        await this.auditTx(tx, {
+          actorType: 'SYSTEM',
+          action: 'AGREEMENT_FOUNDING_GRANTED',
+          entityType: 'Agreement',
+          entityId: created.id,
+          meta: { userId: payload.userId },
+        });
+      });
+    } catch (err) {
+      // Joining must never fail because of this; the first-earning fallback below covers it.
+      console.error('Founding grant failed', err);
+    }
+  }
+
+  /** Active agreement for a creator; lazily seeds Founding (programme open) or the STANDARD default. */
   private async getOrCreateActiveAgreement(
     tx: DbClient,
     creatorId: string,
@@ -103,12 +146,14 @@ export class EarningsService {
         isFounding: existing.isFounding,
       };
     }
+    const founding = isFoundingProgramOpen();
     const created = await tx.creatorEarningsAgreement.create({
       data: {
         userId: creatorId,
-        tier: 'STANDARD',
-        creatorSharePct: 70,
-        isFounding: false,
+        tier: founding ? 'FOUNDING' : 'STANDARD',
+        creatorSharePct: founding ? FOUNDING_SHARE_PCT : STANDARD_SHARE_PCT,
+        isFounding: founding,
+        notes: founding ? FOUNDING_NOTE : undefined,
       },
     });
     return {

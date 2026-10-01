@@ -14,6 +14,7 @@ import { AuthEmailService } from '../email/auth-email.service';
 import { UserOnboardingService } from '../user-onboarding/user-onboarding.service';
 import { firebaseAdmin } from './firebase-admin';
 import { Role } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 // signToken hard-fails when JWT_SECRET is unset (A2) — give every test a value.
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
@@ -87,6 +88,7 @@ describe('AuthService', () => {
             sendPasswordResetEmail: jest.fn(),
           },
         },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
         {
           provide: UserOnboardingService,
           useValue: {
