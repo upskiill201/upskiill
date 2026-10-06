@@ -30,6 +30,7 @@ import {
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
+import GetNotified from '@/components/homepage/v3/GetNotified';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -68,6 +69,7 @@ export default function Home() {
       <Audience />
       <Creators />
       <Faq />
+      <GetNotified />
       <FinalCta />
     </main>
   );
