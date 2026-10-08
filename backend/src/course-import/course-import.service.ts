@@ -12,6 +12,8 @@ import {
 import {
   DriveFile,
   NATIVE_EXPORTS,
+  cleanDriveFileName,
+  mimeFromExtension,
 } from '../google-drive/google-drive.types';
 import { R2StorageService } from '../storage/r2-storage.service';
 import { CourseImportSummary } from './course-import.types';
@@ -483,7 +485,12 @@ function buildFileRow(file: DriveFile, orderIndex: number) {
   return {
     driveFileId: file.id,
     driveFileName: file.name,
-    mimeType: file.mimeType,
+    // Drive types uploads by name, so a junk-suffixed name can leave a real
+    // video as a generic binary; store the type its real extension says.
+    mimeType:
+      file.mimeType === 'application/octet-stream' || !file.mimeType
+        ? (mimeFromExtension(cleanDriveFileName(file.name)) ?? file.mimeType)
+        : file.mimeType,
     category: file.category,
     orderIndex,
     sectionFolderId: file.sectionFolderId ?? null,

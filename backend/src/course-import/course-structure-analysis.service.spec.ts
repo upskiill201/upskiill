@@ -26,6 +26,20 @@ describe('cleanLessonTitle', () => {
     expect(cleanLessonTitle('Final Thoughts.mp4')).toBe('Final Thoughts');
   });
 
+  it('drops "Copy of" and the junk re-uploaders add after the extension', () => {
+    expect(
+      cleanLessonTitle(
+        'Copy of 9 - Introduction.mp4 |google>|ahm7tech|or|ahm7tech.vercel.app|',
+      ),
+    ).toBe('Introduction');
+    expect(cleanLessonTitle('Copy of 12. Flexbox Basics.html |site.app|')).toBe(
+      'Flexbox Basics',
+    );
+    expect(cleanLessonTitle('Course Notes |google>|ahm7tech|')).toBe(
+      'Course Notes',
+    );
+  });
+
   it('falls back to the original name if cleanup would strip everything', () => {
     expect(cleanLessonTitle('01.mp4')).toBe('01.mp4');
   });

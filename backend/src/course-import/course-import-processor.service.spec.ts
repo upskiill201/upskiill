@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseImportProcessorService } from './course-import-processor.service';
+import {
+  CourseImportProcessorService,
+  buildObjectKey,
+} from './course-import-processor.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
@@ -144,6 +147,16 @@ describe('CourseImportProcessorService', () => {
       },
     });
     expect(summary).toEqual({ claimed: 1, uploaded: 1, failed: 0 });
+  });
+
+  it('keys a junk-suffixed file by its real name and extension', () => {
+    expect(
+      buildObjectKey(
+        'import-1',
+        'vid-9',
+        'Copy of 9 - Introduction.mp4 |google>|ahm7tech|or|ahm7tech.vercel.app|',
+      ),
+    ).toBe('course-imports/import-1/vid-9-9_-_Introduction.mp4');
   });
 
   it('stores an exported Google Doc under a .pdf key with the exported type', async () => {
