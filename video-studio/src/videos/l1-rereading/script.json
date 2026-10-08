@@ -1,0 +1,23 @@
+{
+  "slug": "l1-rereading",
+  "account": "teyro",
+  "title": "Rereading is the worst way to study",
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    { "id": "h1", "text": "Rereading your notes is one of the *worst* ways to study. | Here are *four* things the research found instead." },
+    { "id": "i1a", "text": "First, a study from *2006.* | Students either *reread* a passage, or *tested* themselves on it." },
+    { "id": "i1b", "text": "One week later, | the testers remembered *sixty-one* percent. | The rereaders? *Forty.*" },
+    { "id": "i2", "text": "Second, the rereaders felt *more* confident. | Rereading feels like learning, | because the words look *familiar.* | Your brain mistakes *I've seen this* | for *I know this.*" },
+    { "id": "i3", "text": "Third, a review of *118* studies | found practice tests beat the *other* ways of studying, | again and again." },
+    { "id": "i4", "text": "And finally, *feedback.* | When people checked the right answer straight after testing themselves, | the benefit nearly *doubled.*" },
+    { "id": "s1", "text": "So close the notes, | *quiz* yourself, | and check your answers *right away.*" },
+    { "id": "c1", "text": "If you want lessons that make you do exactly that, | a few minutes a day, | the app is in my *bio.* | It's called *Teyro.*" }
+  ],
+  "sources": [
+    "Roediger & Karpicke (2006), Psychological Science: one-week recall 61% (repeated testing) vs 40% (repeated study); repeated-study group predicted better recall",
+    "Adesope, Trevisan & Sundararajan (2017), Review of Educational Research: 272 effect sizes from 118 articles, practice tests g = 0.61",
+    "Rowland (2014), Psychological Bulletin: testing effect g = 0.73 with feedback vs 0.39 without"
+  ]
+}

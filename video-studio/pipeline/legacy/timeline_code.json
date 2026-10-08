@@ -1,0 +1,17 @@
+{
+  "fps": 60, "duration": 60, "bpm": 120,
+  "vo": [
+    { "id": "C01", "file": "vo_A01.mp3", "at": 0.35, "text": "Hey, it's Ada!" },
+    { "id": "C02", "file": "vo_C02.mp3", "at": 2.0,  "text": "Coding has changed. With today's frontier AI models, one person can build what used to take a whole team." },
+    { "id": "C03", "file": "vo_C03.mp3", "at": 10.1, "text": "But AI writes code fast... and someone still has to know if it's right." },
+    { "id": "C04", "file": "vo_C04.mp3", "at": 15.3, "text": "That someone could be you. The coding track." },
+    { "id": "C04b","file": "vo_L03.mp3", "at": 19.35, "text": "Meet Teyro." },
+    { "id": "C05", "file": "vo_C05.mp3", "at": 22.1, "text": "Learn the fundamentals, so you can read, fix and trust any code." },
+    { "id": "C06", "file": "vo_C06.mp3", "at": 26.3, "text": "Build real web and mobile apps, and ship them with AI tools." },
+    { "id": "C07", "file": "vo_C07.mp3", "at": 30.4, "text": "Go from your very first line of code to apps people actually use." },
+    { "id": "C08", "file": "vo_C08.mp3", "at": 35.0, "text": "A few minutes a day, with instant feedback, streaks and leagues to keep you going." },
+    { "id": "C09", "file": "vo_C09.mp3", "at": 40.3, "text": "In this new world, you won't just use apps. You'll build them." },
+    { "id": "C10", "file": "vo_A10.mp3", "at": 46.0, "text": "It all launches this November! Free to start." },
+    { "id": "C11", "file": "vo_A11.mp3", "at": 50.0, "text": "Get notified at teyro dot app, and be first in!" }
+  ]
+}

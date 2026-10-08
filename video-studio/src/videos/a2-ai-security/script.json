@@ -1,0 +1,42 @@
+{
+  "slug": "a2-ai-security",
+  "account": "teyro",
+  "title": "AI code passes security checks 56% of the time",
+  "sources": [
+    "Veracode 2026 GenAI Code Security Report (press release): average security pass rate 56% across 100+ models, virtually unchanged since the 2025 report; syntax pass ~100%; coding-specific and larger models showed little security advantage",
+    "OWASP Top 10 (secrets, injection, access control) for the checklist"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "AI code runs *almost every time.* | It passes *security* checks | only *56 percent* of the time."
+    },
+    {
+      "id": "i1",
+      "text": "First, that's from *Veracode's 2026* report, | testing *over a hundred* AI models | on the same coding tasks."
+    },
+    {
+      "id": "i2",
+      "text": "Second, the code *compiled* nearly always. | So *it runs* | isn't the same as *it's safe.*"
+    },
+    {
+      "id": "i3",
+      "text": "Third, *bigger* models weren't safer. | And models built *for coding* | did no better."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, that score barely moved in a *year,* | while the models got *smarter* at everything else."
+    },
+    {
+      "id": "s1",
+      "text": "So before you ship AI code, | check where your *secrets* live, | what *user input* can do, | and *who* is allowed in."
+    },
+    {
+      "id": "c1",
+      "text": "Reading the code you ship is the real skill now. | Go to teyro dot app, | or search *Teyro.*"
+    }
+  ]
+}

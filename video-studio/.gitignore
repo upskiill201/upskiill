@@ -1,0 +1,14 @@
+node_modules
+out
+# rendered videos and audio stay local (large); post kits (post.md) are tracked
+deliverables/**/*.mp4
+deliverables/**/*.mov
+deliverables/**/*.jpg
+work/**/*.mp3
+work/**/*.wav
+# ElevenLabs key file used by the pipeline scripts: never commit
+.xi
+.env
+# per-machine generated audio: voice cache + VO stems (re-create with pipeline/voice.mjs)
+work/
+public/videos/

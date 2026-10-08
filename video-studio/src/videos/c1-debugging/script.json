@@ -1,0 +1,43 @@
+{
+  "slug": "c1-debugging",
+  "account": "teyro",
+  "title": "4 debugging moves seniors use",
+  "sources": [
+    "git-scm.com/docs/git-bisect: binary search for the commit that introduced a bug",
+    "developer.chrome.com DevTools docs: logpoints (right-click line number > Add logpoint) and conditional breakpoints",
+    "The Pragmatic Programmer (Hunt & Thomas): rubber duck debugging"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "Four debugging moves seniors use | that tutorials *never* show you."
+    },
+    {
+      "id": "i1",
+      "text": "First, *git bisect.* | Tell git one *good* commit and one *bad* one, | and it searches the history by halves | until it finds the commit that *broke* it."
+    },
+    {
+      "id": "i2",
+      "text": "Second, *logpoints* in Chrome DevTools. | Right-click a line number, | and it logs any value | *without* touching your code."
+    },
+    {
+      "id": "i3",
+      "text": "Third, *conditional breakpoints.* | The code only pauses when something you choose is *true,* | like the one bad item | in a list of *ten thousand.*"
+    },
+    {
+      "id": "i4",
+      "text": "And finally, *rubber duck* debugging. | Explain your code out loud, line by line, | and the bug often shows up | *before* you finish."
+    },
+    {
+      "id": "s1",
+      "text": "Save this for the next time something *breaks.*"
+    },
+    {
+      "id": "c1",
+      "text": "If you want skills like this, | a few minutes a day, | the link's in my *bio.* | It's called *Teyro.*"
+    }
+  ]
+}

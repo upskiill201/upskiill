@@ -1,0 +1,55 @@
+{
+  "slug": "t2-quitting-cost",
+  "account": "teyro-teach",
+  "title": "Students quitting is costing you money",
+  "darkFrom": "v1",
+  "sources": [
+    "UPenn: ~4% of MOOC sign-ups completed; MIT/Harvard edX: ~5%",
+    "teyro.app/teach and /teach/how-it-works: streaks, weekly leagues, see where learners stop and nudge in one tap, subscriptions (paid every month a learner stays), keep 70% (80% Founding), free to publish, no camera needed"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "If you sell online courses, | *students quitting* is costing you money | every *single* month."
+    },
+    {
+      "id": "p1",
+      "text": "Most people never finish online courses. | In big studies, only about *one in twenty* did. | And a student who quits | never pays you *again.*"
+    },
+    {
+      "id": "v1",
+      "text": "Now picture a course | people open *every day.*"
+    },
+    {
+      "id": "o1",
+      "text": "Your lessons keep a *streak* alive, | so missing a day feels like *losing* something."
+    },
+    {
+      "id": "o2",
+      "text": "Your students race each other | in *weekly leagues.*"
+    },
+    {
+      "id": "o3",
+      "text": "You see the exact lesson where people *stop,* | and nudge them back | in *one tap.*"
+    },
+    {
+      "id": "o4",
+      "text": "And because learners *subscribe,* | you get paid again | every month they *keep learning.*"
+    },
+    {
+      "id": "r1",
+      "text": "That's teaching on *Teyro.*"
+    },
+    {
+      "id": "f1",
+      "text": "You keep *seventy percent* of every payment, | publishing is *free,* | and you don't even need a *camera.*"
+    },
+    {
+      "id": "c1",
+      "text": "Go to teyro dot app slash *teach.*"
+    }
+  ]
+}
