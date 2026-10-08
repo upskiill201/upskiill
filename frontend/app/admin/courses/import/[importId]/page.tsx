@@ -476,13 +476,12 @@ export default function CourseImportPage() {
                     <RotateCw size={14} aria-hidden="true" /> Retry
                   </button>
                 ) : f.transcriptStatus === 'FAILED' ? (
-                  f.transcriptRetryable ? (
-                    <button type="button" className={m.smallBtn} disabled={busy !== null} onClick={() => void act(`tr:${f.id}`, `${path}/files/${f.id}/retry-transcription`)}>
-                      <RotateCw size={14} aria-hidden="true" /> Retry transcript
-                    </button>
-                  ) : (
-                    <span className={m.muted}>Needs a fix first</span>
-                  )
+                  // Always retryable by hand: a "terminal" failure (no AI
+                  // provider, revoked key) is terminal only until the admin
+                  // fixes it, and then this is the way to continue.
+                  <button type="button" className={m.smallBtn} disabled={busy !== null} onClick={() => void act(`tr:${f.id}`, `${path}/files/${f.id}/retry-transcription`)}>
+                    <RotateCw size={14} aria-hidden="true" /> {f.transcriptRetryable ? 'Retry transcript' : 'Fixed it? Retry'}
+                  </button>
                 ) : null}
               </li>
             );

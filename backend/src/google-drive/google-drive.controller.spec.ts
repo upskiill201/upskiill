@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import type { Response } from 'express';
-import { GoogleDriveController } from './google-drive.controller';
+import {
+  GoogleDriveController,
+  frontendBaseUrl,
+} from './google-drive.controller';
 import { GoogleDriveService } from './google-drive.service';
 import { encryptJson } from '../earnings/crypto.util';
 
@@ -213,5 +216,30 @@ describe('GoogleDriveController', () => {
       'user-1',
       'folder-42',
     );
+  });
+});
+
+describe('frontendBaseUrl', () => {
+  const env = { ...process.env };
+  afterEach(() => {
+    process.env = { ...env };
+  });
+
+  it('uses FRONTEND_URL when set', () => {
+    process.env.FRONTEND_URL = 'https://teyro.app/';
+    expect(frontendBaseUrl()).toBe('https://teyro.app');
+  });
+
+  it('falls back to the deployed origin in ALLOWED_ORIGINS, never localhost first', () => {
+    delete process.env.FRONTEND_URL;
+    process.env.ALLOWED_ORIGINS =
+      'http://localhost:3000, https://upskiill-git-staging.vercel.app';
+    expect(frontendBaseUrl()).toBe('https://upskiill-git-staging.vercel.app');
+  });
+
+  it('only uses localhost when nothing else is configured', () => {
+    delete process.env.FRONTEND_URL;
+    delete process.env.ALLOWED_ORIGINS;
+    expect(frontendBaseUrl()).toBe('http://localhost:3000');
   });
 });
