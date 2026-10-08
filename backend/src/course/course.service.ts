@@ -1030,7 +1030,9 @@ export class CourseService {
         let freezesToConsume = 0;
 
         if (!lastStreakDate) {
-          newStreak = Math.max(1, profile.streakDays || 1);
+          // No earned day on record = no real streak to extend (a leftover
+          // starter count, say): this lesson is day 1.
+          newStreak = 1;
           shouldUpdateStreakEarnedDate = true;
         } else {
           const lastStreakStr = getLocalDayStr(new Date(lastStreakDate));
@@ -1063,7 +1065,7 @@ export class CourseService {
 
         const isFirstStreakOfDay = shouldUpdateStreakEarnedDate;
         const coinReward = Math.round(BASE_LESSON_COINS * boost.coins);
-        const currentLongest = profile.longestStreak ?? Math.max(3, profile.streakDays);
+        const currentLongest = profile.longestStreak ?? profile.streakDays;
         const updatedLongest = Math.max(currentLongest, newStreak);
 
         const [updatedEnrollment, updatedProfile] = await Promise.all([

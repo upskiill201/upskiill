@@ -18,11 +18,15 @@
  * cannot be the `start_url` directly either, because a returning learner would
  * then be asked to sign in on every single launch.
  *
- * ── Why this does not check authentication ─────────────────────────────────
- * The destinations do. Blocking the first paint of the installed app on an
- * `/auth/me` round trip — over whatever connection the learner has when they
- * tap the icon — to reach a conclusion /dashboard re-checks anyway is the
- * slowest possible way to be no more correct.
+ * ── Why it checks the session, alongside the splash ───────────────────────
+ * Onboarding progress lives in this device's storage, and only finishing
+ * onboarding here sets it. A learner who signed in through the login screen
+ * (or whose installed app keeps separate storage from the browser, as iOS
+ * does) has none, so every launch sent them to screen 0 — which reads as
+ * "sign in again" even though their 7-day session was still valid. The
+ * account is created at the END of onboarding, so a live session means
+ * onboarding is done: go home. The check runs while the splash plays, so it
+ * costs no extra wait; if it's slow or offline, the device's own answer wins.
  *
  * `router.replace` keeps this route out of the history stack, so the back
  * gesture from onboarding does not land on a blank redirector.
@@ -34,6 +38,7 @@ import { TeyMark } from '@/components/brand/TeyMark';
 import { resolveAppEntry } from '@/lib/pwa/entry';
 import { detectBrowser, detectPlatform, detectStandalone } from '@/lib/pwa/platform';
 import { trackInstallEvent } from '@/lib/pwa/analytics';
+import { hasLiveSession } from '@/lib/pwa/session';
 import { saveInstallFlowState } from '@/lib/pwa/installFlow';
 import styles from './Launch.module.css';
 
@@ -73,14 +78,16 @@ export default function LaunchPage() {
       via_home_screen: standalone,
     });
 
-    if (!standalone) {
-      router.replace(entry.href);
-      return;
-    }
-    // Warm the destination while the splash plays, so the hand-off is instant.
-    router.prefetch(entry.href);
-    const t = setTimeout(() => router.replace(entry.href), SPLASH_MS);
-    return () => clearTimeout(t);
+    // Warm both possible destinations while the session check runs.
+    router.prefetch('/dashboard');
+    if (entry.href !== '/dashboard') router.prefetch(entry.href);
+    const splash = new Promise((r) => setTimeout(r, standalone ? SPLASH_MS : 0));
+
+    // No cleanup cancel: doneRef already stops StrictMode's second run, so
+    // cancelling here would leave development stuck on the splash.
+    void Promise.all([hasLiveSession(), splash]).then(([signedIn]) => {
+      router.replace(signedIn ? '/dashboard' : entry.href);
+    });
   }, [router]);
 
   return (

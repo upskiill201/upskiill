@@ -118,6 +118,27 @@ describe('StreakService.reconcile', () => {
     expect(ledger).toEqual([expect.objectContaining({ currency: 'STREAK_LOST', amount: 12 })]);
   });
 
+  it('clears a leftover streak count that was never earned (no lesson, no date)', async () => {
+    const { prisma, profile } = makeDb({ streakDays: 3, lastStreakEarnedAt: null, lastLessonCompletedAt: null });
+    const r = await new StreakService(prisma).reconcile('u1');
+    expect(r.streakStatus).toBe('NORMAL'); // nothing to mourn
+    expect(profile.streakDays).toBe(0);
+  });
+
+  it('dates an undated streak from the last lesson, then breaks it if that was days ago', async () => {
+    const { prisma, profile } = makeDb({ streakDays: 3, lastStreakEarnedAt: null, lastLessonCompletedAt: daysAgo(5) });
+    const r = await new StreakService(prisma).reconcile('u1');
+    expect(r).toMatchObject({ streakStatus: 'RESET', lostStreakCount: 3 });
+    expect(profile.streakDays).toBe(0);
+  });
+
+  it('keeps an undated streak whose last lesson was yesterday', async () => {
+    const { prisma, profile } = makeDb({ streakDays: 3, lastStreakEarnedAt: null, lastLessonCompletedAt: daysAgo(1) });
+    const r = await new StreakService(prisma).reconcile('u1');
+    expect(r.streakStatus).toBe('NORMAL');
+    expect(profile.streakDays).toBe(3);
+  });
+
   it('only one of two simultaneous reconciles spends the freezes', async () => {
     const { prisma, profile } = makeDb({ streakDays: 9, streakFreezeBank: 3, lastStreakEarnedAt: daysAgo(2) });
     const svc = new StreakService(prisma);
