@@ -87,7 +87,7 @@ export class GoogleDriveController {
     @Query('state') state?: string,
     @Query('error') error?: string,
   ) {
-    const frontendBase = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendBase = frontendBaseUrl();
     const redirectTo = (params: Record<string, string>) => {
       const qs = new URLSearchParams(params).toString();
       res.redirect(`${frontendBase}/admin/courses/import?${qs}`);
@@ -148,4 +148,21 @@ export class GoogleDriveController {
   getFolderPreview(@GetUser() user: AuthedUser, @Param('id') id: string) {
     return this.googleDrive.getFolderPreview(user.id, id);
   }
+}
+
+/**
+ * Where the browser goes after Google's consent screen. FRONTEND_URL when
+ * set; otherwise the first non-localhost entry of the CORS whitelist (the
+ * deployed frontend is always in it), and only then localhost. Falling
+ * straight to localhost sent production admins to a dead page after a
+ * connect that had actually succeeded.
+ */
+export function frontendBaseUrl(): string {
+  const explicit = process.env.FRONTEND_URL?.trim();
+  if (explicit) return explicit.replace(/\/+$/, '');
+  const deployed = (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim().replace(/\/+$/, ''))
+    .find((o) => /^https?:\/\//.test(o) && !/localhost|127\.0\.0\.1/.test(o));
+  return deployed ?? 'http://localhost:3000';
 }

@@ -28,6 +28,10 @@ services:
         sync: false
       - key: ALLOWED_ORIGINS
         sync: false   # set to your staging Vercel URL, e.g. https://teyro-git-staging.vercel.app
+      # Where Google Drive's consent screen sends the admin back to (the
+      # course importer). Unset, it falls back to ALLOWED_ORIGINS.
+      - key: FRONTEND_URL
+        sync: false   # the staging Vercel URL
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_CLIENT_EMAIL
@@ -105,6 +109,9 @@ services:
       - key: JWT_SECRET
         sync: false   # DIFFERENT from staging — generate a new strong secret
       - key: ALLOWED_ORIGINS
+        value: https://teyro.app
+      # Where Google Drive's consent screen sends the admin back to.
+      - key: FRONTEND_URL
         value: https://teyro.app
       - key: FIREBASE_PROJECT_ID
         sync: false
