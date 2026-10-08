@@ -16,6 +16,7 @@ import { APPLY_QUESTIONS_MAX, APPLY_QUESTIONS_MIN } from './lesson-content-gener
 import { RICH_EXERCISES_KEEP_MIN } from './rich-lesson';
 import { phaseStateFromBlocks } from '../lesson/lesson-blocks.util';
 import { cleanLessonTitle } from './course-structure-analysis.service';
+import { cleanDriveFileName } from '../google-drive/google-drive.types';
 
 export interface CreateCourseFromImportInput {
   title: string;
@@ -416,15 +417,16 @@ export class CourseImportPublishService {
         .map((f): AddLessonResourceDto => {
           const storedName = (f.storageKey ?? '').split('/').pop() ?? '';
           const storedExt = storedName.includes('.') ? storedName.split('.').pop()! : '';
-          const hasExt = /\.[a-z0-9]{1,5}$/i.test(f.driveFileName.trim());
-          const originalName = hasExt || !storedExt ? f.driveFileName.trim() : `${f.driveFileName.trim()}.${storedExt}`;
+          const cleanName = cleanDriveFileName(f.driveFileName);
+          const hasExt = /\.[a-z0-9]{1,5}$/i.test(cleanName);
+          const originalName = hasExt || !storedExt ? cleanName : `${cleanName}.${storedExt}`;
           return {
             type: resourceTypeFor(f),
             title: cleanLessonTitle(f.driveFileName),
             storageUrl: f.storageUrl!,
             sizeBytes: f.sizeBytes ? Number(f.sizeBytes) : undefined,
             originalName,
-            category: TEMPLATE_NAME.test(f.driveFileName) ? 'Template' : 'Reference',
+            category: TEMPLATE_NAME.test(cleanName) ? 'Template' : 'Reference',
           };
         }),
     };

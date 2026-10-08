@@ -9,6 +9,7 @@ import {
 } from './course-import-error';
 import { asSegments, sliceTranscript } from './lesson-parts';
 import { cleanLessonTitle } from './course-structure-analysis.service';
+import { cleanDriveFileName } from '../google-drive/google-drive.types';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -218,7 +219,7 @@ export class LessonContentGenerationProcessorService {
           // The reading lesson's own document is a download, not "attached".
           resourceNames: resourceFiles
             .filter((f) => f.id !== lesson.primaryFileId)
-            .map((f) => f.driveFileName),
+            .map((f) => cleanDriveFileName(f.driveFileName)),
           track:
             courseImport.courseCategory === 'Coding' || courseImport.courseCategory === 'AI'
               ? courseImport.courseCategory

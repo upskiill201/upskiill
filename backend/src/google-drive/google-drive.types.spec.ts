@@ -1,4 +1,8 @@
-import { NATIVE_EXPORTS, categorize } from './google-drive.types';
+import {
+  NATIVE_EXPORTS,
+  categorize,
+  cleanDriveFileName,
+} from './google-drive.types';
 
 describe('categorize', () => {
   it.each([
@@ -41,5 +45,42 @@ describe('categorize', () => {
       'xlsx',
     );
     expect(NATIVE_EXPORTS['application/vnd.google-apps.form']).toBeUndefined();
+  });
+});
+
+describe('cleanDriveFileName', () => {
+  it.each([
+    [
+      'Copy of 9 - Introduction.mp4 |google>|ahm7tech|or|ahm7tech.vercel.app|',
+      '9 - Introduction.mp4',
+    ],
+    ['Copy of Copy of 02 Hooks.mp4', '02 Hooks.mp4'],
+    ['Lesson 3.pdf ||telegram@channel||', 'Lesson 3.pdf'],
+    ['index.html |site.app|', 'index.html'],
+    ['my.notes.v2.pdf', 'my.notes.v2.pdf'],
+    // Native Google Doc: no extension, cut at the first "|".
+    ['Course Notes |google>|ahm7tech|', 'Course Notes'],
+    ['  Drama Editing.mp4 ', 'Drama Editing.mp4'],
+    ['Plain name', 'Plain name'],
+  ])('%s -> %s', (raw, clean) => {
+    expect(cleanDriveFileName(raw)).toBe(clean);
+  });
+
+  it('sees through junk when Drive typed a real video as a generic binary', () => {
+    const junk =
+      '9 - Introduction.mp4 |google>|ahm7tech|or|ahm7tech.vercel.app|';
+    expect(categorize('application/octet-stream', junk)).toBe('video');
+    expect(categorize('application/octet-stream', 'slides.pdf |x.app|')).toBe(
+      'document',
+    );
+    // A real type from Drive still wins.
+    expect(categorize('audio/mpeg', junk)).toBe('audio');
+  });
+
+  it('treats saved web pages as documents', () => {
+    expect(categorize('text/html', 'Lesson 1.html')).toBe('document');
+    expect(categorize('application/octet-stream', 'page.htm |x|')).toBe(
+      'document',
+    );
   });
 });

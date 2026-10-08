@@ -1,4 +1,8 @@
-import { extractDocumentText, extractableKind } from './document-text';
+import {
+  extractDocumentText,
+  extractableKind,
+  htmlToText,
+} from './document-text';
 import { CourseImportError } from './course-import-error';
 
 // unpdf loads pdfjs with a native dynamic import, which Jest's VM can't run
@@ -68,6 +72,33 @@ describe('document text', () => {
     );
     expect(extractableKind('k/readme.txt', 'text/plain')).toBe('text');
     expect(extractableKind('k/old.doc', 'application/msword')).toBeNull();
+  });
+
+  it('reads a saved web page as text, without its scripts and menus', async () => {
+    expect(extractableKind('k/lesson.html', 'application/octet-stream')).toBe(
+      'html',
+    );
+    const page = `<html><head><title>x</title><style>p{color:red}</style></head>
+      <body><nav>Home | Courses</nav><h1>Flexbox basics</h1>
+      <p>Flexbox lays items out in a row &amp; wraps them.</p><script>track()</script>
+      <p>${LONG}</p></body></html>`;
+    serve(page);
+    const text = await extractDocumentText(
+      'https://cdn/x.html',
+      'k/x.html',
+      'text/html',
+    );
+    const lines = text.split(String.fromCharCode(10)).filter(Boolean);
+    expect(lines[0]).toBe('Flexbox basics');
+    expect(lines[1]).toBe('Flexbox lays items out in a row & wraps them.');
+    for (const junk of ['track()', 'color:red', 'Home | Courses'])
+      expect(text.includes(junk)).toBe(false);
+  });
+
+  it('decodes entities and ignores impossible ones', () => {
+    expect(htmlToText('<p>a&nbsp;b &#8212; c &#x41; &#99999999;</p>')).toBe(
+      'a b — c A &#99999999;',
+    );
   });
 
   it('reads plain text', async () => {

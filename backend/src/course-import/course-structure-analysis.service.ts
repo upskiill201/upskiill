@@ -12,6 +12,7 @@ import {
 } from './course-import-summary.util';
 import { extractableKind } from './document-text';
 import { lessonRowsForFile } from './lesson-plan';
+import { cleanDriveFileName } from '../google-drive/google-drive.types';
 
 /** A file the planning below needs — only the fields actually used. */
 export interface UploadedFile {
@@ -105,7 +106,7 @@ function planSection(files: UploadedFile[]): {
     hasMedia
       ? MEDIA.has(f.category)
       : f.category === 'document' &&
-        !HANDOUT_NAME.test(f.driveFileName) &&
+        !HANDOUT_NAME.test(cleanDriveFileName(f.driveFileName)) &&
         extractableKind(f.storageKey, f.mimeType) !== null;
 
   const lessons: PlannedLesson[] = [];
@@ -262,7 +263,9 @@ function groupBySection<T extends UploadedFile>(
 }
 
 /** "Copy of 01. Introduction (Telegram@TechZoneX).mp4" -> "Introduction" */
-export function cleanLessonTitle(fileName: string): string {
+export function cleanLessonTitle(rawFileName: string): string {
+  // "Copy of …" and anything stuck on after the extension go first.
+  const fileName = cleanDriveFileName(rawFileName);
   // A real extension only: a Google Doc has none, and "v1.2" isn't one.
   let title = fileName.trim().replace(/\.[a-z][a-z0-9]{0,4}$/i, '');
   title = title.replace(/^copy of\s+/i, ''); // Drive's "make a copy" prefix

@@ -20,9 +20,11 @@ export const MIN_READING_CHARS = 300;
 export function extractableKind(
   key: string | null,
   mimeType: string,
-): 'pdf' | 'docx' | 'text' | null {
+): 'pdf' | 'docx' | 'html' | 'text' | null {
   const ext = (key ?? '').split('.').pop()?.toLowerCase() ?? '';
   if (ext === 'pdf' || mimeType === 'application/pdf') return 'pdf';
+  if (ext === 'html' || ext === 'htm' || mimeType === 'text/html')
+    return 'html';
   if (
     ext === 'docx' ||
     mimeType ===
@@ -65,6 +67,8 @@ export async function extractDocumentText(
   } else if (kind === 'docx') {
     const out = await mammoth.extractRawText({ buffer: Buffer.from(bytes) });
     text = out.value;
+  } else if (kind === 'html') {
+    text = htmlToText(new TextDecoder('utf-8').decode(bytes));
   } else {
     text = new TextDecoder('utf-8').decode(bytes);
   }
@@ -81,4 +85,56 @@ export async function extractDocumentText(
     );
   }
   return clean;
+}
+
+const ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+  mdash: '—',
+  ndash: '–',
+  hellip: '…',
+  rsquo: '’',
+  lsquo: '‘',
+  rdquo: '”',
+  ldquo: '“',
+};
+
+/**
+ * The readable text of a saved web page: what a learner would read, with
+ * scripts, styles, navigation chrome and markup removed, and block elements
+ * kept as paragraph breaks so the lesson writer sees the page's structure.
+ */
+export function htmlToText(html: string): string {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(
+      /<(script|style|noscript|template|svg|head|nav|footer|header|form|iframe)\b[\s\S]*?<\/\1>/gi,
+      ' ',
+    )
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(
+      /<\/?(p|div|section|article|li|ul|ol|h[1-6]|pre|blockquote|tr|table|main)\b[^>]*>/gi,
+      '\n',
+    )
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e: string) => {
+      if (e[0] === '#') {
+        const code =
+          e[1] === 'x' || e[1] === 'X'
+            ? parseInt(e.slice(2), 16)
+            : parseInt(e.slice(1), 10);
+        return Number.isFinite(code) && code > 0 && code <= 0x10ffff
+          ? String.fromCodePoint(code)
+          : m;
+      }
+      return ENTITIES[e.toLowerCase()] ?? m;
+    })
+    .replace(/[ \t]+/g, ' ')
+    .replace(/ *\n */g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }

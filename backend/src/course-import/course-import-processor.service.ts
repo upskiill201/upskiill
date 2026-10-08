@@ -10,7 +10,10 @@ import {
   codeForHttpStatus,
   toCourseImportError,
 } from './course-import-error';
-import { NATIVE_EXPORTS } from '../google-drive/google-drive.types';
+import {
+  NATIVE_EXPORTS,
+  cleanDriveFileName,
+} from '../google-drive/google-drive.types';
 
 /** Ceiling for one Drive→R2 transfer. Generous, because a legitimate 2GB
  *  video on a slow link genuinely takes a while — this exists to catch a
@@ -220,7 +223,15 @@ export class CourseImportProcessorService {
               file.import.createdById,
               file.driveFileId,
             );
-            return this.r2.uploadStream(key, stream, mimeType || file.mimeType);
+            // The row's type (fixed up from the real extension) beats a
+            // generic one Drive reports for a junk-suffixed name.
+            return this.r2.uploadStream(
+              key,
+              stream,
+              mimeType && mimeType !== 'application/octet-stream'
+                ? mimeType
+                : file.mimeType,
+            );
           })(),
           FILE_TRANSFER_TIMEOUT_MS,
           `Transferring "${file.driveFileName.trim()}" from Google Drive to storage`,
@@ -467,7 +478,10 @@ export function buildObjectKey(
   // keys/URLs with a literal trailing space, which R2 stored fine but which
   // fetch()'s WHATWG URL parser silently strips, turning every later
   // download of that file into a 404.
-  const trimmed = fileName.trim();
+  // Junk after the real extension ("….mp4 |site.app|") is dropped too, or
+  // the key would end in ".app_" and every reader of its extension (file
+  // type, download icon, reading-lesson text) would get it wrong.
+  const trimmed = cleanDriveFileName(fileName);
   const dotIndex = trimmed.lastIndexOf('.');
   const ext = dotIndex > 0 ? trimmed.slice(dotIndex + 1).toLowerCase() : 'bin';
   const base = (dotIndex > 0 ? trimmed.slice(0, dotIndex) : trimmed)
