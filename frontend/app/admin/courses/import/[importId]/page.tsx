@@ -116,7 +116,16 @@ export default function CourseImportPage() {
   const params = useParams<{ importId: string }>();
   const path = `/api/admin/course-imports/${params.importId}`;
   const { data: imp, error, mutate } = useSWR<CourseImport>(path, adminFetcher, {
-    refreshInterval: (d) => (d && (RUNNING.has(d.status) || d.status === 'PAUSED') ? 3000 : 0),
+    // Autopilot builds the draft from READY_FOR_REVIEW on its own, so keep
+    // watching until it has (or has stopped), or the page sits on "Creating
+    // the course draft" after the course already exists.
+    refreshInterval: (d) =>
+      d &&
+      (RUNNING.has(d.status) ||
+        d.status === 'PAUSED' ||
+        (d.status === 'READY_FOR_REVIEW' && d.autopilot && !d.createdCourseId))
+        ? 3000
+        : 0,
     shouldRetryOnError: true,
     errorRetryInterval: 4000,
     errorRetryCount: undefined,
