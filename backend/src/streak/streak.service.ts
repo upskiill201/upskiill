@@ -149,6 +149,20 @@ export class StreakService {
     const now = new Date();
     const today = localDay(now, tzOffsetMinutes);
 
+    // A streak count with no "last earned" day can never be checked against
+    // the calendar, so it used to stand forever (accounts from the old fake
+    // 3-day starter streak showed "3" no matter what). Date it from the last
+    // lesson, which is when a streak day is earned; with no lesson ever, it
+    // was never real — clear it quietly, there's nothing to mourn.
+    if (profile.streakDays > 0 && !profile.lastStreakEarnedAt) {
+      const anchor = profile.lastLessonCompletedAt;
+      await this.prisma.studentProfile.updateMany({
+        where: { userId, lastStreakEarnedAt: null },
+        data: anchor ? { lastStreakEarnedAt: anchor } : { streakDays: 0 },
+      });
+      profile = await this.prisma.studentProfile.findUniqueOrThrow({ where: { userId } });
+    }
+
     if (!profile.lastStreakEarnedAt || profile.streakDays <= 0) {
       return { profile, streakStatus: 'NORMAL', lostStreakCount: 0, freezesUsed: 0 };
     }

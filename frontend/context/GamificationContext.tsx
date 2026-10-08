@@ -202,8 +202,9 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         xp: data.xp ?? 30,
         gems: currentCoins,
         coins: currentCoins,
-        streakDays: data.streakDays ?? 3,
-        longestStreak: data.longestStreak ?? Math.max(3, data.streakDays ?? 3),
+        // Server truth only: a missing field means 0, never a made-up streak.
+        streakDays: data.streakDays ?? 0,
+        longestStreak: data.longestStreak ?? data.streakDays ?? 0,
         lives: data.lives ?? 5,
         maxLives: data.maxLives ?? 5,
         livesRefillAt: data.livesRefillAt ?? null,
