@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { spawn } from 'child_process';
 import { createWriteStream } from 'fs';
-import { mkdir, readdir, readFile, rm, stat, unlink } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, stat, statfs, unlink } from 'fs/promises';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import { tmpdir } from 'os';
@@ -37,6 +37,18 @@ interface ChunkTranscript {
  *  length — see the module doc comment below for the math. */
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const DOWNLOAD_TIMEOUT_MS = 10 * 60 * 1000;
+/** Kept free beyond the video itself: its audio track and the chunks. */
+const DISK_HEADROOM_BYTES = 300 * 1024 * 1024;
+
+/** Free bytes on the temp disk, or null where the platform can't say. */
+async function freeTempBytes(): Promise<number | null> {
+  try {
+    const s = await statfs(tmpdir());
+    return Number(s.bavail) * Number(s.bsize);
+  } catch {
+    return null;
+  }
+}
 /** Pulling the audio out of a 1-2 hour, 2GB lecture is a long ffmpeg pass on
  *  a small instance; 5 minutes timed out on real long videos. */
 const FFMPEG_TIMEOUT_MS = 15 * 60 * 1000;
@@ -103,6 +115,15 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
    *  horizontally on shared storage, a starting instance would delete a
    *  sibling's in-flight files and this needs an age/ownership check. */
   async onModuleInit(): Promise<void> {
+    // Free plans have no shell, so the log is the only place an admin can
+    // see how big a video this server can transcribe (it's saved here while
+    // its audio is pulled out).
+    const free = await freeTempBytes();
+    if (free !== null) {
+      this.logger.log(
+        `Course import temp disk: ${(free / 1e9).toFixed(1)} GB free in ${tmpdir()} — the largest video it can transcribe is a little under that.`,
+      );
+    }
     try {
       const dir = tmpdir();
       const orphans = (await readdir(dir)).filter((name) =>
@@ -264,6 +285,17 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
       throw new CourseImportError(
         codeForHttpStatus(res.status, 'STORAGE'),
         `Could not download video for transcription (HTTP ${res.status}).`,
+      );
+    }
+    // Fail clearly up front rather than with ENOSPC halfway through a
+    // multi-GB download. Room for the audio and chunks is kept on top.
+    const size = Number(res.headers.get('content-length'));
+    const free = await freeTempBytes();
+    if (size > 0 && free !== null && size + DISK_HEADROOM_BYTES > free) {
+      await res.body.cancel().catch(() => undefined);
+      throw new CourseImportError(
+        'DISK_SPACE_LOW',
+        `This video is ${(size / 1e9).toFixed(1)} GB but the server only has ${(free / 1e9).toFixed(1)} GB of temporary disk free. Split or compress the video, or move to a plan with more disk.`,
       );
     }
     // `readable.pipe(writable)` returns `writable`, so a `.on('error', ...)`

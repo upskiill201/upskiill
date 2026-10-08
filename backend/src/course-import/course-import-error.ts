@@ -46,6 +46,9 @@ export type CourseImportErrorCode =
   | 'PROVIDER_NOT_CONFIGURED'
   | 'NO_TRANSCRIPT'
   | 'FILE_NOT_UPLOADED'
+  /** The server's temporary disk can't hold this video while its audio is
+   *  extracted. Terminal: it won't fit on a retry either. */
+  | 'DISK_SPACE_LOW'
   // Fallback
   | 'UNKNOWN';
 
@@ -106,6 +109,7 @@ const KNOWN_CODES: ReadonlySet<string> = new Set<CourseImportErrorCode>([
   'PROVIDER_NOT_CONFIGURED',
   'NO_TRANSCRIPT',
   'FILE_NOT_UPLOADED',
+  'DISK_SPACE_LOW',
   'UNKNOWN',
 ]);
 
