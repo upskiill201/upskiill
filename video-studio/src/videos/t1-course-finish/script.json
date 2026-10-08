@@ -1,0 +1,44 @@
+{
+  "slug": "t1-course-finish",
+  "account": "teyro-teach",
+  "title": "4 things every coding course needs so students finish",
+  "sources": [
+    "Jordan (2015), IRRODL: MOOC completion rates decrease as course length increases",
+    "Roediger & Karpicke 2006; Rowland 2014 (feedback g 0.73 vs 0.39)",
+    "Lally et al. 2010 (habits form with consistency)",
+    "teyro.app/teach: four-step lessons (Learn, Apply, Reflect, Deepen); creators keep 70% (80% Founding)"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "Four things every coding course needs, | so students *actually* finish."
+    },
+    {
+      "id": "i1",
+      "text": "First, *short* lessons. | When researchers compared online courses, | the *longer* the course, | the *fewer* people finished."
+    },
+    {
+      "id": "i2",
+      "text": "Second, practice that's *checked instantly.* | Testing yourself beats rereading, | and feedback nearly *doubles* the benefit."
+    },
+    {
+      "id": "i3",
+      "text": "Third, a moment to *explain it back.* | Putting an idea in your *own words* | shows what you *actually* understood."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, a reason to come back *tomorrow.* | Habits come from showing up *most days,* | so streaks and reminders *matter.*"
+    },
+    {
+      "id": "s1",
+      "text": "So in our Studio, every lesson runs in *four* steps: | learn, | apply, | reflect, | and deepen."
+    },
+    {
+      "id": "c1",
+      "text": "If you teach coding or AI, | you keep *seventy percent* of every payment. | Go to teyro dot app slash *teach.*"
+    }
+  ]
+}

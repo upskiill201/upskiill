@@ -1,0 +1,17 @@
+{
+  "fps": 60, "duration": 60, "bpm": 120,
+  "vo": [
+    { "id": "A01", "file": "vo_A01.mp3",  "at": 0.35, "text": "Hey, it's Ada!" },
+    { "id": "A02", "file": "vo_A02.mp3",  "at": 2.0,  "text": "AI is moving fast. Like, really fast. And the way we work is changing with it." },
+    { "id": "A03", "file": "vo_A03.mp3",  "at": 8.6,  "text": "The people who stay relevant? The ones who know how to use AI." },
+    { "id": "A04", "file": "vo_A04a.mp3", "at": 14.0, "text": "So here's your shortcut: the AI track." },
+    { "id": "A04b","file": "vo_L03.mp3",  "at": 17.4, "text": "Meet Teyro." },
+    { "id": "A05", "file": "vo_A05.mp3",  "at": 20.1, "text": "Master prompting, so AI does exactly what you want." },
+    { "id": "A06", "file": "vo_A06.mp3",  "at": 24.1, "text": "Build your own AI agents that handle real tasks for you." },
+    { "id": "A07", "file": "vo_A07.mp3",  "at": 28.3, "text": "Automate the busywork. Build tools with AI. Even learn how AI gets trained." },
+    { "id": "A08", "file": "vo_A08.mp3",  "at": 34.3, "text": "A few minutes a day, with streaks, leagues and friends to keep you going." },
+    { "id": "A09", "file": "vo_A09.mp3",  "at": 39.4, "text": "And you won't just know about AI. You'll be the one who can actually use it." },
+    { "id": "A10", "file": "vo_A10.mp3",  "at": 44.2, "text": "It all launches this November! Free to start." },
+    { "id": "A11", "file": "vo_A11.mp3",  "at": 50.0, "text": "Get notified at teyro dot app, and be first in!" }
+  ]
+}

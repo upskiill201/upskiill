@@ -1,0 +1,27 @@
+import { execFileSync } from 'child_process';
+const C = [];
+const q = (t, n, db = 0) => C.push([t, n, db]);
+q(0.0,'heartbeat',-4); q(0.43,'pop',-8); q(0.5,'scan',-9); for(let i=0;i<10;i++) q(0.15+i*0.04,'tick',-16);
+q(2.6,'datawhoosh',-5); for(let i=0;i<8;i++) q(2.65+i*0.1,'tick',-10); q(3.0,'glitch',-9); for(let i=0;i<10;i++) q(3.0+i*0.16,'blip',-12); q(3.4,'pop',-3); q(3.42,'shimmer',-9);
+q(4.52,'swish',-10); q(5.5,'glitch',-6); q(6.43,'pop',-4); q(6.45,'heartbeat',-4);
+q(7.2,'glitch',-5); q(7.46,'datawhoosh',-6); for(let i=0;i<12;i++) q(7.5+i*0.13,'blip',-12); q(8.3,'pop',-4); q(9.4,'heartbeat',-4); q(11.12,'pop',-3); q(11.15,'success',-10); q(12.31,'tick',-6);
+q(12.7,'whoosh',-6); q(12.85,'pop',-6); q(13.3,'tick',-6); for(let i=0;i<4;i++) q(13.4+i*0.3,'tick',-12); q(14.6,'pop',-3); q(14.62,'heartbeat',-3);
+q(15.2,'power',-6); q(15.6,'swish',-6); q(16.2,'pop',-4); q(16.25,'shimmer',-8); q(16.95,'whoosh',-6); q(17.4,'swish',-6);
+q(17.98,'slam',-1); q(18.05,'shimmer',-7); [18.4,18.56,18.72,18.93,19.09].forEach(t=>q(t,'tick',-12)); q(19.05,'whoosh',-6);
+q(19.61,'pop',-4); q(20.34,'pop2',-4); q(21.1,'swish',-7); for(let i=0;i<6;i++) q(21.62+i*0.12,'blip',-8); q(23.57,'pop',-4); q(23.6,'tick',-8); q(24.67,'shimmer',-8);
+q(24.85,'whoosh',-5); q(25.1,'pop',-4); q(25.74,'success',-4); q(25.76,'coin',-9); q(26.43,'pop',-4); q(26.84,'swish',-8); q(27.5,'pop2',-5); q(27.78,'pop',-4); q(28.0,'swish',-8); q(28.69,'levelup',-5);
+q(29.2,'glitch',-6); q(29.5,'pop',-6); for(let i=0;i<5;i++) q(30.1+i*0.08,'pop2',-11); q(31.86,'power',-7); for(let i=0;i<12;i++) q(31.9+i*0.05,'blip',-14); q(32.3,'pop',-6);
+q(33.58,'slam',-5); q(33.61,'pop',-2); q(33.65,'shimmer',-6); q(35.18,'pop',-4); q(36.23,'pop2',-3); q(36.3,'cheer',-11);
+q(36.7,'whoosh',-5); q(38.05,'pop',-3); q(38.08,'shimmer',-6); q(38.68,'slam',-7); q(39.75,'whoosh',-5);
+q(39.98,'slam',0); q(40.05,'shimmer',-5); q(40.3,'pop',-6); q(40.45,'pop',-5); q(40.75,'pop2',-5); q(41.12,'tick',-8); q(42.9,'notify',-6); q(43.4,'cheer',-12); q(44.0,'coin',-6);
+
+const args = ['-y','-v','error','-i','audio/music_wef.wav','-i','audio/vo_stem_wef.wav'];
+C.forEach(([,n]) => args.push('-i', `audio/sfx/${n}.mp3`));
+let fg = '[1:a]highpass=f=90,equalizer=f=3500:t=q:w=1.2:g=2.5,acompressor=threshold=-20dB:ratio=3:attack=5:release=80:makeup=3dB,aresample=48000,asplit=2[vo][sc];';
+fg += '[0:a]volume=-3dB[mus];[mus][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=320:makeup=1[duck];';
+C.forEach(([t,,db], i) => { fg += `[${i+2}:a]aresample=48000,aformat=channel_layouts=stereo,volume=${db - 4}dB,adelay=${Math.round(t*1000)}|${Math.round(t*1000)}[s${i}];`; });
+fg += C.map((_, i) => `[s${i}]`).join('') + `amix=inputs=${C.length}:normalize=0:duration=longest[sfx];`;
+fg += '[vo]aformat=channel_layouts=stereo[vos];[duck][vos][sfx]amix=inputs=3:normalize=0:duration=first,atrim=0:45,alimiter=limit=0.95,loudnorm=I=-14:TP=-1.2:LRA=9[out]';
+args.push('-filter_complex', fg, '-map', '[out]', '-ar', '48000', '-c:a', 'pcm_s16le', 'audio/final_mix_wef.wav');
+execFileSync('ffmpeg', args, { stdio: 'inherit' });
+console.log('cues', C.length);

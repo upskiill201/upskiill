@@ -1,0 +1,43 @@
+{
+  "slug": "l2-habit",
+  "account": "teyro",
+  "title": "It doesn't take 21 days to build a habit",
+  "sources": [
+    "Maxwell Maltz, Psycho-Cybernetics (1960): patients took a minimum of about 21 days to adjust",
+    "Lally, van Jaarsveld, Potts & Wardle (2010), European Journal of Social Psychology: 96 volunteers, 18-254 days to automaticity, median 66; missing one opportunity did not materially affect habit formation",
+    "teyro.app: streak freezes cover a busy day, a repair saves a slip"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "It doesn't take *21 days* to build a habit. | Here's what the research *actually* found."
+    },
+    {
+      "id": "i1",
+      "text": "First, *21 days* came from a *plastic surgeon* in the *1960s,* | describing how long his patients took to adjust after surgery. | It was never a *study.*"
+    },
+    {
+      "id": "i2",
+      "text": "Second, when *UCL* researchers tracked *96* people building a new daily habit, | it took anywhere from *18* to *254* days. | A typical habit took *66.*"
+    },
+    {
+      "id": "i3",
+      "text": "Third, *missing one day* | didn't break anything. | The habit kept *building* anyway."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, what mattered was doing it *most days,* | in the *same* situation. | Not being *perfect.*"
+    },
+    {
+      "id": "s1",
+      "text": "So stop counting to twenty-one. | Pick a time, | keep it *small,* | and forgive a *missed* day."
+    },
+    {
+      "id": "c1",
+      "text": "That's why every streak comes with *freezes* for busy days. | Go to teyro dot app, | or just search *Teyro.*"
+    }
+  ]
+}

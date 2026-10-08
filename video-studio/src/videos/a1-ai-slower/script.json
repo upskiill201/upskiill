@@ -1,0 +1,43 @@
+{
+  "slug": "a1-ai-slower",
+  "account": "teyro",
+  "title": "AI made expert coders 19% slower",
+  "sources": [
+    "METR (July 2025) randomized controlled trial: 16 experienced open-source developers, 246 tasks in repos they knew; AI-allowed tasks took 19% longer; developers estimated a ~20% speed-up afterwards",
+    "Stack Overflow Developer Survey 2025: top frustration (66%) \"AI solutions that are almost right, but not quite\"",
+    "teyro.app: coding track, short daily lessons, real code with instant feedback"
+  ],
+  "voice": "cgSgspJ2msm6clMCkdW9",
+  "model": "eleven_multilingual_v2",
+  "fps": 30,
+  "lines": [
+    {
+      "id": "h1",
+      "text": "AI made expert coders *19 percent slower.* | And they thought it made them *faster.*"
+    },
+    {
+      "id": "i1",
+      "text": "First, the study. | Researchers at *METR* gave *16* experienced developers | *246* real tasks | in code they already knew well."
+    },
+    {
+      "id": "i2",
+      "text": "Second, with AI tools allowed, | they took *19 percent* longer. | But afterwards, they *believed* AI had sped them up | by about *20 percent.*"
+    },
+    {
+      "id": "i3",
+      "text": "Third, why. | A lot of the time went into *reviewing* and *fixing* suggestions | that were *almost* right, | but not quite."
+    },
+    {
+      "id": "i4",
+      "text": "And finally, it's not just them. | In Stack Overflow's developer survey, | *almost right* was the number one frustration | with AI tools."
+    },
+    {
+      "id": "s1",
+      "text": "So AI doesn't replace knowing how to code. | It *rewards* it, | because someone has to spot the *almost.*"
+    },
+    {
+      "id": "c1",
+      "text": "If you want to learn to read and fix code properly, | a few minutes a day, | the link's in my *bio.* | It's called *Teyro.*"
+    }
+  ]
+}
