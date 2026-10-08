@@ -1,5 +1,7 @@
 # Teyro Video Studio
 
+> **New here? Read [GUIDE.md](GUIDE.md)**: setup, making a video, posting it, troubleshooting.
+>
 > **To make a video, type `/make-videos` in Claude Code** (see `.claude/skills/make-videos/SKILL.md`). You approve one idea, paste an ElevenLabs key (asked each session, never stored), and get one finished video. One at a time, never batches.
 
 Remotion project for Teyro's short-form videos (Instagram Reels / TikTok) and the October 2026 launch reels.

@@ -7,7 +7,7 @@ description: Produce ONE Teyro / Teyro Teach Instagram Reel + TikTok explainer v
 
 Anyone on the Teyro team (founder or a team member managing a Teyro / Teyro Teach account) starts a video session with this command. "You" below = the person running it.
 
-**First time on this machine?** You need Node 20+, `ffmpeg` + `ffprobe` on PATH, and `npm ci` inside `video-studio/` (Remotion downloads its own headless Chrome). Run `git pull` before every session, because the idea bank (`video-studio/ideas/IDEAS.md`) is shared by the whole team.
+**First time on this machine?** Point them to `video-studio/GUIDE.md`. You need Node 20+, `ffmpeg` + `ffprobe` on PATH, and `npm ci` inside `video-studio/` (Remotion downloads its own headless Chrome). Run `git pull` before every session, because the idea bank (`video-studio/ideas/IDEAS.md`) is shared by the whole team.
 
 **Two hard rules (founder's decision, 2026-10-08; they apply to everyone):**
 1. **No video without an approved idea.** Only an idea the person running the session has explicitly approved (status `approved` in `IDEAS.md`) may be scripted. Approval is per idea, given in chat.

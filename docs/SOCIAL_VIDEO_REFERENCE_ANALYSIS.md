@@ -1,6 +1,8 @@
 # Teyro Social Video Playbook: the "Illustrated Host Explainer" format
 
-> **▶ START HERE (founder):** open Claude Code in the `upskiill` folder and type **`/make-videos`**.
+> **▶ Team setup + how-to guide: [`video-studio/GUIDE.md`](../video-studio/GUIDE.md)**
+>
+> **▶ START HERE:** open Claude Code in the `upskiill` folder and type **`/make-videos`**.
 > 1. Claude proposes up to 3 ideas; you **approve one**.
 > 2. Paste an ElevenLabs key.
 > 3. You get that one finished video, and Claude asks before starting the next.
