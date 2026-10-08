@@ -3,8 +3,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   CourseStructureAnalysisService,
   cleanLessonTitle,
+  planCourseStructure,
+  type UploadedFile,
 } from './course-structure-analysis.service';
 import { PrismaService } from '../prisma/prisma.service';
+import * as summaryUtil from './course-import-summary.util';
 
 const userId = 'user-1';
 const importId = 'import-1';
@@ -280,5 +283,177 @@ describe('CourseStructureAnalysisService', () => {
     await expect(service.analyze(userId, importId)).rejects.toThrow(
       NotFoundException,
     );
+  });
+});
+
+describe('planCourseStructure', () => {
+  let n = 0;
+  function f(
+    overrides: Partial<UploadedFile> & { driveFileName: string },
+  ): UploadedFile {
+    n += 1;
+    return {
+      id: `f${n}`,
+      category: 'video',
+      mimeType: 'video/mp4',
+      storageKey: `course-imports/i/${overrides.driveFileName}`,
+      sectionFolderId: null,
+      sectionFolderName: null,
+      durationMs: null,
+      ...overrides,
+    };
+  }
+
+  it('makes audio files lessons, and gives handouts before the first video to the first lesson', () => {
+    const starter = f({
+      driveFileName: 'starter.zip',
+      category: 'file',
+      mimeType: 'application/zip',
+    });
+    const intro = f({ driveFileName: '01 Intro.mp4' });
+    const diagram = f({
+      driveFileName: 'diagram.png',
+      category: 'image',
+      mimeType: 'image/png',
+    });
+    const podcast = f({
+      driveFileName: '02 Q&A.mp3',
+      category: 'audio',
+      mimeType: 'audio/mpeg',
+    });
+    const [section] = planCourseStructure(
+      [starter, intro, diagram, podcast],
+      'Course',
+    );
+    expect(
+      section.lessons.map((l) => [
+        l.primary.driveFileName,
+        l.kind,
+        l.resourceFileIds,
+      ]),
+    ).toEqual([
+      ['01 Intro.mp4', 'media', [starter.id, diagram.id]],
+      ['02 Q&A.mp3', 'media', []],
+    ]);
+  });
+
+  it('turns a section with no media into reading lessons, keeping handouts as resources', () => {
+    const notes = f({
+      driveFileName: '01 Notes.pdf',
+      category: 'document',
+      mimeType: 'application/pdf',
+      sectionFolderId: 's2',
+      sectionFolderName: 'Reading',
+    });
+    const cheat = f({
+      driveFileName: 'Cheat sheet.pdf',
+      category: 'document',
+      mimeType: 'application/pdf',
+      sectionFolderId: 's2',
+      sectionFolderName: 'Reading',
+    });
+    const oldDoc = f({
+      driveFileName: 'legacy.doc',
+      category: 'document',
+      mimeType: 'application/msword',
+      sectionFolderId: 's2',
+      sectionFolderName: 'Reading',
+    });
+    const [section] = planCourseStructure([notes, cheat, oldDoc], 'Course');
+    expect(section.title).toBe('Reading');
+    expect(section.lessons).toHaveLength(1);
+    expect(section.lessons[0]).toMatchObject({
+      kind: 'reading',
+      primary: { id: notes.id },
+      // Its own document is a download too; the cheat sheet and the
+      // unreadable .doc are handouts.
+      resourceFileIds: [notes.id, cheat.id, oldDoc.id],
+    });
+  });
+
+  it("gives a handouts-only section's files to the previous section's last lesson", () => {
+    const v1 = f({
+      driveFileName: '01 A.mp4',
+      sectionFolderId: 's1',
+      sectionFolderName: 'One',
+    });
+    const v2 = f({
+      driveFileName: '02 B.mp4',
+      sectionFolderId: 's1',
+      sectionFolderName: 'One',
+    });
+    const zip = f({
+      driveFileName: 'Project files.zip',
+      category: 'file',
+      mimeType: 'application/zip',
+      sectionFolderId: 's2',
+      sectionFolderName: 'Resources',
+    });
+    const sections = planCourseStructure([v1, v2, zip], 'Course');
+    expect(sections).toHaveLength(1);
+    expect(sections[0].lessons[1].resourceFileIds).toEqual([zip.id]);
+  });
+});
+
+describe('CourseStructureAnalysisService parts', () => {
+  it('writes a 40-minute video as four part lessons with clip ranges', async () => {
+    const createMany = jest.fn();
+    const prisma = {
+      courseImport: {
+        findFirst: jest.fn().mockResolvedValue({
+          status: 'READY_FOR_GENERATION',
+          sourceDriveFolderName: 'Course',
+          modules: [],
+          files: [
+            {
+              id: 'v1',
+              driveFileName: '01 Deep Dive.mp4',
+              category: 'video',
+              mimeType: 'video/mp4',
+              storageKey: 'k/v1.mp4',
+              status: 'UPLOADED',
+              sectionFolderId: null,
+              sectionFolderName: null,
+              durationMs: BigInt(40 * 60 * 1000),
+            },
+          ],
+        }),
+        findFirstOrThrow: jest.fn().mockResolvedValue({}),
+        update: jest.fn(),
+      },
+      courseImportModule: { create: jest.fn().mockResolvedValue({ id: 'm1' }) },
+      courseImportLesson: { createMany },
+      courseImportFile: { updateMany: jest.fn() },
+      $transaction: jest.fn((cb: (tx: unknown) => unknown) => cb(prisma)),
+    };
+    const service = new CourseStructureAnalysisService(
+      prisma as unknown as PrismaService,
+    );
+    jest
+      .spyOn(summaryUtil, 'toCourseImportSummary')
+      .mockReturnValue({} as never);
+
+    await service.analyze(userId, importId);
+
+    const rows = (
+      createMany.mock.calls[0][0] as { data: Record<string, unknown>[] }
+    ).data;
+    expect(
+      rows.map((r) => [
+        r.title,
+        r.orderIndex,
+        r.clipStartSec,
+        r.clipEndSec,
+        r.partIndex,
+        r.partCount,
+      ]),
+    ).toEqual([
+      ['Deep Dive (Part 1 of 4)', 0, 0, 600, 1, 4],
+      ['Deep Dive (Part 2 of 4)', 1, 600, 1200, 2, 4],
+      ['Deep Dive (Part 3 of 4)', 2, 1200, 1800, 3, 4],
+      ['Deep Dive (Part 4 of 4)', 3, 1800, 2400, 4, 4],
+    ]);
+    expect(rows.every((r) => r.primaryFileId === 'v1')).toBe(true);
+    expect(prisma.courseImportFile.updateMany).not.toHaveBeenCalled();
   });
 });

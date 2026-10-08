@@ -55,6 +55,25 @@ export function applySaveErrors(applyBlocks: unknown): string[] {
   return items.length > LIMITS.exercises ? [`Up to ${LIMITS.exercises} exercises per lesson.`] : [];
 }
 
+/**
+ * A video/audio card may play only part of its file (`startSec`–`endSec`):
+ * how a long imported video becomes several bite-size lessons without
+ * re-encoding. `durationSec` must then be the clip's length, so the 15-minute
+ * rule above can't be dodged by clipping a long file with a short duration.
+ */
+function clipProblem(c: any): string | null {
+  if (c.startSec === undefined && c.endSec === undefined) return null;
+  const { startSec, endSec } = c;
+  if (typeof startSec !== 'number' || typeof endSec !== 'number' || startSec < 0 || endSec <= startSec) {
+    return 'A clip has an invalid start or end time.';
+  }
+  if (typeof c.durationSec === 'number' && Math.abs(c.durationSec - (endSec - startSec)) > 2) {
+    return "A clip's length doesn't match its start and end times.";
+  }
+  if (c.kind === 'video' && endSec - startSec > MAX_VIDEO_SECONDS) return 'A video is over 15 minutes.';
+  return null;
+}
+
 export function learnCardProblem(c: any): string | null {
   switch (c?.kind) {
     case 'text':
@@ -64,9 +83,10 @@ export function learnCardProblem(c: any): string | null {
     case 'video':
       if (blank(c.url)) return 'A video card has no video.';
       if (typeof c.durationSec !== 'number' || c.durationSec <= 0) return 'A video card is missing its length. Upload it again.';
-      return c.durationSec > MAX_VIDEO_SECONDS ? 'A video is over 15 minutes.' : null;
+      if (c.durationSec > MAX_VIDEO_SECONDS) return 'A video is over 15 minutes.';
+      return clipProblem(c);
     case 'audio':
-      return blank(c.url) ? 'An audio card has no audio.' : null;
+      return blank(c.url) ? 'An audio card has no audio.' : clipProblem(c);
     case 'image':
       if (blank(c.url)) return 'An image card has no image.';
       return blank(c.alt) ? 'An image is missing its description.' : null;

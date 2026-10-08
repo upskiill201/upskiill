@@ -78,11 +78,39 @@ interface CardBase {
   id: string;
 }
 
+/**
+ * A video/audio card can play just part of its file — how the course
+ * importer turns one long video into several bite-size lessons without
+ * re-encoding it. When set, `durationSec` is the clip's length.
+ */
+interface Clip {
+  startSec?: number;
+  endSec?: number;
+}
+
+/** "Plays 12:00–24:00" for a clipped card, or null for a whole file. */
+export function clipRange(card: Clip): { startSec: number; endSec: number } | null {
+  return typeof card.startSec === 'number' && typeof card.endSec === 'number' && card.endSec > card.startSec
+    ? { startSec: card.startSec, endSec: card.endSec }
+    : null;
+}
+
+function clipIssue(card: Clip & { kind: string; durationSec?: number }): string | null {
+  if (card.startSec === undefined && card.endSec === undefined) return null;
+  const range = clipRange(card);
+  if (!range || range.startSec < 0) return 'This clip has an invalid start or end time.';
+  if (typeof card.durationSec === 'number' && Math.abs(card.durationSec - (range.endSec - range.startSec)) > 2)
+    return "This clip's length doesn't match its start and end times.";
+  if (card.kind === 'video' && range.endSec - range.startSec > MAX_VIDEO_SECONDS)
+    return videoTooLongMessage(range.endSec - range.startSec);
+  return null;
+}
+
 export type LearnCard =
   | (CardBase & { kind: 'text'; html: string })
   | (CardBase & { kind: 'code'; language: CodeLanguage; code: string; caption?: string })
-  | (CardBase & { kind: 'video'; url: string; durationSec: number; caption?: string })
-  | (CardBase & { kind: 'audio'; url: string; durationSec?: number; caption?: string })
+  | (CardBase & { kind: 'video'; url: string; durationSec: number; caption?: string } & Clip)
+  | (CardBase & { kind: 'audio'; url: string; durationSec?: number; caption?: string } & Clip)
   | (CardBase & { kind: 'image'; url: string; alt: string; caption?: string })
   | (CardBase & { kind: 'callout'; tone: 'tip' | 'warning' | 'remember'; text: string })
   | (CardBase & {
@@ -285,9 +313,11 @@ export function validateLearnCards(cards: LearnCard[]): BlockIssue[] {
         if (blank(c.url)) issues.push({ id: c.id, message: 'Upload a video or remove this card.' });
         else if (c.durationSec > MAX_VIDEO_SECONDS)
           issues.push({ id: c.id, message: videoTooLongMessage(c.durationSec) });
+        else if (clipIssue(c)) issues.push({ id: c.id, message: clipIssue(c)! });
         break;
       case 'audio':
         if (blank(c.url)) issues.push({ id: c.id, message: 'Upload audio or remove this card.' });
+        else if (clipIssue(c)) issues.push({ id: c.id, message: clipIssue(c)! });
         break;
       case 'image':
         if (blank(c.url)) issues.push({ id: c.id, message: 'Add an image or remove this card.' });

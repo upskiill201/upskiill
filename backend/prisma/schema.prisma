@@ -2436,7 +2436,8 @@ model CourseImportFile {
   driveFileId   String
   driveFileName String
   mimeType      String
-  /// 'video' | 'document' | 'presentation' | 'image' | 'other' — mirrors
+  /// 'video' | 'audio' | 'document' | 'presentation' | 'image' | 'file' |
+  /// 'other' — mirrors
   /// GoogleDriveService's DriveFileCategory; 'other' rows are created as
   /// SKIPPED immediately, never attempted.
   category      String
@@ -2490,6 +2491,11 @@ model CourseImportFile {
   transcriptAttempts  Int              @default(0)
   transcriptClaimedAt DateTime?
   transcriptClaimedBy String?
+  /// Whisper's timed segments ([{ start, end, text }], seconds). Lets a long
+  /// video be split into parts at sentence gaps, each part generated from its
+  /// own slice of the transcript. Null for documents and for providers that
+  /// return plain text (the slice then falls back to a proportional cut).
+  transcriptSegments  Json?
 
   lessonsAsPrimary CourseImportLesson[] @relation("lessonsAsPrimary")
 
@@ -2583,6 +2589,14 @@ model CourseImportLesson {
   /// Which file(s) this lesson's generated content was actually built from —
   /// spec §42 (source traceability). Internal only, never shown to learners.
   generatedFromFileIds Json?
+
+  /// A long video/audio file is split into bite-size parts: several lessons
+  /// share one primaryFileId and each plays only [clipStartSec, clipEndSec)
+  /// of it. All four are null for a whole-file lesson.
+  clipStartSec Int?
+  clipEndSec   Int?
+  partIndex    Int?
+  partCount    Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

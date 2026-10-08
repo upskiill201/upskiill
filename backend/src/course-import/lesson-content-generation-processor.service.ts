@@ -7,6 +7,8 @@ import {
   CourseImportError,
   toCourseImportError,
 } from './course-import-error';
+import { asSegments, sliceTranscript } from './lesson-parts';
+import { cleanLessonTitle } from './course-structure-analysis.service';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -152,11 +154,59 @@ export class LessonContentGenerationProcessorService {
         const resourceFiles = resourceFileIds.length
           ? await this.prisma.courseImportFile.findMany({
               where: { id: { in: resourceFileIds } },
-              select: { driveFileName: true },
+              select: {
+                id: true,
+                driveFileName: true,
+                category: true,
+                storageUrl: true,
+              },
             })
           : [];
 
-        const durationMs = lesson.primaryFile.durationMs;
+        const primary = lesson.primaryFile;
+        const durationMs = primary.durationMs;
+        const durationSec =
+          durationMs !== null && durationMs !== undefined
+            ? Number(durationMs) / 1000
+            : null;
+        const mediaKind =
+          primary.category === 'audio'
+            ? ('audio' as const)
+            : primary.category === 'document'
+              ? ('none' as const)
+              : ('video' as const);
+        // One part of a long file: written from its own slice of the
+        // transcript, so Part 3 teaches what Part 3 actually says.
+        const part =
+          lesson.clipStartSec != null &&
+          lesson.clipEndSec != null &&
+          lesson.partIndex != null &&
+          lesson.partCount != null
+            ? {
+                index: lesson.partIndex,
+                count: lesson.partCount,
+                startSec: lesson.clipStartSec,
+                endSec: lesson.clipEndSec,
+              }
+            : undefined;
+        const transcript =
+          part && primary.transcript
+            ? sliceTranscript(
+                primary.transcript,
+                asSegments(primary.transcriptSegments),
+                part.startSec,
+                part.endSec,
+                durationSec ?? part.endSec,
+              )
+            : primary.transcript;
+
+        const images = resourceFiles
+          .filter((f) => f.category === 'image' && f.storageUrl)
+          .map((f) => ({
+            url: f.storageUrl!,
+            alt: cleanLessonTitle(f.driveFileName),
+          }));
+
         // Stamped before the call: even a failed call spent the provider's
         // per-minute allowance.
         this.lastAiCallAt = Date.now();
@@ -164,13 +214,19 @@ export class LessonContentGenerationProcessorService {
           courseTitle: courseImport.courseTitle || courseImport.sourceDriveFolderName.trim(),
           lessonTitle: lesson.title,
           videoUrl: lesson.primaryFile.storageUrl,
-          transcript: lesson.primaryFile.transcript,
-          resourceNames: resourceFiles.map((f) => f.driveFileName),
+          transcript,
+          // The reading lesson's own document is a download, not "attached".
+          resourceNames: resourceFiles
+            .filter((f) => f.id !== lesson.primaryFileId)
+            .map((f) => f.driveFileName),
           track:
             courseImport.courseCategory === 'Coding' || courseImport.courseCategory === 'AI'
               ? courseImport.courseCategory
               : null,
-          videoDurationSec: durationMs !== null && durationMs !== undefined ? Number(durationMs) / 1000 : null,
+          videoDurationSec: durationSec,
+          ...(mediaKind !== 'video' ? { mediaKind } : {}),
+          ...(part ? { part } : {}),
+          ...(images.length ? { images } : {}),
         });
 
         await this.prisma.courseImportLesson.update({

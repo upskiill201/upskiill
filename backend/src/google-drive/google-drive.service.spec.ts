@@ -353,13 +353,17 @@ describe('GoogleDriveService', () => {
         folderName: 'How to Create Great Content',
         totalFiles: 4,
         videos: 2,
+        audio: 0,
         documents: 1,
         presentations: 0,
         images: 0,
-        unsupported: [expect.objectContaining({ id: 'sheet-1' })],
+        // A native Sheet is exported to XLSX on import: a project file now.
+        projectFiles: 1,
+        unsupported: [],
         estimatedVideoDurationSeconds: 90,
         videosMissingDuration: 1,
         videosOverLimit: 0,
+        longVideoParts: 0,
         modules: 1,
       });
     });

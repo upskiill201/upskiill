@@ -13,6 +13,7 @@ import {
 } from '../blocks';
 import { sanitizeExercises, sanitizeLearnCards } from '../sanitize';
 import { lessonPhases, readLessonContent } from '../content';
+import { learnCards } from '../learnCards';
 
 const mcq: Exercise = {
   id: 'm',
@@ -176,5 +177,33 @@ describe('reading v2 lessons', () => {
     expect(v1.learn.cards).toBeNull();
     expect(v1.apply.exercises[0]).toMatchObject({ kind: 'mcq', variant: 'standard', prompt: 'Q?' });
     expect(lessonPhases(v1)).toContain('apply');
+  });
+});
+
+describe('clipped media cards (one part of a long imported video)', () => {
+  const part = { id: 'v', kind: 'video' as const, url: 'https://cdn/v.mp4', durationSec: 600, startSec: 1200, endSec: 1800 };
+
+  it('accepts a clip whose length matches its range', () => {
+    expect(validateLearnCards([part])).toEqual([]);
+  });
+
+  it("flags a clip whose length doesn't match, or that runs backwards", () => {
+    expect(validateLearnCards([{ ...part, endSec: 3600 }])[0].message).toMatch(/doesn't match/);
+    expect(validateLearnCards([{ ...part, startSec: 1900 }])[0].message).toMatch(/invalid start or end/);
+  });
+
+  it('flags a clip over 15 minutes', () => {
+    expect(validateLearnCards([{ ...part, startSec: 0, endSec: MAX_VIDEO_SECONDS + 60, durationSec: MAX_VIDEO_SECONDS + 60 }])).toHaveLength(1);
+  });
+
+  it('keeps the clip through sanitizing, and drops a broken one', () => {
+    expect(sanitizeLearnCards([part])[0]).toMatchObject({ startSec: 1200, endSec: 1800 });
+    const broken = sanitizeLearnCards([{ ...part, startSec: 50, endSec: 10 }])[0];
+    expect(broken).not.toHaveProperty('startSec');
+  });
+
+  it('carries the clip into the learner deck', () => {
+    const deck = learnCards(readLessonContent({ contentBlocks: { learn: [{ type: 'learnCards', value: [part] }] } }).learn);
+    expect(deck.find((c) => c.kind === 'video')).toMatchObject({ startSec: 1200, endSec: 1800 });
   });
 });

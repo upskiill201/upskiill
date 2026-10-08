@@ -243,10 +243,112 @@ describe('buildRichLesson', () => {
     expect(buildRichLesson(out, VIDEO, null).stats.dropped).toHaveLength(1);
   });
 
+  it('blanks out answers the model left written into the sentence', () => {
+    const out = editingLessonOutput();
+    out.exercises = [
+      {
+        kind: 'fillBlank',
+        prompt: 'Fill in the blanks.',
+        template: 'Drama editing hinges on Conflict and reactions.',
+        answers: ['conflict', 'reactions'],
+        distractors: ['music'],
+      },
+      // Ambiguous: "cut" appears twice, so this one is still dropped.
+      {
+        kind: 'fillBlank',
+        prompt: 'Fill in the blanks.',
+        template: 'A cut is a cut.',
+        answers: ['cut'],
+        distractors: ['fade'],
+      },
+      ...out.exercises.filter((e: any) => e.kind !== 'fillBlank'),
+    ];
+    const r = buildRichLesson(out, VIDEO, null);
+    const items = (r.applyBlocks[0] as any).value.items;
+    expect(items[0].template).toBe('Drama editing hinges on [[1]] and [[2]].');
+    expect(r.stats.dropped.join(' ')).toMatch(/0 blanks but 1 answers/);
+  });
+
   it('tells the model which exercise kinds fit the track', () => {
     expect(richSystemPrompt('Coding')).toContain('predictOutput');
     expect(richSystemPrompt('AI')).toContain('pickPrompt');
     expect(richSystemPrompt(null)).not.toContain('predictOutput');
     expect(richSystemPrompt(null)).toContain('AT LEAST 3 different kinds');
+  });
+
+  it('builds one part of a long video as a clipped video card', () => {
+    const r = buildRichLesson(
+      editingLessonOutput(),
+      { url: VIDEO.url, durationSec: 2400, startSec: 720, endSec: 1440 },
+      null,
+    );
+    const cards = (r.learnBlocks[0] as any).value;
+    expect(r.stats.classicLearn).toBe(false);
+    expect(cards[0]).toEqual({
+      id: 'c_video',
+      kind: 'video',
+      url: VIDEO.url,
+      durationSec: 720,
+      startSec: 720,
+      endSec: 1440,
+    });
+    expect(
+      phaseStateFromBlocks({ learn: r.learnBlocks, apply: r.applyBlocks }).learn
+        ?.complete,
+    ).toBe(true);
+  });
+
+  it('starts an audio lesson with an audio card', () => {
+    const r = buildRichLesson(
+      editingLessonOutput(),
+      { kind: 'audio', url: 'https://cdn.example/a.mp3', durationSec: 3000 },
+      null,
+    );
+    const cards = (r.learnBlocks[0] as any).value;
+    expect(cards[0]).toMatchObject({ kind: 'audio', durationSec: 3000 });
+    expect(cards.some((c: any) => c.kind === 'video')).toBe(false);
+    expect(r.stats.classicLearn).toBe(false);
+  });
+
+  it('builds a reading lesson with no media card, just the ideas to read', () => {
+    const r = buildRichLesson(
+      editingLessonOutput(),
+      { kind: 'none', url: 'https://cdn.example/notes.pdf', durationSec: null },
+      null,
+    );
+    const cards = (r.learnBlocks[0] as any).value;
+    expect(
+      cards.some((c: any) => c.kind === 'video' || c.kind === 'audio'),
+    ).toBe(false);
+    expect(
+      cards.filter((c: any) => c.kind === 'text').length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(
+      phaseStateFromBlocks({ learn: r.learnBlocks, apply: r.applyBlocks }).learn
+        ?.complete,
+    ).toBe(true);
+  });
+
+  it("adds the lesson's images as image cards, before the tip", () => {
+    const r = buildRichLesson(editingLessonOutput(), VIDEO, null, [
+      { url: 'https://cdn.example/diagram.png', alt: 'Rule of thirds grid' },
+      { url: 'https://cdn.example/x.png', alt: '' },
+    ]);
+    const cards = (r.learnBlocks[0] as any).value;
+    const img = cards.findIndex((c: any) => c.kind === 'image');
+    expect(cards[img]).toMatchObject({
+      url: 'https://cdn.example/diagram.png',
+      alt: 'Rule of thirds grid',
+    });
+    expect(cards.filter((c: any) => c.kind === 'image')).toHaveLength(1);
+    expect(img).toBeLessThan(cards.findIndex((c: any) => c.kind === 'callout'));
+  });
+
+  it('words the prompt for the source it writes from', () => {
+    expect(richSystemPrompt(null, 'document')).toContain(
+      "lesson document's document text",
+    );
+    expect(richSystemPrompt(null, 'document')).toContain('reading lesson');
+    expect(richSystemPrompt(null, 'audio')).toContain('audio recording');
   });
 });

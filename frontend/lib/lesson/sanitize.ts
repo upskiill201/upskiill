@@ -34,6 +34,13 @@ const strList = (v: unknown, maxItems: number, maxLen: number = LIMITS.textChars
 const id = (v: unknown, fallback: string) => (typeof v === 'string' && v ? v.slice(0, 80) : fallback);
 const num = (v: unknown, fallback = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
 
+/** A clipped media card's play range (long imported videos split into parts). */
+const clip = (c: any): { startSec?: number; endSec?: number } => {
+  const start = num(c?.startSec, -1);
+  const end = num(c?.endSec, -1);
+  return start >= 0 && end > start ? { startSec: start, endSec: end } : {};
+};
+
 export function sanitizeLearnCards(raw: unknown): LearnCard[] {
   if (!Array.isArray(raw)) return [];
   const out: LearnCard[] = [];
@@ -51,10 +58,10 @@ export function sanitizeLearnCards(raw: unknown): LearnCard[] {
         break;
       }
       case 'video':
-        if (str(c.url).trim()) out.push({ id: cid, kind: 'video', url: str(c.url), durationSec: num(c.durationSec), caption: optStr(c.caption, 300) });
+        if (str(c.url).trim()) out.push({ id: cid, kind: 'video', url: str(c.url), durationSec: num(c.durationSec), caption: optStr(c.caption, 300), ...clip(c) });
         break;
       case 'audio':
-        if (str(c.url).trim()) out.push({ id: cid, kind: 'audio', url: str(c.url), durationSec: num(c.durationSec) || undefined, caption: optStr(c.caption, 300) });
+        if (str(c.url).trim()) out.push({ id: cid, kind: 'audio', url: str(c.url), durationSec: num(c.durationSec) || undefined, caption: optStr(c.caption, 300), ...clip(c) });
         break;
       case 'image':
         if (str(c.url).trim()) out.push({ id: cid, kind: 'image', url: str(c.url), alt: str(c.alt, 300), caption: optStr(c.caption, 300) });

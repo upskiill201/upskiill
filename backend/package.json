@@ -46,6 +46,7 @@
     "firebase-admin": "^13.7.0",
     "google-auth-library": "^11.1.0",
     "googleapis": "^181.0.0",
+    "mammoth": "1.13.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "qrcode": "^1.5.4",
@@ -56,6 +57,7 @@
     "rxjs": "^7.8.1",
     "stripe": "^22.0.0",
     "twilio": "^6.0.2",
+    "unpdf": "1.8.1",
     "web-push": "^3.6.7",
     "zod": "^4.5.4"
   },

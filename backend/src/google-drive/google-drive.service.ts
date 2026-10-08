@@ -13,15 +13,17 @@ import {
   ConnectionStatus,
   DriveFile,
   FolderPreview,
+  NATIVE_EXPORTS,
   categorize,
 } from './google-drive.types';
+import { needsParts, partCountFor } from '../course-import/lesson-parts';
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 
 /** Native Google formats (Docs/Sheets/Slides/Drawings/...) have no fixed
- *  binary content — `files.get(alt:'media')` 403s on them. Exporting them to
- *  a real file format is a later-phase capability (text extraction); for now
- *  the importer skips them with an honest reason rather than crashing. */
+ *  binary content — `files.get(alt:'media')` 403s on them. Docs, Slides and
+ *  Sheets are exported instead (see NATIVE_EXPORTS); the rest are skipped
+ *  with an honest reason rather than crashing. */
 export function isGoogleNativeFormat(mimeType: string): boolean {
   return (
     mimeType.startsWith('application/vnd.google-apps.') &&
@@ -54,7 +56,7 @@ function mapEntry(
     id: entry.id ?? '',
     name: entry.name ?? 'Untitled',
     mimeType,
-    category: categorize(mimeType),
+    category: categorize(mimeType, entry.name ?? ''),
     sizeBytes: entry.size ? Number(entry.size) : undefined,
     durationMs: entry.videoMediaMetadata?.durationMillis
       ? Number(entry.videoMediaMetadata.durationMillis)
@@ -293,15 +295,25 @@ export class GoogleDriveService {
     let estimatedVideoDurationSeconds = 0;
     let videosMissingDuration = 0;
     let videosOverLimit = 0;
+    let longVideoParts = 0;
     const sections = new Set<string>();
     for (const file of nonFolders) {
-      if (file.category !== 'video') continue;
+      if (file.category === 'document' && file.sectionFolderId) {
+        // A docs-only section still becomes a module (reading lessons); a
+        // section with videos is counted below either way.
+        sections.add(file.sectionFolderId);
+      }
+      if (file.category !== 'video' && file.category !== 'audio') continue;
       sections.add(file.sectionFolderId ?? '(root)');
       if (typeof file.durationMs === 'number') {
-        estimatedVideoDurationSeconds += Math.round(file.durationMs / 1000);
-        // Over Teyro's bite-size limit: imported with the classic Learn layout.
-        if (file.durationMs > 15 * 60 * 1000) videosOverLimit += 1;
-      } else {
+        const seconds = file.durationMs / 1000;
+        estimatedVideoDurationSeconds += Math.round(seconds);
+        // Over Teyro's bite-size limit: split into parts on import.
+        if (needsParts(seconds)) {
+          videosOverLimit += 1;
+          longVideoParts += partCountFor(seconds);
+        }
+      } else if (file.category === 'video') {
         videosMissingDuration += 1;
       }
     }
@@ -311,14 +323,21 @@ export class GoogleDriveService {
       folderName: rootMeta.data.name ?? 'Untitled folder',
       totalFiles: nonFolders.length,
       videos: nonFolders.filter((f) => f.category === 'video').length,
+      audio: nonFolders.filter((f) => f.category === 'audio').length,
       documents: nonFolders.filter((f) => f.category === 'document').length,
       presentations: nonFolders.filter((f) => f.category === 'presentation')
         .length,
       images: nonFolders.filter((f) => f.category === 'image').length,
-      unsupported: nonFolders.filter((f) => f.category === 'other'),
+      projectFiles: nonFolders.filter((f) => f.category === 'file').length,
+      unsupported: nonFolders.filter(
+        (f) =>
+          f.category === 'other' ||
+          (isGoogleNativeFormat(f.mimeType) && !NATIVE_EXPORTS[f.mimeType]),
+      ),
       estimatedVideoDurationSeconds,
       videosMissingDuration,
       videosOverLimit,
+      longVideoParts,
       modules: sections.size,
     };
   }
@@ -346,8 +365,8 @@ export class GoogleDriveService {
     return all.filter((f) => f.category !== 'folder');
   }
 
-  /** Streams a file's raw bytes. Throws for native Google formats (Docs/
-   *  Sheets/Slides) — check `isGoogleNativeFormat(mimeType)` before calling. */
+  /** Streams a file's bytes. Native Docs/Slides/Sheets are exported (PDF /
+   *  XLSX, see NATIVE_EXPORTS); other native formats throw. */
   async downloadFile(
     userId: string,
     fileId: string,
@@ -359,9 +378,22 @@ export class GoogleDriveService {
     });
     const mimeType = meta.data.mimeType ?? 'application/octet-stream';
     if (isGoogleNativeFormat(mimeType)) {
-      throw new BadRequestException(
-        `"${meta.data.name}" is a native Google file (${mimeType}) — exporting it isn't supported yet.`,
+      const target = NATIVE_EXPORTS[mimeType];
+      if (!target) {
+        throw new BadRequestException(
+          `"${meta.data.name}" is a native Google file (${mimeType}) that can't be exported.`,
+        );
+      }
+      // Drive caps an export at 10MB; past that it answers 403
+      // exportSizeLimitExceeded, which surfaces as a normal file failure.
+      const exported = await drive.files.export(
+        { fileId, mimeType: target.mimeType },
+        { responseType: 'stream' },
       );
+      return {
+        stream: exported.data as unknown as Readable,
+        mimeType: target.mimeType,
+      };
     }
 
     const res = await drive.files.get(

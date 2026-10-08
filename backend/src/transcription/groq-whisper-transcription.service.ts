@@ -14,13 +14,32 @@ import {
   CourseImportError,
   codeForHttpStatus,
 } from '../course-import/course-import-error';
+import type { TranscriptSegment } from '../course-import/lesson-parts';
+
+export interface TranscriptionResult {
+  text: string;
+  /** Timed segments (seconds from the start of the file), for splitting a
+   *  long video into parts at sentence gaps. */
+  segments: TranscriptSegment[];
+  /** Length of the audio as Whisper measured it; fills in a duration Drive
+   *  didn't report. Null if no chunk reported one. */
+  durationSec: number | null;
+}
+
+interface ChunkTranscript {
+  text: string;
+  segments: TranscriptSegment[];
+  duration: number | null;
+}
 
 /** Groq's own limit for the Whisper endpoint. Audio extracted at
  *  AUDIO_BITRATE_KBPS stays well under this for any realistic lesson
  *  length — see the module doc comment below for the math. */
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const DOWNLOAD_TIMEOUT_MS = 10 * 60 * 1000;
-const FFMPEG_TIMEOUT_MS = 5 * 60 * 1000;
+/** Pulling the audio out of a 1-2 hour, 2GB lecture is a long ffmpeg pass on
+ *  a small instance; 5 minutes timed out on real long videos. */
+const FFMPEG_TIMEOUT_MS = 15 * 60 * 1000;
 const UPLOAD_TIMEOUT_MS = 5 * 60 * 1000;
 /** Mono, 16kHz (Whisper's own internal rate — anything higher is wasted
  *  bytes), 40kbps — tuned for spoken word, not music. A full 1-hour lesson
@@ -114,7 +133,7 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
     private readonly budget: AiBudgetService,
   ) {}
 
-  async transcribe(videoUrl: string): Promise<{ text: string }> {
+  async transcribe(videoUrl: string): Promise<TranscriptionResult> {
     const decision = await this.budget.checkCourseImport();
     if (!decision.allow) {
       throw new CourseImportError(
@@ -145,8 +164,7 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
       // multi-GB temp file on Render's small disk for the whole job.
       await unlink(videoPath).catch(() => undefined);
 
-      const text = await this.transcribeAudio(audioPath, chunkDir, creds);
-      return { text };
+      return await this.transcribeAudio(audioPath, chunkDir, creds);
     } finally {
       await Promise.all([
         unlink(videoPath).catch(() => undefined),
@@ -165,10 +183,11 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
     audioPath: string,
     chunkDir: string,
     creds: TranscriptionCredentials,
-  ): Promise<string> {
+  ): Promise<TranscriptionResult> {
     const { size } = await stat(audioPath);
     if (size <= MAX_AUDIO_BYTES) {
-      return this.uploadForTranscription(audioPath, creds);
+      const one = await this.uploadForTranscription(audioPath, creds);
+      return { text: one.text, segments: one.segments, durationSec: one.duration };
     }
 
     this.logger.log(
@@ -176,7 +195,13 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
     );
     const chunkPaths = await this.splitAudio(audioPath, chunkDir);
 
-    const parts: string[] = [];
+    const texts: string[] = [];
+    const segments: TranscriptSegment[] = [];
+    // Each chunk's timestamps start at 0; shift them by the real length of
+    // the chunks before it (the segment muxer cuts near, not exactly at,
+    // CHUNK_SECONDS), falling back to the nominal length if one is missing.
+    let offset = 0;
+    let measured = true;
     for (const [index, chunkPath] of chunkPaths.entries()) {
       const { size: chunkSize } = await stat(chunkPath);
       if (chunkSize > MAX_AUDIO_BYTES) {
@@ -188,10 +213,16 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
       this.logger.log(
         `Transcribing chunk ${index + 1}/${chunkPaths.length}...`,
       );
-      parts.push(await this.uploadForTranscription(chunkPath, creds));
+      const part = await this.uploadForTranscription(chunkPath, creds);
+      texts.push(part.text);
+      for (const s of part.segments) {
+        segments.push({ start: s.start + offset, end: s.end + offset, text: s.text });
+      }
+      if (part.duration === null) measured = false;
+      offset += part.duration ?? CHUNK_SECONDS;
     }
 
-    return parts.join(' ');
+    return { text: texts.join(' '), segments, durationSec: measured ? offset : null };
   }
 
   /** ffmpeg's segment muxer with `-c copy` — re-muxes at chunk boundaries
@@ -323,12 +354,14 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
   private async uploadForTranscription(
     audioPath: string,
     creds: TranscriptionCredentials,
-  ): Promise<string> {
+  ): Promise<ChunkTranscript> {
     const audioBuffer = await readFile(audioPath);
     const form = new FormData();
     form.append('file', new Blob([audioBuffer], { type: 'audio/mpeg' }), 'audio.mp3');
     form.append('model', 'whisper-large-v3-turbo');
-    form.append('response_format', 'json');
+    // verbose_json adds timed segments and the audio's length — what lets a
+    // long video be split into parts at sentence gaps.
+    form.append('response_format', 'verbose_json');
 
     const res = await fetch(`${creds.baseUrl.replace(/\/+$/, '')}/audio/transcriptions`, {
       method: 'POST',
@@ -345,7 +378,11 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
       );
     }
 
-    const json = (await res.json()) as { text?: string };
+    const json = (await res.json()) as {
+      text?: string;
+      duration?: number;
+      segments?: { start?: number; end?: number; text?: string }[];
+    };
     const text = json.text?.trim();
     if (!text) {
       throw new CourseImportError(
@@ -364,6 +401,22 @@ export class GroqWhisperTranscriptionService implements OnModuleInit {
       },
     );
 
-    return text;
+    const segments: TranscriptSegment[] = (json.segments ?? [])
+      .filter(
+        (s) =>
+          typeof s.start === 'number' &&
+          typeof s.end === 'number' &&
+          typeof s.text === 'string',
+      )
+      .map((s) => ({
+        start: Math.round((s.start as number) * 100) / 100,
+        end: Math.round((s.end as number) * 100) / 100,
+        text: (s.text as string).trim(),
+      }));
+    return {
+      text,
+      segments,
+      duration: typeof json.duration === 'number' && json.duration > 0 ? json.duration : null,
+    };
   }
 }

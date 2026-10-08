@@ -6,6 +6,7 @@ import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
 import { HeavyTransferLockService } from './heavy-transfer-lock.service';
 import { CourseImportError, toCourseImportError } from './course-import-error';
+import { NATIVE_EXPORTS } from '../google-drive/google-drive.types';
 
 /** Ceiling for one Drive→R2 transfer. Generous, because a legitimate 2GB
  *  video on a slow link genuinely takes a while — this exists to catch a
@@ -180,10 +181,15 @@ export class CourseImportProcessorService {
           continue;
         }
 
+        // A native Google Doc/Slides/Sheet is exported on download, so its
+        // stored object gets the exported format's extension.
+        const exported = NATIVE_EXPORTS[file.mimeType];
         const key = buildObjectKey(
           file.importId,
           file.driveFileId,
-          file.driveFileName,
+          exported
+            ? `${file.driveFileName.trim()}.${exported.ext}`
+            : file.driveFileName,
         );
 
         // Bounded, because neither the Drive stream nor the R2 upload has a

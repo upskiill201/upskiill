@@ -8,6 +8,8 @@ import {
   toCourseImportError,
 } from '../course-import/course-import-error';
 import { HeavyTransferLockService } from '../course-import/heavy-transfer-lock.service';
+import { extractDocumentText } from '../course-import/document-text';
+import { replanFileLessons } from '../course-import/lesson-plan';
 
 /** One at a time — a transcription round-trips a whole video download PLUS
  *  a re-upload to Gemini, easily minutes for a large file. Keeping this at 1
@@ -20,6 +22,8 @@ const MAX_AUTO_ATTEMPTS = 3;
 /** Retry delay grows with each attempt (2min, 4min, ...) so a retry doesn't
  *  land in the same "model overloaded" window that caused the failure. */
 const RETRY_BACKOFF_MINUTES = 2;
+/** How long a file waits after the provider's audio-per-hour limit. */
+const QUOTA_WAIT_MINUTES = 20;
 
 interface ClaimedIdRow {
   id: string;
@@ -137,17 +141,45 @@ export class TranscriptionProcessorService {
           );
         }
 
-        const { text } = await this.transcription.transcribe(file.storageUrl);
-        await this.prisma.courseImportFile.update({
-          where: { id: file.id },
-          data: {
-            transcriptStatus: 'TRANSCRIBED',
-            transcript: text,
-            transcriptError: null,
-            transcriptErrorCode: null,
-            transcriptClaimedAt: null,
-            transcriptClaimedBy: null,
-          },
+        // A reading lesson's document "transcribes" by reading its text —
+        // no AI call. Video and audio go through Whisper.
+        const isDocument = file.category === 'document';
+        const result = isDocument
+          ? {
+              text: await extractDocumentText(
+                file.storageUrl,
+                file.storageKey,
+                file.mimeType,
+              ),
+              segments: [],
+              durationSec: null,
+            }
+          : await this.transcription.transcribe(file.storageUrl);
+        const segments = result.segments ?? [];
+
+        // One transaction: the lessons are re-planned (split into parts at
+        // sentence gaps, now that the real length and segments are known)
+        // in the same step that makes them claimable for generation, so
+        // generation can never pick up a lesson about to be re-cut.
+        await this.prisma.$transaction(async (tx) => {
+          const updated = await tx.courseImportFile.update({
+            where: { id: file.id },
+            data: {
+              transcriptStatus: 'TRANSCRIBED',
+              transcript: result.text,
+              transcriptSegments: segments.length
+                ? (segments as unknown as Prisma.InputJsonValue)
+                : Prisma.DbNull,
+              ...(file.durationMs === null && result.durationSec
+                ? { durationMs: BigInt(Math.round(result.durationSec * 1000)) }
+                : {}),
+              transcriptError: null,
+              transcriptErrorCode: null,
+              transcriptClaimedAt: null,
+              transcriptClaimedBy: null,
+            },
+          });
+          if (!isDocument) await replanFileLessons(tx, updated);
         });
         summary.transcribed += 1;
       } catch (err) {
@@ -156,6 +188,48 @@ export class TranscriptionProcessorService {
           `Transcription failed for file ${file.id} (${file.driveFileName}) [${failure.code}]`,
           failure,
         );
+        // Quota, not a broken file: Groq's free tier allows ~2 hours of
+        // audio an hour and ~8 a day, and a 1-2 hour lecture can use all of
+        // it on its own. Retrying in 2-4 minutes just hits the limit again
+        // and burns the file's attempts until it lands in FAILED. Wait it
+        // out instead: give the attempt back and push updatedAt forward,
+        // which is what the claim query's backoff reads.
+        if (
+          failure.code === 'TRANSCRIPTION_RATE_LIMIT' ||
+          failure.code === 'AI_BUDGET_EXCEEDED'
+        ) {
+          const now = new Date();
+          const resumeAt =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? new Date(
+                  Date.UTC(
+                    now.getUTCFullYear(),
+                    now.getUTCMonth(),
+                    now.getUTCDate() + 1,
+                    0,
+                    5,
+                  ),
+                )
+              : new Date(now.getTime() + QUOTA_WAIT_MINUTES * 60_000);
+          const when = resumeAt.toISOString().slice(11, 16);
+          const message =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? `Waiting: today's AI budget is used up. Continues automatically after ${when} UTC.`
+              : `Waiting: the speech-to-text provider's hourly limit was reached. Continues automatically around ${when} UTC.`;
+          await this.prisma.$executeRaw`
+            UPDATE "course_import_files"
+               SET "transcriptStatus" = 'PENDING',
+                   "transcriptAttempts" = GREATEST("transcriptAttempts" - 1, 0),
+                   "transcriptErrorCode" = ${failure.code},
+                   "transcriptError" = ${message},
+                   "transcriptClaimedAt" = NULL,
+                   "transcriptClaimedBy" = NULL,
+                   "updatedAt" = ${resumeAt}
+             WHERE "id" = ${file.id}`;
+          summary.failed += 1;
+          continue;
+        }
+
         // transcriptAttempts was already incremented by claimBatch's UPDATE —
         // retry automatically (transient provider overload/rate-limit is
         // common and shouldn't need a manual click) until MAX_AUTO_ATTEMPTS,

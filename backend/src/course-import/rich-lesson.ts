@@ -16,10 +16,16 @@
  * on publish. A broken exercise is dropped, not the whole lesson; only when
  * too little survives does generation fail (and retry).
  *
- * A video over 15 minutes (or of unknown length) can't be a v2 video card —
- * Teyro's bite-size rule, enforced on save. Those lessons keep the classic
- * Learn format (video + the key ideas as reading) and still get the rich
- * Apply, Reflect and Deepen. The player reads each phase independently.
+ * The lesson is built around its source (LessonMedia): a video card (or a
+ * clip of a long video — see lesson-parts.ts), an audio card, or nothing for
+ * a reading lesson written from a document. Images handed out with the
+ * lesson become image cards.
+ *
+ * A video of unknown length (or, defensively, one still over 15 minutes)
+ * can't be a v2 video card — Teyro's bite-size rule, enforced on save. Those
+ * lessons keep the classic Learn format (video + the key ideas as reading)
+ * and still get the rich Apply, Reflect and Deepen. The player reads each
+ * phase independently.
  */
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument -- this file normalises untyped model JSON; every value is checked before use */
@@ -57,6 +63,31 @@ const CODE_LANGUAGES = [
 type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 
 export type ImportTrack = 'Coding' | 'AI' | null;
+
+/** What the lesson is written from and plays in Learn. */
+export interface LessonMedia {
+  /** Defaults to 'video'. 'none' = a reading lesson built from a document. */
+  kind?: 'video' | 'audio' | 'none';
+  url: string;
+  /** The clip's length when startSec/endSec are set, else the file's. */
+  durationSec: number | null;
+  /** Set for one part of a long video/audio split into parts. */
+  startSec?: number;
+  endSec?: number;
+}
+
+export interface LessonImage {
+  url: string;
+  alt: string;
+}
+
+export type LessonSource = 'video' | 'audio' | 'document';
+
+const SOURCE_WORDS: Record<LessonSource, { one: string; text: string }> = {
+  video: { one: 'lesson video', text: 'transcript' },
+  audio: { one: 'lesson audio recording', text: 'transcript' },
+  document: { one: 'lesson document', text: 'document text' },
+};
 
 /* ── what the model is asked for ─────────────────────────────────────── */
 
@@ -98,8 +129,12 @@ export const EXERCISE_PLAN: Record<'Coding' | 'AI' | 'other', string[]> = {
   ],
 };
 
-export function richSystemPrompt(track: ImportTrack): string {
+export function richSystemPrompt(
+  track: ImportTrack,
+  source: LessonSource = 'video',
+): string {
   const plan = EXERCISE_PLAN[track ?? 'other'];
+  const w = SOURCE_WORDS[source];
   const kinds =
     track === 'Coding'
       ? `- mcq (variant "standard", or "predictOutput" with "code": what does this code print/return?)
@@ -119,15 +154,15 @@ export function richSystemPrompt(track: ImportTrack): string {
 - orderLines: "lines" 3-8 steps of a process in the CORRECT order
 - matchPairs: "pairs" 3-6 of {"left","right"} (term ↔ meaning)`;
 
-  return `You are Teyro's lesson writer. Turn ONE lesson video's transcript into a rich, hands-on Teyro lesson.
+  return `You are Teyro's lesson writer. Turn ONE ${w.one}'s ${w.text} into a rich, hands-on Teyro lesson.
 
 Rules:
-- The transcript is the only source. Never invent facts, code, tools or numbers it doesn't support.
-- Keep the instructor's voice ("I'll show you…" stays first person). Never write "the instructor says".
+- The ${w.text} is the only source. Never invent facts, code, tools or numbers it doesn't support.
+- Keep the author's voice ("I'll show you…" stays first person). Never write "the instructor says".${source === 'document' ? '\n- This is a reading lesson: the key ideas ARE the lesson, so make them complete and clear on their own (aim for 4-5).' : ''}
 - Short and punchy: learners do this in a few minutes on a phone.
-- Code only if the transcript really shows or describes code. Otherwise return "codeSamples": [] and write NO code or pseudo-code anywhere, including exercises.
-- Every exercise must be answerable using ONLY what this lesson teaches, by someone who just watched it. Never ask about people, brands, shows or examples beyond exactly what the transcript says about them, and never ask the learner to guess.
-- Every exercise must have exactly one defensible answer. In "findBug", exactly ONE line is wrong and every other line must be correct according to the transcript.
+- Code only if the ${w.text} really shows or describes code. Otherwise return "codeSamples": [] and write NO code or pseudo-code anywhere, including exercises.
+- Every exercise must be answerable using ONLY what this lesson teaches, by someone who just went through it. Never ask about people, brands, shows or examples beyond exactly what the ${w.text} says about them, and never ask the learner to guess.
+- Every exercise must have exactly one defensible answer. In "findBug", exactly ONE line is wrong and every other line must be correct according to the ${w.text}.
 - Never number or bullet the "lines" of findBug/orderLines ("1.", "-"): they are shuffled, and numbers would give the answer away.
 
 Return ONE JSON object with exactly these fields:
@@ -138,10 +173,10 @@ Return ONE JSON object with exactly these fields:
 - "tip": {"tone": "tip" | "warning" | "remember", "text" (under 280 chars)} — the gotcha or shortcut worth remembering.
 - "quickCheck": {"question", "options" (3 short answers), "correctIndex" (0-based), "explanation"} — checks the main idea.
 - "scenario": one sentence setting up the practice (under 240 chars), or "".
-- "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the transcript is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, easy first. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
+- "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the ${w.text} is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, easy first. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
 ${kinds}
   mcq items also have "options" (3-4 short answers) and "correctIndex" (0-based). Exactly one right answer; wrong ones plausible, never "all of the above".
-  Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank]. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
+  Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank] — and each one REPLACES its answer: the answer words never appear in the template. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
 - "reflectPrompt": asks the learner to apply the lesson to their own work or plan an action (under 300 chars). Never "what did you learn?".
 - "reflectStarters": 2-3 sentence starters (under 60 chars each).
 - "deepenTitle" (under 80 chars) and "deepenSummary" (under 300 chars): a concrete next step or deeper technique.
@@ -322,18 +357,47 @@ const BLANK_STYLES: RegExp[] = [
   /\[\s*\d+\s*\]/g, // [1]
   /[[(<]\s*blank\s*\d*\s*[\])>]/gi, // [blank] (blank) <blank> [blank 1]
 ];
-function normaliseBlanks(template: string, answers: number): string {
-  if (answers === 0) return template;
-  if (Array.from(template.matchAll(/\[\[(\d+)\]\]/g)).length === answers)
+function normaliseBlanks(template: string, answers: string[]): string {
+  if (answers.length === 0) return template;
+  if (Array.from(template.matchAll(/\[\[(\d+)\]\]/g)).length === answers.length)
     return template;
   for (const style of BLANK_STYLES) {
     const hits = template.match(style);
-    if (hits && hits.length === answers) {
+    if (hits && hits.length === answers.length) {
       let n = 0;
       return template.replace(style, () => `[[${++n}]]`);
     }
   }
-  return template;
+  return blankOutAnswers(template, answers);
+}
+
+const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * The other common miss (every live run, 2026-10-08): the model writes the
+ * full sentence with the answers left IN it — "Drama hinges on conflict and
+ * reactions" with answers ["conflict", "reactions"]. Blank them out, but only
+ * when every answer appears exactly once, as a whole word, in answer order;
+ * anything less certain is left alone and the exercise is dropped as before.
+ */
+function blankOutAnswers(template: string, answers: string[]): string {
+  let out = template;
+  let from = 0;
+  for (const [i, answer] of answers.entries()) {
+    const re = new RegExp(
+      `(?<![\\p{L}\\p{N}_])${escapeRe(answer)}(?![\\p{L}\\p{N}_])`,
+      'giu',
+    );
+    const hits = Array.from(out.matchAll(re));
+    if (hits.length !== 1 || hits[0].index < from) return template;
+    const marker = `[[${i + 1}]]`;
+    out =
+      out.slice(0, hits[0].index) +
+      marker +
+      out.slice(hits[0].index + hits[0][0].length);
+    from = hits[0].index + marker.length;
+  }
+  return out;
 }
 
 /** One model exercise → a v2 exercise, or a reason it can't be one. */
@@ -385,7 +449,7 @@ function buildExercise(
     }
     case 'fillBlank': {
       const answers = list(raw.answers, 6, 200);
-      const template = normaliseBlanks(s(raw.template, 3000), answers.length);
+      const template = normaliseBlanks(s(raw.template, 3000), answers);
       const markers = Array.from(template.matchAll(/\[\[(\d+)\]\]/g));
       if (markers.length !== answers.length)
         return {
@@ -494,9 +558,17 @@ function buildExercise(
  */
 export function buildRichLesson(
   content: any,
-  video: { url: string; durationSec: number | null },
+  media: LessonMedia,
   track: ImportTrack,
+  images: LessonImage[] = [],
 ): RichBuildResult {
+  const mediaKind = media.kind ?? 'video';
+  const clip =
+    typeof media.startSec === 'number' &&
+    typeof media.endSec === 'number' &&
+    media.endSec > media.startSec
+      ? { startSec: media.startSec, endSec: media.endSec }
+      : null;
   if (!content || typeof content !== 'object')
     throw new RichLessonError('The model returned no lesson object.');
   const dropped: string[] = [];
@@ -533,21 +605,37 @@ export function buildRichLesson(
   const qcIndex = Number.isInteger(qc?.correctIndex) ? qc.correctIndex : -1;
 
   /* Learn */
+  const clipLength = clip ? clip.endSec - clip.startSec : null;
+  const videoLength = clipLength ?? media.durationSec;
   const fitsCard =
-    video.durationSec !== null &&
-    video.durationSec > 0 &&
-    video.durationSec <= MAX_VIDEO_SECONDS;
+    mediaKind !== 'video' ||
+    (videoLength !== null &&
+      videoLength > 0 &&
+      videoLength <= MAX_VIDEO_SECONDS);
   let learnBlocks: unknown[];
   let learnCardCount = 0;
   if (fitsCard) {
-    const cards: any[] = [
-      {
+    const cards: any[] = [];
+    if (mediaKind === 'video') {
+      cards.push({
         id: 'c_video',
         kind: 'video',
-        url: video.url,
-        durationSec: Math.round(video.durationSec as number),
-      },
-    ];
+        url: media.url,
+        durationSec: Math.round(videoLength as number),
+        ...(clip ?? {}),
+      });
+    } else if (mediaKind === 'audio') {
+      const audioLength = clipLength ?? media.durationSec;
+      cards.push({
+        id: 'c_audio',
+        kind: 'audio',
+        url: media.url,
+        ...(audioLength && audioLength > 0
+          ? { durationSec: Math.round(audioLength) }
+          : {}),
+        ...(clip ?? {}),
+      });
+    }
     ideas.forEach((k: any, i: number) => {
       cards.push({
         id: `c_idea${i}`,
@@ -572,6 +660,17 @@ export function buildRichLesson(
         ...(c.caption ? { caption: c.caption } : {}),
       }),
     );
+    // The lesson's images (diagrams, screenshots handed out with it) sit
+    // after the ideas they illustrate, before the tip and the check.
+    images.slice(0, 6).forEach((img, i) => {
+      if (img.url && img.alt)
+        cards.push({
+          id: `c_img${i}`,
+          kind: 'image',
+          url: img.url,
+          alt: img.alt.slice(0, 300),
+        });
+    });
     if (tipText)
       cards.push({
         id: 'c_tip',
@@ -630,7 +729,7 @@ export function buildRichLesson(
         ? `<blockquote><p><strong>${tipTone === 'warning' ? 'Watch out' : tipTone === 'remember' ? 'Remember' : 'Tip'}:</strong> ${esc(tipText)}</p></blockquote>`
         : '');
     learnBlocks = [
-      { type: 'videoUrl', value: video.url },
+      { type: 'videoUrl', value: media.url },
       { type: 'audioUrl', value: '' },
       { type: 'text', value: reading },
       { type: 'whatYouWillLearn', value: outcomes },
