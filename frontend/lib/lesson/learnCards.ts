@@ -14,14 +14,14 @@
  */
 
 import type { LessonContent } from './content';
-import type { CodeLanguage } from './blocks';
+import { clipRange, type CodeLanguage } from './blocks';
 
 export const WORDS_PER_CARD = 70;
 
 export type LearnCard =
   | { kind: 'intro' }
-  | { kind: 'video'; url: string; caption?: string }
-  | { kind: 'audio'; url: string; caption?: string }
+  | { kind: 'video'; url: string; caption?: string; startSec?: number; endSec?: number }
+  | { kind: 'audio'; url: string; caption?: string; startSec?: number; endSec?: number }
   | { kind: 'text'; html: string; heading: string | null }
   | { kind: 'code'; language: CodeLanguage; code: string; caption?: string }
   | { kind: 'image'; url: string; alt: string; caption?: string }
@@ -97,10 +97,10 @@ export function learnCards(learn: LessonContent['learn']): LearnCard[] {
           cards.push({ kind: 'code', language: c.language, code: c.code, caption: c.caption });
           break;
         case 'video':
-          cards.push({ kind: 'video', url: c.url, caption: c.caption });
+          cards.push({ kind: 'video', url: c.url, caption: c.caption, ...clipRange(c) });
           break;
         case 'audio':
-          cards.push({ kind: 'audio', url: c.url, caption: c.caption });
+          cards.push({ kind: 'audio', url: c.url, caption: c.caption, ...clipRange(c) });
           break;
         case 'image':
           cards.push({ kind: 'image', url: c.url, alt: c.alt, caption: c.caption });

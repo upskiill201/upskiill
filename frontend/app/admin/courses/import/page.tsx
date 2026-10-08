@@ -8,8 +8,10 @@
  * the admin comes back only to review it.
  *
  * Folder convention (GoogleDriveService#walkFolder): the course folder's
- * direct subfolders become modules; every video becomes a lesson; documents
- * attach to the video before them.
+ * direct subfolders become modules; every video or audio file becomes a
+ * lesson (one over 15 minutes becomes bite-size parts); other files attach to
+ * the lesson before them; a folder with only documents becomes reading
+ * lessons.
  */
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
@@ -21,12 +23,15 @@ import {
   ChevronRight,
   Clock,
   File as FileIcon,
+  FileArchive,
   FileText,
   Folder,
   FolderOpen,
   HardDrive,
+  Headphones,
   Image as ImageIcon,
   Presentation,
+  Scissors,
   Sparkles,
   TriangleAlert,
   Video,
@@ -63,18 +68,22 @@ interface Crumb {
 const ICON: Record<DriveFileCategory, typeof Folder> = {
   folder: Folder,
   video: Video,
+  audio: Headphones,
   document: FileText,
   presentation: Presentation,
   image: ImageIcon,
+  file: FileArchive,
   other: FileIcon,
 };
 
 const ICON_TONE: Record<DriveFileCategory, string> = {
   folder: 'var(--warning)',
   video: 'var(--error-red)',
+  audio: 'var(--error-red)',
   document: 'var(--color-brand)',
   presentation: 'var(--brand-purple)',
   image: 'var(--success-green)',
+  file: 'var(--warning)',
   other: 'var(--text-muted)',
 };
 
@@ -113,6 +122,11 @@ export default function ImportCoursePage() {
   const { data: preview, error: previewError, isLoading: previewLoading } = useAdminData<FolderPreview>(
     previewId ? `/api/admin/google-drive/folders/${previewId}/preview` : null,
   );
+  // Every video/audio file is a lesson, a long one several parts. Reading
+  // lessons from document-only folders are decided at planning time.
+  const lessonEstimate = preview
+    ? preview.videos + preview.audio - preview.videosOverLimit + preview.longVideoParts
+    : 0;
 
   // A preview only describes the folder it was made for.
   useEffect(() => {
@@ -318,16 +332,16 @@ export default function ImportCoursePage() {
               <>
                 <div className={m.make}>
                   <span className={m.makeItem} style={{ '--tone': 'var(--error-red)' } as CSSProperties}>
-                    <strong>{preview.videos}</strong>
-                    <span>lesson{preview.videos === 1 ? '' : 's'}</span>
+                    <strong>{lessonEstimate}</strong>
+                    <span>lesson{lessonEstimate === 1 ? '' : 's'}</span>
                     <em>
                       in {preview.modules} module{preview.modules === 1 ? '' : 's'}
                     </em>
                   </span>
                   <span className={m.makeItem} style={{ '--tone': 'var(--color-brand)' } as CSSProperties}>
-                    <strong>{preview.documents + preview.presentations + preview.images}</strong>
+                    <strong>{preview.documents + preview.presentations + preview.images + preview.projectFiles}</strong>
                     <span>resources</span>
-                    <em>docs, slides, images</em>
+                    <em>docs, slides, images, project files</em>
                   </span>
                   <span className={m.makeItem} style={{ '--tone': 'var(--warning)' } as CSSProperties}>
                     <strong>{formatDuration(preview.estimatedVideoDurationSeconds)}</strong>
@@ -336,27 +350,34 @@ export default function ImportCoursePage() {
                   </span>
                 </div>
 
-                {preview.videos === 0 && (
+                {preview.videos + preview.audio + preview.documents === 0 && (
                   <p className={m.warn}>
-                    <TriangleAlert size={16} aria-hidden="true" /> There are no videos here, so there’s nothing to build lessons from.
+                    <TriangleAlert size={16} aria-hidden="true" /> There are no videos, audio or documents here, so there’s nothing to
+                    build lessons from.
                   </p>
                 )}
-                {preview.videos > 0 && (
+                {preview.videos + preview.audio + preview.documents > 0 && (
                   <p className={m.note}>
-                    Each lesson gets Tey-written Learn cards (key ideas, a tip, a quick check, code when the video shows code) and 5–12
-                    hands-on exercises of different kinds.
+                    Each lesson gets Tey-written Learn cards (key ideas, a tip, a quick check, code when the video shows code, the images
+                    handed out with it) and 5–12 hands-on exercises of different kinds. Audio files become audio lessons, and a folder with
+                    only documents becomes reading lessons. Project files, PDFs and slides become Deepen downloads.
                   </p>
                 )}
-                {preview.videosOverLimit + preview.videosMissingDuration > 0 && (
+                {preview.videosOverLimit > 0 && (
+                  <p className={m.note}>
+                    <Scissors size={16} aria-hidden="true" />{' '}
+                    {preview.videosOverLimit} recording{preview.videosOverLimit === 1 ? ' is' : 's are'} over 15 minutes, so{' '}
+                    {preview.videosOverLimit === 1 ? 'it becomes' : 'they become'} {preview.longVideoParts} bite-size parts. Each part plays its
+                    own stretch of the video and gets exercises written from that stretch.
+                  </p>
+                )}
+                {preview.videosMissingDuration > 0 && (
                   <p className={m.warn}>
                     <TriangleAlert size={16} aria-hidden="true" />
                     <span>
-                      {preview.videosOverLimit > 0 &&
-                        `${preview.videosOverLimit} video${preview.videosOverLimit === 1 ? ' is' : 's are'} over 15 minutes. `}
-                      {preview.videosMissingDuration > 0 &&
-                        `${preview.videosMissingDuration} video${preview.videosMissingDuration === 1 ? ' has' : 's have'} no length in Drive. `}
-                      Those lessons keep the classic Learn layout (the video plus reading) and still get the full exercises. Splitting long videos
-                      into shorter ones gives learners the card layout.
+                      {preview.videosMissingDuration} video{preview.videosMissingDuration === 1 ? ' has' : 's have'} no length in Drive yet.
+                      Teyro measures {preview.videosMissingDuration === 1 ? 'it' : 'them'} while transcribing and splits any long one into
+                      parts then.
                     </span>
                   </p>
                 )}

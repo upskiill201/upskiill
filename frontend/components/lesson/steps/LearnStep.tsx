@@ -36,6 +36,31 @@ const CALLOUT = {
   remember: { label: 'Remember', tone: 'var(--brand-purple)', icon: <Pin className="w-6 h-6 stroke-[2.5]" /> },
 } as const;
 
+/**
+ * A clipped card (one part of a long imported video) plays only its range:
+ * it opens at `startSec`, can't be scrubbed before it, and pauses and counts
+ * as finished at `endSec`, which is what unlocks Continue.
+ */
+function clipHandlers(card: { startSec?: number; endSec?: number }, onEnded: () => void) {
+  const { startSec, endSec } = card;
+  if (typeof startSec !== 'number' || typeof endSec !== 'number' || endSec <= startSec) return {};
+  const toStart = (e: React.SyntheticEvent<HTMLMediaElement>) => {
+    const el = e.currentTarget;
+    if (el.currentTime < startSec - 0.5 || el.currentTime > endSec) el.currentTime = startSec;
+  };
+  return {
+    onLoadedMetadata: toStart,
+    onSeeked: toStart,
+    onTimeUpdate: (e: React.SyntheticEvent<HTMLMediaElement>) => {
+      const el = e.currentTarget;
+      if (el.currentTime >= endSec - 0.25 && !el.paused) {
+        el.pause();
+        onEnded();
+      }
+    },
+  };
+}
+
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -108,13 +133,14 @@ export function LearnStep({
 
       {card.kind === 'video' && (
         <div className="rounded-[24px] overflow-hidden bg-[var(--color-ink)] aspect-video">
-          {/* #t=0.1 paints the first frame instead of a black box. */}
+          {/* #t= paints the first frame (or opens a clip at its start) instead of a black box. */}
           <video
-            src={`${card.url}#t=0.1`}
+            src={`${card.url}#t=${card.startSec ?? 0.1}`}
             controls
             playsInline
             preload="metadata"
             controlsList="nodownload"
+            {...clipHandlers(card, onMediaEnded)}
             onEnded={onMediaEnded}
             onError={onMediaEnded}
             className="w-full h-full object-contain"
@@ -134,7 +160,7 @@ export function LearnStep({
             >
               <Headphones className="w-8 h-8 text-[var(--color-brand)]" aria-hidden="true" />
             </span>
-            <audio src={card.url} controls onEnded={onMediaEnded} onError={onMediaEnded} className="w-full max-w-[480px]" />
+            <audio src={card.startSec ? `${card.url}#t=${card.startSec}` : card.url} controls {...clipHandlers(card, onMediaEnded)} onEnded={onMediaEnded} onError={onMediaEnded} className="w-full max-w-[480px]" />
           </div>
         </Card>
       )}

@@ -96,15 +96,28 @@ describe('CourseImportService', () => {
         }),
         file({
           id: 'zip-1',
-          name: 'assets.zip',
+          name: 'setup.exe',
           category: 'other',
-          mimeType: 'application/zip',
+          mimeType: 'application/x-msdownload',
         }),
         file({
           id: 'sheet-1',
           name: 'Budget',
-          category: 'other',
+          category: 'file',
           mimeType: 'application/vnd.google-apps.spreadsheet',
+        }),
+        file({
+          id: 'form-1',
+          name: 'Survey',
+          category: 'other',
+          mimeType: 'application/vnd.google-apps.form',
+        }),
+        file({
+          id: 'audio-1',
+          name: 'Podcast.mp3',
+          category: 'audio',
+          mimeType: 'audio/mpeg',
+          sizeBytes: 400 * 1024 * 1024,
         }),
         file({
           id: 'gdoc-1',
@@ -233,12 +246,24 @@ describe('CourseImportService', () => {
         status: 'SKIPPED',
         error: 'Unsupported file type.',
       });
-      expect(rows.find((r) => r.driveFileId === 'sheet-1')?.error).toEqual(
-        expect.stringContaining('Native Google file'),
+      // Docs/Slides/Sheets are exported on transfer now, not skipped.
+      expect(rows.find((r) => r.driveFileId === 'sheet-1')).toMatchObject({
+        status: 'PENDING',
+        error: null,
+        transcriptStatus: 'NOT_APPLICABLE',
+      });
+      expect(rows.find((r) => r.driveFileId === 'gdoc-1')).toMatchObject({
+        status: 'PENDING',
+        error: null,
+      });
+      expect(rows.find((r) => r.driveFileId === 'form-1')?.error).toEqual(
+        expect.stringContaining("can't be exported"),
       );
-      expect(rows.find((r) => r.driveFileId === 'gdoc-1')?.error).toEqual(
-        expect.stringContaining('Native Google file'),
-      );
+      // Audio is under its 500MB cap and gets transcribed like video.
+      expect(rows.find((r) => r.driveFileId === 'audio-1')).toMatchObject({
+        status: 'PENDING',
+        transcriptStatus: 'PENDING',
+      });
       expect(rows.find((r) => r.driveFileId === 'huge-1')?.error).toEqual(
         expect.stringContaining('2GB'),
       );

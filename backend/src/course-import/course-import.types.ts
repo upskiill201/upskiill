@@ -48,6 +48,12 @@ export interface CourseImportLessonSummary {
   applyBlocks: unknown[] | null;
   reflectBlocks: unknown[] | null;
   deepenBlocks: unknown[] | null;
+  /** One part of a long video/audio: plays [clipStartSec, clipEndSec) of
+   *  its file. All null for a whole-file lesson. */
+  clipStartSec: number | null;
+  clipEndSec: number | null;
+  partIndex: number | null;
+  partCount: number | null;
 }
 
 export interface CourseImportModuleSummary {

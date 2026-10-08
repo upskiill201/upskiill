@@ -4,7 +4,7 @@
  * backend/src/course-import/course-import.types.ts.
  */
 
-export type DriveFileCategory = 'folder' | 'video' | 'document' | 'presentation' | 'image' | 'other';
+export type DriveFileCategory = 'folder' | 'video' | 'audio' | 'document' | 'presentation' | 'image' | 'file' | 'other';
 
 export interface DriveFile {
   id: string;
@@ -21,14 +21,19 @@ export interface FolderPreview {
   folderName: string;
   totalFiles: number;
   videos: number;
+  audio: number;
   documents: number;
   presentations: number;
   images: number;
+  /** Archives, starter code, datasets, Sheets: Deepen downloads. */
+  projectFiles: number;
   unsupported: DriveFile[];
   estimatedVideoDurationSeconds: number;
   videosMissingDuration: number;
-  /** Over 15 minutes: imported with the classic Learn layout. */
+  /** Video/audio over 15 minutes: each is split into bite-size parts. */
   videosOverLimit: number;
+  /** How many part-lessons those long files become. */
+  longVideoParts: number;
   modules: number;
 }
 
@@ -64,6 +69,11 @@ export interface ImportLesson {
   applyBlocks: unknown[] | null;
   reflectBlocks: unknown[] | null;
   deepenBlocks: unknown[] | null;
+  /** One part of a long video/audio: plays [clipStartSec, clipEndSec). */
+  clipStartSec: number | null;
+  clipEndSec: number | null;
+  partIndex: number | null;
+  partCount: number | null;
 }
 
 export interface ImportModule {
@@ -159,7 +169,7 @@ const ERROR_EXPLANATION: Record<string, string> = {
   AI_SCHEMA_INVALID: "The AI's response didn't match the lesson format. Regenerating usually fixes this.",
   AI_BUDGET_EXCEEDED: "Today's AI budget is spent. The lesson waits and continues automatically tomorrow (UTC).",
   PROVIDER_NOT_CONFIGURED: 'No AI provider is set up. Add one under Automation → AI providers.',
-  NO_TRANSCRIPT: 'This lesson has no transcript to write from yet.',
+  NO_TRANSCRIPT: "This lesson has no transcript or readable document text to write from. A scanned PDF or an old .doc can't be read: export it as a text PDF or DOCX.",
   FILE_NOT_UPLOADED: 'This file has not finished uploading yet.',
   UNKNOWN: 'Unexpected error. Retrying may help.',
 };
@@ -173,6 +183,28 @@ export function formatDuration(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.round((totalSeconds % 3600) / 60);
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+}
+
+/** 754 -> "12:34", 3725 -> "1:02:05" — a clip's place in its video. */
+export function formatClock(totalSeconds: number): string {
+  const s = Math.max(0, Math.round(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = String(s % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`;
+}
+
+/** What a written lesson is built around, read from its Learn deck. */
+export function lessonKind(lesson: Pick<ImportLesson, 'learnBlocks'>): 'Video lesson' | 'Audio lesson' | 'Reading lesson' | null {
+  const learn = lesson.learnBlocks ?? [];
+  const cards = (learn.find((b) => (b as { type?: string }).type === 'learnCards') as { value?: { kind?: string }[] } | undefined)
+    ?.value;
+  if (!Array.isArray(cards)) {
+    return learn.some((b) => (b as { type?: string }).type === 'videoUrl') ? 'Video lesson' : null;
+  }
+  if (cards.some((c) => c.kind === 'video')) return 'Video lesson';
+  if (cards.some((c) => c.kind === 'audio')) return 'Audio lesson';
+  return 'Reading lesson';
 }
 
 export function formatBytes(bytes?: number | null): string {

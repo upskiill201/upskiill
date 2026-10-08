@@ -15,6 +15,7 @@ import {
 import { APPLY_QUESTIONS_MAX, APPLY_QUESTIONS_MIN } from './lesson-content-generation.types';
 import { RICH_EXERCISES_KEEP_MIN } from './rich-lesson';
 import { phaseStateFromBlocks } from '../lesson/lesson-blocks.util';
+import { cleanLessonTitle } from './course-structure-analysis.service';
 
 export interface CreateCourseFromImportInput {
   title: string;
@@ -23,16 +24,32 @@ export interface CreateCourseFromImportInput {
   creatorTimeWeekly?: string;
 }
 
-/** DriveFileCategory -> LessonResource.type. Free-text field on the Lesson
- *  side (no shared enum), so this only needs to be a reasonable label, not
- *  an exhaustive mapping — 'other'-category files never reach here (they're
- *  SKIPPED at upload time, never given a storageUrl). */
-const RESOURCE_TYPE_BY_CATEGORY: Record<string, string> = {
-  video: 'video',
-  document: 'pdf',
-  presentation: 'pptx',
-  image: 'pdf',
-};
+/** LessonResource.type — a free-text label the players turn into an icon
+ *  and a word ("Guide", "Slides", "Files", "Data sheet"; see DeepenStep).
+ *  Read from the stored object's extension, so an exported Google Doc is a
+ *  pdf and a starter zip is a zip, not everything a "pdf". */
+export function resourceTypeFor(file: {
+  category: string;
+  storageKey: string | null;
+  driveFileName: string;
+}): string {
+  const ext = (file.storageKey ?? file.driveFileName).trim().split('.').pop()?.toLowerCase() ?? '';
+  if (ext === 'pdf') return 'pdf';
+  if (['doc', 'docx', 'txt', 'md', 'rtf'].includes(ext)) return 'doc';
+  if (['ppt', 'pptx', 'key'].includes(ext)) return 'pptx';
+  if (['xls', 'xlsx', 'csv', 'tsv'].includes(ext)) return ext === 'csv' || ext === 'tsv' ? 'csv' : 'xls';
+  if (['zip', 'rar', '7z', 'tar', 'gz', 'tgz'].includes(ext)) return 'zip';
+  if (['fig', 'sketch', 'psd', 'ai', 'xd'].includes(ext)) return 'design';
+  if (file.category === 'video') return 'video';
+  if (file.category === 'audio') return 'audio';
+  if (file.category === 'image') return 'image';
+  if (file.category === 'file') return 'source';
+  if (file.category === 'presentation') return 'pptx';
+  return 'doc';
+}
+
+/** Starter files and templates a learner works in, vs. things to read. */
+const TEMPLATE_NAME = /\b(starter|template|boilerplate|exercise|assignment|project|worksheet)s?\b/i;
 
 type ImportLesson = CourseImportWithFilesAndModules['modules'][number]['lessons'][number];
 
@@ -242,7 +259,7 @@ export class CourseImportPublishService {
    * same as "safe to show a learner" — this is the gate that keeps a
    * malformed lesson out of a course that may already be live.
    */
-  private isPublishable(lesson: ImportLesson): boolean {
+  private isPublishable(lesson: ImportLesson, isReading = false): boolean {
     if (lesson.status !== 'GENERATED') return false;
 
     const learn = lesson.learnBlocks as unknown[] | null;
@@ -254,12 +271,17 @@ export class CourseImportPublishService {
       return false;
     }
 
-    // Rich (v2) lessons: the exact checks publish runs, plus the video card.
+    // Rich (v2) lessons: the exact checks publish runs, plus the lesson's
+    // source — its video or audio card, or, for a reading lesson built from
+    // a document, at least two explanation cards to read.
     const state = phaseStateFromBlocks({ learn, apply });
     if (state.learn || state.apply) {
       const cards = (learn.find((b) => (b as { type?: string }).type === 'learnCards') as { value?: { kind?: string }[] } | undefined)?.value;
+      const kinds = Array.isArray(cards) ? cards.map((c) => c?.kind) : [];
       const hasVideo =
-        (Array.isArray(cards) && cards.some((c) => c?.kind === 'video')) ||
+        kinds.includes('video') ||
+        kinds.includes('audio') ||
+        (isReading && kinds.filter((k) => k === 'text').length >= 2) ||
         learn.some((b) => (b as { type?: string }).type === 'videoUrl' && !!(b as { value?: string }).value);
       const items = (apply.find((b) => (b as { type?: string }).type === 'exercises') as { value?: { items?: unknown[] } } | undefined)
         ?.value?.items;
@@ -317,7 +339,11 @@ export class CourseImportPublishService {
         module,
         lessons: module.lessons.filter(
           (l) =>
-            this.isPublishable(l) &&
+            this.isPublishable(
+              l,
+              !!l.primaryFileId &&
+                this.filesById(found).get(l.primaryFileId)?.category === 'document',
+            ) &&
             (!opts.onlyUnwritten || !l.createdLessonId),
         ),
       }))
@@ -335,8 +361,14 @@ export class CourseImportPublishService {
     // lesson in a course that may hold 100+ files, and rebuilding the map
     // each time would make it quadratic for no reason.
     const filesById = this.filesById(found);
-    // "N min" for learners: the video, plus ~30s per exercise.
-    const videoMs = lesson.primaryFileId ? filesById.get(lesson.primaryFileId)?.durationMs : null;
+    // "N min" for learners: the video (or this part's clip of it), plus ~30s
+    // per exercise.
+    const videoMs =
+      lesson.clipStartSec !== null && lesson.clipEndSec !== null
+        ? (lesson.clipEndSec - lesson.clipStartSec) * 1000
+        : lesson.primaryFileId
+          ? filesById.get(lesson.primaryFileId)?.durationMs
+          : null;
     const applyItems = (
       ((lesson.applyBlocks as unknown[] | null) ?? []).find((b) => (b as { type?: string }).type === 'exercises') as
         | { value?: { items?: unknown[] } }
@@ -358,17 +390,23 @@ export class CourseImportPublishService {
       },
       resources: ((lesson.resourceFileIds as string[] | null) ?? [])
         .map((fileId) => filesById.get(fileId))
-        .filter((f): f is NonNullable<typeof f> => !!f && !!f.storageUrl)
-        .map(
-          (f): AddLessonResourceDto => ({
-            type: RESOURCE_TYPE_BY_CATEGORY[f.category] ?? 'link',
-            title: f.driveFileName,
+        // Images are already Learn image cards; everything else is a
+        // Deepen download.
+        .filter((f): f is NonNullable<typeof f> => !!f && !!f.storageUrl && f.category !== 'image')
+        .map((f): AddLessonResourceDto => {
+          const storedName = (f.storageKey ?? '').split('/').pop() ?? '';
+          const storedExt = storedName.includes('.') ? storedName.split('.').pop()! : '';
+          const hasExt = /\.[a-z0-9]{1,5}$/i.test(f.driveFileName.trim());
+          const originalName = hasExt || !storedExt ? f.driveFileName.trim() : `${f.driveFileName.trim()}.${storedExt}`;
+          return {
+            type: resourceTypeFor(f),
+            title: cleanLessonTitle(f.driveFileName),
             storageUrl: f.storageUrl!,
             sizeBytes: f.sizeBytes ? Number(f.sizeBytes) : undefined,
-            originalName: f.driveFileName,
-            category: 'Reference',
-          }),
-        ),
+            originalName,
+            category: TEMPLATE_NAME.test(f.driveFileName) ? 'Template' : 'Reference',
+          };
+        }),
     };
   }
 

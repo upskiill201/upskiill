@@ -9,7 +9,10 @@ import {
   GoogleDriveService,
   isGoogleNativeFormat,
 } from '../google-drive/google-drive.service';
-import { DriveFile } from '../google-drive/google-drive.types';
+import {
+  DriveFile,
+  NATIVE_EXPORTS,
+} from '../google-drive/google-drive.types';
 import { R2StorageService } from '../storage/r2-storage.service';
 import { CourseImportSummary } from './course-import.types';
 import { buildObjectKey } from './course-import-processor.service';
@@ -22,7 +25,12 @@ import {
 /** Mirrors frontend/lib/uploadS3Server.ts's per-type caps — a file over this
  *  is marked SKIPPED at creation rather than attempted and failing later. */
 const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
+const MAX_AUDIO_BYTES = 500 * 1024 * 1024; // 500MB
 const MAX_OTHER_BYTES = 100 * 1024 * 1024; // 100MB
+const SIZE_CAP: Record<string, { bytes: number; label: string }> = {
+  video: { bytes: MAX_VIDEO_BYTES, label: '2GB' },
+  audio: { bytes: MAX_AUDIO_BYTES, label: '500MB' },
+};
 
 const ACTIVE_STATUSES = ['CREATED', 'PROCESSING_FILES'] as const;
 
@@ -451,19 +459,25 @@ export class CourseImportService {
 }
 
 function buildFileRow(file: DriveFile, orderIndex: number) {
-  const isNative = isGoogleNativeFormat(file.mimeType);
-  const sizeCap = file.category === 'video' ? MAX_VIDEO_BYTES : MAX_OTHER_BYTES;
+  // Docs/Slides/Sheets are exported on transfer (PDF / XLSX); Forms,
+  // Drawings and the like have nothing a learner could download.
+  const unexportable =
+    isGoogleNativeFormat(file.mimeType) && !NATIVE_EXPORTS[file.mimeType];
+  const cap = SIZE_CAP[file.category] ?? {
+    bytes: MAX_OTHER_BYTES,
+    label: '100MB',
+  };
   const tooLarge =
-    typeof file.sizeBytes === 'number' && file.sizeBytes > sizeCap;
+    typeof file.sizeBytes === 'number' && file.sizeBytes > cap.bytes;
   const unsupportedCategory = file.category === 'other';
-  const skip = unsupportedCategory || isNative || tooLarge;
+  const skip = unsupportedCategory || unexportable || tooLarge;
 
   const error = !skip
     ? null
-    : isNative
-      ? "Native Google file — exporting it isn't supported yet."
+    : unexportable
+      ? "This kind of Google file (Form, Drawing, ...) can't be exported."
       : tooLarge
-        ? `File exceeds the ${file.category === 'video' ? '2GB' : '100MB'} limit Teyro can import today.`
+        ? `File exceeds the ${cap.label} limit Teyro can import today.`
         : 'Unsupported file type.';
 
   return {
@@ -482,10 +496,11 @@ function buildFileRow(file: DriveFile, orderIndex: number) {
         : null,
     status: skip ? ('SKIPPED' as const) : ('PENDING' as const),
     error,
-    // Only real, importable video files ever need a transcript. A skipped
-    // "video-category" file (too large, say) has nothing to transcribe.
+    // Only real, importable video/audio files need a transcript up front. A
+    // skipped one (too large, say) has nothing to transcribe. Documents that
+    // become reading lessons are queued for text extraction at analysis.
     transcriptStatus:
-      !skip && file.category === 'video'
+      !skip && (file.category === 'video' || file.category === 'audio')
         ? ('PENDING' as const)
         : ('NOT_APPLICABLE' as const),
   };

@@ -65,3 +65,25 @@ describe('lesson content v2 rules', () => {
     expect(exerciseProblem({ kind: 'nope', prompt: 'p' })).toMatch(/unknown type/);
   });
 });
+
+describe('clipped media cards', () => {
+  const video = (extra: Record<string, unknown>) => ({ id: 'v', kind: 'video', url: 'u', ...extra });
+  const learnErrors = (card: unknown) => phaseStateFromBlocks({ learn: learn([card]) }).learn?.errors ?? [];
+
+  it('accepts one part of a long video whose length is its clip', () => {
+    expect(learnErrors(video({ durationSec: 600, startSec: 1200, endSec: 1800 }))).toEqual([]);
+  });
+
+  it("rejects a clip whose length doesn't match its range (no dodging the 15-minute rule)", () => {
+    expect(learnErrors(video({ durationSec: 600, startSec: 0, endSec: 2400 })).join(' ')).toMatch(/doesn't match/);
+  });
+
+  it('rejects a clip over 15 minutes and a backwards range', () => {
+    expect(learnErrors(video({ durationSec: 1200, startSec: 0, endSec: 1200 })).join(' ')).toMatch(/over 15 minutes/);
+    expect(learnErrors(video({ durationSec: 10, startSec: 50, endSec: 40 })).join(' ')).toMatch(/invalid start or end/);
+  });
+
+  it('allows a clipped audio card', () => {
+    expect(learnErrors({ id: 'a', kind: 'audio', url: 'u', durationSec: 900, startSec: 900, endSec: 1800 })).toEqual([]);
+  });
+});

@@ -8,6 +8,8 @@ import {
   toCourseImportError,
 } from '../course-import/course-import-error';
 import { HeavyTransferLockService } from '../course-import/heavy-transfer-lock.service';
+import { extractDocumentText } from '../course-import/document-text';
+import { replanFileLessons } from '../course-import/lesson-plan';
 
 /** One at a time — a transcription round-trips a whole video download PLUS
  *  a re-upload to Gemini, easily minutes for a large file. Keeping this at 1
@@ -137,17 +139,45 @@ export class TranscriptionProcessorService {
           );
         }
 
-        const { text } = await this.transcription.transcribe(file.storageUrl);
-        await this.prisma.courseImportFile.update({
-          where: { id: file.id },
-          data: {
-            transcriptStatus: 'TRANSCRIBED',
-            transcript: text,
-            transcriptError: null,
-            transcriptErrorCode: null,
-            transcriptClaimedAt: null,
-            transcriptClaimedBy: null,
-          },
+        // A reading lesson's document "transcribes" by reading its text —
+        // no AI call. Video and audio go through Whisper.
+        const isDocument = file.category === 'document';
+        const result = isDocument
+          ? {
+              text: await extractDocumentText(
+                file.storageUrl,
+                file.storageKey,
+                file.mimeType,
+              ),
+              segments: [],
+              durationSec: null,
+            }
+          : await this.transcription.transcribe(file.storageUrl);
+        const segments = result.segments ?? [];
+
+        // One transaction: the lessons are re-planned (split into parts at
+        // sentence gaps, now that the real length and segments are known)
+        // in the same step that makes them claimable for generation, so
+        // generation can never pick up a lesson about to be re-cut.
+        await this.prisma.$transaction(async (tx) => {
+          const updated = await tx.courseImportFile.update({
+            where: { id: file.id },
+            data: {
+              transcriptStatus: 'TRANSCRIBED',
+              transcript: result.text,
+              transcriptSegments: segments.length
+                ? (segments as unknown as Prisma.InputJsonValue)
+                : Prisma.DbNull,
+              ...(file.durationMs === null && result.durationSec
+                ? { durationMs: BigInt(Math.round(result.durationSec * 1000)) }
+                : {}),
+              transcriptError: null,
+              transcriptErrorCode: null,
+              transcriptClaimedAt: null,
+              transcriptClaimedBy: null,
+            },
+          });
+          if (!isDocument) await replanFileLessons(tx, updated);
         });
         summary.transcribed += 1;
       } catch (err) {

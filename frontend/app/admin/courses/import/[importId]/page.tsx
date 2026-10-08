@@ -34,7 +34,19 @@ import {
 import { ConfirmDialog, adminFetcher, adminMutate } from '@/components/admin/AdminUI';
 import { hq } from '@/components/admin/hq/HQ';
 import { computeStages, currentActivity, overallPercent, type StageState } from './importProgress';
-import { ACTIVE, LEVELS, RUNNING, TRACKS, explainError, formatBytes, statusInfo, type CourseImport, type ImportLesson } from '../importer';
+import {
+  ACTIVE,
+  LEVELS,
+  RUNNING,
+  TRACKS,
+  explainError,
+  formatBytes,
+  formatClock,
+  lessonKind,
+  statusInfo,
+  type CourseImport,
+  type ImportLesson,
+} from '../importer';
 import m from '../importer.module.css';
 
 function blockValue(blocks: unknown[] | null, type: string): Record<string, unknown> | null {
@@ -537,6 +549,17 @@ function LessonRow({
           <strong>{lesson.title}</strong>
           <span className={m.itemMeta}>
             <Tag {...s} />
+            {lesson.partIndex !== null && lesson.partCount !== null && (
+              <Tag
+                label={`Part ${lesson.partIndex} of ${lesson.partCount}${
+                  lesson.clipStartSec !== null && lesson.clipEndSec !== null
+                    ? ` · ${formatClock(lesson.clipStartSec)}–${formatClock(lesson.clipEndSec)}`
+                    : ''
+                }`}
+                tone="var(--warning)"
+              />
+            )}
+            {lessonKind(lesson) && <Tag label={lessonKind(lesson)!} tone="var(--text-muted)" />}
             {lesson.status === 'GENERATED' && rich && (
               <Tag
                 label={`${Array.isArray(cards) ? `${cards.length} cards · ` : ''}${exercises.length} exercises`}

@@ -10,6 +10,8 @@ import {
   RichLessonError,
   richSystemPrompt,
   type ImportTrack,
+  type LessonImage,
+  type LessonMedia,
   type RichBuildResult,
 } from './rich-lesson';
 
@@ -21,7 +23,15 @@ import {
  * typical 5-15 minute lesson), the instructions ~1.3k, and 3.8k of output
  * fits a full rich lesson (cards + 8 exercises): ~7.8k in total.
  */
-const MAX_TRANSCRIPT_CHARS = 10_500;
+const DEFAULT_MAX_TRANSCRIPT_CHARS = 10_500;
+/** Raise COURSE_IMPORT_MAX_TRANSCRIPT_CHARS (and the provider's limits)
+ *  when generation moves to a paid tier with a bigger window. */
+const MAX_TRANSCRIPT_CHARS = (() => {
+  const n = Number(process.env.COURSE_IMPORT_MAX_TRANSCRIPT_CHARS);
+  return Number.isFinite(n) && n >= 2_000
+    ? Math.floor(n)
+    : DEFAULT_MAX_TRANSCRIPT_CHARS;
+})();
 const GENERATION_TIMEOUT_MS = 90_000;
 const MAX_OUTPUT_TOKENS = 3_800;
 /** One retry on a weak or malformed answer: cheaper than a failed lesson. */
@@ -37,6 +47,13 @@ export interface LessonGenerationInput {
   track?: ImportTrack;
   /** From Google Drive's metadata; decides video card vs classic Learn. */
   videoDurationSec?: number | null;
+  /** Audio lesson or reading lesson instead of a video lesson. */
+  mediaKind?: 'video' | 'audio' | 'none';
+  /** One part of a long file: plays [startSec, endSec), and `transcript`
+   *  is already that part's slice. */
+  part?: { index: number; count: number; startSec: number; endSec: number };
+  /** Images handed out with the lesson, shown as Learn image cards. */
+  images?: LessonImage[];
 }
 
 @Injectable()
@@ -76,7 +93,21 @@ export class LessonContentGenerationService {
     }
 
     const track = input.track ?? null;
-    const system = richSystemPrompt(track);
+    const mediaKind = input.mediaKind ?? 'video';
+    const system = richSystemPrompt(
+      track,
+      mediaKind === 'none' ? 'document' : mediaKind,
+    );
+    const media: LessonMedia = {
+      kind: mediaKind,
+      url: input.videoUrl,
+      durationSec: input.part
+        ? input.part.endSec - input.part.startSec
+        : (input.videoDurationSec ?? null),
+      ...(input.part
+        ? { startSec: input.part.startSec, endSec: input.part.endSec }
+        : {}),
+    };
     const user = buildUserPrompt(input);
     const isReasoningModel = /gpt-oss|^o\d/i.test(resolved.provider.model);
     let lastProblem = 'unknown';
@@ -149,8 +180,9 @@ export class LessonContentGenerationService {
       try {
         const built = buildRichLesson(
           parsed.value,
-          { url: input.videoUrl, durationSec: input.videoDurationSec ?? null },
+          media,
           track,
+          input.images ?? [],
         );
         if (built.stats.dropped.length) {
           this.logger.log(
@@ -201,10 +233,21 @@ function buildUserPrompt(input: LessonGenerationInput): string {
       ? `\nAttached resources: ${input.resourceNames.join(', ')}`
       : '';
   const track = input.track ? `\nTrack: ${input.track}` : '';
+  const part = input.part
+    ? `\nThis is part ${input.part.index} of ${input.part.count} of a longer recording. Cover ONLY what this part says; don't recap earlier parts or preview later ones.`
+    : '';
+  const label =
+    input.mediaKind === 'none'
+      ? "Text of this lesson's document"
+      : input.mediaKind === 'audio'
+        ? "Transcript of this lesson's audio"
+        : input.part
+          ? 'Transcript of this part of the video'
+          : "Transcript of this lesson's video";
   return `Course: ${input.courseTitle}${track}
-Lesson: ${input.lessonTitle}${resources}
+Lesson: ${input.lessonTitle}${resources}${part}
 
-Transcript of this lesson's video:
+${label}:
 """
 ${transcript}${truncated}
 """`;

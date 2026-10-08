@@ -140,6 +140,42 @@ describe('CourseImportProcessorService', () => {
     expect(summary).toEqual({ claimed: 1, uploaded: 1, failed: 0 });
   });
 
+  it('stores an exported Google Doc under a .pdf key with the exported type', async () => {
+    prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }]);
+    prisma.courseImportFile.findMany.mockResolvedValue([
+      {
+        id: 'row-1',
+        importId: 'import-1',
+        driveFileId: 'gdoc-1',
+        driveFileName: 'Course Notes',
+        mimeType: 'application/vnd.google-apps.document',
+        import: { createdById: 'user-1', status: 'PROCESSING_FILES' },
+      },
+    ]);
+    googleDrive.downloadFile.mockResolvedValue({
+      stream: { pipe: jest.fn() },
+      mimeType: 'application/pdf',
+    });
+    r2.uploadStream.mockResolvedValue({
+      key: 'k',
+      url: 'https://cdn.example/k',
+    });
+    prisma.courseImportFile.groupBy.mockResolvedValue([
+      { status: 'UPLOADED', _count: 1 },
+    ]);
+    prisma.courseImport.findUnique.mockResolvedValue({
+      status: 'PROCESSING_FILES',
+    });
+
+    await service.tick();
+
+    expect(r2.uploadStream).toHaveBeenCalledWith(
+      'course-imports/import-1/gdoc-1-Course_Notes.pdf',
+      expect.anything(),
+      'application/pdf',
+    );
+  });
+
   it('isolates a failed file: it is marked FAILED and does not stop the rest of the batch', async () => {
     prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }, { id: 'row-2' }]);
     prisma.courseImportFile.findMany.mockResolvedValue([

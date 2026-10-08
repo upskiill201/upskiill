@@ -3,38 +3,135 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseImportSummary } from './course-import.types';
 import {
   WITH_FILES_AND_MODULES,
   toCourseImportSummary,
 } from './course-import-summary.util';
+import { extractableKind } from './document-text';
+import { lessonRowsForFile } from './lesson-plan';
 
-/** A file the transaction below needs — only the fields actually used. */
-interface UploadedFile {
+/** A file the planning below needs — only the fields actually used. */
+export interface UploadedFile {
   id: string;
   category: string;
   driveFileName: string;
+  mimeType: string;
+  storageKey: string | null;
   sectionFolderId: string | null;
   sectionFolderName: string | null;
+  durationMs: bigint | number | null;
+  transcriptSegments?: Prisma.JsonValue | null;
+}
+
+/** Media a lesson is built around: transcribed, then played as its card. */
+const MEDIA = new Set(['video', 'audio']);
+/** Names that mark a document as a handout for a lesson, never a lesson of
+ *  its own ("Exercise files.pdf", "Starter code.zip", "Slides - Intro"). */
+const HANDOUT_NAME =
+  /\b(resources?|starter|solutions?|exercises?|slides?|cheat ?sheets?|handouts?|projects?|assets?|worksheets?|templates?|downloads?|source ?code|transcripts?)\b/i;
+
+export interface PlannedLesson {
+  primary: UploadedFile;
+  /** 'media' = video/audio lesson; 'reading' = built from a document. */
+  kind: 'media' | 'reading';
+  resourceFileIds: string[];
+}
+
+export interface PlannedSection {
+  title: string;
+  lessons: PlannedLesson[];
 }
 
 /**
- * Deterministic file -> Learn/Apply/Reflect/Deepen lesson grouping — no AI
- * involved in this step (spec §11: "Use deterministic logic first"). Every
- * uploaded video becomes one lesson; a non-video file is attached to the
- * video that immediately precedes it within the same section, in Drive's
- * natural order (a PDF right after "01 Intro.mp4" is almost always that
- * lesson's handout).
+ * Deterministic file -> lesson grouping — no AI involved in this step (spec
+ * §11: "Use deterministic logic first"):
  *
- * One module per Drive section folder (a course root's direct subfolders —
- * see GoogleDriveService#walkFolder and CourseImportFile#sectionFolderId).
- * A flat course with no subfolders — the only structure this was originally
- * tested against — still produces exactly one module, named after the
- * course itself; that behavior is unchanged. Files sitting loose in the
- * course root (no section folder) alongside real sections land in that same
- * course-named module rather than being dropped.
+ * - Every uploaded video or audio file becomes a lesson (a long one becomes
+ *   several "Part N" lessons when the rows are written).
+ * - Every other file is a resource of the media lesson right before it in
+ *   its section, in Drive's natural order (a PDF right after "01 Intro.mp4"
+ *   is almost always that lesson's handout). Files before a section's first
+ *   video belong to its first lesson. Images become Learn image cards,
+ *   everything else a Deepen download.
+ * - A section with no video or audio at all is a reading section: each
+ *   readable document (PDF, DOCX, TXT, Google Doc) that isn't named like a
+ *   handout becomes a reading lesson, built from its text.
+ * - A section left with only handouts gives them to the previous section's
+ *   last lesson (or the next section's first), instead of dropping them.
+ *
+ * One module per Drive section folder (a course root's direct subfolders);
+ * a flat course with no subfolders is one module named after the course.
  */
+export function planCourseStructure(
+  files: UploadedFile[],
+  courseTitle: string,
+): PlannedSection[] {
+  const sections = groupBySection(files, courseTitle).map(
+    ({ title, files: sectionFiles }) => ({
+      title,
+      ...planSection(sectionFiles),
+    }),
+  );
+
+  // Handouts from sections that produced no lesson go to the nearest one.
+  for (const [i, section] of sections.entries()) {
+    if (section.lessons.length > 0 || section.loose.length === 0) continue;
+    const before = sections
+      .slice(0, i)
+      .reverse()
+      .find((s) => s.lessons.length > 0);
+    const after = sections.slice(i + 1).find((s) => s.lessons.length > 0);
+    const target = before
+      ? before.lessons[before.lessons.length - 1]
+      : after?.lessons[0];
+    target?.resourceFileIds.push(...section.loose.map((f) => f.id));
+  }
+
+  return sections
+    .filter((s) => s.lessons.length > 0)
+    .map(({ title, lessons }) => ({ title, lessons }));
+}
+
+function planSection(files: UploadedFile[]): {
+  lessons: PlannedLesson[];
+  /** Files with no lesson to attach to in this section. */
+  loose: UploadedFile[];
+} {
+  const hasMedia = files.some((f) => MEDIA.has(f.category));
+  const isLessonSource = (f: UploadedFile) =>
+    hasMedia
+      ? MEDIA.has(f.category)
+      : f.category === 'document' &&
+        !HANDOUT_NAME.test(f.driveFileName) &&
+        extractableKind(f.storageKey, f.mimeType) !== null;
+
+  const lessons: PlannedLesson[] = [];
+  const beforeFirst: string[] = [];
+  for (const file of files) {
+    if (isLessonSource(file)) {
+      lessons.push({
+        primary: file,
+        kind: hasMedia ? 'media' : 'reading',
+        // A reading lesson offers its own document as a download too.
+        resourceFileIds: hasMedia ? [] : [file.id],
+      });
+    } else if (lessons.length > 0) {
+      lessons[lessons.length - 1].resourceFileIds.push(file.id);
+    } else {
+      beforeFirst.push(file.id);
+    }
+  }
+
+  if (lessons.length === 0) {
+    return { lessons, loose: files };
+  }
+  lessons[0].resourceFileIds.unshift(...beforeFirst);
+  return { lessons, loose: [] };
+}
+
 @Injectable()
 export class CourseStructureAnalysisService {
   constructor(private readonly prisma: PrismaService) {}
@@ -61,20 +158,18 @@ export class CourseStructureAnalysisService {
     }
 
     const uploaded = courseImport.files.filter((f) => f.status === 'UPLOADED');
-    const hasAnyVideo = uploaded.some((f) => f.category === 'video');
-    if (!hasAnyVideo) {
+    const sections = planCourseStructure(
+      uploaded,
+      courseImport.sourceDriveFolderName,
+    );
+    if (sections.length === 0) {
       throw new BadRequestException(
-        'No uploaded videos to build lessons from.',
+        'No uploaded videos, audio or readable documents to build lessons from.',
       );
     }
 
-    const sections = groupBySection(uploaded, courseImport.sourceDriveFolderName);
-
     await this.prisma.$transaction(async (tx) => {
-      let moduleOrderIndex = 0;
-      for (const section of sections) {
-        if (section.videos.length === 0) continue; // e.g. a section folder with only handouts, no videos
-
+      for (const [moduleOrderIndex, section] of sections.entries()) {
         const courseModule = await tx.courseImportModule.create({
           data: {
             importId,
@@ -82,16 +177,33 @@ export class CourseStructureAnalysisService {
             orderIndex: moduleOrderIndex,
           },
         });
-        moduleOrderIndex += 1;
 
-        await tx.courseImportLesson.createMany({
-          data: section.videos.map((video, index) => ({
-            moduleId: courseModule.id,
-            title: cleanLessonTitle(video.driveFileName),
-            orderIndex: index,
-            primaryFileId: video.id,
-            resourceFileIds: section.resourcesByVideoId.get(video.id) ?? [],
-          })),
+        const rows: Prisma.CourseImportLessonCreateManyInput[] = [];
+        for (const lesson of section.lessons) {
+          rows.push(
+            ...lessonRowsForFile(lesson.primary, {
+              moduleId: courseModule.id,
+              title: cleanLessonTitle(lesson.primary.driveFileName),
+              orderIndex: rows.length,
+              resourceFileIds: lesson.resourceFileIds,
+            }),
+          );
+        }
+        await tx.courseImportLesson.createMany({ data: rows });
+      }
+
+      // Reading lessons wait on their document's text, extracted by the
+      // same claim queue that transcribes videos.
+      const readingFileIds = sections.flatMap((s) =>
+        s.lessons.filter((l) => l.kind === 'reading').map((l) => l.primary.id),
+      );
+      if (readingFileIds.length > 0) {
+        await tx.courseImportFile.updateMany({
+          where: {
+            id: { in: readingFileIds },
+            transcriptStatus: 'NOT_APPLICABLE',
+          },
+          data: { transcriptStatus: 'PENDING' },
         });
       }
 
@@ -112,8 +224,7 @@ export class CourseStructureAnalysisService {
 
 interface SectionGroup<T> {
   title: string;
-  videos: T[];
-  resourcesByVideoId: Map<string, string[]>;
+  files: T[];
 }
 
 /** Groups uploaded files by their Drive section folder, preserving each
@@ -143,35 +254,17 @@ function groupBySection<T extends UploadedFile>(
 
   return order.map((key) => {
     const sectionFiles = buckets.get(key)!;
-    const title =
-      key === null ? courseTitle : sectionFiles[0].sectionFolderName!;
-
-    // Attach each non-video to the nearest PRECEDING video within this
-    // section only — a resource right after entering a new section must
-    // never attach to the previous section's last video.
-    const resourcesByVideoId = new Map<string, string[]>();
-    const videos: T[] = [];
-    let currentVideoId: string | null = null;
-    for (const file of sectionFiles) {
-      if (file.category === 'video') {
-        currentVideoId = file.id;
-        resourcesByVideoId.set(file.id, []);
-        videos.push(file);
-      } else if (currentVideoId) {
-        resourcesByVideoId.get(currentVideoId)!.push(file.id);
-      }
-      // A resource with no preceding video in its own section is silently
-      // dropped from lesson grouping today — same known gap as before,
-      // just now scoped correctly per section instead of globally.
-    }
-
-    return { title, videos, resourcesByVideoId };
+    return {
+      title: key === null ? courseTitle : sectionFiles[0].sectionFolderName!,
+      files: sectionFiles,
+    };
   });
 }
 
 /** "Copy of 01. Introduction (Telegram@TechZoneX).mp4" -> "Introduction" */
 export function cleanLessonTitle(fileName: string): string {
-  let title = fileName.replace(/\.[^/.]+$/, ''); // strip extension
+  // A real extension only: a Google Doc has none, and "v1.2" isn't one.
+  let title = fileName.trim().replace(/\.[a-z][a-z0-9]{0,4}$/i, '');
   title = title.replace(/^copy of\s+/i, ''); // Drive's "make a copy" prefix
   title = title.replace(/^(lesson\s*)?\d+\s*[.\-):]?\s*/i, ''); // leading numbering
   title = title.replace(/\s*\([^)]*\)\s*$/, ''); // trailing "(Telegram@...)" etc.

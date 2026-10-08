@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { CourseImportPublishService } from './course-import-publish.service';
+import {
+  CourseImportPublishService,
+  resourceTypeFor,
+} from './course-import-publish.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseCreationService } from '../course-creation/course-creation.service';
 import {
@@ -234,7 +237,7 @@ describe('CourseImportPublishService', () => {
                 resources: [
                   {
                     type: 'pdf',
-                    title: 'Cheat Sheet.pdf',
+                    title: 'Cheat Sheet',
                     storageUrl: 'https://cdn.example/cheat-sheet.pdf',
                     sizeBytes: 1024,
                     originalName: 'Cheat Sheet.pdf',
@@ -492,6 +495,123 @@ describe('CourseImportPublishService', () => {
           service.createCourse(user, importId, baseInput),
         ).rejects.toThrow(rejected);
       });
+
+      function readingImport() {
+        const rich = buildRichLesson(
+          editingLessonOutput(),
+          {
+            kind: 'none',
+            url: 'https://cdn.example/notes.pdf',
+            durationSec: null,
+          },
+          null,
+        );
+        const found = lessonWith({
+          primaryFileId: 'notes-1',
+          learnBlocks: rich.learnBlocks,
+          applyBlocks: rich.applyBlocks,
+          reflectBlocks: rich.reflectBlocks,
+          deepenBlocks: rich.deepenBlocks,
+          resourceFileIds: ['notes-1', 'img-1'],
+        }) as unknown as { files: Record<string, unknown>[] };
+        found.files = [
+          {
+            id: 'notes-1',
+            driveFileName: 'Notes',
+            category: 'document',
+            storageKey: 'course-imports/i/notes-1-Notes.pdf',
+            storageUrl: 'https://cdn.example/notes.pdf',
+            sizeBytes: BigInt(2048),
+          },
+          {
+            id: 'img-1',
+            driveFileName: 'diagram.png',
+            category: 'image',
+            storageKey: 'course-imports/i/img-1-diagram.png',
+            storageUrl: 'https://cdn.example/diagram.png',
+            sizeBytes: null,
+          },
+        ];
+        return found;
+      }
+
+      it('accepts a reading lesson built from a document, offering the document as a download', async () => {
+        prisma.courseImport.findFirst.mockResolvedValue(readingImport());
+        courseCreation.createFullCourseTree.mockResolvedValue(created);
+        await service.createCourse(user, importId, baseInput);
+        const lessonSpec =
+          courseCreation.createFullCourseTree.mock.calls[0][2].sections[0]
+            .lessons[0];
+        // The exported Google Doc keeps its real extension; the image is
+        // already a Learn card, so it isn't repeated as a download.
+        expect(lessonSpec.resources).toEqual([
+          expect.objectContaining({
+            type: 'pdf',
+            title: 'Notes',
+            originalName: 'Notes.pdf',
+          }),
+        ]);
+      });
+
+      it('withholds a text-only lesson whose source was a video', async () => {
+        const found = readingImport();
+        found.files[0].category = 'video';
+        prisma.courseImport.findFirst.mockResolvedValue(found);
+        await expect(
+          service.createCourse(user, importId, baseInput),
+        ).rejects.toThrow(rejected);
+      });
+
+      it('times a part lesson by its clip, not the whole video', async () => {
+        const rich = buildRichLesson(
+          editingLessonOutput(),
+          {
+            url: 'https://cdn.example/v.mp4',
+            durationSec: 2400,
+            startSec: 600,
+            endSec: 1200,
+          },
+          null,
+        );
+        prisma.courseImport.findFirst.mockResolvedValue(
+          lessonWith({
+            clipStartSec: 600,
+            clipEndSec: 1200,
+            learnBlocks: rich.learnBlocks,
+            applyBlocks: rich.applyBlocks,
+            reflectBlocks: rich.reflectBlocks,
+            deepenBlocks: rich.deepenBlocks,
+          }),
+        );
+        courseCreation.createFullCourseTree.mockResolvedValue(created);
+        await service.createCourse(user, importId, baseInput);
+        const content =
+          courseCreation.createFullCourseTree.mock.calls[0][2].sections[0]
+            .lessons[0].content;
+        // 10 min of clip + 6 exercises at ~30s each.
+        expect(content.durationMinutes).toBe(13);
+      });
+    });
+  });
+
+  describe('resourceTypeFor', () => {
+    it.each([
+      ['notes.pdf', 'document', 'pdf'],
+      ['brief.docx', 'document', 'doc'],
+      ['deck.pptx', 'presentation', 'pptx'],
+      ['sales.csv', 'file', 'csv'],
+      ['model.xlsx', 'file', 'xls'],
+      ['starter.zip', 'file', 'zip'],
+      ['app.py', 'file', 'source'],
+      ['mockup.fig', 'file', 'design'],
+    ])('labels %s as %s → %s', (name, category, type) => {
+      expect(
+        resourceTypeFor({
+          category,
+          storageKey: `k/${name}`,
+          driveFileName: name,
+        }),
+      ).toBe(type);
     });
   });
 

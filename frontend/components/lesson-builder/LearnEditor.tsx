@@ -32,6 +32,8 @@ import {
   CODE_LANGUAGES,
   CODE_LANGUAGE_LABEL,
   LIMITS,
+  clipRange,
+  formatDuration,
   newBlockId,
   type BlockIssue,
   type CodeLanguage,
@@ -205,15 +207,30 @@ function CardEditor({
                 card.kind === 'image'
                   ? { ...card, url }
                   : card.kind === 'video'
-                    ? { ...card, url, durationSec: seconds ?? 0 }
-                    : { ...card, url, durationSec: seconds ?? undefined },
+                    ? { ...card, url, durationSec: seconds ?? 0, startSec: undefined, endSec: undefined }
+                    : { ...card, url, durationSec: seconds ?? undefined, startSec: undefined, endSec: undefined },
               )
             }
             onDuration={(s) => {
-              if (card.kind === 'video') onChange({ ...card, durationSec: s });
+              // A clip's length is its range, not the whole file's.
+              if (card.kind === 'video' && !clipRange(card)) onChange({ ...card, durationSec: s });
             }}
-            onRemove={() => onChange(card.kind === 'image' ? { ...card, url: '' } : card.kind === 'video' ? { ...card, url: '', durationSec: 0 } : { ...card, url: '' })}
+            onRemove={() =>
+              onChange(
+                card.kind === 'image'
+                  ? { ...card, url: '' }
+                  : card.kind === 'video'
+                    ? { ...card, url: '', durationSec: 0, startSec: undefined, endSec: undefined }
+                    : { ...card, url: '', startSec: undefined, endSec: undefined },
+              )
+            }
           />
+          {card.kind !== 'image' && clipRange(card) && (
+            <span className={styles.hint}>
+              Plays {formatDuration(clipRange(card)!.startSec)}–{formatDuration(clipRange(card)!.endSec)} of the full{' '}
+              {card.kind === 'video' ? 'video' : 'audio'}. Upload a new file to replace the whole clip.
+            </span>
+          )}
           {card.kind === 'image' && (
             <input
               className={styles.input}

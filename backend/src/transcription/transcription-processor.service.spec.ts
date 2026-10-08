@@ -4,6 +4,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GroqWhisperTranscriptionService } from './groq-whisper-transcription.service';
 import { HeavyTransferLockService } from '../course-import/heavy-transfer-lock.service';
 import { CourseImportError } from '../course-import/course-import-error';
+import { extractDocumentText } from '../course-import/document-text';
+
+jest.mock('../course-import/document-text', () => ({
+  extractDocumentText: jest.fn(),
+}));
 
 interface UpdateCall {
   where: { id: string };
@@ -21,6 +26,14 @@ describe('TranscriptionProcessorService', () => {
     $queryRaw: jest.Mock;
     $executeRaw: jest.Mock;
     courseImportFile: { findMany: jest.Mock; update: jest.Mock };
+    courseImportLesson: {
+      findMany: jest.Mock;
+      update: jest.Mock;
+      deleteMany: jest.Mock;
+      updateMany: jest.Mock;
+      createMany: jest.Mock;
+    };
+    $transaction: jest.Mock;
   };
   let transcription: { transcribe: jest.Mock };
   let heavyTransferLock: HeavyTransferLockService;
@@ -29,7 +42,18 @@ describe('TranscriptionProcessorService', () => {
     prisma = {
       $queryRaw: jest.fn().mockResolvedValue([]),
       $executeRaw: jest.fn().mockResolvedValue(0),
-      courseImportFile: { findMany: jest.fn(), update: jest.fn() },
+      courseImportFile: {
+        findMany: jest.fn(),
+        update: jest.fn((args: UpdateCall) => ({ id: args.where.id, durationMs: null, ...args.data })),
+      },
+      courseImportLesson: {
+        findMany: jest.fn().mockResolvedValue([]),
+        update: jest.fn(),
+        deleteMany: jest.fn(),
+        updateMany: jest.fn(),
+        createMany: jest.fn(),
+      },
+      $transaction: jest.fn((cb: (tx: unknown) => unknown) => cb(prisma)),
     };
     transcription = { transcribe: jest.fn() };
 
@@ -176,6 +200,84 @@ describe('TranscriptionProcessorService', () => {
       transcriptStatus: 'FAILED',
       transcriptErrorCode: 'STORAGE_OBJECT_NOT_FOUND',
     });
+  });
+
+  it('keeps Whisper segments, fills a missing length, and splits the lessons into parts', async () => {
+    prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }]);
+    prisma.courseImportFile.findMany.mockResolvedValue([
+      {
+        id: 'row-1',
+        category: 'video',
+        durationMs: null,
+        storageUrl: 'https://cdn.example/long.mp4',
+        import: { status: 'GENERATING_CONTENT' },
+      },
+    ]);
+    const segments = [{ start: 0, end: 4, text: 'Hi.' }];
+    transcription.transcribe.mockResolvedValue({
+      text: 'Hi.',
+      segments,
+      durationSec: 1800,
+    });
+    prisma.courseImportLesson.findMany.mockResolvedValue([
+      {
+        id: 'l1',
+        moduleId: 'm1',
+        title: 'Deep Dive',
+        orderIndex: 0,
+        status: 'PENDING',
+        createdLessonId: null,
+        resourceFileIds: [],
+      },
+    ]);
+
+    await service.tick();
+
+    const update = updateCallsFor(prisma.courseImportFile.update).find(
+      (c) => c.where.id === 'row-1',
+    );
+    expect(update?.data).toMatchObject({
+      transcriptStatus: 'TRANSCRIBED',
+      transcriptSegments: segments,
+      durationMs: BigInt(1_800_000),
+    });
+    const rows = (
+      prisma.courseImportLesson.createMany.mock.calls[0][0] as {
+        data: { title: string }[];
+      }
+    ).data;
+    expect(rows.map((r) => r.title)).toEqual([
+      'Deep Dive (Part 1 of 3)',
+      'Deep Dive (Part 2 of 3)',
+      'Deep Dive (Part 3 of 3)',
+    ]);
+  });
+
+  it("reads a reading lesson's document instead of calling Whisper", async () => {
+    prisma.$queryRaw.mockResolvedValue([{ id: 'doc-1' }]);
+    prisma.courseImportFile.findMany.mockResolvedValue([
+      {
+        id: 'doc-1',
+        category: 'document',
+        mimeType: 'application/pdf',
+        storageKey: 'k/notes.pdf',
+        durationMs: null,
+        storageUrl: 'https://cdn.example/notes.pdf',
+        import: { status: 'GENERATING_CONTENT' },
+      },
+    ]);
+    (extractDocumentText as jest.Mock).mockResolvedValue('Plenty of text.');
+
+    const summary = await service.tick();
+
+    expect(transcription.transcribe).not.toHaveBeenCalled();
+    expect(extractDocumentText).toHaveBeenCalledWith(
+      'https://cdn.example/notes.pdf',
+      'k/notes.pdf',
+      'application/pdf',
+    );
+    expect(prisma.courseImportLesson.findMany).not.toHaveBeenCalled();
+    expect(summary.transcribed).toBe(1);
   });
 
   it('records the error code alongside the message for the admin UI', async () => {
