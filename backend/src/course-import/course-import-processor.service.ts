@@ -5,7 +5,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
 import { HeavyTransferLockService } from './heavy-transfer-lock.service';
-import { CourseImportError, toCourseImportError } from './course-import-error';
+import {
+  CourseImportError,
+  codeForHttpStatus,
+  toCourseImportError,
+} from './course-import-error';
 import { NATIVE_EXPORTS } from '../google-drive/google-drive.types';
 
 /** Ceiling for one Drive→R2 transfer. Generous, because a legitimate 2GB
@@ -202,6 +206,16 @@ export class CourseImportProcessorService {
         // that during a Supabase outage before this was added.
         const { url } = await withTimeout(
           (async () => {
+            // The Worker copies Drive -> R2 inside Cloudflare, so the bytes
+            // never count against Render's outbound bandwidth. It answers
+            // null when it isn't set up or can't size the file; then this
+            // server streams it itself, as it always did.
+            const viaWorker = await this.transferViaWorker(
+              file,
+              key,
+              exported?.mimeType,
+            );
+            if (viaWorker) return viaWorker;
             const { stream, mimeType } = await this.googleDrive.downloadFile(
               file.import.createdById,
               file.driveFileId,
@@ -240,7 +254,8 @@ export class CourseImportProcessorService {
         // already incremented by claimBatch, and claimBatch's own
         // `attempts < MAX_AUTO_ATTEMPTS` clause bounds the loop. A terminal
         // failure (missing Drive file, revoked access) still stops at once.
-        const willRetry = failure.retryable && file.attempts < MAX_AUTO_ATTEMPTS;
+        const willRetry =
+          failure.retryable && file.attempts < MAX_AUTO_ATTEMPTS;
         await this.prisma.courseImportFile.update({
           where: { id: file.id },
           data: {
@@ -261,6 +276,77 @@ export class CourseImportProcessorService {
     }
 
     return summary;
+  }
+
+  /**
+   * Copies one file with the teyro-import-transfer Cloudflare Worker
+   * (workers/import-transfer). Configured by COURSE_IMPORT_TRANSFER_URL and
+   * COURSE_IMPORT_TRANSFER_SECRET; returns null when they're unset or the
+   * Worker hands the file back (Drive didn't report its size).
+   */
+  private async transferViaWorker(
+    file: {
+      driveFileId: string;
+      mimeType: string;
+      import: { createdById: string };
+    },
+    key: string,
+    exportMimeType: string | undefined,
+  ): Promise<{ key: string; url: string } | null> {
+    const base = process.env.COURSE_IMPORT_TRANSFER_URL?.trim().replace(
+      /\/+$/,
+      '',
+    );
+    const secret = process.env.COURSE_IMPORT_TRANSFER_SECRET?.trim();
+    if (!base || !secret) return null;
+
+    const accessToken = await this.googleDrive.getAccessToken(
+      file.import.createdById,
+    );
+    let res: Response;
+    try {
+      res = await fetch(`${base}/transfer`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${secret}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          driveFileId: file.driveFileId,
+          key,
+          accessToken,
+          ...(exportMimeType
+            ? { exportMimeType }
+            : { contentType: file.mimeType }),
+        }),
+        signal: AbortSignal.timeout(FILE_TRANSFER_TIMEOUT_MS),
+      });
+    } catch (err) {
+      throw new CourseImportError(
+        'STORAGE_UPLOAD_FAILED',
+        `The transfer Worker could not be reached: ${(err as Error).message}`,
+        err,
+      );
+    }
+    const body = (await res.json().catch(() => ({}))) as {
+      ok?: boolean;
+      fallback?: boolean;
+      error?: string;
+      driveStatus?: number;
+    };
+    if (res.ok && body.ok) return { key, url: this.r2.publicUrlFor(key) };
+    if (res.ok && body.fallback) return null;
+    if (typeof body.driveStatus === 'number') {
+      throw new CourseImportError(
+        codeForHttpStatus(body.driveStatus, 'DRIVE'),
+        body.error ?? `Google Drive returned ${body.driveStatus}.`,
+      );
+    }
+    throw new CourseImportError(
+      // 401 = the shared secret doesn't match: a setup problem, not bad luck.
+      res.status === 401 ? 'PROVIDER_NOT_CONFIGURED' : 'STORAGE_UPLOAD_FAILED',
+      `Transfer Worker failed (HTTP ${res.status}): ${body.error ?? 'no detail'}`,
+    );
   }
 
   /** Atomically claims the next batch of pending files whose import is still

@@ -113,6 +113,13 @@ services:
       # Where Google Drive's consent screen sends the admin back to.
       - key: FRONTEND_URL
         value: https://teyro.app
+      # Course importer: the Cloudflare Worker that copies Drive -> R2 so
+      # videos don't count against Render's outbound bandwidth
+      # (workers/import-transfer). Unset = copy through this server.
+      - key: COURSE_IMPORT_TRANSFER_URL
+        sync: false   # https://teyro-import-transfer.<subdomain>.workers.dev
+      - key: COURSE_IMPORT_TRANSFER_SECRET
+        sync: false   # same value as the Worker's TRANSFER_SECRET
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_CLIENT_EMAIL

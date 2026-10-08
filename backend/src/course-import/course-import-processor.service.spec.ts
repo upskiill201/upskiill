@@ -33,8 +33,8 @@ describe('CourseImportProcessorService', () => {
     };
     courseImport: { findUnique: jest.Mock; update: jest.Mock };
   };
-  let googleDrive: { downloadFile: jest.Mock };
-  let r2: { uploadStream: jest.Mock };
+  let googleDrive: { downloadFile: jest.Mock; getAccessToken: jest.Mock };
+  let r2: { uploadStream: jest.Mock; publicUrlFor: jest.Mock };
   let heavyTransferLock: HeavyTransferLockService;
 
   beforeEach(async () => {
@@ -48,8 +48,14 @@ describe('CourseImportProcessorService', () => {
       },
       courseImport: { findUnique: jest.fn(), update: jest.fn() },
     };
-    googleDrive = { downloadFile: jest.fn() };
-    r2 = { uploadStream: jest.fn() };
+    googleDrive = {
+      downloadFile: jest.fn(),
+      getAccessToken: jest.fn().mockResolvedValue('drive-access-token'),
+    };
+    r2 = {
+      uploadStream: jest.fn(),
+      publicUrlFor: jest.fn((k: string) => `https://cdn.example/${k}`),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -174,6 +180,106 @@ describe('CourseImportProcessorService', () => {
       expect.anything(),
       'application/pdf',
     );
+  });
+
+  describe('through the transfer Worker', () => {
+    const env = { ...process.env };
+    let fetchMock: jest.Mock;
+    beforeEach(() => {
+      process.env.COURSE_IMPORT_TRANSFER_URL = 'https://transfer.example/';
+      process.env.COURSE_IMPORT_TRANSFER_SECRET = 'secret-123';
+      fetchMock = jest.fn();
+      global.fetch = fetchMock as unknown as typeof fetch;
+      prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }]);
+      prisma.courseImportFile.findMany.mockResolvedValue([
+        {
+          id: 'row-1',
+          importId: 'import-1',
+          driveFileId: 'vid-1',
+          driveFileName: '01 Intro.mp4',
+          mimeType: 'video/mp4',
+          attempts: 1,
+          import: { createdById: 'user-1', status: 'PROCESSING_FILES' },
+        },
+      ]);
+      prisma.courseImportFile.groupBy.mockResolvedValue([
+        { status: 'UPLOADED', _count: 1 },
+      ]);
+      prisma.courseImport.findUnique.mockResolvedValue({
+        status: 'PROCESSING_FILES',
+      });
+    });
+    afterEach(() => {
+      process.env = { ...env };
+    });
+    const reply = (status: number, body: unknown) =>
+      fetchMock.mockResolvedValue({
+        ok: status < 400,
+        status,
+        json: () => Promise.resolve(body),
+      });
+
+    it('copies the file without the bytes ever passing through this server', async () => {
+      reply(200, { ok: true, key: 'k', size: 10 });
+
+      await service.tick();
+
+      const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe('https://transfer.example/transfer');
+      expect(init.headers).toMatchObject({
+        authorization: 'Bearer secret-123',
+      });
+      expect(JSON.parse(init.body as string)).toMatchObject({
+        driveFileId: 'vid-1',
+        accessToken: 'drive-access-token',
+        contentType: 'video/mp4',
+      });
+      expect(googleDrive.downloadFile).not.toHaveBeenCalled();
+      expect(r2.uploadStream).not.toHaveBeenCalled();
+      const update = updateCallsFor(prisma.courseImportFile.update).find(
+        (c) => c.where.id === 'row-1',
+      );
+      expect(update?.data).toMatchObject({
+        status: 'UPLOADED',
+        storageUrl: expect.stringContaining('course-imports/import-1/vid-1-'),
+      });
+    });
+
+    it('streams the file itself when the Worker hands it back', async () => {
+      reply(200, { ok: false, fallback: true });
+      googleDrive.downloadFile.mockResolvedValue({
+        stream: {},
+        mimeType: 'video/mp4',
+      });
+      r2.uploadStream.mockResolvedValue({
+        key: 'k',
+        url: 'https://cdn.example/k',
+      });
+
+      await service.tick();
+
+      expect(googleDrive.downloadFile).toHaveBeenCalled();
+      expect(r2.uploadStream).toHaveBeenCalled();
+    });
+
+    it("reports Drive's refusal with the right code, not a storage error", async () => {
+      reply(502, {
+        ok: false,
+        error: 'Google Drive returned 404.',
+        driveStatus: 404,
+      });
+
+      await service.tick();
+
+      const update = updateCallsFor(prisma.courseImportFile.update).find(
+        (c) => c.where.id === 'row-1',
+      );
+      expect(update?.data).toMatchObject({
+        status: 'FAILED',
+        errorCode: 'DRIVE_FILE_NOT_FOUND',
+      });
+      expect(googleDrive.downloadFile).not.toHaveBeenCalled();
+    });
   });
 
   it('isolates a failed file: it is marked FAILED and does not stop the rest of the batch', async () => {

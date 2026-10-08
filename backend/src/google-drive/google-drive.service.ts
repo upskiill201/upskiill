@@ -249,6 +249,20 @@ export class GoogleDriveService {
     return google.drive({ version: 'v3', auth });
   }
 
+  /** A short-lived (~1 hour) Drive access token, refreshed if needed — for
+   *  the transfer Worker, which downloads from Drive itself so the bytes
+   *  never pass through this server. Read-only scope, like everything here. */
+  async getAccessToken(userId: string): Promise<string> {
+    const client = await this.getAuthorizedClient(userId);
+    const { token } = await client.getAccessToken();
+    if (!token) {
+      throw new BadRequestException(
+        'Google Drive did not issue an access token. Reconnect Drive.',
+      );
+    }
+    return token;
+  }
+
   /** One level of a folder's children — powers the folder-browser UI.
    *  `parentId` defaults to 'root' (My Drive). */
   async listChildren(userId: string, parentId = 'root'): Promise<DriveFile[]> {

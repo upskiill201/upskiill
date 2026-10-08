@@ -1,0 +1,13 @@
+# Teyro course-import transfer Worker — copies Google Drive files straight
+# into R2 so course videos never count against Render's outbound bandwidth.
+# Deploy: see the PR description (wrangler login, secret put, deploy).
+name = "teyro-import-transfer"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "teyro-production"
+
+# TRANSFER_SECRET is a secret, never in this file:
+#   npx wrangler@4.134.0 secret put TRANSFER_SECRET
