@@ -1,0 +1,9 @@
+{
+  "name": "teyro-import-transfer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/index.test.js",
+    "deploy": "npx wrangler@4.134.0 deploy"
+  }
+}
