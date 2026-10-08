@@ -22,6 +22,8 @@ const MAX_AUTO_ATTEMPTS = 3;
 /** Retry delay grows with each attempt (2min, 4min, ...) so a retry doesn't
  *  land in the same "model overloaded" window that caused the failure. */
 const RETRY_BACKOFF_MINUTES = 2;
+/** How long a file waits after the provider's audio-per-hour limit. */
+const QUOTA_WAIT_MINUTES = 20;
 
 interface ClaimedIdRow {
   id: string;
@@ -186,6 +188,48 @@ export class TranscriptionProcessorService {
           `Transcription failed for file ${file.id} (${file.driveFileName}) [${failure.code}]`,
           failure,
         );
+        // Quota, not a broken file: Groq's free tier allows ~2 hours of
+        // audio an hour and ~8 a day, and a 1-2 hour lecture can use all of
+        // it on its own. Retrying in 2-4 minutes just hits the limit again
+        // and burns the file's attempts until it lands in FAILED. Wait it
+        // out instead: give the attempt back and push updatedAt forward,
+        // which is what the claim query's backoff reads.
+        if (
+          failure.code === 'TRANSCRIPTION_RATE_LIMIT' ||
+          failure.code === 'AI_BUDGET_EXCEEDED'
+        ) {
+          const now = new Date();
+          const resumeAt =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? new Date(
+                  Date.UTC(
+                    now.getUTCFullYear(),
+                    now.getUTCMonth(),
+                    now.getUTCDate() + 1,
+                    0,
+                    5,
+                  ),
+                )
+              : new Date(now.getTime() + QUOTA_WAIT_MINUTES * 60_000);
+          const when = resumeAt.toISOString().slice(11, 16);
+          const message =
+            failure.code === 'AI_BUDGET_EXCEEDED'
+              ? `Waiting: today's AI budget is used up. Continues automatically after ${when} UTC.`
+              : `Waiting: the speech-to-text provider's hourly limit was reached. Continues automatically around ${when} UTC.`;
+          await this.prisma.$executeRaw`
+            UPDATE "course_import_files"
+               SET "transcriptStatus" = 'PENDING',
+                   "transcriptAttempts" = GREATEST("transcriptAttempts" - 1, 0),
+                   "transcriptErrorCode" = ${failure.code},
+                   "transcriptError" = ${message},
+                   "transcriptClaimedAt" = NULL,
+                   "transcriptClaimedBy" = NULL,
+                   "updatedAt" = ${resumeAt}
+             WHERE "id" = ${file.id}`;
+          summary.failed += 1;
+          continue;
+        }
+
         // transcriptAttempts was already incremented by claimBatch's UPDATE —
         // retry automatically (transient provider overload/rate-limit is
         // common and shouldn't need a manual click) until MAX_AUTO_ATTEMPTS,

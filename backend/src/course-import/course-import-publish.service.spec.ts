@@ -553,6 +553,71 @@ describe('CourseImportPublishService', () => {
         ]);
       });
 
+      function splitVideoImport(part1Status: string) {
+        const rich = buildRichLesson(
+          editingLessonOutput(),
+          {
+            url: 'https://cdn.example/v.mp4',
+            durationSec: 1200,
+            startSec: 0,
+            endSec: 600,
+          },
+          null,
+        );
+        const part = (n: number, status: string) => ({
+          id: `part-${n}`,
+          title: `Deep Dive (Part ${n} of 2)`,
+          status,
+          description: 'desc',
+          primaryFileId: 'vid-long',
+          partIndex: n,
+          partCount: 2,
+          clipStartSec: (n - 1) * 600,
+          clipEndSec: n * 600,
+          learnBlocks: rich.learnBlocks,
+          applyBlocks: rich.applyBlocks,
+          reflectBlocks: rich.reflectBlocks,
+          deepenBlocks: rich.deepenBlocks,
+          resourceFileIds: [],
+          createdLessonId: null,
+        });
+        return baseImport({
+          modules: [
+            {
+              id: 'module-1',
+              title: 'Course',
+              orderIndex: 0,
+              createdSectionId: null,
+              lessons: [part(1, part1Status), part(2, 'GENERATED')],
+            },
+          ],
+        });
+      }
+
+      it("holds back a split video's parts until every part is ready", async () => {
+        prisma.courseImport.findFirst.mockResolvedValue(
+          splitVideoImport('FAILED'),
+        );
+        await expect(
+          service.createCourse(user, importId, baseInput),
+        ).rejects.toThrow(rejected);
+      });
+
+      it('adds all the parts of a split video together, in order', async () => {
+        prisma.courseImport.findFirst.mockResolvedValue(
+          splitVideoImport('GENERATED'),
+        );
+        courseCreation.createFullCourseTree.mockResolvedValue(created);
+        await service.createCourse(user, importId, baseInput);
+        const [[, , spec]] = courseCreation.createFullCourseTree.mock.calls as [
+          [unknown, unknown, { sections: { lessons: { title: string }[] }[] }],
+        ];
+        expect(spec.sections[0].lessons.map((l) => l.title)).toEqual([
+          'Deep Dive (Part 1 of 2)',
+          'Deep Dive (Part 2 of 2)',
+        ]);
+      });
+
       it('withholds a text-only lesson whose source was a video', async () => {
         const found = readingImport();
         found.files[0].category = 'video';

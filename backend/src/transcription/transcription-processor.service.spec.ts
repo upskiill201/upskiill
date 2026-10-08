@@ -292,7 +292,7 @@ describe('TranscriptionProcessorService', () => {
       },
     ]);
     transcription.transcribe.mockRejectedValue(
-      new CourseImportError('TRANSCRIPTION_RATE_LIMIT', 'slow down'),
+      new CourseImportError('TRANSCRIPTION_TIMEOUT', 'took too long'),
     );
 
     await service.tick();
@@ -301,10 +301,34 @@ describe('TranscriptionProcessorService', () => {
       (c) => c.where.id === 'row-1',
     );
     expect(row1Update?.data).toMatchObject({
-      transcriptStatus: 'PENDING', // rate limits are retryable
-      transcriptErrorCode: 'TRANSCRIPTION_RATE_LIMIT',
-      transcriptError: 'slow down',
+      transcriptStatus: 'PENDING', // timeouts are retryable
+      transcriptErrorCode: 'TRANSCRIPTION_TIMEOUT',
+      transcriptError: 'took too long',
     });
+  });
+
+  it("waits out the provider's hourly audio limit instead of spending the file's attempts", async () => {
+    prisma.$queryRaw.mockResolvedValue([{ id: 'row-1' }]);
+    prisma.courseImportFile.findMany.mockResolvedValue([
+      {
+        id: 'row-1',
+        category: 'video',
+        storageUrl: 'https://cdn.example/lecture.mp4',
+        transcriptAttempts: 3, // would be FAILED under the normal rule
+        import: { status: 'GENERATING_CONTENT' },
+      },
+    ]);
+    transcription.transcribe.mockRejectedValue(
+      new CourseImportError('TRANSCRIPTION_RATE_LIMIT', 'slow down'),
+    );
+
+    await service.tick();
+
+    expect(prisma.courseImportFile.update).not.toHaveBeenCalled();
+    const sql = (prisma.$executeRaw.mock.calls as unknown[][])
+      .map((c) => (c[0] as string[]).join('?'))
+      .find((q) => q.includes('"transcriptAttempts" = GREATEST'));
+    expect(sql).toContain(`"transcriptStatus" = 'PENDING'`);
   });
 
   it('refuses to transcribe a file with no storage URL yet, without ever calling Gemini', async () => {

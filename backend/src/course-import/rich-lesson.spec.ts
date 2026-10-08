@@ -243,6 +243,32 @@ describe('buildRichLesson', () => {
     expect(buildRichLesson(out, VIDEO, null).stats.dropped).toHaveLength(1);
   });
 
+  it('blanks out answers the model left written into the sentence', () => {
+    const out = editingLessonOutput();
+    out.exercises = [
+      {
+        kind: 'fillBlank',
+        prompt: 'Fill in the blanks.',
+        template: 'Drama editing hinges on Conflict and reactions.',
+        answers: ['conflict', 'reactions'],
+        distractors: ['music'],
+      },
+      // Ambiguous: "cut" appears twice, so this one is still dropped.
+      {
+        kind: 'fillBlank',
+        prompt: 'Fill in the blanks.',
+        template: 'A cut is a cut.',
+        answers: ['cut'],
+        distractors: ['fade'],
+      },
+      ...out.exercises.filter((e: any) => e.kind !== 'fillBlank'),
+    ];
+    const r = buildRichLesson(out, VIDEO, null);
+    const items = (r.applyBlocks[0] as any).value.items;
+    expect(items[0].template).toBe('Drama editing hinges on [[1]] and [[2]].');
+    expect(r.stats.dropped.join(' ')).toMatch(/0 blanks but 1 answers/);
+  });
+
   it('tells the model which exercise kinds fit the track', () => {
     expect(richSystemPrompt('Coding')).toContain('predictOutput');
     expect(richSystemPrompt('AI')).toContain('pickPrompt');

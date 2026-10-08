@@ -176,7 +176,7 @@ Return ONE JSON object with exactly these fields:
 - "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the ${w.text} is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, easy first. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
 ${kinds}
   mcq items also have "options" (3-4 short answers) and "correctIndex" (0-based). Exactly one right answer; wrong ones plausible, never "all of the above".
-  Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank]. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
+  Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank] — and each one REPLACES its answer: the answer words never appear in the template. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
 - "reflectPrompt": asks the learner to apply the lesson to their own work or plan an action (under 300 chars). Never "what did you learn?".
 - "reflectStarters": 2-3 sentence starters (under 60 chars each).
 - "deepenTitle" (under 80 chars) and "deepenSummary" (under 300 chars): a concrete next step or deeper technique.
@@ -357,18 +357,47 @@ const BLANK_STYLES: RegExp[] = [
   /\[\s*\d+\s*\]/g, // [1]
   /[[(<]\s*blank\s*\d*\s*[\])>]/gi, // [blank] (blank) <blank> [blank 1]
 ];
-function normaliseBlanks(template: string, answers: number): string {
-  if (answers === 0) return template;
-  if (Array.from(template.matchAll(/\[\[(\d+)\]\]/g)).length === answers)
+function normaliseBlanks(template: string, answers: string[]): string {
+  if (answers.length === 0) return template;
+  if (Array.from(template.matchAll(/\[\[(\d+)\]\]/g)).length === answers.length)
     return template;
   for (const style of BLANK_STYLES) {
     const hits = template.match(style);
-    if (hits && hits.length === answers) {
+    if (hits && hits.length === answers.length) {
       let n = 0;
       return template.replace(style, () => `[[${++n}]]`);
     }
   }
-  return template;
+  return blankOutAnswers(template, answers);
+}
+
+const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * The other common miss (every live run, 2026-10-08): the model writes the
+ * full sentence with the answers left IN it — "Drama hinges on conflict and
+ * reactions" with answers ["conflict", "reactions"]. Blank them out, but only
+ * when every answer appears exactly once, as a whole word, in answer order;
+ * anything less certain is left alone and the exercise is dropped as before.
+ */
+function blankOutAnswers(template: string, answers: string[]): string {
+  let out = template;
+  let from = 0;
+  for (const [i, answer] of answers.entries()) {
+    const re = new RegExp(
+      `(?<![\\p{L}\\p{N}_])${escapeRe(answer)}(?![\\p{L}\\p{N}_])`,
+      'giu',
+    );
+    const hits = Array.from(out.matchAll(re));
+    if (hits.length !== 1 || hits[0].index < from) return template;
+    const marker = `[[${i + 1}]]`;
+    out =
+      out.slice(0, hits[0].index) +
+      marker +
+      out.slice(hits[0].index + hits[0][0].length);
+    from = hits[0].index + marker.length;
+  }
+  return out;
 }
 
 /** One model exercise → a v2 exercise, or a reason it can't be one. */
@@ -420,7 +449,7 @@ function buildExercise(
     }
     case 'fillBlank': {
       const answers = list(raw.answers, 6, 200);
-      const template = normaliseBlanks(s(raw.template, 3000), answers.length);
+      const template = normaliseBlanks(s(raw.template, 3000), answers);
       const markers = Array.from(template.matchAll(/\[\[(\d+)\]\]/g));
       if (markers.length !== answers.length)
         return {

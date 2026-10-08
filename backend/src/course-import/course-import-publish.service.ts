@@ -334,19 +334,39 @@ export class CourseImportPublishService {
     found: CourseImportWithFilesAndModules,
     opts: { onlyUnwritten?: boolean } = {},
   ) {
+    // A lesson already in the course counts as ready, so a later batch can
+    // finish a split video whose first parts went in earlier.
+    const ok = (l: ImportLesson) =>
+      !!l.createdLessonId ||
+      this.isPublishable(
+        l,
+        !!l.primaryFileId &&
+          this.filesById(found).get(l.primaryFileId)?.category === 'document',
+      );
     return found.modules
-      .map((module) => ({
-        module,
-        lessons: module.lessons.filter(
-          (l) =>
-            this.isPublishable(
-              l,
-              !!l.primaryFileId &&
-                this.filesById(found).get(l.primaryFileId)?.category === 'document',
-            ) &&
-            (!opts.onlyUnwritten || !l.createdLessonId),
-        ),
-      }))
+      .map((module) => {
+        // The parts of a split video go into the course together, in order:
+        // never "Part 2 of 3" while Part 1 is still writing or has failed.
+        const partsReady = new Map<string, boolean>();
+        for (const l of module.lessons) {
+          if (l.partCount == null || !l.primaryFileId) continue;
+          partsReady.set(
+            l.primaryFileId,
+            (partsReady.get(l.primaryFileId) ?? true) && ok(l),
+          );
+        }
+        return {
+          module,
+          lessons: module.lessons.filter(
+            (l) =>
+              ok(l) &&
+              (l.partCount == null ||
+                !l.primaryFileId ||
+                partsReady.get(l.primaryFileId) === true) &&
+              (!opts.onlyUnwritten || !l.createdLessonId),
+          ),
+        };
+      })
       .filter((m) => m.lessons.length > 0);
   }
 
