@@ -56,6 +56,21 @@ describe('GroqWhisperTranscriptionService', () => {
     service = module.get(GroqWhisperTranscriptionService);
   });
 
+  it("stops before downloading a video that can't fit on the temp disk", async () => {
+    const body = new ReadableStream({ start: (c) => c.close() });
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      body,
+      // 1 PB: bigger than any real disk this test runs on.
+      headers: new Headers({ 'content-length': String(1e15) }),
+    });
+
+    await expect(
+      service.transcribe('https://cdn.example/huge.mp4'),
+    ).rejects.toMatchObject({ code: 'DISK_SPACE_LOW' });
+  });
+
   it('refuses when the course-import AI budget has been reached, before touching Drive or Groq', async () => {
     budget.checkCourseImport.mockResolvedValue({
       allow: false,

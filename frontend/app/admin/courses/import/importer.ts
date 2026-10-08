@@ -171,6 +171,7 @@ const ERROR_EXPLANATION: Record<string, string> = {
   PROVIDER_NOT_CONFIGURED: 'No AI provider is set up. Add one under Automation → AI providers.',
   NO_TRANSCRIPT: "This lesson has no transcript or readable document text to write from. A scanned PDF or an old .doc can't be read: export it as a text PDF or DOCX.",
   FILE_NOT_UPLOADED: 'This file has not finished uploading yet.',
+  DISK_SPACE_LOW: "This video is bigger than the server's free temporary disk. Compress or split it, then retry.",
   UNKNOWN: 'Unexpected error. Retrying may help.',
 };
 
