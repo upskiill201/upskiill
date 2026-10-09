@@ -30,6 +30,7 @@ import { playHaptic } from '@/lib/haptics';
 import { deletePost, setPostFlag, timeAgo, togglePostLike, type CommunityPost } from '@/lib/communityApi';
 import styles from './PostDetail.module.css';
 import { CreatorBadge } from '@/components/community/CreatorBadge';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 type DetailPost = CommunityPost & {
   canModerate: boolean;
@@ -149,7 +150,7 @@ export default function PostDetailPage() {
         <div className={styles.body}>{renderRichText(post.contentText)}</div>
 
         {post.lesson && (
-          <Link href={`/learn/${post.community?.courseId ?? courseId}`} className={styles.lessonTag}>
+          <Link href={courseHomeHref(post.community?.courseId ?? courseId)} className={styles.lessonTag}>
             <BookOpen size={14} strokeWidth={2.75} /> {post.lesson.title}
           </Link>
         )}

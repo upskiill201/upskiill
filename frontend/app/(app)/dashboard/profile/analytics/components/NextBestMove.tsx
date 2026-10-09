@@ -5,13 +5,14 @@ import { Target } from 'lucide-react';
 import DuolingoButton3D from '@/components/creator-onboarding/DuolingoButton3D';
 import { getNextBestMoveCopy } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 export function NextBestMove({ move }: { move: DashboardResponse['nextBestMove'] }) {
   const router = useRouter();
   const copy = getNextBestMoveCopy(move.action, move.data);
 
   const handleClick = () => {
-    router.push(move.courseId ? `/learn/${move.courseId}` : '/dashboard');
+    router.push(move.courseId ? courseHomeHref(move.courseId) : '/dashboard');
   };
 
   return (

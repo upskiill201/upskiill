@@ -52,6 +52,7 @@ import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { useGamification } from '@/context/GamificationContext';
 import styles from './CourseDetail.module.css';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 interface Lesson {
   id?: string;
@@ -309,7 +310,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
   const continueHref = () => {
     const next = enrollment?.nextLesson;
     if (next) return lessonHref(courseId, next.sectionIndex, next.id);
-    return `/learn/${courseId}`;
+    return courseHomeHref(courseId);
   };
 
   const handlePrimary = () => {
@@ -363,14 +364,14 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
   const startFirstLesson = (lessonId?: string) => {
     const id = lessonId || firstLesson?.id;
     const secIdx = id ? sections.findIndex((s) => (s.lessons || []).some((l) => l.id === id)) : -1;
-    router.push(id && secIdx >= 0 ? lessonHref(courseId, secIdx, id) : `/learn/${courseId}`);
+    router.push(id && secIdx >= 0 ? lessonHref(courseId, secIdx, id) : courseHomeHref(courseId));
   };
 
   const openLesson = (secIdx: number, lessonId?: string) => {
     if (!isEnrolled) return;
     playSound('nodeTap');
     playHaptic('light', false);
-    router.push(lessonId ? lessonHref(courseId, secIdx, lessonId) : `/learn/${courseId}/section/${secIdx}`);
+    router.push(lessonId ? lessonHref(courseId, secIdx, lessonId) : courseHomeHref(courseId));
   };
 
   const toggleUnit = (key: string, open: boolean) => {

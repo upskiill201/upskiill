@@ -1,4 +1,4 @@
-import { sanitizeNextPath } from '../return-to';
+import { sanitizeNextPath, sanitizeReturnTo } from '../return-to';
 
 /**
  * Open-redirect guards for the `next` param proxy.ts attaches when it bounces
@@ -65,5 +65,19 @@ describe('sanitizeNextPath', () => {
 
   it('honours a caller-supplied fallback', () => {
     expect(sanitizeNextPath('//evil.example', '/learn')).toBe('/learn');
+  });
+});
+
+describe('sanitizeReturnTo', () => {
+  it('keeps a lesson route and home', () => {
+    expect(sanitizeReturnTo('/learn/c1/section/2?lesson=l9', 'c1')).toBe('/learn/c1/section/2?lesson=l9');
+    expect(sanitizeReturnTo('/dashboard?course=c1', 'c1')).toBe('/dashboard?course=c1');
+  });
+
+  it('falls back to home on this course — there is no course map any more', () => {
+    expect(sanitizeReturnTo(null, 'c1')).toBe('/dashboard?course=c1');
+    expect(sanitizeReturnTo('//evil.example', 'c1')).toBe('/dashboard?course=c1');
+    expect(sanitizeReturnTo('/dashboardevil', 'c1')).toBe('/dashboard?course=c1');
+    expect(sanitizeReturnTo('/creator/courses')).toBe('/dashboard');
   });
 });

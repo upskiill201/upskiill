@@ -54,7 +54,6 @@ export default function LessonPreviewPage() {
       courseId={courseId}
       isReview={false}
       adminReviewMode
-      returnHome={false}
       onExit={leave}
       onCompleted={() => {}}
       onFinished={() => setRun((r) => r + 1)}
