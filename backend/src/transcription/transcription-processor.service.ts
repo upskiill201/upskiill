@@ -284,20 +284,17 @@ export class TranscriptionProcessorService {
             JOIN "course_imports" ci ON ci."id" = f2."importId"
            WHERE f2."transcriptStatus" = 'PENDING'
              AND f2."status" = 'UPLOADED'
-             -- Deliberately NOT PROCESSING_FILES: transcription for an
-             -- import only starts once every one of its files has finished
-             -- uploading (the import only leaves PROCESSING_FILES once
-             -- nothing is left PENDING/CLAIMED there — see
-             -- CourseImportProcessorService#recomputeImportStatus). Upload
-             -- fully, then transcribe — not interleaved per file.
-             -- COURSE_CREATED keeps later batches transcribing after a
-             -- first partial course has been built; PAUSED is excluded so a
-             -- paused import stops claiming new videos.
-             AND ci."status" IN ('READY_FOR_GENERATION', 'TRANSCRIBING', 'GENERATING_CONTENT', 'COURSE_CREATED')
+             -- Each video is transcribed as soon as it's copied, not after
+             -- the whole course has copied: that's what lets section 1 be
+             -- written (and published) while section 9 is still copying.
+             -- The heavy-transfer lock still keeps one big file in memory at
+             -- a time. PAUSED and CANCELLED are excluded so they stop.
+             AND ci."status" IN ('CREATED', 'PROCESSING_FILES', 'READY_FOR_GENERATION', 'TRANSCRIBING', 'GENERATING_CONTENT', 'READY_FOR_REVIEW', 'COURSE_CREATED')
              AND f2."transcriptAttempts" < ${MAX_AUTO_ATTEMPTS}
              AND f2."updatedAt" < NOW() - (f2."transcriptAttempts" * ${RETRY_BACKOFF_MINUTES} * INTERVAL '1 minute')
              ${importFilter}
-           ORDER BY f2."createdAt"
+           -- Drive order, so videos are ready section by section.
+           ORDER BY ci."createdAt", f2."orderIndex"
            LIMIT ${limit}
              FOR UPDATE SKIP LOCKED
         ) d

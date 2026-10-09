@@ -1,3 +1,5 @@
+import type { LessonReadiness, SectionReadiness } from './lesson-readiness';
+
 export interface CourseImportFileSummary {
   id: string;
   driveFileId: string;
@@ -54,12 +56,19 @@ export interface CourseImportLessonSummary {
   clipEndSec: number | null;
   partIndex: number | null;
   partCount: number | null;
+  /** added | ready | skipped | attention | working — see lesson-readiness. */
+  readiness: LessonReadiness;
+  skipped: boolean;
 }
 
 export interface CourseImportModuleSummary {
   id: string;
   title: string;
   orderIndex: number;
+  /** Ready = every lesson written or skipped: the section can go in. */
+  readiness: SectionReadiness;
+  /** The section exists in the real course (some or all lessons added). */
+  inCourse: boolean;
   lessons: CourseImportLessonSummary[];
 }
 

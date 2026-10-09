@@ -53,7 +53,9 @@ export class CourseImportAutopilotService {
     const toAnalyze = await this.prisma.courseImport.findMany({
       where: {
         autopilot: true,
-        status: 'READY_FOR_GENERATION',
+        // Normally planned at creation; this catches one whose planning
+        // failed then (or an older import still waiting to be planned).
+        status: { in: ['CREATED', 'PROCESSING_FILES', 'READY_FOR_GENERATION'] },
         modules: { none: {} },
       },
       select: { id: true, createdById: true },

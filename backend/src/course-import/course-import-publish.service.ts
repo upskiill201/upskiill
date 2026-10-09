@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseCreationService } from '../course-creation/course-creation.service';
 import { AddLessonResourceDto } from '../lesson/dto/update-lesson.dto';
@@ -12,9 +17,7 @@ import {
   CourseImportWithFilesAndModules,
   WITH_FILES_AND_MODULES,
 } from './course-import-summary.util';
-import { APPLY_QUESTIONS_MAX, APPLY_QUESTIONS_MIN } from './lesson-content-generation.types';
-import { RICH_EXERCISES_KEEP_MIN } from './rich-lesson';
-import { phaseStateFromBlocks } from '../lesson/lesson-blocks.util';
+import { lessonReadiness, sectionReadiness } from './lesson-readiness';
 import { cleanLessonTitle } from './course-structure-analysis.service';
 import { cleanDriveFileName } from '../google-drive/google-drive.types';
 
@@ -34,11 +37,17 @@ export function resourceTypeFor(file: {
   storageKey: string | null;
   driveFileName: string;
 }): string {
-  const ext = (file.storageKey ?? file.driveFileName).trim().split('.').pop()?.toLowerCase() ?? '';
+  const ext =
+    (file.storageKey ?? file.driveFileName)
+      .trim()
+      .split('.')
+      .pop()
+      ?.toLowerCase() ?? '';
   if (ext === 'pdf') return 'pdf';
   if (['doc', 'docx', 'txt', 'md', 'rtf'].includes(ext)) return 'doc';
   if (['ppt', 'pptx', 'key'].includes(ext)) return 'pptx';
-  if (['xls', 'xlsx', 'csv', 'tsv'].includes(ext)) return ext === 'csv' || ext === 'tsv' ? 'csv' : 'xls';
+  if (['xls', 'xlsx', 'csv', 'tsv'].includes(ext))
+    return ext === 'csv' || ext === 'tsv' ? 'csv' : 'xls';
   if (['zip', 'rar', '7z', 'tar', 'gz', 'tgz'].includes(ext)) return 'zip';
   if (['fig', 'sketch', 'psd', 'ai', 'xd'].includes(ext)) return 'design';
   if (file.category === 'video') return 'video';
@@ -50,9 +59,11 @@ export function resourceTypeFor(file: {
 }
 
 /** Starter files and templates a learner works in, vs. things to read. */
-const TEMPLATE_NAME = /\b(starter|template|boilerplate|exercise|assignment|project|worksheet)s?\b/i;
+const TEMPLATE_NAME =
+  /\b(starter|template|boilerplate|exercise|assignment|project|worksheet)s?\b/i;
 
-type ImportLesson = CourseImportWithFilesAndModules['modules'][number]['lessons'][number];
+type ImportLesson =
+  CourseImportWithFilesAndModules['modules'][number]['lessons'][number];
 
 /**
  * Builds and then incrementally extends the real course for an import.
@@ -90,7 +101,11 @@ export class CourseImportPublishService {
     user: AuthenticatedUser,
     importId: string,
     input: CreateCourseFromImportInput,
-  ): Promise<{ courseId: string; result: CourseTreeResult; appended: boolean }> {
+  ): Promise<{
+    courseId: string;
+    result: CourseTreeResult;
+    appended: boolean;
+  }> {
     const found = await this.findOwned(user.id, importId);
 
     return found.createdCourseId
@@ -104,11 +119,15 @@ export class CourseImportPublishService {
     user: AuthenticatedUser,
     found: CourseImportWithFilesAndModules,
     input: CreateCourseFromImportInput,
-  ): Promise<{ courseId: string; result: CourseTreeResult; appended: boolean }> {
+  ): Promise<{
+    courseId: string;
+    result: CourseTreeResult;
+    appended: boolean;
+  }> {
     const publishable = this.publishableModules(found);
     if (publishable.length === 0) {
       throw new BadRequestException(
-        'No lessons have finished generating and passed validation yet — there is nothing to build a course from.',
+        'No section is complete yet — there is nothing to build a course from. A section goes in once every lesson in it is written (or skipped).',
       );
     }
 
@@ -167,7 +186,11 @@ export class CourseImportPublishService {
     user: AuthenticatedUser,
     found: CourseImportWithFilesAndModules,
     courseId: string,
-  ): Promise<{ courseId: string; result: CourseTreeResult; appended: boolean }> {
+  ): Promise<{
+    courseId: string;
+    result: CourseTreeResult;
+    appended: boolean;
+  }> {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
       select: { id: true, published: true },
@@ -180,10 +203,10 @@ export class CourseImportPublishService {
 
     // Anything already carrying a createdLessonId was written by an earlier
     // call and is skipped — this is what makes repeat calls idempotent.
-    const pending = this.publishableModules(found, { onlyUnwritten: true });
+    const pending = this.publishableModules(found);
     if (pending.length === 0) {
       throw new BadRequestException(
-        'Every lesson that has finished generating is already in the course. Nothing new to add yet.',
+        'No new section is complete yet. Every finished section is already in the course.',
       );
     }
 
@@ -207,12 +230,13 @@ export class CourseImportPublishService {
           lessons: [],
         };
         for (const [i, spec] of lessonSpecs.entries()) {
-          const lessonResult = await this.courseCreation.createLessonWithContent(
-            user.id,
-            module.createdSectionId,
-            user,
-            spec,
-          );
+          const lessonResult =
+            await this.courseCreation.createLessonWithContent(
+              user.id,
+              module.createdSectionId,
+              user,
+              spec,
+            );
           created.lessons.push(lessonResult);
           if (lessonResult.lessonId) {
             await this.markLessonWritten(lessons[i].id, lessonResult.lessonId);
@@ -234,13 +258,17 @@ export class CourseImportPublishService {
           });
           for (const [i, lessonResult] of sectionResult.lessons.entries()) {
             if (lessonResult.lessonId) {
-              await this.markLessonWritten(lessons[i].id, lessonResult.lessonId);
+              await this.markLessonWritten(
+                lessons[i].id,
+                lessonResult.lessonId,
+              );
             }
           }
         }
       }
     }
 
+    await this.reorderImportedSections(found.id, courseId);
     this.logger.log(
       `Appended ${pending.reduce((n, p) => n + p.lessons.length, 0)} lesson(s) to course ${courseId} as ${publishLessons ? 'published' : 'drafts'}.`,
     );
@@ -255,120 +283,64 @@ export class CourseImportPublishService {
   // ── Eligibility ────────────────────────────────────────────────────────
 
   /**
-   * A lesson is only eligible to be written into the real course once its
-   * generated content actually holds up. "Generation finished" is not the
-   * same as "safe to show a learner" — this is the gate that keeps a
-   * malformed lesson out of a course that may already be live.
+   * What goes into the course now: every lesson of every section that is
+   * READY (all its lessons written or skipped — see lesson-readiness), and
+   * nothing from a section that is still writing or has a lesson needing
+   * attention, so a learner never sees a section with lessons missing.
+   * Lessons already in the course are never written twice.
    */
-  private isPublishable(lesson: ImportLesson, isReading = false): boolean {
-    if (lesson.status !== 'GENERATED') return false;
-
-    const learn = lesson.learnBlocks as unknown[] | null;
-    const apply = lesson.applyBlocks as unknown[] | null;
-    const reflect = lesson.reflectBlocks as unknown[] | null;
-    const deepen = lesson.deepenBlocks as unknown[] | null;
-
-    if (!learn?.length || !apply?.length || !reflect?.length || !deepen?.length) {
-      return false;
-    }
-
-    // Rich (v2) lessons: the exact checks publish runs, plus the lesson's
-    // source — its video or audio card, or, for a reading lesson built from
-    // a document, at least two explanation cards to read.
-    const state = phaseStateFromBlocks({ learn, apply });
-    if (state.learn || state.apply) {
-      const cards = (learn.find((b) => (b as { type?: string }).type === 'learnCards') as { value?: { kind?: string }[] } | undefined)?.value;
-      const kinds = Array.isArray(cards) ? cards.map((c) => c?.kind) : [];
-      const hasVideo =
-        kinds.includes('video') ||
-        kinds.includes('audio') ||
-        (isReading && kinds.filter((k) => k === 'text').length >= 2) ||
-        learn.some((b) => (b as { type?: string }).type === 'videoUrl' && !!(b as { value?: string }).value);
-      const items = (apply.find((b) => (b as { type?: string }).type === 'exercises') as { value?: { items?: unknown[] } } | undefined)
-        ?.value?.items;
-      const count = Array.isArray(items) ? items.length : 0;
-      const ok =
-        hasVideo &&
-        (state.learn?.complete ?? true) &&
-        (state.apply?.complete ?? false) &&
-        count >= RICH_EXERCISES_KEEP_MIN &&
-        count <= 20;
-      if (!ok) {
-        this.logger.warn(
-          `Lesson "${lesson.title}" failed its checks (${[...(state.learn?.errors ?? []), ...(state.apply?.errors ?? [])].join(' ') || `${count} exercises`}) — withheld from the course.`,
-        );
-      }
-      return ok;
-    }
-
-    // Classic (v1) lessons from before rich generation.
-    // The video is the Learn step; a lesson without one is a shell.
-    const hasVideo = learn.some(
-      (b) =>
-        (b as { type?: string }).type === 'videoUrl' &&
-        !!(b as { value?: string }).value,
-    );
-    if (!hasVideo) return false;
-
-    // Hard product rule, re-checked here rather than trusted from
-    // generation time: this is the last point before content reaches a real
-    // course, and a course that is already published cannot afford an
-    // Apply step with the wrong number of questions.
-    const questions = (
-      apply[0] as { value?: { questions?: unknown[] } } | undefined
-    )?.value?.questions;
-    if (!Array.isArray(questions)) return false;
-    if (
-      questions.length < APPLY_QUESTIONS_MIN ||
-      questions.length > APPLY_QUESTIONS_MAX
-    ) {
-      this.logger.warn(
-        `Lesson "${lesson.title}" has ${questions.length} Apply questions (allowed ${APPLY_QUESTIONS_MIN}-${APPLY_QUESTIONS_MAX}) — withheld from the course.`,
-      );
-      return false;
-    }
-
-    return true;
-  }
-
-  private publishableModules(
-    found: CourseImportWithFilesAndModules,
-    opts: { onlyUnwritten?: boolean } = {},
-  ) {
-    // A lesson already in the course counts as ready, so a later batch can
-    // finish a split video whose first parts went in earlier.
-    const ok = (l: ImportLesson) =>
-      !!l.createdLessonId ||
-      this.isPublishable(
-        l,
-        !!l.primaryFileId &&
-          this.filesById(found).get(l.primaryFileId)?.category === 'document',
-      );
+  private publishableModules(found: CourseImportWithFilesAndModules) {
+    const filesById = this.filesById(found);
     return found.modules
       .map((module) => {
-        // The parts of a split video go into the course together, in order:
-        // never "Part 2 of 3" while Part 1 is still writing or has failed.
-        const partsReady = new Map<string, boolean>();
-        for (const l of module.lessons) {
-          if (l.partCount == null || !l.primaryFileId) continue;
-          partsReady.set(
-            l.primaryFileId,
-            (partsReady.get(l.primaryFileId) ?? true) && ok(l),
-          );
-        }
+        const states = module.lessons.map((l) => lessonReadiness(l, filesById));
         return {
           module,
-          lessons: module.lessons.filter(
-            (l) =>
-              ok(l) &&
-              (l.partCount == null ||
-                !l.primaryFileId ||
-                partsReady.get(l.primaryFileId) === true) &&
-              (!opts.onlyUnwritten || !l.createdLessonId),
-          ),
+          lessons:
+            sectionReadiness(states) === 'ready'
+              ? module.lessons.filter((_, i) => states[i] === 'ready')
+              : [],
         };
       })
       .filter((m) => m.lessons.length > 0);
+  }
+
+  /**
+   * New sections are appended at the end of a course, so a section that
+   * finished out of turn (6 held back by one lesson, 7 done first) would land
+   * out of order. Put the imported sections back in Drive order, using the
+   * slots they already occupy, so anything the admin added by hand keeps its
+   * place. Best-effort: order is fixable in Course Builder, a failure here
+   * must never fail a publish that already succeeded.
+   */
+  private async reorderImportedSections(importId: string, courseId: string) {
+    try {
+      const modules = await this.prisma.courseImportModule.findMany({
+        where: { importId, createdSectionId: { not: null } },
+        orderBy: { orderIndex: 'asc' },
+        select: { createdSectionId: true },
+      });
+      const wanted = modules.map((m) => m.createdSectionId as string);
+      const sections = await this.prisma.section.findMany({
+        where: { courseId, id: { in: wanted } },
+        select: { id: true, orderIndex: true },
+      });
+      const present = wanted.filter((id) => sections.some((s) => s.id === id));
+      const slots = sections.map((s) => s.orderIndex).sort((a, b) => a - b);
+      for (const [i, id] of present.entries()) {
+        const current = sections.find((s) => s.id === id)?.orderIndex;
+        if (current !== slots[i]) {
+          await this.prisma.section.update({
+            where: { id },
+            data: { orderIndex: slots[i] },
+          });
+        }
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Could not reorder imported sections for course ${courseId}: ${(err as Error).message}`,
+      );
+    }
   }
 
   // ── Mapping ────────────────────────────────────────────────────────────
@@ -391,12 +363,18 @@ export class CourseImportPublishService {
           ? filesById.get(lesson.primaryFileId)?.durationMs
           : null;
     const applyItems = (
-      ((lesson.applyBlocks as unknown[] | null) ?? []).find((b) => (b as { type?: string }).type === 'exercises') as
-        | { value?: { items?: unknown[] } }
-        | undefined
+      ((lesson.applyBlocks as unknown[] | null) ?? []).find(
+        (b) => (b as { type?: string }).type === 'exercises',
+      ) as { value?: { items?: unknown[] } } | undefined
     )?.value?.items;
     const durationMinutes = videoMs
-      ? Math.max(1, Math.round(Number(videoMs) / 60_000 + (Array.isArray(applyItems) ? applyItems.length * 0.5 : 0)))
+      ? Math.max(
+          1,
+          Math.round(
+            Number(videoMs) / 60_000 +
+              (Array.isArray(applyItems) ? applyItems.length * 0.5 : 0),
+          ),
+        )
       : undefined;
     return {
       title: lesson.title,
@@ -413,13 +391,19 @@ export class CourseImportPublishService {
         .map((fileId) => filesById.get(fileId))
         // Images are already Learn image cards; everything else is a
         // Deepen download.
-        .filter((f): f is NonNullable<typeof f> => !!f && !!f.storageUrl && f.category !== 'image')
+        .filter(
+          (f): f is NonNullable<typeof f> =>
+            !!f && !!f.storageUrl && f.category !== 'image',
+        )
         .map((f): AddLessonResourceDto => {
           const storedName = (f.storageKey ?? '').split('/').pop() ?? '';
-          const storedExt = storedName.includes('.') ? storedName.split('.').pop()! : '';
+          const storedExt = storedName.includes('.')
+            ? storedName.split('.').pop()!
+            : '';
           const cleanName = cleanDriveFileName(f.driveFileName);
           const hasExt = /\.[a-z0-9]{1,5}$/i.test(cleanName);
-          const originalName = hasExt || !storedExt ? cleanName : `${cleanName}.${storedExt}`;
+          const originalName =
+            hasExt || !storedExt ? cleanName : `${cleanName}.${storedExt}`;
           return {
             type: resourceTypeFor(f),
             title: cleanLessonTitle(f.driveFileName),

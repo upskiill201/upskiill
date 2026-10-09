@@ -3,13 +3,11 @@ import { Cron } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LessonContentGenerationService } from './lesson-content-generation.service';
-import {
-  CourseImportError,
-  toCourseImportError,
-} from './course-import-error';
+import { CourseImportError, toCourseImportError } from './course-import-error';
 import { asSegments, sliceTranscript } from './lesson-parts';
 import { cleanLessonTitle } from './course-structure-analysis.service';
 import { cleanDriveFileName } from '../google-drive/google-drive.types';
+import { lessonReadiness } from './lesson-readiness';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -28,7 +26,9 @@ const QUOTA_WAIT_MINUTES = 2;
  * earn rate-limit errors. One a minute keeps a free-tier import moving
  * steadily; lower it with COURSE_IMPORT_AI_MIN_GAP_SECONDS on a paid tier.
  */
-const AI_MIN_GAP_MS = Math.max(0, Number(process.env.COURSE_IMPORT_AI_MIN_GAP_SECONDS ?? 60)) * 1000;
+const AI_MIN_GAP_MS =
+  Math.max(0, Number(process.env.COURSE_IMPORT_AI_MIN_GAP_SECONDS ?? 60)) *
+  1000;
 
 interface ClaimedIdRow {
   id: string;
@@ -212,7 +212,9 @@ export class LessonContentGenerationProcessorService {
         // per-minute allowance.
         this.lastAiCallAt = Date.now();
         const generated = await this.generation.generate({
-          courseTitle: courseImport.courseTitle || courseImport.sourceDriveFolderName.trim(),
+          courseTitle:
+            courseImport.courseTitle ||
+            courseImport.sourceDriveFolderName.trim(),
           lessonTitle: lesson.title,
           videoUrl: lesson.primaryFile.storageUrl,
           transcript,
@@ -221,7 +223,8 @@ export class LessonContentGenerationProcessorService {
             .filter((f) => f.id !== lesson.primaryFileId)
             .map((f) => cleanDriveFileName(f.driveFileName)),
           track:
-            courseImport.courseCategory === 'Coding' || courseImport.courseCategory === 'AI'
+            courseImport.courseCategory === 'Coding' ||
+            courseImport.courseCategory === 'AI'
               ? courseImport.courseCategory
               : null,
           videoDurationSec: durationSec,
@@ -273,17 +276,31 @@ export class LessonContentGenerationProcessorService {
         // The attempt this claim spent is given back, and the row's
         // updatedAt is pushed forward, which is what the claim query's
         // backoff reads.
-        if (failure.code === 'AI_RATE_LIMIT' || failure.code === 'AI_BUDGET_EXCEEDED') {
+        if (
+          failure.code === 'AI_RATE_LIMIT' ||
+          failure.code === 'AI_BUDGET_EXCEEDED'
+        ) {
           const now = new Date();
           const resumeAt =
             failure.code === 'AI_BUDGET_EXCEEDED'
-              ? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 5))
+              ? new Date(
+                  Date.UTC(
+                    now.getUTCFullYear(),
+                    now.getUTCMonth(),
+                    now.getUTCDate() + 1,
+                    0,
+                    5,
+                  ),
+                )
               : new Date(
                   now.getTime() +
                     // Groq says how long ("try again in 7m12s"); trust it,
                     // within 1 minute to 6 hours, else a short fixed wait.
                     Math.min(
-                      Math.max(failure.retryAfterMs ?? QUOTA_WAIT_MINUTES * 60_000, 60_000),
+                      Math.max(
+                        failure.retryAfterMs ?? QUOTA_WAIT_MINUTES * 60_000,
+                        60_000,
+                      ),
                       6 * 60 * 60_000,
                     ),
                 );
@@ -350,6 +367,7 @@ export class LessonContentGenerationProcessorService {
             JOIN "course_imports" ci ON ci."id" = m."importId"
             JOIN "course_import_files" f ON f."id" = l2."primaryFileId"
            WHERE l2."status" = 'PENDING'
+             AND l2."skippedAt" IS NULL
              AND f."transcriptStatus" = 'TRANSCRIBED'
              -- COURSE_CREATED keeps generating lessons for later batches
              -- after a first partial course exists; PAUSED is excluded so a
@@ -364,7 +382,10 @@ export class LessonContentGenerationProcessorService {
            -- import's lesson 1, so neither course finishes first). Lessons
            -- within one import share a createdAt from their createMany, so
            -- orderIndex still decides their order.
-           ORDER BY l2."createdAt", l2."orderIndex"
+           -- Section by section: a whole section finishes (and can go into
+           -- the course) before the next starts. Imports still queue behind
+           -- each other by when they were started.
+           ORDER BY ci."createdAt", m."orderIndex", l2."orderIndex"
            LIMIT ${limit}
              FOR UPDATE SKIP LOCKED
         ) d
@@ -391,26 +412,42 @@ export class LessonContentGenerationProcessorService {
    *  progress UI regardless of whether every single lesson succeeded (spec
    *  §36: partial failure never blocks reviewing what DID work). */
   private async recomputeImportStatus(importId: string): Promise<void> {
-    const current = await this.prisma.courseImport.findUnique({
-      where: { id: importId },
-      select: { status: true },
-    });
-    if (!current || current.status !== 'GENERATING_CONTENT') return;
-
-    const lessons = await this.prisma.courseImportLesson.findMany({
-      where: { module: { importId } },
-      select: { status: true },
-    });
-    if (lessons.length === 0) return;
-
-    const allTerminal = lessons.every(
-      (l) => l.status === 'GENERATED' || l.status === 'FAILED',
-    );
-    if (!allTerminal) return;
-
-    await this.prisma.courseImport.update({
-      where: { id: importId },
-      data: { status: 'READY_FOR_REVIEW', completedAt: new Date() },
-    });
+    await settleImportIfDone(this.prisma, importId);
   }
+}
+
+/**
+ * READY_FOR_REVIEW once nothing is still in flight: every lesson is written,
+ * skipped, or needs the admin (failed, or its video failed to copy or
+ * transcribe). Counting only GENERATED/FAILED used to leave an import with
+ * one broken video "writing" forever. Shared with the skip action.
+ */
+export async function settleImportIfDone(
+  prisma: PrismaService,
+  importId: string,
+): Promise<void> {
+  const current = await prisma.courseImport.findUnique({
+    where: { id: importId },
+    select: { status: true },
+  });
+  if (!current || current.status !== 'GENERATING_CONTENT') return;
+  const [lessons, files] = await Promise.all([
+    prisma.courseImportLesson.findMany({ where: { module: { importId } } }),
+    prisma.courseImportFile.findMany({
+      where: { importId },
+      select: {
+        id: true,
+        category: true,
+        status: true,
+        transcriptStatus: true,
+      },
+    }),
+  ]);
+  if (lessons.length === 0) return;
+  const filesById = new Map(files.map((f) => [f.id, f]));
+  if (lessons.some((l) => lessonReadiness(l, filesById) === 'working')) return;
+  await prisma.courseImport.update({
+    where: { id: importId },
+    data: { status: 'READY_FOR_REVIEW', completedAt: new Date() },
+  });
 }

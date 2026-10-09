@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { CourseImportCounts, CourseImportSummary } from './course-import.types';
 import { isRetryableStoredCode } from './course-import-error';
+import { lessonReadiness, sectionReadiness } from './lesson-readiness';
 
 export const WITH_FILES_AND_MODULES = {
   files: { orderBy: { orderIndex: 'asc' as const } },
@@ -20,6 +21,7 @@ export type CourseImportWithFilesAndModules = Prisma.CourseImportGetPayload<{
 export function toCourseImportSummary(
   courseImport: CourseImportWithFilesAndModules,
 ): CourseImportSummary {
+  const filesById = new Map(courseImport.files.map((f) => [f.id, f]));
   const counts: CourseImportCounts = {
     total: 0,
     pending: 0,
@@ -79,31 +81,38 @@ export function toCourseImportSummary(
       transcriptRetryable: isRetryableStoredCode(f.transcriptErrorCode),
       hasTranscript: !!f.transcript,
     })),
-    modules: courseImport.modules.map((m) => ({
-      id: m.id,
-      title: m.title,
-      orderIndex: m.orderIndex,
-      lessons: m.lessons.map((l) => ({
-        id: l.id,
-        title: l.title,
-        orderIndex: l.orderIndex,
-        primaryFileId: l.primaryFileId,
-        status: l.status,
-        error: l.error,
-        errorCode: l.errorCode,
-        retryable: isRetryableStoredCode(l.errorCode),
-        addedToCourse: !!l.createdLessonId,
-        description: l.description,
-        learnBlocks: l.learnBlocks as unknown[] | null,
-        applyBlocks: l.applyBlocks as unknown[] | null,
-        reflectBlocks: l.reflectBlocks as unknown[] | null,
-        deepenBlocks: l.deepenBlocks as unknown[] | null,
-        clipStartSec: l.clipStartSec,
-        clipEndSec: l.clipEndSec,
-        partIndex: l.partIndex,
-        partCount: l.partCount,
-      })),
-    })),
+    modules: courseImport.modules.map((m) => {
+      const states = m.lessons.map((l) => lessonReadiness(l, filesById));
+      return {
+        id: m.id,
+        title: m.title,
+        orderIndex: m.orderIndex,
+        readiness: sectionReadiness(states),
+        inCourse: !!m.createdSectionId,
+        lessons: m.lessons.map((l, i) => ({
+          id: l.id,
+          title: l.title,
+          orderIndex: l.orderIndex,
+          primaryFileId: l.primaryFileId,
+          status: l.status,
+          error: l.error,
+          errorCode: l.errorCode,
+          retryable: isRetryableStoredCode(l.errorCode),
+          addedToCourse: !!l.createdLessonId,
+          description: l.description,
+          learnBlocks: l.learnBlocks as unknown[] | null,
+          applyBlocks: l.applyBlocks as unknown[] | null,
+          reflectBlocks: l.reflectBlocks as unknown[] | null,
+          deepenBlocks: l.deepenBlocks as unknown[] | null,
+          clipStartSec: l.clipStartSec,
+          clipEndSec: l.clipEndSec,
+          partIndex: l.partIndex,
+          partCount: l.partCount,
+          readiness: states[i],
+          skipped: !!l.skippedAt,
+        })),
+      };
+    }),
     createdCourseId: courseImport.createdCourseId,
     autopilot: courseImport.autopilot,
     courseTitle: courseImport.courseTitle,

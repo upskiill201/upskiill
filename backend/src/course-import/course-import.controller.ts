@@ -21,6 +21,7 @@ import { CourseImportPublishService } from './course-import-publish.service';
 import { TranscriptionProcessorService } from '../transcription/transcription-processor.service';
 import { CreateCourseImportDto } from './dto/create-course-import.dto';
 import { CreateCourseFromImportDto } from './dto/create-course-from-import.dto';
+import { SkipLessonDto } from './dto/skip-lesson.dto';
 
 interface AuthedUser {
   id: string;
@@ -50,7 +51,7 @@ export class CourseImportController {
     @GetUser() user: AuthedUser,
     @Body() dto: CreateCourseImportDto,
   ) {
-    const summary = await this.courseImport.createImport(
+    let summary = await this.courseImport.createImport(
       user.id,
       dto.driveFolderId,
       {
@@ -60,6 +61,19 @@ export class CourseImportController {
         courseLevel: dto.courseLevel ?? null,
       },
     );
+    // Plan sections and lessons straight from the Drive listing, so each
+    // lesson is written as soon as its own video is ready and finished
+    // sections can go into the course while later ones are still copying.
+    // A failure here isn't fatal: "Plan the course" (or autopilot) retries.
+    if (summary.modules.length === 0) {
+      try {
+        summary = await this.structureAnalysis.analyze(user.id, summary.id);
+      } catch (err) {
+        this.logger.warn(
+          `Planning at creation failed for import ${summary.id}: ${(err as Error).message}`,
+        );
+      }
+    }
     // Kick processing off immediately rather than waiting up to 15s for the
     // next cron tick — fire-and-forget; the cron tick remains the safety net
     // if this request's process dies before the batch finishes.
@@ -144,6 +158,18 @@ export class CourseImportController {
       );
     });
     return summary;
+  }
+
+  /** Leave a lesson that can't be written out of its section ({ skip: true })
+   *  or put it back ({ skip: false }). */
+  @Post(':id/lessons/:lessonId/skip')
+  skipLesson(
+    @GetUser() user: AuthedUser,
+    @Param('id') id: string,
+    @Param('lessonId') lessonId: string,
+    @Body() dto: SkipLessonDto,
+  ) {
+    return this.courseImport.skipLesson(user.id, id, lessonId, dto.skip);
   }
 
   @Post(':id/files/:fileId/retry-transcription')

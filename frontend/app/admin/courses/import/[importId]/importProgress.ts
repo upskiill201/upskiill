@@ -88,18 +88,18 @@ export function computeStages(input: ProgressInput): ImportStage[] {
   // be a straightforward lie about what the backend is doing.
   const idle = status === 'CANCELLED' || status === 'PAUSED';
 
-  // Strictly sequential pipeline — showing two stages as active at once
-  // would misrepresent what the backend is actually doing.
+  // The stages overlap: each video is transcribed as soon as it's copied,
+  // and each lesson written as soon as its video is transcribed, section by
+  // section. Copying and transcribing can therefore both be active.
   const uploadState: StageState =
     uploadFraction >= 1 ? 'done' : idle ? 'waiting' : 'active';
+  const anyCopied = files.some((f) => f.status === 'UPLOADED');
   const transcriptState: StageState =
-    uploadState !== 'done'
-      ? 'waiting'
-      : transcriptFraction >= 1
-        ? 'done'
-        : idle
-          ? 'waiting'
-          : 'active';
+    transcriptFraction >= 1 && uploadState === 'done'
+      ? 'done'
+      : idle || !anyCopied
+        ? 'waiting'
+        : 'active';
   const analysisState: StageState = analysisDone
     ? 'done'
     : transcriptState === 'done'

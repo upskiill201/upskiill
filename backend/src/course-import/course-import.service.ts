@@ -18,6 +18,7 @@ import {
 import { R2StorageService } from '../storage/r2-storage.service';
 import { CourseImportSummary } from './course-import.types';
 import { buildObjectKey } from './course-import-processor.service';
+import { settleImportIfDone } from './lesson-content-generation-processor.service';
 import {
   CourseImportWithFilesAndModules,
   WITH_FILES_AND_MODULES,
@@ -65,7 +66,12 @@ export class CourseImportService {
       courseTitle: string | null;
       courseCategory: string | null;
       courseLevel: string | null;
-    } = { autopilot: false, courseTitle: null, courseCategory: null, courseLevel: null },
+    } = {
+      autopilot: false,
+      courseTitle: null,
+      courseCategory: null,
+      courseLevel: null,
+    },
   ): Promise<CourseImportSummary> {
     const existing = await this.prisma.courseImport.findFirst({
       where: {
@@ -99,7 +105,10 @@ export class CourseImportService {
         startedAt: new Date(),
         // Autopilot needs the settings it will build the course with; without
         // a title and track it would stall at the last step, so it's off.
-        autopilot: options.autopilot && !!options.courseTitle && !!options.courseCategory,
+        autopilot:
+          options.autopilot &&
+          !!options.courseTitle &&
+          !!options.courseCategory,
         courseTitle: options.courseTitle,
         courseCategory: options.courseCategory,
         courseLevel: options.courseLevel,
@@ -133,7 +142,11 @@ export class CourseImportService {
     // processors are the authoritative path, but if none happens to tick
     // (nothing left to claim), this is what stops the UI showing
     // "stopping..." forever. Guarded so a normal read costs nothing extra.
-    if (found.status === 'PAUSED' && found.pauseRequestedAt && !found.pausedAt) {
+    if (
+      found.status === 'PAUSED' &&
+      found.pauseRequestedAt &&
+      !found.pausedAt
+    ) {
       await this.reconcilePauseState(importId);
       return toCourseImportSummary(await this.findOwned(userId, importId));
     }
@@ -189,16 +202,19 @@ export class CourseImportService {
     lessonId: string,
   ): Promise<CourseImportSummary> {
     const found = await this.findOwned(userId, importId);
-    if (found.status === 'COURSE_CREATED') {
-      throw new BadRequestException(
-        'A course was already created from this import — edit the lesson directly in Course Builder instead.',
-      );
-    }
     const lesson = found.modules
       .flatMap((m) => m.lessons)
       .find((l) => l.id === lessonId);
     if (!lesson)
       throw new NotFoundException('Lesson not found on this import.');
+    // Sections go into the course as they finish, so a course can exist while
+    // most lessons are still being written. Only a lesson already IN the
+    // course is off limits here: rewriting it wouldn't touch the real Lesson.
+    if (lesson.createdLessonId) {
+      throw new BadRequestException(
+        'This lesson is already in the course — edit it in Course Builder instead.',
+      );
+    }
     if (lesson.status !== 'FAILED' && lesson.status !== 'GENERATED') {
       throw new BadRequestException(
         'Only a failed or already-generated lesson can be retried.',
@@ -211,9 +227,11 @@ export class CourseImportService {
         data: {
           status: 'PENDING',
           error: null,
+          errorCode: null,
           claimedAt: null,
           claimedBy: null,
           attempts: 0,
+          skippedAt: null,
         },
       }),
       // A retry after every lesson finished (some failed) had already moved
@@ -232,6 +250,54 @@ export class CourseImportService {
     return this.getImport(userId, importId);
   }
 
+  /**
+   * Leaves a lesson out (or puts it back). A section goes into the course
+   * only when every lesson is written or skipped, so skipping the one lesson
+   * that can't be written is how the admin lets the rest of its section go
+   * in. Un-skipping puts it back in the writing queue.
+   */
+  async skipLesson(
+    userId: string,
+    importId: string,
+    lessonId: string,
+    skip: boolean,
+  ): Promise<CourseImportSummary> {
+    const found = await this.findOwned(userId, importId);
+    const lesson = found.modules
+      .flatMap((m) => m.lessons)
+      .find((l) => l.id === lessonId);
+    if (!lesson)
+      throw new NotFoundException('Lesson not found on this import.');
+    if (lesson.createdLessonId) {
+      throw new BadRequestException(
+        'This lesson is already in the course — remove it in Course Builder instead.',
+      );
+    }
+    if (lesson.status === 'CLAIMED') {
+      throw new BadRequestException(
+        'This lesson is being written right now. Try again in a minute.',
+      );
+    }
+
+    await this.prisma.courseImportLesson.update({
+      where: { id: lessonId },
+      data: { skippedAt: skip ? new Date() : null },
+    });
+    if (skip) {
+      await settleImportIfDone(this.prisma, importId);
+    } else if (
+      found.status === 'READY_FOR_REVIEW' &&
+      lesson.status !== 'GENERATED'
+    ) {
+      // Back in the queue: reopen the import so the writer picks it up.
+      await this.prisma.courseImport.update({
+        where: { id: importId },
+        data: { status: 'GENERATING_CONTENT', completedAt: null },
+      });
+    }
+    return this.getImport(userId, importId);
+  }
+
   /** Separate from retryFile: a file can be UPLOADED (fine) while its
    *  transcript specifically FAILED after exhausting its auto-retries — that
    *  needs its own reset, not the upload-status retry path. */
@@ -244,9 +310,7 @@ export class CourseImportService {
     const file = found.files.find((f) => f.id === fileId);
     if (!file) throw new NotFoundException('File not found on this import.');
     if (file.transcriptStatus !== 'FAILED') {
-      throw new BadRequestException(
-        'Only a failed transcript can be retried.',
-      );
+      throw new BadRequestException('Only a failed transcript can be retried.');
     }
 
     await this.prisma.courseImportFile.update({
@@ -325,9 +389,9 @@ export class CourseImportService {
     if (found.status === 'PAUSED') return this.getImport(userId, importId);
 
     if (
-      !(
-        CourseImportService.PAUSABLE_STATUSES as readonly string[]
-      ).includes(found.status)
+      !(CourseImportService.PAUSABLE_STATUSES as readonly string[]).includes(
+        found.status,
+      )
     ) {
       throw new BadRequestException(
         `An import that is ${found.status} has no remaining work to pause.`,

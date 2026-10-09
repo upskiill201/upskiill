@@ -81,6 +81,9 @@ function baseImport(overrides: Record<string, unknown> = {}) {
             id: 'lesson-2',
             title: 'Broken Lesson',
             status: 'FAILED',
+            // Skipped by the admin: under section-by-section publishing a
+            // failed lesson holds its section back until it is skipped.
+            skippedAt: new Date('2026-10-09T10:00:00Z'),
             description: null,
             learnBlocks: null,
             applyBlocks: null,
@@ -935,6 +938,137 @@ describe('CourseImportPublishService', () => {
       await expect(
         service.createCourse(user, importId, baseInput),
       ).rejects.toThrow('no longer exists');
+    });
+  });
+  // ── Section by section ──────────────────────────────────────────────────
+
+  describe('publishing finished sections', () => {
+    const written = (id: string, extra: Record<string, unknown> = {}) => ({
+      id,
+      title: id,
+      status: 'GENERATED',
+      description: 'd',
+      learnBlocks: [{ type: 'videoUrl', value: 'https://cdn.example/v.mp4' }],
+      applyBlocks: applyBlocks(),
+      reflectBlocks: [{ type: 'reflectActivity', value: {} }],
+      deepenBlocks: [{ type: 'deepenActivity', value: {} }],
+      resourceFileIds: [],
+      createdLessonId: null,
+      ...extra,
+    });
+    const section = (id: string, orderIndex: number, lessons: unknown[]) => ({
+      id,
+      title: id,
+      orderIndex,
+      createdSectionId: null,
+      lessons,
+    });
+    const created = {
+      courseId: 'course-1',
+      status: 'created',
+      sections: [
+        { sectionId: 's1', title: 'one', status: 'created', lessons: [] },
+      ],
+    };
+
+    it('puts in a complete section and holds back one with a lesson needing attention', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        baseImport({
+          status: 'GENERATING_CONTENT',
+          modules: [
+            section('one', 0, [written('a'), written('b')]),
+            section('two', 1, [
+              written('c'),
+              { ...written('d'), status: 'FAILED' },
+            ]),
+          ],
+        }),
+      );
+      courseCreation.createFullCourseTree.mockResolvedValue(created);
+
+      await service.createCourse(user, importId, baseInput);
+
+      const [[, , spec]] = courseCreation.createFullCourseTree.mock.calls as [
+        [
+          unknown,
+          unknown,
+          { sections: { title: string; lessons: { title: string }[] }[] },
+        ],
+      ];
+      expect(spec.sections.map((x) => x.title)).toEqual(['one']);
+      expect(spec.sections[0].lessons.map((l) => l.title)).toEqual(['a', 'b']);
+    });
+
+    it('lets a section in once its failed lesson is skipped', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        baseImport({
+          modules: [
+            section('two', 0, [
+              written('c'),
+              { ...written('d'), status: 'FAILED', skippedAt: new Date() },
+            ]),
+          ],
+        }),
+      );
+      courseCreation.createFullCourseTree.mockResolvedValue(created);
+
+      await service.createCourse(user, importId, baseInput);
+
+      const [[, , spec]] = courseCreation.createFullCourseTree.mock.calls as [
+        [unknown, unknown, { sections: { lessons: { title: string }[] }[] }],
+      ];
+      expect(spec.sections[0].lessons.map((l) => l.title)).toEqual(['c']);
+    });
+
+    it('puts imported sections back in Drive order, keeping the slots they hold', async () => {
+      // Section B (Drive position 1) went in before A (position 0) because A
+      // was held back; a hand-made section sits at slot 4 in between.
+      const section = { findMany: jest.fn(), update: jest.fn() };
+      (prisma as unknown as { section: typeof section }).section = section;
+      (
+        prisma.courseImportModule as unknown as { findMany: jest.Mock }
+      ).findMany = jest
+        .fn()
+        .mockResolvedValue([
+          { createdSectionId: 'sec-A' },
+          { createdSectionId: 'sec-B' },
+        ]);
+      section.findMany.mockResolvedValue([
+        { id: 'sec-B', orderIndex: 3 },
+        { id: 'sec-A', orderIndex: 5 },
+      ]);
+
+      await (
+        service as unknown as {
+          reorderImportedSections: (i: string, c: string) => Promise<void>;
+        }
+      ).reorderImportedSections(importId, 'course-1');
+
+      expect(section.update).toHaveBeenCalledWith({
+        where: { id: 'sec-A' },
+        data: { orderIndex: 3 },
+      });
+      expect(section.update).toHaveBeenCalledWith({
+        where: { id: 'sec-B' },
+        data: { orderIndex: 5 },
+      });
+    });
+
+    it('waits for a section whose lessons are still being written', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        baseImport({
+          status: 'GENERATING_CONTENT',
+          modules: [
+            section('one', 0, [
+              written('a'),
+              { ...written('b'), status: 'PENDING' },
+            ]),
+          ],
+        }),
+      );
+      await expect(
+        service.createCourse(user, importId, baseInput),
+      ).rejects.toThrow('No section is complete yet');
     });
   });
 });
