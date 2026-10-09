@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { AiConfigService } from '../tey/ai/ai-config.service';
 import { AiBudgetService } from '../tey/ai/ai-budget.service';
 import { parseStructured } from '../tey/ai/structured-output';
-import { CourseImportError } from './course-import-error';
+import { CourseImportError, codeForHttpStatus } from './course-import-error';
 import {
   buildRichLesson,
   RICH_LESSON_JSON_SCHEMA,
@@ -148,7 +148,7 @@ export class LessonContentGenerationService {
           !(err instanceof Error) ||
           !err.message.includes('json_validate_failed')
         )
-          throw err;
+          throw classifyProviderError(err);
         lastProblem = 'it was not valid JSON (the provider rejected it)';
         this.logger.warn(
           `Lesson "${input.lessonTitle}" attempt ${attempt}: ${lastProblem}.`,
@@ -251,4 +251,47 @@ ${label}:
 """
 ${transcript}${truncated}
 """`;
+}
+
+/**
+ * The provider adapters throw plain Errors ("OpenAI-compatible request
+ * failed (429): {…Rate limit reached… Please try again in 7m12.5s…}").
+ * Unclassified, a rate limit landed on UNKNOWN: each refusal spent one of
+ * the lesson's three attempts until it FAILED, on the free tier's daily
+ * limit (live import, 2026-10-09). Read the HTTP status so a 429 becomes
+ * AI_RATE_LIMIT (the lesson waits without spending attempts), and keep the
+ * provider's own "try again in" so the wait matches it.
+ */
+export function classifyProviderError(err: unknown): unknown {
+  if (!(err instanceof Error) || err instanceof CourseImportError) return err;
+  const status = Number(/request failed \((\d{3})\)/i.exec(err.message)?.[1]);
+  if (!status) return err;
+  const failure = new CourseImportError(
+    codeForHttpStatus(status, 'AI'),
+    err.message.slice(0, 480),
+    err,
+  );
+  const wait = retryAfterMs(err.message);
+  if (wait !== null) failure.retryAfterMs = wait;
+  return failure;
+}
+
+/** "try again in 7m12.48s" / "in 1h2m" / "in 850ms" -> milliseconds. */
+export function retryAfterMs(message: string): number | null {
+  const m = /try again in\s+((?:\d+(?:\.\d+)?(?:h|ms|m|s))+)/i.exec(message);
+  if (!m) return null;
+  let ms = 0;
+  for (const [, n, unit] of m[1].matchAll(/(\d+(?:\.\d+)?)(h|ms|m|s)/gi)) {
+    const v = Number(n);
+    const u = unit.toLowerCase();
+    ms +=
+      u === 'h'
+        ? v * 3_600_000
+        : u === 'm'
+          ? v * 60_000
+          : u === 's'
+            ? v * 1000
+            : v;
+  }
+  return ms > 0 ? Math.ceil(ms) : null;
 }

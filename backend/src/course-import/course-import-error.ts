@@ -123,6 +123,10 @@ export function isRetryableStoredCode(code: string | null): boolean {
 }
 
 export class CourseImportError extends Error {
+  /** How long the provider asked us to wait ("try again in 7m12s"), when it
+   *  said; a quota wait uses it instead of a fixed guess. */
+  retryAfterMs?: number;
+
   constructor(
     readonly code: CourseImportErrorCode,
     message: string,
@@ -157,7 +161,9 @@ export function codeForHttpStatus(
     }
   }
   if (status === 401 || status === 403) {
-    return kind === 'DRIVE' ? 'DRIVE_PERMISSION_DENIED' : 'PROVIDER_NOT_CONFIGURED';
+    return kind === 'DRIVE'
+      ? 'DRIVE_PERMISSION_DENIED'
+      : 'PROVIDER_NOT_CONFIGURED';
   }
   if (status === 404) {
     switch (kind) {

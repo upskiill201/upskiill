@@ -278,7 +278,15 @@ export class LessonContentGenerationProcessorService {
           const resumeAt =
             failure.code === 'AI_BUDGET_EXCEEDED'
               ? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 5))
-              : new Date(now.getTime() + QUOTA_WAIT_MINUTES * 60_000);
+              : new Date(
+                  now.getTime() +
+                    // Groq says how long ("try again in 7m12s"); trust it,
+                    // within 1 minute to 6 hours, else a short fixed wait.
+                    Math.min(
+                      Math.max(failure.retryAfterMs ?? QUOTA_WAIT_MINUTES * 60_000, 60_000),
+                      6 * 60 * 60_000,
+                    ),
+                );
           const when = resumeAt.toISOString().slice(11, 16);
           const message =
             failure.code === 'AI_BUDGET_EXCEEDED'
