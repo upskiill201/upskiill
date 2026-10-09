@@ -15,8 +15,8 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
   {
     title: 'Learn',
     links: [
-      ['Coding track', '/#tracks'],
-      ['AI track', '/#tracks'],
+      ['Learn coding', '/learn-coding'],
+      ['Learn AI', '/learn-ai'],
       ['How it works', '/#how-it-works'],
       ['Leagues', '/#leagues'],
       [LEARNER_ENTRY.gated ? 'Get notified' : 'Get the app', LEARNER_ENTRY.href],

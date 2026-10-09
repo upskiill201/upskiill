@@ -28,6 +28,7 @@ import {
 } from '@/lib/seo/teach';
 import type { TeachPlace, TeachSkill } from '@/lib/seo/teach';
 import { articleSchema, breadcrumbSchema, faqSchema, schemas } from '@/lib/seo/schema';
+import { learnPath, learnTrack } from '@/lib/seo/learn';
 import JsonLd from '@/components/features/blog/JsonLd';
 import FaqAccordion from '@/components/features/blog/FaqAccordion';
 import CtaBlock from '@/components/features/blog/CtaBlock';
@@ -328,6 +329,10 @@ export default async function TeachPlacePage({ params }: Props) {
             ) : (
               <Link href={`/teach/${otherSkill}`}>teach {SKILL_COPY[otherSkill].noun} online</Link>
             )}
+            {' · '}Still learning?{' '}
+            <Link href={learnPath(learnTrack(skill), p)}>
+              Learn {copy.noun} in {p.name}
+            </Link>
             .
           </p>
         </section>

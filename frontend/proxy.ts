@@ -94,8 +94,9 @@ export function proxy(request: NextRequest) {
 
   const isDashboard = path.startsWith('/dashboard');
   // Walled too: a push notification deep-links straight into /learn, and
-  // /admin is new privileged surface.
-  const isLearn = path.startsWith('/learn');
+  // /admin is new privileged surface. Exactly /learn and /learn/… — the public
+  // /learn-coding and /learn-ai pages share the prefix and must stay crawlable.
+  const isLearn = path === '/learn' || path.startsWith('/learn/');
   const isAdmin = path.startsWith('/admin');
   // Exactly /creator and /creator/… — a bare prefix match also walled off the
   // PUBLIC creator pages (/creator-profile/:username) from logged-out visitors.

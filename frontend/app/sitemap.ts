@@ -7,6 +7,7 @@ import { getAllUseCasePages } from '@/lib/use-cases/posts';
 import { COMPETITORS, altSlug, vsSlug } from '@/lib/seo/competitors';
 import { PERSONAS } from '@/lib/seo/personas';
 import { TEACH_SKILLS, TEACH_SOURCES, teachParams } from '@/lib/seo/teach';
+import { LEARN_HUB, allLearnPaths } from '@/lib/seo/learn';
 
 // Auto-generated sitemap — adding an .mdx post to content/blog updates this
 // on the next build automatically.
@@ -95,6 +96,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(TEACH_SOURCES.generatedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+    })),
+    // Learner pages: /learn-online, track hubs, topic guides and track × place.
+    {
+      url: `https://teyro.app${LEARN_HUB}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    ...allLearnPaths().map(({ path, kind }) => ({
+      url: `https://teyro.app${path}`,
+      lastModified: new Date(TEACH_SOURCES.generatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: kind === 'track' ? 0.8 : kind === 'topic' ? 0.7 : 0.6,
     })),
     // Comparison pages convert hardest — the reader is already switching.
     ...COMPETITORS.flatMap((c) =>
