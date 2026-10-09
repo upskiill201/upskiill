@@ -1,4 +1,7 @@
-import { CourseImportAutopilotService } from './course-import-autopilot.service';
+import {
+  CourseImportAutopilotService,
+  isTransientDbError,
+} from './course-import-autopilot.service';
 
 function setup() {
   const prisma = {
@@ -96,5 +99,30 @@ describe('CourseImportAutopilotService', () => {
           "Couldn't analyze the structure: No uploaded videos to build lessons from.",
       },
     });
+  });
+
+  it('stays on and retries after a temporary database error (a 131-video plan timed out)', async () => {
+    const { prisma, analysis, service } = setup();
+    prisma.courseImport.findMany
+      .mockResolvedValueOnce([{ id: 'i4', createdById: 'a1' }])
+      .mockResolvedValueOnce([]);
+    analysis.analyze.mockRejectedValue(
+      new Error(
+        'Invalid `prisma.courseImportModule.create()` invocation: Transaction API error: Transaction not found.',
+      ),
+    );
+    await service.tick();
+    const calls = prisma.courseImport.update.mock.calls as [
+      { data: Record<string, unknown> },
+    ][];
+    expect(calls.some(([c]) => c.data.autopilot === false)).toBe(false);
+    expect(calls[0][0].data.autopilotNote).toMatch(/Retrying automatically/);
+  });
+
+  it('recognises temporary database errors by Prisma code too', () => {
+    expect(
+      isTransientDbError(Object.assign(new Error('x'), { code: 'P2028' })),
+    ).toBe(true);
+    expect(isTransientDbError(new Error('No uploaded videos'))).toBe(false);
   });
 });

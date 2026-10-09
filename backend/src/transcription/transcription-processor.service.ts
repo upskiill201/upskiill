@@ -161,26 +161,34 @@ export class TranscriptionProcessorService {
         // sentence gaps, now that the real length and segments are known)
         // in the same step that makes them claimable for generation, so
         // generation can never pick up a lesson about to be re-cut.
-        await this.prisma.$transaction(async (tx) => {
-          const updated = await tx.courseImportFile.update({
-            where: { id: file.id },
-            data: {
-              transcriptStatus: 'TRANSCRIBED',
-              transcript: result.text,
-              transcriptSegments: segments.length
-                ? (segments as unknown as Prisma.InputJsonValue)
-                : Prisma.DbNull,
-              ...(file.durationMs === null && result.durationSec
-                ? { durationMs: BigInt(Math.round(result.durationSec * 1000)) }
-                : {}),
-              transcriptError: null,
-              transcriptErrorCode: null,
-              transcriptClaimedAt: null,
-              transcriptClaimedBy: null,
-            },
-          });
-          if (!isDocument) await replanFileLessons(tx, updated);
-        });
+        await this.prisma.$transaction(
+          async (tx) => {
+            const updated = await tx.courseImportFile.update({
+              where: { id: file.id },
+              data: {
+                transcriptStatus: 'TRANSCRIBED',
+                transcript: result.text,
+                transcriptSegments: segments.length
+                  ? (segments as unknown as Prisma.InputJsonValue)
+                  : Prisma.DbNull,
+                ...(file.durationMs === null && result.durationSec
+                  ? {
+                      durationMs: BigInt(Math.round(result.durationSec * 1000)),
+                    }
+                  : {}),
+                transcriptError: null,
+                transcriptErrorCode: null,
+                transcriptClaimedAt: null,
+                transcriptClaimedBy: null,
+              },
+            });
+            if (!isDocument) await replanFileLessons(tx, updated);
+            // Above Prisma's 5s default: re-cutting a long video's parts is a
+            // handful of round trips to the database, and a slow moment must
+            // not throw away a transcript that took minutes to make.
+          },
+          { maxWait: 15_000, timeout: 60_000 },
+        );
         summary.transcribed += 1;
       } catch (err) {
         const failure = toCourseImportError(err);
