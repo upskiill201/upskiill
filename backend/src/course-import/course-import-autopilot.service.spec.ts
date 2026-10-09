@@ -32,7 +32,7 @@ describe('CourseImportAutopilotService', () => {
     // Only unanalyzed, autopilot imports that are ready are picked up.
     expect(prisma.courseImport.findMany.mock.calls[0][0].where).toEqual({
       autopilot: true,
-      status: 'READY_FOR_GENERATION',
+      status: { in: ['CREATED', 'PROCESSING_FILES', 'READY_FOR_GENERATION'] },
       modules: { none: {} },
     });
   });

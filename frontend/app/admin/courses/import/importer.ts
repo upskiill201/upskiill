@@ -74,12 +74,18 @@ export interface ImportLesson {
   clipEndSec: number | null;
   partIndex: number | null;
   partCount: number | null;
+  /** added | ready | skipped | attention | working (see backend lesson-readiness). */
+  readiness: 'added' | 'ready' | 'skipped' | 'attention' | 'working';
+  skipped: boolean;
 }
 
 export interface ImportModule {
   id: string;
   title: string;
   orderIndex: number;
+  /** Ready = every lesson written or skipped: the section can go into the course. */
+  readiness: 'added' | 'ready' | 'attention' | 'working';
+  inCourse: boolean;
   lessons: ImportLesson[];
 }
 

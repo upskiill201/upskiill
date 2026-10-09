@@ -25,7 +25,9 @@ import {
   Pause,
   Play,
   RotateCw,
+  SkipForward,
   Sparkles,
+  Undo2,
   TriangleAlert,
   Wand2,
   X,
@@ -46,6 +48,7 @@ import {
   statusInfo,
   type CourseImport,
   type ImportLesson,
+  type ImportModule,
 } from '../importer';
 import m from '../importer.module.css';
 
@@ -169,8 +172,6 @@ export default function CourseImportPage() {
   const running = RUNNING.has(imp.status);
   const lessons = imp.modules.flatMap((mod) => mod.lessons);
   const written = lessons.filter((l) => l.status === 'GENERATED');
-  const awaiting = written.filter((l) => !l.addedToCourse).length;
-  const inCourse = lessons.filter((l) => l.addedToCourse).length;
   const failedFiles = imp.files.filter((f) => f.status === 'FAILED' || f.transcriptStatus === 'FAILED').length;
   const failedLessons = lessons.filter((l) => l.status === 'FAILED').length;
 
@@ -200,50 +201,29 @@ export default function CourseImportPage() {
   };
 
   /* ── what the admin should do next ──────────────────────────────────── */
-  let next: React.ReactNode = null;
-  if (imp.createdCourseId) {
-    next = (
-      <>
-        <p className={m.nextText}>
-          <strong>The draft course is built.</strong>{' '}
-          {awaiting > 0
-            ? `${inCourse} lesson${inCourse === 1 ? '' : 's'} are in it, and ${awaiting} more ${awaiting === 1 ? 'is' : 'are'} written and ready to add.`
-            : running
-              ? `${inCourse} lesson${inCourse === 1 ? '' : 's'} are in it. The rest are still being imported.`
-              : 'Every written lesson is in it. Review it and publish through the normal review.'}
-        </p>
-        <div className={m.btnRow}>
-          <Link href={`/admin/courses/${imp.createdCourseId}`} className={m.primaryBtn}>
-            <ExternalLink size={16} aria-hidden="true" /> Open the course
-          </Link>
-          {awaiting > 0 && (
-            <button
-              type="button"
-              className={m.ghostBtn}
-              disabled={busy !== null}
-              onClick={() => void act('build', `${path}/create-course`, { title: courseTitle || 'Imported course', category: courseTrack || 'Coding' })}
-            >
-              {busy === 'build' ? 'Adding…' : `Add ${awaiting} lesson${awaiting === 1 ? '' : 's'}`}
-            </button>
-          )}
-        </div>
-        {awaiting > 0 && (
-          <p className={m.note}>
-            New lessons go in as drafts. If the course is already approved, adding content returns it to draft for re-approval; anything
-            already live stays live.
-          </p>
-        )}
-      </>
-    );
-  } else if (imp.autopilot && !['FAILED', 'CANCELLED'].includes(imp.status)) {
-    next = (
-      <p className={m.nextText}>
-        <strong>Autopilot is on. Nothing to do yet.</strong> Tey will plan the modules, write every lesson and build “{imp.courseTitle}” as a
-        draft course. You’ll find it here and in Courses &amp; review when it’s done.
-        {imp.autopilotNote && <span className={m.autoNote}>Latest: {imp.autopilotNote}</span>}
+  // Sections go into the course as they finish (every lesson written or
+  // skipped), so there is something to publish long before the import ends.
+  const planned = imp.modules.length > 0;
+  const readySections = imp.modules.filter((mod) => mod.readiness === 'ready');
+  const readyLessons = readySections.reduce((n, mod) => n + mod.lessons.filter((l) => l.readiness === 'ready').length, 0);
+  const sectionsInCourse = imp.modules.filter((mod) => mod.inCourse).length;
+  const attention = lessons.filter((l) => l.readiness === 'attention').length;
+  const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+  const readyLabel = `${plural(readySections.length, 'section')} (${plural(readyLessons, 'lesson')})`;
+
+  const attentionNote =
+    attention > 0 ? (
+      <p className={m.warn}>
+        <TriangleAlert size={16} aria-hidden="true" />
+        <span>
+          {plural(attention, 'lesson needs', 'lessons need')} attention. Its section waits until you <strong>Retry</strong> it or{' '}
+          <strong>Skip</strong> it (see the lessons below).
+        </span>
       </p>
-    );
-  } else if (imp.status === 'READY_FOR_GENERATION' && imp.modules.length === 0) {
+    ) : null;
+
+  let next: React.ReactNode = null;
+  if (!planned && imp.status === 'READY_FOR_GENERATION') {
     next = (
       <>
         <p className={m.nextText}>
@@ -255,56 +235,110 @@ export default function CourseImportPage() {
         </button>
       </>
     );
-  } else if (imp.status === 'READY_FOR_REVIEW' || (written.length > 0 && !running)) {
-    next =
-      written.length === 0 ? (
+  } else if (readySections.length > 0 && !imp.createdCourseId) {
+    next = (
+      <>
         <p className={m.nextText}>
-          <strong>No lesson could be written yet.</strong> Retry the failed lessons below. You can build the course once at least one is
-          written.
+          <strong>{readyLabel} ready to publish.</strong> Every lesson in {readySections.length === 1 ? 'it is' : 'them is'} written. Build the
+          draft course with {readySections.length === 1 ? 'it' : 'them'} now; the rest are added section by section as they finish.
+          Nothing reaches learners until you publish it through the normal review.
         </p>
-      ) : (
-        <>
-          <p className={m.nextText}>
-            <strong>
-              {written.length} lesson{written.length === 1 ? ' is' : 's are'} written. Build the draft course.
-            </strong>{' '}
-            Lessons that failed are skipped, not blocking. Nothing is published: the course goes through normal review.
-          </p>
-          <div className={m.form}>
-            <label className={m.field}>
-              <span className={m.label}>Course title</span>
-              <input className={m.input} value={courseTitle} maxLength={200} onChange={(e) => setTitle(e.target.value)} />
-            </label>
-            <div className={m.field}>
-              <span className={m.label}>Track</span>
-              <div className={m.chips}>
-                {TRACKS.map((t) => (
-                  <button key={t} type="button" aria-pressed={courseTrack === t} className={`${m.chip} ${courseTrack === t ? m.chipOn : ''}`} onClick={() => setTrack(t)}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className={m.field}>
-              <span className={m.label}>Level</span>
-              <div className={m.chips}>
-                {LEVELS.map((l) => (
-                  <button key={l} type="button" aria-pressed={courseLevel === l} className={`${m.chip} ${courseLevel === l ? m.chipOn : ''}`} onClick={() => setLevel(l)}>
-                    {l}
-                  </button>
-                ))}
-              </div>
+        <div className={m.form}>
+          <label className={m.field}>
+            <span className={m.label}>Course title</span>
+            <input className={m.input} value={courseTitle} maxLength={200} onChange={(e) => setTitle(e.target.value)} />
+          </label>
+          <div className={m.field}>
+            <span className={m.label}>Track</span>
+            <div className={m.chips}>
+              {TRACKS.map((t) => (
+                <button key={t} type="button" aria-pressed={courseTrack === t} className={`${m.chip} ${courseTrack === t ? m.chipOn : ''}`} onClick={() => setTrack(t)}>
+                  {t}
+                </button>
+              ))}
             </div>
           </div>
-          <button type="button" className={m.primaryBtn} disabled={busy !== null} onClick={build}>
-            <Wand2 size={16} aria-hidden="true" /> {busy === 'build' ? 'Building…' : 'Build the draft course'}
-          </button>
-        </>
-      );
+          <div className={m.field}>
+            <span className={m.label}>Level</span>
+            <div className={m.chips}>
+              {LEVELS.map((l) => (
+                <button key={l} type="button" aria-pressed={courseLevel === l} className={`${m.chip} ${courseLevel === l ? m.chipOn : ''}`} onClick={() => setLevel(l)}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button type="button" className={m.primaryBtn} disabled={busy !== null} onClick={build}>
+          <Wand2 size={16} aria-hidden="true" /> {busy === 'build' ? 'Building…' : `Build the course with ${plural(readySections.length, 'ready section')}`}
+        </button>
+        {attentionNote}
+      </>
+    );
+  } else if (imp.createdCourseId) {
+    next = (
+      <>
+        <p className={m.nextText}>
+          <strong>
+            The course is built with {plural(sectionsInCourse, 'section')}.
+          </strong>{' '}
+          {readySections.length > 0
+            ? `${readyLabel} more ${readySections.length === 1 ? 'is' : 'are'} finished and ready to add.`
+            : running
+              ? 'The next sections are added here as soon as every lesson in them is written.'
+              : 'Every finished section is in it. Review it and publish through the normal review.'}
+        </p>
+        <div className={m.btnRow}>
+          <Link href={`/admin/courses/${imp.createdCourseId}`} className={m.primaryBtn}>
+            <ExternalLink size={16} aria-hidden="true" /> Open the course
+          </Link>
+          {readySections.length > 0 && (
+            <button
+              type="button"
+              className={m.ghostBtn}
+              disabled={busy !== null}
+              onClick={() => void act('build', `${path}/create-course`, { title: courseTitle || 'Imported course', category: courseTrack || 'Coding' })}
+            >
+              {busy === 'build' ? 'Adding…' : `Add ${plural(readySections.length, 'ready section')}`}
+            </button>
+          )}
+        </div>
+        {readySections.length > 0 && (
+          <p className={m.note}>
+            New sections go in as drafts, in their Drive order. If the course is already approved, adding content returns it to draft for
+            re-approval; anything already live stays live.
+          </p>
+        )}
+        {attentionNote}
+      </>
+    );
+  } else if (imp.autopilot && !['FAILED', 'CANCELLED'].includes(imp.status)) {
+    next = (
+      <>
+        <p className={m.nextText}>
+          <strong>Autopilot is on. Nothing to do yet.</strong> Tey writes the lessons section by section and builds “{imp.courseTitle}” as a
+          draft course. You can also publish sections yourself here as soon as each one is finished.
+          {imp.autopilotNote && <span className={m.autoNote}>Latest: {imp.autopilotNote}</span>}
+        </p>
+        {attentionNote}
+      </>
+    );
+  } else if (planned) {
+    next = (
+      <>
+        <p className={m.nextText}>
+          <strong>Writing section by section.</strong> As soon as every lesson in a section is written, it appears here, ready to publish,
+          while the rest keep going.
+          {!imp.autopilot && imp.autopilotNote && <span className={m.autoNote}>Autopilot stopped: {imp.autopilotNote}</span>}
+        </p>
+        {attentionNote}
+      </>
+    );
   } else if (running) {
     next = (
       <p className={m.nextText}>
-        <strong>Nothing to do right now.</strong> Once the files are copied you’ll plan the course, then build it when the lessons are written.
+        <strong>Nothing to do right now.</strong> The course is planned as soon as the Drive folder has been read, then written section by
+        section.
         {!imp.autopilot && imp.autopilotNote && <span className={m.autoNote}>Autopilot stopped: {imp.autopilotNote}</span>}
       </p>
     );
@@ -432,7 +466,7 @@ export default function CourseImportPage() {
           {imp.modules.map((mod, mi) => (
             <div key={mod.id} className={m.module}>
               <h3 className={m.moduleTitle}>
-                <span className={m.moduleNum}>{mi + 1}</span> {mod.title}
+                <span className={m.moduleNum}>{mi + 1}</span> {mod.title} <SectionChip mod={mod} />
               </h3>
               <ul className={m.rows}>
                 {mod.lessons.map((l) => (
@@ -444,6 +478,7 @@ export default function CourseImportPage() {
                     canRegenerate={!imp.createdCourseId || !l.addedToCourse}
                     busy={busy === `lesson:${l.id}`}
                     onRetry={() => void act(`lesson:${l.id}`, `${path}/lessons/${l.id}/retry`)}
+                    onSkip={(skip) => void act(`lesson:${l.id}`, `${path}/lessons/${l.id}/skip`, { skip })}
                   />
                 ))}
               </ul>
@@ -516,6 +551,24 @@ export default function CourseImportPage() {
   );
 }
 
+/** Where a section stands: in the course, ready to publish, held back by a
+ *  lesson that needs attention, or still being written. */
+function SectionChip({ mod }: { mod: ImportModule }) {
+  const total = mod.lessons.filter((l) => !l.skipped).length;
+  const done = mod.lessons.filter((l) => l.readiness === 'ready' || l.readiness === 'added').length;
+  const attention = mod.lessons.filter((l) => l.readiness === 'attention').length;
+  switch (mod.readiness) {
+    case 'added':
+      return <Tag label="In the course" tone="var(--color-brand)" />;
+    case 'ready':
+      return <Tag label={mod.inCourse ? 'More ready to add' : 'Ready to publish'} tone="var(--success-green)" />;
+    case 'attention':
+      return <Tag label={`${attention} need${attention === 1 ? 's' : ''} attention`} tone="var(--error-red)" />;
+    default:
+      return <Tag label={`Writing ${done}/${total}`} tone="var(--text-muted)" />;
+  }
+}
+
 function LessonRow({
   lesson,
   open,
@@ -523,6 +576,7 @@ function LessonRow({
   canRegenerate,
   busy,
   onRetry,
+  onSkip,
 }: {
   lesson: ImportLesson;
   open: boolean;
@@ -530,7 +584,15 @@ function LessonRow({
   canRegenerate: boolean;
   busy: boolean;
   onRetry: () => void;
+  onSkip: (skip: boolean) => void;
 }) {
+  // Why a lesson that isn't FAILED still holds its section back.
+  const blockedReason =
+    lesson.readiness !== 'attention' || lesson.status === 'FAILED'
+      ? null
+      : lesson.status === 'GENERATED'
+        ? "What was written didn't pass the lesson checks. Rewrite it, or skip it."
+        : "Its video couldn't be copied or transcribed. Retry the file under Files from Drive, or skip this lesson.";
   const s = LESSON_STATUS[lesson.status] ?? { label: lesson.status, tone: 'var(--text-muted)' };
   const apply = blockValue(lesson.applyBlocks, 'mcqActivity');
   const reflect = blockValue(lesson.reflectBlocks, 'reflectActivity');
@@ -575,7 +637,13 @@ function LessonRow({
               />
             )}
             {lesson.addedToCourse && <Tag label="In the course" tone="var(--color-brand)" />}
+            {lesson.skipped && <Tag label="Skipped" tone="var(--text-muted)" />}
           </span>
+          {blockedReason && (
+            <span className={m.err}>
+              <CircleAlert size={14} aria-hidden="true" /> {blockedReason}
+            </span>
+          )}
           {(lesson.error || explainError(lesson.errorCode)) && (
             <span className={m.err}>
               <CircleAlert size={14} aria-hidden="true" /> {explainError(lesson.errorCode) ?? lesson.error}
@@ -591,6 +659,16 @@ function LessonRow({
           {((lesson.status === 'GENERATED' && canRegenerate) || lesson.status === 'FAILED') && (
             <button type="button" className={m.smallBtn} disabled={busy} onClick={onRetry}>
               <RotateCw size={14} aria-hidden="true" /> {lesson.status === 'FAILED' ? 'Retry' : 'Rewrite'}
+            </button>
+          )}
+          {lesson.readiness === 'attention' && (
+            <button type="button" className={m.smallBtn} disabled={busy} onClick={() => onSkip(true)}>
+              <SkipForward size={14} aria-hidden="true" /> Skip
+            </button>
+          )}
+          {lesson.skipped && !lesson.addedToCourse && (
+            <button type="button" className={m.smallBtn} disabled={busy} onClick={() => onSkip(false)}>
+              <Undo2 size={14} aria-hidden="true" /> Undo skip
             </button>
           )}
         </span>

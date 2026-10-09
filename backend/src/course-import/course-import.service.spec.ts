@@ -5,6 +5,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import { R2StorageService } from '../storage/r2-storage.service';
 import { DriveFile } from '../google-drive/google-drive.types';
+import { settleImportIfDone } from './lesson-content-generation-processor.service';
+
+jest.mock('./lesson-content-generation-processor.service', () => ({
+  settleImportIfDone: jest.fn(),
+}));
 
 const userId = 'user-1';
 const folderId = 'drive-folder-1';
@@ -400,6 +405,80 @@ describe('CourseImportService', () => {
     });
   });
 
+  describe('skipLesson', () => {
+    const found = (
+      lesson: Record<string, unknown>,
+      status = 'GENERATING_CONTENT',
+    ) => ({
+      id: 'import-1',
+      createdById: userId,
+      sourceDriveFolderId: folderId,
+      sourceDriveFolderName: 'Course',
+      error: null,
+      createdCourseId: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status,
+      files: [],
+      modules: [
+        {
+          id: 'module-1',
+          title: 'Module',
+          orderIndex: 0,
+          lessons: [
+            {
+              id: 'lesson-1',
+              title: 'Lesson',
+              status: 'FAILED',
+              createdLessonId: null,
+              ...lesson,
+            },
+          ],
+        },
+      ],
+    });
+
+    it('skips a failed lesson so its section can go in, and settles the import', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(found({}));
+      await service.skipLesson(userId, 'import-1', 'lesson-1', true);
+      expect(prisma.courseImportLesson.update).toHaveBeenCalledWith({
+        where: { id: 'lesson-1' },
+        data: { skippedAt: expect.any(Date) as Date },
+      });
+      expect(settleImportIfDone).toHaveBeenCalledWith(prisma, 'import-1');
+    });
+
+    it('un-skipping puts it back in the queue and reopens a finished import', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        found({ skippedAt: new Date() }, 'READY_FOR_REVIEW'),
+      );
+      await service.skipLesson(userId, 'import-1', 'lesson-1', false);
+      expect(prisma.courseImportLesson.update).toHaveBeenCalledWith({
+        where: { id: 'lesson-1' },
+        data: { skippedAt: null },
+      });
+      expect(prisma.courseImport.update).toHaveBeenCalledWith({
+        where: { id: 'import-1' },
+        data: { status: 'GENERATING_CONTENT', completedAt: null },
+      });
+    });
+
+    it('refuses a lesson already in the course, or being written right now', async () => {
+      prisma.courseImport.findFirst.mockResolvedValue(
+        found({ createdLessonId: 'real-1' }),
+      );
+      await expect(
+        service.skipLesson(userId, 'import-1', 'lesson-1', true),
+      ).rejects.toThrow('already in the course');
+      prisma.courseImport.findFirst.mockResolvedValue(
+        found({ status: 'CLAIMED' }),
+      );
+      await expect(
+        service.skipLesson(userId, 'import-1', 'lesson-1', true),
+      ).rejects.toThrow('being written');
+    });
+  });
+
   describe('retryLesson', () => {
     const baseImport = {
       id: 'import-1',
@@ -440,9 +519,11 @@ describe('CourseImportService', () => {
         data: {
           status: 'PENDING',
           error: null,
+          errorCode: null,
           claimedAt: null,
           claimedBy: null,
           attempts: 0,
+          skippedAt: null,
         },
       });
       expect(prisma.courseImport.update).toHaveBeenCalledWith({
@@ -464,9 +545,11 @@ describe('CourseImportService', () => {
         data: {
           status: 'PENDING',
           error: null,
+          errorCode: null,
           claimedAt: null,
           claimedBy: null,
           attempts: 0,
+          skippedAt: null,
         },
       });
     });
@@ -480,14 +563,26 @@ describe('CourseImportService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('refuses once a real course has already been created from this import', async () => {
+    it('still retries a lesson that is not in the course yet, after earlier sections were published', async () => {
       prisma.courseImport.findFirst.mockResolvedValue({
-        ...withLesson('GENERATED', 'COURSE_CREATED'),
+        ...withLesson('FAILED', 'COURSE_CREATED'),
+        createdCourseId: 'course-1',
+      });
+      await service.retryLesson(userId, 'import-1', 'lesson-1');
+      expect(prisma.courseImportLesson.update).toHaveBeenCalled();
+    });
+
+    it('refuses a lesson that is already in the course', async () => {
+      const found = withLesson('GENERATED', 'COURSE_CREATED');
+      (found.modules[0].lessons[0] as Record<string, unknown>).createdLessonId =
+        'real-lesson-1';
+      prisma.courseImport.findFirst.mockResolvedValue({
+        ...found,
         createdCourseId: 'course-1',
       });
       await expect(
         service.retryLesson(userId, 'import-1', 'lesson-1'),
-      ).rejects.toThrow('already created from this import');
+      ).rejects.toThrow('already in the course');
     });
 
     it('404s when the lesson does not exist on this import', async () => {

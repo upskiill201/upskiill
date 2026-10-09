@@ -2598,6 +2598,10 @@ model CourseImportLesson {
   partIndex    Int?
   partCount    Int?
 
+  /// The admin chose to leave this lesson out (it couldn't be written). A
+  /// skipped lesson no longer holds its section back from the course.
+  skippedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

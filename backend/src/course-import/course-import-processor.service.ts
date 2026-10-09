@@ -70,6 +70,8 @@ const STALE_CLAIM_MINUTES = 20;
  *  auto-reclaimed — it waits for an explicit admin retry instead of quietly
  *  retrying forever. */
 const MAX_AUTO_ATTEMPTS = 3;
+/** How many copied videos may wait for transcription before copying pauses. */
+const TRANSCRIPTION_BACKLOG_MAX = 2;
 
 interface ClaimedIdRow {
   id: string;
@@ -160,6 +162,16 @@ export class CourseImportProcessorService {
     limit: number,
     importId?: string,
   ): Promise<TickSummary> {
+    // Don't copy far ahead of transcription: two copied-but-untranscribed
+    // videos are enough of a queue. Keeps the course moving section by
+    // section (section 1 copied, transcribed and written before section 6
+    // is even copied) instead of copying everything first.
+    if (
+      !importId &&
+      (await this.transcriptionBacklog()) >= TRANSCRIPTION_BACKLOG_MAX
+    ) {
+      return { claimed: 0, uploaded: 0, failed: 0 };
+    }
     const claimedIds = await this.claimBatch(limit, importId);
     const summary: TickSummary = {
       claimed: claimedIds.length,
@@ -191,13 +203,7 @@ export class CourseImportProcessorService {
         // A native Google Doc/Slides/Sheet is exported on download, so its
         // stored object gets the exported format's extension.
         const exported = NATIVE_EXPORTS[file.mimeType];
-        const key = buildObjectKey(
-          file.importId,
-          file.driveFileId,
-          exported
-            ? `${file.driveFileName.trim()}.${exported.ext}`
-            : file.driveFileName,
-        );
+        const key = objectKeyForFile(file);
 
         // Bounded, because neither the Drive stream nor the R2 upload has a
         // timeout of its own. A stalled transfer (a half-open connection, a
@@ -386,16 +392,35 @@ export class CourseImportProcessorService {
              -- batches keeps uploading its remaining files after the first
              -- batch has already produced a course. PAUSED is absent on
              -- purpose: that is exactly what stops new work being claimed.
-             AND ci."status" IN ('CREATED', 'PROCESSING_FILES', 'COURSE_CREATED')
+             -- GENERATING_CONTENT / READY_FOR_REVIEW: a course planned straight
+             -- from the Drive listing keeps copying while early sections are
+             -- already being written.
+             AND ci."status" IN ('CREATED', 'PROCESSING_FILES', 'GENERATING_CONTENT', 'READY_FOR_REVIEW', 'COURSE_CREATED')
              AND f2."attempts" < ${MAX_AUTO_ATTEMPTS}
              ${importFilter}
-           ORDER BY f2."createdAt"
+           -- Drive order: section 1's files first, so it can be finished first.
+           ORDER BY ci."createdAt", f2."orderIndex"
            LIMIT ${limit}
              FOR UPDATE SKIP LOCKED
         ) d
        WHERE f."id" = d."id"
       RETURNING f."id";
     `;
+  }
+
+  /** Copied videos waiting to be transcribed (and able to be, not parked on
+   *  a provider quota) across active imports. */
+  private async transcriptionBacklog(): Promise<number> {
+    const rows = await this.prisma.$queryRaw<{ n: bigint }[]>`
+      SELECT COUNT(*) AS n
+        FROM "course_import_files" f
+        JOIN "course_imports" ci ON ci."id" = f."importId"
+       WHERE f."status" = 'UPLOADED'
+         AND f."transcriptStatus" IN ('PENDING', 'CLAIMED')
+         AND f."updatedAt" <= NOW()
+         AND ci."status" NOT IN ('PAUSED', 'CANCELLED', 'FAILED')
+    `;
+    return Number(rows[0]?.n ?? 0);
   }
 
   private async reapStaleClaims(): Promise<number> {
@@ -435,6 +460,12 @@ export class CourseImportProcessorService {
     ) {
       return;
     }
+    // Planned already (lessons exist): its status now follows the lessons
+    // (GENERATING_CONTENT -> READY_FOR_REVIEW), not the copying.
+    const planned = await this.prisma.courseImportModule.count({
+      where: { importId },
+    });
+    if (planned > 0) return;
 
     const grouped = await this.prisma.courseImportFile.groupBy({
       by: ['status'],
@@ -465,6 +496,25 @@ export class CourseImportProcessorService {
       },
     });
   }
+}
+
+/** Where a file will live in R2 — deterministic, so planning can read a
+ *  file's real type from it before the file has even been copied. A native
+ *  Google Doc/Slides/Sheet gets its exported format's extension. */
+export function objectKeyForFile(file: {
+  importId: string;
+  driveFileId: string;
+  driveFileName: string;
+  mimeType: string;
+}): string {
+  const exported = NATIVE_EXPORTS[file.mimeType];
+  return buildObjectKey(
+    file.importId,
+    file.driveFileId,
+    exported
+      ? `${cleanDriveFileName(file.driveFileName)}.${exported.ext}`
+      : file.driveFileName,
+  );
 }
 
 export function buildObjectKey(

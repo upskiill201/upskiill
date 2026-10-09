@@ -12,6 +12,7 @@ import {
 } from './course-import-summary.util';
 import { extractableKind } from './document-text';
 import { lessonRowsForFile } from './lesson-plan';
+import { objectKeyForFile } from './course-import-processor.service';
 import { cleanDriveFileName } from '../google-drive/google-drive.types';
 
 /** A file the planning below needs — only the fields actually used. */
@@ -34,6 +35,14 @@ export interface UploadedFile {
  * not found" (rolled back, so a retry is safe, but it could never finish).
  */
 const PLAN_TRANSACTION_OPTIONS = { maxWait: 15_000, timeout: 120_000 };
+
+/** Statuses an import can be planned from: straight after the Drive
+ *  listing (CREATED), mid-copy, or after copying (older imports). */
+const PLANNABLE: string[] = [
+  'CREATED',
+  'PROCESSING_FILES',
+  'READY_FOR_GENERATION',
+];
 
 /** Media a lesson is built around: transcribed, then played as its card. */
 const MEDIA = new Set(['video', 'audio']);
@@ -160,15 +169,23 @@ export class CourseStructureAnalysisService {
     if (courseImport.modules.length > 0) {
       throw new BadRequestException('This import has already been analyzed.');
     }
-    if (courseImport.status !== 'READY_FOR_GENERATION') {
+    // Planned straight away from the Drive listing — names, types, order and
+    // lengths are all known before anything is copied — so each lesson can
+    // be written the moment its own video is ready, section by section,
+    // instead of waiting for the whole course to copy and transcribe.
+    if (!PLANNABLE.includes(courseImport.status)) {
       throw new BadRequestException(
-        'Files must finish uploading before the course structure can be analyzed.',
+        `An import that is ${courseImport.status} can't be planned.`,
       );
     }
 
-    const uploaded = courseImport.files.filter((f) => f.status === 'UPLOADED');
+    const usable = courseImport.files
+      .filter((f) => f.status !== 'SKIPPED' && f.status !== 'FAILED')
+      // Not copied yet: its key is deterministic, and that's where a
+      // reading lesson's real document type is read from.
+      .map((f) => ({ ...f, storageKey: f.storageKey ?? objectKeyForFile(f) }));
     const sections = planCourseStructure(
-      uploaded,
+      usable,
       courseImport.sourceDriveFolderName,
     );
     if (sections.length === 0) {

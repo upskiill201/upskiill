@@ -35,6 +35,7 @@ describe('CourseImportProcessorService', () => {
       groupBy: jest.Mock;
     };
     courseImport: { findUnique: jest.Mock; update: jest.Mock };
+    courseImportModule: { count: jest.Mock };
   };
   let googleDrive: { downloadFile: jest.Mock; getAccessToken: jest.Mock };
   let r2: { uploadStream: jest.Mock; publicUrlFor: jest.Mock };
@@ -50,6 +51,8 @@ describe('CourseImportProcessorService', () => {
         groupBy: jest.fn(),
       },
       courseImport: { findUnique: jest.fn(), update: jest.fn() },
+      // Not planned yet: status follows the copying, as these tests expect.
+      courseImportModule: { count: jest.fn().mockResolvedValue(0) },
     };
     googleDrive = {
       downloadFile: jest.fn(),

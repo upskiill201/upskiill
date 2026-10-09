@@ -268,16 +268,59 @@ describe('CourseStructureAnalysisService', () => {
     expect(prisma.courseImportModule.create).not.toHaveBeenCalled();
   });
 
-  it('refuses to analyze before files have finished uploading', async () => {
+  it('refuses to plan a paused or cancelled import', async () => {
+    for (const status of ['PAUSED', 'CANCELLED']) {
+      prisma.courseImport.findFirst.mockResolvedValue({
+        status,
+        modules: [],
+        files: [],
+      });
+      await expect(service.analyze(userId, importId)).rejects.toThrow(
+        "can't be planned",
+      );
+    }
+  });
+
+  it('plans straight from the Drive listing, before anything is copied', async () => {
     prisma.courseImport.findFirst.mockResolvedValue({
-      status: 'PROCESSING_FILES',
+      status: 'CREATED',
+      sourceDriveFolderName: 'Course',
       modules: [],
+      files: [
+        file({
+          id: 'v1',
+          driveFileName: '01 Intro.mp4',
+          status: 'PENDING',
+          storageKey: null,
+          importId,
+          driveFileId: 'd1',
+          mimeType: 'video/mp4',
+        }),
+        file({
+          id: 'gone',
+          driveFileName: '02 Broken.mp4',
+          status: 'SKIPPED',
+          importId,
+          driveFileId: 'd2',
+          mimeType: 'video/mp4',
+        }),
+      ],
+    });
+    prisma.courseImportModule.create.mockResolvedValue({ id: 'm1' });
+    prisma.courseImport.findFirstOrThrow.mockResolvedValue({
+      ...(await prisma.courseImport.findFirst()),
       files: [],
+      modules: [],
     });
 
-    await expect(service.analyze(userId, importId)).rejects.toThrow(
-      'Files must finish uploading',
-    );
+    await service.analyze(userId, importId).catch(() => undefined);
+
+    const rows = (
+      prisma.courseImportLesson.createMany.mock.calls[0][0] as {
+        data: { primaryFileId: string }[];
+      }
+    ).data;
+    expect(rows.map((r) => r.primaryFileId)).toEqual(['v1']);
   });
 
   it('refuses to analyze when there are no uploaded videos', async () => {
