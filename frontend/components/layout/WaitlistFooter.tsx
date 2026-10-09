@@ -15,6 +15,7 @@ const COLUMNS: { title: string; links: [string, string][] }[] = [
   {
     title: 'Learn',
     links: [
+      ['All courses', '/courses'],
       ['Learn coding', '/learn-coding'],
       ['Learn AI', '/learn-ai'],
       ['How it works', '/#how-it-works'],

@@ -45,7 +45,8 @@ export function buildUnlockHref(courseId: string, returnTo?: string | null): str
  * Paths worth preserving through a login bounce. Anything else falls back to
  * the dashboard rather than being trusted.
  */
-const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin'] as const;
+// /courses: "sign in to start this course" comes back to the course page.
+const NEXT_ALLOWED_PREFIXES = ['/dashboard', '/learn', '/admin', '/courses'] as const;
 
 /**
  * Sanitizes the `next` param used by the login wall (proxy.ts).

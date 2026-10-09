@@ -30,6 +30,7 @@ import {
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
+import HomeCourses from '@/components/homepage/v3/HomeCourses';
 import s from '@/components/homepage/v3/Home.module.css';
 
 /**
@@ -42,6 +43,9 @@ const baloo2 = Baloo_2({
   weight: ['600', '700', '800'],
   display: 'swap',
 });
+
+// The courses section reads the live catalogue; refresh it every five minutes.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Teyro — the fun way to finish learning coding and AI',
@@ -62,6 +66,7 @@ export default function Home() {
       <LaunchBadges />
       <LaunchSection />
       <Tracks />
+      <HomeCourses />
       <StayRelevant />
       <WhyItWorks />
       <Features />

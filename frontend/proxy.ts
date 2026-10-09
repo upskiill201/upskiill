@@ -11,7 +11,8 @@ import { LEARNER_ENTRY, LEARNER_GATE, STUDIO_ENTRY, STUDIO_GATE } from '@/lib/la
 const LEARNER_DOORS = [
   '/start', '/login', '/signup', '/join', '/launch', '/onboarding',
   '/forgot-password', '/reset-password', '/verify-email', '/role-select',
-  '/explore', '/courses', '/learn', '/dashboard', '/cart', '/checkout',
+  // Not /courses: the catalog and course pages are public marketing pages.
+  '/explore', '/learn', '/dashboard', '/cart', '/checkout',
   '/my-courses', '/my-learning', '/leaderboards', '/quests', '/shop',
   '/profile', '/certificates', '/student',
 ];
