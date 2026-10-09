@@ -27,6 +27,14 @@ export interface UploadedFile {
   transcriptSegments?: Prisma.JsonValue | null;
 }
 
+/**
+ * Prisma's interactive transactions default to 5s. Planning writes every
+ * module and lesson in one transaction, a round trip each from Render to
+ * Supabase — a 131-video course ran past 5s and failed with "Transaction
+ * not found" (rolled back, so a retry is safe, but it could never finish).
+ */
+const PLAN_TRANSACTION_OPTIONS = { maxWait: 15_000, timeout: 120_000 };
+
 /** Media a lesson is built around: transcribed, then played as its card. */
 const MEDIA = new Set(['video', 'audio']);
 /** Names that mark a document as a handout for a lesson, never a lesson of
@@ -212,7 +220,7 @@ export class CourseStructureAnalysisService {
         where: { id: importId },
         data: { status: 'GENERATING_CONTENT' },
       });
-    });
+    }, PLAN_TRANSACTION_OPTIONS);
 
     const withModules = await this.prisma.courseImport.findFirstOrThrow({
       where: { id: importId },

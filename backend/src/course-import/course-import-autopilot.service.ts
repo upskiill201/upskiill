@@ -72,10 +72,7 @@ export class CourseImportAutopilotService {
         // AI call in parallel with the job's own, which a free-tier provider
         // answers with rate-limit errors.
       } catch (err) {
-        await this.stop(
-          imp.id,
-          `Couldn't analyze the structure: ${(err as Error).message}`,
-        );
+        await this.failOrRetry(imp.id, "Couldn't analyze the structure", err);
       }
     }
 
@@ -114,10 +111,7 @@ export class CourseImportAutopilotService {
         );
         built++;
       } catch (err) {
-        await this.stop(
-          imp.id,
-          `Couldn't build the course: ${(err as Error).message}`,
-        );
+        await this.failOrRetry(imp.id, "Couldn't build the course", err);
       }
     }
 
@@ -131,6 +125,25 @@ export class CourseImportAutopilotService {
     });
   }
 
+  /**
+   * A database hiccup (a transaction timing out, a dropped connection) is
+   * not a reason to hand the course back: the step is all-or-nothing, so the
+   * next tick (20s) just tries again. Real problems still stop autopilot.
+   */
+  private async failOrRetry(id: string, what: string, err: unknown) {
+    if (isTransientDbError(err)) {
+      this.logger.warn(
+        `Autopilot: ${what} for import ${id} hit a temporary database error; retrying. ${(err as Error).message}`,
+      );
+      await this.note(
+        id,
+        `${what} (temporary database error). Retrying automatically.`,
+      );
+      return;
+    }
+    await this.stop(id, `${what}: ${(err as Error).message}`);
+  }
+
   private async stop(id: string, reason: string) {
     this.logger.warn(`Autopilot stopped for import ${id}: ${reason}`);
     await this.prisma.courseImport.update({
@@ -138,4 +151,23 @@ export class CourseImportAutopilotService {
       data: { autopilot: false, autopilotNote: reason.slice(0, 500) },
     });
   }
+}
+
+/** Prisma errors that clear on their own: transaction timeouts (P2028),
+ *  pool timeouts (P2024), lost or refused connections (P1001, P1002, P1017). */
+const TRANSIENT_PRISMA_CODES = new Set([
+  'P2028',
+  'P2024',
+  'P1001',
+  'P1002',
+  'P1017',
+]);
+
+export function isTransientDbError(err: unknown): boolean {
+  const code = (err as { code?: unknown })?.code;
+  if (typeof code === 'string' && TRANSIENT_PRISMA_CODES.has(code)) return true;
+  const message = err instanceof Error ? err.message : '';
+  return /Transaction API error|Transaction not found|Transaction already closed|Can't reach database server|Timed out fetching a new connection/i.test(
+    message,
+  );
 }
