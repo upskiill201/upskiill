@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import StartExperience from '@/components/start/StartExperience';
 
 /**
@@ -29,6 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StartPage() {
-  return <StartExperience />;
+export default async function StartPage() {
+  // A signed-in learner who opens the gateway goes home (lib/pwa/entry.ts).
+  const hasSession = Boolean((await cookies()).get('access_token')?.value);
+  return <StartExperience hasSession={hasSession} />;
 }

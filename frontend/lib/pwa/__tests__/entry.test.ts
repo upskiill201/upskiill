@@ -29,6 +29,13 @@ afterEach(() => {
 });
 
 describe('resolveAppEntry', () => {
+  it('sends a signed-in learner home even with no onboarding on this device', () => {
+    // Signed in on the web, then installed (or an iPhone install, whose storage
+    // is separate from Safari): asking them to sign in on every open was the bug.
+    withStoredState(undefined);
+    expect(resolveAppEntry({ hasSession: true })).toEqual({ href: '/dashboard', reason: 'completed' });
+  });
+
   it('sends a brand-new learner to screen 0, not step 1', () => {
     // Screen 0 is the new-user / existing-user fork. Skipping to step 1 would
     // leave a returning learner on a fresh device with no route to sign-in.

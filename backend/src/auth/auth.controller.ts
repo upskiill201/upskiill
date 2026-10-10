@@ -7,10 +7,11 @@ import {
   Get,
   UseGuards,
   Res,
+  Req,
   Query,
   BadRequestException,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -229,7 +230,18 @@ export class AuthController {
    */
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async getMe(@GetUser() user: User) {
+  async getMe(
+    @GetUser() user: User,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // Every app open calls this — the natural place to slide the session.
+    const fresh = await this.authService.refreshTokenIfStale(
+      (req as Request & { cookies?: Record<string, string> }).cookies?.access_token,
+      user,
+    );
+    if (fresh) this.setCookie(res, fresh);
+
     // Return enriched user with both profiles — not just the raw User row
     const enrichedUser = await this.prisma.user.findUnique({
       where: { id: user.id },
