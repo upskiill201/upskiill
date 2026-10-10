@@ -7,7 +7,7 @@ import { AlertTriangle } from 'lucide-react';
 /**
  * Route-segment error boundary for the admin lesson review viewer.
  *
- * This route reuses the full learner lesson player (SectionViewContent) in
+ * This route reuses the full learner lesson player (LessonHost) in
  * a stripped-down provider stack (see page.tsx) rather than the real
  * (app)/layout.tsx tree — a mismatch between what that component expects at
  * runtime and what's actually mounted here throws instead of rendering, and

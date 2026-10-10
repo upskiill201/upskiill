@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Target } from 'lucide-react';
 import type { DashboardResponse } from '../types';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 export function AreasToImprove({ areas }: { areas: DashboardResponse['areasToImprove'] }) {
   const router = useRouter();
@@ -28,7 +29,7 @@ export function AreasToImprove({ areas }: { areas: DashboardResponse['areasToImp
             {area.courseId && (
               <button
                 type="button"
-                onClick={() => router.push(`/learn/${area.courseId}`)}
+                onClick={() => router.push(courseHomeHref(area.courseId!))}
                 className="shrink-0 text-xs font-bold text-[#0172FD] hover:text-[#00459E]"
               >
                 {area.type === 'low_score' ? 'Practice Again' : 'Continue'}

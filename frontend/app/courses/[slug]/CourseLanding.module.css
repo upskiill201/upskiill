@@ -3,7 +3,8 @@
 .page {
   max-width: 1080px;
   margin: 0 auto;
-  padding-bottom: 48px;
+  /* A standalone page now (no app shell around it). */
+  padding: 24px 16px 64px;
   font-family: var(--font-jakarta), sans-serif;
   color: var(--text-primary);
 }
@@ -835,10 +836,10 @@
     flex-direction: column;
     gap: 6px;
     position: sticky;
-    bottom: calc(72px + env(safe-area-inset-bottom));
+    bottom: 0;
     z-index: 20;
-    margin: 24px -14px 0;
-    padding: 12px 14px 10px;
+    margin: 24px -16px 0;
+    padding: 12px 16px calc(10px + env(safe-area-inset-bottom));
     border-top: 2px solid var(--border);
     background: var(--bg-card);
   }

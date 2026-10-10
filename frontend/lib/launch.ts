@@ -39,11 +39,16 @@ export const STANDARD_SHARE_PCT = 70;
 export const FOUNDING_SHARE_PCT = 80;
 
 /**
- * The Founding Creator programme runs until the learner app launches (November
+ * The Founding Creator programme runs until the public launch (November
  * 2026): anyone who joins before then is a Founding Creator, whether Studio is
- * still gated or already open. It ends when LEARNER_GATE is turned off.
+ * still gated or already open.
+ *
+ * Its own switch, NEXT_PUBLIC_FOUNDING_OPEN ('on' | 'off'), because the
+ * learner app opens early (LEARNER_GATE off) while the programme carries on.
+ * Unset means open, whatever the learner gate says: set it to 'off' on
+ * public launch day to end the programme.
  */
-export const FOUNDING_OPEN = LEARNER_GATE;
+export const FOUNDING_OPEN = process.env.NEXT_PUBLIC_FOUNDING_OPEN !== 'off';
 
 /** Where "start learning" goes: the app, or the notify-me form while gated. */
 export const LEARNER_ENTRY = LEARNER_GATE

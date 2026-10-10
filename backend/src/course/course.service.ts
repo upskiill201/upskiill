@@ -21,6 +21,7 @@ import { calculateCoursePricingLadder } from './pricing-engine';
 import { assessCourseReadiness } from './course-readiness.util';
 import { CourseReviewService } from '../course-review/course-review.service';
 import * as crypto from 'crypto';
+import { slugUpdateFor, uniqueCourseSlug } from './course-slug.util';
 
 const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
 
@@ -274,6 +275,9 @@ export class CourseService {
         OR: [
           { id: idOrSlug },
           { slug: idOrSlug },
+          // An old slug still finds the course; the public page 301s to the
+          // current one (findOne returns it).
+          { slugHistory: { has: idOrSlug } },
         ],
       },
       include: {
@@ -1409,15 +1413,8 @@ export class CourseService {
     userId: string,
     data: { title: string; category: string; level?: string; creatorTimeWeekly?: string },
   ) {
-    // Basic slug generation: lowercasing and replacing non-alphanumeric with hyphens
-    const baseSlug = data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-
-    // Append a simple unique identifier just in case of clashes
-    const uniqueHash = crypto.randomBytes(4).toString('hex').substring(0, 6);
-    const slug = `${baseSlug}-${uniqueHash}`;
+    // The URL comes from the title (course-slug.util.ts) and follows it.
+    const slug = await uniqueCourseSlug(this.prisma, data.title);
 
     // Generate a 7 digit numeric ID string (e.g. "7127813")
     const shortId = crypto.randomInt(1000000, 10000000).toString();
@@ -1595,12 +1592,7 @@ export class CourseService {
 
     if (!source) throw new NotFoundException('Source course not found');
 
-    const baseSlug = `${source.title}-copy`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-    const uniqueHash = crypto.randomBytes(4).toString('hex').substring(0, 6);
-    const slug = `${baseSlug}-${uniqueHash}`;
+    const slug = await uniqueCourseSlug(this.prisma, `${source.title} (Copy)`);
     const shortId = crypto.randomInt(1000000, 10000000).toString();
 
     const newCourse = await this.prisma.course.create({
@@ -1811,6 +1803,11 @@ export class CourseService {
       }
     }
 
+    const titleSlug =
+      data.title !== undefined && data.title.trim() && data.title !== course.title
+        ? await slugUpdateFor(this.prisma, course, data.title)
+        : null;
+
     // Atomic optimistic lock, matching lesson.service.ts semantics: the row is
     // only written when the stored version still equals the one the client
     // loaded. Two builder tabs (or a slow save landing after a fast one) used
@@ -1824,6 +1821,8 @@ export class CourseService {
         version: { increment: 1 },
         ...(data.category !== undefined && { category: data.category }),
         ...(data.title !== undefined && { title: data.title }),
+        // The URL follows the title; the old slug keeps redirecting.
+        ...(titleSlug ?? {}),
         ...(data.description !== undefined && {
           description: data.description,
         }),
@@ -1920,9 +1919,12 @@ export class CourseService {
       });
     }
 
+    // Going live is when the URL starts to matter: make sure it is the
+    // title's (older courses carried a random "-962d48" ending).
+    const slugFix = await slugUpdateFor(this.prisma, course);
     return await this.prisma.course.update({
       where: { id: course.id },
-      data: { published: true },
+      data: { published: true, ...(slugFix ?? {}) },
     });
   }
 

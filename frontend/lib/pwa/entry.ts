@@ -21,7 +21,15 @@ export interface AppEntry {
   reason: 'completed' | 'resume' | 'fresh';
 }
 
-export function resolveAppEntry(): AppEntry {
+/**
+ * `hasSession`: the server saw the session cookie (pages read it and pass it
+ * down — the cookie is httpOnly). A signed-in learner always goes home: device
+ * storage alone sent everyone who signed in instead of onboarding here, and
+ * every iPhone install (storage separate from Safari), to sign-in on each open.
+ */
+export function resolveAppEntry(opts: { hasSession?: boolean } = {}): AppEntry {
+  if (opts.hasSession) return { href: '/dashboard', reason: 'completed' };
+
   const state = getOnboardingState();
 
   if (state.onboardingComplete) {

@@ -9,6 +9,7 @@ import RankMedal from '@/components/leaderboard/RankMedal';
 import type { CommunityOverview, LeaderboardBoard } from '@/lib/communityApi';
 import shared from './community.module.css';
 import styles from './CommunityRail.module.css';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 interface CommunityRailProps {
   community: CommunityOverview;
@@ -48,7 +49,7 @@ export default function CommunityRail({
           </div>
         )}
         {community.course && (
-          <Link href={`/learn/${community.course.id}`} className={styles.railLink}>
+          <Link href={courseHomeHref(community.course.id)} className={styles.railLink}>
             <GraduationCap size={16} strokeWidth={2.5} /> Go to the course
           </Link>
         )}

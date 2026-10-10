@@ -7,11 +7,16 @@ import { getAllUseCasePages } from '@/lib/use-cases/posts';
 import { COMPETITORS, altSlug, vsSlug } from '@/lib/seo/competitors';
 import { PERSONAS } from '@/lib/seo/personas';
 import { TEACH_SKILLS, TEACH_SOURCES, teachParams } from '@/lib/seo/teach';
+import { LEARN_HUB, allLearnPaths } from '@/lib/seo/learn';
+import { fetchPublicCourses } from '@/lib/courses/public';
 
 // Auto-generated sitemap — adding an .mdx post to content/blog updates this
 // on the next build automatically.
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  // Published Coding and AI courses (empty if the backend is unreachable —
+  // the rest of the sitemap still builds).
+  const courses = await fetchPublicCourses();
 
   return [
     {
@@ -95,6 +100,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(TEACH_SOURCES.generatedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+    })),
+    // The course catalogue and one page per published course.
+    {
+      url: 'https://teyro.app/courses',
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    ...courses.map((c) => ({
+      url: `https://teyro.app/courses/${c.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
+    // Learner pages: /learn-online, track hubs, topic guides and track × place.
+    {
+      url: `https://teyro.app${LEARN_HUB}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    ...allLearnPaths().map(({ path, kind }) => ({
+      url: `https://teyro.app${path}`,
+      lastModified: new Date(TEACH_SOURCES.generatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: kind === 'track' ? 0.8 : kind === 'topic' ? 0.7 : 0.6,
     })),
     // Comparison pages convert hardest — the reader is already switching.
     ...COMPETITORS.flatMap((c) =>

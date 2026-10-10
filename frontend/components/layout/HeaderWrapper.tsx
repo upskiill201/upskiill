@@ -5,7 +5,7 @@ import Header from '../Header';
 import WaitlistHeader from './WaitlistHeader';
 import OnboardingHeader from './OnboardingHeader';
 
-const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach'];
+const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach', '/courses', '/learn-online', '/learn-coding', '/learn-ai'];
 
 function isSeoSection(pathname: string | null) {
   return SEO_SECTIONS.some((s) => pathname === s || pathname?.startsWith(`${s}/`));
@@ -38,8 +38,9 @@ export default function HeaderWrapper() {
     pathname === '/creator/login' ||
     pathname === '/creator/signup' ||
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/courses') ||
-    pathname.startsWith('/learn') ||
+    // The lesson route (/learn/…) — not /learn-coding, /learn-ai, /learn-online.
+    pathname === '/learn' ||
+    pathname.startsWith('/learn/') ||
     pathname.startsWith('/creator') ||
     // The Admin Center has its own shell (AdminShell) with its own sidebar
     // and branding — the marketing header (with logged-out Login/Sign Up

@@ -34,6 +34,7 @@ import {
   ShopError,
 } from '@/lib/shop/api';
 import { CATEGORY_LABELS } from '@/lib/shop/cosmetics';
+import { getLastCatalog, rememberCatalog } from '@/lib/shop/previewCache';
 import type { ShopCatalog, ShopItem } from '@/lib/shop/types';
 import { pickShopMessage } from '@/lib/tey/shopVoice';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -47,8 +48,10 @@ export default function ShopPage() {
   const { refresh } = useGamification();
   const { shopScene } = useShopEngine();
 
-  const [catalog, setCatalog] = useState<ShopCatalog | null>(null);
-  const [loading, setLoading] = useState(true);
+  // A revisit paints the last catalog right away and refreshes underneath —
+  // it used to show the loading screen on every visit while it re-fetched.
+  const [catalog, setCatalog] = useState<ShopCatalog | null>(() => getLastCatalog());
+  const [loading, setLoading] = useState(() => getLastCatalog() === null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busyItemId, setBusyItemId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; tone: 'ok' | 'bad' } | null>(null);
@@ -74,6 +77,7 @@ export default function ShopPage() {
     try {
       setLoadError(null);
       const data = await fetchCatalog();
+      rememberCatalog(data);
       setCatalog(data);
       setLockerToken((n) => n + 1);
     } catch (e) {

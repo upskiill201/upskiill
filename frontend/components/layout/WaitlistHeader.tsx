@@ -27,7 +27,7 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: 'Courses', anchor: '#tracks' },
+  { label: 'Courses', href: '/courses' },
   { label: 'How it works', anchor: '#how-it-works' },
   { label: 'Leagues', anchor: '#leagues' },
   { label: 'Community', anchor: '#community' },

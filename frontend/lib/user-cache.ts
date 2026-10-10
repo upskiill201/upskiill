@@ -1,4 +1,5 @@
 import { clearSwrCache } from './swr';
+import { clearHudSnapshot } from './hud-snapshot';
 
 export interface CachedUserProfile {
   id?: string;
@@ -60,4 +61,5 @@ export function clearCachedUser() {
 export function clearClientSession() {
   clearCachedUser();
   clearSwrCache();
+  clearHudSnapshot();
 }

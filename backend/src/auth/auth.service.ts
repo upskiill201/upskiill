@@ -901,6 +901,24 @@ export class AuthService {
     }
   }
 
+  /**
+   * Sliding session: a learner who keeps opening the app stays signed in.
+   * The token lives 7 days; once the one in use is over a day old, /auth/me
+   * hands back a fresh 7-day one. Only someone away a full week has to sign
+   * in again. Returns null when the current token is still fresh.
+   */
+  async refreshTokenIfStale(
+    currentToken: string | undefined,
+    user: { id: string; email: string; fullName?: string | null; role: string },
+  ): Promise<string | null> {
+    if (!currentToken) return null;
+    const decoded = this.jwt.decode(currentToken) as { iat?: number } | null;
+    const issuedAtMs = decoded?.iat ? decoded.iat * 1000 : 0;
+    if (Date.now() - issuedAtMs < 24 * 60 * 60 * 1000) return null;
+    const { access_token } = await this.signToken(user.id, user.email, user.fullName ?? '', user.role);
+    return access_token;
+  }
+
   async signToken(
     userId: string,
     email: string,

@@ -37,6 +37,7 @@ import { playHaptic } from '@/lib/haptics';
 import { setFollowing } from '@/lib/social';
 import styles from './FeedPage.module.css';
 import { getFeed, type DiscoverPayload, type FeedItem, type MyCommunity } from '@/lib/communityApi';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 const FILTERS = [
   { value: 'all', label: 'All', icon: <LayoutGrid size={14} strokeWidth={2.75} /> },
@@ -270,7 +271,7 @@ export default function FeedPage() {
             {discover.data.continueLearning.map((card) => (
               <Link
                 key={card.courseId}
-                href={`/learn/${card.courseId}`}
+                href={courseHomeHref(card.courseId)}
                 className={styles.railItem}
                 onClick={() => playSound('start')}
               >

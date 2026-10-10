@@ -6,7 +6,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CelebrationProvider } from '@/context/CelebrationContext';
 import { GamificationProvider } from '@/context/GamificationContext';
 import { ComingSoonProvider } from '@/components/layout/StudentShell';
-import { SectionViewContent } from '@/app/(app)/learn/[id]/section/[sectionIndex]/page';
+import { LessonHost } from '@/components/lesson/LessonHost';
 import { ErrorState, Loading, useAdminData } from '@/components/admin/AdminUI';
 import styles from '@/components/admin/AdminUI.module.css';
 
@@ -33,7 +33,7 @@ interface CourseDetailForReview {
 /**
  * Admin, read-only lesson content review viewer.
  *
- * Reuses the exact learner lesson player (`SectionViewContent`) in
+ * Reuses the exact learner lesson player (`LessonHost`) in
  * `adminReviewMode` — same Learn/Apply/Reflect/Deepen rendering, quiz correct
  * answers included, but every mutating call site (complete-lesson, hearts,
  * XP/coin/streak celebrations, chest writes) is a no-op, and the out-of-lives
@@ -43,7 +43,7 @@ interface CourseDetailForReview {
  * CelebrationProvider/GamificationProvider/ComingSoonProvider are mounted
  * locally because this route sits outside the `(app)` route group that
  * normally supplies them to the student runtime (see that group's layout for
- * why they're scoped there) — `SectionViewContent`'s hooks throw without a
+ * why they're scoped there) — `LessonHost`'s hooks throw without a
  * provider, so a minimal instance of each is provided here instead of
  * pulling in the full student dashboard shell/nav.
  */
@@ -220,19 +220,16 @@ function ReviewLessonPlayer({
         background: '#fff',
       }}
     >
-      <SectionViewContent
-        course={{ id: courseId }}
-        section={section}
+      {/* LessonHost renders its own error + "Back to course" action. */}
+      <LessonHost
+        courseId={courseId}
         sectionIndex={sectionIndex}
+        lessons={section.lessons ?? []}
         completedLessons={[]}
-        setCompletedLessons={() => {}}
+        onCompleted={() => {}}
+        lessonId={lessonId}
         adminReviewMode
-        reviewLessonId={lessonId}
         onReviewClose={onExit}
-        onReviewLoadError={() => {
-          /* SectionViewContent already renders the error + a "Back to
-             course" action inline — nothing else to do here. */
-        }}
       />
     </div>
   );
