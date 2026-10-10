@@ -32,7 +32,6 @@ export default function LessonBlocksBench() {
       courseId="dev"
       isReview={false}
       adminReviewMode
-      returnHome={false}
       onExit={() => setRun((r) => r + 1)}
       onCompleted={() => {}}
       onFinished={() => setRun((r) => r + 1)}

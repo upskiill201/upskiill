@@ -21,6 +21,7 @@ import { getHomeCourse, setHomeCourse } from '@/lib/homeCourse';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import styles from './MyLearning.module.css';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 const TINTS = ['tintBlue', 'tintGreen', 'tintOrange', 'tintPurple'] as const;
 
@@ -66,7 +67,7 @@ export default function MyLearningPage() {
   const others = list.filter((e) => e.course.id !== current?.course.id);
 
   const continueHref = (e: Enrollment) =>
-    e.nextLesson ? lessonHref(e.course.id, e.nextLesson.sectionIndex, e.nextLesson.id) : `/learn/${e.course.id}`;
+    e.nextLesson ? lessonHref(e.course.id, e.nextLesson.sectionIndex, e.nextLesson.id) : courseHomeHref(e.course.id);
 
   const switchTo = (e: Enrollment) => {
     playSound('toggleOn');
@@ -148,7 +149,7 @@ export default function MyLearningPage() {
                   >
                     {isComplete(current) ? 'Review' : lessonsDone(current) === 0 ? 'Start' : 'Continue'}
                   </Link>
-                  <Link href={`/learn/${current.course.id}`} className={styles.ghostBtn} onClick={() => playSound('navTap', 2)}>
+                  <Link href={courseHomeHref(current.course.id)} className={styles.ghostBtn} onClick={() => playSound('navTap', 2)}>
                     <MapIcon size={18} strokeWidth={2.75} aria-hidden="true" /> Course map
                   </Link>
                   <Link
@@ -169,7 +170,7 @@ export default function MyLearningPage() {
                   {others.map((e) => (
                     <li key={e.id} className={styles.row}>
                       <Link
-                        href={`/learn/${e.course.id}`}
+                        href={courseHomeHref(e.course.id)}
                         className={styles.rowLink}
                         onMouseEnter={() => preloadCourse(e.course.id)}
                         onClick={() => playSound('navTap', 2)}

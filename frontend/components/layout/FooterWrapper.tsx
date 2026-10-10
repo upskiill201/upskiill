@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Footer from './Footer';
 import WaitlistFooter from './WaitlistFooter';
 
-const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach'];
+const SEO_SECTIONS = ['/features', '/for', '/alternatives', '/teach', '/courses', '/learn-online', '/learn-coding', '/learn-ai'];
 
 function isSeoSection(pathname: string | null) {
   return SEO_SECTIONS.some((s) => pathname === s || pathname?.startsWith(`${s}/`));
@@ -33,8 +33,9 @@ export default function FooterWrapper() {
     pathname === '/signup' ||
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/dashboard') ||
-    pathname?.startsWith('/courses') ||
-    pathname?.startsWith('/learn') ||
+    // The lesson route (/learn/…) — not /learn-coding, /learn-ai, /learn-online.
+    pathname === '/learn' ||
+    pathname?.startsWith('/learn/') ||
     pathname?.startsWith('/creator') ||
     // Teyro HQ (the admin center) has its own frame; a marketing footer under
     // an internal tool only gets in the way.

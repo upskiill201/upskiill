@@ -214,6 +214,9 @@ model Course {
   id               String  @id @default(uuid())
   title            String
   slug             String  @unique
+  // Past slugs (title changes, the 2026-10 clean-URL backfill). Public
+  // lookups by an old slug 301 to `slug` — see course-slug.util.ts.
+  slugHistory      String[] @default([])
   description      String  @db.Text
   shortDescription String?
   thumbnailUrl     String?
@@ -289,6 +292,7 @@ model Course {
   // `createdAt` — previously a full table scan + sort on every catalog
   // load. `instructorId` backs every "my courses" / ownership-check query.
   @@index([published, createdAt])
+  @@index([slugHistory], type: Gin)
   @@index([instructorId])
   @@index([featured])
   // Backs the admin review queue (GET /admin/courses?reviewStatus=...),

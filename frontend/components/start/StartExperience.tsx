@@ -94,7 +94,7 @@ function PhaseSkeleton() {
   );
 }
 
-export default function StartExperience() {
+export default function StartExperience({ hasSession = false }: { hasSession?: boolean }) {
   const router = useRouter();
   const install = usePwaInstall();
 
@@ -130,7 +130,7 @@ export default function StartExperience() {
 
     // Both read localStorage, which does not exist during render on the
     // server — so the SSR defaults above are corrected here on mount.
-    setEntry(resolveAppEntry());
+    setEntry(resolveAppEntry({ hasSession }));
     setNagged(hasDismissedTooOften());
     saveInstallFlowState({ stage: 'browsing' });
   }, []);
@@ -155,7 +155,7 @@ export default function StartExperience() {
   useEffect(() => {
     if (!install.ready || !install.isStandalone || redirectedRef.current) return;
     redirectedRef.current = true;
-    router.replace(resolveAppEntry().href);
+    router.replace(resolveAppEntry({ hasSession }).href);
   }, [install.ready, install.isStandalone, router]);
 
   // ── Install completed while this page is open ────────────────────────────
@@ -189,7 +189,7 @@ export default function StartExperience() {
 
   // ── Navigation into the app ──────────────────────────────────────────────
   const enterApp = useCallback(() => {
-    const target = resolveAppEntry();
+    const target = resolveAppEntry({ hasSession });
     trackInstallEvent('onboarding_started', {
       // Required discriminator — the creator flow emits this name too.
       flow: 'learner',

@@ -72,6 +72,7 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: {
             signAsync: jest.fn().mockResolvedValue('mocked-jwt-token'),
+            decode: jest.fn(),
           },
         },
         {
@@ -1385,6 +1386,31 @@ describe('becomeCreator', () => {
 
       await expect(service.becomeCreator('gone')).rejects.toThrow(UnauthorizedException);
       expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+  });
+
+  // Sliding session: an active learner never gets signed out of the app.
+  describe('refreshTokenIfStale', () => {
+    const user = { id: 'u1', email: 'a@b.test', fullName: 'A', role: 'STUDENT' };
+    const nowSec = () => Math.floor(Date.now() / 1000);
+
+    beforeEach(() => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue({ hasCreatorAccess: false, hasStudentAccess: true });
+    });
+
+    it('leaves a token issued in the last day alone', async () => {
+      (jwt.decode as jest.Mock).mockReturnValue({ iat: nowSec() - 3600 });
+      await expect(service.refreshTokenIfStale('tok', user)).resolves.toBeNull();
+      expect(jwt.signAsync).not.toHaveBeenCalled();
+    });
+
+    it('issues a fresh token once the current one is over a day old', async () => {
+      (jwt.decode as jest.Mock).mockReturnValue({ iat: nowSec() - 3 * 24 * 3600 });
+      await expect(service.refreshTokenIfStale('tok', user)).resolves.toBe('mocked-jwt-token');
+    });
+
+    it('does nothing without a token', async () => {
+      await expect(service.refreshTokenIfStale(undefined, user)).resolves.toBeNull();
     });
   });
 });

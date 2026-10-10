@@ -6,6 +6,7 @@ import { CheckCircle2 } from 'lucide-react';
 import ProgressBar3D from '@/components/ui/ProgressBar3D';
 import { pickSkillMapEmptyLine } from '@/lib/tey/analyticsVoice';
 import type { DashboardResponse } from '../types';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 const STATUS_DOT: Record<string, string> = {
   growing: 'bg-[#22C55E]',
@@ -36,7 +37,7 @@ export function SkillMap({ skills }: { skills: DashboardResponse['skillMap'] }) 
             <button
               key={skill.courseId}
               type="button"
-              onClick={() => router.push(`/learn/${skill.courseId}`)}
+              onClick={() => router.push(courseHomeHref(skill.courseId))}
               className="text-left rounded-lg border border-[#E2E8F0] p-3 hover:border-[#3D5AFE] transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">

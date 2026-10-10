@@ -56,7 +56,11 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   show,
 }) => {
   const router = useRouter();
-  const { streakDays, coins, xp, lives, userLevel } = useGamification();
+  const { streakDays, coins, xp, lives, userLevel, statsReady } = useGamification();
+  // Until real numbers exist (server read or the learner's own snapshot), a
+  // dash — never a zero or a placeholder that looks like their balance. A
+  // string also keeps StatChange from floating a fake "+87" when they land.
+  const shown = (n: number) => (statsReady ? n : '–');
 
   // Streak popover hover & pin state
   const [isStreakHovered, setIsStreakHovered] = useState(false);
@@ -173,11 +177,11 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   const showLevelPopover = isLevelHovered || isLevelPinned;
 
   const allStats: { type: StatType; value: number | string; onClick?: () => void }[] = [
-    { type: 'streak', value: streakDays, onClick: handleStreakClick },
-    { type: 'coin', value: coins, onClick: handleCoinClick },
-    { type: 'gem', value: xp, onClick: handleXpClick },
-    { type: 'lives', value: lives, onClick: handleLivesClick },
-    { type: 'level', value: `Lvl ${userLevel}`, onClick: handleLevelClick },
+    { type: 'streak', value: shown(streakDays), onClick: handleStreakClick },
+    { type: 'coin', value: shown(coins), onClick: handleCoinClick },
+    { type: 'gem', value: shown(xp), onClick: handleXpClick },
+    { type: 'lives', value: shown(lives), onClick: handleLivesClick },
+    { type: 'level', value: `Lvl ${shown(userLevel)}`, onClick: handleLevelClick },
   ];
   const stats = show ? allStats.filter((s) => show.includes(s.type)) : allStats;
 

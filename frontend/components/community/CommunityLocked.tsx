@@ -16,6 +16,7 @@ import { lessonHref, useEnrollments } from '@/hooks/useCourse';
 import { playSound } from '@/lib/audio/lessonSounds';
 import PostTypeArt from './PostTypeArt';
 import styles from './CommunityLocked.module.css';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 export interface CommunityLockInfo {
   lessonsDone: number;
@@ -43,7 +44,7 @@ export default function CommunityLocked({ lock }: { lock: CommunityLockInfo }) {
   const { enrollments } = useEnrollments();
   const enrollment = enrollments?.find((e) => e.course.id === lock.courseId);
   const next = enrollment?.nextLesson;
-  const href = next ? lessonHref(lock.courseId, next.sectionIndex, next.id) : `/learn/${lock.courseId}`;
+  const href = next ? lessonHref(lock.courseId, next.sectionIndex, next.id) : courseHomeHref(lock.courseId);
   const left = Math.max(0, lock.lessonsNeeded - lock.lessonsDone);
 
   useEffect(() => {

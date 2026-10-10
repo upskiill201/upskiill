@@ -20,3 +20,11 @@ export function setHomeCourse(courseId: string): void {
     // Storage blocked — home falls back to the course you're partway through.
   }
 }
+
+/**
+ * Home, showing this course's path. The only course map there is — every
+ * "go to the course" link lands here (home reads ?course= and remembers it).
+ */
+export function courseHomeHref(courseId: string): string {
+  return `/dashboard?course=${encodeURIComponent(courseId)}`;
+}

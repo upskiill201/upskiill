@@ -35,6 +35,7 @@ import { clearFinishedLesson, peekFinishedLesson } from '@/lib/path/arrival';
 import { playHaptic } from '@/lib/haptics';
 import { buildPathModel, nodeOffset, type PathNode, type PathUnit } from '@/lib/path/model';
 import { buildUnlockHref } from '@/lib/return-to';
+import { courseHomeHref } from '@/lib/homeCourse';
 import { prefetchLesson } from '@/lib/path/lessonPrefetch';
 import { lessonHref, preloadCourse, type LearningPath as LearningPathData } from '@/hooks/useCourse';
 
@@ -219,7 +220,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
 
   const unlock = (unit: PathUnit) => {
     playHaptic('medium', false);
-    router.push(buildUnlockHref(courseId, `/learn/${courseId}/section/${unit.sectionIndex}`));
+    router.push(buildUnlockHref(courseId, courseHomeHref(courseId)));
   };
 
   if (model.units.length === 0) {

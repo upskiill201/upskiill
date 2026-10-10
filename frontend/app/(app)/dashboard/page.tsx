@@ -105,13 +105,26 @@ export default function DashboardPage() {
   // Read once at mount. Safe from hydration mismatch: the choice only matters
   // once enrollments have loaded, and they never exist on the first render
   // (server or client) — home's first frame is always the path skeleton.
+  // ?course=<id> (courseHomeHref — every "go to this course" link) wins and
+  // is remembered, the way picking it in the course picker would be.
+  const courseParam = searchParams.get('course');
   const [chosenId, setChosenId] = useState<string | null>(() => {
+    if (courseParam) return courseParam;
     try {
       return typeof window === 'undefined' ? null : localStorage.getItem(COURSE_KEY);
     } catch {
       return null; // Storage blocked — the default course is fine.
     }
   });
+  useEffect(() => {
+    if (!courseParam) return;
+    setChosenId(courseParam);
+    try {
+      localStorage.setItem(COURSE_KEY, courseParam);
+    } catch {
+      // Not persisted; still shows this course for this visit.
+    }
+  }, [courseParam]);
   const active: Enrollment | null =
     enrollments?.find((e) => e.course.id === chosenId) ?? pickCurrentEnrollment(enrollments);
   const activeId = active?.course.id ?? null;

@@ -15,6 +15,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { LayoutGroup, motion, useReducedMotion } from 'framer-motion';
 import { ChevronDown, ChevronUp, RefreshCw, ShieldAlert, ShieldCheck, Trophy, Users } from 'lucide-react';
+import useSWR from 'swr';
+import { fetcher } from '@/lib/swr';
 import Avatar from '@/components/ui/Avatar';
 import CosmeticFrame from '@/components/cosmetics/CosmeticFrame';
 import LeagueBadge from '@/components/leaderboard/LeagueBadge';
@@ -74,12 +76,26 @@ function readLastVisit(weekStart: string): Record<string, number> {
 
 export default function LeaderboardsPage() {
   const reducedMotion = useReducedMotion();
-  const [data, setData] = useState<MyLeaderboard | null>(null);
   // Ranks as they were on the previous visit (captured once per load), then
   // this visit's ranks are saved for next time.
   const [lastVisit, setLastVisit] = useState<Record<string, number> | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Shared SWR cache (same key as the profile page): a revisit shows the
+  // board instantly and refreshes underneath. It used to show the loading
+  // state on every visit while a raw fetch went out again.
+  const {
+    data: swrData,
+    error: swrError,
+    isLoading,
+    mutate,
+  } = useSWR<MyLeaderboard>('/api/leagues/me', fetcher, {
+    // Live board: a rival's XP moves ranks while you watch.
+    refreshInterval: REFRESH_MS, // paused while the app is hidden (SWR default)
+    revalidateOnFocus: true,
+    dedupingInterval: 5_000,
+  });
+  const data = swrData ?? null;
+  const loading = isLoading && !swrData;
+  const error = swrError && !swrData ? 'Could not load the leaderboard.' : null;
   const [now, setNow] = useState(() => Date.now());
   // The pinned "you" bar only exists while your in-list row is scrolled out of
   // view — with a short board it would just duplicate your row and overlap the
@@ -87,34 +103,7 @@ export default function LeaderboardsPage() {
   const meRowRef = useRef<HTMLDivElement | null>(null);
   const [meRowVisible, setMeRowVisible] = useState(true);
 
-  const refresh = useCallback(async () => {
-    setError(null);
-    try {
-      const res = await fetch('/api/leagues/me', { credentials: 'include' });
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
-      setData(await res.json());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not load the leaderboard.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void refresh();
-    // Live board: a rival's XP moves ranks while you watch.
-    const timer = setInterval(() => {
-      if (document.visibilityState === 'visible') void refresh();
-    }, REFRESH_MS);
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') void refresh();
-    };
-    document.addEventListener('visibilitychange', onVisible);
-    return () => {
-      clearInterval(timer);
-      document.removeEventListener('visibilitychange', onVisible);
-    };
-  }, [refresh]);
+  const refresh = useCallback(() => mutate(), [mutate]);
 
   // First data of this visit: remember the last visit's ranks for the
   // arrows, and save this visit's for next time.

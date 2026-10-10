@@ -2,6 +2,7 @@
 
 import useSWR, { preload } from 'swr';
 import { fetcher } from '@/lib/swr';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 /**
  * Shared SWR keys/hooks for course detail, progress and access.
@@ -195,15 +196,12 @@ export function useLearningPath(courseId?: string | null) {
 }
 
 /**
- * Where START sends the learner: the section route with `?lesson=`, which
- * opens that lesson straight away. That route is where the lesson player
- * lives, and its deep-link handler re-checks sequencing and the paywall, so
- * this link can never skip a lesson or bypass payment.
+ * The lesson route: opens that one lesson (components/lesson/LessonHost),
+ * which re-checks sequencing and the paywall, so this link can never skip a
+ * lesson or bypass payment. Leaving or finishing always goes home.
  */
 export function lessonHref(courseId: string, sectionIndex: number, lessonId: string): string {
-  // `from=home`: leaving the lesson (back / close) returns to home, not to
-  // the section map the learner never saw on the way in.
-  return `/learn/${courseId}/section/${sectionIndex}?lesson=${encodeURIComponent(lessonId)}&from=home`;
+  return `/learn/${courseId}/section/${sectionIndex}?lesson=${encodeURIComponent(lessonId)}`;
 }
 
 /** Where a learner with no course goes to find one. */
@@ -220,7 +218,8 @@ export function pickCurrentEnrollment(enrollments: Enrollment[] | undefined): En
   return enrollments.find((e) => e.nextLesson) ?? enrollments[0];
 }
 
-/** The map route for a learner's next lesson (or the course's first section). */
+/** The learner's next lesson — or, when the course is done, its path on home. */
 export function nextLessonHref(enrollment: Pick<Enrollment, 'course' | 'nextLesson'>): string {
-  return `/learn/${enrollment.course.id}/section/${enrollment.nextLesson?.sectionIndex ?? 0}`;
+  const next = enrollment.nextLesson;
+  return next ? lessonHref(enrollment.course.id, next.sectionIndex, next.id) : courseHomeHref(enrollment.course.id);
 }

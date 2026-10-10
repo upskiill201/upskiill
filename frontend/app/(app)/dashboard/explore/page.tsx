@@ -39,6 +39,7 @@ import { playHaptic } from '@/lib/haptics';
 import { LearnerRail } from '@/components/layout/LearnerRail';
 import { CourseCover, categoryGlyph } from '@/components/course/CourseCover';
 import styles from './Explore.module.css';
+import { courseHomeHref } from '@/lib/homeCourse';
 
 interface Instructor {
   id: string;
@@ -179,7 +180,7 @@ export default function ExplorePage() {
   const continueCourse = (e: Enrollment) => {
     playSound('start');
     playHaptic('medium', false);
-    router.push(e.nextLesson ? lessonHref(e.course.id, e.nextLesson.sectionIndex, e.nextLesson.id) : `/learn/${e.course.id}`);
+    router.push(e.nextLesson ? lessonHref(e.course.id, e.nextLesson.sectionIndex, e.nextLesson.id) : courseHomeHref(e.course.id));
   };
 
   const pickCategory = (cat: string, i: number) => {

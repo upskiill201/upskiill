@@ -137,11 +137,6 @@ export interface LessonPlayerProps {
   onCompleted: (lessonId: string) => void;
   /** After the celebration chain (or straight away for a replay). */
   onFinished: () => void;
-  /**
-   * Started from home: every "what next" button in the celebrations (next
-   * unit, back to course) leads home, where the path shows what's next.
-   */
-  returnHome: boolean;
 }
 
 export function LessonPlayer({
@@ -152,7 +147,6 @@ export function LessonPlayer({
   onExit,
   onCompleted,
   onFinished,
-  returnHome,
 }: LessonPlayerProps) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -623,17 +617,8 @@ export function LessonPlayer({
 
   /** After the in-lesson screens: the community welcome if earned, then out. */
   const endOutro = () => {
-    // Heading home, the path shows what's next. On the unit map, a finished
-    // unit moves on to the next unit's map (or the course, when it's done).
-    const leave = () => {
-      if (!returnHome && unit && result?.isNewCompletion !== false) {
-        router.push(
-          unit.nextSectionIndex !== null ? `/learn/${courseId}/section/${unit.nextSectionIndex}` : `/learn/${courseId}`,
-        );
-      } else {
-        onFinished();
-      }
-    };
+    // Always home: the path there shows what's next (there is no unit map).
+    const leave = () => onFinished();
     const welcome =
       result?.isNewCompletion === false
         ? null

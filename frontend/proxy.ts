@@ -11,7 +11,8 @@ import { LEARNER_ENTRY, LEARNER_GATE, STUDIO_ENTRY, STUDIO_GATE } from '@/lib/la
 const LEARNER_DOORS = [
   '/start', '/login', '/signup', '/join', '/launch', '/onboarding',
   '/forgot-password', '/reset-password', '/verify-email', '/role-select',
-  '/explore', '/courses', '/learn', '/dashboard', '/cart', '/checkout',
+  // Not /courses: the catalog and course pages are public marketing pages.
+  '/explore', '/learn', '/dashboard', '/cart', '/checkout',
   '/my-courses', '/my-learning', '/leaderboards', '/quests', '/shop',
   '/profile', '/certificates', '/student',
 ];
@@ -94,8 +95,9 @@ export function proxy(request: NextRequest) {
 
   const isDashboard = path.startsWith('/dashboard');
   // Walled too: a push notification deep-links straight into /learn, and
-  // /admin is new privileged surface.
-  const isLearn = path.startsWith('/learn');
+  // /admin is new privileged surface. Exactly /learn and /learn/… — the public
+  // /learn-coding and /learn-ai pages share the prefix and must stay crawlable.
+  const isLearn = path === '/learn' || path.startsWith('/learn/');
   const isAdmin = path.startsWith('/admin');
   // Exactly /creator and /creator/… — a bare prefix match also walled off the
   // PUBLIC creator pages (/creator-profile/:username) from logged-out visitors.

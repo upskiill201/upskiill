@@ -19,6 +19,8 @@ const mockPrismaService = {
   course: {
     create: jest.fn(),
     findFirst: jest.fn(),
+    // Slug collision checks (course-slug.util.ts). Empty = every slug free.
+    findMany: jest.fn().mockResolvedValue([]),
     findUnique: jest.fn(),
     count: jest.fn(),
     // Optimistic-locked writes go through updateMany so the version check and
@@ -178,7 +180,7 @@ describe('CourseService', () => {
       expect(createCallArgs.data.id).toMatch(/^\d{7}$/);
 
       // Verify slug logic starts with 'my-first-course-'
-      expect(createCallArgs.data.slug).toMatch(/^my-first-course-[a-z0-9]{6}$/);
+      expect(createCallArgs.data.slug).toBe('my-first-course');
     });
 
     it('should generate correct slug for title with special characters', async () => {
@@ -205,9 +207,8 @@ describe('CourseService', () => {
 
       const createCallArgs = mockPrismaService.course.create.mock.calls[0][0];
 
-      // Expected base slug logic: lowercases, replaces non-alphanumeric with hyphens, trims hyphens
-      // '  C++ & C# Programming: 101!!!  ' -> 'c-c-programming-101'
-      expect(createCallArgs.data.slug).toMatch(/^c-c-programming-101-[a-z0-9]{6}$/);
+      // The URL comes from the title, no random ending (course-slug.util.ts).
+      expect(createCallArgs.data.slug).toBe('c-plus-plus-and-c-sharp-programming-101');
     });
 
     it('should generate a 7-digit numeric ID', async () => {
@@ -880,6 +881,9 @@ describe('CourseService', () => {
     const userId = 'user-123';
     const readyCourse = {
       id: 'course-1',
+      title: 'Intro to Python',
+      slug: 'intro-to-python',
+      slugHistory: [] as string[],
       instructorId: userId,
       reviewStatus: 'APPROVED',
       sections: [
@@ -920,6 +924,18 @@ describe('CourseService', () => {
       expect(mockPrismaService.course.update).toHaveBeenCalledWith({
         where: { id: 'course-1' },
         data: { published: true },
+      });
+    });
+
+    it('gives a course with a hashed slug its clean title URL when it goes live', async () => {
+      mockPrismaService.course.findFirst.mockResolvedValue({ ...readyCourse, slug: 'intro-to-python-962d48' });
+      mockPrismaService.course.update.mockResolvedValue({ ...readyCourse, published: true });
+
+      await service.publishCourse(userId, 'course-1');
+
+      expect(mockPrismaService.course.update).toHaveBeenCalledWith({
+        where: { id: 'course-1' },
+        data: { published: true, slug: 'intro-to-python', slugHistory: ['intro-to-python-962d48'] },
       });
     });
 

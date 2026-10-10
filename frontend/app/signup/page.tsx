@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { getOnboardingState } from '@/lib/user-onboarding';
@@ -29,12 +29,32 @@ function pendingOnboardingAnswers(): Record<string, unknown> | null {
   return Object.keys(answers).length > 0 ? (answers as Record<string, unknown>) : null;
 }
 
+/**
+ * Arriving from a course page (/signup?course=<slug>): this account is for that
+ * course, so it skips onboarding entirely and goes back to the course with
+ * ?start=1, which enrols and opens lesson 1. Only a plain slug is accepted —
+ * it becomes a same-site path, never an arbitrary redirect.
+ */
+function courseReturnPath(): string | null {
+  if (typeof window === 'undefined') return null;
+  const slug = new URLSearchParams(window.location.search).get('course');
+  return slug && /^[a-z0-9-]{1,120}$/i.test(slug) ? `/courses/${slug}?start=1` : null;
+}
+
 export default function Signup() {
   const router = useRouter();
+  // Read after mount (see app/login/page.tsx for why not useSearchParams).
+  const [courseNext, setCourseNext] = useState<string | null>(null);
 
   useEffect(() => {
     hydrateSoundPreferences();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCourseNext(courseReturnPath());
   }, []);
+
+  const loginHref = courseNext
+    ? `/login?mode=signin&next=${encodeURIComponent(courseNext)}`
+    : '/login?mode=signin';
 
   return (
     <div className={styles.screen}>
@@ -50,7 +70,7 @@ export default function Signup() {
         >
           <X size={26} strokeWidth={3} />
         </button>
-        <Link href="/login?mode=signin" className={styles.topLink} onClick={() => playSound('navTap', 1)}>
+        <Link href={loginHref} className={styles.topLink} onClick={() => playSound('navTap', 1)}>
           Log in
         </Link>
       </header>
@@ -63,11 +83,12 @@ export default function Signup() {
           role="STUDENT"
           title="Create your profile"
           banner={<InvitedBanner />}
-          getOnboarding={pendingOnboardingAnswers}
-          loginHref="/login?mode=signin"
+          // A course signup has no onboarding answers to attach.
+          getOnboarding={courseNext ? () => null : pendingOnboardingAnswers}
+          loginHref={loginHref}
           // The backend has set the httpOnly cookie by now.
           onDone={() => {
-            window.location.href = '/dashboard';
+            window.location.href = courseReturnPath() ?? '/dashboard';
           }}
         />
       </main>

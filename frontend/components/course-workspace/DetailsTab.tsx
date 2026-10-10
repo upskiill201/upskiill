@@ -13,6 +13,7 @@ import { useRef, useState } from 'react';
 import { CheckCircle2, ImageIcon, Loader2, Plus, UploadCloud, X } from 'lucide-react';
 import { CREATOR_TRACK_LIST, CREATOR_TRACKS, normalizeCourseCategory, type CreatorTrack } from '@/lib/creator/categories';
 import { calculateCoursePricingLadder } from '@/lib/pricing-engine';
+import { slugifyTitle } from '@/lib/courses/slug';
 import { uploadThumbnail } from '@/lib/s3Uploader';
 import { extractErrorMessage } from '@/lib/apiError';
 import { playHaptic } from '@/lib/haptics';
@@ -132,6 +133,10 @@ export function DetailsTab({ course, locked, onSaved }: { course: CourseDetails;
         <label className={b.label}>
           Course title
           <input className={b.input} value={form.title} maxLength={100} disabled={locked} onChange={(e) => set('title', e.target.value)} placeholder="e.g. JavaScript from zero" />
+          <span className={b.hint}>
+            Course page: <strong>teyro.app/courses/{slugifyTitle(form.title)}</strong>. Made from the title, so put the
+            words learners search for in it. Change it later and old links still work.
+          </span>
         </label>
         <label className={b.label}>
           One-line promise

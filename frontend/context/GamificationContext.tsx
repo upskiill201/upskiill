@@ -12,6 +12,7 @@ import React, {
 // Window-event helper, not a hook — importing the Shop Engine's context here
 // would invert the provider order (ShopEngineProvider nests inside this one).
 import { requestShopUnlockCheck } from './ShopEngineContext';
+import { readHudSnapshot, writeHudSnapshot } from '@/lib/hud-snapshot';
 
 /** Days away before the full-screen welcome back plays. */
 const WELCOME_BACK_MIN_DAYS = 3;
@@ -83,22 +84,29 @@ interface GamificationContextValue extends GamificationState {
   dismissStreakModal: () => void;
   userLevel: number;
   xpInCurrentLevel: number;
+  /** Real numbers on screen: the server answered, or the learner's own last snapshot. */
+  statsReady: boolean;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
 const GamificationContext = createContext<GamificationContextValue | null>(null);
 
+/**
+ * Before the first server read. Zeros, never "starter" numbers: the HUD shows
+ * placeholders until `profileLoaded` (or a snapshot of the learner's own last
+ * real balances), so nothing here is ever displayed as a learner's stats.
+ */
 const DEFAULT_STATE: GamificationState = {
-  xp: 30, // Seeded default matching onboarding/psychological grant
-  gems: 50, // Starter grant aligned to coins
-  coins: 50, // 50 Coins starter grant
-  streakDays: 0, // Server truth for new users is zero — no fake starter streak
+  xp: 0,
+  gems: 0,
+  coins: 0,
+  streakDays: 0,
   longestStreak: 0,
   lives: 5,
   maxLives: 5,
   livesRefillAt: null,
-  streakFreezeBank: 1, // Start with 1 starter freeze banked
+  streakFreezeBank: 0,
   streakStatus: 'NORMAL',
   lostStreakCount: 0,
   daysSinceLastLesson: 0,
@@ -108,16 +116,19 @@ const DEFAULT_STATE: GamificationState = {
   lastRewardClaimedAt: null,
   dailyRewardCyclePosition: 1,
   dailyRewardSchedule: [],
-  isEligibleForReward: true,
+  isEligibleForReward: false,
   nextRewardClaimInMs: 0,
   isLoading: true,
   profileLoaded: false,
 };
 
+const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GamificationState>(DEFAULT_STATE);
+  const [hasSnapshot, setHasSnapshot] = useState(false);
   // Last server-reported userLevel — level-up detection across refreshes
   const prevServerLevelRef = useRef<number | null>(null);
 
@@ -125,14 +136,10 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     try {
       const tzOffset = new Date().getTimezoneOffset();
 
-      // Refill lives based on elapsed time — fired but not awaited. This
-      // used to block the entire XP/coins/hearts HUD behind a serial
-      // write-then-read; refill is idempotent and only matters for the NEXT
-      // read, so the initial paint no longer waits on it.
-      void fetch('/api/gamification/refill-lives', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      // No separate refill call: /gamification/me catches lives up with
+      // elapsed time and saves it (GamificationService.getMyStats step 3).
+      // A second POST on every open and refresh was a redundant write racing
+      // this read on an already slow backend.
 
       // Get current gamification stats (passing local client timezone offset)
       const res = await fetch(`/api/gamification/me?timezoneOffset=${tzOffset}`, {
@@ -145,7 +152,13 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       }
 
       const data = await res.json();
-      const currentCoins = data.coins ?? data.gems ?? 50;
+      // A payload without the balances is a broken response, not a learner
+      // with 30 XP and 50 coins. Keep whatever real numbers are on screen.
+      if (!isNum(data?.xp) || !isNum(data?.streakDays) || !(isNum(data?.coins) || isNum(data?.gems))) {
+        setState((prev) => ({ ...prev, isLoading: false }));
+        return;
+      }
+      const currentCoins: number = isNum(data.coins) ? data.coins : data.gems;
 
       // ── Level-up detection: the backend sends userLevel on /gamification/me
       // but fires no level-up event, so we compare across refreshes and let
@@ -198,17 +211,29 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         );
       }
 
+      const lives = isNum(data.lives) ? data.lives : 5;
+      const maxLives = isNum(data.maxLives) ? data.maxLives : 5;
+      writeHudSnapshot({
+        xp: data.xp,
+        coins: currentCoins,
+        streakDays: data.streakDays,
+        longestStreak: isNum(data.longestStreak) ? data.longestStreak : data.streakDays,
+        lives,
+        maxLives,
+        userLevel: isNum(data.userLevel) ? data.userLevel : undefined,
+        xpInCurrentLevel: isNum(data.xpInCurrentLevel) ? data.xpInCurrentLevel : undefined,
+      });
+
       setState({
-        xp: data.xp ?? 30,
+        xp: data.xp,
         gems: currentCoins,
         coins: currentCoins,
-        // Server truth only: a missing field means 0, never a made-up streak.
-        streakDays: data.streakDays ?? 0,
-        longestStreak: data.longestStreak ?? data.streakDays ?? 0,
-        lives: data.lives ?? 5,
-        maxLives: data.maxLives ?? 5,
+        streakDays: data.streakDays,
+        longestStreak: isNum(data.longestStreak) ? data.longestStreak : data.streakDays,
+        lives,
+        maxLives,
         livesRefillAt: data.livesRefillAt ?? null,
-        streakFreezeBank: data.streakFreezeBank ?? 1,
+        streakFreezeBank: isNum(data.streakFreezeBank) ? data.streakFreezeBank : 0,
         streakStatus: data.streakStatus ?? 'NORMAL',
         lostStreakCount: data.lostStreakCount ?? 0,
         daysSinceLastLesson,
@@ -218,7 +243,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         lastRewardClaimedAt: data.lastRewardClaimedAt ?? null,
         dailyRewardCyclePosition: data.dailyRewardCyclePosition ?? 1,
         dailyRewardSchedule: Array.isArray(data.dailyRewardSchedule) ? data.dailyRewardSchedule : [],
-        isEligibleForReward: data.isEligibleForReward ?? true,
+        isEligibleForReward: data.isEligibleForReward === true,
         nextRewardClaimInMs: data.nextRewardClaimInMs ?? 0,
         userLevel: data.userLevel,
         xpInCurrentLevel: data.xpInCurrentLevel,
@@ -231,6 +256,28 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   }, []);
 
   useEffect(() => {
+    // Paint the learner's own last real numbers right away (after mount, so
+    // server and client render the same first frame), then the fresh read.
+    const snap = readHudSnapshot();
+    if (snap) {
+      setState((prev) =>
+        prev.profileLoaded
+          ? prev
+          : {
+              ...prev,
+              xp: snap.xp,
+              coins: snap.coins,
+              gems: snap.coins,
+              streakDays: snap.streakDays,
+              longestStreak: snap.longestStreak,
+              lives: snap.lives,
+              maxLives: snap.maxLives,
+              userLevel: snap.userLevel,
+              xpInCurrentLevel: snap.xpInCurrentLevel,
+            },
+      );
+      setHasSnapshot(true);
+    }
     fetchStats();
   }, [fetchStats]);
 
@@ -285,8 +332,8 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       ...prev,
       xp: newXp,
       streakDays: newStreakDays,
-      coins: newCoins !== undefined ? newCoins : (prev.coins + 5),
-      gems: newCoins !== undefined ? newCoins : (prev.gems + 5),
+      coins: newCoins !== undefined ? newCoins : prev.coins,
+      gems: newCoins !== undefined ? newCoins : prev.gems,
       // True the moment a lesson is saved; ReminderAskWatcher keys off it.
       lastLessonCompletedAt: new Date().toISOString(),
     }));
@@ -451,6 +498,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   // fall back to level 1 with modulo progress — no diverging client formula.
   const userLevel = state.userLevel || 1;
   const xpInCurrentLevel = state.xpInCurrentLevel ?? ((state.xp || 0) % 100);
+  const statsReady = state.profileLoaded || hasSnapshot;
 
   // PERF: memoized. This provider sits near the root of the layout, so the
   // object literal that used to be inlined here was rebuilt on every render of
@@ -477,6 +525,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       dismissStreakModal,
       userLevel,
       xpInCurrentLevel,
+      statsReady,
     }),
     [
       state,
@@ -492,6 +541,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       dismissStreakModal,
       userLevel,
       xpInCurrentLevel,
+      statsReady,
     ]
   );
 

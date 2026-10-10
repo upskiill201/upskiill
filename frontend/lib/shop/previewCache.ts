@@ -44,3 +44,17 @@ export function prefetchCatalog(): Promise<ShopCatalog> {
 export function invalidateCatalogCache(): void {
   cached = null;
 }
+
+/**
+ * The last catalog seen this session, however old — for painting the shop
+ * page instantly on a revisit while it fetches a fresh one. Prices and stock
+ * always come from that fresh read before anything can be bought.
+ */
+export function getLastCatalog(): ShopCatalog | null {
+  return cached?.data ?? null;
+}
+
+/** Keep a catalog the shop page fetched, so the next visit (and the popover) start from it. */
+export function rememberCatalog(data: ShopCatalog): void {
+  cached = { data, at: Date.now() };
+}

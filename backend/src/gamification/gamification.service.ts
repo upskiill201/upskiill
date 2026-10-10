@@ -347,7 +347,7 @@ export class GamificationService {
     });
 
     return {
-      ...(await this.buildResponse(updated, timezoneOffsetMinutes)),
+      ...this.buildResponse(updated, timezoneOffsetMinutes),
       justClaimedCoins: coinsReward,
       justClaimedXp: xpReward,
       justClaimedCycleDay: currentPosition,
@@ -433,8 +433,13 @@ export class GamificationService {
 
   /**
    * Builds the formatted API payload.
+   *
+   * Synchronous on purpose. It used to be `async` with nothing to await, and
+   * getMyStats / loseLife spread it — `{ ...promise }` is `{}` — so
+   * /gamification/me answered with no xp, coins or streak at all and the HUD
+   * fell back to placeholder numbers after every refresh.
    */
-  private async buildResponse(
+  private buildResponse(
     profile: {
       xp: number;
       streakDays: number;
