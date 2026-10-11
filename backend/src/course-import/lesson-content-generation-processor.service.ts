@@ -8,6 +8,7 @@ import { asSegments, sliceTranscript } from './lesson-parts';
 import { cleanLessonTitle } from './course-structure-analysis.service';
 import { cleanDriveFileName } from '../google-drive/google-drive.types';
 import { lessonReadiness } from './lesson-readiness';
+import { lessonDesign } from './lesson-design';
 
 /** One AI call at a time — each is already a meaningful prompt (a full
  *  transcript), and this shares the same small connection pool/AI budget
@@ -201,6 +202,34 @@ export class LessonContentGenerationProcessorService {
               )
             : primary.transcript;
 
+        // Where the lesson sits in its section shapes it: a gentle warm-up
+        // first, a harder finale last, a different personality in between
+        // (lesson-design.ts) — so lessons don't all come out the same.
+        const [sectionCount, previous] = await Promise.all([
+          this.prisma.courseImportLesson.count({
+            where: { moduleId: lesson.moduleId },
+          }),
+          this.prisma.courseImportLesson.findFirst({
+            where: {
+              moduleId: lesson.moduleId,
+              orderIndex: { lt: lesson.orderIndex },
+            },
+            orderBy: { orderIndex: 'desc' },
+            select: { title: true },
+          }),
+        ]);
+        const track =
+          courseImport.courseCategory === 'Coding' ||
+          courseImport.courseCategory === 'AI'
+            ? courseImport.courseCategory
+            : null;
+        const design = lessonDesign(
+          lesson.orderIndex,
+          Math.max(sectionCount, 1),
+          lesson.module.orderIndex ?? 0,
+          track,
+        );
+
         const images = resourceFiles
           .filter((f) => f.category === 'image' && f.storageUrl)
           .map((f) => ({
@@ -222,15 +251,17 @@ export class LessonContentGenerationProcessorService {
           resourceNames: resourceFiles
             .filter((f) => f.id !== lesson.primaryFileId)
             .map((f) => cleanDriveFileName(f.driveFileName)),
-          track:
-            courseImport.courseCategory === 'Coding' ||
-            courseImport.courseCategory === 'AI'
-              ? courseImport.courseCategory
-              : null,
+          track,
           videoDurationSec: durationSec,
           ...(mediaKind !== 'video' ? { mediaKind } : {}),
           ...(part ? { part } : {}),
           ...(images.length ? { images } : {}),
+          design,
+          position: {
+            index: lesson.orderIndex ?? 0,
+            count: Math.max(sectionCount, 1),
+            previousTitle: previous?.title ?? null,
+          },
         });
 
         await this.prisma.courseImportLesson.update({

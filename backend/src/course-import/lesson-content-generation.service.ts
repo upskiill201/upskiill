@@ -14,6 +14,7 @@ import {
   type LessonMedia,
   type RichBuildResult,
 } from './rich-lesson';
+import type { LessonDesign } from './lesson-design';
 
 /**
  * Sized for a small free-tier provider (Groq gpt-oss-20b in JSON mode):
@@ -54,6 +55,11 @@ export interface LessonGenerationInput {
   part?: { index: number; count: number; startSec: number; endSec: number };
   /** Images handed out with the lesson, shown as Learn image cards. */
   images?: LessonImage[];
+  /** This lesson's personality, difficulty and shape (lesson-design.ts). */
+  design?: LessonDesign;
+  /** Where it sits in its section, and the lesson before it, so it builds
+   *  on that one instead of repeating it. */
+  position?: { index: number; count: number; previousTitle: string | null };
 }
 
 @Injectable()
@@ -97,6 +103,7 @@ export class LessonContentGenerationService {
     const system = richSystemPrompt(
       track,
       mediaKind === 'none' ? 'document' : mediaKind,
+      input.design,
     );
     const media: LessonMedia = {
       kind: mediaKind,
@@ -183,6 +190,7 @@ export class LessonContentGenerationService {
           media,
           track,
           input.images ?? [],
+          input.design?.layout,
         );
         if (built.stats.dropped.length) {
           this.logger.log(
@@ -244,8 +252,12 @@ function buildUserPrompt(input: LessonGenerationInput): string {
         : input.part
           ? 'Transcript of this part of the video'
           : "Transcript of this lesson's video";
+  const position = input.position
+    ? `
+Lesson ${input.position.index + 1} of ${input.position.count} in its section.${input.position.previousTitle ? ` The lesson before it was "${input.position.previousTitle}": build on it, don't repeat it.` : ''}`
+    : '';
   return `Course: ${input.courseTitle}${track}
-Lesson: ${input.lessonTitle}${resources}${part}
+Lesson: ${input.lessonTitle}${resources}${position}${part}
 
 ${label}:
 """
