@@ -8,15 +8,19 @@ import { CourseService } from './course.service';
 
 function build(seated = true) {
   const prisma: any = {
-    lesson: { findFirst: jest.fn().mockResolvedValue(seated ? { id: 'l1' } : null) },
+    lesson: {
+      findFirst: jest.fn().mockResolvedValue(seated ? { id: 'l1', section: { courseId: 'c1' } } : null),
+    },
     userLessonProgress: {
       upsert: jest.fn().mockResolvedValue({}),
       updateMany: jest.fn().mockResolvedValue({ count: 1 }),
     },
   };
   const service = Object.create(CourseService.prototype) as CourseService;
+  const events = { emit: jest.fn() };
   (service as any).prisma = prisma;
-  return { service, prisma };
+  (service as any).eventEmitter = events;
+  return { service, prisma, events };
 }
 
 describe('lesson pings', () => {
@@ -61,5 +65,26 @@ describe('lesson pings', () => {
     await service.recordLessonQuit('u1', 'c', 'l1', step);
     expect(prisma.lesson.findFirst).not.toHaveBeenCalled();
     expect(prisma.userLessonProgress.updateMany).not.toHaveBeenCalled();
+  });
+});
+
+describe('lesson quit → first-lesson journey', () => {
+  it('tells the journey which course, lesson, step and how far in', async () => {
+    const { service, events } = build();
+    await service.recordLessonQuit('u1', 'c1', 'l1', 'learn:3:8', 37.6);
+    expect(events.emit).toHaveBeenCalledWith('lesson.quit', {
+      userId: 'u1',
+      courseId: 'c1',
+      lessonId: 'l1',
+      step: 'learn:3:8',
+      progressPct: 38,
+    });
+  });
+
+  it('stays quiet when the lesson was already finished (no row updated)', async () => {
+    const { service, prisma, events } = build();
+    prisma.userLessonProgress.updateMany.mockResolvedValue({ count: 0 });
+    await service.recordLessonQuit('u1', 'c1', 'l1', 'reflect');
+    expect(events.emit).not.toHaveBeenCalled();
   });
 });

@@ -32,6 +32,7 @@ import { TeyController } from './tey.controller';
 import { TeyNotifyService } from './notify/tey-notify.service';
 import { TeyEventNotifier } from './notify/tey-event.notifier';
 import { CourseUnlockJourney } from './notify/course-unlock.journey';
+import { FirstLessonJourney } from './notify/first-lesson.journey';
 import { EmailModule } from '../email/email.module';
 
 /**
@@ -85,6 +86,7 @@ import { EmailModule } from '../email/email.module';
     TeyNotifyService,
     TeyEventNotifier,
     CourseUnlockJourney,
+    FirstLessonJourney,
   ],
   exports: [
     TeyNotifyService,

@@ -1,4 +1,4 @@
-import { decideInAppAsk, type AskContext, type AskLedger } from '../askPolicy';
+import { decideEnrollAsk, decideInAppAsk, type AskContext, type AskLedger } from '../askPolicy';
 
 const NOW = new Date('2026-09-25T12:00:00Z');
 const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000).toISOString();
@@ -65,5 +65,41 @@ describe('decideInAppAsk', () => {
   it('asks straight away in the installed app after an install ask', () => {
     const ledger: AskLedger = { asks: [{ at: hoursAgo(1), kind: 'install', where: 'onboarding' }] };
     expect(decideInAppAsk(ledger, base)).toEqual({ ask: true, kind: 'enable' });
+  });
+});
+
+describe('decideEnrollAsk — right after enrolling, before lesson 1', () => {
+  const ctx = {
+    now: new Date('2026-10-11T12:00:00Z'),
+    permission: 'default' as const,
+    subscribed: false,
+    standalone: false,
+    installable: false,
+    needsInstall: false,
+  };
+
+  it('asks a learner who never saw onboarding', () => {
+    expect(decideEnrollAsk({ asks: [] }, ctx)).toEqual({ ask: true, kind: 'enable' });
+  });
+
+  it('asks to install first in a tab that can install', () => {
+    expect(decideEnrollAsk({ asks: [] }, { ...ctx, installable: true })).toEqual({ ask: true, kind: 'install' });
+  });
+
+  it('never asks twice in a row right after onboarding asked', () => {
+    const ledger = { asks: [{ at: '2026-10-11T11:50:00Z', kind: 'enable' as const, where: 'onboarding' as const }] };
+    expect(decideEnrollAsk(ledger, ctx)).toEqual({ ask: false, reason: 'too-soon' });
+  });
+
+  it('stays quiet once reminders are on or blocked, and after its own budget', () => {
+    expect(decideEnrollAsk({ asks: [] }, { ...ctx, permission: 'granted', subscribed: true }).ask).toBe(false);
+    expect(decideEnrollAsk({ asks: [] }, { ...ctx, permission: 'denied' }).ask).toBe(false);
+    const spent = {
+      asks: [
+        { at: '2026-10-01T00:00:00Z', kind: 'enable' as const, where: 'enroll' as const },
+        { at: '2026-10-05T00:00:00Z', kind: 'enable' as const, where: 'enroll' as const },
+      ],
+    };
+    expect(decideEnrollAsk(spent, ctx)).toEqual({ ask: false, reason: 'budget-spent' });
   });
 });

@@ -2,6 +2,7 @@
 
 export type Segment =
   | 'NEW'
+  | 'NOT_STARTED'
   | 'ACTIVE'
   | 'HIGHLY_ENGAGED'
   | 'NEAR_COMPLETION'
@@ -13,6 +14,7 @@ export type Segment =
 
 export const SEGMENTS: Record<Segment, { label: string; tone: string; action: 'NUDGE' | 'CHEER' }> = {
   NEW: { label: 'New', tone: 'var(--color-brand)', action: 'CHEER' },
+  NOT_STARTED: { label: 'Not started', tone: 'var(--error-red)', action: 'NUDGE' },
   HIGHLY_ENGAGED: { label: 'On fire', tone: 'var(--warning)', action: 'CHEER' },
   ACTIVE: { label: 'Active', tone: 'var(--success-green)', action: 'CHEER' },
   NEAR_COMPLETION: { label: 'Almost done', tone: 'var(--brand-purple)', action: 'CHEER' },
@@ -24,6 +26,7 @@ export const SEGMENTS: Record<Segment, { label: string; tone: string; action: 'N
 };
 
 export const SEGMENT_ORDER: Segment[] = [
+  'NOT_STARTED',
   'AT_RISK',
   'STRUGGLING',
   'NEAR_COMPLETION',

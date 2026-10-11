@@ -16,6 +16,7 @@ import { Request } from 'express';
 // req.user shape for every downstream consumer, ~95% fewer lookups under
 // normal traffic where one user fires several requests in quick succession.
 const USER_CACHE_TTL_MS = 30_000;
+const ACTIVE_STAMP_MS = 5 * 60_000;
 type CachedUser = Record<string, unknown>;
 const userCache = new Map<string, { user: CachedUser; expiresAt: number }>();
 
@@ -48,6 +49,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       userCache.delete(payload.sub);
       throw new UnauthorizedException('User no longer exists.');
+    }
+
+    // "Last active" for Teyro HQ, the studio and the nudge engine. Nothing
+    // else stamps it; at most one write per user per few minutes, off the
+    // request path, since a cache miss here happens every 30s at most.
+    if (!user.lastActiveAt || Date.now() - user.lastActiveAt.getTime() > ACTIVE_STAMP_MS) {
+      void this.prisma.user
+        .update({ where: { id: user.id }, data: { lastActiveAt: new Date() } })
+        .catch(() => undefined);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

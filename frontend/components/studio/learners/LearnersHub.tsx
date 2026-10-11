@@ -57,6 +57,13 @@ export function LearnersHub() {
   // Only live courses have learners (the roster covers published courses).
   const { courses, course, setCourse, loading, error, reload } = useStudioCourse({ publishedOnly: true });
   const [segment, setSegment] = useState<Segment | 'ALL'>('ALL');
+  // Deep links (the studio's "never started" insight) open on one segment.
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get('segment');
+    // Reading the URL once on mount is the point.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (wanted && wanted in SEGMENTS) setSegment(wanted as Segment);
+  }, []);
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   useEffect(() => {

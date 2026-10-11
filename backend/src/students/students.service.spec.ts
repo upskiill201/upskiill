@@ -37,13 +37,22 @@ describe('computeLearnerStatus precedence', () => {
     expect(computeLearnerStatus(s)).toBe('COMPLETED');
   });
 
-  it('NEW while fresh AND reachable', () => {
+  it('NEW on the day they enrol', () => {
     const s = baseStatusInput();
-    s.firstEnrolledAt = daysAgo(5);
+    s.firstEnrolledAt = new Date();
     s.completedLessonsTotal = 0;
     s.courses = [{ completedCount: 0, totalPublished: 10, progressPct: 0 }];
     s.daysSinceActive = null; // never studied yet
     expect(computeLearnerStatus(s)).toBe('NEW');
+  });
+
+  it('NOT_STARTED a day or more after enrolling with no lesson finished', () => {
+    const s = baseStatusInput();
+    s.firstEnrolledAt = daysAgo(5);
+    s.completedLessonsTotal = 0;
+    s.courses = [{ completedCount: 0, totalPublished: 10, progressPct: 0 }];
+    s.daysSinceActive = null;
+    expect(computeLearnerStatus(s)).toBe('NOT_STARTED');
   });
 
   it('fresh enrollee who vanished falls through to INACTIVE framing', () => {

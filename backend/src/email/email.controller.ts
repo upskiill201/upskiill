@@ -27,6 +27,7 @@ const CATEGORY_TO_FIELD: Record<Exclude<UnsubscribeScope, 'ALL'>, string> = {
   LEAGUE: 'leagueEmailsOptOut',
   REENGAGEMENT: 'reengagementOptOut',
   CREATOR_DIGEST: 'creatorDigestOptOut',
+  LEARNING: 'learningRemindersOptOut',
 };
 
 const PAGE_STYLE = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:480px;margin:60px auto;padding:0 20px;color:#0f172a;`;
@@ -255,4 +256,5 @@ const LABELS: Record<Exclude<UnsubscribeScope, 'ALL'>, string> = {
   LEAGUE: 'League results',
   REENGAGEMENT: 'Re-engagement emails',
   CREATOR_DIGEST: 'Creator weekly digest',
+  LEARNING: 'Learning reminders',
 };

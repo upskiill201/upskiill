@@ -48,7 +48,10 @@ type Step =
   | 'blocked'
   | 'failed';
 
-function previewLine(days: number) {
+function previewLine(days: number, lessonTitle?: string) {
+  if (lessonTitle) {
+    return { title: 'Lesson 1 is just sitting there', body: `"${lessonTitle}" is waiting. I'll pretend I'm not counting.` };
+  }
   return days > 1
     ? { title: `Keep your ${days}-day streak alive!`, body: 'One quick lesson is all it takes. I saved your spot.' }
     : { title: 'Time for your daily lesson!', body: 'Three minutes today keeps your streak going. I saved your spot.' };
@@ -125,7 +128,7 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
     setStep('guide');
   };
 
-  const line = previewLine(scene.streakDays);
+  const line = previewLine(scene.streakDays, scene.lessonTitle);
 
   if (step === 'guide') {
     return (
@@ -161,7 +164,9 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
           Let me <span className={sceneStyles.headlineBlue}>remind you</span>
         </h1>
         <p className={sceneStyles.subhead}>
-          Put Teyro on your Home Screen and I can nudge you before your streak runs out.
+          {scene.lessonTitle
+            ? "Put Teyro on your Home Screen so I can remind you about lesson 1. It's where I live. Rent-free."
+            : 'Put Teyro on your Home Screen and I can nudge you before your streak runs out.'}
         </p>
         <div className={styles.phone}>
           <HomeScreenMock compact />
@@ -172,7 +177,7 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
 
   if (step === 'open-app') {
     return (
-      <SceneShell cta={{ text: 'GOT IT', onClick: onAdvance, variant: 'green' }}>
+      <SceneShell cta={{ text: scene.lessonTitle ? 'START LESSON 1' : 'GOT IT', onClick: onAdvance, variant: 'green' }}>
         <h1 className={sceneStyles.headline}>
           Now open <span className={sceneStyles.headlineBlue}>Teyro</span>
         </h1>
@@ -188,11 +193,15 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
 
   if (step === 'on') {
     return (
-      <SceneShell cta={{ text: 'CONTINUE', onClick: onAdvance, variant: 'green' }}>
+      <SceneShell cta={{ text: scene.lessonTitle ? 'START LESSON 1' : 'CONTINUE', onClick: onAdvance, variant: 'green' }}>
         <h1 className={sceneStyles.headline}>
           Reminders <span className={sceneStyles.headlineBlue}>on!</span>
         </h1>
-        <p className={sceneStyles.subhead}>I&apos;ll nudge you on days you haven&apos;t practised yet. Never spam.</p>
+        <p className={sceneStyles.subhead}>
+          {scene.lessonTitle
+            ? "Good. Now let's make sure I never have to use them. Lesson 1, go."
+            : "I'll nudge you on days you haven't practised yet. Never spam."}
+        </p>
         <div className={sceneStyles.mascotWrap}>
           <Image src="/User onbarding Assets/tey/cheering.webp" alt="" fill className={sceneStyles.mascotImg} priority />
         </div>
@@ -202,7 +211,7 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
 
   if (step === 'blocked') {
     return (
-      <SceneShell cta={{ text: 'CONTINUE', onClick: onAdvance, variant: 'blue' }}>
+      <SceneShell cta={{ text: scene.lessonTitle ? 'START LESSON 1' : 'CONTINUE', onClick: onAdvance, variant: 'blue' }}>
         <h1 className={sceneStyles.headline}>No problem</h1>
         <p className={sceneStyles.subhead}>
           If you change your mind, allow notifications for Teyro in your phone&apos;s settings, then turn reminders on
@@ -250,10 +259,23 @@ export default function RemindersScene({ scene, onAdvance }: { scene: Input; onA
       cta={{ text: push.busy ? 'TURNING ON…' : 'TURN ON REMINDERS', onClick: () => void turnOn(), variant: 'blue', disabled: push.busy }}
       secondaryCta={{ text: 'NOT NOW', onClick: notNow }}
     >
-      <h1 className={sceneStyles.headline}>
-        Can I <span className={sceneStyles.headlineBlue}>remind you?</span>
-      </h1>
-      <p className={sceneStyles.subhead}>A nudge on days you haven&apos;t practised, before your streak runs out.</p>
+      {scene.lessonTitle ? (
+        <>
+          <h1 className={sceneStyles.headline}>
+            Want me to <span className={sceneStyles.headlineBlue}>nag you?</span>
+          </h1>
+          <p className={sceneStyles.subhead}>
+            If lesson 1 doesn&apos;t happen, I&apos;ll remind you. Politely. At first.
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className={sceneStyles.headline}>
+            Can I <span className={sceneStyles.headlineBlue}>remind you?</span>
+          </h1>
+          <p className={sceneStyles.subhead}>A nudge on days you haven&apos;t practised, before your streak runs out.</p>
+        </>
+      )}
       <div className={styles.preview}>
         <NotificationPreview title={line.title} body={line.body} delay={0.45} />
       </div>

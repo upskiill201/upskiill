@@ -54,6 +54,18 @@ export function computeLearnerStatus(input: {
   }
 
   const enrolledDaysAgo = Math.floor((Date.now() - firstEnrolledAt.getTime()) / (24 * 60 * 60 * 1000));
+
+  // Enrolled, a day has passed, and not one lesson finished: the learner most
+  // worth a nudge, and the one "New" or "Inactive" used to hide.
+  // (Past the inactive window it's just INACTIVE: that ship has sailed.)
+  if (
+    input.completedLessonsTotal === 0 &&
+    daysSinceActive === null &&
+    enrolledDaysAgo >= 1 &&
+    enrolledDaysAgo < ENGAGEMENT.INACTIVE_AFTER_DAYS
+  ) {
+    return 'NOT_STARTED';
+  }
   const reachable = daysSinceActive !== null && daysSinceActive <= ENGAGEMENT.ACTIVE_DAYS;
   const neverActive = daysSinceActive === null;
 

@@ -1625,13 +1625,17 @@ export class AnalyticsService {
 
     // 5) First-lesson friction — enrolled but never started
     const notStarted = ds.allStudents.filter((s) => this.bucketOf(s) === 'NOT_STARTED').length;
-    if (total >= 10 && notStarted / total > 0.35) {
+    // Small courses too: two people stuck before lesson 1 is worth a look
+    // when you only have a handful of learners.
+    if (notStarted >= 2 && (total < 10 || notStarted / total > 0.35)) {
       cards.push({
         id: 'not-started',
         kind: 'watch',
         icon: 'play-circle',
         title: `${notStarted} learners never started`,
-        body: `${Math.round((notStarted / total) * 100)}% of enrolled learners haven't opened lesson one. Shortening your first lesson or making it more interactive typically unlocks them.`,
+        body: `${Math.round((notStarted / total) * 100)}% of your enrolled learners haven't finished lesson one. Tey is already following up by email; a personal nudge from you lands harder. A short, interactive first lesson helps most.`,
+        href: '/creator/students?segment=NOT_STARTED',
+        cta: 'Nudge them',
       });
     }
 

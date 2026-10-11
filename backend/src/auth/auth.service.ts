@@ -776,6 +776,9 @@ export class AuthService {
             password: hash,
             fullName: name,
             role: safeRole,
+            // The provider already proved the address (email_verified above).
+            isVerified: true,
+            emailVerifiedAt: new Date(),
             hasStudentAccess: isStudent,
             hasCreatorAccess: isInstructor,
             profile: {
@@ -878,6 +881,21 @@ export class AuthService {
           console.warn(`Profile hydration failed for user ${user.id}:`, err);
         }
       }
+
+      // Same login tracking as the password path, so HQ's login count and
+      // last-login aren't stuck at zero for everyone who signs in with Google.
+      // And a provider-verified address makes the account verified, even if
+      // an earlier email signup never finished.
+      const signedInId = user.id;
+      const verify = user.isVerified ? {} : { isVerified: true, emailVerifiedAt: new Date() };
+      void Promise.resolve()
+        .then(() =>
+          this.prisma.user.update({
+            where: { id: signedInId },
+            data: { lastLoginAt: new Date(), lastActiveAt: new Date(), loginCount: { increment: 1 }, ...verify },
+          }),
+        )
+        .catch(() => undefined);
 
       const hasBothRoles = user.hasStudentAccess && user.hasCreatorAccess;
       return {
@@ -1062,6 +1080,8 @@ export class AuthService {
         courseId: true,
         progress: true,
         completedLessons: true,
+        // When they enrolled: home's first-lesson card counts the wait.
+        createdAt: true,
         course: {
           select: {
             id: true,
@@ -1119,8 +1139,22 @@ export class AuthService {
       sectionsByCourse.set(s.courseId, list);
     }
 
+    // Lesson 1 opened but never finished? Home says "continue", not "start".
+    const firstIds = enrollments
+      .map((e) => sectionsByCourse.get(e.courseId)?.find((s) => s.lessons.length > 0)?.lessons[0]?.id)
+      .filter((id): id is string => Boolean(id));
+    const openedFirst = new Set(
+      (
+        await this.prisma.userLessonProgress.findMany({
+          where: { userId, lessonId: { in: firstIds }, openCount: { gt: 0 } },
+          select: { lessonId: true },
+        })
+      ).map((r) => r.lessonId),
+    );
+
     return enrollments.map((enrollment) => {
       const courseSections = sectionsByCourse.get(enrollment.courseId) ?? [];
+      const firstLessonId = courseSections.find((s) => s.lessons.length > 0)?.lessons[0]?.id;
       const done = new Set(
         Array.isArray(enrollment.completedLessons)
           ? (enrollment.completedLessons as unknown[]).filter(
@@ -1166,6 +1200,7 @@ export class AuthService {
         // or has no published lessons yet. Never guessed.
         nextLesson,
         completedCount,
+        firstLessonOpened: firstLessonId ? openedFirst.has(firstLessonId) : false,
         course: { ...enrollment.course, totalLessons },
       };
     });

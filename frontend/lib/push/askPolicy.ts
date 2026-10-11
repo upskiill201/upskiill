@@ -5,6 +5,10 @@
  *  1. Onboarding's last step asks once.
  *  2. In the app, at most MAX_IN_APP_ASKS more asks, each right after the
  *     learner finishes a lesson (the moment reminders obviously matter).
+ *  2b. Right after enrolling, before lesson 1 (decideEnrollAsk): learners who
+ *     enrol straight from a course page never see onboarding's ask, and an
+ *     unreachable learner who doesn't start is a learner lost. Its own small
+ *     budget, so it never eats the after-lesson asks.
  *  3. In a browser tab that can install Teyro, the ask is "install first":
  *     reminders belong to the installed app (on iPhone they only work there).
  *     An install ask spends from the same budget.
@@ -34,7 +38,7 @@ export type AskKind = 'install' | 'enable';
 export interface AskEntry {
   at: string;
   kind: AskKind;
-  where: 'onboarding' | 'in-app';
+  where: 'onboarding' | 'in-app' | 'enroll';
 }
 
 export interface AskLedger {
@@ -76,22 +80,46 @@ export function recordAsk(kind: AskKind, where: AskEntry['where'], now = new Dat
   }
 }
 
+/** Install first, in a tab that can install; else the permission ask; else nothing. */
+function askKindFor(ctx: AskContext): AskKind | null {
+  return !ctx.standalone && ctx.installable
+    ? 'install'
+    : ctx.permission === 'default' && !ctx.needsInstall
+      ? 'enable'
+      : // Granted but not subscribed (a failed subscribe) — asking again
+        // re-runs the subscribe inside a tap, which is the fix.
+        ctx.permission === 'granted' && !ctx.subscribed
+        ? 'enable'
+        : null;
+}
+
+export const MAX_ENROLL_ASKS = 2;
+/** Onboarding just asked (they enrolled straight after it): don't ask twice in a row. */
+export const ENROLL_QUIET_AFTER_ASK_MIN = 30;
+
+/** Which ask (if any) is due right after enrolling, before lesson 1. */
+export function decideEnrollAsk(ledger: AskLedger, ctx: AskContext): AskDecision {
+  if (ctx.subscribed && ctx.permission === 'granted') return { ask: false, reason: 'already-on' };
+  if (ctx.permission === 'denied') return { ask: false, reason: 'blocked' };
+  const kind = askKindFor(ctx);
+  if (!kind) return { ask: false, reason: 'unsupported' };
+
+  if (ledger.asks.filter((a) => a.where === 'enroll').length >= MAX_ENROLL_ASKS) {
+    return { ask: false, reason: 'budget-spent' };
+  }
+  const last = ledger.asks[ledger.asks.length - 1];
+  if (last && ctx.now.getTime() - new Date(last.at).getTime() < ENROLL_QUIET_AFTER_ASK_MIN * 60_000) {
+    return { ask: false, reason: 'too-soon' };
+  }
+  return { ask: true, kind };
+}
+
 /** Which ask (if any) is due right now, after a finished lesson. */
 export function decideInAppAsk(ledger: AskLedger, ctx: AskContext): AskDecision {
   if (ctx.subscribed && ctx.permission === 'granted') return { ask: false, reason: 'already-on' };
   if (ctx.permission === 'denied') return { ask: false, reason: 'blocked' };
 
-  // Install first, in a tab that can install.
-  const kind: AskKind | null =
-    !ctx.standalone && ctx.installable
-      ? 'install'
-      : ctx.permission === 'default' && !ctx.needsInstall
-        ? 'enable'
-        : // Granted but not subscribed (a failed subscribe) — asking again
-          // re-runs the subscribe inside a tap, which is the fix.
-          ctx.permission === 'granted' && !ctx.subscribed
-          ? 'enable'
-          : null;
+  const kind = askKindFor(ctx);
   if (!kind) return { ask: false, reason: 'unsupported' };
 
   const inApp = ledger.asks.filter((a) => a.where === 'in-app');

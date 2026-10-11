@@ -156,8 +156,11 @@ export class CourseController {
     @Param('id') id: string,
     @Param('lessonId') lessonId: string,
     @Body('step') step?: unknown,
+    @Body('progress') progress?: unknown,
   ) {
-    await this.courseService.recordLessonQuit(req.user.id as string, id, lessonId, step).catch(() => {});
+    await this.courseService
+      .recordLessonQuit(req.user.id as string, id, lessonId, step, progress)
+      .catch(() => {});
   }
 
   @UseGuards(AuthGuard('jwt'))

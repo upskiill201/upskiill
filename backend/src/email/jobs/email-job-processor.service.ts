@@ -25,6 +25,11 @@ import { EmailCategory } from '../types';
 import { EmailJobRow } from './email-job.repository';
 import { courseUnlockState, SOCIAL_PROOF_MIN_LEARNERS } from '../../common/course-unlock.util';
 import { renderCourseUnlockEmail } from '../templates/conversion/course-unlock.template';
+import { firstLessonState } from '../../common/first-lesson.util';
+import {
+  renderFirstLessonEmail,
+  type FirstLessonStage,
+} from '../templates/learning/first-lesson.template';
 import {
   INACTIVE_EMAIL_DAYS,
   renderInactiveEmail,
@@ -91,6 +96,8 @@ export class EmailJobProcessorService {
         return this.processCreatorDigest(job);
       case 'ACCESS_ENDING':
         return this.processAccessEnding(job);
+      case 'FIRST_LESSON_STAGE':
+        return this.processFirstLesson(job);
       default:
         this.logger.warn(`No handler for email job eventType=${job.eventType}`);
         return { sent: false, skipReason: 'NO_HANDLER' };
@@ -261,6 +268,72 @@ export class EmailJobProcessorService {
             state.learners >= SOCIAL_PROOF_MIN_LEARNERS ? state.learners : undefined,
           unlockUrl: `${emailConfig.appUrl}/learn/${state.course.id}/unlock?campaign=unlock-${stage}`,
           unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'MARKETING'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  // ── Activation: the first-lesson journey ──────────────────────────────────
+  private async processFirstLesson(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    const payload = job.payload as {
+      courseId?: string;
+      stage?: FirstLessonStage;
+      lessonId?: string;
+      progressPct?: number;
+    } | null;
+    const stage = payload?.stage;
+    const validStage = stage === 0 || stage === 1 || stage === 2 || stage === 3 || stage === 'resume';
+    if (!payload?.courseId || !validStage || (stage === 'resume' && !payload.lessonId)) {
+      return { sent: false, skipReason: 'BAD_PAYLOAD' };
+    }
+
+    // Finished a lesson since this was queued? Then the journey is over.
+    const state = await firstLessonState(this.prisma, job.userId, payload.courseId, {
+      lessonId: stage === 'resume' ? payload.lessonId : undefined,
+    });
+    if (!state.eligible) return { sent: false, skipReason: state.reason };
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        onboardingSession: { select: { answers: true } },
+      },
+    });
+    if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
+    const answers = (user.onboardingSession?.answers ?? {}) as {
+      goals?: unknown;
+      dailyCommitment?: unknown;
+    };
+    const goal = Array.isArray(answers.goals) ? String(answers.goals[0] ?? '') : undefined;
+    const dailyMinutes = Number(answers.dailyCommitment) || undefined;
+
+    const key = `learning.first-lesson:${user.id}:${payload.courseId}:${stage}${stage === 'resume' ? `:${payload.lessonId}` : ''}`;
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'learning.first-lesson',
+      category: EmailCategory.ENGAGEMENT,
+      idempotencyKey: key,
+      metadata: { courseId: payload.courseId, stage },
+      render: () =>
+        renderFirstLessonEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          stage,
+          courseName: state.course.title,
+          creatorName: state.course.instructorName,
+          lessonTitle: state.lesson.title,
+          lessonMinutes: state.lesson.minutes,
+          totalLessons: state.totalLessons,
+          goal: goal || undefined,
+          dailyMinutes,
+          progressPct: payload.progressPct,
+          lessonUrl: `${emailConfig.appUrl}${state.lessonPath}&utm_source=email&utm_campaign=first-lesson-${stage}`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'LEARNING'),
           preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
         }),
     });

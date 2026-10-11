@@ -11,6 +11,7 @@ import { Prisma, EarningsEntryType } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LessonCompletedEvent } from './events/lesson-completed.event';
 import { EnrollmentCreatedEvent } from '../common/events/enrollment-created.event';
+import { LESSON_QUIT_EVENT, type LessonQuitEvent } from '../common/events/lesson-quit.event';
 import { CommunityService } from '../community/community.service';
 import { ShopService } from '../shop/shop.service';
 import { XpAwardedEvent } from '../league/events/xp-awarded.event';
@@ -784,7 +785,7 @@ export class CourseService {
           },
         },
       },
-      select: { id: true },
+      select: { id: true, section: { select: { courseId: true } } },
     });
   }
 
@@ -808,14 +809,38 @@ export class CourseService {
    * says where: a Learn card position, an exercise id, or a phase. A replay
    * of a finished lesson isn't a drop-off, so finished rows are left alone.
    */
-  async recordLessonQuit(userId: string, idOrSlug: string, lessonId: string, step: unknown): Promise<void> {
+  async recordLessonQuit(
+    userId: string,
+    idOrSlug: string,
+    lessonId: string,
+    step: unknown,
+    progress?: unknown,
+  ): Promise<void> {
     if (typeof step !== 'string' || !QUIT_STEP_RE.test(step)) return;
     const lesson = await this.seatedLesson(userId, idOrSlug, lessonId);
     if (!lesson) return;
-    await this.prisma.userLessonProgress.updateMany({
+    const pct =
+      typeof progress === 'number' && Number.isFinite(progress)
+        ? Math.max(0, Math.min(100, Math.round(progress)))
+        : undefined;
+    const { count } = await this.prisma.userLessonProgress.updateMany({
       where: { userId, lessonId: lesson.id, completedAt: null },
-      data: { quitCount: { increment: 1 }, lastStepId: step },
+      data: {
+        quitCount: { increment: 1 },
+        lastStepId: step,
+        ...(pct !== undefined ? { progressPercentage: pct } : {}),
+      },
     });
+    // Left unfinished: the first-lesson journey decides whether Tey follows up.
+    if (count > 0) {
+      this.eventEmitter.emit(LESSON_QUIT_EVENT, {
+        userId,
+        courseId: lesson.section.courseId,
+        lessonId: lesson.id,
+        step,
+        progressPct: pct,
+      } satisfies LessonQuitEvent);
+    }
   }
 
   async getProgress(userId: string, idOrSlug: string) {

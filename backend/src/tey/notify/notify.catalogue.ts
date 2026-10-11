@@ -47,6 +47,10 @@ export const NOTIFY_KINDS = {
     audience: 'learner', pref: 'leagueUpdates', throttleMinutes: 0,
     ttlSeconds: 24 * HOUR, tag: 'tey-league', teyState: 'CELEBRATING',
   },
+  FIRST_LESSON: {
+    audience: 'learner', pref: 'dailyReminders', throttleMinutes: 150,
+    ttlSeconds: 6 * HOUR, tag: 'tey-first-lesson', teyState: 'PASSIVE_AGGRESSIVE',
+  },
   COURSE_UNLOCK: {
     audience: 'learner', pref: 'courseOffers', throttleMinutes: 20 * 60,
     ttlSeconds: 12 * HOUR, tag: 'tey-unlock', teyState: 'ENCOURAGING',

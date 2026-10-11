@@ -57,6 +57,9 @@ describe('AuthService', () => {
             section: {
               findMany: jest.fn(),
             },
+            userLessonProgress: {
+              findMany: jest.fn().mockResolvedValue([]),
+            },
             creatorOnboardingDraft: {
               update: jest.fn(),
             },
@@ -1194,6 +1197,7 @@ describe('AuthService', () => {
           courseId: true,
           progress: true,
           completedLessons: true,
+          createdAt: true,
           course: {
             select: {
               id: true,
@@ -1233,12 +1237,14 @@ describe('AuthService', () => {
         {
           ...mockEnrollments[0],
           completedCount: 0,
+          firstLessonOpened: false,
           nextLesson: { id: 'a-1', title: 'L1', sectionIndex: 0, sectionTitle: 'S1', number: 1 },
           course: { ...mockEnrollments[0].course, totalLessons: 3 },
         },
         {
           ...mockEnrollments[1],
           completedCount: 0,
+          firstLessonOpened: false,
           nextLesson: { id: 'c-1', title: 'L1', sectionIndex: 0, sectionTitle: 'S1', number: 1 },
           course: { ...mockEnrollments[1].course, totalLessons: 4 },
         },

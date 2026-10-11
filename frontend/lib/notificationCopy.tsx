@@ -54,6 +54,7 @@ const TEY_EVENT_TYPES = new Set([
   'TEY_LEAGUE_ENDING',
   'TEY_LEAGUE_RESULT',
   'TEY_COURSE_UNLOCK',
+  'TEY_FIRST_LESSON',
 ]);
 const isTeyEvent = (type: string) => TEY_EVENT_TYPES.has(type);
 

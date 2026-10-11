@@ -28,8 +28,12 @@ export function pingLessonOpen(courseId: string, lessonId: string) {
   ping(`${base(courseId, lessonId)}/open`);
 }
 
-export function pingLessonQuit(courseId: string, lessonId: string, step: QuitStep) {
-  ping(`${base(courseId, lessonId)}/quit`, { step });
+/** `progress` (0–100) lets Tey say "you got 60% in" when he follows up. */
+export function pingLessonQuit(courseId: string, lessonId: string, step: QuitStep, progress?: number) {
+  ping(`${base(courseId, lessonId)}/quit`, {
+    step,
+    ...(typeof progress === 'number' && Number.isFinite(progress) ? { progress: Math.round(progress) } : {}),
+  });
 }
 
 /** Where the learner is, in the shape the server stores. */

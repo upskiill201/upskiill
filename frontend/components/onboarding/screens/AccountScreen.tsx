@@ -12,6 +12,7 @@ import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import {
   Divider,
+  EmailTypoHint,
   Field,
   FieldGroup,
   FormError,
@@ -358,6 +359,7 @@ export default function AccountScreen({ onNext }: AccountScreenProps) {
                   }
                 />
               </FieldGroup>
+              {!isLinkAccountMode && <EmailTypoHint email={email} onFix={setEmail} />}
 
               <FormError message={authError} />
 

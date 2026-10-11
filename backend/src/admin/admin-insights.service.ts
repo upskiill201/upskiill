@@ -346,12 +346,13 @@ export class AdminInsightsService {
       const since = new Date(now - range * DAY);
       const prevSince = new Date(now - 2 * range * DAY);
 
-      const [dau, wau, mau, byDay, activation] = await Promise.all([
+      const [dau, wau, mau, byDay, activation, stuck] = await Promise.all([
         this.activeBetween(new Date(now - DAY), nowD),
         this.activeBetween(new Date(now - 7 * DAY), nowD),
         this.activeBetween(new Date(now - 30 * DAY), nowD),
         this.activeByDay(since),
         this.activation(since),
+        this.stuckBeforeLessonOne(),
       ]);
       const [cohorts, retention, engagement, engagementPrev] =
         await Promise.all([
@@ -417,6 +418,7 @@ export class AdminInsightsService {
           active: byDay.get(d) ?? 0,
         })),
         activation,
+        stuck,
         cohorts,
         retention,
         engagement: {
@@ -446,21 +448,35 @@ export class AdminInsightsService {
     });
   }
 
-  /** Of the people who signed up since `since`: how far they got. */
+  /**
+   * Of the LEARNERS who signed up since `since`: how far they got. Creators
+   * are left out (they used to make up most "signups" and hid the real
+   * drop-offs). The enrolled → opened → finished steps are the first-lesson
+   * funnel: where Teyro wins or loses a learner.
+   */
   private async activation(since: Date) {
     const [row] = await this.q<{
       signed: bigint;
       onboarded: bigint;
-      started: bigint;
+      enrolled: bigint;
+      opened: bigint;
       finished: bigint;
       returned: bigint;
+      reachable: bigint;
     }>(Prisma.sql`
       WITH u AS (
-        SELECT id, "hasStudentAccess" FROM "User" WHERE "createdAt" >= ${since} AND ${NOT_ADMIN}
+        SELECT id FROM "User"
+        WHERE "createdAt" >= ${since} AND ${NOT_ADMIN} AND "hasStudentAccess" AND NOT "hasCreatorAccess"
       ),
-      started AS (
+      onboarded AS (
+        SELECT "userId" FROM onboarding_sessions WHERE "userId" IN (SELECT id FROM u) AND "onboardingComplete"
+      ),
+      enrolled AS (
+        SELECT DISTINCT "userId" FROM "Enrollment" WHERE "userId" IN (SELECT id FROM u)
+      ),
+      opened AS (
         SELECT DISTINCT "userId" FROM user_lesson_progress
-        WHERE "userId" IN (SELECT id FROM u) AND ("startedAt" IS NOT NULL OR "completedAt" IS NOT NULL)
+        WHERE "userId" IN (SELECT id FROM u) AND ("openCount" > 0 OR "startedAt" IS NOT NULL OR "completedAt" IS NOT NULL)
       ),
       learned AS (
         SELECT "userId", COUNT(DISTINCT "date") AS days FROM user_daily_activity
@@ -468,22 +484,61 @@ export class AdminInsightsService {
       )
       SELECT
         (SELECT COUNT(*) FROM u) AS signed,
-        (SELECT COUNT(*) FROM u WHERE "hasStudentAccess") AS onboarded,
-        (SELECT COUNT(*) FROM started) AS started,
+        (SELECT COUNT(*) FROM onboarded) AS onboarded,
+        (SELECT COUNT(*) FROM enrolled) AS enrolled,
+        (SELECT COUNT(*) FROM opened) AS opened,
         (SELECT COUNT(*) FROM learned) AS finished,
-        (SELECT COUNT(*) FROM learned WHERE days >= 2) AS returned`);
+        (SELECT COUNT(*) FROM learned WHERE days >= 2) AS returned,
+        (SELECT COUNT(DISTINCT "userId") FROM push_subscriptions
+          WHERE "userId" IN (SELECT id FROM u) AND "isActive") AS reachable`);
     const signed = n(row?.signed);
     return [
-      { key: 'signed', label: 'Signed up', count: signed },
-      {
-        key: 'onboarded',
-        label: 'Finished onboarding',
-        count: n(row?.onboarded),
-      },
-      { key: 'started', label: 'Started a lesson', count: n(row?.started) },
+      { key: 'signed', label: 'Learners signed up', count: signed },
+      { key: 'onboarded', label: 'Finished onboarding', count: n(row?.onboarded) },
+      { key: 'enrolled', label: 'Enrolled in a course', count: n(row?.enrolled) },
+      { key: 'started', label: 'Opened a lesson', count: n(row?.opened) },
       { key: 'finished', label: 'Finished a lesson', count: n(row?.finished) },
       { key: 'returned', label: 'Learned on 2+ days', count: n(row?.returned) },
+      { key: 'reachable', label: 'Push turned on', count: n(row?.reachable) },
     ].map((s) => ({ ...s, pctOfSignups: pct(s.count, signed) }));
+  }
+
+  /**
+   * Learners enrolled in a course (in the last 60 days) without one finished
+   * lesson in it: the people the first-lesson journey is working on. Newest
+   * first, with whether they ever opened lesson 1 and whether push can reach
+   * them, so HQ can see at a glance who is slipping and why.
+   */
+  private async stuckBeforeLessonOne() {
+    const rows = await this.q<{
+      userId: string;
+      name: string;
+      courseId: string;
+      course: string;
+      enrolledAt: Date;
+      opened: boolean;
+      pushOn: boolean;
+    }>(Prisma.sql`
+      SELECT u.id AS "userId", u."fullName" AS name, c.id AS "courseId", c.title AS course,
+             e."createdAt" AS "enrolledAt",
+             EXISTS (
+               SELECT 1 FROM user_lesson_progress p
+               JOIN course_lessons l ON l.id = p."lessonId"
+               JOIN course_sections s ON s.id = l."sectionId"
+               WHERE p."userId" = u.id AND s."courseId" = c.id AND p."openCount" > 0
+             ) AS opened,
+             EXISTS (
+               SELECT 1 FROM push_subscriptions ps WHERE ps."userId" = u.id AND ps."isActive"
+             ) AS "pushOn"
+      FROM "Enrollment" e
+      JOIN "User" u ON u.id = e."userId"
+      JOIN "Course" c ON c.id = e."courseId"
+      WHERE u."deletedAt" IS NULL AND u.role <> 'ADMIN' AND e."userId" <> c."instructorId"
+        AND e."createdAt" >= NOW() - INTERVAL '60 days'
+        AND jsonb_array_length(COALESCE(e."completedLessons", '[]'::jsonb)) = 0
+      ORDER BY e."createdAt" DESC
+      LIMIT 50`);
+    return rows;
   }
 
   /** Weekly signup cohorts (last 8 weeks) and the share active in each following week. */
