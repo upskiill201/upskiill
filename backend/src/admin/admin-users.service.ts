@@ -182,6 +182,159 @@ export class AdminUsersService {
       activity,
       economy,
       adminHistory,
+      journey: await this.journey(id),
+    };
+  }
+
+  /**
+   * Everything needed to answer "why hasn't this person started?" in one
+   * place: what they told onboarding, whether we can reach them at all, every
+   * course and lesson they touched (opened, quit where, finished), and every
+   * nudge and email: sent, blocked (and why), or still scheduled.
+   */
+  private async journey(id: string) {
+    const [onboarding, pushDevices, prefs, emailPrefs, enrollments, nudges, emails, upcomingEmails, upcomingNudges] =
+      await Promise.all([
+        this.prisma.onboardingSession.findUnique({
+          where: { userId: id },
+          select: { onboardingComplete: true, completedAt: true, currentStep: true, answers: true },
+        }),
+        this.prisma.pushSubscription.findMany({
+          where: { userId: id },
+          select: {
+            platform: true, isActive: true, createdAt: true,
+            lastUsedAt: true, failureCount: true, userAgent: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.teyNotificationPrefs.findUnique({
+          where: { userId: id },
+          select: { pushEnabled: true, dailyReminders: true, preferredHour: true },
+        }),
+        this.prisma.emailPreference.findUnique({ where: { userId: id } }),
+        this.prisma.enrollment.findMany({
+          where: { userId: id },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            createdAt: true,
+            progress: true,
+            completedLessons: true,
+            course: { select: { id: true, title: true } },
+          },
+        }),
+        this.prisma.teyDelivery.findMany({
+          where: { userId: id },
+          orderBy: { sentAt: 'desc' },
+          take: 30,
+          select: {
+            ruleId: true, channel: true, status: true, skipReason: true,
+            title: true, body: true, sentAt: true, openedAt: true,
+            action: { select: { skipReason: true } },
+          },
+        }),
+        this.prisma.emailLog.findMany({
+          where: { userId: id },
+          orderBy: { createdAt: 'desc' },
+          take: 30,
+          select: { templateKey: true, status: true, skipReason: true, createdAt: true, sentAt: true, openedAt: true, clickedAt: true },
+        }),
+        this.prisma.emailJob.findMany({
+          where: { userId: id, status: 'PENDING' },
+          orderBy: { dueAt: 'asc' },
+          take: 15,
+          select: { templateKey: true, dueAt: true },
+        }),
+        this.prisma.teyScheduledAction.findMany({
+          where: { userId: id, status: 'PENDING' },
+          orderBy: { dueAt: 'asc' },
+          take: 15,
+          select: { ruleId: true, dueAt: true },
+        }),
+      ]);
+
+    const reachUser = await this.prisma.user.findUnique({
+      where: { id },
+      select: { pwaInstalledAt: true, pwaLastSeenAt: true, notificationPermission: true, reachAskRequestedAt: true, reachAskShownAt: true },
+    });
+    const courseIds = enrollments.map((e) => e.course.id);
+    const [lessons, progress] = await Promise.all([
+      this.prisma.lesson.findMany({
+        where: { status: 'published', section: { courseId: { in: courseIds } } },
+        orderBy: [{ section: { orderIndex: 'asc' } }, { orderIndex: 'asc' }],
+        select: { id: true, title: true, section: { select: { courseId: true } } },
+      }),
+      this.prisma.userLessonProgress.findMany({
+        where: { userId: id, lesson: { section: { courseId: { in: courseIds } } } },
+        select: {
+          lessonId: true, openCount: true, quitCount: true, lastStepId: true,
+          progressPercentage: true, startedAt: true, completedAt: true,
+        },
+      }),
+    ]);
+    const byLesson = new Map(progress.map((p) => [p.lessonId, p]));
+
+    const courses = enrollments.map((e) => {
+      const list = lessons.filter((l) => l.section.courseId === e.course.id);
+      const done = Array.isArray(e.completedLessons) ? e.completedLessons.length : 0;
+      const touched = list
+        .map((l, i) => ({ number: i + 1, title: l.title, ...byLesson.get(l.id) }))
+        .filter((l) => l.openCount !== undefined);
+      const first = list[0] ? byLesson.get(list[0].id) : undefined;
+      return {
+        id: e.course.id,
+        title: e.course.title,
+        enrolledAt: e.createdAt,
+        progress: Math.round(e.progress ?? 0),
+        lessonsDone: done,
+        totalLessons: list.length,
+        firstLesson: list[0]?.title ?? null,
+        stage: done > 0 ? 'LEARNING' : first?.openCount ? 'OPENED_NOT_FINISHED' : 'NOT_STARTED',
+        lessons: touched,
+      };
+    });
+
+    const answers = (onboarding?.answers ?? {}) as Record<string, unknown>;
+    const optOuts = emailPrefs
+      ? Object.entries(emailPrefs)
+          .filter(([k, v]) => k.endsWith('OptOut') && v === true)
+          .map(([k]) => k.replace(/OptOut$/, ''))
+      : [];
+
+    return {
+      onboarding: {
+        complete: onboarding?.onboardingComplete ?? false,
+        completedAt: onboarding?.completedAt ?? null,
+        reachedStep: onboarding?.currentStep ?? null,
+        skipped: !onboarding,
+        track: answers.category ?? null,
+        goals: answers.goals ?? null,
+        experience: answers.experienceLevel ?? null,
+        dailyMinutes: answers.dailyCommitment ?? null,
+        preferredTime: answers.preferredTime ?? null,
+        barriers: answers.barriers ?? null,
+        notifications: answers.notifications ?? null,
+      },
+      reach: {
+        pushDevices: pushDevices.filter((d) => d.isActive).length,
+        devices: pushDevices.map(({ userAgent, ...d }) => ({ ...d, device: describeDevice(userAgent) })),
+        installed: !!reachUser?.pwaInstalledAt || pushDevices.some((d) => d.isActive && d.platform === 'ios-standalone'),
+        installedAt: reachUser?.pwaInstalledAt ?? null,
+        appLastOpenedAt: reachUser?.pwaLastSeenAt ?? null,
+        permission: reachUser?.notificationPermission ?? null,
+        askRequestedAt: reachUser?.reachAskRequestedAt ?? null,
+        askShownAt: reachUser?.reachAskShownAt ?? null,
+        pushEnabled: prefs?.pushEnabled ?? true,
+        dailyReminders: prefs?.dailyReminders ?? true,
+        preferredHour: prefs?.preferredHour ?? null,
+        emailOptOuts: optOuts,
+      },
+      courses,
+      nudges: nudges.map(({ action, ...n }) => ({ ...n, skipReason: n.skipReason ?? action?.skipReason ?? null })),
+      emails,
+      upcoming: [
+        ...upcomingEmails.map((j) => ({ kind: 'EMAIL', key: j.templateKey, dueAt: j.dueAt })),
+        ...upcomingNudges.map((a) => ({ kind: 'PUSH', key: a.ruleId, dueAt: a.dueAt })),
+      ].sort((x, y) => x.dueAt.getTime() - y.dueAt.getTime()),
     };
   }
 
@@ -296,4 +449,24 @@ export class AdminUsersService {
 
     return { accountStatus: 'ACTIVE' as const };
   }
+}
+
+/** "Chrome on Android", "Safari on iPhone"… from a stored user agent. */
+function describeDevice(ua: string | null): string {
+  if (!ua) return 'Unknown device';
+  const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'Unknown OS';
+  const browser = /Claude\//.test(ua)
+    ? 'Claude desktop app'
+    : /Edg\//.test(ua)
+      ? 'Edge'
+      : /SamsungBrowser/.test(ua)
+        ? 'Samsung Internet'
+        : /Firefox\//.test(ua)
+          ? 'Firefox'
+          : /CriOS|Chrome\//.test(ua)
+            ? 'Chrome'
+            : /Safari\//.test(ua)
+              ? 'Safari'
+              : 'Browser';
+  return `${browser} on ${os}`;
 }

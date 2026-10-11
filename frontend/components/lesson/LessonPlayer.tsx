@@ -58,6 +58,7 @@ import {
 } from '@/lib/lesson/content';
 import { learnCards } from '@/lib/lesson/learnCards';
 import { pingLessonOpen, pingLessonQuit, quitStep } from '@/lib/lesson/lessonPings';
+import { clearSpot, readSpot, saveSpot } from '@/lib/lesson/resume';
 import { setLessonFocus } from '@/lib/lesson/lessonFocus';
 import { readHistory, recordLesson } from '@/lib/lesson/history';
 import {
@@ -124,6 +125,24 @@ const CORRECT_TITLES = ['Nice!', 'Correct!', 'Great job!', 'You got it!', 'Naile
 const RUN_TITLES = ['Unstoppable!', 'On fire!', 'Brilliant!'];
 const FIXED_TITLES = ['Fixed it!', 'Got it now!', "That's the one!"];
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+
+/** First-ever lesson: mistakes are free, and Tey makes sure they know it. */
+const FREE_MISTAKE_LINES = [
+  "No hearts lost. First lesson's on me.",
+  "Free mistake. I'm generous today. Don't get used to it.",
+  "That one's free. First lessons don't cost hearts. The rest? We'll see.",
+];
+
+/** Back in a lesson they left part-way. */
+const RESUME_LINES = [
+  'Welcome back. I saved your spot. You’re welcome.',
+  'Oh, you came back! Right where you left off.',
+  'I kept your place warm. Let’s finish this one.',
+];
+
+/** How long a video card holds Continue before letting the learner skip ahead. */
+const VIDEO_GRACE_MS = 20_000;
+
 /** When to look for the lesson's XP on the league board (ms after saving). */
 const LEAGUE_READS = [1200, 2600, 4200];
 const missionsUrl = () => `/api/v2/missions/today?timezoneOffset=${new Date().getTimezoneOffset()}`;
@@ -204,7 +223,11 @@ export function LessonPlayer({
   const content = useMemo(() => readLessonContent(lesson), [lesson]);
   const phases = lessonPhases(content);
   const exercises = content.apply.exercises;
-  const heartsAtRisk = !isReview && !adminReviewMode;
+  // A learner's very first lesson costs no hearts: the worst first
+  // impression Teyro can make is "out of hearts" before you've finished
+  // anything. (Decided at open, like isReview.)
+  const [firstEverLesson] = useState(() => lastLessonCompletedAt == null);
+  const heartsAtRisk = !isReview && !adminReviewMode && !firstEverLesson;
 
   // ── Focus: the lesson owns the screen while it's open ───────────────────
   useEffect(() => {
@@ -218,7 +241,11 @@ export function LessonPlayer({
   }, []);
 
   const startedAt = useRef(Date.now());
-  const [phase, setPhase] = useState<LessonPhase>(phases[0]);
+  // Left part-way last time? Pick up at the same card (or the questions).
+  const [spot] = useState(() => (isReviewAtOpen || adminReviewMode ? null : readSpot(lesson.id)));
+  const [phase, setPhase] = useState<LessonPhase>(() =>
+    spot?.phase === 'apply' && phases.includes('apply') ? 'apply' : phases[0],
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const goTo = useCallback((next: LessonPhase) => {
@@ -227,18 +254,31 @@ export function LessonPlayer({
   }, []);
 
   // ── Learn: one card at a time ───────────────────────────────────────────
-  // A video card must be watched to the end; a broken video never traps
+  // A video card asks to be watched to the end; a broken video never traps
   // anyone (onError counts as ended). Every other card is just CONTINUE.
   const cards = useMemo(() => learnCards(content.learn), [content]);
-  const [cardIndex, setCardIndex] = useState(0);
+  const [cardIndex, setCardIndex] = useState(() =>
+    spot?.phase === 'learn' ? Math.max(0, Math.min(spot.card, cards.length - 1)) : 0,
+  );
   const [cardDir, setCardDir] = useState<1 | -1>(1);
   const card = cards[Math.min(cardIndex, cards.length - 1)];
   const [mediaEnded, setMediaEnded] = useState(false);
   const [checkPicks, setCheckPicks] = useState<Record<string, number>>({});
+  // ...but never for long: after VIDEO_GRACE_MS on a video card, Continue
+  // unlocks anyway. A long intro video you must sit through is where real
+  // learners quit lesson 1 for good.
+  const [videoGraceCard, setVideoGraceCard] = useState<number | null>(null);
+  useEffect(() => {
+    if (card.kind !== 'video' || mediaEnded || isReview || adminReviewMode) return;
+    const at = cardIndex;
+    const t = setTimeout(() => setVideoGraceCard(at), VIDEO_GRACE_MS);
+    return () => clearTimeout(t);
+  }, [card.kind, cardIndex, mediaEnded, isReview, adminReviewMode]);
   const learnGated =
     !isReview &&
     !adminReviewMode &&
-    ((card.kind === 'video' && !mediaEnded) || (card.kind === 'check' && checkPicks[card.id] === undefined));
+    ((card.kind === 'video' && !mediaEnded && videoGraceCard !== cardIndex) ||
+      (card.kind === 'check' && checkPicks[card.id] === undefined));
   const pickCheck = (i: number) => {
     if (card.kind !== 'check' || checkPicks[card.id] !== undefined) return;
     const right = i === card.correctIndex;
@@ -343,7 +383,7 @@ export function LessonPlayer({
         body = [right ? `Correct answer: ${right}` : null, picked?.misconception ?? exercise.explanation].filter(Boolean).join('\n');
       }
       setVerdict({ kind: 'wrong', title: 'Not quite', body });
-      say('thinking', pickWrongAnswerLine(broken));
+      say('thinking', firstEverLesson ? pick(FREE_MISTAKE_LINES) : pickWrongAnswerLine(broken));
       if (heartsAtRisk) {
         wrongCount.current += 1;
         // A Perfect Lesson Protection charge may absorb this; the server
@@ -708,10 +748,25 @@ export function LessonPlayer({
   whereRef.current = () => quitStep(phase, { index: cardIndex, total: cards.length }, exercise?.id);
   const finishedRef = useRef(false);
   finishedRef.current = outro !== null;
+
+  // Keep their place for next time; a finished lesson forgets it.
+  useEffect(() => {
+    if (!tracked) return;
+    if (outro !== null) clearSpot(lesson.id);
+    else saveSpot(lesson.id, phase, cardIndex);
+  }, [tracked, outro, phase, cardIndex, lesson.id]);
+  // Say so, once, when they come back mid-lesson.
+  const greetedSpot = useRef(false);
+  useEffect(() => {
+    if (!spot || greetedSpot.current) return;
+    greetedSpot.current = true;
+    say('pointing', pick(RESUME_LINES));
+  }, [spot]);
+  const progressRef = useRef(0);
   const reportLeft = useCallback(() => {
     if (!tracked || leftRef.current || finishedRef.current) return;
     leftRef.current = true;
-    pingLessonQuit(courseId, lesson.id, whereRef.current());
+    pingLessonQuit(courseId, lesson.id, whereRef.current(), progressRef.current * 100);
   }, [tracked, courseId, lesson.id]);
   useEffect(() => {
     if (!tracked) return;
@@ -748,6 +803,7 @@ export function LessonPlayer({
     reflectDone: reflectSub === 'write' ? 1 : 0,
     finished: outro !== null,
   });
+  progressRef.current = progress;
 
   let footer: {
     label: string;
@@ -900,7 +956,7 @@ export function LessonPlayer({
           progress={progress}
           phase={phase}
           combo={phase === 'apply' ? combo : 0}
-          hearts={adminReviewMode ? null : lives}
+          hearts={adminReviewMode || firstEverLesson ? null : lives}
           onClose={requestQuit}
         />
       )}

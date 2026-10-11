@@ -309,6 +309,12 @@ export type CelebrationScene =
       variant: 'install' | 'enable';
       /** For the preview notification's line ("keep your 4-day streak"). */
       streakDays: number;
+      /**
+       * Asked right after enrolling, before lesson 1: the scene talks about
+       * THIS lesson ("if you don't start it, I'll remind you") and its last
+       * button starts it.
+       */
+      lessonTitle?: string;
       onComplete?: () => void;
       dedupeKey?: string;
     }

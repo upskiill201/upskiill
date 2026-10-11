@@ -117,6 +117,7 @@ export class TeyDeliveryService {
         where: { id: delivery.id },
         data: {
           status: result.status === 'NO_TARGET' ? 'SUPPRESSED' : 'FAILED',
+          skipReason: result.status === 'NO_TARGET' ? 'NO_SUBSCRIPTION' : 'PUSH_FAILED',
         },
       });
       await this.maybeSendWhatsApp(userId, ctx, message, deepLink, actionId, generatedBy);
@@ -293,6 +294,7 @@ export class TeyDeliveryService {
           context: ctx as unknown as Prisma.InputJsonValue,
           generatedBy: 'TEMPLATE',
           status: 'SUPPRESSED',
+          skipReason: reason,
         },
       });
     } catch (err) {

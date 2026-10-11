@@ -530,3 +530,23 @@ a.primary {
     animation: none;
   }
 }
+
+/* "Did you mean …@gmail.com?" under the email field. */
+.typoHint {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.typoFix {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--color-brand);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

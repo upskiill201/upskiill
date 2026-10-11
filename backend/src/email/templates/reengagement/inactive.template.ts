@@ -12,8 +12,11 @@ import {
 } from '../shared';
 
 /** Days away at which a win-back email goes out. The last one is a goodbye. */
-export const INACTIVE_EMAIL_DAYS = [3, 7, 14, 30] as const;
-export type InactiveEmailDay = (typeof INACTIVE_EMAIL_DAYS)[number];
+/** Days away an email goes out: thick early, then easing off, never "the last". */
+export const INACTIVE_EMAIL_DAYS: readonly number[] = [
+  1, 3, 5, 7, 10, 14, 21, 30, 45, 60, 75, 90, 120, 150, 180, 240, 300, 365,
+];
+export type InactiveEmailDay = number;
 
 export interface InactiveData extends BaseEmailData {
   daysAway: InactiveEmailDay;
@@ -25,10 +28,10 @@ export interface InactiveData extends BaseEmailData {
 }
 
 /**
- * The win-back ladder by email — Duolingo's shape, in Tey's voice: a nudge,
- * a warmer "it's still here", a light guilt-trip about the owl, and finally
- * an honest "I'll stop". The goodbye is a real promise: nothing in this
- * ladder sends after day 30.
+ * The win-back ladder by email, in Tey's voice: a nudge, a warmer "it's still
+ * here", a guilt-trip, and then Tey simply refusing to give up. There is no
+ * goodbye email: the ladder eases off but keeps going until they come back
+ * (the unsubscribe link is the learner's off switch).
  */
 export function renderInactiveEmail(data: InactiveData): RenderedEmail {
   const name = safeName(data.firstName);
@@ -46,7 +49,20 @@ export function renderInactiveEmail(data: InactiveData): RenderedEmail {
     }),
   });
 
-  switch (data.daysAway) {
+  const bucket =
+    data.daysAway <= 1 ? 1 : data.daysAway <= 5 ? 3 : data.daysAway <= 10 ? 7 : data.daysAway <= 21 ? 14 : 30;
+  switch (bucket) {
+    case 1:
+      return layout(
+        'You skipped yesterday. I noticed.',
+        'One lesson today and nobody has to know.',
+        `
+        ${teySays(`${name}. Yesterday. No lesson. I’m not mad.`)}
+        ${paragraph(`${where}. Do one today and we’ll pretend it never happened.`)}
+        ${ctaButton('Do one lesson', data.continueUrl)}
+        ${teySignOff()}
+      `,
+      );
     case 3:
       return layout(
         'Three days, huh? 👀',
@@ -83,18 +99,40 @@ export function renderInactiveEmail(data: InactiveData): RenderedEmail {
       `,
       );
     case 30:
-    default:
+    default: {
+      const variants = [
+        {
+          subject: 'These reminders don’t seem to be working',
+          pre: 'So I’m going to keep sending them.',
+          head: 'These reminders don’t seem to be working.',
+          body: 'So I’m going to keep sending them. That’s how this works. One lesson and they turn into celebrations instead.',
+        },
+        {
+          subject: `${data.daysAway} days. I’m still counting.`,
+          pre: 'Your progress is saved. My patience is... mostly saved.',
+          head: `${data.daysAway} days, ${name}. I counted every one.`,
+          body: 'I don’t do goodbyes. I do “one more lesson?”. So: one more lesson?',
+        },
+        {
+          subject: 'Plot twist: you come back today',
+          pre: 'Best comeback story ever. I’ll bring the confetti.',
+          head: 'I have a script for today.',
+          body: 'You open Teyro. You do one lesson. I lose my mind with joy. Roll credits.',
+        },
+      ];
+      const v = variants[Math.max(0, INACTIVE_EMAIL_DAYS.indexOf(data.daysAway)) % variants.length];
       return layout(
-        'These reminders don’t seem to be working',
-        'So I’ll stop sending them.',
+        v.subject,
+        v.pre,
         `
-        ${teySays('These reminders don’t seem to be working.')}
-        ${paragraph('So I’ll stop sending them for now. No hard feelings — life gets busy.')}
-        ${paragraph(`${where}. If you ever want to pick it back up, everything will be waiting.`)}
+        ${teySays(v.head)}
+        ${paragraph(v.body)}
+        ${paragraph(`${where}.`)}
+        ${data.longestStreak >= 3 ? paragraph(`You once kept a <strong>${data.longestStreak}-day streak</strong>. That person is still in there.`) : ''}
         ${ctaButton('Take me back', data.continueUrl)}
-        ${smallMuted('This is my last reminder. You won’t hear from me again unless you come back.')}
         ${teySignOff()}
       `,
       );
+    }
   }
 }

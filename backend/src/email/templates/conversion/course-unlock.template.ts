@@ -12,10 +12,12 @@ import {
   teySignOff,
 } from '../shared';
 
-export type CourseUnlockStage = 1 | 2 | 3;
+export type CourseUnlockStage = 1 | 2 | 3 | 'nag';
 
 export interface CourseUnlockData extends BaseEmailData {
   stage: CourseUnlockStage;
+  /** 'nag' only: which nag (picks the variant). */
+  nag?: number;
   courseName: string;
   creatorName: string;
   /** The first locked lessons, by their real titles. */
@@ -85,17 +87,49 @@ export function renderCourseUnlockEmail(data: CourseUnlockData): RenderedEmail {
       `,
       );
     }
+    case 'nag': {
+      const v = [
+        {
+          subject: `You stopped at the best part of ${data.courseName}`,
+          pre: "That's a cliffhanger, and I hate cliffhangers.",
+          head: `${name}, we need to talk about ${data.courseName}.`,
+          body: `You did the free lessons of <strong>${course}</strong>, then stopped right where it gets good. ${left} ${left === 1 ? 'lesson is' : 'lessons are'} waiting, and your progress is saved.`,
+        },
+        {
+          subject: `I'll keep asking about ${data.courseName}`,
+          pre: "Every week. Until you unlock it. That's the deal.",
+          head: `Hi ${name}. Me again.`,
+          body: `<strong>${course}</strong> by ${creator} is still waiting where you left it. ${next[0] ? `Next up: <strong>${next[0]}</strong>.` : ''} Unlock it and these emails turn into high-fives.`,
+        },
+        {
+          subject: 'Remember why you started?',
+          pre: `${data.courseName} does.`,
+          head: `${name}, quick reminder.`,
+          body: `You chose <strong>${course}</strong> for a reason. ${outcomes[0] ? `Finish it and you'll be able to: ${outcomes[0]}.` : `${left} lessons stand between you and finishing it.`}`,
+        },
+      ][(data.nag ?? 0) % 3];
+      return layout(
+        v.subject,
+        v.pre,
+        `
+        ${teySays(v.head)}
+        ${paragraph(v.body)}
+        ${ctaButton('Unlock the course', data.unlockUrl)}
+        ${teySignOff()}
+      `,
+      );
+    }
     case 3:
     default:
       return layout(
         `Still thinking about ${data.courseName}?`,
-        'No pressure. Your spot is saved.',
+        'Your spot is saved. My patience is... mostly saved.',
         `
         ${teySays(`No pressure, ${name}.`)}
         ${paragraph(`You did ${data.completedLessons} ${data.completedLessons === 1 ? 'lesson' : 'lessons'} of <strong>${course}</strong>, and they’re saved right where you left them.`)}
         ${paragraph('Whenever you’re ready to see how it ends, it’s one tap away.')}
         ${ctaButton('Unlock the course', data.unlockUrl)}
-        ${smallMuted('This is my last email about this course. I’ll let you get on with your day.')}
+        ${smallMuted('I’ll keep checking in about this course until you unlock it. That’s a promise.')}
         ${teySignOff()}
       `,
       );

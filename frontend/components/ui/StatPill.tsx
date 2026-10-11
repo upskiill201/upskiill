@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
-import { playRewardTick } from '@/lib/audio/celebrationAudio';
+import { playSound } from '@/lib/audio/lessonSounds';
 import styles from './StatPill.module.css';
 
 export type StatType = 'streak' | 'gem' | 'lives' | 'coin' | 'level';
@@ -24,45 +24,23 @@ interface StatPillProps {
   variant?: StatVariant;
   onClick?: () => void;
   className?: string;
+  /**
+   * How the stat feels right now (StatsBar decides):
+   *  - 'dim'   streak not kept today yet: grey flame, Duolingo's quiet nudge
+   *  - 'low'   last heart left: the heart beats
+   *  - 'empty' no hearts: grey
+   */
+  mood?: 'normal' | 'dim' | 'low' | 'empty';
 }
 
-const STAT_CONFIG: Record<
-  StatType,
-  {
-    icon: string;
-    defaultLabel: string;
-    color: string;
-  }
-> = {
-  streak: {
-    icon: '/Icons/burn.png',
-    defaultLabel: 'Streak',
-    color: '#EA580C',
-  },
-  gem: {
-    icon: '/Icons/gem.png',
-    defaultLabel: 'XP',
-    color: '#0172FD',
-  },
-  lives: {
-    icon: '/Icons/heart.png',
-    defaultLabel: 'Lives',
-    color: '#E11D48',
-  },
-  coin: {
-    icon: '/Icons/Coin.png',
-    defaultLabel: 'Coins',
-    color: '#CA8A04',
-  },
-  level: {
-    icon: '/Icons/user-profile.png',
-    defaultLabel: 'Level',
-    color: '#9333EA',
-  },
+// Each stat's colour is a token in StatPill.module.css (.pill_<type>), never hex.
+const STAT_CONFIG: Record<StatType, { icon: string; defaultLabel: string }> = {
+  streak: { icon: '/Icons/burn.png', defaultLabel: 'Streak' },
+  gem: { icon: '/Icons/gem.png', defaultLabel: 'XP' },
+  lives: { icon: '/Icons/heart.png', defaultLabel: 'Lives' },
+  coin: { icon: '/Icons/Coin.png', defaultLabel: 'Coins' },
+  level: { icon: '/Icons/user-profile.png', defaultLabel: 'Level' },
 };
-
-/** Brand --text-muted: used for a cold (0-day) streak, like Duolingo's gray fire */
-const INACTIVE_COLOR = '#94A3B8';
 
 function formatStatValue(val: number | string): string {
   if (typeof val === 'number') {
@@ -84,6 +62,7 @@ export const StatPill: React.FC<StatPillProps> = ({
   variant = 'flat',
   onClick,
   className,
+  mood = 'normal',
 }) => {
   const cfg = STAT_CONFIG[type];
   const displayLabel = label ?? cfg.defaultLabel;
@@ -102,7 +81,7 @@ export const StatPill: React.FC<StatPillProps> = ({
   const glowPulse = useAnimationControls();
   useEffect(() => {
     if (type === 'streak' && typeof value === 'number' && typeof prevValueRef.current === 'number' && value > prevValueRef.current) {
-      playRewardTick(3);
+      playSound('streakTick', 3);
       if (!reducedMotion) {
         void iconPulse.start({
           scale: [1, 1.35, 1],
@@ -112,9 +91,9 @@ export const StatPill: React.FC<StatPillProps> = ({
         });
         void glowPulse.start({
           boxShadow: [
-            '0 0 0 0 rgba(234, 88, 12, 0)',
-            '0 0 0 6px rgba(234, 88, 12, 0.22)',
-            '0 0 0 0 rgba(234, 88, 12, 0)',
+            '0 0 0 0 color-mix(in srgb, var(--warning) 0%, transparent)',
+            '0 0 0 6px color-mix(in srgb, var(--warning) 26%, transparent)',
+            '0 0 0 0 color-mix(in srgb, var(--warning) 0%, transparent)',
           ],
           transition: { duration: 0.7, ease: 'easeOut' },
         });
@@ -126,14 +105,14 @@ export const StatPill: React.FC<StatPillProps> = ({
   // Dynamic icon for Coins
   const iconSrc =
     type === 'coin'
-      ? Number(value) > 0
+      ? !(typeof value === 'number' && value <= 0)
         ? '/Icons/Coin.png'
         : '/Icons/Coin_empty.png'
       : cfg.icon;
 
-  // A cold (0-day) streak renders grayed-out, like Duolingo's inactive fire
-  const isInactive = type === 'streak' && Number(value) <= 0;
-  const valueColor = isInactive ? INACTIVE_COLOR : cfg.color;
+  // A cold (0-day) streak, or one not kept today yet, renders grey — like
+  // Duolingo's unlit fire. No hearts left: a grey heart.
+  const isInactive = (type === 'streak' && (Number(value) <= 0 || mood === 'dim')) || mood === 'empty';
 
   const formattedValue = formatStatValue(value);
   const typePillClass = styles[`pill_${type}`] || '';
@@ -157,6 +136,8 @@ export const StatPill: React.FC<StatPillProps> = ({
       className={[
         styles.pillBtn,
         typePillClass,
+        isInactive ? styles.inactive : '',
+        mood === 'low' && !reducedMotion ? styles.low : '',
         variant === 'candy' ? styles.candy : '',
         compact ? styles.pillBtnCompact : '',
         className || '',
@@ -171,7 +152,6 @@ export const StatPill: React.FC<StatPillProps> = ({
           prop. */}
       <motion.div
         className={styles.iconWrapper}
-        style={isInactive ? { filter: 'grayscale(1) opacity(0.55)' } : undefined}
         animate={iconPulse}
       >
         <Image
@@ -185,7 +165,7 @@ export const StatPill: React.FC<StatPillProps> = ({
       </motion.div>
 
       {/* Bold colored value, Duolingo-style */}
-      <span className={styles.statValue} style={{ color: valueColor }}>
+      <span className={styles.statValue}>
         {formattedValue}
       </span>
     </motion.button>

@@ -34,6 +34,15 @@ interface Learning {
   pulse: { dau: number; wau: number; mau: number; stickinessPct: number };
   activeSeries: { day: string; active: number }[];
   activation: { key: string; label: string; count: number; pctOfSignups: number }[];
+  stuck?: {
+    userId: string;
+    name: string;
+    courseId: string;
+    course: string;
+    enrolledAt: string;
+    opened: boolean;
+    pushOn: boolean;
+  }[];
   cohorts: { week: string; size: number; weeks: (number | null)[] }[];
   retention: { day: number; eligible: number; pct: number }[];
   engagement: {
@@ -57,6 +66,7 @@ const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(
 
 export default function AdminLearningPage() {
   const [range, setRange] = useState<Range>(30);
+  const [openedAt] = useState(() => Date.now());
   const { data, error, mutate } = useAdminData<Learning>(`/api/admin/insights/learning?range=${range}`);
 
   if (error && !data) return <LoadError onRetry={() => void mutate()} />;
@@ -92,7 +102,7 @@ export default function AdminLearningPage() {
       />
 
       <div className={h.grid2}>
-        <Panel title="How far new people get" note={`Everyone who signed up in the ${period}`}>
+        <Panel title="How far new learners get" note={`Learners (not creators) who signed up in the ${period}`}>
           <Funnel steps={data.activation} />
         </Panel>
 
@@ -113,6 +123,49 @@ export default function AdminLearningPage() {
           </p>
         </Panel>
       </div>
+
+      <Panel
+        title="Stuck before lesson 1"
+        note="Enrolled in the last 60 days, nothing finished yet. Tey's first-lesson journey is working on each of them. Open one to see every nudge and email."
+      >
+        {!data.stuck || data.stuck.length === 0 ? (
+          <p className={h.note}>Nobody is stuck. Every recent enrolment has finished a lesson.</p>
+        ) : (
+          <div style={{ display: 'grid', gap: 8 }}>
+            {data.stuck.map((r) => {
+              const days = Math.floor((openedAt - Date.parse(r.enrolledAt)) / 86_400_000);
+              return (
+                <Link
+                  key={`${r.userId}:${r.courseId}`}
+                  href={`/admin/users/${r.userId}`}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 12px',
+                    borderRadius: 12,
+                    border: '1px solid var(--border)',
+                    textDecoration: 'none',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  <strong style={{ fontSize: 14 }}>{r.name}</strong>
+                  <span style={{ fontSize: 13, color: 'var(--text-secondary)', flex: 1, minWidth: 160 }}>
+                    {r.course} · enrolled {days <= 0 ? 'today' : `${days}d ago`}
+                  </span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: r.opened ? 'var(--warning)' : 'var(--error-red)' }}>
+                    {r.opened ? 'Opened lesson 1, left' : 'Never opened lesson 1'}
+                  </span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: r.pushOn ? 'var(--success-green)' : 'var(--text-muted)' }}>
+                    {r.pushOn ? 'Push on' : 'Email only'}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
 
       <Panel title="Weekly cohorts" note="People grouped by the week they signed up, and the share who were active in each week after. Greener is better.">
         <CohortGrid rows={data.cohorts} />

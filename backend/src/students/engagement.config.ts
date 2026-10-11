@@ -43,6 +43,8 @@ export const ENGAGEMENT = Object.freeze({
 /** Platform-level learner segment — one per learner, precedence-ordered. */
 export type LearnerSegment =
   | 'NEW'
+  /** Enrolled a day or more ago and hasn't finished lesson 1. */
+  | 'NOT_STARTED'
   | 'ACTIVE'
   | 'HIGHLY_ENGAGED'
   | 'NEAR_COMPLETION'
@@ -54,6 +56,7 @@ export type LearnerSegment =
 
 export const SEGMENT_ORDER: LearnerSegment[] = [
   'NEW',
+  'NOT_STARTED',
   'HIGHLY_ENGAGED',
   'ACTIVE',
   'NEAR_COMPLETION',

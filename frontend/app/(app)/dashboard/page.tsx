@@ -31,6 +31,7 @@ import DailyChestCard from '@/components/quests/DailyChestCard';
 import NotificationBell from '@/components/community/NotificationBell';
 import { CoursePicker } from '@/components/home/CoursePicker';
 import { LearningPath } from '@/components/home/LearningPath';
+import { FirstLessonCard } from '@/components/home/FirstLessonCard';
 import { PathSkeleton } from '@/components/home/PathSkeleton';
 import { NewLearnerHome } from '@/components/home/NewLearnerHome';
 import { ComingSoonPath } from '@/components/home/ComingSoonPath';
@@ -202,7 +203,12 @@ export default function DashboardPage() {
   } else {
     // Keyed by course: switching courses remounts the path, so it lands on
     // the NEW course's next lesson instead of keeping the old scroll spot.
-    centre = <LearningPath key={path.course.id} path={path} stickyTop="var(--path-sticky-top)" />;
+    centre = (
+      <>
+        <FirstLessonCard path={path} enrolledAt={active.createdAt} opened={active.firstLessonOpened} />
+        <LearningPath key={path.course.id} path={path} stickyTop="var(--path-sticky-top)" />
+      </>
+    );
   }
 
   return (

@@ -39,6 +39,7 @@ import {
 import Avatar from '@/components/ui/Avatar';
 import { CourseCover } from '@/components/course/CourseCover';
 import EnrollmentWizard, { type EnrollResponse } from '@/components/course/EnrollmentWizard';
+import EnrollReminderAsk from '@/components/push/EnrollReminderAsk';
 import { enrollmentsKey, lessonHref, preloadCourse, type Enrollment } from '@/hooks/useCourse';
 import { fetcher } from '@/lib/swr';
 import { courseHomeHref, setHomeCourse } from '@/lib/homeCourse';
@@ -130,6 +131,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
   const [openUnits, setOpenUnits] = useState<string[]>(() => sections.slice(0, 2).map((s, i) => s.id || String(i)));
   const [justEnrolled, setJustEnrolled] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [remindBeforeStart, setRemindBeforeStart] = useState<{ lessonId?: string; title: string } | null>(null);
 
   // Count a course-page view once per browser session (anonymous aggregate;
   // powers the creator's "viewed → enrolled" funnel).
@@ -668,10 +670,24 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
             stats={{ totalLessons, totalXp: totalXp ?? 0, totalMinutes }}
             enroll={handleEnroll}
             onClose={() => setShowWizard(false)}
-            onFinish={(result) => startFirstLesson(result?.firstLesson?.id)}
+            onFinish={(result) => {
+              // Reminders (and the install) are asked here, before lesson 1:
+              // learners who enrol from a course page never saw onboarding.
+              setShowWizard(false);
+              setRemindBeforeStart({
+                lessonId: result?.firstLesson?.id,
+                title: result?.firstLesson?.title || firstLesson?.title || 'Lesson 1',
+              });
+            }}
           />
         )}
       </AnimatePresence>
+      {remindBeforeStart && (
+        <EnrollReminderAsk
+          lessonTitle={remindBeforeStart.title}
+          onDone={() => startFirstLesson(remindBeforeStart.lessonId)}
+        />
+      )}
     </div>
   );
 }

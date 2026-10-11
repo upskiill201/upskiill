@@ -89,12 +89,9 @@ export class EmailLifecycleBatchService {
 
   /**
    * The win-back email ladder: one scan a day picks out learners whose last
-   * lesson was exactly 3, 7, 14 or 30 days ago. Exact-day windows mean each
-   * rung is queued once, and nothing is ever queued past day 30.
-   *
-   * Only lapses that began around or after the activation date qualify, so
-   * turning this on never mails someone "I'll stop sending these" as their
-   * first email from us.
+   * lesson was exactly one of INACTIVE_EMAIL_DAYS ago (1, 3, 5, 7 … 365).
+   * Exact-day windows mean each rung is queued once. There is no goodbye
+   * email, so lapses from before this existed are included too.
    */
   @Cron('0 0 11 * * *', { name: 'email-reengagement-scan' })
   async scheduledReengagementScan(): Promise<void> {
@@ -109,12 +106,10 @@ export class EmailLifecycleBatchService {
 
   async scanReengagement(now = new Date()): Promise<number> {
     const today = Date.parse(`${utcDay(now)}T00:00:00Z`);
-    const activation = emailConfig.lifecycleActivationDate.getTime();
     let queued = 0;
 
     for (const daysAway of INACTIVE_EMAIL_DAYS) {
       const dayStart = new Date(today - daysAway * DAY_MS);
-      if (dayStart.getTime() < activation - 3 * DAY_MS) continue;
       const dayEnd = new Date(dayStart.getTime() + DAY_MS);
 
       let cursor: string | undefined;

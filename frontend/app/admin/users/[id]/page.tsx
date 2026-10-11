@@ -16,6 +16,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import { LearnerJourney, type LearnerJourneyData } from '@/components/admin/LearnerJourney';
 import {
   Button,
   Card,
@@ -75,6 +76,7 @@ interface UserDetail {
     reason: string | null;
     createdAt: string;
   }[];
+  journey?: LearnerJourneyData;
 }
 
 export default function AdminUserDetailPage() {
@@ -274,6 +276,8 @@ export default function AdminUserDetailPage() {
           )}
         </Card>
       </div>
+
+      {data.journey && <LearnerJourney journey={data.journey} userId={account.id} />}
 
       <Card title="Recent activity">
         {activity.length === 0 ? (

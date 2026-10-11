@@ -23,6 +23,7 @@ import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import {
   Divider,
+  EmailTypoHint,
   Field,
   FieldGroup,
   FormError,
@@ -254,6 +255,7 @@ export default function SignupFlow({
                 }
               />
             </FieldGroup>
+            {!linkMode && <EmailTypoHint email={email} onFix={setEmail} />}
             {!linkMode && (
               <p className={`${styles.hint} ${longEnough ? styles.hintOk : ''}`}>
                 {longEnough && <Check size={14} strokeWidth={4} aria-hidden="true" />}

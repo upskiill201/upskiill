@@ -114,6 +114,7 @@ export class TeyNotifyService {
           deepLink: input.url,
           context,
           status: 'SUPPRESSED',
+          skipReason: gate.reason,
         },
       });
       return { pushed: false, reason: gate.reason };
@@ -151,7 +152,7 @@ export class TeyNotifyService {
 
     await this.prisma.teyDelivery.update({
       where: { id: delivery.id },
-      data: ok ? { deepLink: url } : { deepLink: url, status: 'FAILED' },
+      data: ok ? { deepLink: url } : { deepLink: url, status: 'FAILED', skipReason: 'PUSH_FAILED' },
     });
     return ok
       ? { pushed: true, deliveryId: delivery.id }

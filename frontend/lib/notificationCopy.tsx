@@ -39,6 +39,7 @@ const TYPE_PHRASES: Record<string, string> = {
   TEY_LEAGUE_ENDING: 'Your league ends soon',
   TEY_LEAGUE_RESULT: 'Your league results are in',
   TEY_COURSE_UNLOCK: 'Your course is waiting for you',
+  TEY_REACH: 'Install Teyro and turn on reminders',
 };
 
 /**
@@ -54,6 +55,8 @@ const TEY_EVENT_TYPES = new Set([
   'TEY_LEAGUE_ENDING',
   'TEY_LEAGUE_RESULT',
   'TEY_COURSE_UNLOCK',
+  'TEY_FIRST_LESSON',
+  'TEY_REACH',
 ]);
 const isTeyEvent = (type: string) => TEY_EVENT_TYPES.has(type);
 

@@ -123,6 +123,10 @@ export interface Enrollment {
   nextLesson: NextLesson | null;
   /** Published lessons done — same source the map's checkmarks read. */
   completedCount: number;
+  /** ISO time they enrolled. */
+  createdAt?: string;
+  /** Lesson 1 was opened at least once (finished or not). */
+  firstLessonOpened?: boolean;
   course: {
     id: string;
     slug: string | null;

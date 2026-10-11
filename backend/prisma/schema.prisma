@@ -76,6 +76,17 @@ model User {
   timezone              String?
   timezoneOffsetMinutes Int?
 
+  // Reach: can Tey actually get to this person? Reported by the app on open
+  // (POST /tey/reach/ping). pwaInstalledAt = first time seen running as the
+  // installed app; notificationPermission = the browser's last answer
+  // (default | granted | denied). reachAskRequestedAt = an admin asked from
+  // HQ for the install + reminders screen; reachAskShownAt = it was shown.
+  pwaInstalledAt         DateTime?
+  pwaLastSeenAt          DateTime?
+  notificationPermission String?
+  reachAskRequestedAt    DateTime?
+  reachAskShownAt        DateTime?
+
   gemTransactions        GemTransaction[]
   shopTransactions       ShopTransaction[]
   userAchievements       UserAchievement[]
@@ -733,7 +744,7 @@ model StudentProfile {
   // Gems & Coins currency & longest streak tracking
   gems                  Int       @default(100) // 100 Gems starter grant
   coins                 Int       @default(50) // 50 Coins starter grant
-  longestStreak         Int       @default(3)
+  longestStreak         Int       @default(0)
   lastLessonCompletedAt DateTime? // Exact timestamp when a lesson was finished
 
   // Daily goal (XP/day) — Duolingo-style commitment level
@@ -2107,6 +2118,8 @@ model TeyDelivery {
   generatedBy String @default("TEMPLATE")
   /// 'SENT' | 'FAILED' | 'SUPPRESSED'
   status      String @default("SENT")
+  /// Why it didn't reach a phone (NO_SUBSCRIPTION, QUIET_HOURS, DAILY_CAP…).
+  skipReason  String?
 
   /// Provider-side message id (e.g. Meta's `wamid...`). Webhook delivery
   /// status callbacks are matched back to this row by this field.

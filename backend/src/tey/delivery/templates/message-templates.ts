@@ -184,18 +184,18 @@ const streakRepairExpiring: Variants = [
 
 const firstLesson: Variants = [
   (f) => ({
-    title: 'Your first lesson is waiting',
+    title: 'Your first lesson is waiting. Patiently. For now.',
     body: f.courseTitle
-      ? `${f.courseTitle} starts with a 5-minute lesson. Let’s do the first one together.`
-      : 'It takes about five minutes. Let’s do the first one together.',
+      ? `${f.courseTitle} starts with one short lesson. It’s not going to do itself.`
+      : 'One short lesson. It’s not going to do itself.',
   }),
   () => ({
     title: 'Hi, I’m Tey 👋',
-    body: 'I’ll be cheering you on. First step: one short lesson. That’s it.',
+    body: 'I can be your biggest fan or your loudest reminder. Lesson 1 decides which.',
   }),
   () => ({
     title: 'Day one is the hardest',
-    body: 'So let’s make it tiny. One lesson, five minutes, and you’ve started.',
+    body: 'So I made it tiny. One lesson, a few minutes. No excuses left, I checked.',
   }),
 ];
 
@@ -242,11 +242,25 @@ const inactiveWarm: Variants = [
   }),
 ];
 
-/** Day 30: Duolingo's most famous line, because it's honest. */
+/** Day 30 on: Tey doesn't give up. He gets theatrical about it. */
 const inactiveFinal: Variants = [
   () => ({
     title: 'These reminders don’t seem to be working',
-    body: 'So I’ll stop sending them for now. Your progress is saved whenever you want it.',
+    body: 'So I’m going to keep sending them. That’s how this works. One lesson makes it stop.',
+  }),
+  (f) => ({
+    title: `It’s been ${f.daysSinceLastActivity ?? 30} days. I’m still here.`,
+    body: `${inCourse(f, 'Your course')} is still waiting. So am I. Patiently. Mostly.`,
+  }),
+  () => ({
+    title: 'Plot twist: you come back today',
+    body: 'And finish one lesson. Best comeback story ever. I’ll bring the confetti.',
+  }),
+  (f) => ({
+    title: 'I don’t do goodbyes',
+    body: f.courseTitle
+      ? `${f.courseTitle} is ${f.courseProgressPct}% done. Let’s make it more.`
+      : 'Your progress is saved. One lesson and we’re back.',
   }),
 ];
 
@@ -256,14 +270,14 @@ const inactiveFinal: Variants = [
  *  reading as a generic daily nudge. */
 const lessonAbandoned: Variants = [
   (f) => ({
-    title: 'You left a lesson mid-way',
+    title: 'You left mid-lesson. I noticed.',
     body: f.courseTitle
-      ? `Pick up where you stopped in ${f.courseTitle}? It’ll only take a minute.`
-      : 'Pick up where you stopped? It’ll only take a minute.',
+      ? `Your place in ${f.courseTitle} is saved. Finish it before I start taking it personally.`
+      : 'Your place is saved. Finish it before I start taking it personally.',
   }),
   () => ({
     title: 'That lesson is still open',
-    body: 'Finish it while it’s fresh. You were so close.',
+    body: 'You were so close. It’s fine. I’m fine. Come finish it.',
   }),
 ];
 

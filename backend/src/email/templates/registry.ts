@@ -66,6 +66,24 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     description:
       'Daily batch job — streak alive but no activity logged yet today.',
   },
+  'learning.first-lesson': {
+    templateKey: 'learning.first-lesson',
+    category: EmailCategory.ENGAGEMENT,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description:
+      'First-lesson journey: "you’re in" 15 min after enrolling, then day 1/3/6 while lesson 1 is unstarted, plus a "your place is saved" email 2h after leaving lesson 1 part-way. Stops the moment a lesson in the course is finished.',
+  },
+  'learning.reach': {
+    templateKey: 'learning.reach',
+    category: EmailCategory.ENGAGEMENT,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description:
+      'Install Teyro + turn on reminders, for learners Tey can’t push to: on the REACH cadence until they can be reached, and on demand from HQ.',
+  },
   'learning.daily-reminder': {
     templateKey: 'learning.daily-reminder',
     category: EmailCategory.ENGAGEMENT,

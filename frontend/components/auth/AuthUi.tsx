@@ -12,6 +12,7 @@ import { FaGoogle } from 'react-icons/fa';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import styles from './Auth.module.css';
+import { suggestEmail } from '@/lib/auth/emailTypo';
 
 export { styles as authStyles };
 
@@ -94,6 +95,31 @@ export function FormError({ message }: { message: string }) {
     <p key={message} className={styles.error} role="alert">
       <AlertCircle size={18} strokeWidth={2.75} aria-hidden="true" />
       {message}
+    </p>
+  );
+}
+
+/**
+ * "Did you mean jane@gmail.com?" — one tap fixes a mistyped domain before the
+ * verification email goes nowhere. Renders nothing for a normal address.
+ */
+export function EmailTypoHint({ email, onFix }: { email: string; onFix: (fixed: string) => void }) {
+  const suggestion = suggestEmail(email);
+  if (!suggestion) return null;
+  return (
+    <p className={styles.typoHint} role="status">
+      Did you mean{' '}
+      <button
+        type="button"
+        className={styles.typoFix}
+        onClick={() => {
+          playSound('navTap', 2);
+          onFix(suggestion);
+        }}
+      >
+        {suggestion}
+      </button>
+      ?
     </p>
   );
 }

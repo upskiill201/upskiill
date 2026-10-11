@@ -130,6 +130,12 @@ export default function TeyScenesDevPage() {
       </button>
       <button
         style={btn}
+        onClick={() => celebrate({ kind: 'REMINDERS', variant: 'enable', streakDays: 0, lessonTitle: 'Introduction to Git' })}
+      >
+        Reminders — before lesson 1 (enrol)
+      </button>
+      <button
+        style={btn}
         onClick={() =>
           celebrate({
             kind: 'CLAIM',
