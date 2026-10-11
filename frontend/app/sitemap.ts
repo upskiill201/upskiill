@@ -12,8 +12,18 @@ import { fetchPublicCourses } from '@/lib/courses/public';
 
 // Auto-generated sitemap — adding an .mdx post to content/blog updates this
 // on the next build automatically.
+//
+// <lastmod> is only emitted where we know a real date (a post's updated date,
+// a competitor's "checked" date, the teach data's generation date). It used
+// to be `new Date()` on every build for every other page, which told Google
+// that ~1,000 pages changed every deploy; Google learns to ignore a sitemap's
+// lastmod when it's wrong, and then stops using it for the pages where it IS
+// right. No date is better than a false one.
+//
+// /start is deliberately absent: it is the app's install gateway (a
+// full-bleed client screen with no page content), noindexed on purpose. The
+// homepage and /courses are the entry points that should rank.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
   // Published Coding and AI courses (empty if the backend is unreachable —
   // the rest of the sitemap still builds).
   const courses = await fetchPublicCourses();
@@ -21,28 +31,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: 'https://teyro.app',
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      // The install gateway — the entry point into the app itself, and a
-      // legitimate landing page for "get the Teyro app" style queries.
-      url: 'https://teyro.app/start',
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
       // The creator landing page.
       url: 'https://teyro.app/teach',
-      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: 'https://teyro.app/blog',
-      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
@@ -54,13 +53,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...CATEGORIES.map((category) => ({
       url: `https://teyro.app/blog/category/${category.slug}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),
     ...AUTHORS.map((author) => ({
       url: `https://teyro.app/blog/author/${author.slug}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     })),
@@ -84,7 +81,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     {
       url: 'https://teyro.app/teach/how-it-works',
-      lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.9,
     },
@@ -104,20 +100,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // The course catalogue and one page per published course.
     {
       url: 'https://teyro.app/courses',
-      lastModified: now,
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
     ...courses.map((c) => ({
       url: `https://teyro.app/courses/${c.slug}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     })),
     // Learner pages: /learn-online, track hubs, topic guides and track × place.
     {
       url: `https://teyro.app${LEARN_HUB}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
@@ -138,19 +131,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
     {
       url: 'https://teyro.app/features',
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     },
     {
       url: 'https://teyro.app/for',
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     },
     {
       url: 'https://teyro.app/alternatives',
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     },

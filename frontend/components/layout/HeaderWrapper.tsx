@@ -41,7 +41,8 @@ export default function HeaderWrapper() {
     // The lesson route (/learn/…) — not /learn-coding, /learn-ai, /learn-online.
     pathname === '/learn' ||
     pathname.startsWith('/learn/') ||
-    pathname.startsWith('/creator') ||
+    pathname === '/creator' ||
+    pathname.startsWith('/creator/') ||
     // The Admin Center has its own shell (AdminShell) with its own sidebar
     // and branding — the marketing header (with logged-out Login/Sign Up
     // CTAs) has no business rendering above an internal, admin-only tool.

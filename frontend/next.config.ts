@@ -82,6 +82,32 @@ const nextConfig: NextConfig = {
     ],
   },
   /**
+   * Private surfaces carry `X-Robots-Tag: noindex`.
+   *
+   * robots.txt keeps crawlers out of these (public/robots.txt), but a robots
+   * block stops a crawler READING a page, not search engines listing its URL
+   * when something links to it. The header is the second layer: if a private
+   * URL is ever fetched or linked, it still stays out of results. It's set
+   * here, in one place, so a new signed-in route is one line instead of a
+   * metadata export in every layout. Patterns are path-to-regexp: `/learn/…`
+   * (the lesson player) does not match `/learn-coding`, and `/creator/…` (the
+   * studio) does not match `/creator-profile/<name>`.
+   */
+  async headers() {
+    const PRIVATE = [
+      'dashboard', 'onboarding', 'learn', 'creator', 'login', 'signup', 'forgot-password', 'reset-password',
+      'verify-email', 'role-select', 'cart', 'checkout', 'certificates', 'student', 'analytics', 'my-courses',
+      'my-learning', 'profile', 'quests', 'shop', 'leaderboards', 'explore', 'audio-settings', 'preview', 'dev',
+      'offline',
+    ];
+    const noindex = [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }];
+    return PRIVATE.flatMap((p) => [
+      { source: `/${p}`, headers: noindex },
+      { source: `/${p}/:path*`, headers: noindex },
+    ]);
+  },
+
+  /**
    * Retired URLs.
    *
    * /join was the Tally waitlist, the conversion path while Teyro was

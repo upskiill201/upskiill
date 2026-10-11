@@ -1,259 +1,100 @@
 # =============================================================
 # robots.txt — Teyro (https://teyro.app)
-# Strategy: Homepage (/) and the SEO blog (/blog) are public.
-# SEO landing pages (/features, /for, /alternatives) are public.
-# App pages (dashboard/courses/learn/creator/onboarding) are blocked.
+#
+# Policy: everything is public and crawlable by default — the homepage,
+# /courses, /start, the blog, features, use cases, comparisons, /teach and
+# every /learn-* page — for search engines AND AI/LLM crawlers alike.
+# Only the signed-in app, auth screens, checkout and internal routes are
+# blocked (they hold no public content).
+#
+# Why open-by-default: this file used to be an allow-list that ended in
+# "Disallow: /" for Googlebot, Bing and others, so any page not named in it
+# (/learn-coding, /learn-ai, /learn-online, /courses, /start, images in
+# .webp) was silently blocked. A new public page is now indexable the day it
+# ships; to keep something out, add it to the Disallow list below (and give
+# it a noindex).
+#
+# One group for every crawler: a bot that matches a named group ignores the
+# "*" group entirely, so separate per-bot blocks would each need the same
+# Disallow list. Keep this single list as the source of truth, and
+# lib/seo/__tests__/robots.test.ts proves every sitemap URL is allowed.
 # =============================================================
 
-# ── Google Search ──────────────────────────────────────────
+# ── Search engines ─────────────────────────────────────────
+User-agent: *
 User-agent: Googlebot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Allow: /_next/
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.svg$
-Allow: /*.jpeg$
-Disallow: /
-
-# ── Google Image Search ────────────────────────────
 User-agent: Googlebot-Image
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Allow: /_next/
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.svg$
-Allow: /*.jpeg$
-Disallow: /
-
-# ── Google AI (Gemini / AI Overviews / AI training) ────────
-# Governs Gemini training + AI Overviews grounding only — has no
-# effect on ordinary Googlebot search indexing above.
-User-agent: Google-Extended
-Allow: /
-
-# ── Bing / Microsoft Search ────────────────────────
+User-agent: Googlebot-News
 User-agent: Bingbot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Allow: /_next/
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.svg$
-Allow: /*.jpeg$
-Disallow: /
-
-# ── Bing Image Search ──────────────────────────────
 User-agent: msnbot-media
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── DuckDuckGo ─────────────────────────────────────
 User-agent: DuckDuckBot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Allow: /_next/
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.svg$
-Allow: /*.jpeg$
-Disallow: /
-
-# ── Yahoo / Slurp ──────────────────────────────────
 User-agent: Slurp
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Yandex ─────────────────────────────────────────
 User-agent: YandexBot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Baidu ──────────────────────────────────────────
 User-agent: Baiduspider
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── OpenAI — training crawler ───────────────────────
-User-agent: GPTBot
-Allow: /
-
-# ── OpenAI — ChatGPT live browse/citation bots ──────────────
-# These fetch a page on-demand while answering a live user query and
-# link back to it — distinct from GPTBot's training crawl. They need
-# the full site, not just /blog, so ChatGPT can cite whatever page a
-# user actually asked about.
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-# ── Anthropic — Claude training crawler ─────────────
-User-agent: ClaudeBot
-Allow: /
-
-# ── Anthropic — Claude live browse/citation bots ────────────
-User-agent: Claude-SearchBot
-Allow: /
-
-User-agent: Claude-User
-Allow: /
-
-User-agent: Claude-Web
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-User-agent: anthropic-ai
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Perplexity AI — training crawler ────────────────────────
-User-agent: PerplexityBot
-Allow: /
-
-# ── Perplexity AI — live browse/citation bot ────────────────
-User-agent: Perplexity-User
-Allow: /
-
-# ── Meta AI (Llama) ────────────────────────────────
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Meta-ExternalFetcher
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Amazon Alexa / Amazonbot ───────────────────────────────
-User-agent: Amazonbot
-Allow: /
-
-# ── Apple (Siri / Spotlight) ───────────────────────────────
 User-agent: Applebot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
+# ── AI / LLM crawlers, answer engines and live-browse agents ──
+# Training crawlers, search/citation crawlers and the bots that fetch a page
+# on demand while a person asks a question: all allowed, so Teyro can be
+# learned from, cited and linked to.
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
 User-agent: Applebot-Extended
-Allow: /
-
-# ── Cohere AI ──────────────────────────────────────────────
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: Amazonbot
 User-agent: cohere-ai
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── You.com AI ─────────────────────────────────────────────
+User-agent: MistralAI-User
+User-agent: DuckAssistBot
 User-agent: YouBot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Diffbot (used by many AI knowledge graphs) ─────────────
 User-agent: Diffbot
-Allow: /$
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
-
-# ── Common Crawl (powers many AI training datasets) ────────
 User-agent: CCBot
-Allow: /
-
-# ── ByteDance / TikTok AI ──────────────────────────────────
 User-agent: Bytespider
 Allow: /
 
-# ── All other bots — app routes stay blocked, SEO pages stay open
-User-agent: *
-Allow: /blog
-Allow: /features
-Allow: /for
-Allow: /alternatives
-Allow: /teach
-Allow: /sitemap.xml
-Disallow: /
+# Private surfaces: the signed-in app, auth, checkout, internal tools.
+# (Prefixes match from the start of the path. "/learn/" is the lesson player
+# and does NOT match /learn-coding, /learn-ai or /learn-online; "/creator/"
+# is the creator studio and does NOT match /creator-profile/<name>.)
+Disallow: /api/
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /learn/
+Disallow: /learn$
+Disallow: /onboarding
+Disallow: /creator/
+Disallow: /creator$
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /role-select
+Disallow: /cart
+Disallow: /checkout
+Disallow: /certificates
+Disallow: /student
+Disallow: /analytics
+Disallow: /my-courses
+Disallow: /my-learning
+Disallow: /profile
+Disallow: /quests
+Disallow: /shop
+Disallow: /leaderboards
+Disallow: /explore
+Disallow: /audio-settings
+Disallow: /preview
+Disallow: /dev/
+Disallow: /offline
+Disallow: /webhook
 
 # ── Sitemap ────────────────────────────────────────────────
 Sitemap: https://teyro.app/sitemap.xml
