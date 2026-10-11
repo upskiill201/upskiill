@@ -40,6 +40,22 @@ function sameSecret(a: string | undefined, b: string | undefined): boolean {
  * correct login page.
  */
 export function proxy(request: NextRequest) {
+  const response = route(request);
+  // Visitor country (Vercel IP geolocation) for prices in local currency —
+  // lib/localPrice.ts. Readable by the page on purpose; it is not sensitive.
+  const country = request.headers.get('x-vercel-ip-country');
+  if (country && /^[A-Z]{2}$/.test(country) && request.cookies.get('teyro_country')?.value !== country) {
+    response.cookies.set('teyro_country', country, {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  }
+  return response;
+}
+
+function route(request: NextRequest): NextResponse {
   const token = request.cookies.get('access_token')?.value;
   const path = request.nextUrl.pathname;
 

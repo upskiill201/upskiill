@@ -30,9 +30,8 @@ export function PublicCourseGrid({ courses, priorityCount = 0 }: { courses: Publ
                   <span className={`${s.tag} ${c.track === 'ai' ? s.tagAi : s.tagCoding}`}>
                     {c.track === 'ai' ? 'AI' : 'Coding'}
                   </span>
-                  <span className={`${s.tag} ${c.price > 0 ? s.tagPaid : s.tagFree}`}>
-                    {c.price > 0 ? '2 lessons free' : 'Free'}
-                  </span>
+                  {/* Only free courses get a price tag; paid ones show none. */}
+                  {c.price <= 0 && <span className={`${s.tag} ${s.tagFree}`}>Free</span>}
                 </span>
                 <span className={s.title}>{c.title}</span>
                 {(c.shortDescription || c.description) && (

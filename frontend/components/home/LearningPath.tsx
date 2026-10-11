@@ -25,7 +25,20 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowDown, ArrowUp, Check, Lock, Star } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  BookOpen,
+  Check,
+  CodeXml,
+  Dumbbell,
+  Headphones,
+  Lightbulb,
+  Lock,
+  Star,
+  Trophy,
+  type LucideIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -246,8 +259,10 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
               <TeyBeside
                 pose={TEY_POSES[unitIdx % TEY_POSES.length]}
                 side={nodeOffset(2) > 0 ? 'left' : 'right'}
-                // Row 2's vertical centre: top padding + two node rows.
-                top={40 + 2 * (NODE_H + 22) - 30}
+                // Beside row 2: top padding + two node rows, raised by half
+                // the extra height of the larger Tey so he stays centred there.
+                top={40 + 2 * (NODE_H + 22) - 56}
+                locked={!unit.nodes.some((n) => n.state === 'done' || n.state === 'current')}
               />
             )}
 
@@ -412,6 +427,7 @@ function NodeButton({
   const lit = node.state === 'done' || node.state === 'current';
   const face = lit ? unit.color : 'var(--border)';
   const lip = lit ? shade(unit.color) : 'var(--border-strong)';
+  const Icon = nodeIcon(node, unit);
 
   const stateLabel =
     node.state === 'done'
@@ -479,11 +495,11 @@ function NodeButton({
         {node.state === 'done' ? (
           <Check className="w-9 h-9 text-white stroke-[3.5]" aria-hidden="true" />
         ) : node.state === 'current' ? (
-          <Star className="w-9 h-9 text-white fill-white" aria-hidden="true" />
+          <Icon className="w-9 h-9 text-white stroke-[2.75]" aria-hidden="true" />
         ) : node.state === 'paywalled' ? (
           <Lock className="w-8 h-8 stroke-[2.75] text-[var(--text-muted)]" aria-hidden="true" />
         ) : (
-          <Star className="w-9 h-9 fill-[var(--border-strong)] text-[var(--border-strong)]" aria-hidden="true" />
+          <Icon className="w-9 h-9 text-[var(--border-strong)] stroke-[2.75]" aria-hidden="true" />
         )}
       </motion.button>
     </div>
@@ -678,11 +694,35 @@ function ChestPopover({ unit, arrowX }: { unit: PathUnit; arrowX: number }) {
   );
 }
 
-function TeyBeside({ pose, side, top }: { pose: string; side: 'left' | 'right'; top: number }) {
+/**
+ * Each node's icon, Duolingo-style — not a star on every lesson. A lesson's
+ * real type wins (reading, audio, quiz, project, reflection); the unit's last
+ * lesson is its trophy; ordinary lessons step through the lesson rhythm
+ * (learn, read, practise, reflect) so neighbours never look the same.
+ */
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  text: BookOpen,
+  reading: BookOpen,
+  audio: Headphones,
+  quiz: Dumbbell,
+  project: CodeXml,
+  assignment: CodeXml,
+  reflection: Lightbulb,
+};
+const RHYTHM: LucideIcon[] = [Star, BookOpen, Dumbbell, Star, Lightbulb];
+
+function nodeIcon(node: PathNode, unit: PathUnit): LucideIcon {
+  const byType = node.lesson.lessonType ? TYPE_ICONS[node.lesson.lessonType] : undefined;
+  if (byType) return byType;
+  if (unit.nodes.length > 1 && node.numberInUnit === unit.nodes.length) return Trophy;
+  return RHYTHM[(node.numberInUnit - 1) % RHYTHM.length];
+}
+
+function TeyBeside({ pose, side, top, locked = false }: { pose: string; side: 'left' | 'right'; top: number; locked?: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className="absolute w-[96px] h-[112px] md:w-[124px] md:h-[144px] pointer-events-none"
+      className="absolute w-[136px] h-[160px] md:w-[172px] md:h-[200px] pointer-events-none"
       style={{
         top,
         [side]: 'max(4px, calc(50% - 190px))',
@@ -692,8 +732,12 @@ function TeyBeside({ pose, side, top }: { pose: string; side: 'left' | 'right'; 
         src={`/User onbarding Assets/tey/${pose}.webp`}
         alt=""
         fill
-        sizes="124px"
-        className="object-contain drop-shadow-[0_10px_16px_rgba(7,18,51,0.12)]"
+        sizes="(min-width: 768px) 172px, 136px"
+        // A unit you haven't reached yet: Tey waits there in grey, like the
+        // locked nodes, and lights up when the unit opens.
+        className={`object-contain drop-shadow-[0_10px_16px_rgba(7,18,51,0.12)] transition-[filter,opacity] duration-500 ${
+          locked ? 'grayscale opacity-50' : ''
+        }`}
       />
     </div>
   );

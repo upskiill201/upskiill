@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -32,7 +32,7 @@ import PlanRow from '@/components/features/course-paywall/PlanRow';
 import BenefitCarousel from '@/components/features/course-paywall/BenefitCarousel';
 import { useMesombConfig } from '@/hooks/useMesombConfig';
 import { normalizeMomoPhone } from '@/lib/momo-phone';
-import { formatLocalFromUsd } from '@/lib/fx-rates';
+import { formatLocalPrice, formatUsd, useLocalPricing } from '@/lib/localPrice';
 import CountryOperatorPicker from './CountryOperatorPicker';
 import PhoneField from './PhoneField';
 import CouponField, { COUPON_REASON_COPY, type CouponQuoteValid } from './CouponField';
@@ -88,6 +88,8 @@ export default function ScenePlans({
   onBack,
 }: ScenePlansProps) {
   const { countries, defaultCountry } = useMesombConfig();
+  // Cameroon sees prices in FCFA (lib/localPrice.ts); everyone else in USD.
+  const local = useLocalPricing();
 
   // Yearly is the default: it's the creator's own price, the best deal for the
   // learner (the saving is real, from the ladder) and the plan that keeps them
@@ -98,6 +100,15 @@ export default function ScenePlans({
   const [operatorCode, setOperatorCode] = useState<string>('MTN');
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  // A Cameroonian visitor starts on Mobile Money in Cameroon — how they pay,
+  // in the currency they think in. Only until they pick a rail themselves.
+  const railTouched = useRef(false);
+  useEffect(() => {
+    if (!local.country || railTouched.current) return;
+    if (!countries.some((c) => c.code === local.country)) return;
+    setProvider('MESOMB');
+    setCountryCode(local.country);
+  }, [local.country, countries]);
 
   // ── Coupon ────────────────────────────────────────────────────────────
   const [couponExpanded, setCouponExpanded] = useState(false);
@@ -215,6 +226,7 @@ export default function ScenePlans({
   };
 
   const selectRail = (next: PaymentProvider, service?: string) => {
+    railTouched.current = true;
     playHaptic('light', false);
     playSound('navTap', next === 'STRIPE' ? 1 : 3);
     setProvider(next);
@@ -262,7 +274,12 @@ export default function ScenePlans({
 
   const isMomo = !isFree && provider === 'MESOMB';
   const isYearly = selectedPlan === 'YEARLY';
-  const priceLabel = effectivePrice > 0 ? `$${effectivePrice.toFixed(2)}` : 'Free';
+  // Local currency (FCFA) when we localise prices for this visitor. Mobile
+  // Money charges exactly that amount; a card is charged in USD, so the
+  // card lines show the dollar figure the bank will see.
+  const show = local.format;
+  const cardCharge = (usd: number) => (local.currency ? `${show(usd)} (${formatUsd(usd)} by card)` : formatUsd(usd));
+  const priceLabel = effectivePrice > 0 ? show(effectivePrice) : 'Free';
   const ctaLabel = submitting
     ? 'Unlocking…'
     : priceKnown
@@ -287,7 +304,7 @@ export default function ScenePlans({
     ? 'No payment required. Enjoy the course!'
     : isMomo
       ? `One payment of ${priceLabel} for ${isYearly ? '12 months' : '30 days'} of access. It won’t renew automatically.`
-      : `${priceLabel} today, then ${`$${currentPlan.price.toFixed(2)}`} every ${period} until you cancel. Cancel anytime in Settings.`;
+      : `${cardCharge(effectivePrice)} today, then ${cardCharge(currentPlan.price)} every ${period} until you cancel. Cancel anytime in Settings.`;
 
   return (
     <>
@@ -350,6 +367,7 @@ export default function ScenePlans({
               plan={ladder.yearly}
               selected={selectedPlan === 'YEARLY'}
               onSelect={() => choosePlan('YEARLY')}
+              format={show}
               badge={{
                 icon: Crown,
                 text: ladder.yearly.savingsPercent ? `Best value · save ${ladder.yearly.savingsPercent}%` : 'Best value',
@@ -363,6 +381,7 @@ export default function ScenePlans({
               plan={ladder.monthly}
               selected={selectedPlan === 'MONTHLY'}
               onSelect={() => choosePlan('MONTHLY')}
+              format={show}
               discountedPrice={
                 activeCouponQuote && selectedPlan === 'MONTHLY' ? activeCouponQuote.finalPriceUsd : undefined
               }
@@ -374,7 +393,7 @@ export default function ScenePlans({
             <button type="button" className={styles.switchNudge} onClick={() => choosePlan('YEARLY')}>
               <Crown size={14} strokeWidth={2.75} aria-hidden="true" />
               <span>
-                Switch to yearly and keep <strong>${yearlySavingUsd.toFixed(2)}</strong> a year
+                Switch to yearly and keep <strong>{show(yearlySavingUsd)}</strong> a year
               </span>
             </button>
           )}
@@ -450,7 +469,7 @@ export default function ScenePlans({
               />
               <p className={styles.localNotice}>
                 Amount:{' '}
-                <strong>{formatLocalFromUsd(effectivePrice, countryMeta.currency)}</strong>{' '}
+                <strong>{formatLocalPrice(effectivePrice, countryMeta.currency, countryMeta.currency === 'XAF' ? 'FCFA' : countryMeta.currency)}</strong>{' '}
                 · I&apos;ll send a prompt to your phone to approve.
               </p>
             </div>

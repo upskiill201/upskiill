@@ -14,7 +14,7 @@ import ScenePlans, {
 import WaitingForApproval from '@/components/features/course-unlock/WaitingForApproval';
 import SuccessBeat from '@/components/features/course-unlock/SuccessBeat';
 import { sanitizeReturnTo } from '@/lib/return-to';
-import { formatLocalFromUsd } from '@/lib/fx-rates';
+import { formatLocalPrice } from '@/lib/localPrice';
 import { playHaptic } from '@/lib/haptics';
 import { getMomoCountry } from '@/lib/mesomb-countries.client';
 import {
@@ -470,7 +470,8 @@ function getOperatorAndAmountLabels(
   const amountUsd =
     typeof fields.amountUsd === 'number' ? fields.amountUsd : planPrice?.[fields.plan];
   if (typeof amountUsd === 'number') {
-    result.amountLabel = formatLocalFromUsd(amountUsd, country.currency);
+    // Same figure and wording as the plans screen (FCFA for XAF).
+    result.amountLabel = formatLocalPrice(amountUsd, country.currency, country.currency === 'XAF' ? 'FCFA' : country.currency);
   }
   if (fields.service) {
     const op = country.operators.find((o) => o.code === fields.service);
