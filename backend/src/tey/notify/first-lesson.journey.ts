@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Cron } from '@nestjs/schedule';
 import { EnrollmentCreatedEvent } from '../../common/events/enrollment-created.event';
 import { LESSON_QUIT_EVENT, type LessonQuitEvent } from '../../common/events/lesson-quit.event';
 import { firstLessonState, type FirstLessonInfo } from '../../common/first-lesson.util';
@@ -83,23 +84,66 @@ export class FirstLessonJourney {
   }
 
   /**
-   * Queues the ladder. `enrollment.created` fires on every enroll call, so
-   * this is idempotent: one journey per learner per course, ever.
+   * Catch-up: enrolments from the last few days with nothing finished and no
+   * journey yet — the ones made before this shipped, or by a path that never
+   * emitted `enrollment.created`. Only the steps still ahead are queued, so
+   * a late start never fires a burst of stale messages.
    */
-  async start(userId: string, courseId: string, enrolledAt: Date) {
+  @Cron('0 7 * * * *', { name: 'first-lesson-journey-backfill' })
+  async scheduledBackfill(): Promise<void> {
+    const on = process.env.TEY_SCHEDULER_ENABLED;
+    if (on === 'false' || (on !== 'true' && process.env.NODE_ENV !== 'production')) return;
+    try {
+      const n = await this.backfill();
+      if (n > 0) this.logger.log(`first-lesson backfill: started=${n}`);
+    } catch (err) {
+      this.logger.warn(`first-lesson backfill failed: ${(err as Error).message}`);
+    }
+  }
+
+  async backfill(now = new Date()): Promise<number> {
+    const rows = await this.prisma.enrollment.findMany({
+      where: { createdAt: { gte: new Date(now.getTime() - 6 * DAY) } },
+      select: { userId: true, courseId: true, createdAt: true, completedLessons: true },
+      take: 500,
+    });
+    let started = 0;
+    for (const r of rows) {
+      if (Array.isArray(r.completedLessons) && r.completedLessons.length > 0) continue;
+      if (await this.start(r.userId, r.courseId, r.createdAt, now)) started++;
+    }
+    return started;
+  }
+
+  /**
+   * Queues the ladder. `enrollment.created` fires on every enroll call, so
+   * this is idempotent: one journey per learner per course, ever. Steps more
+   * than an hour in the past (a late start) are skipped. Returns whether a
+   * journey was started.
+   */
+  async start(userId: string, courseId: string, enrolledAt: Date, now = new Date()): Promise<boolean> {
     const running = await this.prisma.teyScheduledAction.findUnique({
       where: { dedupeKey: `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:1` },
       select: { id: true },
     });
-    if (running) return;
+    if (running) return false;
+    const marker = await this.prisma.teyScheduledAction.findFirst({
+      where: { userId, dedupeKey: { startsWith: `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:` } },
+      select: { id: true },
+    });
+    if (marker) return false;
 
-    const state = await firstLessonState(this.prisma, userId, courseId, { now: enrolledAt });
+    const state = await firstLessonState(this.prisma, userId, courseId, { now });
     // Only a busy-elsewhere learner gets the journey anyway (it re-checks later).
-    if (!state.eligible && state.reason !== 'LEARNING_ELSEWHERE') return;
+    if (!state.eligible && state.reason !== 'LEARNING_ELSEWHERE') return false;
 
     const offset = await this.offsetFor(userId);
+    const stale = (at: Date) => at.getTime() < now.getTime() - HOUR;
+    let queued = 0;
     for (const s of PUSH_STAGES) {
       const dueAt = toDaytime(new Date(enrolledAt.getTime() + s.after), offset);
+      if (stale(dueAt)) continue;
+      queued++;
       await this.actions.upsertIntent(userId, {
         ruleId: FIRST_LESSON_JOURNEY as TeyReason,
         priority: 'MEDIUM',
@@ -110,7 +154,11 @@ export class FirstLessonJourney {
       });
     }
     for (const s of EMAIL_STAGES) {
-      const at = new Date(enrolledAt.getTime() + s.after);
+      // A late start still sends the welcome (now) if they joined today.
+      const lateWelcome = s.stage === 0 && now.getTime() - enrolledAt.getTime() < 20 * HOUR;
+      const at = lateWelcome ? new Date(Math.max(now.getTime(), enrolledAt.getTime() + s.after)) : new Date(enrolledAt.getTime() + s.after);
+      if (stale(at)) continue;
+      queued++;
       await this.emailJobs.enqueue({
         userId,
         eventType: 'FIRST_LESSON_STAGE',
@@ -121,6 +169,7 @@ export class FirstLessonJourney {
         payload: { courseId, stage: s.stage },
       });
     }
+    return queued > 0;
   }
 
   /** They opened their first lesson and left part-way: one push, one email. */

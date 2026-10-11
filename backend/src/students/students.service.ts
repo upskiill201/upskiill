@@ -109,6 +109,8 @@ interface RosterContext {
 }
 
 const SEGMENT_WEIGHT: Record<LearnerSegment, number> = {
+  // Enrolled, nothing finished: first on "Needs you first", a nudge now matters most.
+  NOT_STARTED: -1,
   AT_RISK: 0,
   INACTIVE: 1,
   STRUGGLING: 2,
