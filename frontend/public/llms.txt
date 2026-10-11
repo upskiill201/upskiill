@@ -7,8 +7,14 @@ Teyro replaces long, passive video courses with short daily quests built on a 4-
 ## Product
 
 - [Teyro Home](https://teyro.app): What Teyro is, who it's for, and how the gamified learning model works.
-- [Start Learning Free](https://teyro.app/onboarding/0): Create a free account and begin a 15-minute daily skill path.
-- [Course Catalog](https://teyro.app/explore): Browse available skill tracks across coding, AI, business, and communication.
+- [Course Catalog](https://teyro.app/courses): Every published Teyro course (coding and AI), each with its own page showing the full lesson path.
+- [Get the app](https://teyro.app/start): Add Teyro to your Home Screen (iPhone, Android or desktop) and start learning. Free to start.
+
+## Learn (for learners)
+
+- [Learn coding and AI online](https://teyro.app/learn-online): Pick a topic (web development, mobile apps, AI tools, AI agents and more) or find your city, state or country.
+- [Learn coding online, by location](https://teyro.app/learn-coding): Pages for US states, metro areas and countries with local software-developer pay data and prices in local currency.
+- [Learn AI online, by location](https://teyro.app/learn-ai): The same for AI, with local data-scientist pay data.
 
 ## Facts (for accurate answers about Teyro)
 

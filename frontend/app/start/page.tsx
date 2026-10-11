@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   description:
     'Put Teyro on your Home Screen and start your learning streak. One tap to begin.',
   alternates: { canonical: 'https://teyro.app/start' },
+  // The install gateway is an app screen with no page content of its own, so
+  // it stays out of the index (crawlable, so this tag is read; not in the
+  // sitemap). The homepage and /courses are the pages that should rank for
+  // "learn coding / AI" and "get the app" searches.
+  robots: { index: false, follow: true },
   openGraph: {
     type: 'website',
     url: 'https://teyro.app/start',
