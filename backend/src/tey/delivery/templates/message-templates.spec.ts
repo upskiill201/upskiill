@@ -184,10 +184,9 @@ describe('renderTemplate', () => {
     }
   });
 
-  it('says the honest goodbye on day 30 of the win-back ladder', () => {
+  it('never says goodbye: a month in, Tey is still nagging', () => {
     const { title, body } = render('INACTIVE_RETURN', { daysSinceLastActivity: 30 });
-    expect(title).toMatch(/don’t seem to be working/);
-    expect(body).toMatch(/stop sending/);
+    expect(`${title} ${body}`).not.toMatch(/stop sending|last reminder|won’t hear from me/);
   });
 
   it('only says "yesterday" when it really was yesterday', () => {

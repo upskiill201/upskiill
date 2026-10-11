@@ -13,9 +13,11 @@ import {
 
 /**
  * 0 = right after enrolling, 1 = next day, 2 = day 3, 3 = day 6 (the last),
- * 'resume' = they opened lesson 1 and left part-way.
+ * 'nag' = every email after that (they rotate), 'resume' = they opened
+ * lesson 1 and left part-way. There is no "last" email: Tey keeps going
+ * until lesson 1 is done (the unsubscribe link is the off switch).
  */
-export type FirstLessonStage = 0 | 1 | 2 | 3 | 'resume';
+export type FirstLessonStage = 0 | 1 | 2 | 3 | 'nag' | 'resume';
 
 export interface FirstLessonData extends BaseEmailData {
   stage: FirstLessonStage;
@@ -31,6 +33,10 @@ export interface FirstLessonData extends BaseEmailData {
   dailyMinutes?: number;
   /** 'resume' only: how far into the lesson they got, 0–100. */
   progressPct?: number;
+  /** 'nag' only: which nag this is (picks the variant). */
+  nag?: number;
+  /** Days since they enrolled, for the nag copy. */
+  daysWaiting?: number;
   lessonUrl: string;
 }
 
@@ -125,18 +131,57 @@ export function renderFirstLessonEmail(data: FirstLessonData): RenderedEmail {
       );
     }
     case 3:
-    default:
       return layout(
-        `These emails don't seem to be working`,
-        `So this is my last one about lesson 1. No hard feelings. (Some hard feelings.)`,
+        `These emails don't seem to be working. Yet.`,
+        `Six days, ${data.firstName || 'friend'}. Lesson 1 and I have been talking about you.`,
         `
-        ${teySays(`Okay ${name}, I get the hint.`)}
-        ${paragraph(`Six days ago you signed up for <strong>${course}</strong>. Lesson 1 is still untouched. I've stopped setting a place for you at dinner.`)}
-        ${paragraph(`But if you're still in there somewhere: <strong>${lesson}</strong> takes ${length}. Right now. Surprise me.`)}
+        ${teySays(`Okay ${name}, I get the hint. I'm ignoring it.`)}
+        ${paragraph(`Six days ago you signed up for <strong>${course}</strong>. Lesson 1 is still untouched. I've started setting a place for it at dinner.`)}
+        ${paragraph(`<strong>${lesson}</strong> takes ${length}. Right now. Surprise me.`)}
         ${ctaButton('Surprise Tey', data.lessonUrl)}
-        ${smallMuted("This is my last email about it. I'll be fine. Your spot stays saved, unlike my dignity.")}
+        ${smallMuted("Fair warning: I don't give up. Your spot stays saved, and so do my emails.")}
         ${teySignOff()}
       `,
       );
+    case 'nag':
+    default: {
+      const days = data.daysWaiting && data.daysWaiting > 0 ? data.daysWaiting : undefined;
+      const since = days ? `${days} days` : 'A while';
+      const variants = [
+        {
+          subject: `${since} later, lesson 1 is still waiting`,
+          pre: "It hasn't moved. Neither have you. Let's fix one of those.",
+          head: `Hi ${name}. It's me again. Obviously.`,
+          body: `${since} ago you enrolled in <strong>${course}</strong>. Since then, <strong>${lesson}</strong> has been sitting on the shelf like an unopened gift. It takes ${length}. Unwrap it.`,
+          cta: 'Open lesson 1',
+        },
+        {
+          subject: `Quick question about ${data.courseName}`,
+          pre: 'Is it me? It feels like it might be me.',
+          head: `${name}, quick question.`,
+          body: `Was it something I said? Because <strong>${course}</strong> is still at zero lessons, and lesson 1 (${length}, I timed it) is starting to think it's personal.`,
+          cta: "Prove it's not personal",
+        },
+        {
+          subject: `I'll keep emailing until lesson 1 is done`,
+          pre: "That's not a threat. It's a promise. (It's a little bit of a threat.)",
+          head: `Here's the deal, ${name}.`,
+          body: `You do <strong>${lesson}</strong> (${length}), and these emails turn into celebrations. You don't, and I keep showing up. Your move.`,
+          cta: 'Make the emails stop',
+        },
+      ];
+      const v = variants[(data.nag ?? 0) % variants.length];
+      return layout(
+        v.subject,
+        v.pre,
+        `
+        ${teySays(v.head)}
+        ${paragraph(v.body)}
+        ${goal ? paragraph(`Reminder: you said you want to ${escapeHtml(goal)}. It starts here.`) : ''}
+        ${ctaButton(v.cta, data.lessonUrl)}
+        ${teySignOff()}
+      `,
+      );
+    }
   }
 }

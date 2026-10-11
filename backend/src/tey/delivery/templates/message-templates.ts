@@ -242,11 +242,25 @@ const inactiveWarm: Variants = [
   }),
 ];
 
-/** Day 30: Duolingo's most famous line, because it's honest. */
+/** Day 30 on: Tey doesn't give up. He gets theatrical about it. */
 const inactiveFinal: Variants = [
   () => ({
     title: 'These reminders don’t seem to be working',
-    body: 'So I’ll stop sending them for now. Your progress is saved whenever you want it.',
+    body: 'So I’m going to keep sending them. That’s how this works. One lesson makes it stop.',
+  }),
+  (f) => ({
+    title: `It’s been ${f.daysSinceLastActivity ?? 30} days. I’m still here.`,
+    body: `${inCourse(f, 'Your course')} is still waiting. So am I. Patiently. Mostly.`,
+  }),
+  () => ({
+    title: 'Plot twist: you come back today',
+    body: 'And finish one lesson. Best comeback story ever. I’ll bring the confetti.',
+  }),
+  (f) => ({
+    title: 'I don’t do goodbyes',
+    body: f.courseTitle
+      ? `${f.courseTitle} is ${f.courseProgressPct}% done. Let’s make it more.`
+      : 'Your progress is saved. One lesson and we’re back.',
   }),
 ];
 

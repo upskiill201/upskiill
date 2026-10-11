@@ -9,8 +9,20 @@
  * sent, blocked with the reason, or still scheduled.
  */
 
-import { BellRing, BookOpen, Compass, Mail, Radio } from 'lucide-react';
-import { Card, DataTable, Empty, Pill, adminStyles as s, humanize, relativeTime } from '@/components/admin/AdminUI';
+import { useState } from 'react';
+import { mutate } from 'swr';
+import { BellRing, BookOpen, Compass, Mail, Radio, Send } from 'lucide-react';
+import {
+  Button,
+  Card,
+  DataTable,
+  Empty,
+  Pill,
+  adminMutate,
+  adminStyles as s,
+  humanize,
+  relativeTime,
+} from '@/components/admin/AdminUI';
 
 export interface LearnerJourneyData {
   onboarding: {
@@ -28,7 +40,20 @@ export interface LearnerJourneyData {
   };
   reach: {
     pushDevices: number;
-    devices: { platform: string | null; isActive: boolean; createdAt: string }[];
+    devices: {
+      platform: string | null;
+      isActive: boolean;
+      createdAt: string;
+      lastUsedAt: string | null;
+      failureCount: number;
+      device: string;
+    }[];
+    installed?: boolean;
+    installedAt?: string | null;
+    appLastOpenedAt?: string | null;
+    permission?: string | null;
+    askRequestedAt?: string | null;
+    askShownAt?: string | null;
     pushEnabled: boolean;
     dailyReminders: boolean;
     preferredHour: number | null;
@@ -120,9 +145,24 @@ function where(step: string | null | undefined): string {
 
 const list = (v: unknown) => (Array.isArray(v) && v.length ? v.map((x) => humanize(String(x))).join(', ') : '—');
 
-export function LearnerJourney({ journey }: { journey: LearnerJourneyData }) {
+export function LearnerJourney({ journey, userId }: { journey: LearnerJourneyData; userId: string }) {
   const { onboarding: ob, reach, courses, nudges, emails, upcoming } = journey;
   const reachable = reach.pushDevices > 0 && reach.pushEnabled;
+  const ready = reachable && !!reach.installed;
+  const [asking, setAsking] = useState(false);
+  const [asked, setAsked] = useState<string | null>(null);
+  const ask = async () => {
+    setAsking(true);
+    try {
+      await adminMutate('/api/tey/admin/reach/ask', { body: { userIds: [userId] } });
+      setAsked('Asked. They’ll see the install + reminders screen on their next app open, plus an email or push now.');
+      await mutate(`/api/admin/users/${userId}`);
+    } catch (e) {
+      setAsked((e as Error).message);
+    } finally {
+      setAsking(false);
+    }
+  };
 
   return (
     <>
@@ -163,19 +203,55 @@ export function LearnerJourney({ journey }: { journey: LearnerJourneyData }) {
               }
             />
             <Row
-              label="Devices"
+              label="App installed"
               value={
-                reach.devices.length
-                  ? reach.devices.map((d) => `${humanize(d.platform ?? 'other')}${d.isActive ? '' : ' (dead)'}`).join(', ')
-                  : 'None'
+                reach.installed ? (
+                  <Pill tone="good">Yes{reach.installedAt ? `, ${relativeTime(reach.installedAt)}` : ''}</Pill>
+                ) : (
+                  <Pill tone="bad">Not installed</Pill>
+                )
               }
             />
+            <Row
+              label="Browser said"
+              value={
+                reach.permission === 'denied'
+                  ? 'Blocked notifications'
+                  : reach.permission === 'granted'
+                    ? 'Allowed notifications'
+                    : reach.permission
+                      ? 'Not asked yet'
+                      : 'Unknown (hasn’t opened the app since this shipped)'
+              }
+            />
+            {reach.devices.map((d, i) => (
+              <Row
+                key={i}
+                label={`Device ${i + 1}`}
+                value={`${d.device}${d.isActive ? '' : ' (dead)'} · last delivered ${d.lastUsedAt ? relativeTime(d.lastUsedAt) : 'never'}${d.failureCount ? ` · ${d.failureCount} failures` : ''}`}
+              />
+            ))}
+            {reach.devices.length === 0 && <Row label="Devices" value="None" />}
             <Row label="Daily reminders" value={reach.dailyReminders ? 'On' : 'Off'} />
             <Row label="Reminder hour" value={reach.preferredHour !== null ? `${reach.preferredHour}:00` : 'Learned from habit'} />
             <Row
               label="Email opt-outs"
               value={reach.emailOptOuts.length ? reach.emailOptOuts.map(humanize).join(', ') : 'None, all emails on'}
             />
+            {reach.askRequestedAt && (
+              <Row
+                label="Last HQ ask"
+                value={`${relativeTime(reach.askRequestedAt)}${reach.askShownAt && reach.askShownAt >= reach.askRequestedAt ? ', seen' : ', not seen yet'}`}
+              />
+            )}
+            {!ready && (
+              <div style={{ marginTop: 8 }}>
+                <Button size="sm" disabled={asking} onClick={() => void ask()}>
+                  <Send size={14} /> Ask to install + turn on reminders
+                </Button>
+                {asked && <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '6px 0 0' }}>{asked}</p>}
+              </div>
+            )}
           </div>
         </Card>
       </div>

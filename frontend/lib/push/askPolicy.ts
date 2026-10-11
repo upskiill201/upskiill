@@ -1,34 +1,32 @@
 /**
- * When Teyro asks for reminder notifications — Duolingo's rule: a few times,
- * at good moments, and never nagging.
+ * When Teyro asks to install the app and turn on reminders. Founder's rule:
+ * a learner Tey can't reach is a learner Tey loses, so the ask comes back
+ * every day until it's done — no budget, no "two strikes and stop".
  *
- *  1. Onboarding's last step asks once.
- *  2. In the app, at most MAX_IN_APP_ASKS more asks, each right after the
- *     learner finishes a lesson (the moment reminders obviously matter).
- *  2b. Right after enrolling, before lesson 1 (decideEnrollAsk): learners who
- *     enrol straight from a course page never see onboarding's ask, and an
- *     unreachable learner who doesn't start is a learner lost. Its own small
- *     budget, so it never eats the after-lesson asks.
- *  3. In a browser tab that can install Teyro, the ask is "install first":
+ *  1. Onboarding's last step asks.
+ *  2. Right after enrolling, before lesson 1 (decideEnrollAsk): learners who
+ *     enrol straight from a course page never see onboarding's ask.
+ *  3. In the app (decideInAppAsk), at most once a day: on app open and after
+ *     a finished lesson, whichever comes first.
+ *  4. In a browser tab that can install Teyro, the ask is "install first":
  *     reminders belong to the installed app (on iPhone they only work there).
- *     An install ask spends from the same budget.
+ *  5. HQ can ask on demand (the server tells the watcher; not decided here).
  *
- * Spacing: the first in-app ask waits ≥ MIN_GAP_AFTER_ONBOARDING_H after the
- * onboarding ask; the second waits ≥ MIN_GAP_BETWEEN_DAYS after the first.
- * One exception: an install ask followed by the learner actually opening the
- * installed app — the reminders ask there is the payoff of the install, so it
- * comes at the next lesson with no wait.
+ * Spacing: MIN_GAP_H between any two asks, so it's daily, never twice in a
+ * sitting. One exception: an install ask followed by the learner actually
+ * opening the installed app — the reminders ask there is the payoff of the
+ * install, so it comes straight away.
  *
  * Nothing is asked once reminders are on, or once the browser has recorded a
- * "Block" (only the learner can undo that, in settings).
+ * "Block" for this tab with nothing to install (only the learner can undo a
+ * block, in settings; the server's emails explain how).
  *
  * The ledger lives in localStorage: notification permission is per device,
  * so the budget is too. Pure functions here; the watcher does the I/O.
  */
 
-export const MAX_IN_APP_ASKS = 2;
-export const MIN_GAP_AFTER_ONBOARDING_H = 20;
-export const MIN_GAP_BETWEEN_DAYS = 3;
+/** Hours between two asks: about once a day, at whatever time they open the app. */
+export const MIN_GAP_H = 20;
 
 const KEY = 'teyro:reminder-asks';
 const HOUR = 3_600_000;
@@ -93,20 +91,15 @@ function askKindFor(ctx: AskContext): AskKind | null {
         : null;
 }
 
-export const MAX_ENROLL_ASKS = 2;
 /** Onboarding just asked (they enrolled straight after it): don't ask twice in a row. */
 export const ENROLL_QUIET_AFTER_ASK_MIN = 30;
 
 /** Which ask (if any) is due right after enrolling, before lesson 1. */
 export function decideEnrollAsk(ledger: AskLedger, ctx: AskContext): AskDecision {
   if (ctx.subscribed && ctx.permission === 'granted') return { ask: false, reason: 'already-on' };
-  if (ctx.permission === 'denied') return { ask: false, reason: 'blocked' };
   const kind = askKindFor(ctx);
-  if (!kind) return { ask: false, reason: 'unsupported' };
+  if (!kind) return { ask: false, reason: ctx.permission === 'denied' ? 'blocked' : 'unsupported' };
 
-  if (ledger.asks.filter((a) => a.where === 'enroll').length >= MAX_ENROLL_ASKS) {
-    return { ask: false, reason: 'budget-spent' };
-  }
   const last = ledger.asks[ledger.asks.length - 1];
   if (last && ctx.now.getTime() - new Date(last.at).getTime() < ENROLL_QUIET_AFTER_ASK_MIN * 60_000) {
     return { ask: false, reason: 'too-soon' };
@@ -114,16 +107,14 @@ export function decideEnrollAsk(ledger: AskLedger, ctx: AskContext): AskDecision
   return { ask: true, kind };
 }
 
-/** Which ask (if any) is due right now, after a finished lesson. */
+/** Which ask (if any) is due right now: on app open or after a lesson. */
 export function decideInAppAsk(ledger: AskLedger, ctx: AskContext): AskDecision {
   if (ctx.subscribed && ctx.permission === 'granted') return { ask: false, reason: 'already-on' };
-  if (ctx.permission === 'denied') return { ask: false, reason: 'blocked' };
 
+  // A blocked tab can still be asked to install (the installed app gets its
+  // own permission); with nothing to install, there's nothing to ask here.
   const kind = askKindFor(ctx);
-  if (!kind) return { ask: false, reason: 'unsupported' };
-
-  const inApp = ledger.asks.filter((a) => a.where === 'in-app');
-  if (inApp.length >= MAX_IN_APP_ASKS) return { ask: false, reason: 'budget-spent' };
+  if (!kind) return { ask: false, reason: ctx.permission === 'denied' ? 'blocked' : 'unsupported' };
 
   const last = ledger.asks[ledger.asks.length - 1];
   if (!last) return { ask: true, kind };
@@ -131,10 +122,6 @@ export function decideInAppAsk(ledger: AskLedger, ctx: AskContext): AskDecision 
   // The install worked and this is the installed app: ask now.
   if (last.kind === 'install' && ctx.standalone && kind === 'enable') return { ask: true, kind };
 
-  const since = ctx.now.getTime() - new Date(last.at).getTime();
-  const gap =
-    last.where === 'onboarding' ? MIN_GAP_AFTER_ONBOARDING_H * HOUR : MIN_GAP_BETWEEN_DAYS * 24 * HOUR;
-  if (since < gap) return { ask: false, reason: 'too-soon' };
-
+  if (ctx.now.getTime() - new Date(last.at).getTime() < MIN_GAP_H * HOUR) return { ask: false, reason: 'too-soon' };
   return { ask: true, kind };
 }

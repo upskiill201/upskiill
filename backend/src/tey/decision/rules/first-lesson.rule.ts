@@ -10,16 +10,27 @@ import {
   withJitter,
 } from './rule.types';
 
-/** Account-age days (0 = signup day) on which a new learner hears from Tey. */
-const FIRST_LESSON_DAYS = [0, 1, 3, 6] as const;
+/**
+ * Account-age days (0 = signup day) on which a new learner hears from Tey:
+ * daily for two weeks, every other day to a month, then every few days.
+ * It keeps going until a first lesson is done (founder's rule).
+ */
+const FIRST_LESSON_DAYS: readonly number[] = (() => {
+  const days: number[] = [];
+  for (let d = 0; d <= 14; d++) days.push(d);
+  for (let d = 16; d <= 30; d += 2) days.push(d);
+  for (let d = 33; d <= 90; d += 3) days.push(d);
+  for (let d = 97; d <= 365; d += 7) days.push(d);
+  return days;
+})();
 
 /**
  * A learner who signed up and never finished a lesson.
  *
  * Every other rule ignores NEW learners on purpose — there is no streak, no
  * habit, nothing to "come back" to — which used to leave the most fragile
- * week of the whole funnel in silence. Four nudges on a short ladder, then
- * nothing: someone who hasn't started after a week has told us something.
+ * week of the whole funnel in silence. A daily nudge for two weeks, then
+ * easing off, until the first lesson is done.
  */
 export const FirstLessonRule: TeyRule = {
   id: 'FIRST_LESSON',
@@ -32,7 +43,10 @@ export const FirstLessonRule: TeyRule = {
     if (state.todayLessons > 0) return null;
     const age = state.accountAgeDays;
     if (age === null || age === undefined) return null;
-    if (!(FIRST_LESSON_DAYS as readonly number[]).includes(age)) return null;
+    if (!FIRST_LESSON_DAYS.includes(age)) return null;
+    // Enrolled in a course: the first-lesson journey (tey/notify) owns them,
+    // with course-specific copy. Two ladders at once would be spam.
+    if (state.currentCourseId) return null;
 
     // Signup day: a few hours after they arrive, never before 18:00. After
     // that, at the time they told us suits them.

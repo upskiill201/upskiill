@@ -48,18 +48,21 @@ describe('decideInAppAsk', () => {
     expect(decideInAppAsk(later, base).ask).toBe(true);
   });
 
-  it('spaces the two in-app asks by days, then stops for good', () => {
-    const one: AskLedger = { asks: [{ at: hoursAgo(30), kind: 'enable', where: 'in-app' }] };
-    expect(decideInAppAsk(one, base).ask).toBe(false);
-    const oneOld: AskLedger = { asks: [{ at: hoursAgo(80), kind: 'enable', where: 'in-app' }] };
-    expect(decideInAppAsk(oneOld, base).ask).toBe(true);
-    const two: AskLedger = {
-      asks: [
-        { at: hoursAgo(200), kind: 'enable', where: 'in-app' },
-        { at: hoursAgo(100), kind: 'enable', where: 'in-app' },
-      ],
+  it('asks once a day, every day, until reminders are on', () => {
+    const today: AskLedger = { asks: [{ at: hoursAgo(5), kind: 'enable', where: 'in-app' }] };
+    expect(decideInAppAsk(today, base)).toEqual({ ask: false, reason: 'too-soon' });
+    const many: AskLedger = {
+      asks: Array.from({ length: 12 }, (_, i) => ({ at: hoursAgo(24 * (12 - i)), kind: 'enable' as const, where: 'in-app' as const })),
     };
-    expect(decideInAppAsk(two, base)).toEqual({ ask: false, reason: 'budget-spent' });
+    expect(decideInAppAsk(many, base).ask).toBe(true);
+    expect(decideInAppAsk(many, { ...base, permission: 'granted', subscribed: true }).ask).toBe(false);
+  });
+
+  it('a blocked tab that can install is still asked to install', () => {
+    expect(decideInAppAsk(empty, { ...base, permission: 'denied', standalone: false, installable: true })).toEqual({
+      ask: true,
+      kind: 'install',
+    });
   });
 
   it('asks straight away in the installed app after an install ask', () => {
@@ -91,15 +94,18 @@ describe('decideEnrollAsk — right after enrolling, before lesson 1', () => {
     expect(decideEnrollAsk(ledger, ctx)).toEqual({ ask: false, reason: 'too-soon' });
   });
 
-  it('stays quiet once reminders are on or blocked, and after its own budget', () => {
+  it('stays quiet once reminders are on, or blocked with nothing to install', () => {
     expect(decideEnrollAsk({ asks: [] }, { ...ctx, permission: 'granted', subscribed: true }).ask).toBe(false);
     expect(decideEnrollAsk({ asks: [] }, { ...ctx, permission: 'denied' }).ask).toBe(false);
-    const spent = {
+  });
+
+  it('keeps asking on every new enrolment (no budget)', () => {
+    const asked = {
       asks: [
         { at: '2026-10-01T00:00:00Z', kind: 'enable' as const, where: 'enroll' as const },
         { at: '2026-10-05T00:00:00Z', kind: 'enable' as const, where: 'enroll' as const },
       ],
     };
-    expect(decideEnrollAsk(spent, ctx)).toEqual({ ask: false, reason: 'budget-spent' });
+    expect(decideEnrollAsk(asked, ctx).ask).toBe(true);
   });
 });

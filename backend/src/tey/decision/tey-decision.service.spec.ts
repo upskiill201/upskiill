@@ -136,18 +136,14 @@ describe('TeyDecisionService', () => {
       expect(plans).toEqual([]);
     });
 
-    it('stops chasing a learner who is long gone', () => {
-      // Past the last rung of the ladder, silence is the feature.
+    it('keeps chasing a learner who is long gone, and stops only past a year', () => {
+      // Founder's rule: nag until the next lesson. Day 60 is a rung.
       expect(
-        ids(
-          learner({
-            streakDays: 0,
-            daysSinceLastActivity: 60,
-            engagementState: 'DORMANT',
-          }),
-          now(12),
-        ),
-      ).toEqual([]);
+        ids(learner({ streakDays: 0, daysSinceLastActivity: 60, engagementState: 'DORMANT' }), now(12)),
+      ).toContain('INACTIVE_RETURN');
+      expect(
+        ids(learner({ streakDays: 0, daysSinceLastActivity: 400, engagementState: 'DORMANT' }), now(12)),
+      ).not.toContain('INACTIVE_RETURN');
     });
 
     it('hands a lapsed learner to the win-back ladder, not the daily nudge', () => {
@@ -549,11 +545,17 @@ describe('the Duolingo-shaped day (reminder ladder)', () => {
         daysSinceLastActivity: null,
         lastActivityAt: null,
         accountAgeDays: age,
+        currentCourseId: null,
       });
 
-    it('nudges a new learner on day 0, 1, 3 and 6 — and not in between', () => {
-      const fires = [0, 1, 2, 3, 4, 5, 6, 7].filter((d) => !!find(fresh(d), now(9), 'FIRST_LESSON'));
-      expect(fires).toEqual([0, 1, 3, 6]);
+    it('nudges a new learner every day for two weeks, then eases off — never stops', () => {
+      const fires = [0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16].filter((d) => !!find(fresh(d), now(9), 'FIRST_LESSON'));
+      expect(fires).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 14, 16]);
+      expect(find(fresh(97), now(9), 'FIRST_LESSON')).toBeDefined();
+    });
+
+    it('leaves an enrolled learner to the first-lesson journey', () => {
+      expect(find({ ...fresh(1), currentCourseId: 'c1' }, now(9), 'FIRST_LESSON')).toBeUndefined();
     });
 
     it('never nudges on signup day before the evening', () => {
@@ -571,23 +573,24 @@ describe('the Duolingo-shaped day (reminder ladder)', () => {
         daysSinceLastActivity: days,
       });
 
-    it('fires on every rung up to day 30, then goes silent', () => {
-      for (const d of [1, 2, 3, 5, 7, 14, 21, 30]) {
+    it('fires daily for a week, then on an easing ladder well past a month', () => {
+      for (const d of [1, 2, 3, 4, 5, 6, 7, 9, 21, 30, 60, 67, 365]) {
         expect(find(away(d), now(7), 'INACTIVE_RETURN')).toBeDefined();
       }
-      expect(find(away(31), now(7), 'INACTIVE_RETURN')).toBeUndefined();
+      expect(find(away(400), now(7), 'INACTIVE_RETURN')).toBeUndefined();
     });
 
     it('keys each rung once per lapse, so a late planner catches up instead of doubling', () => {
-      const day3 = find(away(3), now(7), 'INACTIVE_RETURN');
-      const day4 = find(away(4), now(7), 'INACTIVE_RETURN');
-      expect(day3?.dedupeKey).toBe(day4?.dedupeKey);
-      expect(find(away(5), now(7), 'INACTIVE_RETURN')?.dedupeKey).not.toBe(day3?.dedupeKey);
+      // Day 8 sits between rungs 7 and 9: it catches rung 7 up, not a new one.
+      const day7 = find(away(7), now(7), 'INACTIVE_RETURN');
+      const day8 = find(away(8), now(7), 'INACTIVE_RETURN');
+      expect(day7?.dedupeKey).toBe(day8?.dedupeKey);
+      expect(find(away(9), now(7), 'INACTIVE_RETURN')?.dedupeKey).not.toBe(day7?.dedupeKey);
     });
 
-    it('says an honest goodbye on the final rung', () => {
+    it('still has something to say a month in', () => {
       const check = service.revalidate('INACTIVE_RETURN', away(30), now(19));
-      expect(check.context?.tone).toBe('NEUTRAL');
+      expect(check.context).toBeDefined();
     });
   });
 });

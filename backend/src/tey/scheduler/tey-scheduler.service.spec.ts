@@ -314,18 +314,15 @@ describe('TeySchedulerService', () => {
       expect(planner.dueAt.getTime()).toBeGreaterThan(Date.now());
     });
 
-    it('stops waking a learner who has gone quiet past the final win-back rung', async () => {
-      await service.planFor(
-        'u1',
-        learner({
-          streakDays: 0,
-          engagementState: 'DORMANT',
-          streakState: 'NO_STREAK',
-          daysSinceLastActivity: 45,
-          repair: null,
-        }),
-      );
-      const queued = (actions.upsertIntent as jest.Mock).mock.calls.map((c) => c[1].ruleId);
+    it('keeps waking a long-quiet learner (the ladder runs a year), then stops', async () => {
+      const quiet = (days: number) =>
+        learner({ streakDays: 0, engagementState: 'DORMANT', streakState: 'NO_STREAK', daysSinceLastActivity: days, repair: null });
+      await service.planFor('u1', quiet(45));
+      let queued = (actions.upsertIntent as jest.Mock).mock.calls.map((c) => c[1].ruleId);
+      expect(queued).toContain('DAY_PLANNER');
+      (actions.upsertIntent as jest.Mock).mockClear();
+      await service.planFor('u1', quiet(400));
+      queued = (actions.upsertIntent as jest.Mock).mock.calls.map((c) => c[1].ruleId);
       expect(queued).not.toContain('DAY_PLANNER');
     });
 

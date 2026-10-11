@@ -26,6 +26,7 @@ import { EmailJobRow } from './email-job.repository';
 import { courseUnlockState, SOCIAL_PROOF_MIN_LEARNERS } from '../../common/course-unlock.util';
 import { renderCourseUnlockEmail } from '../templates/conversion/course-unlock.template';
 import { firstLessonState } from '../../common/first-lesson.util';
+import { renderReachEmail } from '../templates/learning/reach.template';
 import {
   renderFirstLessonEmail,
   type FirstLessonStage,
@@ -98,6 +99,8 @@ export class EmailJobProcessorService {
         return this.processAccessEnding(job);
       case 'FIRST_LESSON_STAGE':
         return this.processFirstLesson(job);
+      case 'REACH_ASK':
+        return this.processReach(job);
       default:
         this.logger.warn(`No handler for email job eventType=${job.eventType}`);
         return { sent: false, skipReason: 'NO_HANDLER' };
@@ -231,7 +234,7 @@ export class EmailJobProcessorService {
     if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
     const payload = job.payload as { courseId?: string; stage?: number } | null;
     const stage = payload?.stage;
-    if (!payload?.courseId || (stage !== 1 && stage !== 2 && stage !== 3)) {
+    if (!payload?.courseId || typeof stage !== 'number' || !Number.isInteger(stage) || stage < 1) {
       return { sent: false, skipReason: 'BAD_PAYLOAD' };
     }
 
@@ -246,18 +249,21 @@ export class EmailJobProcessorService {
     });
     if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
 
-    const templateKey = `conversion.course-unlock-${stage}`;
+    // Stages 1–3 are hand-written; every one after rotates nag variants under
+    // the stage-3 template, each with its own idempotency key.
+    const templateKey = `conversion.course-unlock-${Math.min(stage, 3)}`;
     const outcome = await this.dispatch.dispatch({
       userId: user.id,
       email: user.email,
       templateKey,
       category: EmailCategory.CONVERSION,
-      idempotencyKey: `${templateKey}:${user.id}:${payload.courseId}`,
+      idempotencyKey: stage > 3 ? `${templateKey}:${user.id}:${payload.courseId}:${stage}` : `${templateKey}:${user.id}:${payload.courseId}`,
       metadata: { courseId: payload.courseId, stage },
       render: () =>
         renderCourseUnlockEmail({
           firstName: user.fullName?.split(' ')[0] || '',
-          stage,
+          stage: stage > 3 ? 'nag' : (stage as 1 | 2 | 3),
+          nag: stage - 4,
           courseName: state.course.title,
           creatorName: state.course.instructorName,
           nextLessons: state.nextLessonTitles,
@@ -274,6 +280,49 @@ export class EmailJobProcessorService {
     return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
   }
 
+  // ── Reach: install the app + turn on reminders ────────────────────────────
+  private async processReach(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    const payload = (job.payload ?? {}) as { nag?: number; source?: string };
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        accountStatus: true,
+        pwaInstalledAt: true,
+        notificationPermission: true,
+        pushSubscriptions: { where: { isActive: true }, select: { id: true } },
+      },
+    });
+    if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
+    if (user.accountStatus !== 'ACTIVE') return { sent: false, skipReason: 'ACCOUNT_INACTIVE' };
+    // Reachable by push since this was queued? Then there's nothing to ask.
+    if (user.pushSubscriptions.length > 0) return { sent: false, skipReason: 'REACHABLE' };
+
+    const nag = payload.nag ?? 0;
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'learning.reach',
+      category: EmailCategory.ENGAGEMENT,
+      idempotencyKey: job.dedupeKey ?? `learning.reach:${user.id}:${nag}`,
+      metadata: { nag, source: payload.source ?? 'cadence' },
+      render: () =>
+        renderReachEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          installed: !!user.pwaInstalledAt,
+          blocked: user.notificationPermission === 'denied',
+          nag,
+          setupUrl: `${emailConfig.appUrl}/start?utm_source=email&utm_campaign=reach`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'LEARNING'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
   // ── Activation: the first-lesson journey ──────────────────────────────────
   private async processFirstLesson(job: EmailJobRow): Promise<ProcessOutcome> {
     if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
@@ -282,9 +331,11 @@ export class EmailJobProcessorService {
       stage?: FirstLessonStage;
       lessonId?: string;
       progressPct?: number;
+      nag?: number;
     } | null;
     const stage = payload?.stage;
-    const validStage = stage === 0 || stage === 1 || stage === 2 || stage === 3 || stage === 'resume';
+    const validStage =
+      stage === 0 || stage === 1 || stage === 2 || stage === 3 || stage === 'nag' || stage === 'resume';
     if (!payload?.courseId || !validStage || (stage === 'resume' && !payload.lessonId)) {
       return { sent: false, skipReason: 'BAD_PAYLOAD' };
     }
@@ -312,7 +363,13 @@ export class EmailJobProcessorService {
     const goal = Array.isArray(answers.goals) ? String(answers.goals[0] ?? '') : undefined;
     const dailyMinutes = Number(answers.dailyCommitment) || undefined;
 
-    const key = `learning.first-lesson:${user.id}:${payload.courseId}:${stage}${stage === 'resume' ? `:${payload.lessonId}` : ''}`;
+    const step = stage === 'nag' ? (payload.nag ?? 'nag') : stage;
+    const key = `learning.first-lesson:${user.id}:${payload.courseId}:${step}${stage === 'resume' ? `:${payload.lessonId}` : ''}`;
+    const enrolled = await this.prisma.enrollment.findUnique({
+      where: { userId_courseId: { userId: user.id, courseId: payload.courseId } },
+      select: { createdAt: true },
+    });
+    const daysWaiting = enrolled ? Math.floor((Date.now() - enrolled.createdAt.getTime()) / 86_400_000) : undefined;
     const outcome = await this.dispatch.dispatch({
       userId: user.id,
       email: user.email,
@@ -332,7 +389,9 @@ export class EmailJobProcessorService {
           goal: goal || undefined,
           dailyMinutes,
           progressPct: payload.progressPct,
-          lessonUrl: `${emailConfig.appUrl}${state.lessonPath}&utm_source=email&utm_campaign=first-lesson-${stage}`,
+          nag: payload.nag,
+          daysWaiting,
+          lessonUrl: `${emailConfig.appUrl}${state.lessonPath}&utm_source=email&utm_campaign=first-lesson-${step}`,
           unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'LEARNING'),
           preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
         }),

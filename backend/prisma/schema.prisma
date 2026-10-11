@@ -76,6 +76,17 @@ model User {
   timezone              String?
   timezoneOffsetMinutes Int?
 
+  // Reach: can Tey actually get to this person? Reported by the app on open
+  // (POST /tey/reach/ping). pwaInstalledAt = first time seen running as the
+  // installed app; notificationPermission = the browser's last answer
+  // (default | granted | denied). reachAskRequestedAt = an admin asked from
+  // HQ for the install + reminders screen; reachAskShownAt = it was shown.
+  pwaInstalledAt         DateTime?
+  pwaLastSeenAt          DateTime?
+  notificationPermission String?
+  reachAskRequestedAt    DateTime?
+  reachAskShownAt        DateTime?
+
   gemTransactions        GemTransaction[]
   shopTransactions       ShopTransaction[]
   userAchievements       UserAchievement[]

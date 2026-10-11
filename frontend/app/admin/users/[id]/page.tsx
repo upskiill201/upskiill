@@ -277,7 +277,7 @@ export default function AdminUserDetailPage() {
         </Card>
       </div>
 
-      {data.journey && <LearnerJourney journey={data.journey} />}
+      {data.journey && <LearnerJourney journey={data.journey} userId={account.id} />}
 
       <Card title="Recent activity">
         {activity.length === 0 ? (

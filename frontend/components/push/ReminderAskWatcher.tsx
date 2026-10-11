@@ -1,8 +1,15 @@
 'use client';
 
 /**
- * ReminderAskWatcher — queues the RemindersScene right after a finished
- * lesson, when lib/push/askPolicy.ts says an ask is due.
+ * ReminderAskWatcher — queues the RemindersScene (install the app / turn on
+ * reminders) when lib/push/askPolicy.ts says an ask is due: on app open and
+ * right after a finished lesson, at most once a day, until both are done.
+ *
+ * On open it also reports in (POST /tey/reach/ping): whether this is the
+ * installed app, the browser's notification answer, and whether push is
+ * subscribed, which is what Teyro HQ's "can Tey reach them?" view reads.
+ * The reply says whether an admin asked from HQ for the screen; that ask
+ * skips the daily spacing.
  *
  * "Finished a lesson" = `lastLessonCompletedAt` moved forward during this
  * session. The scene is queued once the learner is out of the lesson player
@@ -36,6 +43,36 @@ export default function ReminderAskWatcher() {
   // The value seen when the app loaded; only a later one counts as "just finished".
   const baselineRef = useRef<string | null | undefined>(undefined);
   const [pending, setPending] = useState(false);
+  // HQ asked for the screen (server says so on the open ping).
+  const [hqAsk, setHqAsk] = useState(false);
+
+  // App open: report in once per session, and make the daily ask eligible.
+  const pinged = useRef(false);
+  useEffect(() => {
+    if (pinged.current || !profileLoaded || !push.ready || !install.ready) return;
+    pinged.current = true;
+    void fetch('/api/tey/reach/ping', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        standalone: install.isStandalone,
+        permission: push.permission,
+        subscribed: push.subscribed,
+      }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((r: { askNow?: boolean } | null) => {
+        if (r?.askNow) {
+          setHqAsk(true);
+          setPending(true);
+        }
+      })
+      .catch(() => undefined);
+    // Opening the app is a moment to ask too (the policy keeps it daily).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPending(true);
+  }, [profileLoaded, push.ready, push.permission, push.subscribed, install.ready, install.isStandalone]);
 
   useEffect(() => {
     if (!profileLoaded) return;
@@ -59,14 +96,23 @@ export default function ReminderAskWatcher() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPending(false);
-    const decision = decideInAppAsk(readLedger(), {
+    const ctx = {
       now: new Date(),
       permission: push.permission,
       subscribed: push.subscribed,
       standalone: install.isStandalone,
       installable: install.isInstallable,
       needsInstall: push.needsInstall,
-    });
+    };
+    let decision = decideInAppAsk(readLedger(), ctx);
+    // HQ asked: skip the daily spacing (never past "already on"/"can't").
+    if (hqAsk && !decision.ask && decision.reason === 'too-soon') {
+      decision = decideInAppAsk({ asks: [] }, ctx);
+    }
+    if (hqAsk) {
+      setHqAsk(false);
+      void fetch('/api/tey/reach/shown', { method: 'POST', credentials: 'include' }).catch(() => undefined);
+    }
     if (!decision.ask) return;
 
     recordAsk(decision.kind, 'in-app');
@@ -78,6 +124,7 @@ export default function ReminderAskWatcher() {
     });
   }, [
     pending,
+    hqAsk,
     lessonFocused,
     pathname,
     push.ready,

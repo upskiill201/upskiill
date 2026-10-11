@@ -17,6 +17,7 @@ import { useState, type CSSProperties } from 'react';
 import useSWR from 'swr';
 import {
   Activity,
+  BellRing,
   Video,
   BarChart3,
   BookOpen,
@@ -75,6 +76,7 @@ const NAV: NavGroup[] = [
     items: [
       { href: '/admin/learning', label: 'Learning', icon: GraduationCap, tone: 'var(--success-green)' },
       { href: '/admin/users', label: 'Users', icon: Users, tone: 'var(--brand-purple)' },
+      { href: '/admin/reach', label: 'Reach', icon: BellRing, tone: 'var(--error-red)' },
       { href: '/admin/subscribers', label: 'Subscribers', icon: WalletCards, tone: 'var(--warning)' },
     ],
   },

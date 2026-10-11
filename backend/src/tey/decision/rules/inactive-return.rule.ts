@@ -12,13 +12,21 @@ import {
 } from './rule.types';
 
 /**
- * The win-back ladder, in whole days away — Duolingo's shape: daily at first,
- * while the habit is still warm, then spreading out, then one honest
- * "I'll stop" at day 30 and silence after it.
+ * Days away on which Tey nudges: every day for the first week, every other
+ * day to three weeks, every three days to two months, then weekly. It doesn't
+ * stop (founder's rule: we nag until the next lesson happens), it eases off;
+ * a year is simply where the ladder's arithmetic ends.
  */
-export const ESCALATION_DAYS = [1, 2, 3, 5, 7, 14, 21, 30] as const;
-/** The last rung — its copy says Tey is stepping back, and it means it. */
-export const FINAL_RUNG = ESCALATION_DAYS[ESCALATION_DAYS.length - 1];
+export const ESCALATION_DAYS: readonly number[] = (() => {
+  const days: number[] = [];
+  for (let d = 1; d <= 7; d++) days.push(d);
+  for (let d = 9; d <= 21; d += 2) days.push(d);
+  for (let d = 24; d <= 60; d += 3) days.push(d);
+  for (let d = 67; d <= 365; d += 7) days.push(d);
+  return days;
+})();
+/** A year away: where the ladder ends (every day up to it maps to a rung). */
+export const FINAL_RUNG = 365;
 
 /** Identifies one lapse: the instant the learner was last active. */
 function lapseKey(state: { lastActivityAt: Date | null }): string {
@@ -27,7 +35,7 @@ function lapseKey(state: { lastActivityAt: Date | null }): string {
 
 function stepFor(days: number | null): number | null {
   if (days === null) return null;
-  // The largest rung they have reached. Past the last one, we stop entirely.
+  // The largest rung they have reached.
   let step: number | null = null;
   for (const d of ESCALATION_DAYS) {
     if (days >= d) step = d;
@@ -65,7 +73,7 @@ export const InactiveReturnRule: TeyRule = {
 
     const days = state.daysSinceLastActivity;
     if (days === null || days < 1) return null;
-    // Past the last rung we stop pestering. Silence is a feature.
+    // A year out the ladder's arithmetic ends.
     if (days > FINAL_RUNG) return null;
 
     const step = stepFor(days);

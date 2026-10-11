@@ -201,7 +201,10 @@ export class AdminUsersService {
         }),
         this.prisma.pushSubscription.findMany({
           where: { userId: id },
-          select: { platform: true, isActive: true, createdAt: true },
+          select: {
+            platform: true, isActive: true, createdAt: true,
+            lastUsedAt: true, failureCount: true, userAgent: true,
+          },
           orderBy: { createdAt: 'desc' },
         }),
         this.prisma.teyNotificationPrefs.findUnique({
@@ -249,6 +252,10 @@ export class AdminUsersService {
         }),
       ]);
 
+    const reachUser = await this.prisma.user.findUnique({
+      where: { id },
+      select: { pwaInstalledAt: true, pwaLastSeenAt: true, notificationPermission: true, reachAskRequestedAt: true, reachAskShownAt: true },
+    });
     const courseIds = enrollments.map((e) => e.course.id);
     const [lessons, progress] = await Promise.all([
       this.prisma.lesson.findMany({
@@ -309,7 +316,13 @@ export class AdminUsersService {
       },
       reach: {
         pushDevices: pushDevices.filter((d) => d.isActive).length,
-        devices: pushDevices,
+        devices: pushDevices.map(({ userAgent, ...d }) => ({ ...d, device: describeDevice(userAgent) })),
+        installed: !!reachUser?.pwaInstalledAt || pushDevices.some((d) => d.isActive && d.platform === 'ios-standalone'),
+        installedAt: reachUser?.pwaInstalledAt ?? null,
+        appLastOpenedAt: reachUser?.pwaLastSeenAt ?? null,
+        permission: reachUser?.notificationPermission ?? null,
+        askRequestedAt: reachUser?.reachAskRequestedAt ?? null,
+        askShownAt: reachUser?.reachAskShownAt ?? null,
         pushEnabled: prefs?.pushEnabled ?? true,
         dailyReminders: prefs?.dailyReminders ?? true,
         preferredHour: prefs?.preferredHour ?? null,
@@ -436,4 +449,24 @@ export class AdminUsersService {
 
     return { accountStatus: 'ACTIVE' as const };
   }
+}
+
+/** "Chrome on Android", "Safari on iPhone"… from a stored user agent. */
+function describeDevice(ua: string | null): string {
+  if (!ua) return 'Unknown device';
+  const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'Unknown OS';
+  const browser = /Claude\//.test(ua)
+    ? 'Claude desktop app'
+    : /Edg\//.test(ua)
+      ? 'Edge'
+      : /SamsungBrowser/.test(ua)
+        ? 'Samsung Internet'
+        : /Firefox\//.test(ua)
+          ? 'Firefox'
+          : /CriOS|Chrome\//.test(ua)
+            ? 'Chrome'
+            : /Safari\//.test(ua)
+              ? 'Safari'
+              : 'Browser';
+  return `${browser} on ${os}`;
 }

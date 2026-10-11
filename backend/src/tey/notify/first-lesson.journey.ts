@@ -8,6 +8,16 @@ import { EmailJobRepository } from '../../email/jobs/email-job.repository';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { TeyReason } from '../contracts/tey-context.types';
 import { resolveLocalNow } from '../state/local-time.util';
+import {
+  DAY,
+  FIRST_LESSON_EMAIL,
+  FIRST_LESSON_PUSH,
+  HOUR,
+  MINUTE,
+  NAG_HORIZON_DAYS,
+  nextStep,
+  toDaytime,
+} from '../../common/nag-cadence';
 import { TeyActionRepository, ScheduledActionRow } from '../scheduler/tey-action.repository';
 import { TeyNotifyService } from './tey-notify.service';
 
@@ -15,32 +25,15 @@ import { TeyNotifyService } from './tey-notify.service';
 export const FIRST_LESSON_JOURNEY = 'FIRST_LESSON_JOURNEY';
 
 
-const MIN = 60_000;
-const HOUR = 60 * MIN;
-const DAY = 24 * HOUR;
-
 /**
- * The ladder, measured from the moment they enrolled. Email 0 lands while
- * they're still on the high of joining; push 1 a few hours later, the next
- * day around the hour they joined (the hour they evidently have free), then
- * day 3 and a last word on day 6. Someone who hasn't started after a week has
- * told us something, and we listen.
+ * The ladder (common/nag-cadence.ts), from the moment they enrolled: an email
+ * at 15 minutes, a push at 3h and the next day around the hour they joined,
+ * then a push a day for two weeks and every other day after; email on days
+ * 1, 3, 6, 10, 14, then weekly, then fortnightly. It does not stop until a
+ * lesson in the course is finished (founder's rule): it eases off instead.
  */
-const PUSH_STAGES = [
-  { stage: 1, after: 3 * HOUR },
-  { stage: 2, after: 22 * HOUR },
-  { stage: 3, after: 3 * DAY },
-  { stage: 4, after: 6 * DAY },
-] as const;
-const EMAIL_STAGES = [
-  { stage: 0, after: 15 * MIN },
-  { stage: 1, after: DAY },
-  { stage: 2, after: 3 * DAY + HOUR },
-  { stage: 3, after: 6 * DAY + HOUR },
-] as const;
-
 /** Left lesson 1 part-way: a push while it's fresh, an email a bit later. */
-const RESUME_PUSH_AFTER = 45 * MIN;
+const RESUME_PUSH_AFTER = 45 * MINUTE;
 const RESUME_EMAIL_AFTER = 2 * HOUR;
 
 /**
@@ -84,92 +77,132 @@ export class FirstLessonJourney {
   }
 
   /**
-   * Catch-up: enrolments from the last few days with nothing finished and no
-   * journey yet — the ones made before this shipped, or by a path that never
-   * emitted `enrollment.created`. Only the steps still ahead are queued, so
-   * a late start never fires a burst of stale messages.
+   * Hourly: every enrolment with nothing finished gets its next push and
+   * next email queued, whenever none is pending. This is what makes the
+   * journey last until they act (each step only ever queues the one after),
+   * and it also starts journeys for enrolments that never fired
+   * `enrollment.created` or predate this feature.
    */
-  @Cron('0 7 * * * *', { name: 'first-lesson-journey-backfill' })
-  async scheduledBackfill(): Promise<void> {
+  @Cron('0 7 * * * *', { name: 'first-lesson-journey-top-up' })
+  async scheduledTopUp(): Promise<void> {
     const on = process.env.TEY_SCHEDULER_ENABLED;
     if (on === 'false' || (on !== 'true' && process.env.NODE_ENV !== 'production')) return;
     try {
-      const n = await this.backfill();
-      if (n > 0) this.logger.log(`first-lesson backfill: started=${n}`);
+      const n = await this.topUpAll();
+      if (n > 0) this.logger.log(`first-lesson top-up: queued=${n}`);
     } catch (err) {
-      this.logger.warn(`first-lesson backfill failed: ${(err as Error).message}`);
+      this.logger.warn(`first-lesson top-up failed: ${(err as Error).message}`);
     }
   }
 
-  async backfill(now = new Date()): Promise<number> {
+  async topUpAll(now = new Date()): Promise<number> {
     const rows = await this.prisma.enrollment.findMany({
-      where: { createdAt: { gte: new Date(now.getTime() - 6 * DAY) } },
+      where: { createdAt: { gte: new Date(now.getTime() - NAG_HORIZON_DAYS * DAY) } },
       select: { userId: true, courseId: true, createdAt: true, completedLessons: true },
-      take: 500,
+      take: 5000,
     });
-    let started = 0;
+    let queued = 0;
     for (const r of rows) {
       if (Array.isArray(r.completedLessons) && r.completedLessons.length > 0) continue;
-      if (await this.start(r.userId, r.courseId, r.createdAt, now)) started++;
+      queued += await this.topUp(r.userId, r.courseId, r.createdAt, now);
     }
-    return started;
+    return queued;
+  }
+
+  /** Kept for the enrolment event: the first top-up IS the start. */
+  async start(userId: string, courseId: string, enrolledAt: Date, now = new Date()): Promise<boolean> {
+    return (await this.topUp(userId, courseId, enrolledAt, now)) > 0;
   }
 
   /**
-   * Queues the ladder. `enrollment.created` fires on every enroll call, so
-   * this is idempotent: one journey per learner per course, ever. Steps more
-   * than an hour in the past (a late start) are skipped. Returns whether a
-   * journey was started.
+   * Queues the next push and the next email of this learner's ladder unless
+   * one is already waiting. Idempotent (dedupe keys are per step), so the
+   * event, the hourly cron and a retry can all call it. Returns how many
+   * steps it queued.
    */
-  async start(userId: string, courseId: string, enrolledAt: Date, now = new Date()): Promise<boolean> {
-    const running = await this.prisma.teyScheduledAction.findUnique({
-      where: { dedupeKey: `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:1` },
-      select: { id: true },
-    });
-    if (running) return false;
-    const marker = await this.prisma.teyScheduledAction.findFirst({
-      where: { userId, dedupeKey: { startsWith: `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:` } },
-      select: { id: true },
-    });
-    if (marker) return false;
-
+  async topUp(userId: string, courseId: string, enrolledAt: Date, now = new Date()): Promise<number> {
     const state = await firstLessonState(this.prisma, userId, courseId, { now });
-    // Only a busy-elsewhere learner gets the journey anyway (it re-checks later).
-    if (!state.eligible && state.reason !== 'LEARNING_ELSEWHERE') return false;
+    // Busy learning elsewhere: keep the ladder alive; it re-checks at send.
+    if (!state.eligible && state.reason !== 'LEARNING_ELSEWHERE') return 0;
+
+    const pushPrefix = `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:`;
+    const emailPrefix = `learning.first-lesson:${userId}:${courseId}:`;
+    const notResume = { NOT: { dedupeKey: { contains: ':resume:' } } };
+    const [pushPending, emailPending] = await Promise.all([
+      this.prisma.teyScheduledAction.findFirst({
+        where: { userId, status: 'PENDING', AND: [{ dedupeKey: { startsWith: pushPrefix } }, notResume] },
+        select: { id: true },
+      }),
+      this.prisma.emailJob.findFirst({
+        where: { userId, status: 'PENDING', AND: [{ dedupeKey: { startsWith: emailPrefix } }, notResume] },
+        select: { id: true },
+      }),
+    ]);
 
     const offset = await this.offsetFor(userId);
-    const stale = (at: Date) => at.getTime() < now.getTime() - HOUR;
     let queued = 0;
-    for (const s of PUSH_STAGES) {
-      const dueAt = toDaytime(new Date(enrolledAt.getTime() + s.after), offset);
-      if (stale(dueAt)) continue;
-      queued++;
-      await this.actions.upsertIntent(userId, {
-        ruleId: FIRST_LESSON_JOURNEY as TeyReason,
-        priority: 'MEDIUM',
-        dueAt,
-        expiresAt: new Date(dueAt.getTime() + 12 * HOUR),
-        dedupeKey: `${FIRST_LESSON_JOURNEY}:${userId}:${courseId}:${s.stage}`,
-        contextHint: { courseId, stage: s.stage } as never,
-      });
+
+    if (!pushPending) {
+      const step = await this.firstFreeStep(FIRST_LESSON_PUSH, enrolledAt, now, (i) => `${pushPrefix}${i + 1}`, 'action');
+      if (step) {
+        const dueAt = toDaytime(step.at, offset);
+        await this.actions.upsertIntent(userId, {
+          ruleId: FIRST_LESSON_JOURNEY as TeyReason,
+          priority: 'MEDIUM',
+          dueAt,
+          expiresAt: new Date(dueAt.getTime() + 12 * HOUR),
+          dedupeKey: `${pushPrefix}${step.index + 1}`,
+          contextHint: { courseId, stage: step.index + 1 } as never,
+        });
+        queued++;
+      }
     }
-    for (const s of EMAIL_STAGES) {
-      // A late start still sends the welcome (now) if they joined today.
-      const lateWelcome = s.stage === 0 && now.getTime() - enrolledAt.getTime() < 20 * HOUR;
-      const at = lateWelcome ? new Date(Math.max(now.getTime(), enrolledAt.getTime() + s.after)) : new Date(enrolledAt.getTime() + s.after);
-      if (stale(at)) continue;
-      queued++;
-      await this.emailJobs.enqueue({
-        userId,
-        eventType: 'FIRST_LESSON_STAGE',
-        templateKey: 'learning.first-lesson',
-        // The welcome goes now whatever the hour; the rest wait for daytime.
-        dueAt: s.stage === 0 ? at : toDaytime(at, offset),
-        dedupeKey: `learning.first-lesson:${userId}:${courseId}:${s.stage}`,
-        payload: { courseId, stage: s.stage },
-      });
+
+    if (!emailPending) {
+      const step = await this.firstFreeStep(FIRST_LESSON_EMAIL, enrolledAt, now, (i) => `${emailPrefix}${i}`, 'email');
+      if (step) {
+        // The welcome goes now even when it's late (they joined today); the
+        // rest wait for daytime.
+        const welcome = step.index === 0;
+        const at = welcome ? new Date(Math.max(step.at.getTime(), now.getTime())) : toDaytime(step.at, offset);
+        await this.emailJobs.enqueue({
+          userId,
+          eventType: 'FIRST_LESSON_STAGE',
+          templateKey: 'learning.first-lesson',
+          dueAt: at,
+          dedupeKey: `${emailPrefix}${step.index}`,
+          payload: { courseId, stage: step.index <= 3 ? step.index : 'nag', nag: step.index },
+        });
+        queued++;
+      }
     }
-    return queued > 0;
+    return queued;
+  }
+
+  /**
+   * The ladder's next step from now that hasn't been used yet. A late start
+   * (enrolled before this shipped) still gets the welcome if they joined
+   * within the day; older steps are never back-filled.
+   */
+  private async firstFreeStep(
+    cadence: typeof FIRST_LESSON_PUSH,
+    startedAt: Date,
+    now: Date,
+    key: (i: number) => string,
+    table: 'action' | 'email',
+  ) {
+    const fresh = now.getTime() - startedAt.getTime() < 20 * HOUR;
+    let step = fresh && table === 'email' ? { index: 0, at: new Date(startedAt.getTime() + 15 * MINUTE) } : nextStep(cadence, startedAt, now);
+    for (let guard = 0; step && guard < 400; guard++) {
+      const used =
+        table === 'action'
+          ? await this.prisma.teyScheduledAction.findUnique({ where: { dedupeKey: key(step.index) }, select: { id: true } })
+          : await this.prisma.emailJob.findUnique({ where: { dedupeKey: key(step.index) }, select: { id: true } });
+      if (!used) return step;
+      const next = nextStep(cadence, startedAt, new Date(step.at.getTime() + 2 * HOUR), HOUR);
+      step = next && next.index > step.index ? next : null;
+    }
+    return null;
   }
 
   /** They opened their first lesson and left part-way: one push, one email. */
@@ -235,12 +268,24 @@ export class FirstLessonJourney {
       inbox: { type: 'TEY_FIRST_LESSON', entityType: 'Course', entityId: state.course.id, collapseDaily: true },
     });
 
-    if (outcome.pushed) {
-      await this.actions.markSent(action.id);
-      return { sent: true };
+    if (outcome.pushed) await this.actions.markSent(action.id);
+    else await this.actions.markSkipped(action.id, outcome.reason);
+
+    // Queue the next rung now rather than waiting for the hourly top-up.
+    if (hint.stage !== 'resume') await this.renew(action.userId, hint.courseId);
+    return outcome.pushed ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  private async renew(userId: string, courseId: string) {
+    try {
+      const e = await this.prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId } },
+        select: { createdAt: true },
+      });
+      if (e) await this.topUp(userId, courseId, e.createdAt);
+    } catch (err) {
+      this.logger.warn(`first-lesson renew failed: ${(err as Error).message}`);
     }
-    await this.actions.markSkipped(action.id, outcome.reason);
-    return { sent: false, skipReason: outcome.reason };
   }
 
   private async offsetFor(userId: string) {
@@ -251,6 +296,21 @@ export class FirstLessonJourney {
     return resolveLocalNow(user).offsetMinutes;
   }
 }
+
+/**
+ * Past the hand-written steps, Tey cycles through these, escalating in
+ * attitude, never in cruelty. {lesson} {mins} {course} {you} are filled in.
+ */
+const NAG_LINES: { title: string; body: string }[] = [
+  { title: 'Knock knock.', body: 'Who’s there? Lesson 1. Lesson 1 who? Exactly. You forgot about it{you}. {mins}.' },
+  { title: 'Still enrolled. Still 0 lessons.', body: 'That’s a gym membership you never use. "{lesson}" takes {mins}. Fix it.' },
+  { title: 'Is it the video? Be honest.', body: 'I made it skippable. "{lesson}" is {mins}. Out of excuses, aren’t we?' },
+  { title: '{course} called', body: 'It asked if you’re coming. I said yes. Please don’t make me a liar{you}.' },
+  { title: 'I’ll keep doing this, you know', body: 'Every few days. Forever. Until "{lesson}" is done. {mins} makes it stop.' },
+  { title: 'Lesson 1 has a question', body: '"Was it something I said?" Go answer it. {mins}.' },
+  { title: 'Fine. I’ll just wait here.', body: 'Alone. With "{lesson}". Which takes {mins}. No pressure{you}.' },
+  { title: 'Plot twist: you open the app', body: 'And "{lesson}" is done in {mins}. Best ending. Let’s film it.' },
+];
 
 /**
  * Tey's lines for each step: cheeky, a touch passive-aggressive, never cruel.
@@ -264,6 +324,8 @@ export function firstLessonPush(
   const lesson = info.lesson.title;
   const mins = info.lesson.minutes ? `${info.lesson.minutes} min` : 'a few minutes';
   const you = firstName ? `, ${firstName}` : '';
+  const fill = (t: string) =>
+    t.replace(/{lesson}/g, lesson).replace(/{mins}/g, mins).replace(/{course}/g, info.course.title).replace(/{you}/g, you);
   switch (stage) {
     case 'resume':
       return {
@@ -282,28 +344,17 @@ export function firstLessonPush(
       };
     case 3:
       return {
+        title: 'Two days. Lesson 1 is starting to take it personally.',
+        body: `"${lesson}" is ${mins}. Just saying. Loudly.`,
+      };
+    case 4:
+      return {
         title: "I'm not mad. I'm disappointed.",
         body: `Three days and "${lesson}" is still untouched. ${mins}. Go on. I'll wait. Again.`,
       };
-    case 4:
-    default:
-      return {
-        title: 'Okay, last nudge about lesson 1',
-        body: `I'll stop asking. But "${lesson}" is still ${mins}, and still yours. Surprise me.`,
-      };
+    default: {
+      const line = NAG_LINES[(Number(stage) - 5) % NAG_LINES.length];
+      return { title: fill(line.title), body: fill(line.body) };
+    }
   }
-}
-
-/**
- * Keeps a nudge out of the learner's night: one that would land after 21:00
- * local moves to 18:00 the next evening, one in the small hours to 18:00 that
- * same day.
- */
-function toDaytime(at: Date, offsetMinutes: number): Date {
-  const local = new Date(at.getTime() - offsetMinutes * 60_000);
-  const hour = local.getUTCHours();
-  if (hour >= 8 && hour < 21) return at;
-  const day = new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate(), 18));
-  if (hour >= 21) day.setUTCDate(day.getUTCDate() + 1);
-  return new Date(day.getTime() + offsetMinutes * 60_000);
 }

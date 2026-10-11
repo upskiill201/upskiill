@@ -33,6 +33,8 @@ import { TeyNotifyService } from './notify/tey-notify.service';
 import { TeyEventNotifier } from './notify/tey-event.notifier';
 import { CourseUnlockJourney } from './notify/course-unlock.journey';
 import { FirstLessonJourney } from './notify/first-lesson.journey';
+import { ReachService } from './notify/reach.service';
+import { ReachAdminController, ReachController } from './notify/reach.controller';
 import { EmailModule } from '../email/email.module';
 
 /**
@@ -62,6 +64,8 @@ import { EmailModule } from '../email/email.module';
     PushController,
     TeyAdminController,
     TeyAiAdminController,
+    ReachController,
+    ReachAdminController,
   ],
   providers: [
     TeyActivityService,
@@ -87,6 +91,7 @@ import { EmailModule } from '../email/email.module';
     TeyEventNotifier,
     CourseUnlockJourney,
     FirstLessonJourney,
+    ReachService,
   ],
   exports: [
     TeyNotifyService,
