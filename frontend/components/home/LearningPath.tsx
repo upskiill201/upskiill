@@ -562,7 +562,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
       </AnimatePresence>
 
       {/* Back to my lesson — a labelled pill, so it reads as "go on" rather
-          than a bare arrow. Sits above the mobile bottom nav (84px) and
+          than a bare arrow. Sits above the floating bottom dock (~78px) and
           clears the iOS home indicator. */}
       <AnimatePresence>
         {jump && model.current && (
