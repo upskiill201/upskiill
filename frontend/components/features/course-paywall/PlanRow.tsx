@@ -23,6 +23,8 @@ interface PlanRowProps {
    * computed here. Coupons discount the FIRST payment only, and the row says so.
    */
   discountedPrice?: number;
+  /** Formats a USD amount for display — local currency for Cameroon (lib/localPrice.ts). */
+  format?: (usd: number) => string;
 }
 
 const money = (n: number) => `$${n.toFixed(2)}`;
@@ -35,7 +37,7 @@ const money = (n: number) => `$${n.toFixed(2)}`;
  *     hide its real charge behind a per-month figure.
  *   - Anchors and savings are computed from the real ladder, never invented.
  */
-export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, discountedPrice }: PlanRowProps) {
+export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, discountedPrice, format = money }: PlanRowProps) {
   const BadgeIcon = badge?.icon;
   const isYearly = plan.plan === 'YEARLY';
   const perMonth = plan.effectiveMonthly ?? plan.price;
@@ -64,7 +66,7 @@ export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, 
       <span className={styles.rowInfo}>
         <span className={styles.planName}>{isYearly ? 'Yearly' : 'Monthly'}</span>
         <span className={styles.savingsTextNeutral}>
-          {isYearly ? `${money(plan.price)} billed once a year` : 'Billed every month'}
+          {isYearly ? `${format(plan.price)} billed once a year` : 'Billed every month'}
         </span>
         {isYearly && plan.savingsPercent ? (
           <span className={styles.savingsText}>You save {plan.savingsPercent}%</span>
@@ -77,21 +79,21 @@ export default function PlanRow({ plan, selected, onSelect, badge, anchorPrice, 
         ) : (
           <>
             <span className={styles.priceAmount}>
-              {money(perMonth)}
+              {format(perMonth)}
               <span className={styles.perMonth}>/mo</span>
             </span>
             {hasCoupon ? (
               <>
                 <span className={styles.anchorRow}>
-                  <span className={styles.priceOriginal}>{money(plan.price)}</span>
-                  <span className={`${styles.anchorNow} ${styles.priceDiscounted}`}>{money(discountedPrice!)}</span>
+                  <span className={styles.priceOriginal}>{format(plan.price)}</span>
+                  <span className={`${styles.anchorNow} ${styles.priceDiscounted}`}>{format(discountedPrice!)}</span>
                 </span>
                 <span className={styles.couponAppliedChip}>Coupon · first payment</span>
               </>
             ) : isYearly && anchorPrice && anchorPrice > plan.price ? (
               <span className={styles.anchorRow}>
-                <span className={styles.priceOriginal}>{money(anchorPrice)}</span>
-                <span className={styles.anchorNow}>{money(plan.price)}/yr</span>
+                <span className={styles.priceOriginal}>{format(anchorPrice)}</span>
+                <span className={styles.anchorNow}>{format(plan.price)}/yr</span>
               </span>
             ) : null}
           </>

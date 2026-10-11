@@ -72,9 +72,6 @@
 .tagFree {
   color: var(--success-green);
 }
-.tagPaid {
-  color: var(--text-secondary);
-}
 
 .title {
   font-size: 18px;
