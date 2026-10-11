@@ -471,6 +471,8 @@
     padding: 0 8px env(safe-area-inset-bottom);
     background: var(--nav-bg);
     border-top: 2px solid var(--nav-line);
+    /* A soft lift off the page — static, so it costs nothing per frame. */
+    box-shadow: 0 -6px 18px color-mix(in srgb, var(--color-ink) 6%, transparent);
     justify-content: space-around;
     align-items: center;
   }
@@ -500,6 +502,24 @@
   .activeBottomItem .bottomNavIconWrap {
     background-color: var(--nav-active-bg);
     border-color: var(--nav-active-line);
+    /* A little 3D lip, like the lesson buttons. */
+    box-shadow: 0 3px 0 var(--nav-active-line);
+  }
+
+  /* Pressed: the tile squishes down like a game button. */
+  .bottomNavItem:active .bottomNavIconWrap {
+    transform: translateY(2px) scale(0.92);
+  }
+
+  /* The tab you just landed on pops once (the class arrives with the route). */
+  .activeBottomItem .bottomNavIconWrap > :first-child {
+    animation: tabPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes tabPop {
+    0% { transform: scale(0.82); }
+    55% { transform: scale(1.14); }
+    100% { transform: scale(1); }
   }
 }
 
@@ -540,6 +560,9 @@
   .icon,
   .bottomNavIconWrap {
     transition: none;
+  }
+  .activeBottomItem .bottomNavIconWrap > :first-child {
+    animation: none;
   }
 }
 

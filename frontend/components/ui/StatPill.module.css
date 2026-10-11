@@ -13,15 +13,45 @@
   box-shadow: none;
   transition: background 0.12s ease;
   flex-shrink: 0;
+  --stat-ink: var(--color-ink);
+}
+
+/* Each stat's colour — tokens only. */
+.pill_streak { --stat-ink: color-mix(in srgb, var(--warning) 55%, var(--error-red)); }
+.pill_coin { --stat-ink: color-mix(in srgb, var(--warning) 82%, var(--color-ink)); }
+.pill_gem { --stat-ink: var(--color-brand); }
+.pill_lives { --stat-ink: var(--error-red); }
+.pill_level { --stat-ink: var(--brand-purple); }
+
+/* Not kept today / no hearts: grey, like Duolingo's unlit fire. */
+.inactive { --stat-ink: var(--text-muted); }
+.inactive .iconWrapper { filter: grayscale(1) opacity(0.55); }
+
+/* Last heart: it beats (transform only, so it runs on the compositor). */
+.low .iconWrapper { animation: heartbeat 1.4s ease-in-out infinite; }
+@keyframes heartbeat {
+  0%, 60%, 100% { transform: scale(1); }
+  12% { transform: scale(1.22); }
+  24% { transform: scale(0.96); }
+  36% { transform: scale(1.14); }
 }
 
 .pillBtn:hover {
-  background: rgba(15, 23, 42, 0.05);
+  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
 }
 
 .pillBtn:active {
-  background: rgba(15, 23, 42, 0.09);
+  background: color-mix(in srgb, var(--color-ink) 9%, transparent);
   transform: none;
+}
+
+/* Pressed: the icon squishes, like a game button. */
+.pillBtn .iconWrapper { transition: transform 0.12s ease; }
+.pillBtn:active .iconWrapper { transform: scale(0.86); }
+
+@media (prefers-reduced-motion: reduce) {
+  .low .iconWrapper { animation: none; }
+  .pillBtn .iconWrapper { transition: none; }
 }
 
 /* ─── Candy-3D variant (opt-in only, e.g. shop coin balance card) ─── */
@@ -31,14 +61,14 @@
    .start() call entirely. */
 
 .candy.pillBtn {
-  border: 2px solid #E2E8F0;
-  background: #FFFFFF;
-  box-shadow: 0 2px 0 0 #CBD5E1;
+  border: 2px solid var(--border);
+  background: var(--bg-page);
+  box-shadow: 0 2px 0 0 var(--border-strong);
   transition: all 0.12s ease;
 }
 
 .candy.pillBtn:hover {
-  background: #FFFFFF;
+  background: var(--bg-page);
   filter: brightness(1.03);
 }
 
@@ -49,33 +79,33 @@
 
 /* Individual Gamified 3D Borders & Colors (candy variant only) */
 .candy.pill_streak {
-  border-color: #FED7AA;
-  background: #FFF7ED;
-  box-shadow: 0 2.5px 0 0 #FDBA74;
+  border-color: color-mix(in srgb, var(--warning) 35%, var(--bg-page));
+  background: color-mix(in srgb, var(--warning) 8%, var(--bg-page));
+  box-shadow: 0 2.5px 0 0 color-mix(in srgb, var(--warning) 55%, var(--bg-page));
 }
 
 .candy.pill_coin {
-  border-color: #FDE047;
-  background: #FEFCE8;
-  box-shadow: 0 2.5px 0 0 #FACC15;
+  border-color: color-mix(in srgb, var(--warning) 35%, var(--bg-page));
+  background: color-mix(in srgb, var(--warning) 8%, var(--bg-page));
+  box-shadow: 0 2.5px 0 0 color-mix(in srgb, var(--warning) 55%, var(--bg-page));
 }
 
 .candy.pill_gem {
-  border-color: #BFDBFE;
-  background: #EFF6FF;
-  box-shadow: 0 2.5px 0 0 #93C5FD;
+  border-color: color-mix(in srgb, var(--color-brand) 35%, var(--bg-page));
+  background: color-mix(in srgb, var(--color-brand) 8%, var(--bg-page));
+  box-shadow: 0 2.5px 0 0 color-mix(in srgb, var(--color-brand) 55%, var(--bg-page));
 }
 
 .candy.pill_lives {
-  border-color: #FECDD3;
-  background: #FFF1F2;
-  box-shadow: 0 2.5px 0 0 #FDA4AF;
+  border-color: color-mix(in srgb, var(--error-red) 35%, var(--bg-page));
+  background: color-mix(in srgb, var(--error-red) 8%, var(--bg-page));
+  box-shadow: 0 2.5px 0 0 color-mix(in srgb, var(--error-red) 55%, var(--bg-page));
 }
 
 .candy.pill_level {
-  border-color: #DDD6FE;
-  background: #FAF5FF;
-  box-shadow: 0 2.5px 0 0 #C4B5FD;
+  border-color: color-mix(in srgb, var(--brand-purple) 35%, var(--bg-page));
+  background: color-mix(in srgb, var(--brand-purple) 8%, var(--bg-page));
+  box-shadow: 0 2.5px 0 0 color-mix(in srgb, var(--brand-purple) 55%, var(--bg-page));
 }
 
 /* ─── Compact mode (narrow drawer) ─── */
@@ -92,6 +122,7 @@
 }
 
 .statValue {
+  color: var(--stat-ink);
   font-size: 16px;
   font-weight: 800;
   font-family: var(--font-jakarta), sans-serif;

@@ -3,7 +3,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useRouter } from 'next/navigation';
 import { StatPill, StatType } from './StatPill';
 import { useGamification } from '@/context/GamificationContext';
 import { playHaptic } from '@/lib/haptics';
@@ -14,6 +13,8 @@ import HeartsPopover from '@/components/hearts/HeartsPopover';
 import LevelPopover from '@/components/level/LevelPopover';
 import { prefetchCatalog } from '@/lib/shop/previewCache';
 import { prefetchAchievements } from '@/lib/achievements/previewCache';
+import { useStreakStats } from '@/hooks/useStreak';
+import { useHydrated } from '@/components/studio/useHydrated';
 import styles from './StatsBar.module.css';
 
 export interface StatsBarProps {
@@ -55,12 +56,20 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   onLevelClick,
   show,
 }) => {
-  const router = useRouter();
   const { streakDays, coins, xp, lives, userLevel, statsReady } = useGamification();
   // Until real numbers exist (server read or the learner's own snapshot), a
   // dash — never a zero or a placeholder that looks like their balance. A
   // string also keeps StatChange from floating a fake "+87" when they land.
   const shown = (n: number) => (statsReady ? n : '–');
+
+  // Moods: a streak not kept today goes grey (Duolingo's unlit fire — the
+  // quiet "do a lesson today"); the last heart beats; no hearts is grey.
+  // The streak's state comes from the same cached read the popover uses.
+  const hydrated = useHydrated();
+  const { data: streakStats } = useStreakStats();
+  const streakMood =
+    hydrated && statsReady && streakDays > 0 && streakStats && !streakStats.hasCompletedToday ? 'dim' : 'normal';
+  const livesMood = !statsReady ? 'normal' : lives <= 0 ? 'empty' : lives === 1 ? 'low' : 'normal';
 
   // Streak popover hover & pin state
   const [isStreakHovered, setIsStreakHovered] = useState(false);
@@ -238,6 +247,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
                 value={s.value}
                 compact={compact}
                 variant={variant === 'pill' ? 'candy' : 'flat'}
+                mood={isStreak ? streakMood : isLives ? livesMood : 'normal'}
                 onClick={s.onClick}
               />
             </StatChange>

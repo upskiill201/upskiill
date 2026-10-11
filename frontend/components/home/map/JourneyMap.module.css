@@ -1,0 +1,342 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Journey map — the home path drawn as a world. Flat, bright, Duolingo-ish.
+   Every colour is a --jm-* token mixed from app/globals.css; each land sets
+   its own palette, and the deeper lands are richer and darker.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.board {
+  position: relative;
+  border-radius: 28px;
+  /* Clip sideways only: the scenery is drawn wider than a phone, while the
+     sticky banners and node popovers still need to escape vertically. */
+  overflow-x: clip;
+  --jm-ink: var(--color-ink);
+  --jm-shadow: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --jm-white: var(--bg-page);
+  --jm-trunk: color-mix(in srgb, var(--warning) 42%, var(--color-ink) 58%);
+  --jm-trunk-light: color-mix(in srgb, var(--warning) 60%, var(--color-ink) 40%);
+  --jm-rock: color-mix(in srgb, var(--text-muted) 70%, var(--bg-page));
+  --jm-rock-light: color-mix(in srgb, var(--text-muted) 35%, var(--bg-page));
+  --jm-dirt: color-mix(in srgb, var(--warning) 34%, var(--bg-page));
+  --jm-dirt-edge: color-mix(in srgb, var(--warning) 58%, var(--color-ink) 12%);
+  --jm-dirt-line: color-mix(in srgb, var(--warning) 14%, var(--bg-page));
+  --jm-water: color-mix(in srgb, var(--color-brand) 52%, var(--bg-page));
+  --jm-water-deep: color-mix(in srgb, var(--color-brand) 74%, var(--bg-page));
+  --jm-water-light: color-mix(in srgb, var(--color-brand) 18%, var(--bg-page));
+  --jm-wood: color-mix(in srgb, var(--warning) 55%, var(--color-ink) 30%);
+  --jm-wood-light: color-mix(in srgb, var(--warning) 70%, var(--bg-page) 10%);
+  --jm-red: var(--error-red);
+  --jm-yellow: var(--warning);
+  --jm-purple: var(--brand-purple);
+  --jm-glow: color-mix(in srgb, var(--warning) 40%, var(--bg-page));
+}
+
+/* ── Lands ─────────────────────────────────────────────────────────────── */
+
+.meadow {
+  --jm-ground: color-mix(in srgb, var(--success-green) 15%, var(--bg-page));
+  --jm-ground-patch: color-mix(in srgb, var(--success-green) 24%, var(--bg-page));
+  --jm-leaf: color-mix(in srgb, var(--success-green) 88%, var(--bg-page));
+  --jm-leaf-dark: color-mix(in srgb, var(--success-green) 74%, var(--color-ink));
+  --jm-leaf-light: color-mix(in srgb, var(--success-green) 55%, var(--bg-page));
+  --jm-stone: color-mix(in srgb, var(--success-green) 30%, var(--text-muted) 25%);
+}
+
+.forest {
+  --jm-ground: color-mix(in srgb, var(--success-green) 30%, var(--bg-page));
+  --jm-ground-patch: color-mix(in srgb, var(--success-green) 42%, var(--bg-page));
+  --jm-leaf: color-mix(in srgb, var(--success-green) 70%, var(--color-ink) 18%);
+  --jm-leaf-dark: color-mix(in srgb, var(--success-green) 52%, var(--color-ink));
+  --jm-leaf-light: color-mix(in srgb, var(--success-green) 80%, var(--bg-page) 5%);
+  --jm-stone: color-mix(in srgb, var(--success-green) 40%, var(--text-muted) 30%);
+}
+
+.canyon {
+  --jm-ground: color-mix(in srgb, var(--warning) 28%, var(--bg-page));
+  --jm-ground-patch: color-mix(in srgb, var(--warning) 40%, var(--bg-page));
+  --jm-leaf: color-mix(in srgb, var(--success-green) 62%, var(--color-ink) 14%);
+  --jm-leaf-dark: color-mix(in srgb, var(--success-green) 45%, var(--color-ink));
+  --jm-leaf-light: color-mix(in srgb, var(--success-green) 55%, var(--bg-page));
+  --jm-rock: color-mix(in srgb, var(--error-red) 52%, var(--warning));
+  --jm-rock-light: color-mix(in srgb, var(--warning) 62%, var(--bg-page));
+  --jm-rock-deep: color-mix(in srgb, var(--error-red) 60%, var(--color-ink));
+  --jm-stone: color-mix(in srgb, var(--warning) 55%, var(--color-ink) 18%);
+  --jm-dry: color-mix(in srgb, var(--warning) 70%, var(--color-ink) 22%);
+}
+
+.snow {
+  --jm-ground: color-mix(in srgb, var(--color-brand) 7%, var(--bg-page));
+  --jm-ground-patch: color-mix(in srgb, var(--color-brand) 14%, var(--bg-page));
+  --jm-leaf: color-mix(in srgb, var(--success-green) 48%, var(--color-ink) 34%);
+  --jm-leaf-dark: color-mix(in srgb, var(--success-green) 34%, var(--color-ink));
+  --jm-leaf-light: color-mix(in srgb, var(--success-green) 48%, var(--bg-page));
+  --jm-rock: color-mix(in srgb, var(--color-brand) 22%, var(--text-muted));
+  --jm-rock-light: color-mix(in srgb, var(--color-brand) 10%, var(--bg-page));
+  --jm-stone: color-mix(in srgb, var(--color-brand) 30%, var(--text-muted) 30%);
+  --jm-ice: color-mix(in srgb, var(--color-brand) 28%, var(--bg-page));
+  --jm-ice-deep: color-mix(in srgb, var(--color-brand) 45%, var(--bg-page));
+}
+
+.summit {
+  --jm-ground: color-mix(in srgb, var(--color-ink) 72%, var(--brand-purple));
+  --jm-ground-patch: color-mix(in srgb, var(--color-ink) 58%, var(--brand-purple));
+  --jm-leaf: color-mix(in srgb, var(--success-green) 40%, var(--color-ink));
+  --jm-leaf-dark: color-mix(in srgb, var(--success-green) 30%, var(--color-ink));
+  --jm-leaf-light: color-mix(in srgb, var(--success-green) 50%, var(--color-ink));
+  --jm-rock: color-mix(in srgb, var(--color-ink) 82%, var(--bg-page));
+  --jm-rock-light: color-mix(in srgb, var(--color-ink) 62%, var(--bg-page));
+  --jm-stone: color-mix(in srgb, var(--color-ink) 45%, var(--bg-page));
+  --jm-lava: color-mix(in srgb, var(--error-red) 70%, var(--warning));
+  --jm-lava-hot: color-mix(in srgb, var(--warning) 75%, var(--bg-page));
+  --jm-shadow: color-mix(in srgb, black 30%, transparent);
+}
+
+.land {
+  position: relative;
+  background: var(--jm-ground);
+}
+
+/* The colour of the land before, fading in — a land change reads as a
+   change of scenery, not a seam. */
+.landBlend {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 180px;
+  pointer-events: none;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── Fills ─────────────────────────────────────────────────────────────── */
+
+.shadow { fill: var(--jm-shadow); }
+.leaf { fill: var(--jm-leaf); }
+.leafDark { fill: var(--jm-leaf-dark); }
+.leafLight { fill: var(--jm-leaf-light); }
+.trunk { fill: var(--jm-trunk); }
+.trunkLight { fill: var(--jm-trunk-light); }
+.rock { fill: var(--jm-rock); }
+.rockLight { fill: var(--jm-rock-light); }
+.patch { fill: var(--jm-ground-patch); }
+.white { fill: var(--jm-white); }
+.red { fill: var(--jm-red); }
+.yellow { fill: var(--jm-yellow); }
+.purple { fill: var(--jm-purple); }
+.water { fill: var(--jm-water); }
+.waterDeep { fill: var(--jm-water-deep); }
+.waterLight { fill: var(--jm-water-light); }
+.wood { fill: var(--jm-wood); }
+.woodLight { fill: var(--jm-wood-light); }
+.roof { fill: var(--jm-red); }
+.ink { fill: var(--jm-ink); }
+.rockDeep { fill: var(--jm-rock-deep, var(--jm-rock)); }
+.dry { fill: var(--jm-dry, var(--jm-trunk)); }
+.ice { fill: var(--jm-ice, var(--jm-water-light)); }
+.iceDeep { fill: var(--jm-ice-deep, var(--jm-water)); }
+.lava { fill: var(--jm-lava, var(--jm-red)); }
+.lavaHot { fill: var(--jm-lava-hot, var(--jm-yellow)); }
+.orange { fill: color-mix(in srgb, var(--warning) 60%, var(--error-red)); }
+.stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ropeLine { fill: none; stroke: var(--jm-trunk); stroke-width: 2.5; stroke-linecap: round; }
+.crack { fill: none; stroke: var(--jm-lava-hot, var(--jm-yellow)); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.iceCrack { fill: none; stroke: var(--jm-white); stroke-width: 2; stroke-linecap: round; opacity: 0.8; }
+
+/* ── The road ──────────────────────────────────────────────────────────── */
+
+.roadEdge {
+  fill: none;
+  stroke: var(--jm-dirt-edge);
+  stroke-width: 34;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.road {
+  fill: none;
+  stroke: var(--jm-dirt);
+  stroke-width: 26;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.roadLine {
+  fill: none;
+  stroke: var(--jm-dirt-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 8 14;
+}
+.roadAheadBed {
+  fill: none;
+  stroke: var(--jm-ground-patch);
+  stroke-width: 26;
+  stroke-linecap: round;
+}
+.roadAhead {
+  fill: none;
+  stroke: var(--jm-stone);
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 21;
+}
+
+.riverRipple {
+  fill: none;
+  stroke: var(--jm-water-light);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 14 26;
+}
+
+/* ── Life ──────────────────────────────────────────────────────────────────
+   The only moving things, and they're HTML so the compositor moves them:
+   transform and opacity only, nothing that repaints the land beneath. */
+
+.life {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lifeAt {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.flutter {
+  position: absolute;
+  left: -9px;
+  top: -6px;
+  width: 18px;
+  height: 12px;
+  animation: flutter 9s ease-in-out infinite;
+}
+.wing {
+  position: absolute;
+  top: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--jm-yellow);
+  animation: flap 0.28s ease-in-out infinite alternate;
+}
+.wingL { left: 0; transform-origin: 100% 50%; }
+.wingR { right: 0; transform-origin: 0% 50%; }
+.body {
+  position: absolute;
+  left: 8px;
+  top: 0;
+  width: 2px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--jm-ink);
+}
+
+.firefly {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--jm-yellow) 0 30%, color-mix(in srgb, var(--jm-yellow) 35%, transparent) 45%, transparent 70%);
+  animation: blink 2.6s ease-in-out infinite;
+}
+
+@keyframes flutter {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(26px, -14px); }
+  50% { transform: translate(8px, -30px); }
+  75% { transform: translate(-18px, -10px); }
+}
+@keyframes flap {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.25); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
+}
+
+/* ── Fog over lands not reached yet ────────────────────────────────────── */
+
+.fog {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg-page) 30%, transparent) 0%,
+      color-mix(in srgb, var(--bg-page) 62%, transparent) 40%,
+      color-mix(in srgb, var(--bg-page) 70%, transparent) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flutter,
+  .wing,
+  .firefly {
+    animation: none;
+  }
+}
+
+/* Off-screen lands: every ambient loop holds still (LandScene's observer). */
+.paused,
+.paused * {
+  animation-play-state: paused !important;
+}
+
+/* The castle's stone stays light in every land (the summit's rock is dark). */
+.stone { fill: color-mix(in srgb, var(--text-muted) 55%, var(--bg-page)); }
+.stoneLight { fill: color-mix(in srgb, var(--text-muted) 25%, var(--bg-page)); }
+
+/* Falling snow and rising embers: transform + opacity only (compositor). */
+.snowflake {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bg-page);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 18%, transparent);
+  animation: fall 7s linear infinite;
+}
+.ember {
+  position: absolute;
+  left: -2.5px;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--warning) 70%, var(--bg-page));
+  animation: rise 4.5s ease-out infinite;
+}
+
+@keyframes fall {
+  0% { transform: translate(0, -40px); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(14px, 60px); }
+  90% { opacity: 1; }
+  100% { transform: translate(-6px, 160px); opacity: 0; }
+}
+@keyframes rise {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(10px, -120px) scale(0.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snowflake,
+  .ember {
+    animation: none;
+    opacity: 0;
+  }
+}
