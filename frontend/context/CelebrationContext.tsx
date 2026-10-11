@@ -11,7 +11,13 @@ import React, {
 } from 'react';
 import type { LeagueTier } from '@/lib/leagues';
 import { isLessonFocused, useLessonFocused } from '@/lib/lesson/lessonFocus';
-import { repairStreak } from '@/lib/streak/repair';
+import {
+  freezeNewsKey,
+  lossNewsKey,
+  lostStreakScene,
+  markStreakNewsSeen,
+  streakNewsDedupe,
+} from '@/lib/streak/news';
 import type { DailyRewardClaim, DailyRewardDay } from '@/context/GamificationContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -83,11 +89,14 @@ export type CelebrationScene =
     }
   | {
       kind: 'STREAK';
-      mode: 'EXTENDED' | 'SAVED' | 'LOST';
+      /** REPAIRED: a broken streak bought back — the flame relights. */
+      mode: 'EXTENDED' | 'SAVED' | 'LOST' | 'REPAIRED';
       days: number;
-      /** Count-up origin (e.g. 4 → 5). Defaults to days - 1 for EXTENDED. */
+      /** Count origin (e.g. 4 → 5). Defaults: EXTENDED days-1, LOST lostCount, REPAIRED 0. */
       previousDays?: number;
       lostCount?: number;
+      /** SAVED only — freezes still equipped after this one. */
+      freezesLeft?: number;
       personalBest?: boolean;
       weekDays?: StreakWeekDay[];
       speech?: string;
@@ -495,38 +504,30 @@ export function CelebrationProvider({ children }: { children: React.ReactNode })
         mode: 'SAVED' | 'LOST';
         days: number;
         lostCount?: number;
-        repair?: { available: boolean; costCoins: number } | null;
+        repair?: { available: boolean; costCoins: number; expiresAt?: string | null } | null;
         personalBest?: boolean;
         weekDays?: StreakWeekDay[];
+        freezesLeft?: number;
       }>).detail;
       if (!detail) return;
-      // A broken streak comes with Duolingo's repair offer when the server
-      // says so (it owns the window, the price and once-per-break).
-      const canRepair = detail.mode === 'LOST' && !!detail.repair?.available;
+      // Remembered across visits so StreakNewsWatcher doesn't show it again.
+      if (detail.mode === 'LOST') {
+        const lost = detail.lostCount ?? 0;
+        markStreakNewsSeen(lossNewsKey(lost, detail.repair?.expiresAt));
+        // Duolingo's repair offer rides along when the server makes one (it
+        // owns the window, the price and once-per-break).
+        celebrate(lostStreakScene({ lost, repair: detail.repair, celebrate }));
+        return;
+      }
+      markStreakNewsSeen(freezeNewsKey());
       celebrate({
         kind: 'STREAK',
-        mode: detail.mode,
+        mode: 'SAVED',
         days: detail.days,
-        lostCount: detail.lostCount,
         personalBest: detail.personalBest,
         weekDays: detail.weekDays,
-        dedupeKey: `streak-${detail.mode}-${detail.days}-${detail.lostCount ?? 0}`,
-        ...(canRepair
-          ? {
-              repairCost: detail.repair?.costCoins,
-              onRepair: async () => {
-                const { streakDays } = await repairStreak();
-                celebrate({
-                  kind: 'STREAK',
-                  mode: 'SAVED',
-                  days: streakDays,
-                  previousDays: streakDays,
-                  speech: `Repaired! Your ${streakDays}-day streak is back. One lesson today keeps it growing.`,
-                  dedupeKey: `streak-repaired-${streakDays}`,
-                });
-              },
-            }
-          : {}),
+        freezesLeft: detail.freezesLeft,
+        dedupeKey: streakNewsDedupe('SAVED', detail.days, 0),
       });
     };
 

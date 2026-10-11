@@ -20,3 +20,11 @@ export function getComboTier(combo: number): ComboTier {
   if (combo <= 5) return 4;
   return 5;
 }
+
+/**
+ * Runs worth stopping the show for: 3, 5, 7, 10, then every 5. Between them
+ * the run still climbs in the top bar and the "correct" sound, quietly.
+ */
+export function isComboMilestone(run: number): boolean {
+  return run === 3 || run === 5 || run === 7 || (run >= 10 && run % 5 === 0);
+}

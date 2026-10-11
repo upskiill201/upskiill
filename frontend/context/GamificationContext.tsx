@@ -188,6 +188,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
               days: data.streakDays ?? 0,
               lostCount: data.lostStreakCount ?? 0,
               repair: data.streakRepair ?? null,
+              freezesLeft: typeof data.streakFreezeBank === 'number' ? data.streakFreezeBank : undefined,
             },
           })
         );

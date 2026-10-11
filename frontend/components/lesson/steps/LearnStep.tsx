@@ -14,6 +14,7 @@ import { AlertTriangle, Check, Headphones, Info, Lightbulb, NotebookPen, Pin, X 
 import { motion, useReducedMotion } from 'framer-motion';
 import { CodeBlock } from '../code/CodeBlock';
 import type { LearnCard } from '@/lib/lesson/learnCards';
+import { inlineMarkdown } from '@/lib/lesson/inlineMarkdown';
 import { StepHeading } from './StepHeading';
 import { TeySays } from '../TeySays';
 import styles from '../Lesson.module.css';
@@ -169,7 +170,7 @@ export function LearnStep({
         <Card>
           <div
             className={`${styles.prose} text-[17px] md:text-[18px] leading-[1.65] text-ink`}
-            dangerouslySetInnerHTML={{ __html: sanitize(card.html) }}
+            dangerouslySetInnerHTML={{ __html: sanitize(inlineMarkdown(card.html)) }}
           />
         </Card>
       )}

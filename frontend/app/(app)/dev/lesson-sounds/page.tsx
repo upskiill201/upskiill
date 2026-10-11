@@ -82,6 +82,32 @@ const GROUPS: { title: string; cues: { cue: LessonSound; n?: number; label: stri
       { cue: 'questComplete', label: 'Quest complete' },
       { cue: 'unitComplete', label: 'Unit complete!' },
       { cue: 'courseComplete', label: 'Course complete!' },
+      { cue: 'xpTick', n: 0, label: 'XP rolls up (one tick)' },
+    ],
+  },
+  {
+    title: 'In-lesson momentum',
+    cues: [
+      { cue: 'comboBurst', n: 3, label: '3 in a row!' },
+      { cue: 'comboBurst', n: 5, label: '5 in a row!' },
+      { cue: 'comboBurst', n: 7, label: '7+ in a row!' },
+    ],
+  },
+  {
+    title: 'The streak',
+    cues: [
+      { cue: 'streakStart', label: 'Streak started (day 1)' },
+      { cue: 'streakIgnite', label: 'Flame catches' },
+      { cue: 'streakTick', n: 0, label: 'Counter rolls' },
+      { cue: 'streakTick', n: 3, label: 'Counter rolls (higher)' },
+      { cue: 'streakStamp', label: "Today's day stamped" },
+      { cue: 'streakThaw', label: 'Frozen streak thaws' },
+      { cue: 'streakFreeze', label: 'Freeze saved your streak' },
+      { cue: 'freezeEquip', n: 0, label: 'Freeze equipped' },
+      { cue: 'streakFizzle', label: 'Flame goes out' },
+      { cue: 'streakCountdown', n: 0, label: 'Lost streak counts down' },
+      { cue: 'streakLost', label: 'Streak lost' },
+      { cue: 'streakRepaired', label: 'Streak repaired' },
     ],
   },
   {

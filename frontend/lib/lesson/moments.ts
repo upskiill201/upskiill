@@ -56,6 +56,8 @@ export const COMEBACK_DAYS = 3;
 export const RECORD_MIN_HISTORY = 3;
 /** A run worth calling out in the headline. */
 export const ON_FIRE_RUN = 5;
+/** A fast finish is only a headline when it was this accurate too. */
+export const FAST_MIN_ACCURACY = 80;
 
 const sameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -104,7 +106,8 @@ export function momentId(input: MomentInput): MomentId {
   if (isPerfect(s)) return 'perfect';
   if (input.bestCombo >= ON_FIRE_RUN) return 'onFire';
   if (lessonsToday(input) >= 3) return 'dayRoll';
-  if (isFast(s) && s.questions > 0) return 'fast';
+  // Fast only counts when it was also mostly right — speed through mistakes isn't a feat.
+  if (isFast(s) && s.questions > 0 && (accuracyPct(s) ?? 0) >= FAST_MIN_ACCURACY) return 'fast';
   if (firstOfDay(input)) return 'firstOfDay';
   return 'standard';
 }
