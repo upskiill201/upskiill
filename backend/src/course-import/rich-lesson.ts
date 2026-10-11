@@ -37,6 +37,39 @@ import {
   phaseStateFromBlocks,
 } from '../lesson/lesson-blocks.util';
 import type { GeneratedLessonBlocks } from './lesson-content-generation.types';
+import type { LearnLayout, LessonDesign } from './lesson-design';
+
+/**
+ * The order of a lesson's Learn cards, from its design: the media always
+ * comes first, then a detective/speed lesson asks its quick check straight
+ * away ("what did you catch?"), a myth-buster leads with the warning, a
+ * builder shows the code before the ideas that explain it.
+ */
+function arrangeCards(cards: any[], layout: LearnLayout): any[] {
+  const isMedia = (c: any) => c.kind === 'video' || c.kind === 'audio';
+  const media = cards.filter(isMedia);
+  const rest = cards.filter((c) => !isMedia(c));
+  const pull = (pred: (c: any) => boolean) => {
+    const picked = rest.filter(pred);
+    return [picked, rest.filter((c) => !pred(c))] as const;
+  };
+  switch (layout) {
+    case 'checkEarly': {
+      const [check, others] = pull((c) => c.kind === 'check');
+      return [...media, ...check, ...others];
+    }
+    case 'tipFirst': {
+      const [tip, others] = pull((c) => c.kind === 'callout');
+      return [...media, ...tip, ...others];
+    }
+    case 'codeFirst': {
+      const [code, others] = pull((c) => c.kind === 'code');
+      return [...media, ...code, ...others];
+    }
+    default:
+      return cards;
+  }
+}
 
 export const RICH_EXERCISES_MIN = 5;
 export const RICH_EXERCISES_MAX = 12;
@@ -132,9 +165,22 @@ export const EXERCISE_PLAN: Record<'Coding' | 'AI' | 'other', string[]> = {
 export function richSystemPrompt(
   track: ImportTrack,
   source: LessonSource = 'video',
+  design?: LessonDesign,
 ): string {
-  const plan = EXERCISE_PLAN[track ?? 'other'];
+  const plan = design?.exercisePlan ?? EXERCISE_PLAN[track ?? 'other'];
+  const ideas = design?.keyIdeas ?? { min: KEY_IDEAS_MIN, max: KEY_IDEAS_MAX };
   const w = SOURCE_WORDS[source];
+  // Each lesson has its own personality and difficulty (lesson-design.ts),
+  // so a section doesn't read as the same worksheet over and over.
+  const designBlock = design
+    ? `
+This lesson's design (follow it — it's what makes this lesson feel different from the one before):
+- ${design.brief}
+- Difficulty: ${design.difficulty.toUpperCase()}.${design.difficulty === 'easy' ? ' Keep every exercise gentle and confidence-building.' : design.difficulty === 'hard' ? ' Ask the learner to apply and combine ideas, not just recall them; plausible wrong answers.' : ' A step up from recall: some application, still fair.'}
+- Prefer a "${design.tipTone}" tip.
+- Vary your openings and phrasing: don't start the summary, headings or prompts the way a typical lesson does ("In this lesson…", "Which of the following…").
+`
+    : '';
   const kinds =
     track === 'Coding'
       ? `- mcq (variant "standard", or "predictOutput" with "code": what does this code print/return?)
@@ -164,16 +210,16 @@ Rules:
 - Every exercise must be answerable using ONLY what this lesson teaches, by someone who just went through it. Never ask about people, brands, shows or examples beyond exactly what the ${w.text} says about them, and never ask the learner to guess.
 - Every exercise must have exactly one defensible answer. In "findBug", exactly ONE line is wrong and every other line must be correct according to the ${w.text}.
 - Never number or bullet the "lines" of findBug/orderLines ("1.", "-"): they are shuffled, and numbers would give the answer away.
-
+${designBlock}
 Return ONE JSON object with exactly these fields:
 - "summary": 1-3 sentences (20-500 chars), what this lesson gives the learner.
 - "whatYouWillLearn": ${2}-${5} short outcomes (each under 120 chars).
-- "keyIdeas": ${KEY_IDEAS_MIN}-${KEY_IDEAS_MAX} items {"heading" (under 70 chars), "body" (40-600 chars, one idea, plain text)} in teaching order.
+- "keyIdeas": ${ideas.min}-${ideas.max} items {"heading" (under 70 chars), "body" (40-600 chars, one idea, plain text)} in teaching order.
 - "codeSamples": 0-3 items {"language" (one of ${CODE_LANGUAGES.join(', ')}), "code" (under 1500 chars), "caption"}.
 - "tip": {"tone": "tip" | "warning" | "remember", "text" (under 280 chars)} — the gotcha or shortcut worth remembering.
 - "quickCheck": {"question", "options" (3 short answers), "correctIndex" (0-based), "explanation"} — checks the main idea.
 - "scenario": one sentence setting up the practice (under 240 chars), or "".
-- "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the ${w.text} is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, easy first. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
+- "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the ${w.text} is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, in the order given. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
 ${kinds}
   mcq items also have "options" (3-4 short answers) and "correctIndex" (0-based). Exactly one right answer; wrong ones plausible, never "all of the above".
   Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank] — and each one REPLACES its answer: the answer words never appear in the template. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
@@ -561,6 +607,7 @@ export function buildRichLesson(
   media: LessonMedia,
   track: ImportTrack,
   images: LessonImage[] = [],
+  layout: LearnLayout = 'classic',
 ): RichBuildResult {
   const mediaKind = media.kind ?? 'video';
   const clip =
@@ -697,7 +744,7 @@ export function buildRichLesson(
     } else if (qc) {
       dropped.push('quick check (no clear right answer)');
     }
-    const valid = cards.filter((c) => {
+    const valid = arrangeCards(cards, layout).filter((c) => {
       const p = learnCardProblem(c);
       if (p) dropped.push(`Learn card: ${p}`);
       return !p;

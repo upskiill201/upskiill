@@ -27,7 +27,12 @@ describe('LessonContentGenerationProcessorService', () => {
   let prisma: {
     $queryRaw: jest.Mock;
     $executeRaw: jest.Mock;
-    courseImportLesson: { findMany: jest.Mock; update: jest.Mock };
+    courseImportLesson: {
+      findMany: jest.Mock;
+      update: jest.Mock;
+      count: jest.Mock;
+      findFirst: jest.Mock;
+    };
     courseImportFile: { findMany: jest.Mock };
     courseImport: { findUnique: jest.Mock; update: jest.Mock };
   };
@@ -37,7 +42,13 @@ describe('LessonContentGenerationProcessorService', () => {
     prisma = {
       $queryRaw: jest.fn().mockResolvedValue([]),
       $executeRaw: jest.fn().mockResolvedValue(0),
-      courseImportLesson: { findMany: jest.fn(), update: jest.fn() },
+      courseImportLesson: {
+        findMany: jest.fn(),
+        update: jest.fn(),
+        // Section size and the lesson before it, for the lesson design.
+        count: jest.fn().mockResolvedValue(1),
+        findFirst: jest.fn().mockResolvedValue(null),
+      },
       courseImportFile: { findMany: jest.fn().mockResolvedValue([]) },
       courseImport: { findUnique: jest.fn(), update: jest.fn() },
     };
@@ -147,6 +158,9 @@ describe('LessonContentGenerationProcessorService', () => {
       // No track chosen and no Drive duration on this fixture: classic Learn.
       track: null,
       videoDurationSec: null,
+      // First lesson of its section: the gentle warm-up.
+      design: expect.objectContaining({ flavor: 'warmup', difficulty: 'easy' }),
+      position: { index: 0, count: 1, previousTitle: null },
     });
     const update = updateCallsFor(prisma.courseImportLesson.update).find(
       (c) => c.where.id === 'lesson-1',
