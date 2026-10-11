@@ -24,6 +24,7 @@ import DailyRewardWatcher from "../../components/gamification/DailyRewardWatcher
 import LeagueResultWatcher from "../../components/leaderboard/LeagueResultWatcher";
 import LeaderboardRankWatcher from "../../components/leaderboard/LeaderboardRankWatcher";
 import ReminderAskWatcher from "../../components/push/ReminderAskWatcher";
+import StreakNewsWatcher from "../../components/streak/StreakNewsWatcher";
 // Shop Engine — unlock announcements + purchase/chest/collection takeovers
 import { ShopEngineProvider } from "../../context/ShopEngineContext";
 import ShopEngine from "../../components/shop-engine/ShopEngine";
@@ -103,6 +104,7 @@ export default function AppGroupLayout({
                     <LeagueResultWatcher />
                     <LeaderboardRankWatcher />
                     <ReminderAskWatcher />
+                    <StreakNewsWatcher />
                     {/* Notices (lib/awareness) and the streak/spin reveal portals */}
                     <NoticeHost />
                     <TeyroLoaderProvider>{children}</TeyroLoaderProvider>

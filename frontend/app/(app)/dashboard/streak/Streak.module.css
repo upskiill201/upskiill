@@ -86,9 +86,6 @@
   flex-shrink: 0;
 }
 
-.flameDim {
-  filter: grayscale(1) opacity(0.45);
-}
 
 /* ─── Cards ────────────────────────────────────────────────────────────── */
 .card {

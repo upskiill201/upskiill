@@ -57,6 +57,16 @@ function Stat({ card, index }: { card: StatCard; index: number }) {
     return () => clearTimeout(t);
   }, [delayMs, index]);
 
+  // The XP rolls up with a run of tiny coin clicks, then the card pops.
+  const rounded = shown === null ? null : Math.round(shown);
+  const lastTick = useRef<number | null>(null);
+  const landed = card.id === 'xp' && card.value !== null && card.value > 0 && rounded === card.value;
+  useEffect(() => {
+    if (card.id !== 'xp' || rounded === null) return;
+    if (!reducedMotion && lastTick.current !== null && rounded !== lastTick.current) playSound('xpTick', rounded);
+    lastTick.current = rounded;
+  }, [card.id, rounded, reducedMotion]);
+
   return (
     <motion.div
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.8 }}
@@ -81,12 +91,14 @@ function Stat({ card, index }: { card: StatCard; index: number }) {
             style={{ backgroundColor: `color-mix(in srgb, ${tone.color} 25%, white)` }}
           />
         ) : (
-          <span
+          <motion.span
             className="text-[21px] md:text-[24px] font-extrabold tabular-nums"
             style={{ color: tone.color, fontFamily: 'var(--font-jakarta)' }}
+            animate={landed && !reducedMotion ? { scale: [1, 1.35, 1] } : { scale: 1 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
           >
             {formatStat(card.format, shown)}
-          </span>
+          </motion.span>
         )}
       </div>
     </motion.div>

@@ -15,7 +15,12 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { AlertCircle, Check, Crown, Lock, RefreshCw, Snowflake, Trophy, Wrench } from 'lucide-react';
 import StreakCalendar from '@/components/streak/StreakCalendar';
-import { useStreakStats } from '@/hooks/useStreak';
+import { StreakFlame } from '@/components/streak/fx/StreakFlame';
+import { StreakOdometer } from '@/components/streak/fx/StreakOdometer';
+import { StreakWeekRow } from '@/components/streak/fx/StreakWeekRow';
+import { monthOf, shiftMonth, useStreakCalendar, useStreakStats } from '@/hooks/useStreak';
+import { buildWeek, yesterdayWasFrozen } from '@/lib/streak/week';
+import { useHydrated } from '@/components/studio/useHydrated';
 import { useGamification } from '@/context/GamificationContext';
 import { useCelebration } from '@/context/CelebrationContext';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -41,13 +46,22 @@ function useCountdown(iso: string | null | undefined) {
 export default function StreakPage() {
   const reducedMotion = useReducedMotion();
   const { data, error, isLoading, mutate } = useStreakStats();
+  // The SWR cache lives in localStorage: wait for hydration before using it.
+  const hydrated = useHydrated();
   const { coins } = useGamification();
   const { celebrate } = useCelebration();
   const [repairing, setRepairing] = useState(false);
   const [repairError, setRepairError] = useState<string | null>(null);
   const repairLeft = useCountdown(data?.repair?.available ? data.repair.expiresAt : null);
+  // This week (and last month's tail in week one) for the week row and the
+  // frozen flame.
+  const [month] = useState(() => monthOf(new Date()));
+  const [needPrev] = useState(() => new Date().getDate() <= 7);
+  const { data: cal } = useStreakCalendar(month);
+  const { data: prevCal } = useStreakCalendar(needPrev ? shiftMonth(month, -1) : month);
+  const calendar = cal && (!needPrev || prevCal) ? (needPrev ? [...(prevCal?.days ?? []), ...cal.days] : cal.days) : undefined;
 
-  if (error && !data) {
+  if (hydrated && error && !data) {
     return (
       <div className={styles.page}>
         <div className={styles.errorCard} role="alert">
@@ -61,7 +75,7 @@ export default function StreakPage() {
     );
   }
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !hydrated) {
     return (
       <div className={styles.page} aria-busy="true" aria-label="Loading your streak">
         <div className={`${styles.hero} ${styles.skeleton}`} />
@@ -73,6 +87,9 @@ export default function StreakPage() {
 
   const streak = data.currentStreak;
   const done = data.hasCompletedToday;
+  // A freeze held yesterday and today isn't done: the streak is on ice.
+  const frozen = !done && streak > 0 && yesterdayWasFrozen(calendar);
+  const week = calendar ? buildWeek({ calendar, streak, todayDone: done, span: 'rolling' }) : null;
   const goal = data.goal;
   const maxFreezes = data.maxFreezes ?? 2;
   const repair = data.repair?.available ? data.repair : null;
@@ -89,10 +106,8 @@ export default function StreakPage() {
       const { streakDays } = await repairStreak();
       celebrate({
         kind: 'STREAK',
-        mode: 'SAVED',
+        mode: 'REPAIRED',
         days: streakDays,
-        previousDays: streakDays,
-        speech: `Repaired! Your ${streakDays}-day streak is back. One lesson today keeps it growing.`,
         dedupeKey: `streak-repaired-${streakDays}`,
       });
     } catch (e) {
@@ -114,13 +129,18 @@ export default function StreakPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 380, damping: 18 }}
           >
-            {streak}
+            {/* Counts up as the page opens — the streak, earned day by day. */}
+            <StreakOdometer from={0} to={streak} delay={250} stepMs={70} />
           </motion.span>
           <span className={styles.heroLabel}>day streak{streak === 1 ? '' : '!'}</span>
           <p className={styles.heroSub}>
             {done ? (
               <>
                 <Check size={16} strokeWidth={3} aria-hidden="true" /> You extended your streak today
+              </>
+            ) : frozen ? (
+              <>
+                <Snowflake size={16} strokeWidth={3} aria-hidden="true" /> Frozen. A lesson today thaws it
               </>
             ) : streak > 0 ? (
               'Do a lesson today to keep it alive'
@@ -129,14 +149,17 @@ export default function StreakPage() {
             )}
           </p>
         </div>
-        <motion.div
-          className={styles.heroFlame}
-          animate={reducedMotion || !done ? undefined : { rotate: [-3, 3, -3], scale: [1, 1.04, 1] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <Image src="/Icons/burn.png" alt="" width={112} height={112} priority className={done ? '' : styles.flameDim} />
-        </motion.div>
+        <div className={styles.heroFlame}>
+          <StreakFlame from={done ? 'lit' : frozen ? 'frozen' : 'dim'} size={112} />
+        </div>
       </section>
+
+      {/* ── This week ── */}
+      {week && (
+        <section className={styles.card} aria-label="This week">
+          <StreakWeekRow cells={week} />
+        </section>
+      )}
 
       {!done && (
         <Link href="/dashboard" className={styles.primaryBtn} onClick={() => playSound('start')}>

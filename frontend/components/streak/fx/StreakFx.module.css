@@ -1,0 +1,208 @@
+/* Streak FX — the flame, the rolling counter and the week band, shared by the
+   lesson's streak screen, the streak scenes and the streak page. Tokens only,
+   derived from app/globals.css exactly like the popover's. */
+
+.fx {
+  --sfx-orange: color-mix(in srgb, var(--warning) 68%, var(--error-red));
+  --sfx-orange-deep: color-mix(in srgb, var(--sfx-orange) 78%, black);
+  --sfx-orange-tint: color-mix(in srgb, var(--sfx-orange) 26%, var(--bg-page));
+  --sfx-gold: var(--warning);
+  --sfx-ice: color-mix(in srgb, var(--color-brand) 70%, white);
+  --sfx-ice-deep: var(--color-brand);
+  --sfx-ice-tint: color-mix(in srgb, var(--color-brand) 18%, var(--bg-page));
+  --sfx-ice-glass: color-mix(in srgb, var(--color-brand) 22%, white);
+  --sfx-ink: var(--color-ink);
+  --sfx-muted: var(--text-muted);
+  --sfx-line: var(--border);
+  --sfx-well: var(--bg-section);
+  --sfx-on: var(--bg-page);
+  --sfx-smoke: color-mix(in srgb, var(--text-muted) 55%, var(--bg-page));
+}
+
+/* ── The flame ─────────────────────────────────────────────────────────── */
+
+.flameWrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.glow {
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--sfx-orange) 38%, transparent), transparent 72%);
+}
+
+.glowIce {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--sfx-ice) 45%, transparent), transparent 72%);
+}
+
+.flameImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 90%;
+  will-change: transform, filter;
+}
+
+.ice {
+  position: absolute;
+  inset: 4% 10% 0;
+  pointer-events: none;
+}
+
+.iceShard {
+  position: absolute;
+  background: linear-gradient(150deg, color-mix(in srgb, white 55%, transparent) 0%, color-mix(in srgb, var(--sfx-ice-glass) 35%, transparent) 55%, color-mix(in srgb, var(--sfx-ice) 40%, transparent) 100%);
+  border: 2px solid color-mix(in srgb, var(--sfx-ice) 60%, white);
+  opacity: 1;
+  box-shadow: inset 0 2px 0 color-mix(in srgb, white 80%, transparent);
+}
+
+.particle {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ring {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 4px solid var(--sfx-orange);
+  pointer-events: none;
+}
+
+.ringIce {
+  border-color: var(--sfx-ice);
+}
+
+/* ── The rolling counter ───────────────────────────────────────────────── */
+
+.odometer {
+  display: inline-flex;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  /* Room for the roll without clipping the glyphs. */
+  padding: 0.06em 0;
+}
+
+.digit {
+  position: relative;
+  display: inline-block;
+  width: 0.62em;
+  height: 1em;
+  text-align: center;
+}
+
+.digitInner {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── The week ──────────────────────────────────────────────────────────── */
+
+.week {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+}
+
+.weekDay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.weekLetter {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sfx-muted);
+}
+
+.weekLetterToday {
+  color: var(--sfx-orange);
+}
+
+.weekCell {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+
+/* The band joins two counted days, behind the circles. */
+.band {
+  position: absolute;
+  top: 50%;
+  height: 22px;
+  margin-top: -11px;
+  left: -50%;
+  right: 50%;
+  background: var(--sfx-orange-tint);
+  transform-origin: left center;
+  z-index: 0;
+}
+
+.bandIce {
+  background: var(--sfx-ice-tint);
+}
+
+.circle {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sfx-well);
+  color: var(--sfx-on);
+}
+
+.circleLit {
+  background: var(--sfx-orange);
+  box-shadow: inset 0 -3px 0 var(--sfx-orange-deep);
+}
+
+.circleIce {
+  background: var(--sfx-ice-tint);
+  color: var(--sfx-ice-deep);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sfx-ice) 50%, transparent);
+}
+
+.circleToday {
+  background: var(--sfx-on);
+  box-shadow: inset 0 0 0 3px var(--sfx-orange);
+}
+
+.circleFuture {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--sfx-line);
+}
+
+.stampBurst {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid var(--sfx-orange);
+  pointer-events: none;
+}
+
+@media (max-width: 360px) {
+  .circle {
+    width: 32px;
+    height: 32px;
+  }
+}

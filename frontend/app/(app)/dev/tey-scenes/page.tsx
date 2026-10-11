@@ -16,6 +16,7 @@ import { useCelebration } from '@/context/CelebrationContext';
 import { useShopEngine } from '@/context/ShopEngineContext';
 import { pickAchievementVoice } from '@/lib/tey/achievementVoice';
 import TreasureChestBench from '@/components/dashboard/v2/TreasureChestBench';
+import StreakBench from '@/components/streak/fx/StreakBench';
 
 const btn: React.CSSProperties = {
   display: 'block',
@@ -207,6 +208,35 @@ export default function TeyScenesDevPage() {
       <button style={btn} onClick={() => celebrate({ kind: 'STREAK', mode: 'EXTENDED', days: 30, previousDays: 29 })}>
         Streak — Extended (milestone, day 30)
       </button>
+      <button style={btn} onClick={() => celebrate({ kind: 'STREAK', mode: 'SAVED', days: 9, freezesLeft: 1 })}>
+        Streak — Frozen (freeze used, 1 left)
+      </button>
+      <button
+        style={btn}
+        onClick={() =>
+          celebrate({
+            kind: 'STREAK',
+            mode: 'LOST',
+            days: 0,
+            lostCount: 12,
+            repairCost: 450,
+            // Bench only: pretends the repair went through, then plays it.
+            onRepair: async () => {
+              await new Promise((r) => setTimeout(r, 600));
+              celebrate({ kind: 'STREAK', mode: 'REPAIRED', days: 12, dedupeKey: `bench-repaired-${Date.now()}` });
+            },
+            dedupeKey: `bench-lost-${Date.now()}`,
+          })
+        }
+      >
+        Streak — Lost with repair offer (bench repair)
+      </button>
+      <button style={btn} onClick={() => celebrate({ kind: 'STREAK', mode: 'REPAIRED', days: 12, dedupeKey: `bench-rep-${Date.now()}` })}>
+        Streak — Repaired (0 → 12)
+      </button>
+
+      <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Lesson streak screen + combo (fake data)</h2>
+      <StreakBench />
 
       <h2 style={{ fontSize: 13, fontWeight: 800, marginTop: 20, marginBottom: 8 }}>Section / Course milestones</h2>
       <button

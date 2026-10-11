@@ -288,7 +288,7 @@ const COMPLETE_PERFECT = [
 ];
 
 const COMPLETE_FAST = [
-  'Quick and correct. My favourite combination.',
+  'Quick and sharp. My favourite combination.',
   "That was fast. You're getting good at this.",
   'In and out. Efficient. I like it.',
 ];
@@ -332,6 +332,17 @@ function streakLines(days: number): string[] {
 /** Under the streak number, on the day's first lesson. */
 export function pickStreakLine(days: number): string {
   return pickFromPool(streakLines(days), days <= 1 ? 'lesson:streak:first' : 'lesson:streak');
+}
+
+const THAW_LINES = (days: number) => [
+  `Your freeze held it, and now it's burning again. ${days} days.`,
+  `Out of the ice and back on fire. ${days} days and counting.`,
+  `The freeze did its job. You did yours. ${days} days.`,
+];
+
+/** The first lesson after a freeze covered a missed day. */
+export function pickStreakThawLine(days: number): string {
+  return pickFromPool(THAW_LINES(days), 'lesson:streak:thaw');
 }
 
 const UNIT_DONE = [

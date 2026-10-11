@@ -49,7 +49,12 @@ describe('momentId — one headline, first true thing wins', () => {
   });
 
   it('notices a fast finish against the lesson’s own estimate', () => {
-    expect(momentId(input({ stats: { ...input().stats, seconds: 90 } }))).toBe('fast');
+    expect(momentId(input({ stats: { ...input().stats, questions: 5, seconds: 90 } }))).toBe('fast');
+  });
+
+  it('does not call a fast finish with a lot of misses a feat', () => {
+    // 3 of 4 right (75%) — quick, but not "quick work!".
+    expect(momentId(input({ stats: { ...input().stats, seconds: 90 } }))).toBe('standard');
   });
 
   it('marks the day’s first lesson from the server’s last completion', () => {

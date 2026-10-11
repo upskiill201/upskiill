@@ -1,31 +1,49 @@
 'use client';
 
 /**
- * The streak grew today. Shown only on the day's first lesson.
+ * The streak grew today. Shown only on the day's first lesson — the moment
+ * Duolingo built its habit loop on, so it gets a real performance:
  *
- * The flame punches in, the number rolls over from yesterday's count to
- * today's, and today's circle in the week fills last — the moment the
- * learner sees their own action land on the calendar.
+ *   1. The flame waits where yesterday left it: grey (start, extend) or
+ *      locked in ice (yesterday a freeze held the streak).
+ *   2. It catches — sparks, a pop, colour floods in — or the ice cracks
+ *      apart and the fire roars through (an "unfreeze").
+ *   3. The counter rolls over: yesterday's number up and out, today's in.
+ *   4. Today's circle in the week gets stamped, the band reaching into it.
+ *   5. A milestone or a personal best fires the cannons.
  *
+ * Every beat has its own studio cue, timed to the motion (TIMING below).
  * On a streak-chest day (3, 7, 14, 21, 30, then every 30) a chest drops in
- * under the calendar; tapping it opens the Rive treasure chest right here.
- * If the learner moves on, it waits on the home page's chest card.
+ * under the week; tapping it opens the treasure chest right here.
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, Trophy } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { Snowflake, Sparkles, Trophy } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSWRConfig } from 'swr';
 import { QuestChest } from '@/components/quests/QuestChest';
+import { StreakFlame, type FlameLook } from '@/components/streak/fx/StreakFlame';
+import { StreakOdometer } from '@/components/streak/fx/StreakOdometer';
+import { StreakWeekRow } from '@/components/streak/fx/StreakWeekRow';
+import type { CalendarDay } from '@/context/StreakContext';
 import { useGamification } from '@/context/GamificationContext';
 import { useRewardChest } from '@/hooks/useRewardChest';
-import { playHaptic } from '@/lib/haptics';
+import { celebrationHaptic, playHaptic } from '@/lib/haptics';
 import { findStreakChest, isStreakChestDay, pendingChestsKey, type PendingChest } from '@/lib/quests/streakChests';
 import { playSound } from '@/lib/audio/lessonSounds';
 import type { StreakMoment } from '@/lib/lesson/moments';
-import { streakWeek } from '@/lib/lesson/outro';
+import { buildWeek } from '@/lib/streak/week';
 import { fireCelebration } from './celebrate';
+
+/** What kind of streak day this is. */
+export type StreakDayKind = 'start' | 'extend' | 'thaw';
+
+/** ms from the screen appearing. */
+const TIMING = {
+  start: { catch: 650, roll: 1050, title: 1250, stamp: 1650, big: 2050 },
+  extend: { catch: 450, roll: 850, title: 1050, stamp: 1400, big: 1800 },
+  thaw: { catch: 900, roll: 1350, title: 1550, stamp: 1900, big: 2300 },
+} as const;
 
 function StreakChest({ days }: { days: number }) {
   const reducedMotion = useReducedMotion();
@@ -91,8 +109,12 @@ function StreakChest({ days }: { days: number }) {
         backgroundColor: state === 'open' ? 'white' : 'color-mix(in srgb, var(--warning) 10%, white)',
       }}
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 18 }}
+      animate={state === 'ready' && !reducedMotion ? { opacity: 1, y: 0, scale: [1, 1.03, 1] } : { opacity: 1, y: 0, scale: 1 }}
+      transition={
+        state === 'ready' && !reducedMotion
+          ? { opacity: { duration: 0.3 }, y: { type: 'spring', stiffness: 420, damping: 18 }, scale: { duration: 1.4, repeat: Infinity, delay: 0.6 } }
+          : { type: 'spring', stiffness: 420, damping: 18 }
+      }
     >
       <QuestChest state={state === 'open' ? 'open' : state === 'opening' ? 'opening' : 'ready'} size={52} />
       <span className="flex-1 min-w-0">
@@ -111,93 +133,137 @@ export function StreakDay({
   days,
   line,
   moment,
+  kind = days <= 1 ? 'start' : 'extend',
+  calendar,
 }: {
   days: number;
   line: string;
   /** Milestone name and personal best (lib/lesson/moments.ts). */
   moment: StreakMoment;
+  kind?: StreakDayKind;
+  /** The calendar as it stood when the lesson opened, for the week row. */
+  calendar?: CalendarDay[];
 }) {
   const reducedMotion = useReducedMotion();
-  const week = streakWeek(days);
   const rootRef = useRef<HTMLDivElement>(null);
   const big = moment.milestone || moment.personalBest;
+  const t = TIMING[kind];
+  const week = useMemo(() => buildWeek({ calendar, streak: days, todayDone: true, span: 'rolling' }), [calendar, days]);
+  const flameFrom: FlameLook = kind === 'thaw' ? 'frozen' : 'dim';
+  const before = Math.max(0, days - 1);
 
+  // The beats, each with its cue. Fire-and-forget timers would survive an
+  // unmount, so they're cleared — and the screen only mounts once.
   useEffect(() => {
-    const t = setTimeout(() => {
-      playSound(big ? 'streakMilestone' : 'streak');
-      // A named milestone or a new best gets the big version.
-      if (big && !reducedMotion) fireCelebration('cannons', rootRef.current);
-    }, 350);
-    // Today's circle fills at ~1s — it gets its own little "tock-ding".
-    const day = setTimeout(() => playSound('weekDay'), 1050);
-    return () => {
-      clearTimeout(t);
-      clearTimeout(day);
-    };
-  }, [big, reducedMotion]);
+    const timers = [
+      setTimeout(() => {
+        playSound(kind === 'thaw' ? 'streakThaw' : kind === 'start' ? 'streakStart' : 'streakIgnite');
+        celebrationHaptic(kind === 'extend' ? 'win' : 'big');
+      }, kind === 'thaw' ? t.catch - 420 : t.catch - 60),
+      setTimeout(() => {
+        playSound('streakStamp');
+        playHaptic('medium', false);
+      }, t.stamp),
+    ];
+    if (big) {
+      timers.push(
+        setTimeout(() => {
+          playSound('streakMilestone');
+          if (!reducedMotion) fireCelebration('cannons', rootRef.current);
+        }, t.big),
+      );
+    } else if (!reducedMotion) {
+      timers.push(setTimeout(() => fireCelebration('burst', rootRef.current), t.catch + 80));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [kind, big, reducedMotion, t]);
+
+  const title =
+    kind === 'start' ? 'Streak started!' : kind === 'thaw' ? 'Streak unfrozen!' : moment.title;
+  const ink = kind === 'thaw' && !reducedMotion ? 'var(--color-brand)' : 'var(--warning)';
 
   return (
     <div ref={rootRef} className="flex-1 flex flex-col items-center justify-center text-center py-6">
       <motion.div
-        className="relative w-[150px] h-[150px] md:w-[180px] md:h-[180px]"
-        initial={reducedMotion ? false : { scale: 0.2, rotate: -12, opacity: 0 }}
-        animate={{ scale: [0.2, 1.15, 1], rotate: 0, opacity: 1 }}
-        transition={{ duration: 0.7, times: [0, 0.6, 1], ease: 'easeOut' }}
+        initial={reducedMotion ? false : { scale: 0.3, opacity: 0, y: 30 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 18 }}
       >
-        <Image src="/Icons/burn.png" alt="" aria-hidden="true" fill priority sizes="180px" className="object-contain" />
+        <StreakFlame from={flameFrom} to="lit" delay={t.catch} size={168} />
       </motion.div>
 
       {/* Yesterday's count rolls up and out; today's rolls in. */}
-      <div className="mt-4 relative h-[84px] md:h-[100px] overflow-hidden" aria-live="polite">
-        <motion.p
-          className="text-[72px] md:text-[88px] font-extrabold leading-none tabular-nums"
+      <div className="mt-2 flex flex-col items-center" aria-live="polite">
+        <StreakOdometer
+          from={before}
+          to={days}
+          delay={t.roll}
+          className="text-[80px] md:text-[96px] font-extrabold"
           style={{ color: 'var(--warning)', fontFamily: 'var(--font-jakarta)' }}
-          initial={reducedMotion ? false : { y: '100%' }}
-          animate={{ y: 0 }}
-          transition={{ delay: 0.45, type: 'spring', stiffness: 300, damping: 20 }}
+          onStep={(i) => playSound('streakTick', i + 2)}
+        />
+        <motion.p
+          className="mt-1 text-[24px] md:text-[28px] font-extrabold leading-tight"
+          style={{ fontFamily: 'var(--font-jakarta)' }}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.6, color: ink }}
+          animate={{ opacity: 1, scale: 1, color: 'var(--warning)' }}
+          transition={{ delay: reducedMotion ? 0 : t.title / 1000, type: 'spring', stiffness: 520, damping: 16, color: { delay: t.title / 1000 + 0.6, duration: 0.6 } }}
         >
-          {days}
+          {title}
         </motion.p>
+        {kind !== 'extend' && (
+          <motion.span
+            className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
+            style={
+              kind === 'thaw'
+                ? { backgroundColor: 'color-mix(in srgb, var(--color-brand) 12%, white)', color: 'var(--color-brand)' }
+                : { backgroundColor: 'color-mix(in srgb, var(--warning) 16%, white)', color: 'color-mix(in srgb, var(--warning) 70%, black)' }
+            }
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: reducedMotion ? 0 : t.title / 1000 + 0.2, type: 'spring', stiffness: 560, damping: 14 }}
+          >
+            {kind === 'thaw' ? (
+              <>
+                <Snowflake className="w-4 h-4" aria-hidden="true" /> Your freeze saved yesterday
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" aria-hidden="true" /> Day 1 of something good
+              </>
+            )}
+          </motion.span>
+        )}
+        {moment.personalBest && kind !== 'start' && (
+          <motion.span
+            className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, white)', color: 'var(--lesson-gold-dark)' }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: reducedMotion ? 0 : t.big / 1000, type: 'spring', stiffness: 560, damping: 12 }}
+          >
+            <Trophy className="w-4 h-4" aria-hidden="true" />
+            New personal best
+          </motion.span>
+        )}
       </div>
-      <p className="text-[24px] md:text-[28px] font-extrabold" style={{ color: 'var(--warning)', fontFamily: 'var(--font-jakarta)' }}>
-        {moment.title}
-      </p>
-      {moment.personalBest && (
-        <motion.span
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
-          style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, white)', color: 'var(--lesson-gold-dark)' }}
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.9, type: 'spring', stiffness: 560, damping: 14 }}
-        >
-          <Trophy className="w-4 h-4" aria-hidden="true" />
-          Personal best
-        </motion.span>
-      )}
 
-      <div className="mt-7 w-full max-w-[400px] rounded-[20px] border-2 border-[var(--border)] px-4 py-4">
-        <div className="flex justify-between">
-          {week.map((d, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <span
-                className="text-[13px] font-extrabold"
-                style={{ color: d.isToday ? 'var(--warning)' : 'var(--text-muted)' }}
-              >
-                {d.label}
-              </span>
-              <motion.span
-                className="w-9 h-9 rounded-full flex items-center justify-center"
-                initial={d.isToday && !reducedMotion ? { scale: 0.4, backgroundColor: 'var(--border)' } : false}
-                animate={{ scale: 1, backgroundColor: d.done ? 'var(--warning)' : 'var(--border)' }}
-                transition={d.isToday ? { delay: 1, type: 'spring', stiffness: 500, damping: 14 } : { duration: 0 }}
-              >
-                {d.done && <Check className="w-5 h-5 text-white stroke-[3.5]" aria-hidden="true" />}
-              </motion.span>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-[15px] font-bold text-[var(--text-secondary)] leading-snug">{line}</p>
-      </div>
+      <motion.div
+        className="mt-6 w-full max-w-[420px] rounded-[20px] border-2 border-[var(--border)] px-3 pt-4 pb-4"
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: reducedMotion ? 0 : t.roll / 1000, type: 'spring', stiffness: 400, damping: 26 }}
+      >
+        <StreakWeekRow cells={week} stampDelay={t.stamp} />
+        <motion.p
+          className="mt-4 px-1 text-[15px] font-bold text-[var(--text-secondary)] leading-snug"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: reducedMotion ? 0 : t.stamp / 1000 + 0.3 }}
+        >
+          {line}
+        </motion.p>
+      </motion.div>
 
       {isStreakChestDay(days) && <StreakChest days={days} />}
     </div>

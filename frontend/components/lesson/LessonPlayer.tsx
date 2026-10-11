@@ -43,8 +43,11 @@ import {
 import { markLessonFinished } from '@/lib/path/arrival';
 import { monthlyQuestKey } from '@/lib/monthlyQuest';
 import { enrollmentsKey, learningPathKey, type LearningPath } from '@/hooks/useCourse';
+import { monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
+import type { CalendarDay } from '@/context/StreakContext';
+import { yesterdayWasFrozen } from '@/lib/streak/week';
 import { useSWRConfig } from 'swr';
-import { getComboTier } from '@/lib/lesson/comboTier';
+import { getComboTier, isComboMilestone } from '@/lib/lesson/comboTier';
 import {
   countWords,
   lessonPhases,
@@ -89,12 +92,14 @@ import {
   pickStreakMilestoneLine,
   pickPhaseUnlockLine,
   pickStreakLine,
+  pickStreakThawLine,
   pickUnitCompleteLine,
   pickWrongAnswerLine,
 } from '@/lib/tey/lessonVoice';
 import { LessonFooter, type FooterVerdict } from './LessonFooter';
 import { OutOfHeartsSheet, QuitSheet } from './LessonSheets';
 import { LessonTopBar } from './LessonTopBar';
+import { ComboBurst, type ComboBurstEvent } from './ComboBurst';
 import { TeyPreload } from './TeyPreload';
 import type { TeyPose } from './TeySays';
 import type { AnswerState } from './steps/ApplyStep';
@@ -103,7 +108,7 @@ import { gradeExercise, isResponseComplete, type ExerciseResponse } from '@/lib/
 import { DeepenStep } from './steps/DeepenStep';
 import { DailyQuests } from './outro/DailyQuests';
 import { LessonComplete } from './outro/LessonComplete';
-import { StreakDay } from './outro/StreakDay';
+import { StreakDay, type StreakDayKind } from './outro/StreakDay';
 import { UnitComplete } from './outro/UnitComplete';
 import { LeagueClimb } from './outro/LeagueClimb';
 import { computeClimb, type Board, type Climb } from '@/lib/leaderboard/leagueClimb';
@@ -173,6 +178,17 @@ export function LessonPlayer({
     lastAt: lastLessonCompletedAt,
     longest: longestStreak > 0 ? longestStreak : null,
   }));
+  // The streak calendar as it stood when the lesson opened: the week row on
+  // the streak screen, and whether a freeze held yesterday (an "unfreeze").
+  // Last month too in the first week, so the week and yesterday are whole.
+  const [openMonth] = useState(() => monthOf(new Date()));
+  const [needPrevMonth] = useState(() => new Date().getDate() <= 7);
+  const { data: calThis } = useStreakCalendar(openMonth);
+  const { data: calPrev } = useStreakCalendar(needPrevMonth ? shiftMonth(openMonth, -1) : openMonth);
+  const [calendarAtOpen, setCalendarAtOpen] = useState<CalendarDay[] | undefined>(undefined);
+  if (!calendarAtOpen && calThis && (!needPrevMonth || calPrev)) {
+    setCalendarAtOpen(needPrevMonth ? [...(calPrev?.days ?? []), ...calThis.days] : calThis.days);
+  }
   // Stat titles rotate between lessons but stay put within one.
   const [labelPick] = useState(() => {
     const chosen = new Map<string, string>();
@@ -267,6 +283,8 @@ export function LessonPlayer({
   const [verdict, setVerdict] = useState<FooterVerdict>(null);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
+  const [comboBurst, setComboBurst] = useState<ComboBurstEvent | null>(null);
+  const clearComboBurst = useCallback(() => setComboBurst(null), []);
   const wrongCount = useRef(0);
   /** Questions answered wrong at least once — the accuracy on the finish screen. */
   const missed = useRef(new Set<string>());
@@ -304,6 +322,7 @@ export function LessonPlayer({
         body: exercise.explanation ?? null,
       });
       say('cheering', run >= 3 ? pickComboLine(run) : tey.line);
+      if (isComboMilestone(run)) setComboBurst((b) => ({ run, key: (b?.key ?? 0) + run }));
       if (getComboTier(run) === 5 && !reducedMotion) {
         fireConfetti({ particleCount: 26, spread: 60, origin: { y: 0.7 } });
       }
@@ -392,6 +411,7 @@ export function LessonPlayer({
   const [moment, setMoment] = useState<{ look: Moment; badges: Badge[]; line: string } | null>(null);
   const [streakLine, setStreakLine] = useState('');
   const [streakBeat, setStreakBeat] = useState<StreakMoment | null>(null);
+  const [streakKind, setStreakKind] = useState<StreakDayKind>('extend');
   const [unitLine, setUnitLine] = useState('');
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -656,9 +676,16 @@ export function LessonPlayer({
     if (next === 'streak') {
       const days = result.newStreakDays ?? streakDays;
       const beat = streakMoment(days, atOpen.longest);
+      const kind: StreakDayKind =
+        days <= 1 ? 'start' : yesterdayWasFrozen(calendarAtOpen) ? 'thaw' : 'extend';
       setStreakBeat(beat);
+      setStreakKind(kind);
       setStreakLine(
-        beat.milestone || beat.personalBest ? pickStreakMilestoneLine(days, beat.personalBest) : pickStreakLine(days),
+        kind === 'thaw'
+          ? pickStreakThawLine(days)
+          : beat.milestone || beat.personalBest
+            ? pickStreakMilestoneLine(days, beat.personalBest)
+            : pickStreakLine(days),
       );
     }
     if (next === 'unit' && unit) setUnitLine(pickUnitCompleteLine(unit.courseComplete));
@@ -733,7 +760,11 @@ export function LessonPlayer({
     footer = {
       label: 'Continue',
       disabled: learnGated,
-      hint: learnGated ? 'Watch the video to the end to continue' : undefined,
+      hint: learnGated
+        ? card.kind === 'check'
+          ? 'Pick an answer to continue'
+          : 'Watch the video to the end to continue'
+        : undefined,
       onAction: nextCard,
     };
   } else if (phase === 'apply') {
@@ -874,6 +905,8 @@ export function LessonPlayer({
         />
       )}
 
+      {!outro && <ComboBurst burst={comboBurst} onDone={clearComboBurst} />}
+
       <AnimatePresence>
         {shieldAbsorbed && (
           <motion.div
@@ -932,7 +965,13 @@ export function LessonPlayer({
                 />
               )}
               {outro === 'streak' && streakBeat && (
-                <StreakDay days={result?.newStreakDays ?? streakDays} line={streakLine} moment={streakBeat} />
+                <StreakDay
+                  days={result?.newStreakDays ?? streakDays}
+                  line={streakLine}
+                  moment={streakBeat}
+                  kind={streakKind}
+                  calendar={calendarAtOpen}
+                />
               )}
               {outro === 'quests' && <DailyQuests rows={questRows} monthly={monthly} />}
               {outro === 'league' && climb && <LeagueClimb climb={climb} />}

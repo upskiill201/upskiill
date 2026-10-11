@@ -133,7 +133,20 @@ export type LessonSound =
   | 'purchase' // bought something in the shop
   | 'itemUnlock' // a new item is yours
   | 'collectionComplete' // a whole collection done
-  | 'collect'; // a reward particle lands in the top bar (n = particle)
+  | 'collect' // a reward particle lands in the top bar (n = particle)
+  // ── The streak moment (components/streak/fx) ──
+  | 'streakIgnite' // the grey flame catches: crackle, whoosh, a warm swell
+  | 'streakTick' // the day counter rolls one digit (n = step, climbs)
+  | 'streakStamp' // today's circle in the week gets its flame
+  | 'streakStart' // day 1: a spark, then the first little fanfare
+  | 'streakThaw' // a frozen streak cracks out of the ice and catches fire
+  | 'streakRepaired' // two wrench clanks, then the flame comes back
+  | 'streakCountdown' // a lost streak's number falls (n = step, descends)
+  | 'streakFizzle' // the flame goes out: a hiss and a soft fall
+  | 'freezeEquip' // a freeze slot fills with ice (n = slot)
+  // ── In-lesson momentum ──
+  | 'comboBurst' // a run milestone: 3, 5, 7, 10 in a row (n = run)
+  | 'xpTick'; // the finish screen's XP rolls up (n = tick)
 
 const COOLDOWN_MS: Partial<Record<LessonSound, number>> = {
   nodeLocked: 250,
@@ -169,6 +182,14 @@ const COOLDOWN_MS: Partial<Record<LessonSound, number>> = {
   couponMade: 900,
   collectionComplete: 2000,
   typeTick: 45,
+  streakIgnite: 1200,
+  streakStamp: 600,
+  streakStart: 1500,
+  streakThaw: 1500,
+  streakRepaired: 1500,
+  streakFizzle: 1200,
+  comboBurst: 500,
+  xpTick: 40,
 };
 
 /** C-major steps above a root, for anything that climbs. */
@@ -746,6 +767,97 @@ const CUES: Record<LessonSound, (s: Studio, n: number) => void> = {
     const f = LADDER[Math.min(n, LADDER.length - 1)];
     coin(s, f, 0, { gain: 0.07 });
     pop(s, 800 + Math.min(n, 8) * 60, 0, { gain: 0.18, dur: 0.04 });
+  },
+
+  // ── The streak moment ─────────────────────────────────────────────────────
+  streakIgnite: (s) => {
+    // Flint, catch, roar: three dry crackles, a breathy rise, then the warm
+    // band swells in under a bright bell — the flame is lit.
+    [0, 0.05, 0.11].forEach((t, i) => thud(s, 900 + i * 260, t, { gain: 0.16, dur: 0.04 }));
+    swoosh(s, 0.08, { dur: 0.6, from: 160, to: 2400, gain: 0.34, panFrom: -0.15, panTo: 0.15 });
+    wash(s, 0.2, { dur: 0.9, gain: 0.05 });
+    for (const f of [N.C5, N.E5, N.G5]) brass(s, f, 0.42, { dur: 0.9, gain: 0.085 });
+    marimba(s, N.C4, 0.42, { gain: 0.26, dur: 0.5 });
+    bell(s, N.G6, 0.46, { gain: 0.16, dur: 1.1 });
+  },
+  streakTick: (s, n) => {
+    // The odometer clicks over — each roll one step up the ladder.
+    const f = LADDER[Math.min(n, LADDER.length - 1)];
+    pop(s, 520 + Math.min(n, 6) * 70, 0, { gain: 0.55, dur: 0.06, drop: 1.6 });
+    marimba(s, f, 0.01, { gain: 0.22, dur: 0.28 });
+  },
+  streakStamp: (s) => {
+    // Today's circle: a firm "tock" and a two-note ding — it's on the calendar.
+    thud(s, 160, 0, { gain: 0.32, dur: 0.1 });
+    marimba(s, N.C6, 0.02, { gain: 0.26 });
+    bell(s, N.E6, 0.08, { gain: 0.14, dur: 0.7 });
+    bell(s, N.A6, 0.15, { gain: 0.12, dur: 0.9 });
+    sparkle(s, 0.16, { count: 4, gain: 0.04 });
+  },
+  streakStart: (s) => {
+    // Day one: a single spark, a held breath, then a small proud fanfare.
+    bell(s, N.C7, 0, { gain: 0.08, dur: 0.3, bright: 1.6 });
+    CUES.streakIgnite(s, 0);
+    [N.G5, N.C6, N.E6, N.G6].forEach((f, i) => bell(s, f, 0.95 + i * 0.09, { gain: 0.13 + i * 0.015, dur: 0.6 }));
+    for (const f of [N.C5, N.G5, N.C6]) brass(s, f, 1.3, { dur: 0.9, gain: 0.08 });
+    sparkle(s, 1.32, { count: 8, gain: 0.05 });
+  },
+  streakThaw: (s) => {
+    // Ice under strain (glassy creaks), the crack, shards scattering left and
+    // right — then the fire roars back through the gap.
+    [N.B6, N.E6 * 2, N.G6].forEach((f, i) => bell(s, f, i * 0.12, { gain: 0.06, dur: 0.35, bright: 1.8 }));
+    thud(s, 260, 0.42, { gain: 0.36, dur: 0.06 });
+    pop(s, 1800, 0.43, { gain: 0.4, dur: 0.05, drop: 1.2 });
+    [0.46, 0.5, 0.55, 0.61].forEach((t, i) =>
+      bell(s, N.E6 * 2 - i * 180, t, { gain: 0.05, dur: 0.25, bright: 2, pan: i % 2 ? 0.6 : -0.6 }),
+    );
+    sparkle(s, 0.45, { count: 10, gain: 0.05, spread: 0.03 });
+    swoosh(s, 0.62, { dur: 0.55, from: 200, to: 2600, gain: 0.32, panFrom: 0, panTo: 0 });
+    for (const f of [N.C5, N.E5, N.G5, N.C6]) brass(s, f, 0.98, { dur: 1, gain: 0.08 });
+    bell(s, N.C7, 1.0, { gain: 0.16, dur: 1.3 });
+  },
+  streakRepaired: (s) => {
+    // Clank, clank — the wrench — then a rising run and the flame is back.
+    thud(s, 340, 0, { gain: 0.3, dur: 0.07 });
+    coin(s, N.E6, 0.01, { gain: 0.06 });
+    thud(s, 380, 0.2, { gain: 0.32, dur: 0.07 });
+    coin(s, N.G6, 0.21, { gain: 0.07 });
+    [N.C5, N.E5, N.G5, N.C6, N.E6].forEach((f, i) => marimba(s, f, 0.42 + i * 0.07, { gain: 0.2, dur: 0.3 }));
+    CUES.streakIgnite(s, 0);
+  },
+  streakCountdown: (s, n) => {
+    // A lost streak's number falls: each step a little lower and quieter.
+    const f = [N.G5, N.E5, N.D5, N.C5, N.A4, N.G4][Math.min(n, 5)];
+    marimba(s, f, 0, { gain: Math.max(0.1, 0.22 - n * 0.02), dur: 0.25 });
+  },
+  streakFizzle: (s) => {
+    // Hiss and sag: the flame goes out, softly.
+    swoosh(s, 0, { dur: 0.7, from: 2600, to: 180, gain: 0.16, panFrom: 0, panTo: 0 });
+    muted(s, N.G4, 0.18, { gain: 0.09, dur: 0.3 });
+    muted(s, N.E4, 0.42, { gain: 0.08, dur: 0.5 });
+  },
+  freezeEquip: (s, slot) => {
+    // Frost crystallising in the slot: glassy bells and a cold glitter.
+    const base = [N.E6, N.G6, N.B6][Math.min(slot, 2)];
+    bell(s, base, 0, { gain: 0.1, dur: 0.9, bright: 1.7 });
+    bell(s, base * 1.5, 0.06, { gain: 0.06, dur: 0.8, bright: 1.9 });
+    sparkle(s, 0.04, { count: 6, gain: 0.04, spread: 0.035 });
+  },
+
+  // ── In-lesson momentum ────────────────────────────────────────────────────
+  comboBurst: (s, run) => {
+    // 3: a bright triad. 5: the triad climbs an octave. 7+: the band joins.
+    const tier = run >= 7 ? 3 : run >= 5 ? 2 : 1;
+    swoosh(s, 0, { dur: 0.28, from: 900, to: 5200, gain: 0.12, panFrom: -0.4, panTo: 0.4 });
+    const run1 = [N.C6, N.E6, N.G6];
+    const notes = tier >= 2 ? [...run1, N.C7] : run1;
+    notes.forEach((f, i) => bell(s, f, 0.05 + i * 0.06, { gain: 0.14 + i * 0.01, dur: 0.6 }));
+    if (tier >= 3) for (const f of [N.C5, N.E5, N.G5]) brass(s, f, 0.26, { dur: 0.6, gain: 0.08 });
+    sparkle(s, 0.24, { count: 4 + tier * 2, gain: 0.05 });
+  },
+  xpTick: (s, n) => {
+    // The XP number rolling up: tiny coin clicks that climb.
+    coin(s, LADDER[n % LADDER.length], 0, { gain: 0.045 });
   },
 };
 

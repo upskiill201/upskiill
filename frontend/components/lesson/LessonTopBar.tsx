@@ -14,12 +14,12 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Flame, X } from 'lucide-react';
+import { Flame, Unlock, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
-import { PHASE_COLOR, PHASE_ORDER, type LessonPhase } from '@/lib/lesson/content';
+import { PHASE_COLOR, PHASE_LABEL, PHASE_ORDER, type LessonPhase } from '@/lib/lesson/content';
 
 export function LessonTopBar({
   progress,
@@ -69,8 +69,29 @@ export function LessonTopBar({
     setLastHearts(hearts);
   }
 
+  // ── Every step forward, a sheen runs along the bar.
+  const [lastProgress, setLastProgress] = useState(progress);
+  const [shine, setShine] = useState(0);
+  if (progress !== lastProgress) {
+    if (progress > lastProgress) setShine((n) => n + 1);
+    setLastProgress(progress);
+  }
+
+  // ── A new step opens: its name drops in under the bar for a moment.
+  const [stamp, setStamp] = useState<{ phase: LessonPhase; key: number } | null>(null);
+  const [lastPhase, setLastPhase] = useState(phase);
+  if (phase !== lastPhase) {
+    if (PHASE_ORDER.indexOf(phase) > PHASE_ORDER.indexOf(lastPhase)) setStamp((s) => ({ phase, key: (s?.key ?? 0) + 1 }));
+    setLastPhase(phase);
+  }
+  useEffect(() => {
+    if (!stamp) return;
+    const t = setTimeout(() => setStamp(null), 1900);
+    return () => clearTimeout(t);
+  }, [stamp]);
+
   return (
-    <div className="shrink-0 pt-[calc(env(safe-area-inset-top)+10px)] md:pt-6">
+    <div className="relative shrink-0 pt-[calc(env(safe-area-inset-top)+10px)] md:pt-6">
       <div className="mx-auto w-full max-w-[1040px] px-3 md:px-8 flex items-center gap-3 md:gap-5 h-[52px]">
         <button
           type="button"
@@ -91,10 +112,16 @@ export function LessonTopBar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 600, damping: 20 }}
-                className="absolute -top-[22px] left-2 flex items-center gap-1 text-[12.5px] font-extrabold uppercase tracking-[0.08em]"
+                className="absolute -top-[24px] left-2 flex items-center gap-1 text-[13.5px] font-extrabold uppercase tracking-[0.08em]"
                 style={{ color: 'var(--lesson-gold-dark)' }}
               >
-                <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
+                <motion.span
+                  className="inline-flex"
+                  animate={reducedMotion ? undefined : { scale: [1, 1.25, 1], rotate: [0, -8, 0] }}
+                  transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
+                </motion.span>
                 {combo} in a row
               </motion.div>
             )}
@@ -124,27 +151,100 @@ export function LessonTopBar({
                 aria-hidden="true"
                 className="absolute left-2 right-2 top-[3px] h-[4px] rounded-full bg-white/35"
               />
+              {/* A sheen sweeps along on every step forward. */}
+              {shine > 0 && !reducedMotion && (
+                <span aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-full">
+                  <motion.span
+                    key={shine}
+                    className="absolute top-0 bottom-0 w-10"
+                    style={{ background: 'linear-gradient(90deg, transparent, color-mix(in srgb, white 75%, transparent), transparent)' }}
+                    initial={{ left: '-40px' }}
+                    animate={{ left: '100%' }}
+                    transition={{ duration: 0.65, ease: 'easeOut', delay: 0.15 }}
+                  />
+                </span>
+              )}
             </motion.div>
           </div>
+          {/* On a run, a flame rides the tip of the bar. */}
+          <AnimatePresence>
+            {onFire && (
+              <motion.span
+                aria-hidden="true"
+                className="absolute top-1/2 -mt-[15px] -ml-[13px] w-[26px] h-[30px] pointer-events-none"
+                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1, left: `${progress * 100}%` }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{ left: { type: 'spring', stiffness: 170, damping: 22 }, default: { type: 'spring', stiffness: 500, damping: 16 } }}
+              >
+                <Image src="/Icons/burn.png" alt="" fill sizes="26px" className="object-contain" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
         {hearts !== null && (
-          <motion.div
-            key={heartHit}
-            className="shrink-0 flex items-center gap-1.5"
-            animate={heartHit && !reducedMotion ? { x: [0, -5, 5, -3, 3, 0], scale: [1, 1.15, 1] } : undefined}
-            transition={{ duration: 0.45 }}
-            aria-label={`${hearts} hearts left`}
-          >
-            <Image src="/Icons/heart.png" alt="" aria-hidden="true" width={28} height={28} className="w-7 h-7" />
-            <span
-              className="text-[17px] font-extrabold tabular-nums"
-              style={{ color: 'var(--lesson-heart)', fontFamily: 'var(--font-jakarta)' }}
+          <div className="relative shrink-0">
+            <motion.div
+              key={heartHit}
+              className="flex items-center gap-1.5"
+              animate={heartHit && !reducedMotion ? { x: [0, -5, 5, -3, 3, 0], scale: [1, 1.15, 1] } : undefined}
+              transition={{ duration: 0.45 }}
+              aria-label={`${hearts} hearts left`}
             >
-              {hearts}
-            </span>
-          </motion.div>
+              <Image src="/Icons/heart.png" alt="" aria-hidden="true" width={28} height={28} className="w-7 h-7" />
+              <span
+                className="text-[17px] font-extrabold tabular-nums"
+                style={{ color: 'var(--lesson-heart)', fontFamily: 'var(--font-jakarta)' }}
+              >
+                {hearts}
+              </span>
+            </motion.div>
+            {/* The lost heart breaks off and falls away, with its "−1". */}
+            <AnimatePresence>
+              {heartHit > 0 && !reducedMotion && (
+                <motion.span
+                  key={heartHit}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-0 top-0 flex items-center gap-1"
+                  initial={{ y: 0, opacity: 1, rotate: 0 }}
+                  animate={{ y: 46, opacity: 0, rotate: 28 }}
+                  transition={{ duration: 0.9, ease: 'easeIn' }}
+                >
+                  <Image src="/Icons/heart.png" alt="" width={28} height={28} className="w-7 h-7 grayscale" />
+                  <span className="text-[15px] font-extrabold" style={{ color: 'var(--lesson-heart)' }}>
+                    −1
+                  </span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
         )}
+      </div>
+
+      {/* "Apply unlocked" — the step's name drops in under the bar. */}
+      <div className="pointer-events-none absolute inset-x-0 top-full z-[4] flex justify-center">
+        <AnimatePresence>
+          {stamp && (
+            <motion.div
+              key={stamp.key}
+              role="status"
+              className="mt-2 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[14px] font-extrabold uppercase tracking-[0.08em] text-white"
+              style={{
+                backgroundColor: PHASE_COLOR[stamp.phase],
+                boxShadow: `0 3px 0 color-mix(in srgb, ${PHASE_COLOR[stamp.phase]} 72%, black)`,
+                fontFamily: 'var(--font-jakarta)',
+              }}
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 0.6 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 520, damping: 16, delay: reducedMotion ? 0 : 0.5 }}
+            >
+              <Unlock className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+              {PHASE_LABEL[stamp.phase]} unlocked
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
