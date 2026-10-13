@@ -66,6 +66,9 @@ interface Course {
   ratingAvg?: number | null;
   reviewsCount?: number;
   instructor?: Instructor;
+  /** Teyro Originals: written by Teyro, pinned in their own row (docs/ORIGINALS_PLAYBOOK.md §1). */
+  isOriginal?: boolean;
+  trackLevel?: number | null;
 }
 
 const ALL = 'All';
@@ -169,7 +172,17 @@ export default function ExplorePage() {
     );
   }, [courses, enrolledById, filtering]);
 
-  const grid = featured ? results.filter((c) => c.id !== featured.id) : results;
+  // Teyro Originals get their own pinned row while browsing; searching and
+  // filtering treat them like any other course.
+  const originals = useMemo(
+    () =>
+      filtering
+        ? []
+        : courses.filter((c) => c.isOriginal).sort((a, b) => (a.trackLevel ?? 1) - (b.trackLevel ?? 1)),
+    [courses, filtering],
+  );
+  const pinned = new Set(originals.map((c) => c.id));
+  const grid = results.filter((c) => c.id !== featured?.id && !pinned.has(c.id));
 
   const openCourse = (c: Course) => {
     playSound('nodeTap');
@@ -324,7 +337,30 @@ export default function ExplorePage() {
           </div>
         ) : (
           <>
-            {featured && (
+            {originals.length > 0 && (
+              <section aria-label="Teyro Originals" className={styles.originals}>
+                <div className={styles.sectionHead}>
+                  <h2 className={`${styles.sectionTitle} ${styles.originalsTitle}`}>
+                    <Sparkles size={18} strokeWidth={2.75} aria-hidden="true" />
+                    Teyro Originals
+                  </h2>
+                  <span className={styles.originalsNote}>Made by Teyro. One subscription unlocks them all.</span>
+                </div>
+                <ul className={styles.grid}>
+                  {originals.map((c) => (
+                    <CourseCard
+                      key={c.id}
+                      course={c}
+                      enrollment={enrolledById.get(c.id)}
+                      onOpen={() => openCourse(c)}
+                      onContinue={continueCourse}
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {featured && !featured.isOriginal && (
               <FeaturedCard
                 course={featured}
                 onOpen={() => openCourse(featured)}
@@ -460,8 +496,16 @@ function CourseCard({
             <Check size={12} strokeWidth={4} aria-hidden="true" /> Added
           </span>
         ) : (
-          <span className={`${styles.tag} ${isFree(course) ? styles.tagFree : ''}`}>
-            {isFree(course) ? 'Free' : 'Premium'}
+          <span className={`${styles.tag} ${course.isOriginal ? styles.tagOriginal : isFree(course) ? styles.tagFree : ''}`}>
+            {course.isOriginal ? (
+              <>
+                <Sparkles size={12} strokeWidth={3} aria-hidden="true" /> Teyro Original
+              </>
+            ) : isFree(course) ? (
+              'Free'
+            ) : (
+              'Premium'
+            )}
           </span>
         )}
       </span>
@@ -471,7 +515,9 @@ function CourseCard({
           <span className={styles.cardCategory}>{course.category}</span>
         )}
         <span className={styles.cardTitle}>{course.title}</span>
-        {course.instructor?.fullName && (
+        {course.isOriginal ? (
+          <span className={styles.byline}>by Teyro</span>
+        ) : course.instructor?.fullName && (
           <span className={styles.byline}>
             by{' '}
             {course.instructor.username ? (

@@ -49,6 +49,8 @@ interface UnlockCourse {
   slug?: string;
   title?: string;
   price?: number;
+  /** Teyro Originals: one fixed subscription unlocks every Original. */
+  isOriginal?: boolean;
   sections?: UnlockSection[];
   curriculum?: UnlockSection[];
 }
@@ -204,7 +206,8 @@ export default function LearnUnlockPage() {
         if (
           courseData &&
           typeof courseData.price === 'number' &&
-          courseData.price <= 0
+          courseData.price <= 0 &&
+          !courseData.isOriginal
         ) {
           router.replace(returnTo);
           return;
@@ -331,9 +334,9 @@ export default function LearnUnlockPage() {
   const momoWaitingLabels = useMemo(
     () =>
       pendingFields
-        ? getOperatorAndAmountLabels(pendingFields, course?.price)
+        ? getOperatorAndAmountLabels(pendingFields, course?.price, !!course?.isOriginal)
         : {},
-    [pendingFields, course?.price],
+    [pendingFields, course?.price, course?.isOriginal],
   );
 
   // ── Render shells ─────────────────────────────────────────────────────
@@ -417,6 +420,7 @@ export default function LearnUnlockPage() {
                 courseTitle={course?.title}
                 completedCount={completedCount}
                 totalCount={totalLessons}
+                isOriginal={!!course?.isOriginal}
                 onBack={() => goToScene('celebrate')}
                 onSeePlans={() => goToScene('plans')}
                 onMaybeLater={exitToReturnTo}
@@ -426,6 +430,7 @@ export default function LearnUnlockPage() {
               <ScenePlans
                 courseId={course?.id || courseId}
                 basePrice={course?.price}
+                isOriginal={!!course?.isOriginal}
                 renewing={renewing}
                 accessEndsAt={accessExpiresAt}
                 submitting={isSubscribing}
@@ -448,6 +453,7 @@ export default function LearnUnlockPage() {
 function getOperatorAndAmountLabels(
   fields: SubscribeFields,
   basePrice: number | undefined,
+  isOriginal = false,
 ): { operatorLabel?: string; amountLabel?: string } {
   const result: { operatorLabel?: string; amountLabel?: string } = {};
 
@@ -456,7 +462,7 @@ function getOperatorAndAmountLabels(
 
   const ladder =
     typeof basePrice === 'number'
-      ? calculateCoursePricingLadder(basePrice)
+      ? calculateCoursePricingLadder(basePrice, { isOriginal })
       : undefined;
   const planPrice = ladder
     ? {

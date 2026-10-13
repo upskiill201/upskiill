@@ -240,6 +240,19 @@ model Course {
   // the Admin Center.
   featured Boolean @default(false)
 
+  // Teyro Originals (docs/ORIGINALS_PLAYBOOK.md) — courses Teyro writes
+  // itself. One course = one LEVEL of a Track (1 Beginner, 2 Intermediate,
+  // 3 Advanced). Access and the paywall follow originals.policy.ts, not the
+  // creator rules: one Originals subscription unlocks every Original.
+  isOriginal    Boolean        @default(false)
+  trackId       String?
+  track         OriginalTrack? @relation(fields: [trackId], references: [id])
+  trackLevel    Int?
+  // Units written but not released yet, drawn as "coming soon" on the map.
+  // While > 0 the level isn't finished, so completing every published lesson
+  // doesn't carry the learner into the next level.
+  upcomingUnits Int            @default(0)
+
   // Course review workflow (Teyro's pre-publication gate). `published`
   // still gates the public catalog, and publishCourse() is still the only
   // place that ever sets it true — reviewStatus is a precondition layered
@@ -306,9 +319,28 @@ model Course {
   @@index([slugHistory], type: Gin)
   @@index([instructorId])
   @@index([featured])
+  @@index([isOriginal])
+  @@unique([trackId, trackLevel])
   // Backs the admin review queue (GET /admin/courses?reviewStatus=...),
   // sorted oldest-submission-first by default.
   @@index([reviewStatus, submittedForReviewAt])
+}
+
+/// A Teyro Originals topic whose levels (Course rows, ordered by trackLevel)
+/// form one continuous journey: finishing a level enrols the learner in the
+/// next. See docs/ORIGINALS_PLAYBOOK.md §3.
+model OriginalTrack {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  category    String
+  description String?  @db.Text
+  courses     Course[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("original_tracks")
 }
 
 enum CourseReviewStatus {
@@ -402,6 +434,11 @@ model Lesson {
   orderIndex       Int     @default(0)
   isFreePreview    Boolean @default(false)
   durationMinutes  Int     @default(0)
+
+  // Review lessons on the map: 'CHECKPOINT' (every 5th lesson of an
+  // Original) or 'UNIT_CHALLENGE' (a unit's last checkpoint). Null = a
+  // normal lesson. Drives the map marker; content is ordinary blocks.
+  milestone String?
 
   // Status and versioning for optimistic locking and draft support
   status                   String    @default("draft") // draft, published, scheduled, archived

@@ -19,6 +19,9 @@ import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
 import { calculateCoursePricingLadder } from './pricing-engine';
+import { freeLessonIds, isFreeCourse, isFreeLessonAt, type OriginalsCourseFields } from '../originals/originals.policy';
+import { findActiveEntitlement } from '../originals/originals-access';
+import { OriginalsService } from '../originals/originals.service';
 import { assessCourseReadiness } from './course-readiness.util';
 import { CourseReviewService } from '../course-review/course-review.service';
 import * as crypto from 'crypto';
@@ -96,6 +99,7 @@ export class CourseService {
     private communityService: CommunityService,
     private shopService: ShopService,
     private courseReview: CourseReviewService,
+    private originalsService: OriginalsService,
   ) {}
 
   /**
@@ -165,6 +169,8 @@ export class CourseService {
         duration: true,
         studentsCount: true,
         createdAt: true,
+        isOriginal: true,
+        trackLevel: true,
         _count: { select: { enrollments: true, sections: true } },
         sections: {
           orderBy: { orderIndex: 'asc' as const },
@@ -211,6 +217,9 @@ export class CourseService {
         language: c.language,
         duration: c.duration,
         studentsCount: c._count.enrollments || c.studentsCount || 0,
+        // Teyro Originals get a badge and a pinned row (docs/ORIGINALS_PLAYBOOK.md §1).
+        isOriginal: c.isOriginal,
+        trackLevel: c.trackLevel,
         modulesCount: c._count.sections,
         lessonsCount: lessons.length,
         durationMinutes: lessons.reduce(
@@ -260,6 +269,7 @@ export class CourseService {
           lessonType: true,
           orderIndex: true,
           isFreePreview: true,
+          milestone: true,
           durationMinutes: true,
           status: true,
           version: true,
@@ -456,11 +466,11 @@ export class CourseService {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
         published: true,
       },
-      select: { id: true, title: true, price: true, published: true },
+      select: { id: true, title: true, price: true, published: true, isOriginal: true },
     });
     if (!course) throw new NotFoundException('Course not found');
 
-    const pricing = calculateCoursePricingLadder(course.price);
+    const pricing = calculateCoursePricingLadder(course.price, course);
     return {
       courseId: course.id,
       title: course.title,
@@ -519,13 +529,18 @@ export class CourseService {
   }
 
   /**
-   * Rule: the first 2 lessons of the course (in map order, published only) or
-   * any explicitly flagged `isFreePreview` are free preview. Shared by
-   * getCourseAccess and getLearningPath so the two can never disagree about
-   * which lessons a non-paying learner may open.
+   * Rule: the first N lessons of the course (in map order, published only) or
+   * any explicitly flagged `isFreePreview` are free preview — N is 2 for
+   * creator courses, 5 for a Beginner Original, 0 for later Original levels
+   * (originals.policy.ts). Shared by getCourseAccess and getLearningPath so
+   * the two can never disagree about which lessons a non-paying learner may
+   * open.
    */
-  private freePreviewIdsFor(orderedLessons: { id: string; isFreePreview: boolean }[]): string[] {
-    return orderedLessons.filter((l, idx) => idx < 2 || l.isFreePreview).map((l) => l.id);
+  private freePreviewIdsFor(
+    course: OriginalsCourseFields,
+    orderedLessons: { id: string; isFreePreview: boolean }[],
+  ): string[] {
+    return freeLessonIds(course, orderedLessons);
   }
 
   /**
@@ -553,6 +568,10 @@ export class CourseService {
         published: true,
         instructorId: true,
         price: true,
+        isOriginal: true,
+        trackId: true,
+        trackLevel: true,
+        upcomingUnits: true,
         sections: {
           orderBy: { orderIndex: 'asc' },
           select: {
@@ -570,6 +589,7 @@ export class CourseService {
                 xpReward: true,
                 durationMinutes: true,
                 isFreePreview: true,
+                milestone: true,
               },
             },
           },
@@ -583,35 +603,42 @@ export class CourseService {
       throw new NotFoundException('Course not found');
     }
 
-    const [enrollment, entitlement] = await Promise.all([
+    const [enrollment, entitlement, original] = await Promise.all([
       this.prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId: course.id } },
         select: { completedLessons: true },
       }),
-      this.prisma.courseAccessEntitlement.findUnique({
-        where: { userId_courseId: { userId, courseId: course.id } },
-        select: { status: true, expiresAt: true },
-      }),
+      findActiveEntitlement(this.prisma, userId, course),
+      this.originalsService.describe(course),
     ]);
-
-    const hasActiveEntitlement =
-      !!entitlement && entitlement.status === 'ACTIVE' && entitlement.expiresAt > new Date();
 
     const orderedLessons = course.sections.flatMap((s) => s.lessons);
     const completedLessons = Array.isArray(enrollment?.completedLessons)
       ? (enrollment.completedLessons as unknown[]).filter((id): id is string => typeof id === 'string')
       : [];
 
-    const { sections, instructorId: _i, price, published: _p, ...rest } = course;
+    const {
+      sections,
+      instructorId: _i,
+      price,
+      published: _p,
+      trackId: _t,
+      trackLevel: _l,
+      upcomingUnits: _u,
+      ...rest
+    } = course;
     return {
       course: rest,
       sections,
       enrolled: !!enrollment,
       completedLessons,
       access: {
-        hasAccess: isInstructor || hasActiveEntitlement || price === 0,
-        freePreviewLessonIds: this.freePreviewIdsFor(orderedLessons),
+        hasAccess: isInstructor || !!entitlement || isFreeCourse({ ...course, price }),
+        freePreviewLessonIds: this.freePreviewIdsFor(course, orderedLessons),
       },
+      // Teyro Originals only: track, level, the next level and the hearts
+      // rule. Null for creator courses.
+      original,
     };
   }
 
@@ -624,7 +651,8 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
 
     const orderedLessons = await this.getCourseLessonOrder(course.id);
-    const freePreviewLessonIds = this.freePreviewIdsFor(orderedLessons);
+    const freePreviewLessonIds = this.freePreviewIdsFor(course, orderedLessons);
+    const pricing = calculateCoursePricingLadder(course.price, course);
 
     // Instructor has full creator access
     if (course.instructorId === userId) {
@@ -633,20 +661,18 @@ export class CourseService {
         isInstructor: true,
         accessType: 'INSTRUCTOR',
         freePreviewLessonIds,
-        pricing: calculateCoursePricingLadder(course.price),
+        pricing,
       };
     }
 
-    // Check course access entitlement (subscription)
-    const entitlementRaw = await this.prisma.courseAccessEntitlement.findUnique({
-      where: { userId_courseId: { userId, courseId: course.id } },
-    });
-    const entitlement =
-      entitlementRaw &&
-      entitlementRaw.status === 'ACTIVE' &&
-      entitlementRaw.expiresAt > new Date()
-        ? entitlementRaw
-        : null;
+    // Check course access entitlement (subscription). For an Original, any
+    // active Originals subscription counts (originals-access.ts).
+    const [entitlementRaw, entitlement] = await Promise.all([
+      this.prisma.courseAccessEntitlement.findUnique({
+        where: { userId_courseId: { userId, courseId: course.id } },
+      }),
+      findActiveEntitlement(this.prisma, userId, course),
+    ]);
 
     if (entitlement) {
       return {
@@ -657,12 +683,12 @@ export class CourseService {
         expiresAt: entitlement.expiresAt,
         cancelAtPeriodEnd: entitlement.cancelAtPeriodEnd,
         freePreviewLessonIds,
-        pricing: calculateCoursePricingLadder(course.price),
+        pricing,
       };
     }
 
     // Free course case
-    if (course.price === 0) {
+    if (isFreeCourse(course)) {
       return {
         hasAccess: true,
         isInstructor: false,
@@ -684,23 +710,13 @@ export class CourseService {
       isExpired,
       expiredAt: isExpired ? entitlementRaw?.expiresAt : undefined,
       freePreviewLessonIds,
-      pricing: calculateCoursePricingLadder(course.price),
+      pricing,
     };
   }
 
-  /** ACTIVE, unexpired course entitlement for a user. */
-  private async getActiveEntitlement(userId: string, courseId: string) {
-    const entitlement = await this.prisma.courseAccessEntitlement.findUnique({
-      where: { userId_courseId: { userId, courseId } },
-    });
-    if (
-      entitlement &&
-      entitlement.status === 'ACTIVE' &&
-      entitlement.expiresAt > new Date()
-    ) {
-      return entitlement;
-    }
-    return null;
+  /** ACTIVE, unexpired course entitlement for a user (any Original counts for an Original). */
+  private getActiveEntitlement(userId: string, course: { id: string; isOriginal?: boolean | null }) {
+    return findActiveEntitlement(this.prisma, userId, course);
   }
 
   /**
@@ -722,7 +738,7 @@ export class CourseService {
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
       },
-      select: { id: true, price: true, published: true, instructorId: true },
+      select: { id: true, price: true, published: true, instructorId: true, isOriginal: true, trackLevel: true },
     });
     if (!course) throw new NotFoundException('Course not found');
 
@@ -749,11 +765,11 @@ export class CourseService {
 
     const orderedLessons = await this.getCourseLessonOrder(course.id);
     const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
-    const isFreePreview = globalIndex > -1 && (globalIndex < 2 || lesson.isFreePreview);
+    const isFreePreview = isFreeLessonAt(course, globalIndex, lesson.isFreePreview);
 
-    let hasAccess = isPrivileged || course.price === 0 || isFreePreview;
+    let hasAccess = isPrivileged || isFreeCourse(course) || isFreePreview;
     if (!hasAccess && userId) {
-      hasAccess = !!(await this.getActiveEntitlement(userId, course.id));
+      hasAccess = !!(await this.getActiveEntitlement(userId, course));
     }
     if (!hasAccess) {
       throw new ForbiddenException({
@@ -902,7 +918,17 @@ export class CourseService {
     // same NotFoundException, so draft existence still never leaks.
     const course = await this.prisma.course.findFirst({
       where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
-      select: { id: true, title: true, instructorId: true, published: true, price: true },
+      select: {
+        id: true,
+        title: true,
+        instructorId: true,
+        published: true,
+        price: true,
+        isOriginal: true,
+        trackId: true,
+        trackLevel: true,
+        upcomingUnits: true,
+      },
     });
 
     if (!course) throw new NotFoundException('Course not found');
@@ -931,12 +957,12 @@ export class CourseService {
     }
 
     // ─── ENFORCE ACCESS (server-side paywall) ─────────────────────────────
-    if (!isPrivileged && course.price !== 0) {
+    if (!isPrivileged && !isFreeCourse(course)) {
       const orderedLessons = await this.getCourseLessonOrder(course.id);
       const globalIndex = orderedLessons.findIndex((l) => l.id === lesson.id);
-      const isFreePreview = globalIndex > -1 && (globalIndex < 2 || lesson.isFreePreview);
+      const isFreePreview = isFreeLessonAt(course, globalIndex, lesson.isFreePreview);
       if (!isFreePreview) {
-        const entitlement = await this.getActiveEntitlement(userId, course.id);
+        const entitlement = await this.getActiveEntitlement(userId, course);
         if (!entitlement) {
           throw new ForbiddenException({
             requiresPayment: true,
@@ -1290,6 +1316,14 @@ export class CourseService {
         ),
       ]);
 
+      // Teyro Originals: finishing a level carries the learner straight into
+      // the next one (enrolled, first lesson ready). Null for creator
+      // courses, unfinished levels, and a Track's last level.
+      const levelComplete =
+        course.isOriginal && txResult.progressPct >= 100
+          ? await this.completeOriginalLevel(userId, course).catch(() => null)
+          : null;
+
       return {
         success: true,
         isNewCompletion: true,
@@ -1303,6 +1337,7 @@ export class CourseService {
         isFirstStreakOfDay: txResult.isFirstStreakOfDay,
         ...(sectionCompletion ? { sectionCompletion } : {}),
         ...(communityUnlock ? { communityUnlock } : {}),
+        ...(levelComplete ? { levelComplete } : {}),
       };
     }
 
@@ -1951,6 +1986,23 @@ export class CourseService {
       where: { id: course.id },
       data: { published: true, ...(slugFix ?? {}) },
     });
+  }
+
+  /**
+   * A learner just finished every lesson of an Original's level. When the
+   * level is fully released and the Track has a next level, enrol them in it
+   * (the normal enrolment path, so community/events behave as usual) and
+   * hand the map what it needs to carry them straight on.
+   */
+  private async completeOriginalLevel(
+    userId: string,
+    course: { id: string; trackId: string | null; trackLevel: number | null; upcomingUnits: number },
+  ) {
+    const result = await this.originalsService.levelCompletion(course);
+    if (result?.next) {
+      await this.enrollInCourse(userId, result.next.courseId);
+    }
+    return result;
   }
 
   async enrollInCourse(userId: string, courseIdOrSlug: string, isAdmin = false) {

@@ -8,7 +8,7 @@
 import imported from './fixtures/imported-rich-lesson.json';
 import { readLessonContent } from '../content';
 import { learnCards } from '../learnCards';
-import { gradeExercise, validateExercise, type Exercise } from '../blocks';
+import { gradeExercise, validateExercise, type Exercise, type MatchPairsExercise } from '../blocks';
 
 const lesson = { id: 'l1', title: 'Composition', description: imported.description, contentBlocks: imported.contentBlocks };
 
@@ -39,7 +39,7 @@ describe('an imported rich lesson', () => {
               ? { kind: 'findBug' as const, line: ex.bugLine }
               : ex.kind === 'orderLines'
                 ? { kind: 'orderLines' as const, order: ex.lines.map((_, i) => i) }
-                : { kind: 'matchPairs' as const, matches: Object.fromEntries(ex.pairs.map((p) => [p.id, p.id])) };
+                : { kind: 'matchPairs' as const, matches: Object.fromEntries((ex as MatchPairsExercise).pairs.map((p) => [p.id, p.id])) };
       expect(gradeExercise(ex, right)).toBe(true);
     }
   });

@@ -14,7 +14,7 @@
  */
 
 import type { LessonContent } from './content';
-import { clipRange, type CodeLanguage } from './blocks';
+import { clipRange, type CodeLanguage, type RichLearnCard } from './blocks';
 
 export const WORDS_PER_CARD = 70;
 
@@ -28,7 +28,9 @@ export type LearnCard =
   | { kind: 'callout'; tone: 'tip' | 'warning' | 'remember'; text: string }
   | { kind: 'check'; id: string; question: string; options: string[]; correctIndex: number; explanation?: string }
   | { kind: 'notes'; paragraphs: string[] }
-  | { kind: 'empty' };
+  | { kind: 'empty' }
+  /** Teyro Originals formats (story, chat, reading page...), played as written. */
+  | RichLearnCard;
 
 const HEADING = /^H[1-6]$/;
 
@@ -110,6 +112,10 @@ export function learnCards(learn: LessonContent['learn']): LearnCard[] {
           break;
         case 'check':
           cards.push({ kind: 'check', id: c.id, question: c.question, options: c.options, correctIndex: c.correctIndex, explanation: c.explanation });
+          break;
+        default:
+          // Rich formats are already one screen each: never split a story or a reading page.
+          cards.push(c);
           break;
       }
     }

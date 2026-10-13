@@ -447,6 +447,28 @@
   color: var(--success-green);
 }
 
+.tagOriginal {
+  background: var(--brand-purple);
+  color: var(--bg-card);
+}
+
+.originals {
+  margin-bottom: 32px;
+}
+
+.originalsTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-purple);
+}
+
+.originalsNote {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
 .tagAdded {
   background: var(--success-green);
   color: var(--bg-card);

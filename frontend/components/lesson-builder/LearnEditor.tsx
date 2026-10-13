@@ -24,6 +24,7 @@ import {
   Lightbulb,
   ListChecks,
   Plus,
+  Sparkles,
   Trash2,
   Type,
   X,
@@ -44,6 +45,13 @@ import { playSound } from '@/lib/audio/lessonSounds';
 import { MediaField } from './MediaField';
 import { RichText } from './RichText';
 import styles from './Builder.module.css';
+
+const ORIGINALS_CARD_META = {
+  label: 'Teyro Original card',
+  desc: 'Written in the Originals course files.',
+  Icon: Sparkles,
+  tone: 'var(--brand-purple)',
+};
 
 export const CARD_META: Record<LearnCardKind, { label: string; desc: string; Icon: typeof Type; tone: string }> = {
   text: { label: 'Explanation', desc: 'A short idea in words. One idea per card.', Icon: Type, tone: 'var(--color-brand)' },
@@ -130,7 +138,8 @@ function CardEditor({
   onRemove: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
-  const meta = CARD_META[card.kind];
+  // Rich Originals cards (story, chat, ...) are written as course files, not here.
+  const meta = CARD_META[card.kind as LearnCardKind] ?? ORIGINALS_CARD_META;
 
   return (
     <div
