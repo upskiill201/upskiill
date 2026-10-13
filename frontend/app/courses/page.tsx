@@ -36,6 +36,7 @@ const TRACKS = [
 
 export default async function CoursesCatalog() {
   const courses = await fetchPublicCourses();
+  const originals = courses.filter((c) => c.isOriginal);
 
   return (
     <div className={s.page}>
@@ -64,7 +65,7 @@ export default async function CoursesCatalog() {
             </p>
             <div className={s.pillRow}>
               {TRACKS.map((t) => {
-                const n = courses.filter((c) => c.track === t.id).length;
+                const n = courses.filter((c) => c.track === t.id && !c.isOriginal).length;
                 return (
                   <a key={t.id} href={`#${t.id}`} className={s.pill}>
                     {t.label}
@@ -81,8 +82,19 @@ export default async function CoursesCatalog() {
       </div>
 
       <div className={s.container}>
+        {originals.length > 0 && (
+          <section className={s.section} aria-labelledby="originals">
+            <SectionHead
+              id="originals"
+              eyebrow="Made by Teyro"
+              title="Teyro Originals"
+              lead="Full courses written by Teyro and taught by Tey. One subscription unlocks them all."
+            />
+            <PublicCourseGrid courses={originals} priorityCount={3} />
+          </section>
+        )}
         {TRACKS.map((t) => {
-          const list = courses.filter((c) => c.track === t.id);
+          const list = courses.filter((c) => c.track === t.id && !c.isOriginal);
           return (
             <section key={t.id} className={s.section} aria-labelledby={t.id}>
               <SectionHead id={t.id} eyebrow={`${t.label} track`} title={`${t.label} courses`} lead={t.lead} />
