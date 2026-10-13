@@ -1,0 +1,77 @@
+{
+  "slug": "m4-git",
+  "compId": "M4-git",
+  "title": "The exact difference between Git and GitHub",
+  "look": "night",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "\"This is the exact difference between X and Y\" (founder template, 2026-10-10)",
+    "igCaptionLine1": "This is the exact difference between Git and GitHub 💻",
+    "igCaptionLine2": "Plus the robot that tests and ships your code 👇"
+  },
+  "course": {
+    "name": "Learn Git, GitHub and GitHub Actions",
+    "facts": "free course on Teyro; takes a beginner from Git to GitHub Actions; everything a beginner needs to collaborate on projects as a software developer",
+    "source": "founder (2026-10-10); course exists but is not listed on the homepage"
+  },
+  "sources": [
+    { "claim": "Git stores data as snapshots of the project on every commit", "url": "https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F", "note": "Pro Git, What is Git?", "checked": "2026-10-10" },
+    { "claim": "Each commit is identified by a 40-character SHA-1 hash", "url": "https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F", "note": "Pro Git, 'a 40-character string composed of hexadecimal characters'", "checked": "2026-10-10" },
+    { "claim": "Git created in 2005 by the Linux community, in particular Linus Torvalds", "url": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git", "note": "Pro Git, A Short History of Git", "checked": "2026-10-10" },
+    { "claim": "A branch is a lightweight movable pointer to a commit; creating one is as quick as writing 41 bytes to a file", "url": "https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell", "note": "Pro Git, Branches in a Nutshell", "checked": "2026-10-10" },
+    { "claim": "180 million-plus developers work and build on GitHub", "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/", "note": "GitHub Octoverse 2025", "checked": "2026-10-10" },
+    { "claim": "GitHub Actions is a CI/CD platform to automate build, test and deployment; can build and test every pull request and deploy merged PRs; workflows live in .github/workflows", "url": "https://docs.github.com/en/actions/about-github-actions/understanding-github-actions", "note": "GitHub Docs, Understanding GitHub Actions", "checked": "2026-10-10" },
+    { "claim": "Teyro course 'Learn Git, GitHub and GitHub Actions' is free and goes from Git to GitHub Actions", "url": "founder", "note": "founder statement 2026-10-10", "checked": "2026-10-10" },
+    { "claim": "Teyro: 'a few minutes a day', coding track", "url": "https://teyro.app", "note": "homepage", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["Free course", "Git → GitHub Actions", "A few minutes a day"],
+    "outroHeadline": "Learn Git, GitHub and GitHub Actions. Free.",
+    "outroAsk": "Search Teyro"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "This is the exact difference | between *Git* and *GitHub*." },
+    { "id": "h2", "chapter": "00", "text": "Git is a tool on your laptop. | It remembers every version of your code." },
+    { "id": "h3", "chapter": "00", "text": "GitHub is a website. | It keeps that history online, | so a whole team can work on it." },
+    { "id": "h4", "chapter": "00", "text": "Let's follow one line of code, | from your laptop, | all the way to live." },
+
+    { "id": "c1a", "chapter": "01 The mess", "text": "Step one. *The mess.* | Without Git, | your folder looks like this. | Final. | Final two. | Really final. | Which one actually works?" },
+
+    { "id": "c2a", "chapter": "02 Commit", "text": "Step two. *Commit.* | With Git, | you take a snapshot of your whole project. | Like a save point in a game." },
+    { "id": "c2b", "chapter": "02 Commit", "text": "Each save gets a message, | and a unique ID, | forty characters long. | Break something later? | Jump back to any save." },
+    { "id": "c2c", "chapter": "02 Commit", "text": "That snapshot is called a *commit*. | Git was built in two thousand five, | by the team behind Linux." },
+
+    { "id": "c3a", "chapter": "03 Branch", "text": "Step three. *Branch.* | Want to try a risky idea, | without breaking what works? | Make a branch. | A safe parallel copy." },
+    { "id": "c3b", "chapter": "03 Branch", "text": "And it's cheap. | A new branch is just a tiny file, | forty one bytes, | pointing at a commit." },
+
+    { "id": "c4a", "chapter": "04 GitHub", "text": "Step four. *GitHub.* | So far, | everything lives on your laptop. | Spill coffee on it, | and your history's gone." },
+    { "id": "c4b", "chapter": "04 GitHub", "text": "So you *push* it to GitHub. | Now there's a copy online, | and your teammates can *pull* it down." },
+    { "id": "c4c", "chapter": "04 GitHub", "text": "Over a hundred and eighty million developers | build there." },
+    { "id": "c4d", "chapter": "04 GitHub", "text": "But now ten people can change the same code. | What stops them from wrecking it?" },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | Git, GitHub and GitHub Actions is a free course. | You can learn it on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Okay. | Back to the code." },
+
+    { "id": "c5a", "chapter": "05 Pull request", "text": "Step five. *Pull request.* | You don't change the main code directly. | You ask first." },
+    { "id": "c5b", "chapter": "05 Pull request", "text": "A pull request says: | here's my branch, | please check it. | A teammate reviews it, | leaves comments, | then merges it in." },
+
+    { "id": "c6a", "chapter": "06 The trap", "text": "And here's the trap every beginner hits. | Two people edit the *same line*." },
+    { "id": "c6b", "chapter": "06 The trap", "text": "Git can't guess who's right, | so it stops and asks you. | That's a *merge conflict*." },
+    { "id": "c6c", "chapter": "06 The trap", "text": "It looks scary. | It isn't. | You pick the line you want, | delete the markers, | and commit again." },
+
+    { "id": "c7a", "chapter": "07 GitHub Actions", "text": "Step seven. *GitHub Actions.* | Now the best part. | Every time you push, | a robot wakes up on GitHub's servers." },
+    { "id": "c7b", "chapter": "07 GitHub Actions", "text": "It installs your project, | runs your tests, | and if everything passes, | puts it *live*." },
+    { "id": "c7c", "chapter": "07 GitHub Actions", "text": "You write the steps once, | in a small file, | in a folder called dot github, slash workflows." },
+    { "id": "c7d", "chapter": "07 GitHub Actions", "text": "Engineers call this CI CD. | Test everything. | Ship automatically." },
+
+    { "id": "t1", "chapter": "The journey", "text": "So here's our one line of code. | You fix a typo. | Commit. | Push. | Open a pull request. | The robot tests it. | A teammate approves. | And it's *live*." },
+    { "id": "cav", "chapter": "The journey", "text": "To be fair, | you don't need all of this on day one. | Start with commits. | The rest comes fast." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | Git remembers your code. | GitHub shares it. | Branches keep it safe. | Pull requests get it reviewed. | Actions test it and ship it." },
+
+    { "id": "punch", "chapter": "end", "text": "Git saves your code. | GitHub shares it. | That's the *difference*." },
+    { "id": "cta", "chapter": "end", "text": "Want to learn all of it, step by step, for free? | Learn it on Teyro." }
+  ]
+}
