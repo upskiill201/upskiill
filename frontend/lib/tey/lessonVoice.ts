@@ -364,6 +364,24 @@ export function pickUnitCompleteLine(courseComplete: boolean): string {
     : pickFromPool(UNIT_DONE, 'lesson:unit-complete');
 }
 
+const LEVEL_DONE = [
+  "A whole level. That's not a lesson, that's a new skill.",
+  "You climbed the whole thing. The next level's already open.",
+  "Level cleared. I'd carry you to the next one, but you're doing fine on your own.",
+];
+
+const TRACK_DONE = [
+  'Every level. Beginner to the top. You actually finished the whole thing.',
+  "That's the entire track. I don't say this lightly: impressive.",
+];
+
+/** Under "<Level> complete!" when a learner finishes a Teyro Original level. */
+export function pickLevelCompleteLine(hasNext: boolean): string {
+  return hasNext
+    ? pickFromPool(LEVEL_DONE, 'lesson:level-complete')
+    : pickFromPool(TRACK_DONE, 'lesson:track-complete');
+}
+
 // ─── Reflect ────────────────────────────────────────────────────────────────
 
 export type Confidence = 'solid' | 'mostly' | 'fuzzy' | 'lost';

@@ -42,7 +42,8 @@ import {
 } from '@/lib/lesson/outro';
 import { markLessonFinished } from '@/lib/path/arrival';
 import { monthlyQuestKey } from '@/lib/monthlyQuest';
-import { enrollmentsKey, learningPathKey, type LearningPath } from '@/hooks/useCourse';
+import { enrollmentsKey, learningPathKey, useLearningPath, type LearningPath } from '@/hooks/useCourse';
+import { setHomeCourse } from '@/lib/homeCourse';
 import { monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
 import type { CalendarDay } from '@/context/StreakContext';
 import { yesterdayWasFrozen } from '@/lib/streak/week';
@@ -95,6 +96,7 @@ import {
   pickStreakLine,
   pickStreakThawLine,
   pickUnitCompleteLine,
+  pickLevelCompleteLine,
   pickWrongAnswerLine,
 } from '@/lib/tey/lessonVoice';
 import { LessonFooter, type FooterVerdict } from './LessonFooter';
@@ -105,12 +107,21 @@ import { TeyPreload } from './TeyPreload';
 import type { TeyPose } from './TeySays';
 import type { AnswerState } from './steps/ApplyStep';
 import { ExerciseStep } from './exercises/ExerciseStep';
-import { gradeExercise, isResponseComplete, type ExerciseResponse } from '@/lib/lesson/blocks';
+import {
+  gradeExercise,
+  isResponseComplete,
+  RICH_LEARN_KINDS,
+  type ExerciseResponse,
+  type RichLearnCard,
+} from '@/lib/lesson/blocks';
+import { richCardNeedsAction } from './steps/RichLearnCard';
 import { DeepenStep } from './steps/DeepenStep';
 import { DailyQuests } from './outro/DailyQuests';
 import { LessonComplete } from './outro/LessonComplete';
 import { StreakDay, type StreakDayKind } from './outro/StreakDay';
 import { UnitComplete } from './outro/UnitComplete';
+import { LevelComplete } from './outro/LevelComplete';
+import type { LevelCompletion } from '@/lib/originals';
 import { LeagueClimb } from './outro/LeagueClimb';
 import { computeClimb, type Board, type Climb } from '@/lib/leaderboard/leagueClimb';
 import { markLeaderboardSeen } from '@/lib/leaderboard/leaderboardEvents';
@@ -264,6 +275,13 @@ export function LessonPlayer({
   const card = cards[Math.min(cardIndex, cards.length - 1)];
   const [mediaEnded, setMediaEnded] = useState(false);
   const [checkPicks, setCheckPicks] = useState<Record<string, number>>({});
+  // Rich Originals cards (story decision, chat, walkthrough, explore, myth)
+  // finished by the learner, by card id. They never cost hearts.
+  const [richDone, setRichDone] = useState<Record<string, true>>({});
+  const richCard = (RICH_LEARN_KINDS as readonly string[]).includes(card.kind) ? (card as RichLearnCard) : null;
+  const markRichDone = useCallback((cardId: string) => {
+    setRichDone((d) => (d[cardId] ? d : { ...d, [cardId]: true }));
+  }, []);
   // ...but never for long: after VIDEO_GRACE_MS on a video card, Continue
   // unlocks anyway. A long intro video you must sit through is where real
   // learners quit lesson 1 for good.
@@ -278,7 +296,8 @@ export function LessonPlayer({
     !isReview &&
     !adminReviewMode &&
     ((card.kind === 'video' && !mediaEnded && videoGraceCard !== cardIndex) ||
-      (card.kind === 'check' && checkPicks[card.id] === undefined));
+      (card.kind === 'check' && checkPicks[card.id] === undefined) ||
+      (richCard !== null && richCardNeedsAction(richCard) && !richDone[richCard.id]));
   const pickCheck = (i: number) => {
     if (card.kind !== 'check' || checkPicks[card.id] !== undefined) return;
     const right = i === card.correctIndex;
@@ -416,8 +435,13 @@ export function LessonPlayer({
     }
   };
 
-  // Out of hearts: only asked for when it matters.
-  const outOfHearts = heartsAtRisk && phase === 'apply' && lives === 0;
+  // Out of hearts: only asked for when it matters. Beginner Teyro Originals
+  // are forgiving (docs/ORIGINALS_PLAYBOOK.md §14): mistakes still cost
+  // hearts, but running out never stops the learner. Read from the map's
+  // cached path; until it loads, the normal rule applies.
+  const { path: coursePath } = useLearningPath(courseId);
+  const forgivingHearts = !!coursePath?.original?.forgivingHearts;
+  const outOfHearts = heartsAtRisk && !forgivingHearts && phase === 'apply' && lives === 0;
   useEffect(() => {
     if (outOfHearts) playSound('outOfHearts');
   }, [outOfHearts]);
@@ -445,7 +469,7 @@ export function LessonPlayer({
   // payoff never waits on the network. The screens after it (streak, daily
   // quests) appear only when there's something true to show; the rarer
   // milestones (unit, course, community) follow as full celebrations.
-  const [outro, setOutro] = useState<'complete' | 'streak' | 'quests' | 'league' | 'unit' | null>(null);
+  const [outro, setOutro] = useState<'complete' | 'streak' | 'quests' | 'league' | 'unit' | 'level' | null>(null);
   const [climb, setClimb] = useState<Climb | null>(null);
   const [stats, setStats] = useState<LessonStats | null>(null);
   const [moment, setMoment] = useState<{ look: Moment; badges: Badge[]; line: string } | null>(null);
@@ -453,6 +477,7 @@ export function LessonPlayer({
   const [streakBeat, setStreakBeat] = useState<StreakMoment | null>(null);
   const [streakKind, setStreakKind] = useState<StreakDayKind>('extend');
   const [unitLine, setUnitLine] = useState('');
+  const [levelLine, setLevelLine] = useState('');
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [finishError, setFinishError] = useState<string | null>(null);
@@ -589,6 +614,9 @@ export function LessonPlayer({
       const data = await res.json();
       setResult(data);
       onCompleted(lesson.id);
+      // Finished a whole Original level: the server enrolled them in the next
+      // one, so home opens on it (docs/ORIGINALS_PLAYBOOK.md §3).
+      if (data.levelComplete?.next?.courseId) setHomeCourse(data.levelComplete.next.courseId);
       stashSectionChest(data, streakDays);
       // Home shows it the moment the learner gets there: the node checked
       // off, the next one unlocking (lib/path/arrival.ts).
@@ -674,6 +702,8 @@ export function LessonPlayer({
   };
 
   const unit = unitSummary(result);
+  // Finished a whole Teyro Original level (server: levelComplete).
+  const levelDone: LevelCompletion | null = result?.levelComplete ?? null;
 
   /** After the in-lesson screens: the community welcome if earned, then out. */
   const endOutro = () => {
@@ -703,11 +733,12 @@ export function LessonPlayer({
   const nextOutro = () => {
     playHaptic('medium', false);
     const fresh = result?.isNewCompletion !== false;
-    const order: ('complete' | 'streak' | 'quests' | 'league' | 'unit')[] = ['complete'];
+    const order: ('complete' | 'streak' | 'quests' | 'league' | 'unit' | 'level')[] = ['complete'];
     if (fresh && result?.isFirstStreakOfDay) order.push('streak');
     if (fresh && (questRows.length > 0 || monthly)) order.push('quests');
     if (fresh && climb) order.push('league');
     if (fresh && unit) order.push('unit');
+    if (fresh && levelDone) order.push('level');
     const next = order[order.indexOf(outro ?? 'complete') + 1];
     if (!next) {
       endOutro();
@@ -729,6 +760,7 @@ export function LessonPlayer({
       );
     }
     if (next === 'unit' && unit) setUnitLine(pickUnitCompleteLine(unit.courseComplete));
+    if (next === 'level' && levelDone) setLevelLine(pickLevelCompleteLine(!!levelDone.next));
     // Shown here — so the rank watcher and the tab dot treat it as seen.
     if (next === 'league' && climb) {
       void fetch('/api/leagues/me', { credentials: 'include' })
@@ -1032,6 +1064,7 @@ export function LessonPlayer({
               {outro === 'quests' && <DailyQuests rows={questRows} monthly={monthly} />}
               {outro === 'league' && climb && <LeagueClimb climb={climb} />}
               {outro === 'unit' && unit && <UnitComplete unit={unit} line={unitLine} />}
+              {outro === 'level' && levelDone && <LevelComplete level={levelDone} line={levelLine} />}
               {!outro && phase === 'learn' && (
                 <LearnStep
                   title={lesson.title ?? 'Lesson'}
@@ -1042,6 +1075,8 @@ export function LessonPlayer({
                   onMediaEnded={() => setMediaEnded(true)}
                   checkPick={card.kind === 'check' ? checkPicks[card.id] ?? null : null}
                   onCheckPick={pickCheck}
+                  richDone={richCard ? Boolean(richDone[richCard.id]) : false}
+                  onRichDone={() => richCard && markRichDone(richCard.id)}
                 />
               )}
               {!outro && phase === 'apply' && fixIntro && <FixMistakes count={mistakesLeft(quiz)} />}

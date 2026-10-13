@@ -14,6 +14,8 @@
  * backend/src/course/pricing-engine.ts. Keep the two in lockstep.
  */
 
+import { ORIGINALS_PRICING } from './originals';
+
 export type AccessPlanType = 'MONTHLY' | 'YEARLY';
 
 export interface PlanPricing {
@@ -54,10 +56,13 @@ export function formatCurrency(amount: number, currency: string = '$'): string {
   return `${currency}${rounded.toFixed(2)}`;
 }
 
-export function calculateCoursePricingLadder(baseValue: number = 0): CoursePricingLadder {
+export function calculateCoursePricingLadder(
+  baseValue: number = 0,
+  opts: { isOriginal?: boolean | null } = {},
+): CoursePricingLadder {
   const cleanBase = Math.max(0, Number(baseValue) || 0);
 
-  if (cleanBase === 0) {
+  if (cleanBase === 0 && !opts.isOriginal) {
     const freePlan: PlanPricing = {
       plan: 'MONTHLY',
       durationDays: 365,
@@ -79,9 +84,15 @@ export function calculateCoursePricingLadder(baseValue: number = 0): CoursePrici
     };
   }
 
-  const yearlyPrice = roundToCleanPrice(Math.max(MIN_YEARLY_FLOOR, cleanBase));
+  // Teyro Originals: one fixed subscription for every Original, whatever the
+  // course row says (docs/ORIGINALS_PLAYBOOK.md §1).
+  const yearlyPrice = opts.isOriginal
+    ? ORIGINALS_PRICING.yearly
+    : roundToCleanPrice(Math.max(MIN_YEARLY_FLOOR, cleanBase));
   // Rounded UP to the cent, so "save 50%" is always true, never 49.9%.
-  const monthlyPrice = Math.max(MIN_MONTHLY_FLOOR, Math.ceil((yearlyPrice / YEARLY_IN_MONTHS) * 100 - 1e-9) / 100);
+  const monthlyPrice = opts.isOriginal
+    ? ORIGINALS_PRICING.monthly
+    : Math.max(MIN_MONTHLY_FLOOR, Math.ceil((yearlyPrice / YEARLY_IN_MONTHS) * 100 - 1e-9) / 100);
 
   // The real saving — shown to learners, so it must never be rounded up.
   const yearlySavingsVsMonthly = Math.floor(((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100);

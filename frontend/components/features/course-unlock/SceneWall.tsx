@@ -11,6 +11,8 @@ interface SceneWallProps {
   courseTitle?: string;
   completedCount: number;
   totalCount: number;
+  /** Teyro Originals: one subscription unlocks every Original. */
+  isOriginal?: boolean;
   onBack: () => void;
   onSeePlans: () => void;
   onMaybeLater: () => void;
@@ -24,6 +26,7 @@ export default function SceneWall({
   courseTitle,
   completedCount,
   totalCount,
+  isOriginal = false,
   onBack,
   onSeePlans,
   onMaybeLater,
@@ -82,7 +85,15 @@ export default function SceneWall({
                 {' '}in <em>{courseTitle}</em>
               </>
             ) : null}
-            . Unlock once and I&apos;ll keep every streak, coin and win counting with you.
+            .{' '}
+            {isOriginal ? (
+              <>
+                One <strong>Teyro Originals</strong> subscription unlocks this course and every other
+                Original: every level, and every new unit as it lands.
+              </>
+            ) : (
+              <>Unlock once and I&apos;ll keep every streak, coin and win counting with you.</>
+            )}
           </p>
         </motion.div>
       </div>
@@ -90,7 +101,7 @@ export default function SceneWall({
       <div className={styles.sceneDock}>
         <button type="button" className={styles.cta3D} onClick={handleSeePlans}>
           <Lock size={15} />
-          <span>Unlock the rest of the course</span>
+          <span>{isOriginal ? 'Get Teyro Originals' : 'Unlock the rest of the course'}</span>
         </button>
         <button type="button" className={styles.exitLink} onClick={onMaybeLater}>
           Maybe later

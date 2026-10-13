@@ -10,8 +10,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- this file's job is parsing untyped JSON */
 
 import {
+  CAST_IDS,
   CODE_LANGUAGES,
   LIMITS,
+  RICH_LIMITS,
+  richLearnCardIssue,
+  type CastId,
+  type RichLearnCard,
+  type StorySpeaker,
   validateExercise,
   type CodeLanguage,
   type Exercise,
@@ -40,6 +46,102 @@ const clip = (c: any): { startSec?: number; endSec?: number } => {
   const end = num(c?.endSec, -1);
   return start >= 0 && end > start ? { startSec: start, endSec: end } : {};
 };
+
+const castId = (v: unknown): CastId | undefined =>
+  (CAST_IDS as readonly string[]).includes(v as string) ? (v as CastId) : undefined;
+const speaker = (v: unknown): StorySpeaker => (v === 'tey' ? 'tey' : castId(v) ?? 'narrator');
+
+/**
+ * A Teyro Originals Learn card (story, chat, reading page...), parsed but
+ * not validated. Null for an unknown kind.
+ */
+function parseRichCard(c: any, cid: string): RichLearnCard | null {
+  switch (c?.kind) {
+    case 'reading':
+      return { id: cid, kind: 'reading', title: optStr(c.title, 200), html: str(c.html, RICH_LIMITS.readingChars) };
+    case 'story':
+      return {
+        id: cid,
+        kind: 'story',
+        title: optStr(c.title, 200),
+        beats: Array.isArray(c.beats)
+          ? c.beats.slice(0, RICH_LIMITS.beats).map((b: any) => ({ speaker: speaker(b?.speaker), text: str(b?.text, 1000) }))
+          : [],
+        ...(c.choice && typeof c.choice === 'object'
+          ? {
+              choice: {
+                prompt: str(c.choice.prompt, 300),
+                options: Array.isArray(c.choice.options)
+                  ? c.choice.options.slice(0, RICH_LIMITS.choiceOptions).map((o: any) => ({
+                      text: str(o?.text, 300),
+                      outcome: str(o?.outcome, 1000),
+                      best: o?.best === true,
+                    }))
+                  : [],
+              },
+            }
+          : {}),
+      };
+    case 'chat':
+      return {
+        id: cid,
+        kind: 'chat',
+        turns: Array.isArray(c.turns)
+          ? c.turns.slice(0, RICH_LIMITS.turns).map((t: any) => ({
+              tey: str(t?.tey, 1000),
+              replies: strList(t?.replies, RICH_LIMITS.replies, 160).filter((r) => r.trim()),
+            }))
+          : [],
+      };
+    case 'steps':
+      return {
+        id: cid,
+        kind: 'steps',
+        title: optStr(c.title, 200),
+        steps: Array.isArray(c.steps)
+          ? c.steps.slice(0, RICH_LIMITS.steps).map((s: any) => ({
+              title: str(s?.title, 200),
+              body: str(s?.body, 1500),
+              code: optStr(s?.code, LIMITS.codeChars),
+              language: optLang(s?.language),
+            }))
+          : [],
+      };
+    case 'compare':
+      return {
+        id: cid,
+        kind: 'compare',
+        title: optStr(c.title, 200),
+        before: { label: optStr(c.before?.label, 60), text: str(c.before?.text, 3000) },
+        after: { label: optStr(c.after?.label, 60), text: str(c.after?.text, 3000) },
+        notes: strList(c.notes, RICH_LIMITS.notes, 400).filter((n) => n.trim()),
+      };
+    case 'explore':
+      return {
+        id: cid,
+        kind: 'explore',
+        title: optStr(c.title, 200),
+        text: str(c.text, 3000),
+        hotspots: Array.isArray(c.hotspots)
+          ? c.hotspots.slice(0, RICH_LIMITS.hotspots).map((h: any) => ({ phrase: str(h?.phrase, 200), note: str(h?.note, 600) }))
+          : [],
+      };
+    case 'myth':
+      return {
+        id: cid,
+        kind: 'myth',
+        statements: Array.isArray(c.statements)
+          ? c.statements.slice(0, RICH_LIMITS.statements).map((s: any) => ({
+              text: str(s?.text, 300),
+              isFact: s?.isFact === true,
+              explain: str(s?.explain, 800),
+            }))
+          : [],
+      };
+    default:
+      return null;
+  }
+}
 
 export function sanitizeLearnCards(raw: unknown): LearnCard[] {
   if (!Array.isArray(raw)) return [];
@@ -80,8 +182,11 @@ export function sanitizeLearnCards(raw: unknown): LearnCard[] {
         }
         break;
       }
-      default:
+      default: {
+        const rich = parseRichCard(c, cid);
+        if (rich && richLearnCardIssue(rich) === null) out.push(rich);
         break;
+      }
     }
   });
   return out;
@@ -92,7 +197,8 @@ export function parseExercise(e: any, i: number): Exercise | null {
   const base = { id: id(e?.id, `ex_${i}`), prompt: str(e?.prompt, 500), explanation: optStr(e?.explanation, 1500) };
   switch (e?.kind) {
     case 'mcq': {
-      const variant: McqVariant = e.variant === 'predictOutput' || e.variant === 'pickPrompt' ? e.variant : 'standard';
+      const variant: McqVariant =
+        e.variant === 'predictOutput' || e.variant === 'pickPrompt' || e.variant === 'chat' ? e.variant : 'standard';
       const options = Array.isArray(e.options)
         ? e.options.slice(0, LIMITS.options).map((o: any, j: number) => ({
             id: id(o?.id, `o${j}`),
@@ -106,6 +212,8 @@ export function parseExercise(e: any, i: number): Exercise | null {
         variant,
         code: optStr(e.code, LIMITS.codeChars),
         language: optLang(e.language),
+        character: castId(e.character),
+        message: optStr(e.message, 1000),
         options,
         correctOptionId: str(e.correctOptionId, 80),
       };
@@ -144,6 +252,36 @@ export function parseExercise(e: any, i: number): Exercise | null {
               id: id(p?.id, `p${j}`),
               left: str(p?.left, 200),
               right: str(p?.right, 300),
+            }))
+          : [],
+      };
+    case 'tapBuild':
+      return {
+        ...base,
+        kind: 'tapBuild',
+        language: optLang(e.language),
+        tiles: strList(e.tiles, LIMITS.bank, 120).filter((t) => t.trim()),
+        distractors: strList(e.distractors, LIMITS.bank, 120).filter((t) => t.trim()),
+      };
+    case 'typeAnswer':
+      return {
+        ...base,
+        kind: 'typeAnswer',
+        answers: strList(e.answers, 8, 200).filter((a) => a.trim()),
+        placeholder: optStr(e.placeholder, 80),
+      };
+    case 'sortGroups':
+      return {
+        ...base,
+        kind: 'sortGroups',
+        groups: Array.isArray(e.groups)
+          ? e.groups.slice(0, 3).map((g: any, j: number) => ({ id: id(g?.id, `g${j}`), label: str(g?.label, 60) }))
+          : [],
+        items: Array.isArray(e.items)
+          ? e.items.slice(0, LIMITS.pairs).map((it: any, j: number) => ({
+              id: id(it?.id, `i${j}`),
+              text: str(it?.text, 300),
+              groupId: str(it?.groupId, 80),
             }))
           : [],
       };

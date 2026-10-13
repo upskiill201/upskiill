@@ -16,7 +16,10 @@
 /** Bite-size: a lesson video longer than this should be split up. */
 export const MAX_VIDEO_SECONDS = 15 * 60;
 
-const LIMITS = { learnCards: 30, exercises: 20, options: 6, lines: 30, pairs: 8, blanks: 6 };
+// exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
+const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
+const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6 };
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();
@@ -99,6 +102,67 @@ export function learnCardProblem(c: any): string | null {
       return blank(options[c.correctIndex]) ? 'A quick check has no right answer marked.' : null;
     }
     default:
+      return richLearnCardProblem(c);
+  }
+}
+
+/**
+ * Teyro Originals Learn formats (story, chat, reading page, walkthrough,
+ * before/after, tap to explore, myth or fact). Mirrors richLearnCardIssue
+ * in frontend/lib/lesson/blocks.ts; they're written as course files
+ * (docs/ORIGINALS_PLAYBOOK.md §4), not in the Lesson Builder.
+ */
+function richLearnCardProblem(c: any): string | null {
+  const list = (v: unknown) => (Array.isArray(v) ? v : []);
+  switch (c?.kind) {
+    case 'reading':
+      return blank(String(c.html ?? '').replace(/<[^>]*>/g, '')) ? 'A reading page is empty.' : null;
+    case 'story': {
+      const beats = list(c.beats);
+      if (beats.filter((b: any) => !blank(b?.text)).length === 0) return 'A story has no lines.';
+      if (beats.length > RICH.beats) return `A story can have up to ${RICH.beats} lines.`;
+      if (beats.some((b: any) => b?.speaker !== 'narrator' && b?.speaker !== 'tey' && !CAST.includes(b?.speaker)))
+        return 'A story line has an unknown speaker.';
+      if (c.choice) {
+        const options = list(c.choice.options);
+        if (blank(c.choice.prompt)) return "A story's decision has no question.";
+        if (options.length < 2 || options.length > RICH.choiceOptions) return `A story decision needs 2 to ${RICH.choiceOptions} options.`;
+        if (options.some((o: any) => blank(o?.text) || blank(o?.outcome))) return 'A story decision option is missing its text or outcome.';
+      }
+      return null;
+    }
+    case 'chat': {
+      const turns = list(c.turns);
+      if (turns.length === 0 || turns.some((t: any) => blank(t?.tey))) return 'A chat turn has no message from Tey.';
+      if (turns.length > RICH.turns) return `A chat can have up to ${RICH.turns} turns.`;
+      return turns.some((t: any) => list(t?.replies).length > RICH.replies) ? `Up to ${RICH.replies} replies per chat turn.` : null;
+    }
+    case 'steps': {
+      const steps = list(c.steps);
+      if (steps.length < 2 || steps.length > RICH.steps) return `A walkthrough needs 2 to ${RICH.steps} steps.`;
+      return steps.some((s: any) => blank(s?.title) || blank(s?.body)) ? 'A walkthrough step is missing its title or explanation.' : null;
+    }
+    case 'compare': {
+      const notes = list(c.notes);
+      if (blank(c.before?.text) || blank(c.after?.text)) return 'A before/after is missing a version.';
+      if (notes.length === 0) return 'A before/after needs at least one note on what changed.';
+      return notes.length > RICH.notes ? `A before/after allows up to ${RICH.notes} notes.` : null;
+    }
+    case 'explore': {
+      const hotspots = list(c.hotspots);
+      if (blank(c.text)) return 'A tap-to-explore card has no text.';
+      if (hotspots.length === 0 || hotspots.length > RICH.hotspots) return `A tap-to-explore card needs 1 to ${RICH.hotspots} hotspots.`;
+      if (hotspots.some((h: any) => blank(h?.phrase) || blank(h?.note))) return 'A hotspot is missing its phrase or note.';
+      return hotspots.some((h: any) => !String(c.text).includes(h.phrase)) ? "A hotspot's phrase isn't in the text." : null;
+    }
+    case 'myth': {
+      const statements = list(c.statements);
+      if (statements.length < 2 || statements.length > RICH.statements) return `Myth or Fact needs 2 to ${RICH.statements} statements.`;
+      return statements.some((s: any) => blank(s?.text) || blank(s?.explain) || typeof s?.isFact !== 'boolean')
+        ? 'A Myth or Fact statement is missing its text, answer or explanation.'
+        : null;
+    }
+    default:
       return 'A Learn card has an unknown type.';
   }
 }
@@ -112,6 +176,8 @@ export function exerciseProblem(e: any): string | null {
       if (options.length > LIMITS.options) return `Multiple choice allows up to ${LIMITS.options} answers.`;
       if (!options.some((o: any) => o?.id === e.correctOptionId && !blank(o?.text))) return 'A multiple-choice exercise has no right answer marked.';
       if (e.variant === 'predictOutput' && blank(e.code)) return 'A predict-the-output exercise has no code.';
+      if (e.variant === 'chat' && blank(e.message)) return 'A chat-reply exercise has no message to reply to.';
+      if (e.character !== undefined && !CAST.includes(e.character)) return 'A chat-reply exercise names an unknown character.';
       return null;
     }
     case 'fillBlank': {
@@ -136,6 +202,25 @@ export function exerciseProblem(e: any): string | null {
       const pairs = Array.isArray(e.pairs) ? e.pairs : [];
       if (pairs.length < 3 || pairs.length > LIMITS.pairs) return `A matching exercise needs 3 to ${LIMITS.pairs} pairs.`;
       return pairs.some((p: any) => blank(p?.left) || blank(p?.right)) ? 'A matching exercise has an empty side.' : null;
+    }
+    case 'tapBuild': {
+      const tiles = Array.isArray(e.tiles) ? e.tiles : [];
+      const distractors = Array.isArray(e.distractors) ? e.distractors : [];
+      if (tiles.filter((t: unknown) => !blank(t)).length < 2) return 'A tap-to-build exercise needs at least 2 tiles.';
+      return tiles.length + distractors.length > LIMITS.bank ? `Tap to build allows up to ${LIMITS.bank} tiles.` : null;
+    }
+    case 'typeAnswer': {
+      const answers = Array.isArray(e.answers) ? e.answers : [];
+      return answers.every(blank) ? 'A type-the-answer exercise has no accepted answer.' : null;
+    }
+    case 'sortGroups': {
+      const groups = Array.isArray(e.groups) ? e.groups : [];
+      const items = Array.isArray(e.items) ? e.items : [];
+      if (groups.length < 2 || groups.length > 3) return 'A sorting exercise needs 2 or 3 groups.';
+      if (groups.some((g: any) => blank(g?.label))) return 'A sorting group has no name.';
+      if (items.length < 3 || items.length > LIMITS.pairs) return `A sorting exercise needs 3 to ${LIMITS.pairs} items.`;
+      const ids = new Set(groups.map((g: any) => g?.id));
+      return items.some((it: any) => blank(it?.text) || !ids.has(it?.groupId)) ? 'A sorting item has no text or group.' : null;
     }
     default:
       return 'An exercise has an unknown type.';

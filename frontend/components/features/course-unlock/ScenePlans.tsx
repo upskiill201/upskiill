@@ -61,6 +61,8 @@ interface ScenePlansProps {
   courseId?: string;
   /** Course base value in USD from the API — never guessed client-side. */
   basePrice?: number;
+  /** Teyro Originals: the fixed Originals subscription, whatever basePrice says. */
+  isOriginal?: boolean;
   /** A returning learner renewing (expired, or a plan that doesn't auto-renew). */
   renewing?: boolean;
   /** ISO end of the access they still have, when renewing early. */
@@ -80,6 +82,7 @@ interface ScenePlansProps {
 export default function ScenePlans({
   courseId,
   basePrice,
+  isOriginal = false,
   renewing = false,
   accessEndsAt = null,
   submitting,
@@ -188,8 +191,8 @@ export default function ScenePlans({
   }, [selectedPlan]);
 
   const ladder = useMemo(
-    () => calculateCoursePricingLadder(typeof basePrice === 'number' ? basePrice : 0),
-    [basePrice],
+    () => calculateCoursePricingLadder(typeof basePrice === 'number' ? basePrice : 0, { isOriginal }),
+    [basePrice, isOriginal],
   );
   const priceKnown = typeof basePrice === 'number';
 
@@ -288,7 +291,9 @@ export default function ScenePlans({
         : `${renewing ? 'Renew' : 'Unlock'} ${isYearly ? '12 months' : '1 month'} · ${priceLabel}`
       : renewing
         ? 'Renew'
-        : 'Unlock Course';
+        : isOriginal
+          ? 'Get Teyro Originals'
+          : 'Unlock Course';
   // Renewing before access runs out adds the new period on top (the backend
   // stacks it onto expiresAt), so say so — it removes the "I'll lose days" worry.
   const endsLabel =
@@ -335,8 +340,9 @@ export default function ScenePlans({
               priority
             />
             <p className={styles.plansAsideNote}>
-              Unlock once and I&apos;ll hold onto every lesson, streak and
-              coin you&apos;ve earned.
+              {isOriginal
+                ? "One subscription, every Teyro Original. I'll hold onto every lesson, streak and coin you've earned."
+                : "Unlock once and I'll hold onto every lesson, streak and coin you've earned."}
             </p>
           </aside>
 
@@ -348,7 +354,15 @@ export default function ScenePlans({
               </>
             ) : (
               <>
-                Pick the plan that <span className={styles.titleAccent}>works for you</span>
+                {isOriginal ? (
+                  <>
+                    Unlock <span className={styles.titleAccent}>every Teyro Original</span>
+                  </>
+                ) : (
+                  <>
+                    Pick the plan that <span className={styles.titleAccent}>works for you</span>
+                  </>
+                )}
               </>
             )}
           </h1>
