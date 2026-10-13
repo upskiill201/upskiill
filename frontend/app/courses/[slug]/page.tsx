@@ -62,6 +62,7 @@ function toLanding(c: any): LandingCourse {
     description: plain(c.shortDescription) ?? plain(c.description),
     thumbnailUrl: c.thumbnailUrl || null,
     price: Number(c.price ?? 0),
+    isOriginal: c.isOriginal === true,
     category: c.category ?? null,
     level: c.level ?? null,
     language: c.language ?? null,
@@ -113,7 +114,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const title = `${c.title}: Learn Online in Minutes a Day | Teyro`;
   const description =
     c.description ??
-    `Learn ${c.title} with short daily lessons, streaks and leagues on Teyro.${c.price > 0 ? ' Try the first two lessons free.' : ' Free course.'}`;
+    `Learn ${c.title} with short daily lessons, streaks and leagues on Teyro.${c.isOriginal ? ' A Teyro Original, taught by Tey.' : c.price > 0 ? ' Try the first two lessons free.' : ' Free course.'}`;
   const path = coursePath(c.slug);
   return {
     title,

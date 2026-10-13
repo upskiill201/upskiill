@@ -72,6 +72,11 @@
 .tagFree {
   color: var(--success-green);
 }
+/* Teyro Originals: a filled purple tag, so they stand out from creator courses. */
+.tagOriginal {
+  background: var(--brand-purple);
+  color: var(--bg-card);
+}
 
 .title {
   font-size: 18px;
