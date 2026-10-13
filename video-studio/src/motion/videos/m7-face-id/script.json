@@ -1,0 +1,71 @@
+{
+  "slug": "m7-face-id",
+  "compId": "M7-face-id",
+  "title": "How your phone knows it's your face, not your twin's",
+  "look": "neon",
+  "voice": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_multilingual_v2",
+  "speed": 1.08,
+  "hook": {
+    "archetype": "viral question (founder pick, 2026-10-10)",
+    "igCaptionLine1": "How does your phone know it's your face, and not your twin's? 👯",
+    "igCaptionLine2": "Apple's own answer might surprise you 👇"
+  },
+  "sources": [
+    { "claim": "TrueDepth camera projects and analyzes thousands of invisible (infrared) dots to create a depth map, and captures an infrared image; designed to work indoors, outdoors and in total darkness", "url": "https://support.apple.com/en-us/102381", "note": "Apple Support, 'About Face ID advanced technology' (updated 2026-09-18)", "checked": "2026-10-10" },
+    { "claim": "Neural engine inside the Secure Enclave transforms the depth map + IR image into a mathematical representation; Face ID data is encrypted, doesn't leave the device and is never backed up to iCloud", "url": "https://support.apple.com/en-us/102381", "note": "Apple Support", "checked": "2026-10-10" },
+    { "claim": "Neural networks for attention, matching and anti-spoofing; a dedicated network resists photos or masks", "url": "https://support.apple.com/guide/security/facial-matching-security-sece151358d1/web", "note": "Apple Platform Security, Facial matching security + Face ID and Touch ID security", "checked": "2026-10-10" },
+    { "claim": "Attention-aware (eyes open, looking); adapts to changes like makeup or facial hair", "url": "https://support.apple.com/en-us/102381", "note": "Apple Support", "checked": "2026-10-10" },
+    { "claim": "Passcode required after five unsuccessful match attempts (also after restart or 48 h without unlock)", "url": "https://support.apple.com/guide/security/face-id-touch-id-passcodes-and-passwords-sec9479035f1/web", "note": "Apple Platform Security", "checked": "2026-10-10" },
+    { "claim": "Chance a random person unlocks with Face ID is less than 1 in 1,000,000 (single enrolled appearance); higher for twins and siblings who look like you and for children under 13; Apple recommends a passcode if concerned", "url": "https://support.apple.com/en-us/102381", "note": "Apple Support", "checked": "2026-10-10" },
+    { "claim": "Teyro: AI track; few-minute lessons; XP per right answer; streaks; weekly leagues Bronze → Diamond; three daily quests and chests; coins + shop; Monthly Challenge; friends; free to start; teyro.app", "url": "https://teyro.app/features", "note": "teyro.app + /features", "checked": "2026-10-10" }
+  ],
+  "teyro": {
+    "bridgeChips": ["AI track", "Plays like a game", "A few minutes a day"],
+    "outroHeadline": "Learning that plays like a game. Free to start.",
+    "outroAsk": "Search Teyro · teyro.app"
+  },
+  "lines": [
+    { "id": "h1", "chapter": "00", "text": "How does your phone know it's your face, | and not your *twin's*?" },
+    { "id": "h2", "chapter": "00", "text": "You glance at it, | and it just opens." },
+    { "id": "h3", "chapter": "00", "text": "Behind that glance, | your phone does four jobs. | Let's follow your face." },
+
+    { "id": "c1a", "chapter": "01 The dots", "text": "Step one. *The dots.* | The moment you look, | the camera at the top fires thousands of invisible dots at your face." },
+    { "id": "c1b", "chapter": "01 The dots", "text": "They're infrared light. | Your eyes can't see them, | but the camera can. | It works even in total darkness." },
+
+    { "id": "c2a", "chapter": "02 The depth map", "text": "Step two. *The depth map.* | Each dot lands at a different distance. | Your nose is closer. | Your eyes sit deeper." },
+    { "id": "c2b", "chapter": "02 The depth map", "text": "From where the dots land, | the phone builds a 3D shape of your face. | A *depth map*." },
+    { "id": "c2c", "chapter": "02 The depth map", "text": "That's why a photo can't fool it. | A photo is flat. | Your face isn't." },
+
+    { "id": "c3a", "chapter": "03 The math", "text": "Step three. *The math.* | Your phone never stores a picture of your face." },
+    { "id": "c3b", "chapter": "03 The math", "text": "A neural network turns that depth map | into a long list of numbers. | Your face, as *math*." },
+    { "id": "c3c", "chapter": "03 The math", "text": "That math is locked inside a protected part of the chip, | called the Secure Enclave. | It never leaves your phone." },
+
+    { "id": "c4a", "chapter": "04 The match", "text": "Step four. *The match.* | Every unlock, | your face becomes new math, | and it's compared with the math you saved." },
+    { "id": "c4b", "chapter": "04 The match", "text": "Close enough? | Unlocked. | Not close enough? | Try again. | Five misses, | and it asks for your passcode." },
+    { "id": "c4b2", "chapter": "04 The match", "text": "It also wants your passcode after a restart, | or if nobody has unlocked it for two days." },
+    { "id": "c4c", "chapter": "04 The match", "text": "So if it's comparing shapes, | what happens when two faces have the same shape?" },
+
+    { "id": "bridge", "chapter": "bridge", "text": "Quick thing. | How AI like this works | is part of the AI track on Teyro." },
+    { "id": "back", "chapter": "bridge", "text": "Okay. | Back to the twins." },
+
+    { "id": "c5a", "chapter": "05 The tricks", "text": "First, | the tricks that don't work. | Hold up a photo? | Flat. | Rejected." },
+    { "id": "c5b", "chapter": "05 The tricks", "text": "A mask? | A second neural network is trained | just to catch fakes." },
+    { "id": "c5c", "chapter": "05 The tricks", "text": "Eyes closed? | It checks you're actually looking. | Grow a beard? | It slowly learns your new face." },
+
+    { "id": "t1", "chapter": "06 The twin", "text": "Now, | the twin. | Apple says a random stranger | has less than a one in a million chance | of unlocking your phone. | That's with one saved face." },
+    { "id": "t2", "chapter": "06 The twin", "text": "But Apple also says that chance is *higher* | for twins and siblings who look like you, | and for kids under thirteen." },
+    { "id": "t3", "chapter": "06 The twin", "text": "Their faces really can be that close. | So if you have a lookalike twin, | Apple recommends using a passcode." },
+
+    { "id": "recap", "chapter": "Recap", "text": "So. | Thousands of dots. | A depth map. | Your face as math. | A match, every time. | And your twin is the one weak spot." },
+
+    { "id": "punch", "chapter": "end", "text": "Your phone doesn't see your face. | It *measures* it." },
+
+    { "id": "ty1", "chapter": "Teyro", "text": "Want to understand AI like this? | That's what you'll learn on Teyro." },
+    { "id": "ty2", "chapter": "Teyro", "text": "And it feels like playing a game. | Lessons take a few minutes, | and every right answer earns XP." },
+    { "id": "ty3", "chapter": "Teyro", "text": "Keep your streak alive. | Climb weekly leagues, | from Bronze to Diamond. | Finish three daily quests, | and open chests." },
+    { "id": "ty4", "chapter": "Teyro", "text": "Spend your coins in the shop, | take on the Monthly Challenge, | and race your friends." },
+    { "id": "cta", "chapter": "end", "text": "It's free to start. | Learn it on Teyro." },
+    { "id": "cta2", "chapter": "end", "text": "Search for it in your browser, | or go straight to | Teyro dot app." }
+  ]
+}

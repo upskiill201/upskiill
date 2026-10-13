@@ -12,3 +12,7 @@ work/**/*.wav
 # per-machine generated audio: voice cache + VO stems (re-create with pipeline/voice.mjs)
 work/
 public/videos/
+# motion explainers: per-video VO stems + beds and the voice audition (re-create with pipeline/motion/*)
+public/motion/videos/
+deliverables/_audition/
+deliverables/**/*.mp3
