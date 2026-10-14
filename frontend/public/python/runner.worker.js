@@ -49,6 +49,8 @@ def __teyro_run(src, stdin_lines, exprs):
         out.write(value + '\\n')
         return value
 
+    # import this prints the Zen only on first import: forget it so every run shows it.
+    sys.modules.pop('this', None)
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
     sys.stdout = out

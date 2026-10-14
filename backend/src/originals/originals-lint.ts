@@ -32,7 +32,7 @@ const GEMS = /\bgems?\b/i;
 const STALE_OPENER = /in this lesson,? (you will|you'll|we will|we'll) learn/i;
 
 /** Formats that don't count as a lesson's "main" teaching format. */
-const SUPPORTING: AuthoredCardKind[] = ['callout', 'check', 'image', 'code'];
+const SUPPORTING: AuthoredCardKind[] = ['callout', 'check', 'image', 'code', 'tryIt'];
 
 /** The format a lesson mainly teaches in: its first non-supporting card, else "cards". */
 export function mainFormat(lesson: OriginalLesson): string {
@@ -113,6 +113,15 @@ function lintLesson(
   }
 
   if (lesson.learn.length === 0 && !lesson.milestone) push('error', 'Learn has no cards.');
+
+  // Playbook §7: every coding lesson has real code to run, from lesson 1.
+  if (track.category === 'Coding') {
+    const runs = lesson.learn.some((c) => c.kind === 'tryIt') || lesson.apply.items.some((e) => e.kind === 'writeCode');
+    if (!runs) push('warning', 'A coding lesson with no Try it live card and no Write and run exercise.');
+    if (!lesson.milestone && !lesson.apply.items.some((e) => e.kind === 'writeCode')) {
+      push('warning', 'No Write and run exercise: learners should write some code in every lesson.');
+    }
+  }
 
   // ── Brand hard stops ────────────────────────────────────────────────────
   const text = visibleText(lesson);

@@ -7,35 +7,6 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
  * When a Track gets its first unit, move it to its own file like ai-at-work.ts.
  */
 
-const pythonForBeginners: OriginalTrackDef = {
-  slug: 'python-for-beginners',
-  title: 'Python for Beginners',
-  category: 'Coding',
-  description: 'Learn to code in Python from zero, writing and running real code in every lesson.',
-  levels: [
-    {
-      level: 1,
-      slug: 'python-for-beginners',
-      title: 'Python for Beginners',
-      subtitle: 'Write real code from your very first lesson',
-      shortDescription: 'Go from never having coded to writing small, useful Python programs, running real code inside every lesson.',
-      description:
-        'Python is one of the most popular first programming languages, used for everything from automation to data and AI. In this course you write and run real code from the first lesson, in short steps, with Tey explaining every idea in plain words.',
-      startingPoint: 'You have never written code, or tried once and gave up. You can use a computer or phone comfortably.',
-      endOutcome: 'Write small Python programs that solve real problems, and read other people\'s simple code.',
-      outcomes: [
-        'Understand variables, decisions and loops',
-        'Write and run your own Python programs',
-        'Work with text, numbers and lists',
-        'Read and fix simple errors on your own',
-      ],
-      skills: ['Python', 'Programming basics', 'Problem solving', 'Debugging'],
-      upcomingUnits: 12,
-      units: [],
-    },
-  ],
-};
-
 const acingJobInterviews: OriginalTrackDef = {
   slug: 'acing-job-interviews',
   title: 'Acing Job Interviews',
@@ -123,4 +94,4 @@ const speakLikeACeo: OriginalTrackDef = {
   ],
 };
 
-export const launchLineup: OriginalTrackDef[] = [pythonForBeginners, acingJobInterviews, clearWritingAtWork, speakLikeACeo];
+export const launchLineup: OriginalTrackDef[] = [acingJobInterviews, clearWritingAtWork, speakLikeACeo];

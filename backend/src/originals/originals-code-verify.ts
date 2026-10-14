@@ -48,6 +48,8 @@ def __teyro_run(src, stdin_lines, exprs):
         out.write(value + '\\n')
         return value
 
+    # import this prints the Zen only on first import: forget it so every run shows it.
+    sys.modules.pop('this', None)
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
     sys.stdout = out
@@ -183,7 +185,10 @@ export async function verifyTrackCode(
         lesson.learn.forEach((card, i) => {
           if (card.kind !== 'tryIt') return;
           const out = run(card.code, card.stdin ?? [], []);
-          if (out.error) {
+          if (card.expectError && !out.error) {
+            issues.push({ level: 'warning', where, message: `Try it live card ${i + 1} is marked expectError but runs without one.` });
+          }
+          if (out.error && !card.expectError) {
             issues.push({
               level: 'warning',
               where,

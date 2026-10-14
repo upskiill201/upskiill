@@ -35,7 +35,7 @@ export function TryItCard({ card, done, onDone }: { card: TryIt; done: boolean; 
           stdin={card.stdin}
           label={card.title ?? 'Try it live'}
           onRun={(run) => {
-            if (!run.error && !run.timedOut && !done) onDone();
+            if ((card.expectError || (!run.error && !run.timedOut)) && !done) onDone();
           }}
         />
       </div>

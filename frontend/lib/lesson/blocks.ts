@@ -195,7 +195,16 @@ export type RichLearnCard =
    * (lib/code). Done once it has run without an error. `stdin` feeds input();
    * `challenge` is a nudge to change the code and run it again.
    */
-  | (CardBase & { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[] });
+  | (CardBase & {
+      kind: 'tryIt';
+      title?: string;
+      code: string;
+      caption?: string;
+      challenge?: string;
+      stdin?: string[];
+      /** Meant to fail (an errors lesson): done on any run, error or not. */
+      expectError?: boolean;
+    });
 
 export type RichLearnCardKind = RichLearnCard['kind'];
 export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth', 'tryIt'];
