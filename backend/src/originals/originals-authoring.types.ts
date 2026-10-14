@@ -24,7 +24,8 @@ export type CodeLanguage =
   | 'plaintext';
 
 /** The shared cast (docs/originals/CAST.md). */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi';
+/** Course-only characters (efua, asante) are listed in CAST.md too. */
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -141,6 +142,13 @@ export interface OriginalUnit {
   title: string;
   /** What the learner can DO after this unit, as an action. */
   goal: string;
+  /**
+   * The chapter's place in the story (playbook §8a), shown on the map banner
+   * instead of the land name: "40 weeks to go", "Month 2". Keep it under 24 characters.
+   */
+  marker?: string;
+  /** One-line story teaser under the chapter name on the map: the chapter's problem, not its skill. */
+  story?: string;
   lessons: OriginalLesson[];
 }
 

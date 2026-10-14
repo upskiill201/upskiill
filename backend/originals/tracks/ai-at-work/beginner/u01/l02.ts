@@ -156,29 +156,6 @@ const lesson: OriginalLesson = {
         distractors: ['paid', 'password', 'feelings'],
       },
       {
-        kind: 'sortGroups',
-        prompt: 'Which of these must Ada paste in for a useful answer?',
-        groups: ['Paste it in', 'It already knows'],
-        items: [
-          { text: 'The notes from her meeting', group: 0 },
-          { text: 'What a meeting summary looks like', group: 1 },
-          { text: 'The numbers from her report', group: 0 },
-          { text: 'How to write in a friendly tone', group: 1 },
-        ],
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'I asked an AI tool what our budget is for next quarter and it gave me a number. Can I use it?',
-        prompt: 'What should Ada say?',
-        options: [
-          { text: "Please don't. It can't see your budget, so that number is a guess. Let's use the real one from finance." },
-          { text: 'Sure, AI tools are very accurate.', why: 'It has never seen her budget. Any number is invented.' },
-          { text: 'Only if it sounded confident.', why: 'It always sounds confident.' },
-        ],
-        answer: 0,
-      },
-      {
         kind: 'orderLines',
         prompt: 'Put Ada\'s better routine in order.',
         lines: [
@@ -187,46 +164,6 @@ const lesson: OriginalLesson = {
           'Ask for the answer',
           'Check any fact it states against what I gave it',
         ],
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: 'An AI answer can sound sure and still be ... (one word)',
-        answers: ['wrong', 'incorrect', 'false'],
-        placeholder: 'One word',
-      },
-      {
-        kind: 'mcq',
-        variant: 'pickPrompt',
-        prompt: 'Which request gives the AI the information only Ada has?',
-        options: [
-          { text: 'Write a summary of our last client call.', why: 'It was not on the call. It will invent one.' },
-          {
-            text: 'Here are my notes from today\'s call with Lucía: [notes]. Turn them into 4 bullets: decisions, open questions, next steps, deadlines.',
-          },
-        ],
-        answer: 1,
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match each phrase to what it means.',
-        pairs: [
-          ['Predicts the next words', 'How it writes'],
-          ['Learned up to a date', 'Why recent news may be missing'],
-          ['Sounds confident', 'How it always sounds'],
-          ['Your situation', 'What you must tell it'],
-        ],
-      },
-      {
-        kind: 'findBug',
-        prompt: 'Spot the problem in Ada\'s request.',
-        lines: [
-          'Write a follow-up to Lucía after today\'s call.',
-          'Mention the decisions we made.',
-          'Keep it friendly and under 6 lines.',
-        ],
-        bug: 1,
-        fix: 'List the decisions: we keep the blue palette and testing starts Friday.',
-        explanation: 'The AI was not on the call. "The decisions we made" means nothing to it.',
       },
     ],
   },

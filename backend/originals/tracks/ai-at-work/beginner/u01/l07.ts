@@ -144,51 +144,6 @@ const lesson: OriginalLesson = {
         tiles: ['Match', 'its', 'length', 'and', 'tone'],
         distractors: ['typos', 'names'],
       },
-      {
-        kind: 'sortGroups',
-        prompt: 'Safe to paste as an example, or remove something first?',
-        groups: ['Safe as is', 'Remove something first'],
-        items: [
-          { text: 'A public blog post you liked', group: 0 },
-          { text: 'An email with a customer\'s phone number', group: 1 },
-          { text: 'A newsletter intro already sent to everyone', group: 0 },
-          { text: 'A message with a colleague\'s salary', group: 1 },
-        ],
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'The example you used had a typo, and now the AI version has the same typo!',
-        prompt: 'What should Ada learn from this?',
-        options: [
-          { text: 'The AI copies everything in the example, so fix mistakes or point them out first.' },
-          { text: 'Never use examples.', why: 'Examples work. Just clean them first.' },
-          { text: 'The AI makes typos on purpose.', why: 'It copied what it saw.' },
-        ],
-        answer: 0,
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: 'An example settles what words like "warm" ... (one word)',
-        answers: ['mean'],
-        placeholder: 'One word',
-      },
-      {
-        kind: 'fillBlank',
-        prompt: 'Complete the caution.',
-        template: 'The AI copies [[1]] it sees. If the example has a [[2]], say so.',
-        blanks: [['everything'], ['mistake', 'typo']],
-        distractors: ['nothing', 'reward'],
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match the step to Ada\'s words.',
-        pairs: [
-          ['Paste the example', '"Here is last month\'s update"'],
-          ['Say what to copy', '"Match the tone and length"'],
-          ['Say what is different', '"This week: testing moved to Friday"'],
-        ],
-      },
     ],
   },
   reflect: {

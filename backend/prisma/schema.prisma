@@ -412,6 +412,8 @@ model Section {
   title       String
   description String?  @db.Text
   goal        String?  @db.Text
+  /// Teyro Originals: where the chapter sits in the story ("40 weeks to go"). Shown on the map banner.
+  marker      String?
   orderIndex  Int      @default(0)
   isLocked    Boolean  @default(false)
   courseId    String

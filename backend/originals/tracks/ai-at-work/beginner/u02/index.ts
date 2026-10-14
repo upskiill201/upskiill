@@ -27,7 +27,9 @@ import l20 from './l20';
  */
 const unit: OriginalUnit = {
   key: 'u02',
-  title: 'Write anything faster',
+  title: 'Launch week',
+  marker: 'Month 1',
+  story: "A recap by Friday, an extra request from Lucía and a proposal to review. The inbox won't wait.",
   goal: 'Draft emails, messages and documents with AI, in your own voice.',
   lessons: [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20],
 };

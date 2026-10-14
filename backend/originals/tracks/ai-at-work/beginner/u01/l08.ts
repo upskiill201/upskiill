@@ -153,55 +153,6 @@ const lesson: OriginalLesson = {
         blanks: [['2', 'two'], ['shorter', 'short']],
         distractors: ['99', 'longer and vaguer'],
       },
-      {
-        kind: 'sortGroups',
-        prompt: 'Who decides?',
-        groups: ['Ada decides', 'The AI suggests'],
-        items: [
-          { text: 'Which option to send', group: 0 },
-          { text: 'Five different subject lines', group: 1 },
-          { text: 'Reasons each option might work', group: 1 },
-          { text: 'Whether the reasons make sense', group: 0 },
-        ],
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'Your AI picked option 3 as "the best", but our customers hate urgency. What do we do?',
-        prompt: 'What should Ada say?',
-        options: [
-          { text: 'Its pick is just an opinion. We know our customers, so we go with option 1.' },
-          { text: 'The AI picked it, so we have to use it.', why: 'You decide. Its pick is a suggestion.' },
-          { text: 'Ask it to pick again until it agrees with us.', why: 'Just choose. You know your customers.' },
-        ],
-        answer: 0,
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: 'How many options is a good number to ask for? (a range, e.g. "2 to 4")',
-        answers: ['3 to 5', '3-5', 'three to five', '3 5'],
-        placeholder: 'e.g. 2 to 4',
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match the problem to the fix.',
-        pairs: [
-          ['Only one answer', 'Ask for 3 to 5 options'],
-          ['Options all look alike', 'Name a different style for each'],
-          ['Like parts of two', 'Combine them'],
-          ['Too many to read', 'Ask for fewer'],
-        ],
-      },
-      {
-        kind: 'mcq',
-        prompt: 'After getting options, what is the most useful follow-up?',
-        options: [
-          { text: '"Which would you pick for this audience, and why?"' },
-          { text: '"Are you sure?"', why: 'It will just say yes or reshuffle.' },
-          { text: '"Write 50 more."', why: 'More options, not better ones.' },
-        ],
-        answer: 0,
-      },
     ],
   },
   reflect: {

@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../src/originals/originals-authoring.types';
 import aiAtWork from './tracks/ai-at-work';
 import formatTour from './tracks/format-tour';
+import studySmarter from './tracks/study-smarter';
 import { launchLineup } from './tracks/launch-lineup';
 
 /**
@@ -8,4 +9,4 @@ import { launchLineup } from './tracks/launch-lineup';
  * Add a Track here once its file exists. Tracks with no units yet are
  * checked but never loaded.
  */
-export const tracks: OriginalTrackDef[] = [aiAtWork, ...launchLineup, formatTour];
+export const tracks: OriginalTrackDef[] = [aiAtWork, studySmarter, ...launchLineup, formatTour];

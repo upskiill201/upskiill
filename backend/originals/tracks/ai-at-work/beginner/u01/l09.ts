@@ -150,54 +150,6 @@ const lesson: OriginalLesson = {
         prompt: 'Order a good follow-up.',
         lines: ['Say what to keep', 'Say exactly what to change', 'Say any new limit (length, tone)'],
       },
-      {
-        kind: 'sortGroups',
-        prompt: 'Steer, or start a new chat?',
-        groups: ['Steer', 'New chat'],
-        items: [
-          { text: 'The email is good but a bit long', group: 0 },
-          { text: 'You now need help with a spreadsheet instead', group: 1 },
-          { text: 'The tone is slightly too formal', group: 0 },
-          { text: 'It keeps mixing in details from an earlier topic', group: 1 },
-        ],
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'Weird: the AI keeps mentioning our old pricing in the new announcement.',
-        prompt: 'What should Ada suggest?',
-        options: [
-          { text: 'Start a fresh chat with only the new pricing, so the old details stop leaking in.' },
-          { text: 'Keep asking it to stop in the same chat.', why: 'Old context keeps leaking. A fresh chat clears it.' },
-          { text: 'Use the old pricing.', why: 'It is wrong. Fix the source of the problem.' },
-        ],
-        answer: 0,
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: '"Make it better" is a ... toss (one word)',
-        answers: ['coin'],
-        placeholder: 'One word',
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match Lucía\'s feedback to Ada\'s follow-up.',
-        pairs: [
-          ['"Too long"', '"Cut it by half, same points"'],
-          ['"Too stiff"', '"Friendlier, keep the facts"'],
-          ['"Unclear ask"', '"End with one direct question"'],
-        ],
-      },
-      {
-        kind: 'mcq',
-        prompt: 'Which follow-up is most likely to get exactly what Ada wants?',
-        options: [
-          { text: '"Try again but better"', why: 'Better how?' },
-          { text: '"Keep lines 1 to 3. Rewrite line 4 so it asks Lucía to approve by Wednesday."' },
-          { text: '"Do it differently"', why: 'Differently how? It may lose the good parts.' },
-        ],
-        answer: 1,
-      },
     ],
   },
   reflect: {

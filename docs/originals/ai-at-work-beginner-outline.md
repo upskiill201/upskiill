@@ -17,6 +17,28 @@
 | Launch | Unit 1 complete; Units 2–13 "coming soon", released every 1–2 weeks |
 | Tools | Tool-neutral: works with ChatGPT, Claude, Gemini, Copilot or any chat assistant. No screenshots of a specific product. |
 
+## Storyline: Ada's First Year (playbook §8a, added 2026-10-14)
+
+Each unit is a chapter of Ada's first year at the fintech startup in Lagos. The map banner shows the chapter name, the marker and a one-line story; the skill stays in the unit goal.
+
+| # | Chapter (map banner) | Marker | Story line | Skill (unit goal) |
+|---|---|---|---|---|
+| 1 | The 9:12 email | Week 3 | Lucía needs a project update by ten. Ada's first AI draft says nothing at all. | Your first useful answers |
+| 2 | Launch week | Month 1 | A recap by Friday, an extra request from Lucía and a proposal to review. The inbox won't wait. | Write anything faster |
+| 3 | The 40-page report | Month 2 | A 40-page report to digest before Thursday, and 140 unread emails after a week in Accra. | Summarise and understand |
+| 4 | The number that wasn't true | Month 3 | A confident AI statistic nearly goes into Lucía's launch deck. | Don't trust it blindly |
+| 5 | Lucía's big question | Month 3 | "Should we launch in Ghana next?" Ada has two days to find out. | Research with AI |
+| 6 | Grace's first project | Month 4 | Ada's new colleague has a launch to plan and no idea where to start. | Plan and organise |
+| 7 | The spreadsheet nobody understood | Month 5 | 3,000 rows of sign-up data and a meeting at nine. | Numbers and spreadsheets |
+| 8 | The pitch | Month 6 | Ada presents to the founders for the first time. | Presentations and visuals |
+| 9 | The angry client email | Month 7 | A launch bug, an upset client, and a call in an hour. | Meetings and tricky conversations |
+| 10 | The paste that almost happened | Month 8 | Customer data, a deadline, and one very tempting paste. | Safe, private and allowed |
+| 11 | Ada's playbook | Month 9 | The team wants Ada's prompts. Time to turn habits into a system. | Build your own AI habits |
+| 12 | Too many tools | Month 10 | Every week, a new AI tool. Which ones are worth it? | The right tool for the job |
+| 13 | The one-year review | Month 12 | Ada's first performance review, and one last big week. | Your AI workday (final) |
+
+Chapters 1–3 are live in code (`marker` + `story` on each unit). Chapters 4–13 take these lines when they are written.
+
 ## Every unit has the same rhythm
 
 ```

@@ -138,7 +138,7 @@ Learn is **not** always a card deck. Each lesson picks the teaching format that 
 
 ### Exercise rules
 
-1. **15–20 exercises** per normal lesson; **25–30** in a Unit Challenge or Checkpoint. Exercises can also appear inside Learn (quick checks, story decisions) so the learner is never just reading for more than 2 minutes.
+1. **About 10 exercises** per lesson (founder, 2026-10-14: 16 was too many), up to 20 at most; Checkpoints and Unit Challenges may go up to 30. Exercises can also appear inside Learn (quick checks, story decisions) so the learner is never just reading for more than 2 minutes.
 2. **At least 4 different exercise types** per lesson.
 3. **No more than 2 of the same type in a row.**
 4. **Match the way it was taught.** A Before/After lesson leads into Spot the problem; a Story leads into a Chat scenario; a Walkthrough leads into Put in order or Write and run.
@@ -210,6 +210,20 @@ Before the first Original is written, a short **cast sheet** (`docs/originals/CA
 
 ---
 
+## 8a. Storylines — every level is one story
+
+Founder, 2026-10-14: the home screen is a journey map, so every Original reads like a story while it teaches.
+
+1. **One arc per level.** Each level follows one lead character through one real stretch of life, for example Kofi's final year of school. The skill the course teaches is how the character gets through it.
+2. **A unit is a chapter.** Each chapter has its own problem, which the lessons help solve, and a payoff. The unit title is the chapter name shown on the map banner ("The night it went wrong"). The skill goes in the unit's goal.
+3. **Lesson 1 opens the chapter and lesson 20 is its climax.** The Unit Challenge is the moment in the story where the learner uses everything from the chapter to get the character through.
+4. **Checkpoints are story beats too.** Each one is framed as a small moment: a test moved forward, a message arriving.
+5. **The story carries the teaching; it never replaces it.** At least half of a unit's lessons can be taught without the story. The story gives them a reason and a setting.
+6. **Levels continue the life.** The next level picks up where the last one ended (Kofi starts university in Intermediate). This follows the cast rule that lives only move forward.
+7. **The learner decides at key moments.** Every chapter has at least one Story lesson with a choice, and the hardest choices (shortcuts, honesty) are where the course makes its point.
+
+---
+
 ## 9. Facts and safety
 
 - **Every factual claim is checked** against a reliable source before publishing. Statistics need a source in the lesson's author notes (the 85% dropout figure, not "90%").
@@ -224,7 +238,7 @@ Before the first Original is written, a short **cast sheet** (`docs/originals/CA
 - [ ] Lesson outcome is one idea, written as an action
 - [ ] Opens with a hook in the first 30 seconds
 - [ ] Learn format chosen for the idea and obeys the variety rules for its unit
-- [ ] 15–20 exercises (25–30 for Unit Challenge / Checkpoint), at least 4 types, no 3-in-a-row of one type, easy → hard
+- [ ] About 10 exercises (max 20; up to 30 for Unit Challenge / Checkpoint), at least 4 types, no 3-in-a-row of one type, easy → hard
 - [ ] Learner is never reading for more than 2 minutes without interacting
 - [ ] Every wrong option has its own explanation
 - [ ] From Unit 2 on: 2–3 review exercises from earlier units
@@ -285,7 +299,7 @@ Six Originals at launch, each a Beginner level with at least its first unit (20+
 | # | Original | Category | Notes |
 |---|---|---|---|
 | 1 | **AI at Work** | AI | **Pilot.** Written first; no code runner needed. |
-| 2 | **AI for Students** | AI | University and school. Teaches responsible use: studying smarter with AI, never cheating, so schools and parents can recommend it. |
+| 2 | **Study Smarter with AI** (was "AI for Students") | AI | University and school. Teaches responsible use: studying smarter with AI, never cheating, so schools and parents can recommend it. |
 | 3 | **Python for Beginners** | Coding | Needs the code runner (build piece 5). |
 | 4 | **Acing Job Interviews** | Career | Urgent-need buyers. |
 | 5 | **Clear Writing at Work** | Communication | Written communication. |
@@ -293,7 +307,7 @@ Six Originals at launch, each a Beginner level with at least its first unit (20+
 
 **Launch categories:** AI, Coding, Career, Communication. Thinking & Productivity and Life Skills come after launch. *Learning How to Learn* is not a paid Original (a well-known free course already exists under that name); its best ideas may become a short free mini-course in onboarding later.
 
-**Writing order:** AI at Work (pilot) → AI for Students → Acing Job Interviews → Clear Writing at Work → Speak Like a CEO → Python for Beginners (last, because it waits on the code runner).
+**Writing order:** AI at Work (pilot) → Study Smarter with AI → Acing Job Interviews → Clear Writing at Work → Speak Like a CEO → Python for Beginners (last, because it waits on the code runner).
 
 ---
 

@@ -44,7 +44,7 @@ One shared cast appears across **every** Original, so learners get attached to t
 | Home | Nairobi, Kenya |
 | Job | final-year computer science student, applying for his first internships |
 | Personality | curious, calm, a little too relaxed about deadlines; brilliant at understanding things, less good at explaining them to others. |
-| Best for | AI for Students, Acing Job Interviews, Python for Beginners |
+| Best for | Acing Job Interviews, Python for Beginners (Miracle mentors in Study Smarter with AI) |
 
 ## The rest of the cast
 
@@ -55,7 +55,31 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 | Lucía | Mexico City, Mexico | Mid-career marketer, newly promoted to lead a small team | Speak Like a CEO, AI at Work, Clear Writing at Work |
 | Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Acing Job Interviews, Python |
 | Grace | Manchester, UK | Career-changer in her 40s, moving from nursing into tech | Acing Job Interviews, AI at Work |
-| Kofi | Accra, Ghana | Secondary-school student preparing for university | AI for Students |
+| Kofi | Accra, Ghana | Final-year secondary-school student, 17, who wants to study Biomedical Engineering. Funny, competitive, a last-minute worker with big plans; makes beats on his phone and plays football. | Study Smarter with AI (lead) |
+
+## Cameroon (added 2026-10-14, founder)
+
+These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.
+
+| Name | Age | Home | Life stage | Personality | Best for |
+|---|---|---|---|---|---|
+| **Miracle** | 22 | Buea, Cameroon | Final-year Software Engineering student at the University of Buea. She volunteers as an online mentor for final-year school students. | Warm, organised, very direct ("show me your notes first"). She made every study mistake once and keeps a list of them. Her own final-year project and job hunt run in the background. | Study Smarter with AI (mentor), Acing Job Interviews, Python for Beginners |
+| **Clinton** | 17 | Bamenda, Cameroon | Final year of secondary school; wants to study Computer Science | Loud, funny, runs every group chat, and is brilliant at organising people. He is tempted by shortcuts, but he keeps his drafts, and that saves him. | Study Smarter with AI, Speak Like a CEO |
+| **David** | 17 | Buea, Cameroon | Final year of secondary school; wants to study Medicine | Quiet and the best at Maths in the group. He explains numbers beautifully but freezes when he has to write an essay. | Study Smarter with AI, Clear Writing at Work |
+
+**Fixed relationships:**
+- Miracle mentors Kofi, Clinton and David as one online study group (weekly video call plus a group chat).
+- Clinton and David go to the same school in Buea; Clinton moved there from Bamenda.
+- Kofi meets Clinton and David through Miracle's group.
+
+## Course-only characters
+
+These appear in one Original only and don't join the shared cast.
+
+| Name | Course | Who |
+|---|---|---|
+| Efua | Study Smarter with AI | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. |
+| Mrs Asante | Study Smarter with AI | Kofi's Chemistry teacher. Strict and fair, and gives surprise quizzes. |
 
 ## Decisions
 

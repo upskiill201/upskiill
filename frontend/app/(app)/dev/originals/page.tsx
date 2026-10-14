@@ -33,7 +33,7 @@ interface PreviewLesson {
 interface PreviewBundle {
   track: { slug: string; title: string };
   course: { id: string; slug: string; title: string; level: number; upcomingUnits?: number };
-  units: { key: string; title: string; lessons: PreviewLesson[] }[];
+  units: { key: string; title: string; marker?: string | null; story?: string | null; lessons: PreviewLesson[] }[];
 }
 
 export default function OriginalsBench() {
@@ -56,7 +56,8 @@ export default function OriginalsBench() {
       sections: bundle.units.map((u) => ({
         id: u.key,
         title: u.title,
-        description: null,
+        description: u.story ?? null,
+        marker: u.marker ?? null,
         lessons: u.lessons.map((l) => ({
           id: l.id,
           title: l.title,

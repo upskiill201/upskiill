@@ -182,6 +182,8 @@ export interface PathSection {
   id: string;
   title: string;
   description: string | null;
+  /** Teyro Originals: the chapter's place in the story ("40 weeks to go"). */
+  marker?: string | null;
   lessons: PathLesson[];
 }
 
