@@ -192,67 +192,6 @@ const lesson: OriginalLesson = {
           'Read the answer before you use it',
         ],
       },
-      {
-        kind: 'sortGroups',
-        prompt: 'Vague or specific?',
-        groups: ['Vague', 'Specific'],
-        items: [
-          { text: 'Write something about our product', group: 0 },
-          { text: 'Write 3 lines for our homepage about saving time on invoices', group: 1 },
-          { text: 'Help with my presentation', group: 0 },
-          { text: 'Give me 5 slide titles for a 10-minute talk to new customers', group: 1 },
-          { text: 'Make this better', group: 0 },
-          { text: 'Make this email shorter and end it with one clear question', group: 1 },
-        ],
-      },
-      {
-        kind: 'mcq',
-        variant: 'pickPrompt',
-        prompt: 'Ada wants to thank a client after a meeting. Which request is better?',
-        options: [
-          { text: 'Write a thank-you email.', why: 'Thank them for what? The AI will write a thank-you for anything.' },
-          {
-            text: 'Write a 4-line thank-you to Lucía for meeting us today. Mention that she liked the new sign-up flow, and confirm we will send the designs on Thursday.',
-          },
-          { text: 'Write the best thank-you email ever written.', why: '"Best ever" is not a detail. It is a wish.' },
-        ],
-        answer: 1,
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'Could you send me a short summary I can forward to my boss? She only reads the first two lines.',
-        prompt: 'Which request should Ada give the AI?',
-        options: [
-          { text: 'Summarise our project.', why: 'It says nothing about the boss or the two-line limit.' },
-          { text: 'Summarise our project for a senior manager who only reads two lines: status first, then the one decision needed.' },
-          { text: 'Write a long, detailed project report.', why: 'Lucía said her boss reads two lines.' },
-        ],
-        answer: 1,
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: 'What is the one thing every useful work email should have? (The ...)',
-        answers: ['ask', 'the ask', 'a clear ask', 'request', 'question'],
-        placeholder: 'One word',
-        explanation: 'Every useful email has an ask: what you need the reader to do.',
-      },
-      {
-        kind: 'fillBlank',
-        prompt: 'Complete the rule.',
-        template: 'Generic answers usually come from [[1]] requests. Better answers come from adding [[2]].',
-        blanks: [['vague'], ['details', 'facts']],
-        distractors: ['polite', 'emojis', 'long'],
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match each vague request to a better version.',
-        pairs: [
-          ['"Write an email"', '"Write a 4-line reply to Lucía confirming Friday"'],
-          ['"Summarise this"', '"Summarise this in 3 bullets for my manager"'],
-          ['"Make it better"', '"Make it shorter and friendlier"'],
-        ],
-      },
     ],
   },
   reflect: {

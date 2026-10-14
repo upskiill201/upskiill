@@ -98,7 +98,8 @@ function lintLesson(
   if (lesson.minutes < 10 || lesson.minutes > 15) push('warning', `${lesson.minutes} minutes; lessons should take 10–15.`);
 
   const n = lesson.apply.items.length;
-  const [min, max] = lesson.milestone ? [25, 30] : [15, 20];
+  // Founder 2026-10-14: 10 exercises is enough; up to 20 (30 in a Checkpoint) is the ceiling.
+  const [min, max] = lesson.milestone ? [10, 30] : [10, 20];
   if (n < min || n > max) push('warning', `${n} exercises; aim for ${min}–${max}${lesson.milestone ? ' in a Checkpoint' : ''}.`);
 
   const kinds = lesson.apply.items.map((e) => e.kind);

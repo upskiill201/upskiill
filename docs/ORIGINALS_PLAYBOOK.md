@@ -138,7 +138,7 @@ Learn is **not** always a card deck. Each lesson picks the teaching format that 
 
 ### Exercise rules
 
-1. **15–20 exercises** per normal lesson; **25–30** in a Unit Challenge or Checkpoint. Exercises can also appear inside Learn (quick checks, story decisions) so the learner is never just reading for more than 2 minutes.
+1. **About 10 exercises** per lesson (founder, 2026-10-14: 16 was too many), up to 20 at most; Checkpoints and Unit Challenges may go up to 30. Exercises can also appear inside Learn (quick checks, story decisions) so the learner is never just reading for more than 2 minutes.
 2. **At least 4 different exercise types** per lesson.
 3. **No more than 2 of the same type in a row.**
 4. **Match the way it was taught.** A Before/After lesson leads into Spot the problem; a Story leads into a Chat scenario; a Walkthrough leads into Put in order or Write and run.
@@ -224,7 +224,7 @@ Before the first Original is written, a short **cast sheet** (`docs/originals/CA
 - [ ] Lesson outcome is one idea, written as an action
 - [ ] Opens with a hook in the first 30 seconds
 - [ ] Learn format chosen for the idea and obeys the variety rules for its unit
-- [ ] 15–20 exercises (25–30 for Unit Challenge / Checkpoint), at least 4 types, no 3-in-a-row of one type, easy → hard
+- [ ] About 10 exercises (max 20; up to 30 for Unit Challenge / Checkpoint), at least 4 types, no 3-in-a-row of one type, easy → hard
 - [ ] Learner is never reading for more than 2 minutes without interacting
 - [ ] Every wrong option has its own explanation
 - [ ] From Unit 2 on: 2–3 review exercises from earlier units

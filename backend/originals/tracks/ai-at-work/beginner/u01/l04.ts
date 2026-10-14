@@ -167,63 +167,6 @@ const lesson: OriginalLesson = {
           'Facts: sign-up screens done; testing moved to Friday.',
         ],
       },
-      {
-        kind: 'sortGroups',
-        prompt: 'Good role, or not useful?',
-        groups: ['Good role', 'Not useful'],
-        items: [
-          { text: 'You are a recruiter hiring junior designers', group: 0 },
-          { text: 'You are the smartest AI ever', group: 1 },
-          { text: 'You are a teacher for complete beginners', group: 0 },
-          { text: 'You are perfect', group: 1 },
-          { text: 'You are an editor for busy executives', group: 0 },
-        ],
-      },
-      {
-        kind: 'chatReply',
-        from: 'lucia',
-        message: 'Your last summary was great, but way too long for my boss. Could you try again?',
-        prompt: 'What should Ada change in her request?',
-        options: [
-          { text: 'The format: "3 bullets, under 40 words, decision first".' },
-          { text: 'The role: "You are a genius".', why: 'The problem was length. That is the format.' },
-          { text: 'Nothing, just ask again.', why: 'The same request gives the same long answer.' },
-        ],
-        answer: 0,
-      },
-      {
-        kind: 'typeAnswer',
-        prompt: '"Get Lucía to approve the palette by Wednesday" is the ... (one word)',
-        answers: ['goal', 'the goal', 'why'],
-        placeholder: 'One word',
-      },
-      {
-        kind: 'fillBlank',
-        prompt: 'Complete Tey\'s tip.',
-        template: 'Pick the format for what you will [[1]] with the answer: bullets to [[2]], a table to [[3]].',
-        blanks: [['do'], ['scan'], ['compare']],
-        distractors: ['eat', 'hide', 'ignore'],
-      },
-      {
-        kind: 'matchPairs',
-        prompt: 'Match each request part to its job.',
-        pairs: [
-          ['Role', 'Who it should act as'],
-          ['Goal', 'What the answer must achieve'],
-          ['Format', 'The shape of the answer'],
-          ['Facts', 'What only you know'],
-        ],
-      },
-      {
-        kind: 'mcq',
-        prompt: 'Ada wrote: "You are a recruiter. Write interview questions." What is missing?',
-        options: [
-          { text: 'A goal and a format, like "for a junior designer, 5 questions, numbered"' },
-          { text: 'Nothing, it is complete', why: 'For which job? How many? It will guess.' },
-          { text: 'A longer role', why: 'The role is fine. The goal and format are missing.' },
-        ],
-        answer: 0,
-      },
     ],
   },
   reflect: {
