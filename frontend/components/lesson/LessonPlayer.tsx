@@ -368,8 +368,10 @@ export function LessonPlayer({
     if (!exercise || !isResponseComplete(exercise, response)) return;
     const correct = gradeExercise(exercise, response);
     setQuiz((q) => answerQuestion(q, correct));
+    // Write and run with the solution shown: right, but the combo starts over.
+    const viaSolution = response?.kind === 'writeCode' && response.usedSolution;
     if (correct) {
-      const run = combo + 1;
+      const run = viaSolution ? 0 : combo + 1;
       setCombo(run);
       if (run > bestCombo) setBestCombo(run);
       setAnswer('correct');
@@ -377,8 +379,10 @@ export function LessonPlayer({
       playSound('correct', run);
       setVerdict({
         kind: 'correct',
-        title: fixing ? pick(FIXED_TITLES) : run >= 5 ? pick(RUN_TITLES) : pick(CORRECT_TITLES),
-        body: exercise.explanation ?? null,
+        title: viaSolution ? 'Solution used' : fixing ? pick(FIXED_TITLES) : run >= 5 ? pick(RUN_TITLES) : pick(CORRECT_TITLES),
+        body: viaSolution
+          ? ['Read it line by line until each line makes sense. The next one is yours.', exercise.explanation].filter(Boolean).join('\n')
+          : (exercise.explanation ?? null),
       });
       say('cheering', run >= 3 ? pickComboLine(run) : tey.line);
       if (isComboMilestone(run)) setComboBurst((b) => ({ run, key: (b?.key ?? 0) + run }));
@@ -851,7 +855,11 @@ export function LessonPlayer({
       hint: learnGated
         ? card.kind === 'check'
           ? 'Pick an answer to continue'
-          : 'Watch the video to the end to continue'
+          : card.kind === 'video'
+            ? 'Watch the video to the end to continue'
+            : card.kind === 'tryIt'
+              ? 'Run the code to continue'
+              : 'Finish this card to continue'
         : undefined,
       onAction: nextCard,
     };
@@ -866,7 +874,15 @@ export function LessonPlayer({
           },
         }
       : answer === 'idle'
-        ? { label: 'Check', disabled: !exercise || !isResponseComplete(exercise, response), onAction: check }
+        ? {
+            label: 'Check',
+            disabled: !exercise || !isResponseComplete(exercise, response),
+            hint:
+              exercise?.kind === 'writeCode' && !isResponseComplete(exercise, response)
+                ? 'Run your code. Check unlocks when everything passes.'
+                : undefined,
+            onAction: check,
+          }
         : { label: answer === 'correct' ? 'Continue' : 'Got it', onAction: afterAnswer };
   } else if (phase === 'reflect') {
     footer =

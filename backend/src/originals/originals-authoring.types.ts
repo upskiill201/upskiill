@@ -54,7 +54,9 @@ export type AuthoredCard =
       notes: string[];
     }
   | { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] }
-  | { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] };
+  | { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] }
+  /** Try it live: runnable, editable Python. Done once it runs without an error. */
+  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[] };
 
 export type AuthoredCardKind = AuthoredCard['kind'];
 
@@ -70,6 +72,15 @@ interface ExerciseBase {
 export interface AuthoredOption {
   text: string;
   why?: string;
+}
+
+/** One hidden check on a Write and run program: set `message` and exactly one test. */
+export interface AuthoredCodeCheck {
+  message: string;
+  outputIncludes?: string;
+  outputEquals?: string;
+  expr?: string;
+  codeIncludes?: string;
 }
 
 export type AuthoredExercise =
@@ -106,7 +117,20 @@ export type AuthoredExercise =
   | (ExerciseBase & { kind: 'tapBuild'; tiles: string[]; distractors?: string[]; language?: CodeLanguage })
   | (ExerciseBase & { kind: 'typeAnswer'; answers: string[]; placeholder?: string })
   /** `items[i].group` is an index into `groups`. */
-  | (ExerciseBase & { kind: 'sortGroups'; groups: string[]; items: { text: string; group: number }[] });
+  | (ExerciseBase & { kind: 'sortGroups'; groups: string[]; items: { text: string; group: number }[] })
+  /**
+   * Write and run (Python): runs in the learner's browser; CHECK unlocks when
+   * every check passes. `solution` must pass them all (`npm run originals`
+   * runs it); `starter` is what the editor opens with.
+   */
+  | (ExerciseBase & {
+      kind: 'writeCode';
+      starter?: string;
+      solution: string;
+      hint?: string;
+      checks: AuthoredCodeCheck[];
+      stdin?: string[];
+    });
 
 export type AuthoredExerciseKind = AuthoredExercise['kind'];
 

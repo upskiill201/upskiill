@@ -11,6 +11,7 @@
  *   compare   before / after, with what changed
  *   explore   a real artefact with tappable phrases
  *   myth      quick-fire: myth or fact?
+ *   tryIt     runnable Python (components/code), done once it runs cleanly
  *
  * None of these cost hearts. The interactive ones call `onDone` once the
  * learner has finished them (the player holds Continue until then); `done`
@@ -26,13 +27,14 @@ import { inlineMarkdown } from '@/lib/lesson/inlineMarkdown';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { CodeBlock } from '../code/CodeBlock';
+import { TryItCard } from '@/components/code/TryItCard';
 import { TeySays } from '../TeySays';
 import styles from '../Lesson.module.css';
 
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 
 /** Kinds that must be finished before Continue lights up. */
-export const GATED_RICH_KINDS = new Set<RichLearnCard['kind']>(['story', 'chat', 'steps', 'explore', 'myth']);
+export const GATED_RICH_KINDS = new Set<RichLearnCard['kind']>(['story', 'chat', 'steps', 'explore', 'myth', 'tryIt']);
 
 /** A story without a decision has nothing to finish. */
 export function richCardNeedsAction(card: RichLearnCard): boolean {
@@ -546,6 +548,8 @@ export function RichLearnCardView({
       return <Explore card={card} done={done} onDone={onDone} />;
     case 'myth':
       return <Myth card={card} done={done} onDone={onDone} />;
+    case 'tryIt':
+      return <TryItCard card={card} done={done} onDone={onDone} />;
   }
 }
 

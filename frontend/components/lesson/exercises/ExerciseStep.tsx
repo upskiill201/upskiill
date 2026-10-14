@@ -12,6 +12,7 @@
  *   findBug     tap the line with the mistake
  *   orderLines  tap lines from the bank to build the answer, in order
  *   matchPairs  tap a term, then its meaning
+ *   writeCode   write and run Python (components/code/WriteCodeView)
  *
  * Every tap plays a note and a haptic; nothing needs a keyboard or dragging,
  * so it all works one-handed on a phone.
@@ -40,6 +41,7 @@ import {
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { CodeBlock, CodeLine } from '../code/CodeBlock';
+import { WriteCodeView } from '@/components/code/WriteCodeView';
 import { StepHeading } from '../steps/StepHeading';
 import { TeySays, type TeyPose } from '../TeySays';
 import type { AnswerState } from '../steps/ApplyStep';
@@ -116,6 +118,7 @@ const DEFAULT_LINE: Record<Exercise['kind'], string> = {
   tapBuild: 'Tap the tiles in the right order to build it.',
   typeAnswer: 'Type your answer. Small typos are fine.',
   sortGroups: 'Put each one where it belongs.',
+  writeCode: 'Write it, run it, fix it. Runs are free, so try as often as you like.',
 };
 
 export function ExerciseStep(props: ExerciseStepProps) {
@@ -134,6 +137,9 @@ export function ExerciseStep(props: ExerciseStepProps) {
       {exercise.kind === 'tapBuild' && <TapBuildView {...props} exercise={exercise} />}
       {exercise.kind === 'typeAnswer' && <TypeAnswerView {...props} exercise={exercise} />}
       {exercise.kind === 'sortGroups' && <SortGroupsView {...props} exercise={exercise} />}
+      {exercise.kind === 'writeCode' && (
+        <WriteCodeView exercise={exercise} response={props.response} onResponse={props.onResponse} locked={props.answer !== 'idle'} />
+      )}
     </div>
   );
 }

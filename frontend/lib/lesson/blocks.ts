@@ -189,10 +189,16 @@ export type RichLearnCard =
   /** A real artefact with tappable phrases that reveal explanations. */
   | (CardBase & { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] })
   /** Quick-fire: is each statement a myth or a fact? */
-  | (CardBase & { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] });
+  | (CardBase & { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] })
+  /**
+   * Try it live: runnable, editable Python in the learner's browser
+   * (lib/code). Done once it has run without an error. `stdin` feeds input();
+   * `challenge` is a nudge to change the code and run it again.
+   */
+  | (CardBase & { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[] });
 
 export type RichLearnCardKind = RichLearnCard['kind'];
-export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth'];
+export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth', 'tryIt'];
 
 export const RICH_LIMITS = {
   readingChars: 12000,
@@ -204,6 +210,10 @@ export const RICH_LIMITS = {
   notes: 6,
   hotspots: 8,
   statements: 6,
+  /** Lines of input() fed to a program. */
+  stdin: 10,
+  /** Hidden checks on a Write and run exercise. */
+  checks: 8,
 } as const;
 
 // ─── Exercises ─────────────────────────────────────────────────────────────
@@ -211,7 +221,7 @@ export const RICH_LIMITS = {
 export type ExerciseKind = 'mcq' | 'fillBlank' | 'findBug' | 'orderLines' | 'matchPairs' | RichExerciseKind;
 
 /** Exercise kinds written as Originals course files (not in the builder yet). */
-export type RichExerciseKind = 'tapBuild' | 'typeAnswer' | 'sortGroups';
+export type RichExerciseKind = 'tapBuild' | 'typeAnswer' | 'sortGroups' | 'writeCode';
 
 /** How a multiple-choice question is framed to the learner and the creator. */
 export type McqVariant = 'standard' | 'predictOutput' | 'pickPrompt' | 'chat';
@@ -309,6 +319,42 @@ export interface SortGroupsExercise extends ExerciseBase {
   items: { id: string; text: string; groupId: string }[];
 }
 
+/**
+ * One hidden check on a Write and run program. Checks look at what the
+ * program printed and the values it left behind, never the exact wording
+ * of the code, so different correct solutions pass (playbook §7).
+ * Set exactly one test; `message` is what the learner sees ("Print the total").
+ */
+export interface CodeCheck {
+  message: string;
+  /** The output contains this (case and spacing don't matter). */
+  outputIncludes?: string;
+  /** The whole output is exactly this (spacing at the ends doesn't matter). */
+  outputEquals?: string;
+  /** A Python expression that's true after the program runs, e.g. `pot == 200000`. */
+  expr?: string;
+  /** The code uses this, e.g. `for ` or `f"` (for "use a loop" style tasks). */
+  codeIncludes?: string;
+}
+
+/**
+ * Write and run (Python): the learner writes code, runs it in the browser
+ * as often as they like (free, no hearts), and CHECK unlocks once every
+ * hidden check passes. A hint is always there; the solution appears after
+ * two failed runs, and using it costs the combo, never hearts.
+ */
+export interface WriteCodeExercise extends ExerciseBase {
+  kind: 'writeCode';
+  language: 'python';
+  /** What the editor starts with (may be empty). */
+  starter: string;
+  solution: string;
+  hint?: string;
+  checks: CodeCheck[];
+  /** Lines fed to input(), in order. */
+  stdin?: string[];
+}
+
 export type Exercise =
   | McqExercise
   | FillBlankExercise
@@ -317,7 +363,8 @@ export type Exercise =
   | MatchPairsExercise
   | TapBuildExercise
   | TypeAnswerExercise
-  | SortGroupsExercise;
+  | SortGroupsExercise
+  | WriteCodeExercise;
 
 export interface ApplyContent {
   scenario: string;
@@ -335,7 +382,13 @@ export type ExerciseResponse =
   /** Indexes into tapBuildBank(), in the order tapped. */
   | { kind: 'tapBuild'; picked: number[] }
   | { kind: 'typeAnswer'; text: string }
-  | { kind: 'sortGroups'; placed: Record<string, string> };
+  | { kind: 'sortGroups'; placed: Record<string, string> }
+  /**
+   * `passedCode` is the exact code that last passed every check (null until
+   * one does): editing after a pass means running again. `failedRuns` and
+   * `usedSolution` drive the hint, the solution button and the combo.
+   */
+  | { kind: 'writeCode'; code: string; passedCode: string | null; failedRuns: number; usedSolution: boolean };
 
 /** Blank markers in a fill-in template: `[[1]]`, `[[2]]`… */
 export const BLANK_RE = /\[\[(\d+)\]\]/g;
@@ -362,6 +415,8 @@ export function isResponseComplete(ex: Exercise, r: ExerciseResponse | null): bo
       return r.text.trim().length > 0;
     case 'sortGroups':
       return (ex as SortGroupsExercise).items.every((it) => Boolean(r.placed[it.id]));
+    case 'writeCode':
+      return r.passedCode !== null && r.passedCode === r.code;
   }
 }
 
@@ -451,6 +506,9 @@ export function gradeExercise(ex: Exercise, r: ExerciseResponse | null): boolean
       const placed = (r as { placed: Record<string, string> }).placed;
       return ex.items.every((it) => placed[it.id] === it.groupId);
     }
+    case 'writeCode':
+      // The runner already checked it: complete means every check passed.
+      return true;
   }
 }
 
@@ -572,7 +630,18 @@ export function richLearnCardIssue(c: RichLearnCard): string | null {
     case 'myth':
       if (c.statements.length < 2 || c.statements.length > RICH_LIMITS.statements) return `Myth or Fact needs 2 to ${RICH_LIMITS.statements} statements.`;
       return c.statements.some((s) => blank(s.text) || blank(s.explain)) ? 'Every statement needs its text and the explanation.' : null;
+    case 'tryIt':
+      if (blank(c.code)) return 'Try it live needs code to run.';
+      return (c.stdin?.length ?? 0) > RICH_LIMITS.stdin ? `Up to ${RICH_LIMITS.stdin} lines of input.` : null;
   }
+}
+
+/** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
+export function codeCheckIssue(c: CodeCheck): string | null {
+  if (blank(c.message)) return 'Every check needs a message for the learner.';
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  if (tests.length !== 1) return 'Every check tests exactly one thing.';
+  return blank(tests[0]) ? 'A check has nothing to test.' : null;
 }
 
 export function validateExercise(ex: Exercise): string | null {
@@ -593,6 +662,11 @@ export function validateExercise(ex: Exercise): string | null {
       return null;
     case 'typeAnswer':
       return ex.answers.every(blank) ? 'Add at least one accepted answer.' : null;
+    case 'writeCode':
+      if (blank(ex.solution)) return 'Add the solution.';
+      if (ex.checks.length === 0 || ex.checks.length > RICH_LIMITS.checks) return `Add 1 to ${RICH_LIMITS.checks} checks.`;
+      if ((ex.stdin?.length ?? 0) > RICH_LIMITS.stdin) return `Up to ${RICH_LIMITS.stdin} lines of input.`;
+      return ex.checks.map(codeCheckIssue).find((m) => m !== null) ?? null;
     case 'sortGroups': {
       if (ex.groups.length < 2 || ex.groups.length > 3) return 'Sorting needs 2 or 3 groups.';
       if (ex.groups.some((g) => blank(g.label))) return 'Every group needs a name.';
@@ -717,6 +791,8 @@ export function blankExercise(t: ExerciseTemplate): Exercise {
       return { id, kind: 'tapBuild', prompt: 'Build the answer.', tiles: ['', ''], distractors: [] };
     case 'typeAnswer':
       return { id, kind: 'typeAnswer', prompt: 'Type your answer.', answers: [''] };
+    case 'writeCode':
+      return { id, kind: 'writeCode', language: 'python', prompt: 'Write the code.', starter: '', solution: '', checks: [] };
     case 'sortGroups': {
       const a = newBlockId('grp');
       const b = newBlockId('grp');

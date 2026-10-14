@@ -22,7 +22,8 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { tracks } from '../originals';
 import type { OriginalTrackDef } from '../src/originals/originals-authoring.types';
 import { buildContentBlocks, keys, lessonXp, stableId } from '../src/originals/originals-content';
-import { lintTrack, mainFormat } from '../src/originals/originals-lint';
+import { lintTrack, mainFormat, type LintIssue } from '../src/originals/originals-lint';
+import { hasCode, verifyTrackCode } from '../src/originals/originals-code-verify';
 import { ORIGINALS_PRICING, levelLabel } from '../src/originals/originals.policy';
 
 const args = process.argv.slice(2);
@@ -38,8 +39,8 @@ const EXPORT = flag('export');
 const ONLY = option('track');
 const AUTHOR_EMAIL = process.env.ORIGINALS_AUTHOR_EMAIL ?? 'originals@teyro.app';
 
-function report(track: OriginalTrackDef): boolean {
-  const issues = lintTrack(track);
+function report(track: OriginalTrackDef, codeIssues: LintIssue[] = []): boolean {
+  const issues = [...lintTrack(track), ...codeIssues].sort((a, b) => (a.level === b.level ? 0 : a.level === 'error' ? -1 : 1));
   const errors = issues.filter((i) => i.level === 'error');
   const warnings = issues.filter((i) => i.level === 'warning');
   const lessons = track.levels.flatMap((l) => l.units.flatMap((u) => u.lessons));
@@ -243,7 +244,12 @@ async function main() {
   if (selected.length === 0) throw new Error(ONLY ? `No Track "${ONLY}".` : 'No Tracks registered in originals/index.ts.');
 
   let ok = true;
-  for (const track of selected) ok = report(track) && ok;
+  for (const track of selected) {
+    // Every Try it live card and Write and run solution, run in real Python.
+    if (hasCode(track)) console.log(`
+(running the Python in ${track.slug}...)`);
+    ok = report(track, await verifyTrackCode(track)) && ok;
+  }
   if (EXPORT) selected.forEach(exportPreview);
 
   if (!WRITE) {

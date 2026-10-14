@@ -57,6 +57,12 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 | Grace | Manchester, UK | Career-changer in her 40s, moving from nursing into tech | Acing Job Interviews, AI at Work |
 | Kofi | Accra, Ghana | Final-year secondary-school student, 17, who wants to study Biomedical Engineering. Funny, competitive, a last-minute worker with big plans; makes beats on his phone and plays football. | Study Smarter with AI (lead) |
 
+## Fixed relationships so far
+
+- **Ada and Lucía:** Lucía is the marketing lead at a client company Ada's startup works with (AI at Work).
+- **Ada and Arjun:** Arjun does freelance contract development for Ada's startup and mentors her as she learns Python (Python for Beginners). He is precise, opinionated about variable names, and writes code nobody else can read; Ada teaches him why readable code matters.
+- **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
+
 ## Cameroon (added 2026-10-14, founder)
 
 These three join the shared cast. They first appear in Study Smarter with AI and can return in any Original.

@@ -18,7 +18,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
-const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6 };
+const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
 const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
@@ -162,6 +162,9 @@ function richLearnCardProblem(c: any): string | null {
         ? 'A Myth or Fact statement is missing its text, answer or explanation.'
         : null;
     }
+    case 'tryIt':
+      if (blank(c.code)) return 'A Try it live card has no code.';
+      return list(c.stdin).length > RICH.stdin ? `Try it live allows up to ${RICH.stdin} lines of input.` : null;
     default:
       return 'A Learn card has an unknown type.';
   }
@@ -222,9 +225,25 @@ export function exerciseProblem(e: any): string | null {
       const ids = new Set(groups.map((g: any) => g?.id));
       return items.some((it: any) => blank(it?.text) || !ids.has(it?.groupId)) ? 'A sorting item has no text or group.' : null;
     }
+    case 'writeCode': {
+      const checks = Array.isArray(e.checks) ? e.checks : [];
+      if (e.language !== 'python') return 'A Write and run exercise must be Python.';
+      if (blank(e.solution)) return 'A Write and run exercise has no solution.';
+      if (checks.length === 0 || checks.length > RICH.checks) return `A Write and run exercise needs 1 to ${RICH.checks} checks.`;
+      if (Array.isArray(e.stdin) && e.stdin.length > RICH.stdin) return `Write and run allows up to ${RICH.stdin} lines of input.`;
+      return checks.map(codeCheckProblem).find((p: string | null) => p !== null) ?? null;
+    }
     default:
       return 'An exercise has an unknown type.';
   }
+}
+
+/** One hidden check on a Write and run exercise. Mirrors codeCheckIssue in the frontend. */
+function codeCheckProblem(c: any): string | null {
+  if (blank(c?.message)) return 'A code check has no message for the learner.';
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  if (tests.length !== 1) return 'A code check must test exactly one thing.';
+  return blank(tests[0]) ? 'A code check has nothing to test.' : null;
 }
 
 /**

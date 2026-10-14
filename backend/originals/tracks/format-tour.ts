@@ -284,6 +284,73 @@ const track: OriginalTrackDef = {
             },
           ],
         },
+        {
+          key: 'u02',
+          title: 'Python in the browser',
+          goal: 'Check Try it live and Write and run on a phone-size screen.',
+          lessons: [
+            {
+              key: 'l01',
+              title: 'Your first Python',
+              summary: 'Run real Python, then write some yourself.',
+              minutes: 10,
+              outcomes: ['Run code in a lesson', 'Write a program that passes its checks'],
+              learn: [
+                {
+                  kind: 'tryIt',
+                  title: 'Try it live',
+                  caption: 'This is real Python. Press Run.',
+                  code: 'name = "Ada"\nprint(f"Hello, {name}!")\n',
+                  challenge: 'Change "Ada" to your own name and run it again.',
+                },
+                {
+                  kind: 'tryIt',
+                  title: 'Programs can ask questions',
+                  code: 'name = input("What is your name? ")\nprint("Nice to meet you,", name)\n',
+                  stdin: ['Kofi'],
+                },
+              ],
+              apply: {
+                scenario: "Ada's office savings group.",
+                items: [
+                  {
+                    kind: 'writeCode',
+                    prompt: 'Work out the monthly pot',
+                    starter: 'members = 10\ncontribution = 20000\n',
+                    solution: 'members = 10\ncontribution = 20000\npot = members * contribution\nprint(pot)\n',
+                    hint: 'Multiply with *, save it with pot = ..., then print(pot).',
+                    checks: [
+                      { message: 'Make a variable called pot holding the total', expr: 'pot == 200000' },
+                      { message: 'Print the pot', outputIncludes: '200000' },
+                    ],
+                  },
+                  {
+                    kind: 'mcq',
+                    variant: 'predictOutput',
+                    prompt: 'What does this print?',
+                    code: 'print(3 * "ha")',
+                    language: 'python',
+                    options: [{ text: 'hahaha' }, { text: '3ha', why: 'Multiplying text repeats it.' }, { text: 'An error', why: 'Text times a number is allowed.' }],
+                    answer: 0,
+                  },
+                  {
+                    kind: 'writeCode',
+                    prompt: 'Greet whoever runs it',
+                    starter: '',
+                    solution: 'name = input("Name: ")\nprint(f"Welcome to the ajo, {name}!")\n',
+                    hint: 'Save input() in a variable, then print a greeting that uses it.',
+                    stdin: ['Tunde'],
+                    checks: [
+                      { message: 'Ask for a name with input()', codeIncludes: 'input(' },
+                      { message: 'Greet Tunde by name', outputIncludes: 'Tunde' },
+                    ],
+                  },
+                ],
+              },
+              reflect: { prompt: 'What surprised you about writing your first program?' },
+            },
+          ],
+        },
       ],
     },
   ],

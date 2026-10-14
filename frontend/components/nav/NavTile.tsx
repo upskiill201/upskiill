@@ -16,6 +16,7 @@ export const NAV_TONES = {
   teal: 'color-mix(in srgb, var(--success-green) 55%, var(--color-brand))',
   orange: 'color-mix(in srgb, var(--warning) 60%, var(--error-red))',
   pink: 'color-mix(in srgb, var(--error-red) 60%, var(--brand-purple))',
+  ink: 'var(--color-ink)',
 } as const;
 
 export type NavTone = keyof typeof NAV_TONES;
