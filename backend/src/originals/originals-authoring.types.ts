@@ -24,7 +24,8 @@ export type CodeLanguage =
   | 'plaintext';
 
 /** The shared cast (docs/originals/CAST.md). */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi';
+/** Course-only characters (efua, asante) are listed in CAST.md too. */
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
