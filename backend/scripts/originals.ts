@@ -12,6 +12,10 @@
  * removed. Every id comes from the file's stable keys (originals-content.ts),
  * so re-loading after an edit updates lessons in place and keeps progress.
  *
+ * Deploys publish automatically: deploy-staging.yml and deploy-production.yml
+ * run `npm run originals -- --write --publish` once the new backend is up, so
+ * nobody loads courses by hand (founder, 2026-10-14).
+ *
  * Writes need --write; the default run only checks. The local .env points at
  * the STAGING database, so --write changes staging.
  */
