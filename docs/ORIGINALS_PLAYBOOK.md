@@ -257,7 +257,7 @@ Founder, 2026-10-14: the home screen is a journey map, so every Original reads l
 2. **Originals foundation:** `isOriginal` flag, Teyro as author, new categories + levels, **Tracks that link levels** (auto-enrol into the next level, continuous map, locked-until-earned), Checkpoint and Unit Challenge lesson kinds, Originals badge and pinned row, works on the home map view with many units, **subscription access with lessons 1–5 free and the paywall before lesson 6** (server-side). Plus the cast sheet.
 3. **Course-as-code pipeline:** course files in the repo, a validator sharing the server's rules, a guarded upsert loader (never wipes), a local preview route to play lessons on a phone.
 4. **Lesson engine expansion:** the new Learn formats (section 4) and new exercise types (section 5), each built in both the lesson player and the server's checks.
-5. **Code runner:** CodeMirror editor, in-browser Python/JS/HTML/SQL, Try it live + Write and run.
+5. **Code runner:** in-browser Python (Pyodide), Try it live + Write and run, and the Code playground. JS/HTML/SQL come later, when a course needs them.
 6. **Pilot Original:** the full curriculum outline for one Beginner level (all units and lesson titles), then the first unit (20+ lessons, including its Checkpoints) written in full and tested on a real phone; update this playbook with what we learn.
 
 Then: write the curriculum at scale, unit by unit.
@@ -270,7 +270,7 @@ Then: write the curriculum at scale, unit by unit.
 | 2. Foundation | Built: Tracks, levels, checkpoints, paywall before lesson 6, Originals pricing, forgiving hearts, Explore row + badge, map trail, level-complete screen, unlock-screen wording, cast sheet. **Database migration not applied yet.** |
 | 3. Course-as-code pipeline | Built: `backend/originals/` + `npm run originals` (checker, preview export, loader). See `backend/originals/README.md`. |
 | 4. Lesson engine expansion | Built: reading, story, chat with Tey, walkthrough, before/after, tap to explore, myth or fact; chat reply, spot the problem, tap to build, type the answer, sort into groups. Checked on a phone-size screen via `/dev/originals`. |
-| 5. Code runner | Not started (needed for Python for Beginners only). |
+| 5. Code runner | Built (2026-10-14), Python only. Pyodide 0.26.4 in a Web Worker (`frontend/public/python/runner.worker.js`, `lib/code`), a 5-second time limit, input() through an Input box or fixed lines, plain-words error explanations. Try it live (`tryIt` Learn card), Write and run (`writeCode` exercise: free runs, CHECK unlocks when every check passes, hint, solution after 2 failed runs at the cost of the combo), and the Code playground at `/dashboard/code` (free code + challenges). `npm run originals` runs every solution in the same Python and refuses to load one that fails its own checks. |
 | 6. Pilot (AI at Work) | Ready to start: course details drafted in `backend/originals/tracks/ai-at-work.ts`; next step is the full Beginner outline, then Unit 1. |
 
 ---
@@ -300,7 +300,7 @@ Six Originals at launch, each a Beginner level with at least its first unit (20+
 |---|---|---|---|
 | 1 | **AI at Work** | AI | **Pilot.** Written first; no code runner needed. |
 | 2 | **Study Smarter with AI** (was "AI for Students") | AI | University and school. Teaches responsible use: studying smarter with AI, never cheating, so schools and parents can recommend it. |
-| 3 | **Python for Beginners** | Coding | Needs the code runner (build piece 5). |
+| 3 | **Python for Beginners** | Coding | Outline approved 2026-10-14 (docs/originals/python-beginner-outline.md); the code runner is built. |
 | 4 | **Acing Job Interviews** | Career | Urgent-need buyers. |
 | 5 | **Clear Writing at Work** | Communication | Written communication. |
 | 6 | **Speak Like a CEO** | Communication | One course merging communication, speaking like a leader, and public speaking: everyday communication → meetings → presenting → public speaking. Speaking practice in Phase 1 is technique + record yourself + self-check against a checklist (no AI feedback until Phase 2). |

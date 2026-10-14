@@ -19,6 +19,7 @@ import {
   type RichLearnCard,
   type StorySpeaker,
   validateExercise,
+  type CodeCheck,
   type CodeLanguage,
   type Exercise,
   type LearnCard,
@@ -125,6 +126,16 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
         hotspots: Array.isArray(c.hotspots)
           ? c.hotspots.slice(0, RICH_LIMITS.hotspots).map((h: any) => ({ phrase: str(h?.phrase, 200), note: str(h?.note, 600) }))
           : [],
+      };
+    case 'tryIt':
+      return {
+        id: cid,
+        kind: 'tryIt',
+        title: optStr(c.title, 200),
+        code: str(c.code, LIMITS.codeChars),
+        caption: optStr(c.caption, 300),
+        challenge: optStr(c.challenge, 400),
+        ...(Array.isArray(c.stdin) ? { stdin: strList(c.stdin, RICH_LIMITS.stdin, 200) } : {}),
       };
     case 'myth':
       return {
@@ -285,9 +296,32 @@ export function parseExercise(e: any, i: number): Exercise | null {
             }))
           : [],
       };
+    case 'writeCode':
+      return {
+        ...base,
+        kind: 'writeCode',
+        language: 'python',
+        starter: str(e.starter, LIMITS.codeChars),
+        solution: str(e.solution, LIMITS.codeChars),
+        hint: optStr(e.hint, 600),
+        checks: Array.isArray(e.checks) ? e.checks.slice(0, RICH_LIMITS.checks).map(parseCheck) : [],
+        ...(Array.isArray(e.stdin) ? { stdin: strList(e.stdin, RICH_LIMITS.stdin, 200) } : {}),
+      };
     default:
       return null;
   }
+}
+
+/** One hidden check: only the tests that are strings survive. */
+function parseCheck(c: any): CodeCheck {
+  const test = (v: unknown) => (typeof v === 'string' ? v.slice(0, 500) : undefined);
+  return {
+    message: str(c?.message, 300),
+    ...(test(c?.outputIncludes) !== undefined ? { outputIncludes: test(c.outputIncludes) } : {}),
+    ...(test(c?.outputEquals) !== undefined ? { outputEquals: test(c.outputEquals) } : {}),
+    ...(test(c?.expr) !== undefined ? { expr: test(c.expr) } : {}),
+    ...(test(c?.codeIncludes) !== undefined ? { codeIncludes: test(c.codeIncludes) } : {}),
+  };
 }
 
 /** The exercises a learner can actually take: parsed AND complete. */

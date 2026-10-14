@@ -118,6 +118,17 @@ export function buildExercise(ex: AuthoredExercise, lessonKey: string, i: number
       };
     case 'typeAnswer':
       return { ...base, kind: 'typeAnswer', answers: ex.answers, ...(ex.placeholder ? { placeholder: ex.placeholder } : {}) };
+    case 'writeCode':
+      return {
+        ...base,
+        kind: 'writeCode',
+        language: 'python',
+        starter: ex.starter ?? '',
+        solution: ex.solution,
+        ...(ex.hint ? { hint: ex.hint } : {}),
+        checks: ex.checks,
+        ...(ex.stdin ? { stdin: ex.stdin } : {}),
+      };
     case 'sortGroups': {
       const groups = ex.groups.map((label, j) => ({ id: localId(lessonKey, `e${i}g${j}`), label }));
       return {
