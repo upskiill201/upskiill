@@ -20,19 +20,26 @@ const track: OriginalTrackDef = {
       level: 1,
       slug: 'study-smarter-with-ai-beginner',
       title: 'Study Smarter with AI: Beginner',
-      subtitle: "Kofi's Final Year: the honest shortcut",
-      shortDescription: "Turn AI into a patient tutor: explain hard topics, quiz yourself, plan revision and write better, all within your school's rules.",
+      subtitle: "Kofi's Final Year: learn faster, and still do your own thinking",
+      shortDescription:
+        'Turn any AI chat into an honest study partner: understand hard topics at your level, test yourself, take notes that stick and get ready for exams.',
       description:
-        "AI can make studying much easier, or quietly stop you from learning anything. This course shows the difference. Follow Kofi through his final year of school in Accra, with his mentor Miracle and their study group in Buea, as Tey teaches you to use AI to understand, practise, plan and write, while doing your own thinking and staying within your school's rules.",
-      startingPoint: 'You are a secondary-school or university student. You have heard of AI tools like ChatGPT. No technical background needed.',
-      endOutcome: "Use AI as a study partner to understand topics, quiz yourself and plan revision, honestly and within your school's rules.",
+        "AI can make studying much easier, or quietly stop you learning anything. This course shows you the difference, one 10 to 15 minute lesson at a time. Follow Kofi through his final year of school in Accra, with his mentor Miracle and their study group in Buea, Cameroon, as he goes from a wall of text he can't follow to teaching the hardest topic to his class. Along the way Tey teaches you the study habits with the strongest research behind them, like testing yourself and spacing it out, and how to use AI for each one while doing your own thinking and staying within your school's rules. It works with ChatGPT, Gemini, Claude, Copilot or any other chat assistant.",
+      startingPoint:
+        'You are at secondary school or university, and you have tried or heard of AI tools like ChatGPT. No technical background needed.',
+      endOutcome:
+        "Use AI as a study partner to understand any topic, test yourself and build revision notes that stick, honestly and within your school's rules.",
       outcomes: [
-        'Get clear explanations of hard topics at your level',
-        'Turn notes into practice questions and flashcards',
-        'Plan revision you will actually stick to',
-        'Use AI for writing honestly, without breaking academic rules',
+        'Get clear explanations of any topic, at your level',
+        "Find the hidden gap when a topic just won't click",
+        'Test yourself with AI the way the research says works',
+        'Take notes that stick: Cornell notes, flashcards and one-page revision sheets',
+        'Catch AI mistakes before they end up in your notes',
+        "Use AI honestly, within your school's rules",
       ],
-      skills: ['Studying with AI', 'Self-quizzing', 'Revision planning', 'Academic honesty', 'Research basics'],
+      skills: ['Studying with AI', 'Self-testing', 'Note-taking', 'Revision', 'Exam technique', 'Academic honesty'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/study-smarter-with-ai-beginner.jpg',
       upcomingUnits: 10,
       units: [u01, u02, u03],
     },
