@@ -36,6 +36,8 @@ const track: OriginalTrackDef = {
         'Build a complete program from scratch',
       ],
       skills: ['Python', 'Programming basics', 'Problem solving', 'Debugging'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/python-for-beginners.jpg',
       upcomingUnits: 12,
       units: [u01],
     },
