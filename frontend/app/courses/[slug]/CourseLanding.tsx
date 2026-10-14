@@ -620,7 +620,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
             <div className={styles.creatorHead}>
               <Avatar src={creator.avatar ?? undefined} name={creator.name} size="lg" />
               <div className={styles.creatorInfo}>
-                <span className={styles.creatorLabel}>Your creator</span>
+                <span className={styles.creatorLabel}>{course.isOriginal ? 'Made by' : 'Your creator'}</span>
                 <span className={styles.creatorName}>
                   {creator.name}
                   {creator.verified && <ShieldCheck size={16} className={styles.verified} aria-label="Verified creator" />}

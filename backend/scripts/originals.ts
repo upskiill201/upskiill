@@ -25,6 +25,7 @@ import { buildContentBlocks, keys, lessonXp, stableId } from '../src/originals/o
 import { lintTrack, mainFormat, type LintIssue } from '../src/originals/originals-lint';
 import { hasCode, verifyTrackCode } from '../src/originals/originals-code-verify';
 import { ORIGINALS_PRICING, levelLabel } from '../src/originals/originals.policy';
+import { TEYRO_ACCOUNT } from '../originals/teyro-account';
 
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(`--${name}`);
@@ -104,20 +105,67 @@ function exportPreview(track: OriginalTrackDef) {
 }
 
 async function authorId(prisma: PrismaClient): Promise<string> {
-  // A system author: Originals show "by Teyro". The password is not a bcrypt
-  // hash, so nobody can ever sign in as it.
+  // A system author: Originals show "Made by Teyro". The password is not a
+  // bcrypt hash, so nobody can ever sign in as it. Its public details live in
+  // originals/teyro-account.ts and are re-applied on every load.
+  const a = TEYRO_ACCOUNT;
   const user = await prisma.user.upsert({
     where: { email: AUTHOR_EMAIL },
-    update: {},
+    update: { fullName: a.fullName, avatarUrl: a.avatarUrl },
     create: {
       email: AUTHOR_EMAIL,
-      fullName: 'Teyro',
+      fullName: a.fullName,
+      avatarUrl: a.avatarUrl,
       password: '!originals-system-account',
       role: 'INSTRUCTOR',
       isVerified: true,
       hasCreatorAccess: true,
     },
     select: { id: true },
+  });
+
+  const profile = {
+    creatorStatus: a.creatorStatus,
+    headline: a.headline,
+    tagline: a.tagline,
+    bio: a.bio,
+    about: a.about,
+    avatarUrl: a.avatarUrl,
+    location: a.location,
+    languages: [...a.languages],
+    primaryExpertise: a.primaryExpertise,
+    skills: a.skills.map((s) => ({ ...s })),
+    teachingLevels: [...a.teachingLevels],
+    contentFormats: [...a.contentFormats],
+    website: a.website,
+    profileVisibility: 'PUBLIC',
+    allowCollaboration: false,
+  };
+  // The username is only set when it's free, so a load never fails over it.
+  const taken = await prisma.profile.findFirst({ where: { username: a.username, NOT: { userId: user.id } }, select: { id: true } });
+  if (taken) console.log(`  ! username "${a.username}" belongs to another account; the Teyro profile keeps its current one`);
+  const username = taken ? {} : { username: a.username };
+  await prisma.profile.upsert({
+    where: { userId: user.id },
+    update: { ...profile, ...username },
+    create: { userId: user.id, ...profile, ...username },
+  });
+
+  const instructor = {
+    displayName: a.fullName,
+    professionalHeadline: a.headline,
+    bio: a.bio,
+    avatarUrl: a.avatarUrl,
+    websiteUrl: a.website,
+    verificationStatus: 'VERIFIED' as const,
+    profileVisibility: 'PUBLIC' as const,
+    expertise: a.skills.map((s) => s.name),
+    onboardingCompleted: true,
+  };
+  await prisma.instructorProfile.upsert({
+    where: { userId: user.id },
+    update: instructor,
+    create: { userId: user.id, ...instructor },
   });
   return user.id;
 }
