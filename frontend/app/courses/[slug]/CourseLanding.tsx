@@ -70,6 +70,8 @@ export interface LandingCourse {
   description: string | null;
   thumbnailUrl: string | null;
   price: number;
+  /** Teyro Original: sold through the Originals subscription. Its page never reveals how many lessons are free. */
+  isOriginal?: boolean;
   category: string | null;
   level: string | null;
   language: string | null;
@@ -163,7 +165,10 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
   const learners = course.studentsCount;
   const ratingAvg = course.stats.ratingAvg ?? null;
   const reviewsCount = course.stats.reviewsCount ?? 0;
-  const isPaid = course.price > 0;
+  const isOriginal = !!course.isOriginal;
+  const isPaid = course.price > 0 || isOriginal;
+  // Creator courses advertise their free lessons; Originals deliberately do not.
+  const showFreeLessons = isPaid && !isOriginal;
   const level = prettyLevel(course.level);
 
   // Global lesson order, for the free-preview rule.
@@ -281,20 +286,26 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
         : 'Start lesson 1'
     : LEARNER_ENTRY.gated && authState !== 'authed'
       ? 'Get notified at launch'
-      : 'Start learning free';
+      : isOriginal
+        ? 'Start learning'
+        : 'Start learning free';
   const ctaSub = isEnrolled
     ? enrollment?.nextLesson
       ? `Up next: Lesson ${enrollment.nextLesson.number} · ${enrollment.nextLesson.title}`
       : 'Pick up right where you left off'
-    : isPaid
-      ? `First ${FREE_PREVIEW_LESSONS} lessons free · unlock the rest anytime`
-      : 'Every lesson is free';
+    : isOriginal
+      ? 'A Teyro Original · taught by Tey'
+      : isPaid
+        ? `First ${FREE_PREVIEW_LESSONS} lessons free · unlock the rest anytime`
+        : 'Every lesson is free';
 
   const teyLine = isEnrolled
     ? enrollment?.nextLesson
       ? `Lesson ${enrollment.nextLesson.number} is waiting for you. A few minutes keeps your streak alive.`
       : "You're in. Tap the button and let's go."
-    : isPaid
+    : isOriginal
+      ? "I wrote this one myself. Start now and I'll count your streak from lesson one."
+      : isPaid
       ? `The first ${FREE_PREVIEW_LESSONS} lessons are on me. Try them, then decide.`
       : 'This whole course is free. Start now and I’ll count your streak from lesson one.';
 
@@ -488,8 +499,8 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
                           >
                             {lessons.map((lesson, lIdx) => {
                               const g = lesson.id ? globalIndex.get(lesson.id) ?? 0 : 0;
-                              const locked = !isEnrolled && isPaid && g >= FREE_PREVIEW_LESSONS;
-                              const freePreview = !isEnrolled && isPaid && g < FREE_PREVIEW_LESSONS;
+                              const locked = !isEnrolled && showFreeLessons && g >= FREE_PREVIEW_LESSONS;
+                              const freePreview = !isEnrolled && showFreeLessons && g < FREE_PREVIEW_LESSONS;
                               const meta = [
                                 lesson.durationMinutes ? `${lesson.durationMinutes} min` : null,
                                 lesson.lessonType
@@ -558,7 +569,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
         <aside className={styles.rail} aria-label="Start this course">
           <motion.div className={styles.startCard} {...rise(0.04)}>
             <span className={`${styles.priceTag} ${isPaid ? styles.pricePremium : ''}`}>
-              {isPaid ? 'Premium' : 'Free course'}
+              {isOriginal ? 'Teyro Original' : isPaid ? 'Premium' : 'Free course'}
             </span>
             {isEnrolled && totalLessons > 0 ? (
               <div className={styles.progress}>
@@ -609,7 +620,7 @@ export default function CourseLanding({ course }: { course: LandingCourse }) {
             <div className={styles.creatorHead}>
               <Avatar src={creator.avatar ?? undefined} name={creator.name} size="lg" />
               <div className={styles.creatorInfo}>
-                <span className={styles.creatorLabel}>Your creator</span>
+                <span className={styles.creatorLabel}>{course.isOriginal ? 'Made by' : 'Your creator'}</span>
                 <span className={styles.creatorName}>
                   {creator.name}
                   {creator.verified && <ShieldCheck size={16} className={styles.verified} aria-label="Verified creator" />}

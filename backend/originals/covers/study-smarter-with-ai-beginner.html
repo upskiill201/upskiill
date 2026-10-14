@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: Study Smarter with AI (Beginner). A still frame of
+     a motion-graphics scene: "quiz me" goes in, a flashcard flips, a quiz
+     question is answered right, and the exam countdown ticks on. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --muted: #5B6B8C;
+    --purple: #9333EA;
+    --purple-dark: #6B21A8;
+    --indigo: #6352FF;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+    --line: #E3EAF6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 130px; width: 660px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--purple);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--purple); display: inline-block; }
+  h1 { margin-top: 40px; color: var(--white); font-weight: 800; font-size: 128px; line-height: .95; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 18px 6px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin-top: 14px; }
+  .sub { margin-top: 40px; color: var(--mist); font-weight: 700; font-size: 34px; line-height: 1.3; width: 600px; }
+
+  /* The stage on the right, tilted like a camera move. */
+  .stage { position: absolute; left: 800px; top: 70px; width: 760px; height: 880px; transform: rotate(-4deg); }
+
+  /* Prompt bar: "Quiz me, one at a time". */
+  .prompt {
+    position: absolute; left: 40px; top: 40px; width: 630px; height: 100px;
+    background: var(--white); border-radius: 30px; box-shadow: 0 10px 0 var(--brand-deep);
+    display: flex; align-items: center; padding: 0 20px 0 32px; gap: 16px;
+  }
+  .prompt .txt { flex: 1; font-weight: 700; font-size: 29px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+  .prompt .txt b { color: var(--indigo); }
+  .caret { display: inline-block; width: 4px; height: 34px; background: var(--brand); vertical-align: -6px; margin-left: 4px; border-radius: 2px; }
+  .send { width: 64px; height: 64px; border-radius: 20px; background: var(--brand); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 var(--brand-deep); }
+  .cursor { position: absolute; left: 630px; top: 118px; width: 54px; z-index: 6; filter: drop-shadow(0 4px 0 rgba(0,0,0,.18)); }
+  .ripple { position: absolute; border-radius: 50%; border: 5px solid var(--white); }
+
+  /* Flashcard mid-flip, behind the quiz card, with motion ghosts. */
+  .flash {
+    position: absolute; width: 330px; height: 210px; border-radius: 26px;
+    background: var(--purple); box-shadow: 0 9px 0 var(--purple-dark);
+    padding: 26px 28px; color: var(--white);
+  }
+  .flash .tag { font-weight: 800; font-size: 18px; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+  .flash .q { margin-top: 14px; font-weight: 800; font-size: 27px; line-height: 1.25; }
+  .flash .gap { display: inline-block; width: 74px; height: 6px; background: rgba(255,255,255,.75); border-radius: 3px; vertical-align: 4px; }
+  .flash.ghost { opacity: .22; box-shadow: none; }
+  .flash.ghost * { visibility: hidden; }
+
+  /* Quiz card: question 3 of 5, answered right. */
+  .quiz {
+    position: absolute; left: 140px; top: 270px; width: 560px; height: 430px;
+    background: var(--white); border-radius: 34px; box-shadow: 0 12px 0 var(--brand-deep);
+    padding: 32px 36px;
+  }
+  .quiz .head { display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 22px; letter-spacing: .1em; text-transform: uppercase; color: var(--brand); }
+  .dots { display: flex; gap: 8px; }
+  .dots i { width: 34px; height: 10px; border-radius: 999px; background: var(--line); display: block; }
+  .dots i.on { background: var(--green); }
+  .quiz .question { margin-top: 22px; font-weight: 800; font-size: 33px; line-height: 1.22; color: var(--ink); }
+  .opt {
+    margin-top: 16px; height: 62px; border-radius: 20px; border: 4px solid var(--line);
+    display: flex; align-items: center; padding: 0 22px; gap: 14px;
+    font-weight: 800; font-size: 28px; color: var(--muted);
+  }
+  .opt.right { border-color: var(--green); background: #EAFBF0; color: var(--green-dark); box-shadow: 0 5px 0 var(--green-dark); }
+  .tick { width: 36px; height: 36px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 var(--green-dark); margin-left: auto; }
+
+  /* Countdown chip. */
+  .countdown {
+    position: absolute; left: -40px; top: 210px; display: flex; align-items: center; gap: 14px;
+    background: var(--amber); color: var(--ink); font-weight: 800; font-size: 28px;
+    padding: 16px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--amber-dark); transform: rotate(-7deg); z-index: 4;
+  }
+
+  /* Flying study moves. */
+  .chip { position: absolute; padding: 13px 22px; border-radius: 18px; font-weight: 800; font-size: 27px; color: var(--white); white-space: nowrap; }
+  .ghostc { opacity: .25; color: transparent !important; box-shadow: none !important; }
+  .ghostc2 { opacity: .12; color: transparent !important; box-shadow: none !important; }
+  .explain { background: var(--pink); box-shadow: 0 6px 0 var(--pink-dark); }
+  .check { background: var(--indigo); box-shadow: 0 6px 0 #3F33B8; }
+  .notes { background: var(--green); box-shadow: 0 6px 0 var(--green-dark); }
+
+  /* Progress + XP. */
+  .progress { position: absolute; left: 170px; top: 760px; width: 450px; height: 34px; border-radius: 999px; background: var(--brand-deep); box-shadow: inset 0 4px 0 rgba(0,0,0,.15); }
+  .progress i { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 64%; border-radius: 999px; background: var(--green); box-shadow: inset 0 -5px 0 var(--green-dark); }
+  .progress i::after { content: ''; position: absolute; left: 14px; right: 14px; top: 4px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.45); }
+  .xp { position: absolute; left: 570px; top: 722px; background: var(--white); color: var(--brand); font-weight: 800; font-size: 32px; padding: 14px 24px; border-radius: 22px; box-shadow: 0 7px 0 var(--brand-deep); transform: rotate(8deg); }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:960px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:690px;top:110px;width:160px;opacity:.14"></div>
+  <div class="speed" style="left:740px;top:150px;width:100px;opacity:.20"></div>
+  <div class="speed" style="left:1380px;top:910px;width:260px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:680px;top:720px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1510px;top:70px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Beginner</span>
+    <h1>Study<br/>Smarter<br/><em>with AI</em></h1>
+    <p class="sub">Kofi's final year. Learn faster, and still do your own thinking.</p>
+  </div>
+
+  <div class="stage">
+    <!-- Prompt -->
+    <div class="prompt">
+      <div class="txt">Quiz me on moles, <b>one at a time</b><span class="caret"></span></div>
+      <div class="send">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </div>
+    </div>
+    <div class="ripple" style="left:590px;top:52px;width:76px;height:76px;opacity:.55"></div>
+    <div class="ripple" style="left:564px;top:26px;width:128px;height:128px;opacity:.28"></div>
+    <svg class="cursor" viewBox="0 0 24 24"><path d="M4 2l15 9-7 1.6L9 20z" fill="#071233" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+
+    <!-- Flashcard flipping in from the right, with ghosts -->
+    <div class="flash ghost" style="left:600px;top:200px;transform:rotate(24deg) scaleX(.5)"></div>
+    <div class="flash ghost" style="left:560px;top:180px;transform:rotate(18deg) scaleX(.72)"></div>
+    <div class="flash" style="left:430px;top:150px;width:300px;transform:rotate(11deg)">
+      <div class="tag">Flashcard</div>
+      <div class="q">Osmosis means <span class="gap"></span></div>
+    </div>
+
+    <!-- Countdown -->
+    <div class="countdown">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#071233" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      40 weeks to go
+    </div>
+
+    <!-- Quiz card -->
+    <div class="quiz">
+      <div class="head">Question 3 of 5 <span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+      <div class="question">How many moles are in 36 g of water?</div>
+      <div class="opt">0.5</div>
+      <div class="opt right">2 moles
+        <span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      </div>
+      <div class="opt">18</div>
+    </div>
+
+    <!-- Flying study moves, with trails -->
+    <div class="chip explain ghostc2" style="left:-130px;top:448px">Explain</div>
+    <div class="chip explain ghostc" style="left:-95px;top:454px">Explain</div>
+    <div class="chip explain" style="left:-58px;top:460px;transform:rotate(-8deg)">Explain</div>
+
+    <div class="chip notes ghostc2" style="left:-120px;top:640px">Notes</div>
+    <div class="chip notes ghostc" style="left:-86px;top:634px">Notes</div>
+    <div class="chip notes" style="left:-50px;top:628px;transform:rotate(6deg)">Notes</div>
+
+    <div class="chip check ghostc2" style="left:690px;top:612px">Check</div>
+    <div class="chip check ghostc" style="left:655px;top:604px">Check</div>
+    <div class="chip check" style="left:618px;top:596px;transform:rotate(-7deg)">Check</div>
+
+    <div class="progress"><i></i></div>
+    <div class="xp">+20 XP</div>
+
+    <svg class="spark" style="left:700px;top:0px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:60px;top:720px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+    <svg class="spark" style="left:660px;top:830px" width="34" height="34" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff" opacity=".8"/></svg>
+  </div>
+</body>
+</html>

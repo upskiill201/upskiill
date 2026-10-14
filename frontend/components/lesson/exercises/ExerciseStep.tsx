@@ -12,6 +12,7 @@
  *   findBug     tap the line with the mistake
  *   orderLines  tap lines from the bank to build the answer, in order
  *   matchPairs  tap a term, then its meaning
+ *   writeCode   write and run Python (components/code/WriteCodeView)
  *
  * Every tap plays a note and a haptic; nothing needs a keyboard or dragging,
  * so it all works one-handed on a phone.
@@ -31,10 +32,16 @@ import {
   type MatchPairsExercise,
   type McqExercise,
   type OrderLinesExercise,
+  type SortGroupsExercise,
+  type TapBuildExercise,
+  type TypeAnswerExercise,
+  CAST_NAMES,
+  tapBuildBank,
 } from '@/lib/lesson/blocks';
 import { playHaptic } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { CodeBlock, CodeLine } from '../code/CodeBlock';
+import { WriteCodeView } from '@/components/code/WriteCodeView';
 import { StepHeading } from '../steps/StepHeading';
 import { TeySays, type TeyPose } from '../TeySays';
 import type { AnswerState } from '../steps/ApplyStep';
@@ -108,6 +115,10 @@ const DEFAULT_LINE: Record<Exercise['kind'], string> = {
   findBug: 'Read it carefully, then tap the line that is wrong.',
   orderLines: 'Tap the lines in the order they should go.',
   matchPairs: 'Tap a term, then the thing it matches.',
+  tapBuild: 'Tap the tiles in the right order to build it.',
+  typeAnswer: 'Type your answer. Small typos are fine.',
+  sortGroups: 'Put each one where it belongs.',
+  writeCode: 'Write it, run it, fix it. Runs are free, so try as often as you like.',
 };
 
 export function ExerciseStep(props: ExerciseStepProps) {
@@ -123,6 +134,12 @@ export function ExerciseStep(props: ExerciseStepProps) {
       {exercise.kind === 'findBug' && <FindBugView {...props} exercise={exercise} />}
       {exercise.kind === 'orderLines' && <OrderLinesView {...props} exercise={exercise} />}
       {exercise.kind === 'matchPairs' && <MatchPairsView {...props} exercise={exercise} />}
+      {exercise.kind === 'tapBuild' && <TapBuildView {...props} exercise={exercise} />}
+      {exercise.kind === 'typeAnswer' && <TypeAnswerView {...props} exercise={exercise} />}
+      {exercise.kind === 'sortGroups' && <SortGroupsView {...props} exercise={exercise} />}
+      {exercise.kind === 'writeCode' && (
+        <WriteCodeView exercise={exercise} response={props.response} onResponse={props.onResponse} locked={props.answer !== 'idle'} />
+      )}
     </div>
   );
 }
@@ -139,6 +156,7 @@ function McqView({ exercise, response, onResponse, answer }: ViewProps<McqExerci
   return (
     <>
       {exercise.code && <CodeBlock code={exercise.code} language={exercise.language} compact />}
+      {exercise.variant === 'chat' && exercise.message && <ChatMessage character={exercise.character} text={exercise.message} />}
       <div className="flex flex-col gap-3" role="radiogroup" aria-label="Answers">
         {exercise.options.map((o, i) => {
           const isPicked = picked === o.id;
@@ -528,6 +546,176 @@ function MatchPairsView({ exercise, response, onResponse, answer }: ViewProps<Ma
         <p className="text-center text-[13px] font-semibold text-[var(--text-muted)]">Tap a match to undo it.</p>
       )}
     </>
+  );
+}
+
+// ─── Chat reply (mcq variant) ─────────────────────────────────────────────
+
+/** The incoming message a chat-reply exercise asks the learner to answer. */
+function ChatMessage({ character, text }: { character?: McqExercise['character']; text: string }) {
+  const name = character ? CAST_NAMES[character] : 'Message';
+  return (
+    <div className="flex items-end gap-2.5" aria-label={`${name} says`}>
+      <span
+        className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-[16px] font-extrabold text-white"
+        style={{ backgroundColor: 'var(--brand-purple)' }}
+        aria-hidden="true"
+      >
+        {name.charAt(0)}
+      </span>
+      <div className="max-w-[85%]">
+        <p className="mb-1 text-[13px] font-extrabold text-[var(--text-secondary)]">{name}</p>
+        <div
+          className="rounded-[18px] rounded-bl-[6px] border-2 px-4 py-3 text-[16.5px] font-semibold leading-snug text-ink whitespace-pre-line"
+          style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-section)' }}
+        >
+          {text}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Tap to build ─────────────────────────────────────────────────────────
+
+function TapBuildView({ exercise, response, onResponse, answer }: ViewProps<TapBuildExercise>) {
+  const locked = answer !== 'idle';
+  const bank = useMemo(() => tapBuildBank(exercise), [exercise]);
+  const picked = response?.kind === 'tapBuild' ? response.picked : [];
+  const isCode = Boolean(exercise.language && exercise.language !== 'plaintext');
+
+  const add = (i: number) => {
+    if (picked.includes(i)) return;
+    tap(picked.length);
+    onResponse({ kind: 'tapBuild', picked: [...picked, i] });
+  };
+  const remove = (pos: number) => {
+    playSound('cardBack');
+    onResponse({ kind: 'tapBuild', picked: picked.filter((_, p) => p !== pos) });
+  };
+  const tone: Tone = answer === 'correct' ? 'correct' : answer === 'wrong' ? 'wrong' : 'picked';
+
+  return (
+    <>
+      <div
+        className="min-h-[96px] rounded-[20px] border-2 border-dashed p-3 flex flex-wrap gap-2 content-start"
+        style={{ borderColor: 'var(--border-strong)' }}
+        aria-label="Your answer"
+      >
+        {picked.length === 0 && <p className="m-auto text-[15px] font-semibold text-[var(--text-muted)]">Tap the tiles below</p>}
+        {picked.map((i, pos) => (
+          <Tile key={`${i}-${pos}`} tone={tone} disabled={locked} mono={isCode} onClick={() => remove(pos)}>
+            {bank[i]}
+          </Tile>
+        ))}
+      </div>
+
+      {answer === 'wrong' && (
+        <p className="text-[15px] font-bold text-[var(--lesson-correct-ink)]">Answer: {exercise.tiles.join(' ')}</p>
+      )}
+
+      <div className="flex flex-wrap gap-2.5 justify-center" aria-label="Tiles">
+        {bank.map((t, i) => {
+          const gone = picked.includes(i);
+          return (
+            <Tile key={`${t}-${i}`} tone={gone ? 'muted' : 'idle'} disabled={locked || gone} mono={isCode} onClick={() => add(i)}>
+              <span style={{ visibility: gone ? 'hidden' : 'visible' }}>{t}</span>
+            </Tile>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+// ─── Type the answer ──────────────────────────────────────────────────────
+
+function TypeAnswerView({ exercise, response, onResponse, answer }: ViewProps<TypeAnswerExercise>) {
+  const locked = answer !== 'idle';
+  const text = response?.kind === 'typeAnswer' ? response.text : '';
+  const tone: Tone = answer === 'correct' ? 'correct' : answer === 'wrong' ? 'wrong' : text ? 'picked' : 'idle';
+  // Right but not word-for-word (a typo, other casing): show the clean answer.
+  const close = answer === 'correct' && !exercise.answers.some((a) => a.trim() === text.trim());
+
+  return (
+    <>
+      <input
+        type="text"
+        value={text}
+        disabled={locked}
+        autoComplete="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        placeholder={exercise.placeholder ?? 'Type here'}
+        aria-label="Your answer"
+        onChange={(e) => onResponse({ kind: 'typeAnswer', text: e.target.value.slice(0, 300) })}
+        className="w-full min-h-[60px] rounded-[16px] border-2 px-4 text-[18px] font-bold outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
+        style={{ borderColor: COLORS[tone].border, backgroundColor: COLORS[tone].bg, color: COLORS[tone].ink }}
+      />
+      {(answer === 'wrong' || close) && (
+        <p className="text-[15px] font-bold text-[var(--lesson-correct-ink)]">Answer: {exercise.answers[0]}</p>
+      )}
+    </>
+  );
+}
+
+// ─── Sort into groups ─────────────────────────────────────────────────────
+
+function SortGroupsView({ exercise, response, onResponse, answer }: ViewProps<SortGroupsExercise>) {
+  const locked = answer !== 'idle';
+  const placed = response?.kind === 'sortGroups' ? response.placed : {};
+  const items = useMemo(() => seededShuffle(exercise.items, exercise.id), [exercise.id, exercise.items]);
+
+  const place = (itemId: string, groupId: string, n: number) => {
+    tap(n);
+    onResponse({ kind: 'sortGroups', placed: { ...placed, [itemId]: groupId } });
+  };
+
+  return (
+    <ul className="flex flex-col gap-3" aria-label="Items to sort">
+      {items.map((it, n) => {
+        const choice = placed[it.id];
+        const result: Tone | null = locked ? (choice === it.groupId ? 'correct' : 'wrong') : null;
+        return (
+          <li
+            key={it.id}
+            className="rounded-[18px] border-2 p-3 flex flex-col gap-2.5"
+            style={{
+              borderColor: result ? COLORS[result].border : 'var(--border)',
+              backgroundColor: result ? COLORS[result].bg : 'white',
+            }}
+          >
+            <p className="text-[16px] font-bold text-ink leading-snug">{it.text}</p>
+            <div className="flex gap-2" role="radiogroup" aria-label={`Group for: ${it.text}`}>
+              {exercise.groups.map((g) => {
+                const on = choice === g.id;
+                const tone: Tone = locked
+                  ? g.id === it.groupId
+                    ? 'correct'
+                    : on
+                      ? 'wrong'
+                      : 'muted'
+                  : on
+                    ? 'picked'
+                    : 'idle';
+                return (
+                  <Tile
+                    key={g.id}
+                    tone={tone}
+                    disabled={locked}
+                    className="flex-1 min-h-[44px] text-center !text-[15px]"
+                    label={`${g.label}${on ? ', chosen' : ''}`}
+                    onClick={() => place(it.id, g.id, n)}
+                  >
+                    {g.label}
+                  </Tile>
+                );
+              })}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

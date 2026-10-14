@@ -36,6 +36,7 @@ import {
   Headphones,
   Lightbulb,
   Lock,
+  Medal,
   Mountain,
   MountainSnow,
   Sprout,
@@ -52,6 +53,8 @@ import { playSound } from '@/lib/audio/lessonSounds';
 import { clearFinishedLesson, peekFinishedLesson } from '@/lib/path/arrival';
 import { playHaptic } from '@/lib/haptics';
 import { buildPathModel, type PathNode, type PathUnit } from '@/lib/path/model';
+import { MILESTONE_LABEL } from '@/lib/originals';
+import { OriginalsTrail } from './OriginalsTrail';
 import {
   drawnLand,
   LAND_NAME,
@@ -102,9 +105,11 @@ export interface LearningPathProps {
   beforeStart?: () => Promise<void>;
   /** Rendered after the last unit — e.g. the "more coming soon" teaser. */
   footer?: React.ReactNode;
+  /** Dev preview only (/dev/originals): open a lesson here instead of navigating to the lesson route. */
+  onOpenLesson?: (lessonId: string) => void;
 }
 
-export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: LearningPathProps) {
+export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onOpenLesson }: LearningPathProps) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const model = useMemo(() => buildPathModel(path), [path]);
@@ -371,6 +376,10 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
         // Enrollment can still complete on the lesson route; never strand them.
       }
     }
+    if (onOpenLesson) {
+      onOpenLesson(node.lesson.id);
+      return;
+    }
     router.push(lessonHref(courseId, unit.sectionIndex, node.lesson.id));
   };
 
@@ -407,7 +416,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
               style={{ background: 'linear-gradient(180deg, var(--jm-ground), transparent)' }}
             />
           )}
-          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} />
+          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} chapter={!!path.original} />
 
           <ol className="relative list-none" style={{ height: layout.height }}>
             <LandScene
@@ -498,6 +507,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
                         starting={starting}
                         onStart={() => void start(unit, node)}
                         onUnlock={() => unlock(unit)}
+                        isOriginal={!!path.original}
                       />
                     )}
                   </AnimatePresence>
@@ -521,6 +531,8 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer }: L
         </section>
       ))}
       </div>
+
+      {path.original && <OriginalsTrail original={path.original} levelDone={model.current === null} />}
 
       {footer}
 
@@ -609,11 +621,14 @@ function UnitBanner({
   land,
   reached,
   stickyTop,
+  chapter = false,
 }: {
   unit: PathUnit;
   land: LandId;
   reached: boolean;
   stickyTop: string;
+  /** Teyro Originals: each unit is a story chapter (playbook §8a) with a marker and a story line. */
+  chapter?: boolean;
 }) {
   const complete = unit.doneCount === unit.nodes.length;
   const LandIcon = reached ? LAND_ICON[land] : Lock;
@@ -628,10 +643,13 @@ function UnitBanner({
           <p className="flex items-center gap-1.5 text-[12px] md:text-[13px] font-extrabold uppercase tracking-wider opacity-90">
             <LandIcon className="w-3.5 h-3.5 stroke-[2.75] shrink-0" aria-hidden="true" />
             <span className="truncate">
-              Unit {unit.unitNumber} · {LAND_NAME[land]}
+              {chapter ? 'Chapter' : 'Unit'} {unit.unitNumber} · {(chapter && unit.marker) || LAND_NAME[land]}
             </span>
           </p>
           <h2 className="text-[17px] md:text-[20px] font-extrabold leading-tight truncate">{unit.title}</h2>
+          {chapter && unit.description && (
+            <p className="mt-0.5 text-[13px] md:text-[14px] font-semibold leading-snug opacity-90 line-clamp-2">{unit.description}</p>
+          )}
         </div>
         {/* The unit's progress, as a bar along the banner's foot. */}
         <span aria-hidden="true" className="absolute left-0 right-0 bottom-0 h-[5px]" style={{ backgroundColor: shade(unit.color, 86) }}>
@@ -846,6 +864,7 @@ function NodePopover({
   starting,
   onStart,
   onUnlock,
+  isOriginal = false,
 }: {
   node: PathNode;
   unit: PathUnit;
@@ -853,8 +872,10 @@ function NodePopover({
   starting: boolean;
   onStart: () => void;
   onUnlock: () => void;
+  isOriginal?: boolean;
 }) {
-  const of = `Lesson ${node.numberInUnit} of ${unit.nodes.length}`;
+  const milestone = node.lesson.milestone ? MILESTONE_LABEL[node.lesson.milestone] : null;
+  const of = `${milestone ? `${milestone} · ` : ''}Lesson ${node.numberInUnit} of ${unit.nodes.length}`;
   const xp = node.lesson.xpReward ?? 0;
 
   if (node.state === 'locked') {
@@ -873,9 +894,11 @@ function NodePopover({
       <PopoverShell arrowX={arrowX} color={null}>
         <p className="text-[17px] font-extrabold text-ink leading-snug">{node.lesson.title}</p>
         <p className="mt-1 text-[14.5px] font-semibold text-ink-soft">
-          You&apos;ve finished the free lessons. Unlock the full course to keep going!
+          {isOriginal
+            ? "You've finished the free lessons. Get Teyro Originals to unlock this course and every other Original."
+            : "You've finished the free lessons. Unlock the full course to keep going!"}
         </p>
-        <PopoverButton label="Unlock course" color="var(--color-brand)" onClick={onUnlock} />
+        <PopoverButton label={isOriginal ? 'Get Teyro Originals' : 'Unlock course'} color="var(--color-brand)" onClick={onUnlock} />
       </PopoverShell>
     );
   }
@@ -965,6 +988,8 @@ const TYPE_ICONS: Record<string, LucideIcon> = {
 const RHYTHM: LucideIcon[] = [Star, BookOpen, Dumbbell, Star, Lightbulb];
 
 function nodeIcon(node: PathNode, unit: PathUnit): LucideIcon {
+  if (node.lesson.milestone === 'UNIT_CHALLENGE') return Trophy;
+  if (node.lesson.milestone === 'CHECKPOINT') return Medal;
   const byType = node.lesson.lessonType ? TYPE_ICONS[node.lesson.lessonType] : undefined;
   if (byType) return byType;
   if (unit.nodes.length > 1 && node.numberInUnit === unit.nodes.length) return Trophy;

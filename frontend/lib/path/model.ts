@@ -39,6 +39,8 @@ export interface PathUnit {
   unitNumber: number;
   title: string;
   description: string | null;
+  /** Teyro Originals: the chapter's place in the story ("40 weeks to go"); null otherwise. */
+  marker: string | null;
   /** A CSS colour (token var). Units cycle through the palette. */
   color: string;
   nodes: PathNode[];
@@ -103,6 +105,7 @@ export function buildPathModel(path: LearningPath): PathModel {
       unitNumber,
       title: section.title,
       description: section.description,
+      marker: section.marker ?? null,
       color: UNIT_COLORS[(unitNumber - 1) % UNIT_COLORS.length],
       nodes,
       doneCount: unitDone,

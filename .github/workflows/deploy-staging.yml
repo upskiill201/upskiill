@@ -57,3 +57,14 @@ jobs:
           else
             echo "✅ Staging backend is healthy"
           fi
+
+      - name: Publish Teyro Originals
+        # Course content ships with the deploy (the same step runs in
+        # production), so nobody loads courses by hand. The loader checks every
+        # lesson and runs its Python first, refuses to write if anything fails,
+        # and is upsert-only: it never deletes (backend/scripts/originals.ts).
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+        run: npm run originals -- --write --publish

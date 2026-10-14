@@ -436,11 +436,11 @@ export class CouponsService {
 
     const course = await this.prisma.course.findUnique({
       where: { id: input.courseId },
-      select: { price: true },
+      select: { price: true, isOriginal: true },
     });
     if (!course) return { valid: false, reason: 'NOT_FOUND' };
 
-    const ladder = calculateCoursePricingLadder(course.price);
+    const ladder = calculateCoursePricingLadder(course.price, course);
     if (!isPurchasablePlan(input.plan)) {
       return { valid: false, reason: 'PLAN_NOT_ELIGIBLE' };
     }

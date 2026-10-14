@@ -26,6 +26,7 @@ import {
   Clapperboard,
   Loader2,
   Presentation,
+  SquareTerminal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Modal } from '@/components/ui/Modal';
@@ -113,6 +114,7 @@ const NAV_TABS: NavTab[] = [
   { id: 'home', label: 'Home', href: '/dashboard', icon: House, tone: 'blue', image: '/Icons/home-button.png' },
   { id: 'learning', label: 'My Learning', href: '/dashboard/my-learning', icon: BookOpen, tone: 'green', image: '/Icons/my-learning.png' },
   { id: 'explore', label: 'Explore', href: '/dashboard/explore', icon: Compass, tone: 'purple', image: '/Icons/explore.png' },
+  { id: 'code', label: 'Code', href: '/dashboard/code', icon: SquareTerminal, tone: 'ink' },
   { id: 'community', label: 'Community', href: '/dashboard/feed', icon: UsersRound, tone: 'teal' },
   { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard/leaderboards', icon: Trophy, tone: 'amber', image: '/Icons/Leaderboard.png' },
   { id: 'quests', label: 'Quests', href: '/dashboard/quests', icon: Target, tone: 'orange', image: '/Icons/Quests.png' },
