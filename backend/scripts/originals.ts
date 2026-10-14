@@ -80,6 +80,8 @@ function exportPreview(track: OriginalTrackDef) {
       units: level.units.map((unit) => ({
         key: unit.key,
         title: unit.title,
+        marker: unit.marker ?? null,
+        story: unit.story ?? null,
         lessons: unit.lessons.map((lesson) => {
           const key = keys.lesson(track, level, unit, lesson);
           return {
@@ -177,8 +179,8 @@ async function write(prisma: PrismaClient, track: OriginalTrackDef, instructorId
       const sectionId = stableId(keys.unit(track, level, unit));
       await prisma.section.upsert({
         where: { id: sectionId },
-        update: { title: unit.title, goal: unit.goal, orderIndex: u },
-        create: { id: sectionId, courseId, title: unit.title, goal: unit.goal, orderIndex: u },
+        update: { title: unit.title, goal: unit.goal, description: unit.story ?? null, marker: unit.marker ?? null, orderIndex: u },
+        create: { id: sectionId, courseId, title: unit.title, goal: unit.goal, description: unit.story ?? null, marker: unit.marker ?? null, orderIndex: u },
       });
 
       for (const [i, lesson] of unit.lessons.entries()) {

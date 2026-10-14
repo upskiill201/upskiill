@@ -130,6 +130,13 @@ function lintUnit(
   const where = `${track.slug} L${level.level} ${unit.key}`;
   const at = (lesson?: OriginalLesson) => (lesson ? `${where} ${lesson.key} "${lesson.title}"` : where);
 
+  // Playbook §8a: every unit is a story chapter, shown on the map banner.
+  if (!unit.story || !unit.marker) {
+    issues.push({ level: 'warning', where, message: 'No story line or marker: every unit is a chapter of the level\'s story (playbook §8a).' });
+  }
+  if (unit.marker && unit.marker.length > 24) issues.push({ level: 'warning', where, message: 'Marker is over 24 characters; it has to fit the map banner.' });
+  if (unit.story && unit.story.length > 140) issues.push({ level: 'warning', where, message: 'Story line is over 140 characters; keep it to one line on the map.' });
+
   if (unit.lessons.length < 20) {
     issues.push({ level: 'warning', where, message: `${unit.lessons.length} lessons; a full unit has 20 or more.` });
   }

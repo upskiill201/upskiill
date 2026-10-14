@@ -416,7 +416,7 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
               style={{ background: 'linear-gradient(180deg, var(--jm-ground), transparent)' }}
             />
           )}
-          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} />
+          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} chapter={!!path.original} />
 
           <ol className="relative list-none" style={{ height: layout.height }}>
             <LandScene
@@ -621,11 +621,14 @@ function UnitBanner({
   land,
   reached,
   stickyTop,
+  chapter = false,
 }: {
   unit: PathUnit;
   land: LandId;
   reached: boolean;
   stickyTop: string;
+  /** Teyro Originals: each unit is a story chapter (playbook §8a) with a marker and a story line. */
+  chapter?: boolean;
 }) {
   const complete = unit.doneCount === unit.nodes.length;
   const LandIcon = reached ? LAND_ICON[land] : Lock;
@@ -640,10 +643,13 @@ function UnitBanner({
           <p className="flex items-center gap-1.5 text-[12px] md:text-[13px] font-extrabold uppercase tracking-wider opacity-90">
             <LandIcon className="w-3.5 h-3.5 stroke-[2.75] shrink-0" aria-hidden="true" />
             <span className="truncate">
-              Unit {unit.unitNumber} · {LAND_NAME[land]}
+              {chapter ? 'Chapter' : 'Unit'} {unit.unitNumber} · {(chapter && unit.marker) || LAND_NAME[land]}
             </span>
           </p>
           <h2 className="text-[17px] md:text-[20px] font-extrabold leading-tight truncate">{unit.title}</h2>
+          {chapter && unit.description && (
+            <p className="mt-0.5 text-[13px] md:text-[14px] font-semibold leading-snug opacity-90 line-clamp-2">{unit.description}</p>
+          )}
         </div>
         {/* The unit's progress, as a bar along the banner's foot. */}
         <span aria-hidden="true" className="absolute left-0 right-0 bottom-0 h-[5px]" style={{ backgroundColor: shade(unit.color, 86) }}>

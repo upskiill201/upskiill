@@ -578,6 +578,7 @@ export class CourseService {
             id: true,
             title: true,
             description: true,
+            marker: true,
             lessons: {
               where: { status: 'published' },
               orderBy: { orderIndex: 'asc' },

@@ -26,7 +26,9 @@ import l20 from './l20';
  */
 const unit: OriginalUnit = {
   key: 'u01',
-  title: 'Your first useful answers',
+  title: 'The 9:12 email',
+  marker: 'Week 3',
+  story: "Lucía needs a project update by ten. Ada's first AI draft says nothing at all.",
   goal: 'Get a useful first answer from any AI tool, every time.',
   lessons: [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20],
 };
