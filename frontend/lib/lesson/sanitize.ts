@@ -135,6 +135,7 @@ function parseRichCard(c: any, cid: string): RichLearnCard | null {
         code: str(c.code, LIMITS.codeChars),
         caption: optStr(c.caption, 300),
         challenge: optStr(c.challenge, 400),
+        ...(c.expectError === true ? { expectError: true } : {}),
         ...(Array.isArray(c.stdin) ? { stdin: strList(c.stdin, RICH_LIMITS.stdin, 200) } : {}),
       };
     case 'myth':

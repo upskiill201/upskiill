@@ -56,7 +56,7 @@ export type AuthoredCard =
   | { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] }
   | { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] }
   /** Try it live: runnable, editable Python. Done once it runs without an error. */
-  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[] };
+  | { kind: 'tryIt'; title?: string; code: string; caption?: string; challenge?: string; stdin?: string[]; /** The code is meant to fail (an errors lesson): done on any run. */ expectError?: boolean };
 
 export type AuthoredCardKind = AuthoredCard['kind'];
 
