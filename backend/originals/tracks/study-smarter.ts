@@ -1,5 +1,6 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './study-smarter/beginner/u01';
+import u02 from './study-smarter/beginner/u02';
 
 /**
  * Study Smarter with AI — storyline "Kofi's Final Year".
@@ -31,8 +32,8 @@ const track: OriginalTrackDef = {
         'Use AI for writing honestly, without breaking academic rules',
       ],
       skills: ['Studying with AI', 'Self-quizzing', 'Revision planning', 'Academic honesty', 'Research basics'],
-      upcomingUnits: 12,
-      units: [u01],
+      upcomingUnits: 11,
+      units: [u01, u02],
     },
   ],
 };
