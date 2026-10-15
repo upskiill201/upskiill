@@ -383,6 +383,11 @@ export class CourseImportPublishService {
         description: lesson.description ?? undefined,
         learnBlocks: (lesson.learnBlocks as unknown[] | null) ?? undefined,
         applyBlocks: (lesson.applyBlocks as unknown[] | null) ?? undefined,
+        // An intro lesson has no exercises on purpose (rich-lesson.ts): its
+        // Apply phase is done, and the player skips it.
+        ...(Array.isArray(lesson.applyBlocks) && lesson.applyBlocks.length === 0
+          ? { isApplyCompleted: true }
+          : {}),
         reflectBlocks: (lesson.reflectBlocks as unknown[] | null) ?? undefined,
         deepenBlocks: (lesson.deepenBlocks as unknown[] | null) ?? undefined,
         publish,

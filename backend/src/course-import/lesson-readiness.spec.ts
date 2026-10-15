@@ -69,9 +69,13 @@ describe('lessonReadiness', () => {
         files(file({ transcriptStatus: 'FAILED' })),
       ),
     ).toBe('attention');
-    expect(lessonReadiness(lesson({ applyBlocks: [] }), files())).toBe(
+    expect(lessonReadiness(lesson({ applyBlocks: null }), files())).toBe(
       'attention',
     );
+  });
+
+  it('is ready with no Apply step at all: an intro lesson has nothing to practise', () => {
+    expect(lessonReadiness(lesson({ applyBlocks: [] }), files())).toBe('ready');
   });
 
   it('is still working while copying, transcribing or writing', () => {

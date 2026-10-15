@@ -90,8 +90,63 @@ describe('buildRichLesson', () => {
 
   it('fails (so the service retries) when too few exercises survive', () => {
     const out = editingLessonOutput();
-    out.exercises = out.exercises.slice(0, RICH_EXERCISES_KEEP_MIN - 1);
+    // 8 planned, need 4; only 3 have a right answer marked.
+    out.exercises = Array.from({ length: 8 }, (_, i) => ({
+      ...editingLessonOutput().exercises[0],
+      prompt: `Question ${i}`,
+      correctIndex: i < RICH_EXERCISES_KEEP_MIN - 1 ? 0 : 9,
+    }));
     expect(() => buildRichLesson(out, VIDEO, null)).toThrow(RichLessonError);
+  });
+
+  it('lets a light lesson have just the practice it deserves', () => {
+    const out = editingLessonOutput();
+    out.exercises = out.exercises.slice(0, 2);
+    const r = buildRichLesson(out, VIDEO, null);
+    expect(r.stats).toMatchObject({ exercises: 2, planned: 2 });
+  });
+
+  it('gives an intro lesson no Apply step, but never a lesson that teaches something', () => {
+    const intro = editingLessonOutput();
+    intro.lessonKind = 'intro';
+    intro.exercises = [];
+    intro.tip = null;
+    intro.quickCheck = null;
+    const r = buildRichLesson(intro, VIDEO, null);
+    expect(r.applyBlocks).toEqual([]);
+    const kinds = (r.learnBlocks[0] as any).value.map((c: any) => c.kind);
+    expect(kinds).not.toContain('callout');
+    expect(kinds).not.toContain('check');
+
+    const lazy = { ...intro, lessonKind: 'concept' };
+    expect(() => buildRichLesson(lazy, VIDEO, null)).toThrow(/Only an intro/);
+  });
+
+  it('trusts the named answer over a slipped index', () => {
+    const out = editingLessonOutput();
+    // Counted from 1: index 1 points at a wrong option.
+    out.exercises[0] = {
+      ...out.exercises[0],
+      correctIndex: 1,
+      answer: 'The focal point',
+    };
+    out.quickCheck = { ...out.quickCheck, correctIndex: 2, answer: 'B' };
+    const r = buildRichLesson(out, VIDEO, null);
+    const ex = (r.applyBlocks[0] as any).value.items[0];
+    expect(ex.correctOptionId).toBe('ex_0_o0');
+    const check = (r.learnBlocks[0] as any).value.find(
+      (c: any) => c.kind === 'check',
+    );
+    expect(check.correctIndex).toBe(1);
+  });
+
+  it('accepts one key idea for a video lesson, two for a reading lesson', () => {
+    const out = editingLessonOutput();
+    out.keyIdeas = out.keyIdeas.slice(0, 1);
+    expect(() => buildRichLesson(out, VIDEO, null)).not.toThrow();
+    expect(() =>
+      buildRichLesson(out, { kind: 'none', url: '', durationSec: null }, null),
+    ).toThrow(RichLessonError);
   });
 
   it('keeps a long or unknown-length video in classic Learn, with rich Apply', () => {
@@ -273,7 +328,7 @@ describe('buildRichLesson', () => {
     expect(richSystemPrompt('Coding')).toContain('predictOutput');
     expect(richSystemPrompt('AI')).toContain('pickPrompt');
     expect(richSystemPrompt(null)).not.toContain('predictOutput');
-    expect(richSystemPrompt(null)).toContain('AT LEAST 3 different kinds');
+    expect(richSystemPrompt(null)).toContain('ONE per practice point');
   });
 
   it('builds one part of a long video as a clipped video card', () => {
