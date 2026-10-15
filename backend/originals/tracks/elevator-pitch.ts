@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'End with a clear ask, handle questions and follow up',
       ],
       skills: ['Elevator pitch', 'Self-introduction', 'Storytelling', 'Public speaking', 'Persuasion', 'Networking'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/how-to-give-a-convincing-elevator-pitch.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },
