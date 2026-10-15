@@ -205,7 +205,9 @@ export class LessonContentGenerationProcessorService {
         // Where the lesson sits in its section shapes it: a gentle warm-up
         // first, a harder finale last, a different personality in between
         // (lesson-design.ts) — so lessons don't all come out the same.
-        const [sectionCount, previous] = await Promise.all([
+        // The course's very first lesson is the learner's first impression
+        // of it: designed as a gentle welcome, not just a section warm-up.
+        const [sectionCount, previous, earlierSections] = await Promise.all([
           this.prisma.courseImportLesson.count({
             where: { moduleId: lesson.moduleId },
           }),
@@ -216,6 +218,12 @@ export class LessonContentGenerationProcessorService {
             },
             orderBy: { orderIndex: 'desc' },
             select: { title: true },
+          }),
+          this.prisma.courseImportModule.count({
+            where: {
+              importId: lesson.module.importId,
+              orderIndex: { lt: lesson.module.orderIndex ?? 0 },
+            },
           }),
         ]);
         const track =
@@ -228,6 +236,7 @@ export class LessonContentGenerationProcessorService {
           Math.max(sectionCount, 1),
           lesson.module.orderIndex ?? 0,
           track,
+          { courseOpener: !previous && earlierSections === 0 },
         );
 
         const images = resourceFiles
@@ -263,6 +272,8 @@ export class LessonContentGenerationProcessorService {
             previousTitle: previous?.title ?? null,
           },
         });
+        // The answer check is a second call: space the next lesson from it.
+        this.lastAiCallAt = Date.now();
 
         await this.prisma.courseImportLesson.update({
           where: { id: lesson.id },

@@ -5,7 +5,15 @@ import { AiBudgetService } from '../tey/ai/ai-budget.service';
 import { parseStructured } from '../tey/ai/structured-output';
 import { CourseImportError, codeForHttpStatus } from './course-import-error';
 import {
+  applyReview,
+  hasReviewableItems,
+  REVIEW_JSON_SCHEMA,
+  REVIEW_SYSTEM_PROMPT,
+  reviewSheet,
+} from './exercise-review';
+import {
   buildRichLesson,
+  exercisesNeeded,
   RICH_LESSON_JSON_SCHEMA,
   RichLessonError,
   richSystemPrompt,
@@ -20,11 +28,11 @@ import type { LessonDesign } from './lesson-design';
  * Sized for a small free-tier provider (Groq gpt-oss-20b in JSON mode):
  * transcript + prompt + output must stay inside its per-request/per-minute
  * token window (8k tokens a minute on the free tier, counted as prompt +
- * max output). ~10.5k characters of speech is ~2.7k tokens (the whole of a
- * typical 5-15 minute lesson), the instructions ~1.3k, and 3.8k of output
- * fits a full rich lesson (cards + 8 exercises): ~7.8k in total.
+ * max output). ~9.5k characters of speech is ~2.4k tokens (nearly all of a
+ * typical 5-12 minute lesson), the instructions ~1.7k, and 3.8k of output
+ * fits a full rich lesson (cards + 8 exercises): ~7.9k in total.
  */
-const DEFAULT_MAX_TRANSCRIPT_CHARS = 10_500;
+const DEFAULT_MAX_TRANSCRIPT_CHARS = 9_500;
 /** Raise COURSE_IMPORT_MAX_TRANSCRIPT_CHARS (and the provider's limits)
  *  when generation moves to a paid tier with a bigger window. */
 const MAX_TRANSCRIPT_CHARS = (() => {
@@ -37,6 +45,15 @@ const GENERATION_TIMEOUT_MS = 90_000;
 const MAX_OUTPUT_TOKENS = 3_800;
 /** One retry on a weak or malformed answer: cheaper than a failed lesson. */
 const CONTENT_ATTEMPTS = 2;
+/** The answer checker (exercise-review.ts): on unless set to "off". It's a
+ *  second call per lesson; wrong answer keys are worse than the cost. */
+const REVIEW_ENABLED =
+  (process.env.COURSE_IMPORT_REVIEW_EXERCISES ?? '').toLowerCase() !== 'off';
+const REVIEW_ATTEMPTS = 3;
+const REVIEW_MAX_OUTPUT_TOKENS = 3_000;
+/** The checker runs right after the writer, so on a free tier it often
+ *  meets the per-minute limit. Waits up to this long for it to clear. */
+const REVIEW_MAX_WAIT_MS = 75_000;
 
 export interface LessonGenerationInput {
   courseTitle: string;
@@ -192,12 +209,27 @@ export class LessonContentGenerationService {
           input.images ?? [],
           input.design?.layout,
         );
-        if (built.stats.dropped.length) {
+        const checked = await this.review(built, input, resolved);
+        const { planned, exercises } = checked.stats;
+        if (checked.stats.dropped.length) {
           this.logger.log(
-            `Lesson "${input.lessonTitle}": kept ${built.stats.exercises} exercises (${built.stats.kinds.join(', ')}), dropped ${built.stats.dropped.length}: ${built.stats.dropped.join('; ')}`,
+            `Lesson "${input.lessonTitle}" (${checked.stats.lessonKind}): kept ${exercises} of ${planned} exercises (${checked.stats.kinds.join(', ') || 'no Apply step'}), dropped ${checked.stats.dropped.length}: ${checked.stats.dropped.join('; ')}`,
           );
         }
-        return built;
+        // Too much of the practice failed the checker: the writer misread
+        // the lesson, so write it again with the reasons. On the last try,
+        // the questions that passed are better than none.
+        if (
+          exercises < exercisesNeeded(planned) &&
+          attempt < CONTENT_ATTEMPTS
+        ) {
+          lastProblem = `the answer checker rejected too many exercises (${exercises} of ${planned} passed): ${checked.stats.dropped.slice(-4).join('; ')}. Write clearer questions whose answers the transcript states plainly`;
+          this.logger.warn(
+            `Lesson "${input.lessonTitle}" attempt ${attempt}: ${lastProblem}`,
+          );
+          continue;
+        }
+        return checked;
       } catch (err) {
         if (!(err instanceof RichLessonError)) throw err;
         lastProblem = err.message;
@@ -216,6 +248,95 @@ export class LessonContentGenerationService {
         480,
       ),
     );
+  }
+
+  /**
+   * The answer checker (exercise-review.ts): a separate call that solves the
+   * lesson's questions blind against the transcript; anything it disagrees
+   * with or finds unclear is taken out. A checker that can't give a usable
+   * answer leaves the lesson as written (logged), rather than failing a
+   * lesson whose questions already passed every structural check.
+   */
+  private async review(
+    built: RichBuildResult,
+    input: LessonGenerationInput,
+    resolved: NonNullable<
+      Awaited<ReturnType<AiConfigService['resolveForCourseImport']>>
+    >,
+  ): Promise<RichBuildResult> {
+    if (!REVIEW_ENABLED || !hasReviewableItems(built)) return built;
+    const user = `Lesson: ${input.lessonTitle}
+
+Transcript:
+"""
+${input.transcript!.slice(0, MAX_TRANSCRIPT_CHARS)}
+"""
+
+Items to check:
+
+${reviewSheet(built)}`;
+    const isReasoningModel = /gpt-oss|^o\d/i.test(resolved.provider.model);
+
+    for (let attempt = 1; attempt <= REVIEW_ATTEMPTS; attempt++) {
+      await this.assertBudget();
+      let result: Awaited<ReturnType<typeof resolved.provider.complete>>;
+      try {
+        result = await resolved.provider.complete({
+          system: REVIEW_SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: user }],
+          maxOutputTokens: REVIEW_MAX_OUTPUT_TOKENS,
+          temperature: 0,
+          timeoutMs: GENERATION_TIMEOUT_MS,
+          jsonSchema: REVIEW_JSON_SCHEMA as unknown as Record<string, unknown>,
+          ...(isReasoningModel ? { reasoningEffort: 'medium' as const } : {}),
+        });
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes('json_validate_failed')
+        )
+          continue;
+        const failure = classifyProviderError(err);
+        // Right after the writer's call, a free tier's per-minute window is
+        // usually spent: wait it out instead of losing the written lesson.
+        const wait =
+          failure instanceof CourseImportError &&
+          failure.code === 'AI_RATE_LIMIT'
+            ? (failure.retryAfterMs ?? 20_000)
+            : null;
+        if (
+          wait !== null &&
+          wait <= REVIEW_MAX_WAIT_MS &&
+          attempt < REVIEW_ATTEMPTS
+        ) {
+          this.logger.log(
+            `Answer check for "${input.lessonTitle}" is rate-limited; waiting ${Math.ceil(wait / 1000)}s.`,
+          );
+          await new Promise((r) => setTimeout(r, wait + 500));
+          continue;
+        }
+        throw failure;
+      }
+      await this.budget.record(
+        resolved.providerId,
+        'COURSE_IMPORT',
+        result.usage,
+        {
+          inputCostPer1k: resolved.inputCostPer1k,
+          outputCostPer1k: resolved.outputCostPer1k,
+        },
+      );
+      const parsed = parseStructured(
+        result.text,
+        z.record(z.string(), z.unknown()),
+      );
+      if (!parsed.ok || !Array.isArray(parsed.value.items)) continue;
+      return applyReview(built, parsed.value).lesson;
+    }
+    this.logger.warn(
+      `Answer check for "${input.lessonTitle}" gave no usable answer; keeping the lesson as written.`,
+    );
+    return built;
   }
 
   /** Guards a runaway import (or a retry loop) from an unbounded bill. */
