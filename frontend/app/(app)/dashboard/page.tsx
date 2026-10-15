@@ -236,7 +236,7 @@ export default function DashboardPage() {
           {picker}
           <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className="flex-1 min-w-0 justify-evenly" />
           {/* ml keeps the bell's count badge off the hearts number. */}
-          <div className="shrink-0 ml-2">
+          <div className="shrink-0 ml-2" data-tour="bell">
             <NotificationBell panelAlign="right" />
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
         {/* ═══ THE PATH ═══════════════════════════════════════════════════ */}
         {/* Not a <main>: the shell already provides the page's main landmark,
             and a nested second one confuses screen-reader navigation. */}
-        <section id="home-path" aria-label="Your learning path" className="w-full max-w-[560px] min-w-0">
+        <section id="home-path" data-tour="home-path" aria-label="Your learning path" className="w-full max-w-[560px] min-w-0">
           {/* Tablet: no phone HUD and no right rail — stats go on top. */}
           <div className="hidden md:flex lg:hidden items-center justify-between gap-4 mb-4">
             {picker}

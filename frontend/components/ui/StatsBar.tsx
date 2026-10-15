@@ -196,6 +196,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
 
   return (
     <div
+      data-tour="stats"
       className={`${styles.bar} ${compact ? styles.compact : ''} ${
         variant === 'pill' ? styles.pillBar : ''
       } ${className ?? ''}`}
