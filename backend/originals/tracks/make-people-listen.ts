@@ -41,6 +41,8 @@ const track: OriginalTrackDef = {
         'Change minds without pushing, even with people who disagree',
       ],
       skills: ['Being heard', 'Clear messages', 'Voice and delivery', 'Meetings', 'Persuasion', 'Listening'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/how-to-make-people-listen-to-you.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },
