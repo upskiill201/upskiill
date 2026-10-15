@@ -17,7 +17,7 @@
   place-items: center;
   font-family: var(--font-jakarta), sans-serif;
   font-weight: 800;
-  color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  color: color-mix(in srgb, var(--ink-fixed) 78%, transparent);
   line-height: 1;
 }
 

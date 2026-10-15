@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./theme-dark.css";
 
 /* ── Marketing surface tokens (Tailwind v4 @theme) ───────────────────────────
    Registers the homepage palette as real Tailwind utilities (bg-brand,
@@ -61,6 +62,9 @@
   --success-green:  #22C55E;
   --error-red:      #EF4444;
   --warning:        #F59E0B;
+
+  /* Never flips with the theme: dark scrims and shadows. */
+  --ink-fixed:      #071233;
 }
 
 body {

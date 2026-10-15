@@ -18,9 +18,9 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1px solid #E2E8F0;
-  background-color: #ffffff;
-  color: #1F2A44;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -30,8 +30,8 @@
 }
 
 .pageBtn:not(:disabled):hover {
-  background-color: #F5F7FB;
-  border-color: #CBD5E1;
+  background-color: var(--bg-section);
+  border-color: var(--border-strong);
 }
 
 .pageBtn.active {
@@ -41,14 +41,14 @@
 }
 
 .navBtn {
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .navBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #F8FAFC;
-  border-color: #E2E8F0;
+  background-color: var(--bg-section);
+  border-color: var(--border);
 }
 
 .ellipsis {
@@ -57,16 +57,16 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  color: #94A3B8;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .pageCount {
   font-size: 13px;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .bold {
   font-weight: 600;
-  color: #1F2A44;
+  color: var(--text-primary);
 }

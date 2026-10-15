@@ -435,7 +435,7 @@
   padding: 4px 9px;
   border-radius: 8px;
   background: var(--bg-card);
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-ink) 18%, transparent);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--ink-fixed) 18%, transparent);
   color: var(--brand-purple);
   font-size: 11px;
   font-weight: 800;

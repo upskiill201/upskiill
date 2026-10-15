@@ -15,13 +15,13 @@
 .label {
   font-size: 13px;
   font-weight: 500;
-  color: #1F2A44;
+  color: var(--text-primary);
 }
 
 .percentage {
   font-size: 13px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .track {

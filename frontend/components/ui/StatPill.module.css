@@ -37,11 +37,11 @@
 }
 
 .pillBtn:hover {
-  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 5%, transparent);
 }
 
 .pillBtn:active {
-  background: color-mix(in srgb, var(--color-ink) 9%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 9%, transparent);
   transform: none;
 }
 

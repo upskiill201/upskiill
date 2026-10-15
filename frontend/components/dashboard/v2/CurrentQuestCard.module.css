@@ -86,7 +86,7 @@
 
 .progressFill {
   height: 100%;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-radius: 9999px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   transition: width 0.4s ease;
@@ -111,7 +111,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #FFFFFF;
+  background: var(--bg-card);
   color: #0172FD;
   font-size: 15px;
   font-weight: 900;
@@ -120,7 +120,7 @@
   padding: 13px 26px;
   border-radius: 14px;
   border: none;
-  border-bottom: 4px solid #CBD5E1;
+  border-bottom: 4px solid var(--border-strong);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   outline: none;
@@ -128,7 +128,7 @@
 }
 
 .continueBtn:hover {
-  background-color: #F8FAFC;
+  background-color: var(--bg-section);
 }
 
 .continueBtn:active {
@@ -151,8 +151,8 @@
 /* White Speech Bubble */
 .speechBubble {
   position: relative;
-  background: #FFFFFF;
-  color: #0F172A;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 18px;
   padding: 14px 18px;
   font-size: 13px;
@@ -179,7 +179,7 @@
 }
 
 .speechText {
-  color: #0F172A;
+  color: var(--text-primary);
   font-family: var(--font-jakarta), 'Inter', sans-serif;
   letter-spacing: -0.01em;
 }

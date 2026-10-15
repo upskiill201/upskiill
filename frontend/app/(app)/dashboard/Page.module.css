@@ -96,7 +96,7 @@
 .statLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   margin-top: 2px;
   white-space: nowrap;
 }
@@ -251,7 +251,7 @@
   border-radius: 12px;
   padding: 12px 16px;
   box-shadow: 0 6px 18px rgba(7, 18, 51, 0.06);
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   font-size: 13px;
   font-weight: 600;
   color: #071233;
@@ -271,8 +271,8 @@
   width: 12px;
   height: 12px;
   background: white;
-  border-right: 1px solid #E2E8F0;
-  border-bottom: 1px solid #E2E8F0;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 /* MY JOURNEYS */
@@ -318,7 +318,7 @@
 
 .journeyCard {
   background: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px 24px;
   display: flex;
@@ -328,7 +328,7 @@
 }
 
 .journeyCard:hover {
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
@@ -342,7 +342,7 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background-color: #F8FAFC;
+  background-color: var(--bg-section);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -365,7 +365,7 @@
 .journeySubtitle {
   font-size: 11px;
   font-weight: 700;
-  color: #94A3B8;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -398,7 +398,7 @@
 /* MOTIVATION / CONSISTENCY BUBBLE CARD */
 .motivationCard {
   background: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px 20px;
   display: flex;
@@ -417,8 +417,8 @@
 }
 
 .motivationBubble {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 18px;
   font-size: 14px;
@@ -440,9 +440,9 @@
   transform: translateY(-50%) rotate(45deg);
   width: 10px;
   height: 10px;
-  background: #F8FAFC;
-  border-left: 1px solid #E2E8F0;
-  border-bottom: 1px solid #E2E8F0;
+  background: var(--bg-section);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 /* ──────────────────────────────────────────────────────────────────────────── */
@@ -497,7 +497,7 @@
 /* DAILY QUESTS CARD */
 .questsCard {
   background: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
 }
@@ -578,7 +578,7 @@
 
 .questProgressBar {
   height: 6px;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -592,7 +592,7 @@
 /* UNLOCK LEADERBOARDS CARD */
 .leaderboardsCard {
   background: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 24px;
   display: flex;
@@ -605,7 +605,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -623,7 +623,7 @@
 }
 
 .lockSvg {
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .leaderboardCardTitle {
@@ -636,7 +636,7 @@
 
 .leaderboardCardDesc {
   font-size: 13px;
-  color: #64748B;
+  color: var(--text-secondary);
   font-weight: 500;
   margin: 0 0 16px;
   max-width: 200px;
@@ -651,7 +651,7 @@
 
 .leaderboardProgressBar {
   height: 6px;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -664,7 +664,7 @@
 
 .leaderboardProgressText {
   font-size: 11px;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .leaderboardProgressText strong {
@@ -777,7 +777,7 @@
 
 /* White variant when primary button sits on the blue focus card */
 .focusCard .button3dPrimary {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   color: #0172FD;
   box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.25),
               inset 0px -4px 0px rgba(7, 18, 51, 0.12),
@@ -891,7 +891,7 @@
 .button3dOutline {
   background-color: white;
   color: #0172FD;
-  border: 2px solid #E2E8F0;
+  border: 2px solid var(--border);
   border-radius: 10px;
   padding: 8px 16px;
   font-size: 13px;
@@ -937,7 +937,7 @@
   width: 100%;
   max-width: 380px;
   height: 100vh;
-  background: #F8FAFC;
+  background: var(--bg-section);
   z-index: 1050;
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -954,8 +954,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: #FFFFFF;
-  border-bottom: 1px solid #E2E8F0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
 }
 
 .drawerTitleRow {
@@ -967,16 +967,16 @@
 .mobileSidebarTitle {
   font-size: 16px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .mobileSidebarCloseBtn {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  color: #64748B;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -986,7 +986,7 @@
 
 .mobileSidebarCloseBtn:hover {
   background: #E2E8F0;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .mobileSidebarBody {

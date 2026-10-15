@@ -452,7 +452,7 @@
     color-mix(in srgb, var(--color-brand) 10%, var(--bg-card)),
     color-mix(in srgb, var(--brand-purple) 10%, var(--bg-card))
   );
-  box-shadow: 0 10px 0 color-mix(in srgb, var(--color-ink) 12%, transparent);
+  box-shadow: 0 10px 0 color-mix(in srgb, var(--ink-fixed) 12%, transparent);
 }
 
 .phoneCompact {

@@ -4,6 +4,7 @@ import "./globals.css";
 import HeaderWrapper from "../components/layout/HeaderWrapper";
 import FooterWrapper from "../components/layout/FooterWrapper";
 import iosSplash from "../lib/pwa/iosSplash.json";
+import { THEME_BOOT_SCRIPT } from "../lib/theme/config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -191,6 +192,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {/* Sets the dark theme before first paint (lib/theme/config.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ServiceWorkerRegistrar />
         <ReferralCapture />

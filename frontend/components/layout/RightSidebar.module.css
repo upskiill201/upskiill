@@ -154,7 +154,7 @@
 .button3dOutlineFull {
   background-color: white;
   color: #0172FD;
-  border: 2px solid #E2E8F0;
+  border: 2px solid var(--border);
   border-radius: 10px;
   padding: 10px 16px;
   font-size: 13px;
@@ -178,7 +178,7 @@
 
 /* White flat variant when button sits on the blue course progress card */
 .courseProgressCard .button3dOutlineFull {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   color: #0172FD;
   border: none;
   box-shadow: none;
@@ -245,8 +245,8 @@
 
 /* DAILY QUESTS CARD */
 .questsCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
   padding: 20px;
   box-shadow: 0 3px 0 0 #CBD5E1;
@@ -346,8 +346,8 @@
 
 /* UNLOCK LEADERBOARDS CARD */
 .leaderboardsCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
   padding: 24px;
   display: flex;
@@ -365,7 +365,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -383,7 +383,7 @@
 }
 
 .lockSvg {
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .leaderboardCardTitle {
@@ -396,7 +396,7 @@
 
 .leaderboardCardDesc {
   font-size: 13px;
-  color: #64748B;
+  color: var(--text-secondary);
   font-weight: 500;
   margin: 0 0 16px;
   max-width: 200px;
@@ -427,7 +427,7 @@
 
 .leaderboardProgressText {
   font-size: 11px;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .leaderboardProgressText strong {
@@ -436,8 +436,8 @@
 
 /* DAILY REWARD CARD */
 .rewardCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
   padding: 20px 24px;
   display: flex;
@@ -607,7 +607,7 @@
 
 .rewardSubtext {
   font-size: 12px;
-  color: #64748B;
+  color: var(--text-secondary);
   text-align: center;
   margin: 0 0 12px;
   line-height: 1.4;
@@ -668,8 +668,8 @@
 
 /* DAILY REWARD LOGIN CHEST CARD */
 .dailyRewardCard {
-  background-color: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
   padding: 18px;
   margin-bottom: 20px;
@@ -683,7 +683,7 @@
 
 .dailyRewardCard:hover {
   transform: translateY(-2px);
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
   box-shadow: 0 5px 0 0 #CBD5E1;
 }
 
@@ -720,7 +720,7 @@
   width: 100%;
   background-color: #E2E8F0;
   border: none;
-  border-bottom: 4px solid #CBD5E1;
+  border-bottom: 4px solid var(--border-strong);
   color: #A0A0A0;
   border-radius: 14px;
   font-weight: 800;

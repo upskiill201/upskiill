@@ -312,7 +312,7 @@
     position: fixed;
     inset: 0;
     z-index: 70;
-    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+    background: color-mix(in srgb, var(--ink-fixed) 40%, transparent);
   }
 
   .closeBtn,

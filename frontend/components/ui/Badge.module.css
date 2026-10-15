@@ -58,8 +58,8 @@
 
 /* Grey — Neutral, level labels */
 .grey {
-  background-color: #F1F5F9;
-  color: #64748B;
+  background-color: var(--bg-section);
+  color: var(--text-secondary);
 }
 
 /* Purple — Pro, Premium */

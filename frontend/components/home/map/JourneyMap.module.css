@@ -11,7 +11,7 @@
      sticky banners and node popovers still need to escape vertically. */
   overflow-x: clip;
   --jm-ink: var(--color-ink);
-  --jm-shadow: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --jm-shadow: color-mix(in srgb, var(--ink-fixed) 14%, transparent);
   --jm-white: var(--bg-page);
   --jm-trunk: color-mix(in srgb, var(--warning) 42%, var(--color-ink) 58%);
   --jm-trunk-light: color-mix(in srgb, var(--warning) 60%, var(--color-ink) 40%);

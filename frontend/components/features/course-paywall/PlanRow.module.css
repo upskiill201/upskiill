@@ -8,8 +8,8 @@
   width: 100%;
   box-sizing: border-box;
   padding: 14px 16px;
-  background: #ffffff;
-  border: 2px solid var(--border, #e2e8f0);
+  background: var(--bg-card);
+  border: 2px solid var(--border, var(--border));
   border-radius: 16px;
   cursor: pointer;
   text-align: left;
@@ -19,7 +19,7 @@
 }
 
 .planRow:hover {
-  border-color: var(--border-strong, #cbd5e1);
+  border-color: var(--border-strong, var(--border-strong));
 }
 
 .planRow:focus-visible {
@@ -59,8 +59,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 2px solid var(--border-strong, #cbd5e1);
-  background: #ffffff;
+  border: 2px solid var(--border-strong, var(--border-strong));
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;

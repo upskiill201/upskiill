@@ -1,6 +1,6 @@
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -17,7 +17,7 @@
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 0 0 #CBD5E1;
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
 }
 
 .topRow {
@@ -46,7 +46,7 @@
 .subHeader {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #64748B;
+  color: var(--text-secondary);
   font-family: var(--font-jakarta), sans-serif;
 }
 
@@ -57,7 +57,7 @@
   width: 100%;
   font-size: 0.68rem;
   font-weight: 800;
-  color: #94A3B8;
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 0.35rem;
 }
@@ -121,8 +121,8 @@
 }
 
 .dotEmpty {
-  background: #F1F5F9;
-  border: 1.5px solid #E2E8F0;
+  background: var(--bg-section);
+  border: 1.5px solid var(--border);
 }
 
 .dotActive {

@@ -8,6 +8,7 @@ import { RewardAnimationProvider } from "../../context/RewardAnimationContext";
 import { HeraldProvider } from "../../context/HeraldContext";
 import NoticeHost from "../../components/awareness/NoticeHost";
 import AppTour from "../../components/tour/AppTour";
+import ThemeSync from "../../components/theme/ThemeSync";
 import { StreakProvider } from "../../context/StreakContext";
 import {
   DeferredRewardAnimationOverlay,
@@ -81,6 +82,7 @@ export default function AppGroupLayout({
 }>) {
   return (
     <div className={`${baloo2.variable} contents`}>
+      <ThemeSync />
       <TeyActivityProvider />
       <TeyPushSync />
       <TeyWelcomeBanner />

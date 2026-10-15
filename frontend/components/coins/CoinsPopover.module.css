@@ -6,8 +6,8 @@
   right: 0;
   margin-top: 8px;
   width: 340px;
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 20px;
   box-shadow:
     0 16px 40px rgba(7, 18, 51, 0.16),
@@ -101,7 +101,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #F8FAFC;
+  background: var(--bg-section);
 }
 
 .pageGroup {
@@ -112,8 +112,8 @@
 
 /* Shop Item Card */
 .shopItemCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 12px 14px;
   display: flex;
@@ -159,7 +159,7 @@
 .itemTitle {
   font-size: 0.88rem;
   font-weight: 900;
-  color: #1E293B;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -176,7 +176,7 @@
 .itemSubtitle {
   font-size: 0.76rem;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.35;
 }
@@ -187,8 +187,8 @@
   gap: 3px;
   font-size: 0.65rem;
   font-weight: 900;
-  background: #F1F5F9;
-  color: #64748B;
+  background: var(--bg-section);
+  color: var(--text-secondary);
   padding: 2px 6px;
   border-radius: 6px;
   letter-spacing: 0.02em;
@@ -295,7 +295,7 @@
 
 .footerRow {
   padding: 14px 16px 16px;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-top: 1px solid #F1F5F9;
 }
 

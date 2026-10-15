@@ -10,7 +10,7 @@
   border: 2px solid var(--border);
   border-radius: 20px;
   background: color-mix(in srgb, var(--bg-card) 92%, var(--bg-section));
-  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--color-ink) 30%, transparent);
+  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--ink-fixed) 30%, transparent);
   text-align: left;
 }
 
