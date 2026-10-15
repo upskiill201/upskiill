@@ -24,8 +24,8 @@ export type CodeLanguage =
   | 'plaintext';
 
 /** The shared cast (docs/originals/CAST.md). */
-/** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku';
+/** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi) are listed in CAST.md too. */
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -204,5 +204,10 @@ export interface OriginalTrackDef {
   description: string;
   /** A sample for /dev/originals only: checked and exported, never written to a database. */
   devOnly?: boolean;
+  /**
+   * 'short' = a deliberately short course (founder, 2026-10-15): 10 lessons per unit
+   * (Checkpoint at 5, Unit Challenge at 10) and 5 units per level. Default: full-length.
+   */
+  format?: 'full' | 'short';
   levels: OriginalLevel[];
 }

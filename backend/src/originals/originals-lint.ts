@@ -137,6 +137,8 @@ function lintUnit(
   issues: LintIssue[],
 ) {
   const where = `${track.slug} L${level.level} ${unit.key}`;
+  // Short courses (track.format === 'short') have 10-lesson units.
+  const unitTarget = track.format === 'short' ? 10 : 20;
   const at = (lesson?: OriginalLesson) => (lesson ? `${where} ${lesson.key} "${lesson.title}"` : where);
 
   // Playbook §8a: every unit is a story chapter, shown on the map banner.
@@ -146,8 +148,8 @@ function lintUnit(
   if (unit.marker && unit.marker.length > 24) issues.push({ level: 'warning', where, message: 'Marker is over 24 characters; it has to fit the map banner.' });
   if (unit.story && unit.story.length > 140) issues.push({ level: 'warning', where, message: 'Story line is over 140 characters; keep it to one line on the map.' });
 
-  if (unit.lessons.length < 20) {
-    issues.push({ level: 'warning', where, message: `${unit.lessons.length} lessons; a full unit has 20 or more.` });
+  if (unit.lessons.length < unitTarget) {
+    issues.push({ level: 'warning', where, message: `${unit.lessons.length} lessons; a full unit has ${unitTarget} or more.` });
   }
 
   const seen = new Set<string>();
@@ -161,7 +163,7 @@ function lintUnit(
   const milestones = unit.lessons.filter((l) => l.milestone);
   milestones.forEach((l, i) => {
     const last = i === milestones.length - 1;
-    const isComplete = unit.lessons.length >= 20;
+    const isComplete = unit.lessons.length >= unitTarget;
     if (last && isComplete && l.milestone !== 'UNIT_CHALLENGE') {
       issues.push({ level: 'error', where: at(l), message: "A unit's last Checkpoint is its Unit Challenge." });
     }
@@ -194,8 +196,10 @@ export function lintTrack(track: OriginalTrackDef): LintIssue[] {
     if (levels.has(level.level)) issues.push({ level: 'error', where, message: `Level ${level.level} appears twice.` });
     levels.add(level.level);
     if (level.units.length === 0) issues.push({ level: 'warning', where, message: 'No units written yet: nothing to load for this level.' });
-    if (level.units.length + level.upcomingUnits < 10) {
-      issues.push({ level: 'warning', where, message: `${level.units.length + level.upcomingUnits} units planned; a full level has 10–15.` });
+    const planned = level.units.length + level.upcomingUnits;
+    if (track.format === 'short' ? planned < 5 : planned < 10) {
+      const target = track.format === 'short' ? 'a short course has 5' : 'a full level has 10–15';
+      issues.push({ level: 'warning', where, message: `${planned} units planned; ${target}.` });
     }
     // Lessons 1–5 are the free stretch; lesson 5 must be the first Checkpoint.
     const firstUnit = level.units[0];
