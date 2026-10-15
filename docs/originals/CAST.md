@@ -54,7 +54,7 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 |---|---|---|---|
 | Lucía | Mexico City, Mexico | Mid-career marketer, newly promoted to lead a small team | Speak Like a CEO, AI at Work, Clear Writing at Work |
 | Arjun | Bengaluru, India | Freelance developer juggling international clients | Clear Writing at Work, Acing Job Interviews, Python |
-| Grace | Manchester, UK | Career-changer in her 40s, moving from nursing into tech | Acing Job Interviews, AI at Work |
+| Grace | Manchester, UK | Career-changer, 44: 18 years a ward nurse, now a junior UX researcher at Kinwell, a Manchester health-tech company (The Art of Small Talk, lead). Warm, funny, blunt, brilliant under pressure; freezes in rooms full of strangers and slips into "Nurse Mode" ("And how are we feeling today?") when nervous. Son Jayden, 17. | The Art of Small Talk (lead), Acing Job Interviews |
 | Kofi | Accra, Ghana | Final-year secondary-school student, 17, who wants to study Biomedical Engineering. Funny, competitive, a last-minute worker with big plans; makes beats on his phone and plays football. | Study Smarter with AI (lead) |
 
 ## Fixed relationships so far
@@ -63,6 +63,8 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Ada and Arjun:** Arjun does freelance contract development for Ada's startup and mentors her as she learns Python (Python for Beginners). He is precise, opinionated about variable names, and writes code nobody else can read; Ada teaches him why readable code matters.
 - **Ada and Remi:** friends since they met at a hackathon in Kigali. In Corporate Jargon, Ada (a year or two into her job in Lagos) is Remi's WhatsApp lifeline during his Synergix internship, answering in voice notes.
 - **Remi's internship:** after graduating, Remi does a 12-week internship in the Strategy & Operations team at Synergix, Nairobi (Corporate Jargon). Acing Job Interviews should end with him landing it.
+- **Grace and Ada:** they meet in the coffee queue at a Manchester tech conference where Ada is speaking (The Art of Small Talk, final chapter) and stay in touch as contacts. (Supersedes the earlier idea of Grace as Ada's colleague in AI at Work.)
+- **Grace and Arjun:** Arjun does freelance development for Kinwell; Grace works with him on video calls (The Art of Small Talk).
 - **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
 
 ## Cameroon (added 2026-10-14, founder)
@@ -96,10 +98,13 @@ These appear in one Original only and don't join the shared cast.
 | Pauline Wairimu | Corporate Jargon | Synergix marketing lead. Had Remi's idea first; they pitch it together. |
 | Emeka | Corporate Jargon | Synergix logistics lead in the Lagos office; joins by video. Detailed, clever, generous; forgets he's on mute. |
 | Wanjiku | Corporate Jargon | Synergix Finance. Calm, exact with numbers; owns the Swift Freight refund claim. |
+| Jayden | The Art of Small Talk | Grace's son, 17, Manchester. Coaches his mum on "not being cringe"; usually wrong. |
+| Priya | The Art of Small Talk | Grace's manager, head of UX at Kinwell. A brilliant introvert who finds small talk draining and does it her own quiet way. |
+| Femi | The Art of Small Talk | Kinwell developer, Lagos-born and Manchester-raised. Talks to everyone; Grace's unofficial small-talk coach; overdoes it sometimes. |
 
 ## Decisions
 
 - **Art style:** new characters are drawn in Ada's style (bold sticker look with a white outline), so the whole cast reads as one family in lessons and on social. Remi keeps his motion-explainer look there.
 - **Who appears where:** each Original picks a lead and one or two supporting characters from the "Best for" column; the lead stays the same for the whole Track.
 - **One fixed relationship per pair.** Once two characters meet, how they know each other never changes across Originals.
-- **Pilot (AI at Work):** Ada leads. Lucía supports as the marketing lead at a client company Ada's startup works with (so Ada has someone to write to, present to, and impress). Grace may appear as a newer colleague Ada helps with AI tools in later units.
+- **Pilot (AI at Work):** Ada leads. Lucía supports as the marketing lead at a client company Ada's startup works with (so Ada has someone to write to, present to, and impress). (Grace's life is now fixed by The Art of Small Talk: she works at Kinwell in Manchester and knows Ada as a contact.)
