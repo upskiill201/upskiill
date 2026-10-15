@@ -249,6 +249,20 @@ class SoundManager {
     return this.isMusicEnabled;
   }
 
+  /**
+   * The music category's output (lib/audio/lessonMusic.ts), or null when
+   * audio is unavailable, muted, or music is switched off in settings.
+   */
+  getMusicBus(): { ctx: AudioContext; output: GainNode } | null {
+    if (typeof window === 'undefined') return null;
+    if (this.isMuted || !this.isMusicEnabled) return null;
+    const ctx = this.initContext();
+    if (!ctx) return null;
+    const musicGain = this.categoryGainNodes.music || this.masterGainNode;
+    if (!musicGain) return null;
+    return { ctx, output: musicGain };
+  }
+
   // ─── Sound Registry Customization ──────────────────────────────────────────
 
   getRegistry(): Record<SoundId, SoundConfig> {

@@ -14,12 +14,13 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Flame, Unlock, X } from 'lucide-react';
+import { Music, Unlock, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
 import { PHASE_COLOR, PHASE_LABEL, PHASE_ORDER, type LessonPhase } from '@/lib/lesson/content';
+import { ComboChip } from './ComboHud';
 
 export function LessonTopBar({
   progress,
@@ -27,6 +28,9 @@ export function LessonTopBar({
   combo,
   hearts,
   onClose,
+  musicOn = null,
+  onToggleMusic,
+  stampPhases = PHASE_ORDER,
 }: {
   /** 0–1 */
   progress: number;
@@ -36,6 +40,11 @@ export function LessonTopBar({
   /** null hides hearts (admin review). */
   hearts: number | null;
   onClose: () => void;
+  /** The lesson music switch; null hides it. */
+  musicOn?: boolean | null;
+  onToggleMusic?: () => void;
+  /** Phases that get the "unlocked" pill (the rest have a full-screen gate). */
+  stampPhases?: LessonPhase[];
 }) {
   const reducedMotion = useReducedMotion();
   const onFire = combo >= 3;
@@ -81,7 +90,9 @@ export function LessonTopBar({
   const [stamp, setStamp] = useState<{ phase: LessonPhase; key: number } | null>(null);
   const [lastPhase, setLastPhase] = useState(phase);
   if (phase !== lastPhase) {
-    if (PHASE_ORDER.indexOf(phase) > PHASE_ORDER.indexOf(lastPhase)) setStamp((s) => ({ phase, key: (s?.key ?? 0) + 1 }));
+    if (PHASE_ORDER.indexOf(phase) > PHASE_ORDER.indexOf(lastPhase) && stampPhases.includes(phase)) {
+      setStamp((s) => ({ phase, key: (s?.key ?? 0) + 1 }));
+    }
     setLastPhase(phase);
   }
   useEffect(() => {
@@ -103,29 +114,8 @@ export function LessonTopBar({
         </button>
 
         <div className="relative flex-1">
-          {/* "3 IN A ROW" rides above the bar while a run lasts. */}
-          <AnimatePresence>
-            {onFire && (
-              <motion.div
-                key={combo}
-                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 600, damping: 20 }}
-                className="absolute -top-[24px] left-2 flex items-center gap-1 text-[13.5px] font-extrabold uppercase tracking-[0.08em]"
-                style={{ color: 'var(--lesson-gold-dark)' }}
-              >
-                <motion.span
-                  className="inline-flex"
-                  animate={reducedMotion ? undefined : { scale: [1, 1.25, 1], rotate: [0, -8, 0] }}
-                  transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Flame className="w-4 h-4 fill-current" aria-hidden="true" />
-                </motion.span>
-                {combo} in a row
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* The run, named, rides above the bar while it lasts (ComboHud). */}
+          <ComboChip run={combo} />
 
           <div
             role="progressbar"
@@ -182,6 +172,22 @@ export function LessonTopBar({
             )}
           </AnimatePresence>
         </div>
+
+        {musicOn !== null && onToggleMusic && (
+          <button
+            type="button"
+            onClick={onToggleMusic}
+            aria-label={musicOn ? 'Turn music off' : 'Turn music on'}
+            aria-pressed={musicOn}
+            className="relative shrink-0 w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[var(--bg-section)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
+            style={{ color: musicOn ? 'var(--brand-purple)' : 'var(--text-muted)' }}
+          >
+            <Music className="w-5 h-5 stroke-[2.5]" aria-hidden="true" />
+            {!musicOn && (
+              <span aria-hidden="true" className="absolute w-6 h-[2.5px] rounded-full rotate-45" style={{ backgroundColor: 'var(--text-muted)' }} />
+            )}
+          </button>
+        )}
 
         {hearts !== null && (
           <div className="relative shrink-0">

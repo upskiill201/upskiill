@@ -8,7 +8,10 @@
  *   1. cd backend && npm run originals -- --export
  *   2. open /dev/originals (on a phone: the dev server's LAN address)
  *
- * Admin review mode: nothing is written and no hearts are at risk. Not linked
+ * Two ways to play. "As a learner" (the default) runs everything a learner
+ * sees, from the start screen to the chapter map and the next lesson, with a
+ * simulated save: nothing is written and no hearts are spent. "Admin read"
+ * is the creator review mode: straight through, no chrome. Not linked
  * anywhere; 404 outside development.
  */
 
@@ -45,6 +48,10 @@ export default function OriginalsBench() {
   const [view, setView] = useState<'map' | 'list'>('map');
   // Lessons treated as finished on the map (preview only, never saved).
   const [completed, setCompleted] = useState<string[]>([]);
+  // Play as a learner (simulated save) or as an admin read.
+  const [asLearner, setAsLearner] = useState(true);
+  // A paying learner: no paywall after lesson 5.
+  const [paid, setPaid] = useState(false);
 
   // The real home map, fed from the course file: what a learner on the free
   // tier sees (lessons 1–5 free, the paywall from lesson 6).
@@ -71,7 +78,7 @@ export default function OriginalsBench() {
       })),
       enrolled: true,
       completedLessons: completed,
-      access: { hasAccess: false, freePreviewLessonIds: ordered.slice(0, 5).map((l) => l.id) },
+      access: { hasAccess: paid, freePreviewLessonIds: ordered.slice(0, 5).map((l) => l.id) },
       original: {
         trackId: bundle.track.slug,
         trackSlug: bundle.track.slug,
@@ -84,7 +91,7 @@ export default function OriginalsBench() {
         nextLevel: null,
       },
     };
-  }, [bundle, completed]);
+  }, [bundle, completed, paid]);
 
   const lessonById = (id: string) => bundle?.units.flatMap((u) => u.lessons).find((l) => l.id === id) ?? null;
   const pretendDone = (n: number) => setCompleted((bundle?.units.flatMap((u) => u.lessons) ?? []).slice(0, n).map((l) => l.id));
@@ -114,7 +121,16 @@ export default function OriginalsBench() {
         lesson={playing}
         courseId={bundle.course.id}
         isReview={false}
-        adminReviewMode
+        adminReviewMode={!asLearner}
+        simulate={asLearner}
+        pathOverride={path}
+        onNextLesson={(next) => {
+          // The lesson just played counts as done; the next one opens.
+          setCompleted((c) => (c.includes(playing.id) ? c : [...c, playing.id]));
+          const l = lessonById(next.id);
+          setPlaying(l);
+          setRun((r) => r + 1);
+        }}
         onExit={() => setPlaying(null)}
         onCompleted={() => {}}
         onFinished={() => {
@@ -176,6 +192,14 @@ export default function OriginalsBench() {
               {v === 'map' ? 'Home map' : 'Lesson list'}
             </button>
           ))}
+          <label className="flex items-center gap-1.5 text-[14px] font-bold text-[var(--text-secondary)]">
+            <input type="checkbox" checked={asLearner} onChange={(e) => setAsLearner(e.target.checked)} />
+            As a learner
+          </label>
+          <label className="flex items-center gap-1.5 text-[14px] font-bold text-[var(--text-secondary)]">
+            <input type="checkbox" checked={paid} onChange={(e) => setPaid(e.target.checked)} />
+            Paid
+          </label>
           {view === 'map' && (
             <label className="ml-auto flex items-center gap-2 text-[14px] font-bold text-[var(--text-secondary)]">
               Pretend done

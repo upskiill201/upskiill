@@ -9,11 +9,11 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check, X } from 'lucide-react';
+import { Check, ChevronsRight, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { LessonButton, type LessonButtonVariant } from './LessonButton';
 
-export type FooterVerdict = { kind: 'correct' | 'wrong'; title: string; body?: string | null } | null;
+export type FooterVerdict = { kind: 'correct' | 'wrong' | 'skip'; title: string; body?: string | null } | null;
 
 export function LessonFooter({
   label,
@@ -33,8 +33,17 @@ export function LessonFooter({
 }) {
   const reducedMotion = useReducedMotion();
   const tone = verdict?.kind;
-  const bg = tone === 'correct' ? 'var(--lesson-correct-bg)' : tone === 'wrong' ? 'var(--lesson-wrong-bg)' : 'var(--bg-card)';
-  const ink = tone === 'correct' ? 'var(--lesson-correct-ink)' : 'var(--lesson-wrong-ink)';
+  const bg =
+    tone === 'correct'
+      ? 'var(--lesson-correct-bg)'
+      : tone === 'wrong'
+        ? 'var(--lesson-wrong-bg)'
+        : tone === 'skip'
+          ? 'var(--lesson-select-bg)'
+          : 'var(--bg-card)';
+  const ink = tone === 'correct' ? 'var(--lesson-correct-ink)' : tone === 'skip' ? 'var(--lesson-picked-ink)' : 'var(--lesson-wrong-ink)';
+  const Mark = tone === 'correct' ? Check : tone === 'skip' ? ChevronsRight : X;
+  const markColor = tone === 'correct' ? 'var(--lesson-correct)' : tone === 'skip' ? 'var(--color-brand)' : 'var(--lesson-wrong)';
 
   return (
     <motion.div
@@ -62,11 +71,7 @@ export function LessonFooter({
                   transition={{ type: 'spring', stiffness: 520, damping: 14, delay: 0.05 }}
                   className="hidden md:flex shrink-0 w-[72px] h-[72px] rounded-full bg-white items-center justify-center"
                 >
-                  {tone === 'correct' ? (
-                    <Check className="w-10 h-10 stroke-[4]" style={{ color: 'var(--lesson-correct)' }} aria-hidden="true" />
-                  ) : (
-                    <X className="w-10 h-10 stroke-[4]" style={{ color: 'var(--lesson-wrong)' }} aria-hidden="true" />
-                  )}
+                  <Mark className="w-10 h-10 stroke-[4]" style={{ color: markColor }} aria-hidden="true" />
                 </motion.span>
                 <div className="min-w-0">
                   <p
@@ -74,11 +79,7 @@ export function LessonFooter({
                     style={{ color: ink, fontFamily: 'var(--font-jakarta)' }}
                   >
                     <span className="md:hidden flex w-8 h-8 rounded-full bg-white items-center justify-center">
-                      {tone === 'correct' ? (
-                        <Check className="w-5 h-5 stroke-[4]" style={{ color: 'var(--lesson-correct)' }} aria-hidden="true" />
-                      ) : (
-                        <X className="w-5 h-5 stroke-[4]" style={{ color: 'var(--lesson-wrong)' }} aria-hidden="true" />
-                      )}
+                      <Mark className="w-5 h-5 stroke-[4]" style={{ color: markColor }} aria-hidden="true" />
                     </span>
                     {verdict.title}
                   </p>
