@@ -1,7 +1,7 @@
 # The Art of Small Talk — Course Outline
 
 > A short Teyro Original in **Communication**.
-> **Status: APPROVED (2026-10-15)** as proposed: Grace leads, short-course flag added, Ada crossover yes, names as proposed. All 5 chapters written in backend/originals/tracks/small-talk/u01..u05.
+> **Status: APPROVED (2026-10-15)** as proposed: Grace leads, short-course flag added, Ada crossover yes, names as proposed. All 5 chapters (50 lessons) written in backend/originals/tracks/small-talk/beginner/u01..u05; cover in frontend/public/originals/the-art-of-small-talk.jpg.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (storylines §8a). Cast: docs/originals/CAST.md.
 > **Conscious deviation from the playbook (founder, 2026-10-15):** a short course. One level, **5 chapters × 10 lessons = 50 lessons**. Each chapter has one Checkpoint (lesson 5) and a Unit Challenge (lesson 10). The playbook's "10–15 units of 20+ lessons" rule is for full-length tracks.
 

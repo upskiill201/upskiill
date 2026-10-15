@@ -3,6 +3,7 @@ import u01 from './small-talk/beginner/u01';
 import u02 from './small-talk/beginner/u02';
 import u03 from './small-talk/beginner/u03';
 import u04 from './small-talk/beginner/u04';
+import u05 from './small-talk/beginner/u05';
 
 /**
  * The Art of Small Talk — storyline "Grace Says Hello".
@@ -41,8 +42,10 @@ const track: OriginalTrackDef = {
         'Turn small talk into real connection, and recover from awkward moments',
       ],
       skills: ['Small talk', 'Conversation skills', 'Networking', 'Listening', 'Confidence', 'Workplace relationships'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/the-art-of-small-talk.jpg',
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
