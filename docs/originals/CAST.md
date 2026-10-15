@@ -94,6 +94,8 @@ These appear in one Original only and don't join the shared cast.
 | Mr Kamau | Corporate Jargon | Synergix's CEO. The plainest speaker in the building. |
 | Felix | Corporate Jargon | Synergix IT. Caused the Great Reply-All; fixes everything instantly without explaining how. |
 | Pauline Wairimu | Corporate Jargon | Synergix marketing lead. Had Remi's idea first; they pitch it together. |
+| Emeka | Corporate Jargon | Synergix logistics lead in the Lagos office; joins by video. Detailed, clever, generous; forgets he's on mute. |
+| Wanjiku | Corporate Jargon | Synergix Finance. Calm, exact with numbers; owns the Swift Freight refund claim. |
 
 ## Decisions
 
