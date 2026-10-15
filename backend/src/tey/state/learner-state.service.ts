@@ -6,6 +6,7 @@ import {
   DEFAULT_DAILY_GOAL_XP,
   qualifiesForDailyGoal,
 } from '../../common/daily-goal.util';
+import { resolveFocusCourseId } from '../../common/focus-course.util';
 import type {
   LearnerStateSnapshot,
   TeyTarget,
@@ -313,8 +314,11 @@ export class LearnerStateService {
       daysSinceActivity: null,
     };
 
+    // The learner's focus course (their home-screen choice, else the most
+    // recently active one) — the same course community pings follow.
+    const focusId = await resolveFocusCourseId(this.prisma, userId);
     const enrollment = await this.prisma.enrollment.findFirst({
-      where: { userId },
+      where: focusId ? { userId, courseId: focusId } : { userId },
       orderBy: { updatedAt: 'desc' },
       select: {
         courseId: true,

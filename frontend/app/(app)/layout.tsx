@@ -8,6 +8,7 @@ import { RewardAnimationProvider } from "../../context/RewardAnimationContext";
 import { HeraldProvider } from "../../context/HeraldContext";
 import NoticeHost from "../../components/awareness/NoticeHost";
 import AppTour from "../../components/tour/AppTour";
+import PushSoundListener from "../../components/push/PushSoundListener";
 import ThemeSync from "../../components/theme/ThemeSync";
 import { StreakProvider } from "../../context/StreakContext";
 import {
@@ -110,6 +111,7 @@ export default function AppGroupLayout({
                     <StreakNewsWatcher />
                     {/* Notices (lib/awareness) and the streak/spin reveal portals */}
                     <NoticeHost />
+                    <PushSoundListener />
                     <AppTour />
                     <TeyroLoaderProvider>{children}</TeyroLoaderProvider>
                   </ShopEngineProvider>

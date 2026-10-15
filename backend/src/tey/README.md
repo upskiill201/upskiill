@@ -506,3 +506,36 @@ updates; creator settings show one Studio notifications switch.
 
 On Render's free plan these only run while the instance is awake; the
 external `POST /tey/scheduler/tick` covers the reminder queue only.
+
+## Community notifications (focus course only)
+
+Replies, comments, mentions, announcements and new posts in a course community
+reach a learner as a bell row, a push and (for direct replies/mentions) an
+email, in Tey's voice, but ONLY for the learner's **focus course**.
+
+- **Focus course** (`common/focus-course.util.ts`): `student_profiles.focusCourseId`
+  (set by `PUT /profile/focus-course`, called from the frontend's
+  `setHomeCourse` whenever the learner picks a course), else the most recently
+  active enrolment. The Tey learner-state target uses the same rule, so a
+  reminder and a community ping never point at different courses.
+- **Who is told what** (`community/listeners/community.listener.ts`): reply →
+  the comment's author; comment → the post's author; mention → the mentioned
+  member; announcement/challenge and plain posts → every other focused member.
+  Likes stay a quiet bell row. The course creator is not a learner here: their
+  rows keep going to the studio bell (`STUDIO_*`), unchanged.
+- **Hub kinds** (`notify.catalogue.ts`): `COMMUNITY_REPLY / COMMENT / MENTION /
+  ANNOUNCEMENT / POST`, audience `community` (12 pushes/day), switch
+  `communityActivity`. Only `COMMUNITY_POST` is throttled (90 min); it is the
+  one broadcast. Each conversation gets its own device tag so two threads don't
+  replace each other on the lock screen.
+- **Voice**: all copy lives in `notify/community.copy.ts` (fact first, then one
+  cheeky line; never invite a reply to an email, the sender is noreply@).
+- **Email** (`learning.community-activity`): queued 20 minutes after a reply,
+  comment or mention; sent only if the bell row is still unread and the course
+  is still the focus; one per conversation per day, max three a day;
+  unsubscribe scope `COMMUNITY` (`email_preferences.communityOptOut`).
+- **Sound**: a browser cannot attach a custom sound to a background push, so the
+  OS plays the device's default. With the app open and focused, `public/sw.js`
+  hands the push to the page and `PushSoundListener` shows Tey's notice card
+  with its chime (the bell stays quiet for that one, `lib/push/pushSound.ts`).
+- Migration `20261015120000_add_community_notifications` (3 additive columns).

@@ -11,7 +11,7 @@ import type { PrefFlags } from '../delivery/tey-policy.service';
  * saver, and vice versa.
  */
 
-export type NotifyAudience = 'learner' | 'creator';
+export type NotifyAudience = 'learner' | 'creator' | 'community';
 
 export interface NotifySpec {
   audience: NotifyAudience;
@@ -60,6 +60,32 @@ export const NOTIFY_KINDS = {
     ttlSeconds: 12 * HOUR, tag: 'tey-unlock', teyState: 'ENCOURAGING',
   },
 
+  // ── Community (focus course only — see common/focus-course.util.ts) ────
+  // Someone answered or mentioned YOU: never throttled, each its own thread.
+  COMMUNITY_REPLY: {
+    audience: 'community', pref: 'communityActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'community-reply', teyState: 'HAPPY',
+  },
+  COMMUNITY_COMMENT: {
+    audience: 'community', pref: 'communityActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'community-comment', teyState: 'HAPPY',
+  },
+  COMMUNITY_MENTION: {
+    audience: 'community', pref: 'communityActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'community-mention', teyState: 'ENCOURAGING',
+  },
+  // The creator spoke to the whole class.
+  COMMUNITY_ANNOUNCEMENT: {
+    audience: 'community', pref: 'communityActivity', throttleMinutes: 0,
+    ttlSeconds: 24 * HOUR, tag: 'community-announcement', teyState: 'ENCOURAGING',
+  },
+  // A classmate posted. The only broadcast, so the only throttled one: at most
+  // one such push per learner every 90 minutes.
+  COMMUNITY_POST: {
+    audience: 'community', pref: 'communityActivity', throttleMinutes: 90,
+    ttlSeconds: 6 * HOUR, tag: 'community-post', teyState: 'HAPPY',
+  },
+
   // ── Creator ────────────────────────────────────────────────────────────
   STUDIO_SALE: {
     audience: 'creator', pref: 'creatorActivity', throttleMinutes: 0,
@@ -93,6 +119,9 @@ export type NotifyKind = keyof typeof NOTIFY_KINDS;
 export const DAILY_EVENT_PUSH_CAP: Record<NotifyAudience, number> = {
   learner: 3,
   creator: 8,
+  // Replies and mentions are conversations; a busy thread should not go quiet
+  // after three. Broadcast posts are held back by their own 90-minute throttle.
+  community: 12,
 };
 
 export function kindsFor(audience: NotifyAudience): NotifyKind[] {

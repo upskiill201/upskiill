@@ -36,6 +36,7 @@ import {
   Music,
   Vibrate,
   KeyRound,
+  MessagesSquare,
   Moon,
   Sun,
   SunMoon,
@@ -76,6 +77,7 @@ interface NotificationPrefs {
   reengagement: boolean;
   leagueUpdates: boolean;
   courseOffers: boolean;
+  communityActivity?: boolean;
   preferredHour: number | null;
 }
 
@@ -571,6 +573,9 @@ function NotificationsSection() {
               </Row>
               <Row icon={Trophy} title="League updates" sub="Someone passes you, the week is ending, your result">
                 <Switch checked={prefs.leagueUpdates ?? true} disabled={off} label="League updates" onChange={(v) => void update({ leagueUpdates: v })} />
+              </Row>
+              <Row icon={MessagesSquare} title="Community" sub="Replies, mentions and new posts in the course you're focused on">
+                <Switch checked={prefs.communityActivity ?? true} disabled={off} label="Community" onChange={(v) => void update({ communityActivity: v })} />
               </Row>
               <Row icon={BookOpen} title="Course updates" sub="Picking up a course you started">
                 <Switch checked={prefs.courseOffers ?? true} disabled={off} label="Course updates" onChange={(v) => void update({ courseOffers: v })} />

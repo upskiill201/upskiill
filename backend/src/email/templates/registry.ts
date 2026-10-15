@@ -75,6 +75,15 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateMeta> = {
     description:
       'First-lesson journey: "you’re in" 15 min after enrolling, then day 1/3/6 while lesson 1 is unstarted, plus a "your place is saved" email 2h after leaving lesson 1 part-way. Stops the moment a lesson in the course is finished.',
   },
+  'learning.community-activity': {
+    templateKey: 'learning.community-activity',
+    category: EmailCategory.ENGAGEMENT,
+    audience: EmailAudience.STUDENT,
+    channel: EmailChannel.EMAIL,
+    enabled: true,
+    description:
+      "A reply, comment or mention in the focus course's community that is still unread 20 minutes later. One per conversation per day, at most three a day, in Tey's voice.",
+  },
   'learning.reach': {
     templateKey: 'learning.reach',
     category: EmailCategory.ENGAGEMENT,

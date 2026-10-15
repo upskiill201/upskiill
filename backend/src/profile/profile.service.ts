@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { setFocusCourse } from '../common/focus-course.util';
 
 /**
  * Handles reserved for platform routes — a creator can never claim these,
@@ -224,6 +225,15 @@ export class ProfileService {
    * Handles User.fullName, avatarUrl, username checks, all creator profile
    * fields, and student settings (dailyGoalXp → StudentProfile).
    */
+  /**
+   * The learner switched course. Only a course they are enrolled in can be
+   * their focus; anything else is ignored rather than rejected, because the
+   * client fires this on every switch and a failed call must be harmless.
+   */
+  async setFocusCourse(userId: string, courseId: string): Promise<{ focused: boolean }> {
+    return { focused: await setFocusCourse(this.prisma, userId, courseId) };
+  }
+
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
     // The global ValidationPipe runs without `whitelist`, so undeclared keys
     // survive onto the instance. creatorStatus is system-controlled ("Founding

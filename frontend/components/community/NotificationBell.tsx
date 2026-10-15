@@ -24,6 +24,7 @@ import {
 import { fetcher } from '@/lib/swr';
 import shared from './community.module.css';
 import { playSound } from '@/lib/audio/lessonSounds';
+import { pushHandledRecently } from '@/lib/push/pushSound';
 import { playHaptic } from '@/lib/haptics';
 import styles from './NotificationBell.module.css';
 
@@ -82,8 +83,12 @@ export default function NotificationBell({ panelAlign = 'right' }: NotificationB
     const prev = lastCount.current;
     lastCount.current = data.unreadCount;
     if (prev === null || data.unreadCount <= prev) return;
-    playSound('noticeGood');
-    playHaptic('light', false);
+    // A push the page already announced (its notice card chimed) must not
+    // ring the bell a second time.
+    if (!pushHandledRecently()) {
+      playSound('noticeGood');
+      playHaptic('light', false);
+    }
     void list.mutate();
     if (!reducedMotion) void bell.start({ rotate: [0, -16, 14, -10, 8, -4, 0], transition: { duration: 0.7 } });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- react to the count only

@@ -28,6 +28,12 @@ import { renderCourseUnlockEmail } from '../templates/conversion/course-unlock.t
 import { firstLessonState } from '../../common/first-lesson.util';
 import { renderReachEmail } from '../templates/learning/reach.template';
 import {
+  renderCommunityActivityEmail,
+  type CommunityEmailKind,
+} from '../templates/learning/community-activity.template';
+import { resolveFocusCourseId } from '../../common/focus-course.util';
+import { firstName } from '../../tey/notify/community.copy';
+import {
   renderFirstLessonEmail,
   type FirstLessonStage,
 } from '../templates/learning/first-lesson.template';
@@ -101,6 +107,8 @@ export class EmailJobProcessorService {
         return this.processFirstLesson(job);
       case 'REACH_ASK':
         return this.processReach(job);
+      case 'COMMUNITY_ACTIVITY':
+        return this.processCommunityActivity(job);
       default:
         this.logger.warn(`No handler for email job eventType=${job.eventType}`);
         return { sent: false, skipReason: 'NO_HANDLER' };
@@ -317,6 +325,82 @@ export class EmailJobProcessorService {
           nag,
           setupUrl: `${emailConfig.appUrl}/start?utm_source=email&utm_campaign=reach`,
           unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'LEARNING'),
+          preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
+        }),
+    });
+    return outcome.sent ? { sent: true } : { sent: false, skipReason: outcome.reason };
+  }
+
+  // ── Community: a reply / comment / mention still unread after 20 minutes ──
+  private async processCommunityActivity(job: EmailJobRow): Promise<ProcessOutcome> {
+    if (!job.userId) return { sent: false, skipReason: 'NO_USER' };
+    const payload = job.payload as { courseId?: string; postId?: string; kind?: CommunityEmailKind } | null;
+    if (!payload?.courseId || !payload.postId || !payload.kind) {
+      return { sent: false, skipReason: 'BAD_PAYLOAD' };
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: job.userId },
+      select: { id: true, email: true, fullName: true, accountStatus: true },
+    });
+    if (!user) return { sent: false, skipReason: 'USER_NOT_FOUND' };
+    if (user.accountStatus !== 'ACTIVE') return { sent: false, skipReason: 'ACCOUNT_INACTIVE' };
+
+    // Community pings follow the focus course, and the learner may have
+    // switched since this was queued.
+    if ((await resolveFocusCourseId(this.prisma, user.id)) !== payload.courseId) {
+      return { sent: false, skipReason: 'NOT_FOCUS_COURSE' };
+    }
+
+    // Seen it in the app already? Then an email would only be noise.
+    const unread = await this.prisma.notification.findMany({
+      where: {
+        userId: user.id,
+        isRead: false,
+        entityType: 'POST',
+        entityId: payload.postId,
+        type: { in: ['TEY_COMMUNITY_REPLY', 'TEY_COMMUNITY_COMMENT', 'TEY_COMMUNITY_MENTION'] },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { body: true, type: true, actor: { select: { fullName: true } } },
+    });
+    if (unread.length === 0) return { sent: false, skipReason: 'ALREADY_SEEN' };
+
+    // At most three community emails a learner a day, however busy the class.
+    const since = new Date(Date.now() - 24 * 3_600_000);
+    const recent = await this.prisma.emailLog.count({
+      where: { userId: user.id, templateKey: 'learning.community-activity', status: 'SENT', sentAt: { gte: since } },
+    });
+    if (recent >= 3) return { sent: false, skipReason: 'DAILY_CAP' };
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: payload.courseId },
+      select: { title: true },
+    });
+    const latest = unread[0];
+    // The row body is Tey's line; the quoted part is what the person wrote.
+    const excerpt = /^“(.*?)”/.exec(latest.body ?? '')?.[1] ?? '';
+    const day = new Date().toISOString().slice(0, 10);
+    const kind = payload.kind;
+
+    const outcome = await this.dispatch.dispatch({
+      userId: user.id,
+      email: user.email,
+      templateKey: 'learning.community-activity',
+      category: EmailCategory.ENGAGEMENT,
+      idempotencyKey: job.dedupeKey ?? `learning.community-activity:${user.id}:${payload.postId}:${day}`,
+      metadata: { courseId: payload.courseId, postId: payload.postId, count: unread.length },
+      preferenceOptions: { community: true },
+      render: () =>
+        renderCommunityActivityEmail({
+          firstName: user.fullName?.split(' ')[0] || '',
+          kind,
+          actor: firstName(latest.actor?.fullName),
+          excerpt,
+          courseName: course?.title ?? 'your course',
+          count: unread.length,
+          postUrl: `${emailConfig.appUrl}/dashboard/community/${payload.courseId}/p/${payload.postId}?utm_source=email&utm_campaign=community`,
+          unsubscribeUrl: this.unsubscribe.buildUnsubscribeUrl(user.id, 'COMMUNITY'),
           preferencesUrl: this.unsubscribe.buildPreferencesUrl(user.id),
         }),
     });

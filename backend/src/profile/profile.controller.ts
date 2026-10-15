@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Put,
   Delete,
   Body,
   Param,
@@ -16,6 +17,7 @@ import { OptionalJwtAuthGuard } from '../auth/guard/optional-jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { FocusCourseDto } from './dto/focus-course.dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import type { User } from '@prisma/client';
 
@@ -95,6 +97,18 @@ export class ProfileController {
   @Patch('me')
   updateMyProfile(@GetUser() user: User, @Body() dto: UpdateProfileDto) {
     return this.profileService.updateMyProfile(user.id, dto);
+  }
+
+  /**
+   * PUT /profile/focus-course
+   * The learner switched course (home / My Learning). Community push, email and
+   * bell follow this course. See common/focus-course.util.ts.
+   */
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  @UseGuards(AuthGuard('jwt'))
+  @Put('focus-course')
+  setFocusCourse(@GetUser() user: User, @Body() dto: FocusCourseDto) {
+    return this.profileService.setFocusCourse(user.id, dto.courseId);
   }
 
   /**

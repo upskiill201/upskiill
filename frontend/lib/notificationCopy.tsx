@@ -57,6 +57,11 @@ const TEY_EVENT_TYPES = new Set([
   'TEY_COURSE_UNLOCK',
   'TEY_FIRST_LESSON',
   'TEY_REACH',
+  'TEY_COMMUNITY_REPLY',
+  'TEY_COMMUNITY_COMMENT',
+  'TEY_COMMUNITY_MENTION',
+  'TEY_COMMUNITY_ANNOUNCEMENT',
+  'TEY_COMMUNITY_POST',
 ]);
 const isTeyEvent = (type: string) => TEY_EVENT_TYPES.has(type);
 
@@ -91,6 +96,9 @@ export function typeIcon(type: string, size = 12): React.ReactNode {
   if (type.startsWith('TEY_LEAGUE_')) return <Trophy size={size} />;
   if (type === 'TEY_STREAK_FREEZE_USED') return <Snowflake size={size} />;
   if (type === 'TEY_COURSE_UNLOCK') return <LockOpen size={size} />;
+  if (type === 'TEY_COMMUNITY_MENTION') return <AtSign size={size} />;
+  if (type === 'TEY_COMMUNITY_ANNOUNCEMENT') return <Megaphone size={size} />;
+  if (type.startsWith('TEY_COMMUNITY_')) return <MessageCircle size={size} />;
   if (type.startsWith('TEY_')) return <Flame size={size} />;
   if (type === 'ANNOUNCEMENT') return <Megaphone size={size} />;
   if (type === 'CREATOR_NUDGE') return <BellRing size={size} />;

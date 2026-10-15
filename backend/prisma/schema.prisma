@@ -806,6 +806,11 @@ model StudentProfile {
   leagueTier     LeagueTier @default(BRONZE)
   tournamentWins Int        @default(0) // Diamond Tournament championships
 
+  /// The course the learner chose to focus on (home / My Learning switcher).
+  /// Community push, email and bell are delivered for this course only. NULL =
+  /// the most recently active enrolment (common/focus-course.util.ts).
+  focusCourseId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -2225,6 +2230,9 @@ model TeyNotificationPrefs {
   courseOffers    Boolean @default(true)
   /// Creator side: sales, new learners, questions, finishes, payouts.
   creatorActivity Boolean @default(true)
+  /// Community: replies, comments, mentions, announcements and new posts in
+  /// the focus course's community.
+  communityActivity Boolean @default(true)
 
   /// Minutes from LOCAL midnight. Defaults 21:30 -> 08:00, and the window
   /// wraps midnight by design.
@@ -2852,6 +2860,8 @@ model EmailPreference {
   weeklyDigestOptOut      Boolean @default(false)
   reengagementOptOut      Boolean @default(false)
   creatorDigestOptOut     Boolean @default(false)
+  /// Replies, comments and mentions in the focus course's community.
+  communityOptOut         Boolean @default(false)
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())

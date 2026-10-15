@@ -38,7 +38,7 @@ import { ComingSoonPath } from '@/components/home/ComingSoonPath';
 import { useMe } from '@/hooks/useMe';
 import { getOnboardingState } from '@/lib/user-onboarding';
 import { isLearningTrack } from '@/lib/path/trackCourse';
-import { HOME_COURSE_KEY } from '@/lib/homeCourse';
+import { HOME_COURSE_KEY, setHomeCourse } from '@/lib/homeCourse';
 import type { LearningCategory } from '@/lib/onboarding/types';
 import {
   lessonHref,
@@ -120,11 +120,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!courseParam) return;
     setChosenId(courseParam);
-    try {
-      localStorage.setItem(COURSE_KEY, courseParam);
-    } catch {
-      // Not persisted; still shows this course for this visit.
-    }
+    setHomeCourse(courseParam); // remembers it here and tells the server
   }, [courseParam]);
   const active: Enrollment | null =
     enrollments?.find((e) => e.course.id === chosenId) ?? pickCurrentEnrollment(enrollments);
@@ -132,11 +128,7 @@ export default function DashboardPage() {
 
   const choose = (courseId: string) => {
     setChosenId(courseId);
-    try {
-      localStorage.setItem(COURSE_KEY, courseId);
-    } catch {
-      // Not persisted this time; still switches for this visit.
-    }
+    setHomeCourse(courseId);
   };
 
   const { path, error: pathError, mutate: retryPath } = useLearningPath(activeId);

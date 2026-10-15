@@ -34,6 +34,11 @@ export interface NotifyInput {
     | { type: string; entityType?: string; entityId?: string; collapseDaily?: boolean };
   /** Set false to write the inbox row only. */
   push?: boolean;
+  /**
+   * Overrides the kind's device tag, so two different conversations do not
+   * replace each other on the lock screen (the kind's tag collapses by kind).
+   */
+  tag?: string;
 }
 
 export type NotifyOutcome =
@@ -142,7 +147,7 @@ export class TeyNotifyService {
         title: input.title,
         body: input.body,
         url,
-        tag: spec.tag,
+        tag: input.tag ?? spec.tag,
         reason: input.kind,
         deliveryId: delivery.id,
         teyState: spec.teyState,
