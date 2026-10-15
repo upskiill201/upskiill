@@ -132,7 +132,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -152,6 +152,8 @@ export const CAST_NAMES: Record<CastId, string> = {
   kamau: 'Mr Kamau',
   felix: 'Felix',
   pauline: 'Pauline',
+  emeka: 'Emeka',
+  wanjiku: 'Wanjiku',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
