@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './elevator-pitch/beginner/u01';
 import u02 from './elevator-pitch/beginner/u02';
 import u03 from './elevator-pitch/beginner/u03';
+import u04 from './elevator-pitch/beginner/u04';
 
 /**
  * How to Give a Convincing Elevator Pitch — storyline "Ada's Big Minute".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'End with a clear ask, handle questions and follow up',
       ],
       skills: ['Elevator pitch', 'Self-introduction', 'Storytelling', 'Public speaking', 'Persuasion', 'Networking'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
