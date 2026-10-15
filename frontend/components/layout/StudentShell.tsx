@@ -124,8 +124,8 @@ const NAV_TABS: NavTab[] = [
   { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: UserRound, tone: 'indigo', image: '/Icons/user-profile.png' },
 ];
 
-/** Phone bottom bar — the same five Duolingo keeps one thumb away. */
-const BOTTOM_TABS = ['home', 'leaderboards', 'quests', 'shop', 'profile'];
+/** Phone bottom bar — six tabs one thumb away; My Learning, Explore and More live in the drawer. */
+const BOTTOM_TABS = ['home', 'community', 'leaderboards', 'quests', 'shop', 'profile'];
 
 /** Where the community tab counts as "active" besides its own href. */
 const COMMUNITY_PATHS = ['/dashboard/feed', '/dashboard/communities', '/dashboard/community'];
@@ -510,7 +510,14 @@ export default function StudentShell({
                   className={`${styles.bottomNavItem} ${active ? styles.activeBottomItem : ''}`}
                 >
                   <span className={styles.bottomNavIconWrap}>
-                    <NavTile icon={tab.icon} image={tab.image} tone={tab.tone} active={active} size="lg" />
+                    {/* A glyph tab (no PNG) is sized to the bar and leaves the ring to the wrap. */}
+                    <NavTile
+                      icon={tab.icon}
+                      image={tab.image}
+                      tone={tab.tone}
+                      active={active && Boolean(tab.image)}
+                      size={tab.image ? 'lg' : 'md'}
+                    />
                     {badgeFor(id)}
                   </span>
                 </Link>

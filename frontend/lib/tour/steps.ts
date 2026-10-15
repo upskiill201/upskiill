@@ -68,7 +68,6 @@ export const TOUR_STEPS: TourStep[] = [
     title: 'Community',
     body: 'Learn with others. Ask questions and cheer on your classmates. You unlock your seat after your first two lessons.',
     tey: 'cheering',
-    inDrawer: true,
   },
   {
     id: 'leaderboards',

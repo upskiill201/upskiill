@@ -497,7 +497,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
+    width: 100%;
+    max-width: 56px;
     height: 46px;
     border-radius: 999px;
     border: 2px solid transparent;
@@ -533,7 +534,7 @@
     padding: 12px 8px calc(100px + env(safe-area-inset-bottom));
   }
   .bottomNavIconWrap {
-    width: 48px;
+    max-width: 46px;
   }
 }
 
