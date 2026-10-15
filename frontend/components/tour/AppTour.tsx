@@ -18,7 +18,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { isCelebrationActive } from '@/context/CelebrationContext';
 import { useMe } from '@/hooks/useMe';
 import { playSound } from '@/lib/audio/lessonSounds';
@@ -42,6 +42,11 @@ interface Box {
 
 function isNarrow() {
   return window.innerWidth <= 768;
+}
+
+function subscribeResize(cb: () => void) {
+  window.addEventListener('resize', cb);
+  return () => window.removeEventListener('resize', cb);
 }
 
 /** First element with this tour name that is really on screen. */
@@ -70,9 +75,11 @@ export default function AppTour() {
   const [box, setBox] = useState<Box | null>(null);
   // True until the target is found or the wait runs out.
   const [searching, setSearching] = useState(true);
-  const [narrow, setNarrow] = useState(false);
+  const narrow = useSyncExternalStore(subscribeResize, isNarrow, () => false);
   const nextRef = useRef<HTMLButtonElement>(null);
   const userId = me?.id;
+  // A step with nothing to point at is never "searching" — it is just a card.
+  const waiting = searching && Boolean(step?.target);
 
   // ── Auto-start, once, for a learner who has not seen it ──────────────────
   useEffect(() => {
@@ -123,11 +130,8 @@ export default function AppTour() {
   // ── Find the target on this step, following it as the page moves ─────────
   useEffect(() => {
     if (!active || !step) return;
-    setNarrow(isNarrow());
     if (!step.target) {
       setDrawer(false);
-      setSearching(false);
-      setBox(null);
       return;
     }
     // Only look once we are on the step's page.
@@ -201,15 +205,8 @@ export default function AppTour() {
   }, [active, index, go, finish]);
 
   useEffect(() => {
-    if (active && !searching) nextRef.current?.focus({ preventScroll: true });
-  }, [active, index, searching]);
-
-  useEffect(() => {
-    if (!active) return;
-    const onResize = () => setNarrow(isNarrow());
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [active]);
+    if (active && !waiting) nextRef.current?.focus({ preventScroll: true });
+  }, [active, index, waiting]);
 
   if (!active || !step) return null;
 
@@ -282,7 +279,7 @@ export default function AppTour() {
       )}
 
       <AnimatePresence mode="wait">
-        {!searching && (
+        {!waiting && (
           // Positioned by a plain wrapper: framer owns the card's own transform.
           <div key={step.id} className="absolute" style={cardStyle}>
           <motion.div
