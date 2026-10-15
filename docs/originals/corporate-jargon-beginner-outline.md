@@ -75,14 +75,14 @@ The story has no villain (playbook §8a). The tension comes from confusion, emba
 | # | Chapter (map banner) | Marker | The learner can... | Topic (founder's list) |
 |---|---|---|---|---|
 | 1 | Let's circle back | Day 1 | Decode the most common office jargon | Core jargon |
-| 2 | The meeting about the meeting | Week 1 | Follow, and take part in, any meeting | Decode the Language of Meetings |
-| 3 | Alphabet soup | Week 2 | Read any common business acronym, and know when not to use one | Business Acronyms Everyone Should Know |
-| 4 | "Yo, Mr Kamau" | Week 3 | Switch from casual to professional English | Business English: Sound More Professional |
-| 5 | Reply all | Week 4 | Pick the right channel and handle everyday work messages | Corporate Communication for Beginners |
-| 6 | The email Brian forwarded | Week 5 | Write short, clear work emails and messages | How to Write Like a Professional |
-| 7 | Meets expectations? | Week 6 | Read between the lines of feedback and corporate euphemisms | Corporate Communication (reading between the lines) |
-| 8 | Speak up, Remi | Week 7 | Sound confident at work, honestly | How to Sound Confident at Work |
-| 9 | Who really decides | Week 8 | Understand office politics and work with it, honestly | How to Understand Office Politics |
+| 2 | The meeting about the meeting | Week 2 | Follow, and take part in, any meeting | Decode the Language of Meetings |
+| 3 | Alphabet soup | Week 3 | Read any common business acronym, and know when not to use one | Business Acronyms Everyone Should Know |
+| 4 | "Yo, Mr Kamau" | Week 4 | Switch from casual to professional English | Business English: Sound More Professional |
+| 5 | Reply all | Week 5 | Pick the right channel and handle everyday work messages | Corporate Communication for Beginners |
+| 6 | The email Brian forwarded | Week 6 | Write short, clear work emails and messages | How to Write Like a Professional |
+| 7 | Meets expectations? | Week 7 | Read between the lines of feedback and corporate euphemisms | Corporate Communication (reading between the lines) |
+| 8 | Speak up, Remi | Week 8 | Sound confident at work, honestly | How to Sound Confident at Work |
+| 9 | Who really decides | Week 9 | Understand office politics and work with it, honestly | How to Understand Office Politics |
 | 10 | Nobody told me | Week 10 | Follow the unwritten rules of office life | The Unwritten Rules of Corporate Life |
 | 11 | Plain words win | Week 11 | Decide when jargon helps and when it hides, and translate it | Business English (plain words) |
 | 12 | From intern to professional | Week 12 → Offer day | Survive and do well in a first job | From Intern to Professional: Workplace Survival Guide |
@@ -126,42 +126,43 @@ Formats: Story ×3, Myth or Fact ×2, Card deck ×2, Chat with Tey ×2, Tap to e
 
 ## Chapters 2–12 (lesson titles; Checkpoints at 5, 10, 15 and the Unit Challenge at 20)
 
-### Chapter 2 — The meeting about the meeting (Week 1)
+### Chapter 2 — The meeting about the meeting (Week 2) — WRITTEN 2026-10-15 (u02)
+*Main formats: 1 Story · 2 Cards · 3 Tap to explore · 4 Before/After · 6 Chat · 7 Myth or Fact · 8 Step-by-step · 9 Story · 11 Before/After · 12 Chat · 13 Cards · 14 Step-by-step · 16 Reading · 17 Before/After · 18 Story · 19 Tap to explore. New faces: Emeka (Synergix logistics lead, Lagos) and Wanjiku (Finance), both named extras. Lesson 19 teaches "table it" (UK/Kenya = discuss now; US = postpone).*
 *Story: Remi's calendar fills with stand-ups, syncs, "quick 15s" that last an hour, and a meeting to plan a meeting. Climax: Brian is off sick, and Remi has to take the minutes in a meeting with Mr Kamau and send the follow-up. Cliffhanger: Brian's reply is fourteen acronyms long.*
 
 1. Why there are so many meetings · 2. Stand-up, sync, catch-up, all-hands: meeting types decoded · 3. Reading a meeting invite: optional, tentative, hard stop · 4. Agendas and the "parking lot" · **5 Checkpoint: the quick 15 that lasted an hour** · 6. How meetings start · 7. "You're on mute" and other video-call phrases · 8. "Building on that", "to piggyback": following the thread · 9. Interrupting politely · **10 Checkpoint: two meetings at once** · 11. Asking a question in a meeting · 12. Disagreeing without starting a war · 13. "Let's take a step back" and other steering phrases · 14. Wrapping up: action items, next steps, AOB · **15 Checkpoint: Zanele takes over the stand-up** · 16. Minutes people can actually use · 17. The follow-up email · 18. Declining a meeting politely · 19. The meeting phrasebook · **20 Unit Challenge: minutes for the CEO**
 
-### Chapter 3 — Alphabet soup (Week 2)
+### Chapter 3 — Alphabet soup (Week 3)
 *Story: Brian's email has fourteen acronyms. Remi searches "SOW" and gets results about pigs. Felix from IT closes a ticket with "PEBKAC". Climax: Remi decodes Brian's brief and replies correctly before EOD. Cliffhanger: in the lift, Remi greets the CEO with "yo".*
 
 1. Brian's fourteen-acronym email · 2. Time: ASAP, EOD, EOW, ETA, OOO · 3. Email: FYI, CC, BCC, RE, FWD, NB, TL;DR · 4. Say it or spell it? (acronyms vs initialisms) · **5 Checkpoint: the out-of-office surprise** · 6. Goals and numbers: KPI, OKR, ROI, YoY, Q1–Q4 · 7. Money words: revenue, profit, P&L, budget, FY · 8. Job titles: CEO, CFO, COO, CTO, VP, HR, PM · 9. B2B, B2C and SaaS · **10 Checkpoint: the budget meeting** · 11. Documents: NDA, SOW, RFP, SOP, MoU · 12. Projects: MVP, proof of concept, scope, deliverable, milestone · 13. Customers: CRM, lead, pipeline, churn · 14. Chat shorthand: LGTM, WFH, IMO, BRB, and when they're too casual · **15 Checkpoint: Felix's IT ticket** · 16. Same letters, different meanings (PM, PR, CS) · 17. When acronyms backfire · 18. Acronyms by industry: banking, health, NGOs, tech · 19. The acronym speed round · **20 Unit Challenge: decode Brian before EOD**
 
-### Chapter 4 — "Yo, Mr Kamau" (Week 3)
+### Chapter 4 — "Yo, Mr Kamau" (Week 4)
 *Story: after the lift, Remi messages the CEO "hey bro u got a sec". Mrs Achieng takes him aside. Climax: Remi writes and sends his first message to Mr Kamau, asking for ten minutes to show his intern project. Cliffhanger: Felix hits "reply all".*
 
 1. The lift incident · 2. Casual, neutral, formal: three ways to say it · 3. Greetings and sign-offs that fit · 4. Polite requests: "could you", "would you mind" · **5 Checkpoint: Mrs Achieng's lesson** · 6. Softeners that don't make you sound weak · 7. Swap these words: gonna, yeah, stuff, kinda · 8. "I don't know" → "Let me find out" · 9. Saying sorry the right amount · **10 Checkpoint: the client call** · 11. Thanking people properly · 12. Small talk at work · 13. Your 30-second introduction · 14. Sounding professional on the phone · **15 Checkpoint: Remi meets the board** · 16. Phrases that sound rude by accident ("Noted.", "As per my last email") · 17. You don't need perfect English to sound professional · 18. Names, titles and how to address people around the world · 19. Your professional phrasebook · **20 Unit Challenge: the message to Mr Kamau**
 
-### Chapter 5 — Reply all (Week 4)
+### Chapter 5 — Reply all (Week 5)
 *Story: Felix accidentally emails all 900 staff. Two hundred people reply-all "please remove me", and Remi's finger is on the button. Climax: Remi sends the one helpful message that ends the storm. Cliffhanger: Brian forwards Remi's 600-word project summary to the CEO.*
 
 1. The 900-person email · 2. Email, chat, call or meeting? · 3. To, CC and BCC, properly · 4. Reply or reply all? · **5 Checkpoint: the storm grows** · 6. How fast should you reply? · 7. Status updates that save a meeting · 8. Asking for help without wasting anyone's time · 9. Following up without nagging · **10 Checkpoint: the silent client** · 11. Group chats at work · 12. Out-of-office messages · 13. Voice notes at work: yes or no? · 14. Calendar invites people accept · **15 Checkpoint: Zanele's voice note** · 16. Share bad news early · 17. Saying no to a request · 18. Handover notes · 19. Work messages that went viral · **20 Unit Challenge: ending the storm**
 
-### Chapter 6 — The email Brian forwarded (Week 5)
+### Chapter 6 — The email Brian forwarded (Week 6)
 *Story: Remi's summary reaches Mr Kamau, 600 words long with the point in the last line. Climax: Remi rewrites it in 120 words and it goes to the board. Cliffhanger: the mid-internship review form lands in his inbox.*
 
 1. The forwarded email · 2. Lead with the point · 3. Subject lines that say something · 4. One message, one ask · **5 Checkpoint: Mrs Achieng's red pen** · 6. Short paragraphs, white space · 7. Bullet points done right · 8. Plain words over jargon · 9. Who did what: active sentences · **10 Checkpoint: the client brief** · 11. Friendly, not flaky · 12. Writing for a busy boss · 13. Dates, times and numbers nobody can misread · 14. Summing up a long thread · **15 Checkpoint: the time-zone mix-up** · 16. Proofreading in 60 seconds · 17. The one-page update · 18. Before you hit send · 19. Five work emails, ready to use · **20 Unit Challenge: the version for the board**
 
-### Chapter 7 — Meets expectations? (Week 6)
+### Chapter 7 — Meets expectations? (Week 7)
 *Story: Remi's mid-internship review says "meets expectations" and "opportunity for growth", and he's sure he's being let go. Zanele hears "we're going in a different direction" about her project and panics too. Climax: Remi asks the right questions in his review and leaves with a clear plan. Cliffhanger: in the next strategy meeting, Remi has a good idea and mumbles it.*
 
 1. The review form · 2. Why offices soften everything · 3. "Interesting idea" and other polite no's · 4. Feedback words: strengths, development areas, stretch goals · **5 Checkpoint: Zanele's panic** · 6. Rating scales decoded · 7. "Let's discuss": good or bad? · 8. Restructuring, right-sizing, synergies: big-news words · 9. Asking for feedback · **10 Checkpoint: Brian's one-line reply** · 11. Taking criticism without sulking · 12. The compliment sandwich, and why people see through it · 13. Turning vague feedback into a plan · 14. Giving feedback to a colleague · **15 Checkpoint: "ok." vs "ok!"** · 16. Reading tone in short messages · 17. When "no worries" means worries · 18. Writing your self-review · 19. The euphemism dictionary · **20 Unit Challenge: Remi's review**
 
-### Chapter 8 — Speak up, Remi (Week 7)
+### Chapter 8 — Speak up, Remi (Week 8)
 *Story: Remi says "this is probably stupid, but maybe..." and five minutes later Zanele says the same idea confidently and gets the credit. Climax: in the weekly meeting Remi presents his idea clearly, and when Zanele is talked over, he gives her the floor back. Cliffhanger: the idea needs budget, and nobody seems able to approve it.*
 
 1. The idea that got taken (or did it?) · 2. Confidence isn't loudness · 3. Hedge words: just, maybe, sorry, I think · 4. When hedging is honest · **5 Checkpoint: the project update** · 6. Um, like, you know · 7. Speak in headlines · 8. Pace, pauses and volume · 9. Saying "I don't know" with confidence · **10 Checkpoint: the surprise question** · 11. "I recommend": owning your ideas · 12. Taking credit fairly · 13. Handling interruptions · 14. Disagreeing with your boss · **15 Checkpoint: Zanele gets talked over** · 16. Nerves before you speak · 17. Body language, on camera and in the room · 18. Giving credit, earning respect · 19. Your confident-phrases kit · **20 Unit Challenge: Remi's two minutes**
 
-### Chapter 9 — Who really decides (Week 8)
+### Chapter 9 — Who really decides (Week 9)
 *Story: the org chart says Brian approves budgets, but nothing moves. Mrs Achieng explains how Synergix really works. Then Pauline from Marketing presents an idea very like Remi's. Climax: Remi and Pauline pitch it together and win the budget. Cliffhanger: the invitation to the company retreat says "dress code: smart casual".*
 
 1. The org chart (mostly) lies · 2. Formal power and real influence · 3. Stakeholders: who cares about your work · 4. Managing up · **5 Checkpoint: the stuck approval** · 6. Gatekeepers, and why you thank them · 7. The meeting before the meeting · 8. Reading the room · 9. Staying out of gossip · **10 Checkpoint: the rumour** · 11. When someone takes your credit · 12. Allies, not cliques · 13. Saying no to senior people safely · 14. Caught between two bosses · **15 Checkpoint: Pauline's slide** · 16. Office politics myths · 17. Building a reputation · 18. Remi and Pauline · 19. Your stakeholder map · **20 Unit Challenge: the budget pitch**
