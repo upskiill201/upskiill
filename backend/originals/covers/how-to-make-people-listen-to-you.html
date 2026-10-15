@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: How to Make People Listen to You. A still frame of
+     the Tey FM studio: a glowing ON AIR sign, a live waveform, and caller
+     bubbles lighting up the switchboard. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --red: #EF4444;
+    --red-dark: #B91C1C;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --green: #22C55E;
+    --green-dark: #16A34A;
+    --purple: #9333EA;
+    --purple-dark: #6B21A8;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .speed { position: absolute; height: 10px; border-radius: 999px; background: var(--white); transform: rotate(-18deg); transform-origin: left center; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 120px; width: 720px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--red);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--red); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 100px; line-height: 1.0; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 18px 6px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin: 10px 0 6px; }
+  .sub { margin-top: 36px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 600px; }
+
+  .stage { position: absolute; left: 860px; top: 70px; width: 700px; height: 880px; transform: rotate(-3deg); }
+
+  .onair {
+    position: absolute; left: 150px; top: 20px;
+    background: var(--red); color: var(--white); font-weight: 800; font-size: 64px; letter-spacing: .12em;
+    padding: 22px 44px; border-radius: 28px; box-shadow: 0 12px 0 var(--red-dark), 0 0 0 14px rgba(255,255,255,.14), 0 0 0 30px rgba(255,255,255,.06);
+  }
+
+  .wave { position: absolute; left: 40px; top: 230px; width: 620px; height: 200px; display: flex; align-items: center; gap: 14px; }
+  .wave i { display: block; width: 26px; border-radius: 999px; background: var(--white); }
+
+  .call { position: absolute; padding: 24px 30px; font-weight: 800; color: var(--ink); background: var(--white); box-shadow: 0 12px 0 var(--brand-deep); }
+  .call .line { display: flex; align-items: center; gap: 10px; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; color: var(--brand); }
+  .call .line b { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+  .call p { font-size: 38px; line-height: 1.12; }
+  .k1 { left: 0; top: 480px; width: 420px; border-radius: 36px 36px 36px 10px; }
+  .k1 .line b { background: var(--green); }
+  .k2 { left: 260px; top: 650px; width: 430px; border-radius: 36px 36px 10px 36px; background: var(--green); color: var(--white); box-shadow: 0 12px 0 var(--green-dark); }
+  .k2 .line { color: #DCFCE7; }
+  .k2 .line b { background: var(--white); }
+  .ghost { opacity: .18; box-shadow: none !important; }
+  .ghost * { visibility: hidden; }
+
+  .chip { position: absolute; padding: 13px 22px; border-radius: 18px; font-weight: 800; font-size: 27px; color: var(--white); white-space: nowrap; }
+  .c1 { background: var(--purple); box-shadow: 0 6px 0 var(--purple-dark); }
+  .c2 { background: var(--ink); box-shadow: 0 6px 0 #000A24; }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-220px;top:-300px;opacity:.55"></div>
+  <div class="blob" style="width:540px;height:540px;left:-220px;bottom:-280px;opacity:.45"></div>
+
+  <div class="speed" style="left:-40px;top:930px;width:420px;opacity:.10"></div>
+  <div class="speed" style="left:300px;top:960px;width:260px;opacity:.16"></div>
+  <div class="speed" style="left:1380px;top:930px;width:240px;opacity:.12"></div>
+  <div class="ring" style="width:150px;height:150px;left:720px;top:780px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:50px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Short course</span>
+    <h1>How to Make<br/>People <em>Listen</em><br/>to You</h1>
+    <p class="sub">Tey FM is on air. Five callers, one problem: nobody listens. Until now.</p>
+  </div>
+
+  <div class="stage">
+    <div class="onair">ON AIR</div>
+
+    <div class="wave">
+      <i style="height:40px;opacity:.5"></i><i style="height:90px;opacity:.7"></i><i style="height:150px"></i><i style="height:70px;opacity:.8"></i>
+      <i style="height:190px"></i><i style="height:120px"></i><i style="height:60px;opacity:.7"></i><i style="height:160px"></i>
+      <i style="height:100px;opacity:.85"></i><i style="height:180px"></i><i style="height:80px;opacity:.75"></i><i style="height:130px"></i>
+      <i style="height:50px;opacity:.6"></i><i style="height:110px;opacity:.85"></i><i style="height:36px;opacity:.5"></i><i style="height:70px;opacity:.6"></i>
+    </div>
+
+    <div class="call k1"><div class="line"><b></b>Line 3 · Caller</div><p>"Nobody hears my ideas."</p></div>
+
+    <div class="call k2 ghost" style="left:300px;top:670px"><p>x</p></div>
+    <div class="call k2"><div class="line"><b></b>Tey FM</div><p>"Breathe. Pause. Then say it once."</p></div>
+
+    <div class="chip c1" style="left:470px;top:470px;transform:rotate(7deg)">One clear point</div>
+    <div class="chip c2" style="left:-40px;top:830px;transform:rotate(-6deg)">Listen first</div>
+
+    <svg class="spark" style="left:600px;top:140px" width="54" height="54" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:60px;top:150px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+  </div>
+</body>
+</html>
