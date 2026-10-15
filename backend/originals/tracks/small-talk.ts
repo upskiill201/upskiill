@@ -1,6 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './small-talk/beginner/u01';
 import u02 from './small-talk/beginner/u02';
+import u03 from './small-talk/beginner/u03';
 
 /**
  * The Art of Small Talk — storyline "Grace Says Hello".
@@ -39,8 +40,8 @@ const track: OriginalTrackDef = {
         'Turn small talk into real connection, and recover from awkward moments',
       ],
       skills: ['Small talk', 'Conversation skills', 'Networking', 'Listening', 'Confidence', 'Workplace relationships'],
-      upcomingUnits: 3,
-      units: [u01, u02],
+      upcomingUnits: 2,
+      units: [u01, u02, u03],
     },
   ],
 };
