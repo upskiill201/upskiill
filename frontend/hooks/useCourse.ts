@@ -3,6 +3,7 @@
 import useSWR, { preload } from 'swr';
 import { fetcher } from '@/lib/swr';
 import { courseHomeHref } from '@/lib/homeCourse';
+import type { LessonMilestone, OriginalInfo } from '@/lib/originals';
 
 /**
  * Shared SWR keys/hooks for course detail, progress and access.
@@ -173,12 +174,16 @@ export interface PathLesson {
   xpReward: number | null;
   durationMinutes: number | null;
   isFreePreview: boolean;
+  /** Originals review lessons: every 5th is a Checkpoint, a unit's last one its Unit Challenge. */
+  milestone?: LessonMilestone | null;
 }
 
 export interface PathSection {
   id: string;
   title: string;
   description: string | null;
+  /** Teyro Originals: the chapter's place in the story ("40 weeks to go"). */
+  marker?: string | null;
   lessons: PathLesson[];
 }
 
@@ -189,6 +194,8 @@ export interface LearningPath {
   enrolled: boolean;
   completedLessons: string[];
   access: { hasAccess: boolean; freePreviewLessonIds: string[] };
+  /** Teyro Originals only (track, level, next level, hearts rule); null for creator courses. */
+  original?: OriginalInfo | null;
 }
 
 export function useLearningPath(courseId?: string | null) {

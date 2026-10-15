@@ -11,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MissionsService } from '../missions/missions.service';
 import { ChestService } from '../chest/chest.service';
 import { StripeProvider } from '../payment/providers/stripe.provider';
+import { OriginalsService } from '../originals/originals.service';
 import { CommunityService } from '../community/community.service';
 import { ShopService } from '../shop/shop.service';
 import { CourseReviewService } from '../course-review/course-review.service';
@@ -118,6 +119,14 @@ describe('CourseService', () => {
           // is correct — none of them are exercising the review-lock itself
           // (that lives in course-review.service.spec.ts).
           useValue: { assertEditableAndReopen: jest.fn().mockResolvedValue(undefined) },
+        },
+        {
+          provide: OriginalsService,
+          // Creator courses: no Track info, no level hand-off.
+          useValue: {
+            describe: jest.fn().mockResolvedValue(null),
+            levelCompletion: jest.fn().mockResolvedValue(null),
+          },
         },
       ],
     }).compile();

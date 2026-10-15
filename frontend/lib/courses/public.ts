@@ -28,20 +28,25 @@ export interface PublicCourseCard {
   ratingAvg: number | null;
   reviewsCount: number;
   instructor: { id: string; fullName: string | null; avatarUrl: string | null; username: string | null };
-  track: CreatorTrack;
+  /** Coding or AI for creator courses; null for an Original outside those tracks. */
+  track: CreatorTrack | null;
+  /** Teyro Original: pinned first and tagged (docs/ORIGINALS_PLAYBOOK.md §1). */
+  isOriginal: boolean;
 }
 
-/** Published Coding and AI courses, newest first. Empty (never throws) when the backend is down. */
+/** Published Teyro Originals (any category) first, then Coding and AI courses, newest first. Empty (never throws) when the backend is down. */
 export async function fetchPublicCourses(): Promise<PublicCourseCard[]> {
   try {
     const res = await fetch(`${API}/courses?take=100`, { next: { revalidate: REVALIDATE, tags: ['public-courses'] } });
     if (!res.ok) return [];
     const rows: unknown = await res.json();
     if (!Array.isArray(rows)) return [];
-    return rows.flatMap((c) => {
+    const cards = rows.flatMap((c) => {
       const track = normalizeCourseCategory(c?.category);
+      const isOriginal = c?.isOriginal === true;
       // A course needs at least one published lesson to be worth a click.
-      if (!track || !c?.slug || !(Number(c.lessonsCount) > 0)) return [];
+      // Creator courses must be in a launch track; Originals can be in any category.
+      if ((!track && !isOriginal) || !c?.slug || !(Number(c.lessonsCount) > 0)) return [];
       return [
         {
           id: String(c.id),
@@ -65,9 +70,12 @@ export async function fetchPublicCourses(): Promise<PublicCourseCard[]> {
             username: c.instructor?.username ?? null,
           },
           track,
+          isOriginal,
         },
       ];
     });
+    // Originals first (stable sort keeps newest-first within each group).
+    return cards.sort((a, b) => Number(b.isOriginal) - Number(a.isOriginal));
   } catch {
     return [];
   }

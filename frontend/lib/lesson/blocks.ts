@@ -60,7 +60,9 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 
 export const LIMITS = {
   learnCards: 30,
-  exercises: 20,
+  // 30, not 20: a Teyro Originals Checkpoint / Unit Challenge runs 25–30
+  // exercises (docs/ORIGINALS_PLAYBOOK.md §5).
+  exercises: 30,
   options: 6,
   lines: 30,
   pairs: 8,
@@ -119,14 +121,119 @@ export type LearnCard =
       options: string[];
       correctIndex: number;
       explanation?: string;
+    })
+  | RichLearnCard;
+
+// ─── Rich Learn formats (Teyro Originals, docs/ORIGINALS_PLAYBOOK.md §4) ──
+//
+// Written as course files (originals/), not in the Lesson Builder, so they
+// aren't in LearnCardKind (the builder's "add card" menu). The player plays
+// them for any course. None of them cost hearts: interactive ones only have
+// to be finished before Continue.
+
+/** The shared Originals cast (docs/originals/CAST.md). */
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante'] as const;
+export type CastId = (typeof CAST_IDS)[number];
+export const CAST_NAMES: Record<CastId, string> = {
+  ada: 'Ada',
+  remi: 'Remi',
+  lucia: 'Lucía',
+  arjun: 'Arjun',
+  grace: 'Grace',
+  kofi: 'Kofi',
+  miracle: 'Miracle',
+  clinton: 'Clinton',
+  david: 'David',
+  efua: 'Efua',
+  asante: 'Mrs Asante',
+};
+
+/** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
+export type StorySpeaker = 'narrator' | 'tey' | CastId;
+
+export interface StoryBeat {
+  speaker: StorySpeaker;
+  text: string;
+}
+
+/** A decision in a story: no wrong answers that cost hearts, but every option has a consequence. */
+export interface StoryChoice {
+  prompt: string;
+  options: { text: string; outcome: string; best?: boolean }[];
+}
+
+export interface WalkthroughStep {
+  title: string;
+  body: string;
+  code?: string;
+  language?: CodeLanguage;
+}
+
+export type RichLearnCard =
+  /** A proper article page that scrolls (not split into small cards). */
+  | (CardBase & { kind: 'reading'; title?: string; html: string })
+  /** A short scene with the cast, optionally ending in a decision. */
+  | (CardBase & { kind: 'story'; title?: string; beats: StoryBeat[]; choice?: StoryChoice })
+  /** Tey teaches in a chat thread; the learner taps a reply to move it along. */
+  | (CardBase & { kind: 'chat'; turns: { tey: string; replies?: string[] }[] })
+  /** A worked example revealed one step at a time. */
+  | (CardBase & { kind: 'steps'; title?: string; steps: WalkthroughStep[] })
+  /** A bad and a good version side by side, with what changed. */
+  | (CardBase & {
+      kind: 'compare';
+      title?: string;
+      before: { label?: string; text: string };
+      after: { label?: string; text: string };
+      notes: string[];
+    })
+  /** A real artefact with tappable phrases that reveal explanations. */
+  | (CardBase & { kind: 'explore'; title?: string; text: string; hotspots: { phrase: string; note: string }[] })
+  /** Quick-fire: is each statement a myth or a fact? */
+  | (CardBase & { kind: 'myth'; statements: { text: string; isFact: boolean; explain: string }[] })
+  /**
+   * Try it live: runnable, editable Python in the learner's browser
+   * (lib/code). Done once it has run without an error. `stdin` feeds input();
+   * `challenge` is a nudge to change the code and run it again.
+   */
+  | (CardBase & {
+      kind: 'tryIt';
+      title?: string;
+      code: string;
+      caption?: string;
+      challenge?: string;
+      stdin?: string[];
+      /** Meant to fail (an errors lesson): done on any run, error or not. */
+      expectError?: boolean;
     });
+
+export type RichLearnCardKind = RichLearnCard['kind'];
+export const RICH_LEARN_KINDS: readonly RichLearnCardKind[] = ['reading', 'story', 'chat', 'steps', 'compare', 'explore', 'myth', 'tryIt'];
+
+export const RICH_LIMITS = {
+  readingChars: 12000,
+  beats: 14,
+  choiceOptions: 4,
+  turns: 10,
+  replies: 3,
+  steps: 8,
+  notes: 6,
+  hotspots: 8,
+  statements: 6,
+  /** Lines of input() fed to a program. */
+  stdin: 10,
+  /** Hidden checks on a Write and run exercise. */
+  checks: 8,
+} as const;
 
 // ─── Exercises ─────────────────────────────────────────────────────────────
 
-export type ExerciseKind = 'mcq' | 'fillBlank' | 'findBug' | 'orderLines' | 'matchPairs';
+export type ExerciseKind = 'mcq' | 'fillBlank' | 'findBug' | 'orderLines' | 'matchPairs' | RichExerciseKind;
+
+/** Exercise kinds written as Originals course files (not in the builder yet). */
+export type RichExerciseKind = 'tapBuild' | 'typeAnswer' | 'sortGroups' | 'writeCode';
 
 /** How a multiple-choice question is framed to the learner and the creator. */
-export type McqVariant = 'standard' | 'predictOutput' | 'pickPrompt';
+export type McqVariant = 'standard' | 'predictOutput' | 'pickPrompt' | 'chat';
 
 interface ExerciseBase {
   id: string;
@@ -149,6 +256,9 @@ export interface McqExercise extends ExerciseBase {
   /** Code shown above the options (predict-the-output, "what's wrong here"). */
   code?: string;
   language?: CodeLanguage;
+  /** Chat variant: who sent the message the learner replies to, and what it said. */
+  character?: CastId;
+  message?: string;
   options: McqOption[];
   correctOptionId: string;
 }
@@ -191,12 +301,79 @@ export interface MatchPairsExercise extends ExerciseBase {
   pairs: { id: string; left: string; right: string }[];
 }
 
+/**
+ * Build the answer from tiles, in order: a sentence from word tiles, or a
+ * line of code from token tiles. `tiles` is the answer in the CORRECT
+ * order; `distractors` are extra tiles that don't belong.
+ */
+export interface TapBuildExercise extends ExerciseBase {
+  kind: 'tapBuild';
+  language?: CodeLanguage;
+  tiles: string[];
+  distractors: string[];
+}
+
+/** A short typed answer, matched forgivingly (case, punctuation, one typo). */
+export interface TypeAnswerExercise extends ExerciseBase {
+  kind: 'typeAnswer';
+  /** Every accepted answer; the first is the one shown as "the answer". */
+  answers: string[];
+  placeholder?: string;
+}
+
+/** Put each item in the right group ("clear vs vague", "do vs don't"). */
+export interface SortGroupsExercise extends ExerciseBase {
+  kind: 'sortGroups';
+  groups: { id: string; label: string }[];
+  items: { id: string; text: string; groupId: string }[];
+}
+
+/**
+ * One hidden check on a Write and run program. Checks look at what the
+ * program printed and the values it left behind, never the exact wording
+ * of the code, so different correct solutions pass (playbook §7).
+ * Set exactly one test; `message` is what the learner sees ("Print the total").
+ */
+export interface CodeCheck {
+  message: string;
+  /** The output contains this (case and spacing don't matter). */
+  outputIncludes?: string;
+  /** The whole output is exactly this (spacing at the ends doesn't matter). */
+  outputEquals?: string;
+  /** A Python expression that's true after the program runs, e.g. `pot == 200000`. */
+  expr?: string;
+  /** The code uses this, e.g. `for ` or `f"` (for "use a loop" style tasks). */
+  codeIncludes?: string;
+}
+
+/**
+ * Write and run (Python): the learner writes code, runs it in the browser
+ * as often as they like (free, no hearts), and CHECK unlocks once every
+ * hidden check passes. A hint is always there; the solution appears after
+ * two failed runs, and using it costs the combo, never hearts.
+ */
+export interface WriteCodeExercise extends ExerciseBase {
+  kind: 'writeCode';
+  language: 'python';
+  /** What the editor starts with (may be empty). */
+  starter: string;
+  solution: string;
+  hint?: string;
+  checks: CodeCheck[];
+  /** Lines fed to input(), in order. */
+  stdin?: string[];
+}
+
 export type Exercise =
   | McqExercise
   | FillBlankExercise
   | FindBugExercise
   | OrderLinesExercise
-  | MatchPairsExercise;
+  | MatchPairsExercise
+  | TapBuildExercise
+  | TypeAnswerExercise
+  | SortGroupsExercise
+  | WriteCodeExercise;
 
 export interface ApplyContent {
   scenario: string;
@@ -210,7 +387,17 @@ export type ExerciseResponse =
   | { kind: 'fillBlank'; filled: (string | null)[] }
   | { kind: 'findBug'; line: number }
   | { kind: 'orderLines'; order: number[] }
-  | { kind: 'matchPairs'; matches: Record<string, string>; /** A term tapped, waiting for its match (UI only). */ pendingLeft?: string };
+  | { kind: 'matchPairs'; matches: Record<string, string>; /** A term tapped, waiting for its match (UI only). */ pendingLeft?: string }
+  /** Indexes into tapBuildBank(), in the order tapped. */
+  | { kind: 'tapBuild'; picked: number[] }
+  | { kind: 'typeAnswer'; text: string }
+  | { kind: 'sortGroups'; placed: Record<string, string> }
+  /**
+   * `passedCode` is the exact code that last passed every check (null until
+   * one does): editing after a pass means running again. `failedRuns` and
+   * `usedSolution` drive the hint, the solution button and the combo.
+   */
+  | { kind: 'writeCode'; code: string; passedCode: string | null; failedRuns: number; usedSolution: boolean };
 
 /** Blank markers in a fill-in template: `[[1]]`, `[[2]]`… */
 export const BLANK_RE = /\[\[(\d+)\]\]/g;
@@ -231,7 +418,68 @@ export function isResponseComplete(ex: Exercise, r: ExerciseResponse | null): bo
       return r.order.length === (ex as OrderLinesExercise).lines.length;
     case 'matchPairs':
       return Object.keys(r.matches).length === (ex as MatchPairsExercise).pairs.length;
+    case 'tapBuild':
+      return r.picked.length > 0;
+    case 'typeAnswer':
+      return r.text.trim().length > 0;
+    case 'sortGroups':
+      return (ex as SortGroupsExercise).items.every((it) => Boolean(r.placed[it.id]));
+    case 'writeCode':
+      return r.passedCode !== null && r.passedCode === r.code;
   }
+}
+
+/** Typed answers: case, accents-insensitive punctuation and spacing don't matter. */
+export function normalizeTyped(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFKC')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Edit distance, capped: we only ever ask "is it at most 1?". */
+function withinOneEdit(a: string, b: string): boolean {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else {
+      i++;
+      j++;
+    }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+
+/**
+ * A typed answer is right when it matches an accepted answer after
+ * normalising, or is one typo away from one that's at least 5 characters
+ * (a typo in "Paris" is fine; a typo in "API" is a different word).
+ */
+export function typedAnswerMatches(ex: TypeAnswerExercise, text: string): boolean {
+  const got = normalizeTyped(text);
+  if (!got) return false;
+  return ex.answers.some((a) => {
+    const want = normalizeTyped(a);
+    return want === got || (want.length >= 5 && withinOneEdit(want, got));
+  });
+}
+
+/** Tiles to tap for a tapBuild exercise, in a stable shuffled order. */
+export function tapBuildBank(ex: TapBuildExercise, seed = ex.id): string[] {
+  return seededShuffle([...ex.tiles, ...ex.distractors].filter((t) => t.trim()), seed);
 }
 
 /** Right or wrong. Never throws; a malformed response is simply wrong. */
@@ -255,6 +503,21 @@ export function gradeExercise(ex: Exercise, r: ExerciseResponse | null): boolean
       const matches = (r as { matches: Record<string, string> }).matches;
       return ex.pairs.every((p) => matches[p.id] === p.id);
     }
+    case 'tapBuild': {
+      // Compare text, not tile positions: the same word can appear twice.
+      const bank = tapBuildBank(ex);
+      const built = (r as { picked: number[] }).picked.map((i) => norm(bank[i] ?? ''));
+      return built.length === ex.tiles.length && built.every((t, i) => t === norm(ex.tiles[i]));
+    }
+    case 'typeAnswer':
+      return typedAnswerMatches(ex, (r as { text: string }).text);
+    case 'sortGroups': {
+      const placed = (r as { placed: Record<string, string> }).placed;
+      return ex.items.every((it) => placed[it.id] === it.groupId);
+    }
+    case 'writeCode':
+      // The runner already checked it: complete means every check passed.
+      return true;
   }
 }
 
@@ -331,9 +594,63 @@ export function validateLearnCards(cards: LearnCard[]): BlockIssue[] {
         else if (c.options.filter((o) => !blank(o)).length < 2) issues.push({ id: c.id, message: 'The quick check needs at least 2 answers.' });
         else if (blank(c.options[c.correctIndex])) issues.push({ id: c.id, message: 'Mark the right answer.' });
         break;
+      default: {
+        const msg = richLearnCardIssue(c);
+        if (msg) issues.push({ id: c.id, message: msg });
+      }
     }
   }
   return issues;
+}
+
+/** Problems with a rich Learn card (mirrors backend lesson-blocks.util). */
+export function richLearnCardIssue(c: RichLearnCard): string | null {
+  switch (c.kind) {
+    case 'reading':
+      return blank(c.html.replace(/<[^>]*>/g, '')) ? 'This reading page is empty.' : null;
+    case 'story':
+      if (c.beats.filter((b) => !blank(b.text)).length === 0) return 'This story has no lines.';
+      if (c.beats.length > RICH_LIMITS.beats) return `A story can have up to ${RICH_LIMITS.beats} lines.`;
+      if (c.choice) {
+        if (blank(c.choice.prompt)) return "The story's decision needs a question.";
+        if (c.choice.options.length < 2 || c.choice.options.length > RICH_LIMITS.choiceOptions)
+          return `A story decision needs 2 to ${RICH_LIMITS.choiceOptions} options.`;
+        if (c.choice.options.some((o) => blank(o.text) || blank(o.outcome))) return 'Every decision option needs its text and what happens next.';
+      }
+      return null;
+    case 'chat':
+      if (c.turns.length === 0 || c.turns.some((t) => blank(t.tey))) return 'Every chat turn needs a message from Tey.';
+      if (c.turns.length > RICH_LIMITS.turns) return `A chat can have up to ${RICH_LIMITS.turns} turns.`;
+      if (c.turns.some((t) => (t.replies?.length ?? 0) > RICH_LIMITS.replies)) return `Up to ${RICH_LIMITS.replies} replies per turn.`;
+      return null;
+    case 'steps':
+      if (c.steps.length < 2 || c.steps.length > RICH_LIMITS.steps) return `A walkthrough needs 2 to ${RICH_LIMITS.steps} steps.`;
+      return c.steps.some((s) => blank(s.title) || blank(s.body)) ? 'Every step needs a title and an explanation.' : null;
+    case 'compare':
+      if (blank(c.before.text) || blank(c.after.text)) return 'A before/after needs both versions.';
+      if (c.notes.length === 0) return 'Say what changed: add at least one note.';
+      return c.notes.length > RICH_LIMITS.notes ? `Up to ${RICH_LIMITS.notes} notes.` : null;
+    case 'explore': {
+      if (blank(c.text)) return 'Tap to explore needs the text to explore.';
+      if (c.hotspots.length === 0 || c.hotspots.length > RICH_LIMITS.hotspots) return `Add 1 to ${RICH_LIMITS.hotspots} hotspots.`;
+      if (c.hotspots.some((h) => blank(h.phrase) || blank(h.note))) return 'Every hotspot needs its phrase and a note.';
+      return c.hotspots.some((h) => !c.text.includes(h.phrase)) ? 'Every hotspot phrase must appear in the text exactly.' : null;
+    }
+    case 'myth':
+      if (c.statements.length < 2 || c.statements.length > RICH_LIMITS.statements) return `Myth or Fact needs 2 to ${RICH_LIMITS.statements} statements.`;
+      return c.statements.some((s) => blank(s.text) || blank(s.explain)) ? 'Every statement needs its text and the explanation.' : null;
+    case 'tryIt':
+      if (blank(c.code)) return 'Try it live needs code to run.';
+      return (c.stdin?.length ?? 0) > RICH_LIMITS.stdin ? `Up to ${RICH_LIMITS.stdin} lines of input.` : null;
+  }
+}
+
+/** Problems with one hidden check on a Write and run exercise (mirrors the backend). */
+export function codeCheckIssue(c: CodeCheck): string | null {
+  if (blank(c.message)) return 'Every check needs a message for the learner.';
+  const tests = [c.outputIncludes, c.outputEquals, c.expr, c.codeIncludes].filter((t) => t !== undefined);
+  if (tests.length !== 1) return 'Every check tests exactly one thing.';
+  return blank(tests[0]) ? 'A check has nothing to test.' : null;
 }
 
 export function validateExercise(ex: Exercise): string | null {
@@ -345,7 +662,26 @@ export function validateExercise(ex: Exercise): string | null {
       if (ex.options.length > LIMITS.options) return `Up to ${LIMITS.options} answers.`;
       if (!ex.options.some((o) => o.id === ex.correctOptionId && !blank(o.text))) return 'Mark the right answer.';
       if (ex.variant === 'predictOutput' && blank(ex.code)) return 'Add the code learners should read.';
+      if (ex.variant === 'chat' && blank(ex.message)) return 'Add the message learners are replying to.';
       return null;
+    }
+    case 'tapBuild':
+      if (ex.tiles.filter((t) => !blank(t)).length < 2) return 'Add at least 2 tiles to build the answer from.';
+      if (ex.tiles.length + ex.distractors.length > LIMITS.bank) return `Up to ${LIMITS.bank} tiles in total.`;
+      return null;
+    case 'typeAnswer':
+      return ex.answers.every(blank) ? 'Add at least one accepted answer.' : null;
+    case 'writeCode':
+      if (blank(ex.solution)) return 'Add the solution.';
+      if (ex.checks.length === 0 || ex.checks.length > RICH_LIMITS.checks) return `Add 1 to ${RICH_LIMITS.checks} checks.`;
+      if ((ex.stdin?.length ?? 0) > RICH_LIMITS.stdin) return `Up to ${RICH_LIMITS.stdin} lines of input.`;
+      return ex.checks.map(codeCheckIssue).find((m) => m !== null) ?? null;
+    case 'sortGroups': {
+      if (ex.groups.length < 2 || ex.groups.length > 3) return 'Sorting needs 2 or 3 groups.';
+      if (ex.groups.some((g) => blank(g.label))) return 'Every group needs a name.';
+      if (ex.items.length < 3 || ex.items.length > LIMITS.pairs) return `Sorting needs 3 to ${LIMITS.pairs} items.`;
+      const ids = new Set(ex.groups.map((g) => g.id));
+      return ex.items.some((it) => blank(it.text) || !ids.has(it.groupId)) ? 'Every item needs its text and a group.' : null;
     }
     case 'fillBlank': {
       const markers = Array.from(ex.template.matchAll(BLANK_RE)).map((m) => Number(m[1]));
@@ -460,5 +796,25 @@ export function blankExercise(t: ExerciseTemplate): Exercise {
         prompt: 'Match each term to what it means.',
         pairs: [0, 1, 2].map(() => ({ id: newBlockId('pair'), left: '', right: '' })),
       };
+    case 'tapBuild':
+      return { id, kind: 'tapBuild', prompt: 'Build the answer.', tiles: ['', ''], distractors: [] };
+    case 'typeAnswer':
+      return { id, kind: 'typeAnswer', prompt: 'Type your answer.', answers: [''] };
+    case 'writeCode':
+      return { id, kind: 'writeCode', language: 'python', prompt: 'Write the code.', starter: '', solution: '', checks: [] };
+    case 'sortGroups': {
+      const a = newBlockId('grp');
+      const b = newBlockId('grp');
+      return {
+        id,
+        kind: 'sortGroups',
+        prompt: 'Put each one in the right group.',
+        groups: [
+          { id: a, label: '' },
+          { id: b, label: '' },
+        ],
+        items: [0, 1, 2].map(() => ({ id: newBlockId('item'), text: '', groupId: a })),
+      };
+    }
   }
 }

@@ -17,6 +17,8 @@ import type { LearnCard } from '@/lib/lesson/learnCards';
 import { inlineMarkdown } from '@/lib/lesson/inlineMarkdown';
 import { StepHeading } from './StepHeading';
 import { TeySays } from '../TeySays';
+import { RichLearnCardView } from './RichLearnCard';
+import { RICH_LEARN_KINDS, type RichLearnCard } from '@/lib/lesson/blocks';
 import styles from '../Lesson.module.css';
 
 const sanitize = (raw: string) => DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
@@ -82,6 +84,8 @@ export function LearnStep({
   onMediaEnded,
   checkPick = null,
   onCheckPick,
+  richDone = false,
+  onRichDone,
 }: {
   title: string;
   card: LearnCard;
@@ -93,6 +97,9 @@ export function LearnStep({
   /** Quick-check card: the answer picked so far (null = not yet). */
   checkPick?: number | null;
   onCheckPick?: (i: number) => void;
+  /** Rich Originals card: finished already (swiped back to it). */
+  richDone?: boolean;
+  onRichDone?: () => void;
 }) {
   const first = index === 0;
   const reduce = useReducedMotion() ?? false;
@@ -254,6 +261,10 @@ export function LearnStep({
             )}
           </Card>
         </>
+      )}
+
+      {(RICH_LEARN_KINDS as readonly string[]).includes(card.kind) && (
+        <RichLearnCardView card={card as RichLearnCard} done={richDone} onDone={() => onRichDone?.()} />
       )}
 
       {card.kind === 'notes' && (

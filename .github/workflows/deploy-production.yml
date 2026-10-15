@@ -79,6 +79,19 @@ jobs:
             echo "✅ Production backend is healthy. teyro.app is live."
           fi
 
+      - name: Publish Teyro Originals
+        # Founder decision 2026-10-14: course content ships with the deploy, so
+        # nobody runs the loader against production by hand. It runs only once
+        # the new backend is healthy (the old one doesn't know about Originals).
+        # The loader checks every lesson first, runs every lesson's Python, and
+        # refuses to write if anything fails; it is upsert-only and never deletes
+        # (backend/scripts/originals.ts).
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.PRODUCTION_DIRECT_URL }}
+        run: npm run originals -- --write --publish
+
       - name: Announce deploy
         run: |
           echo "🚀 Production deploy complete."

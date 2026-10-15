@@ -1,4 +1,6 @@
 import type { PrismaService } from '../prisma/prisma.service';
+import { isFreeCourse, isFreeLessonAt } from '../originals/originals.policy';
+import { findActiveEntitlement } from '../originals/originals-access';
 
 /**
  * Who is standing at a course's paywall right now — the one definition shared
@@ -6,8 +8,9 @@ import type { PrismaService } from '../prisma/prisma.service';
  * email processor that sends its emails, so a push and an email about the
  * same course can never disagree about whether the learner still needs one.
  *
- * The paywall itself is CourseService's: the first two published lessons in
- * map order, plus any lesson flagged isFreePreview, are free. Everything
+ * The paywall itself is CourseService's: the first published lessons in map
+ * order (2 for creator courses, 5 for a Beginner Original — originals.policy),
+ * plus any lesson flagged isFreePreview, are free. Everything
  * returned here is real course data — no invented urgency, no invented
  * numbers.
  */
@@ -49,19 +52,18 @@ export async function courseUnlockState(
       published: true,
       outcomes: true,
       instructorId: true,
+      isOriginal: true,
+      trackLevel: true,
       instructor: { select: { fullName: true } },
     },
   });
   if (!course) return { eligible: false, reason: 'COURSE_NOT_FOUND' };
   if (!course.published) return { eligible: false, reason: 'COURSE_UNPUBLISHED' };
-  if (!(course.price > 0)) return { eligible: false, reason: 'COURSE_FREE' };
+  if (isFreeCourse(course)) return { eligible: false, reason: 'COURSE_FREE' };
   if (course.instructorId === userId) return { eligible: false, reason: 'OWN_COURSE' };
 
   const [entitlement, checkout, enrollment, sections, learners] = await Promise.all([
-    prisma.courseAccessEntitlement.findUnique({
-      where: { userId_courseId: { userId, courseId } },
-      select: { status: true, expiresAt: true },
-    }),
+    findActiveEntitlement(prisma, userId, course),
     // A checkout in flight belongs to the abandoned-checkout sequence.
     prisma.checkoutIntent.findFirst({
       where: { userId, courseId, status: { in: ['STARTED', 'PAID'] } },
@@ -85,7 +87,7 @@ export async function courseUnlockState(
     prisma.enrollment.count({ where: { courseId } }),
   ]);
 
-  if (entitlement?.status === 'ACTIVE' && entitlement.expiresAt > new Date()) {
+  if (entitlement) {
     return { eligible: false, reason: 'UNLOCKED' };
   }
   if (checkout?.status === 'PAID') return { eligible: false, reason: 'UNLOCKED' };
@@ -98,7 +100,7 @@ export async function courseUnlockState(
       ? (enrollment.completedLessons as unknown[]).map(String)
       : [],
   );
-  const locked = ordered.filter((l, i) => i >= 2 && !l.isFreePreview);
+  const locked = ordered.filter((l, i) => !isFreeLessonAt(course, i, l.isFreePreview));
   if (locked.length === 0) return { eligible: false, reason: 'NOTHING_LOCKED' };
 
   // At the wall = every free lesson before the first locked one is done.

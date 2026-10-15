@@ -9,6 +9,7 @@ import { PaymentModule } from '../payment/payment.module';
 import { CommunityModule } from '../community/community.module';
 import { ShopModule } from '../shop/shop.module';
 import { CourseReviewModule } from '../course-review/course-review.module';
+import { OriginalsModule } from '../originals/originals.module';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { CourseReviewModule } from '../course-review/course-review.module';
     // creator-facing submit-for-review/review-status endpoints
     // (CourseController) both live against this.
     CourseReviewModule,
+    // Teyro Originals: track/level info on the map, next-level hand-off.
+    OriginalsModule,
   ],
   controllers: [CourseController],
   providers: [CourseService, CourseSlugService],

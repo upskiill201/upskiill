@@ -2,6 +2,7 @@
 import {
   Injectable,
   BadRequestException,
+  ConflictException,
   Logger,
   NotFoundException,
   ServiceUnavailableException,
@@ -13,6 +14,8 @@ import { MesombProvider } from './providers/mesomb.provider';
 import { EarningsService } from '../earnings/earnings.service';
 import { CouponsService, CouponQuoteValid } from '../coupons/coupons.service';
 import { calculateCoursePricingLadder } from '../course/pricing-engine';
+import { isFreeCourse } from '../originals/originals.policy';
+import { findActiveEntitlement } from '../originals/originals-access';
 import { resolveReturnUrl } from './return-url.util';
 import { MESOMB_COUNTRIES, getDefaultMesombCountry } from './mesomb-countries';
 import {
@@ -322,6 +325,7 @@ export class PaymentService {
           price: true,
           published: true,
           instructorId: true,
+          isOriginal: true,
         },
       });
     } catch (err) {
@@ -352,7 +356,7 @@ export class PaymentService {
 
     // Free courses never enter a payment flow — just make sure an enrollment
     // row exists so learning can start immediately.
-    if (course.price === 0) {
+    if (isFreeCourse(course)) {
       const existingEnrollment = await this.prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId } },
       });
@@ -373,8 +377,21 @@ export class PaymentService {
       };
     }
 
+    // One Originals subscription covers every Original. Someone who already
+    // holds it through a DIFFERENT Original must never be charged again; a
+    // repeat purchase on the same Original stays a renewal, as before.
+    if (course.isOriginal) {
+      const existing = await findActiveEntitlement(this.prisma, userId, course);
+      if (existing && existing.courseId !== course.id) {
+        throw new ConflictException({
+          code: 'ORIGINALS_ALREADY_ACTIVE',
+          message: 'You already have Teyro Originals: every Original is unlocked.',
+        });
+      }
+    }
+
     // Server-authoritative price from the pricing ladder
-    const ladder = calculateCoursePricingLadder(course.price);
+    const ladder = calculateCoursePricingLadder(course.price, course);
     const planData = plan === 'YEARLY' ? ladder.yearly : ladder.monthly;
     let actualPrice = planData.price;
 
