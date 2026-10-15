@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './make-people-listen/beginner/u01';
 import u02 from './make-people-listen/beginner/u02';
 import u03 from './make-people-listen/beginner/u03';
+import u04 from './make-people-listen/beginner/u04';
 
 /**
  * How to Make People Listen to You — storyline "Tey FM: Can You Hear Me?".
@@ -39,8 +40,8 @@ const track: OriginalTrackDef = {
         'Change minds without pushing, even with people who disagree',
       ],
       skills: ['Being heard', 'Clear messages', 'Voice and delivery', 'Meetings', 'Persuasion', 'Listening'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
