@@ -88,7 +88,7 @@ function Stat({ card, index }: { card: StatCard; index: number }) {
           <span
             aria-label="Saving"
             className="block w-10 h-5 rounded-full animate-pulse"
-            style={{ backgroundColor: `color-mix(in srgb, ${tone.color} 25%, white)` }}
+            style={{ backgroundColor: `color-mix(in srgb, ${tone.color} 25%, var(--bg-card))` }}
           />
         ) : (
           <motion.span
@@ -179,9 +179,9 @@ export function LessonComplete({
               key={b.id}
               className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
               style={{
-                backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, white)',
+                backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, var(--bg-card))',
                 color: 'var(--lesson-gold-dark)',
-                boxShadow: '0 2px 0 color-mix(in srgb, var(--lesson-gold) 45%, white)',
+                boxShadow: '0 2px 0 color-mix(in srgb, var(--lesson-gold) 45%, var(--bg-card))',
               }}
               initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
               animate={{ opacity: 1, scale: 1 }}

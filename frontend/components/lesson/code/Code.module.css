@@ -1,4 +1,5 @@
-/* Lesson code — a dark ink panel with token-coloured syntax. Tokens only. */
+/* Lesson code — a dark ink panel with token-coloured syntax. The panel is dark
+   in both themes, so it uses --ink-fixed and white, which never flip. */
 
 /* A single line on a light tile (ordering exercise): dark ink palette. */
 .inlineLine {
@@ -11,33 +12,43 @@
   --code-type: color-mix(in srgb, var(--warning) 60%, var(--color-ink));
 }
 
+/* Dark mode: the light-tile line sits on a dark tile, so its syntax colours
+   lighten to stay readable. */
+:global(:root[data-theme="dark"]) .inlineLine:not(.onDark) {
+  --code-kw: #C9A8FF;
+  --code-str: #7FE0A0;
+  --code-num: #FFC16B;
+  --code-fn: #86B8FF;
+  --code-type: #FFC16B;
+}
+
 /* Full blocks, and single lines on a dark panel (find the bug). */
 .block,
 .inlineLine.onDark {
-  --code-bg: var(--color-ink);
-  --code-fg: color-mix(in srgb, var(--bg-card) 92%, var(--color-ink));
-  --code-muted: color-mix(in srgb, var(--bg-card) 55%, var(--color-ink));
-  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, var(--bg-card));
-  --code-str: color-mix(in srgb, var(--success-green) 70%, var(--bg-card));
-  --code-num: color-mix(in srgb, var(--warning) 75%, var(--bg-card));
-  --code-fn: color-mix(in srgb, var(--color-brand) 55%, var(--bg-card));
-  --code-type: color-mix(in srgb, var(--warning) 45%, var(--bg-card));
+  --code-bg: var(--ink-fixed);
+  --code-fg: color-mix(in srgb, white 92%, var(--ink-fixed));
+  --code-muted: color-mix(in srgb, white 55%, var(--ink-fixed));
+  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, white);
+  --code-str: color-mix(in srgb, var(--success-green) 70%, white);
+  --code-num: color-mix(in srgb, var(--warning) 75%, white);
+  --code-fn: color-mix(in srgb, var(--color-brand) 55%, white);
+  --code-type: color-mix(in srgb, var(--warning) 45%, white);
 }
 
 .block {
-  --code-bg: var(--color-ink);
-  --code-fg: color-mix(in srgb, var(--bg-card) 92%, var(--color-ink));
-  --code-muted: color-mix(in srgb, var(--bg-card) 55%, var(--color-ink));
-  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, var(--bg-card));
-  --code-str: color-mix(in srgb, var(--success-green) 70%, var(--bg-card));
-  --code-num: color-mix(in srgb, var(--warning) 75%, var(--bg-card));
-  --code-fn: color-mix(in srgb, var(--color-brand) 55%, var(--bg-card));
-  --code-type: color-mix(in srgb, var(--warning) 45%, var(--bg-card));
+  --code-bg: var(--ink-fixed);
+  --code-fg: color-mix(in srgb, white 92%, var(--ink-fixed));
+  --code-muted: color-mix(in srgb, white 55%, var(--ink-fixed));
+  --code-kw: color-mix(in srgb, var(--brand-purple) 55%, white);
+  --code-str: color-mix(in srgb, var(--success-green) 70%, white);
+  --code-num: color-mix(in srgb, var(--warning) 75%, white);
+  --code-fn: color-mix(in srgb, var(--color-brand) 55%, white);
+  --code-type: color-mix(in srgb, var(--warning) 45%, white);
 
   margin: 0;
   border-radius: 16px;
   background: var(--code-bg);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-ink) 70%, black);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--ink-fixed) 70%, black);
   overflow: hidden;
   text-align: left;
 }
@@ -65,7 +76,7 @@
   padding: 0 10px;
   border: none;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--bg-card) 10%, transparent);
+  background: color-mix(in srgb, white 10%, transparent);
   color: var(--code-muted);
   font: inherit;
   font-size: 12px;

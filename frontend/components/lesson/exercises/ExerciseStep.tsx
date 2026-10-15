@@ -49,8 +49,8 @@ import type { AnswerState } from '../steps/ApplyStep';
 type Tone = 'idle' | 'picked' | 'correct' | 'wrong' | 'muted';
 
 const COLORS: Record<Tone, { border: string; bg: string; ink: string }> = {
-  idle: { border: 'var(--border)', bg: 'white', ink: 'var(--color-ink)' },
-  picked: { border: 'var(--color-brand)', bg: 'var(--lesson-select-bg)', ink: 'var(--color-brand-deep)' },
+  idle: { border: 'var(--border)', bg: 'var(--bg-card)', ink: 'var(--color-ink)' },
+  picked: { border: 'var(--color-brand)', bg: 'var(--lesson-select-bg)', ink: 'var(--lesson-picked-ink)' },
   correct: { border: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', ink: 'var(--lesson-correct-ink)' },
   wrong: { border: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', ink: 'var(--lesson-wrong-ink)' },
   muted: { border: 'var(--border)', bg: 'var(--bg-section)', ink: 'var(--text-muted)' },
@@ -255,8 +255,8 @@ function FillBlankView({ exercise, response, onResponse, answer }: ViewProps<Fil
         className={`rounded-[20px] border-2 p-4 md:p-5 leading-[2.4] ${isCode ? 'font-mono text-[15px] whitespace-pre-wrap' : 'text-[18px] font-bold text-ink'}`}
         style={
           isCode
-            ? { backgroundColor: 'var(--color-ink)', borderColor: 'var(--color-ink)', color: 'color-mix(in srgb, white 90%, var(--color-ink))' }
-            : { borderColor: 'var(--border)', backgroundColor: 'white' }
+            ? { backgroundColor: 'var(--ink-fixed)', borderColor: 'var(--ink-fixed)', color: 'color-mix(in srgb, white 90%, var(--ink-fixed))' }
+            : { borderColor: 'var(--border)', backgroundColor: 'var(--bg-card)' }
         }
       >
         {parts.map((p, i) =>
@@ -314,7 +314,7 @@ function FindBugView({ exercise, response, onResponse, answer }: ViewProps<FindB
     <>
       <div
         className="rounded-[20px] overflow-hidden border-2"
-        style={isCode ? { backgroundColor: 'var(--color-ink)', borderColor: 'var(--color-ink)' } : { backgroundColor: 'white', borderColor: 'var(--border)' }}
+        style={isCode ? { backgroundColor: 'var(--ink-fixed)', borderColor: 'var(--ink-fixed)' } : { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
         role="radiogroup"
         aria-label="Lines"
       >
@@ -351,7 +351,7 @@ function FindBugView({ exercise, response, onResponse, answer }: ViewProps<FindB
             >
               <span
                 className="shrink-0 w-6 text-right font-mono text-[13px]"
-                style={{ color: isCode ? 'color-mix(in srgb, white 45%, var(--color-ink))' : 'var(--text-muted)' }}
+                style={{ color: isCode ? 'color-mix(in srgb, white 45%, var(--ink-fixed))' : 'var(--text-muted)' }}
                 aria-hidden="true"
               >
                 {i + 1}
@@ -682,7 +682,7 @@ function SortGroupsView({ exercise, response, onResponse, answer }: ViewProps<So
             className="rounded-[18px] border-2 p-3 flex flex-col gap-2.5"
             style={{
               borderColor: result ? COLORS[result].border : 'var(--border)',
-              backgroundColor: result ? COLORS[result].bg : 'white',
+              backgroundColor: result ? COLORS[result].bg : 'var(--bg-card)',
             }}
           >
             <p className="text-[16px] font-bold text-ink leading-snug">{it.text}</p>

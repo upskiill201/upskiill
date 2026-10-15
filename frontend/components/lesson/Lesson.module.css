@@ -12,9 +12,22 @@
   --lesson-wrong-bg:     #FFDFE0;
   --lesson-wrong-ink:    #D92D2D;
   --lesson-select-bg:    #E6F1FF;
+  --lesson-picked-ink:   var(--color-brand-deep);
   --lesson-gold:         #FFC800;
   --lesson-gold-dark:    #E0A800;
   --lesson-heart:        #FF4B4B;
+}
+
+/* Dark mode: the correct / wrong banners and selection fill become deep tints
+   of their hue with a light readable ink, instead of the pastel light-theme
+   fills. The saturated greens, reds and golds stay as they are. */
+:global(:root[data-theme="dark"]) .player {
+  --lesson-correct-bg:   color-mix(in srgb, var(--lesson-correct) 20%, var(--bg-card));
+  --lesson-correct-ink:  #8FE04A;
+  --lesson-wrong-bg:     color-mix(in srgb, var(--lesson-wrong) 20%, var(--bg-card));
+  --lesson-wrong-ink:    #FF8F8F;
+  --lesson-select-bg:    color-mix(in srgb, var(--color-brand) 22%, var(--bg-card));
+  --lesson-picked-ink:   #9CC4FF;
 }
 
 /* Creator-written lesson text (sanitised HTML from the editor). */

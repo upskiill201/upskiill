@@ -19,7 +19,7 @@ export function StepHeading({
     <div>
       <span
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-extrabold uppercase tracking-[0.08em]"
-        style={{ color, backgroundColor: `color-mix(in srgb, ${color} 12%, white)` }}
+        style={{ color, backgroundColor: `color-mix(in srgb, ${color} 12%, var(--bg-card))` }}
       >
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" />
         {eyebrow ?? PHASE_LABEL[phase]}

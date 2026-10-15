@@ -9,7 +9,7 @@ export const THEME_KEY = 'teyro-theme';
 export const DARK_FROM = 19;
 export const LIGHT_FROM = 6;
 /** Route prefixes that get a dark mode. */
-export const THEME_SCOPES = ['/dashboard', '/learn', '/audio-settings'];
+export const THEME_SCOPES = ['/dashboard', '/learn', '/audio-settings', '/dev'];
 
 /**
  * Runs inline in <head>, before first paint, so a dark-mode learner never sees
