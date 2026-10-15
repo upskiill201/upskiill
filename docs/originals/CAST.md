@@ -61,6 +61,8 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 
 - **Ada and Lucía:** Lucía is the marketing lead at a client company Ada's startup works with (AI at Work).
 - **Ada and Arjun:** Arjun does freelance contract development for Ada's startup and mentors her as she learns Python (Python for Beginners). He is precise, opinionated about variable names, and writes code nobody else can read; Ada teaches him why readable code matters.
+- **Ada and Remi:** friends since they met at a hackathon in Kigali. In Corporate Jargon, Ada (a year or two into her job in Lagos) is Remi's WhatsApp lifeline during his Synergix internship, answering in voice notes.
+- **Remi's internship:** after graduating, Remi does a 12-week internship in the Strategy & Operations team at Synergix, Nairobi (Corporate Jargon). Acing Job Interviews should end with him landing it.
 - **Ada's office ajo:** Ada runs the rotating savings group at work. Members (Tunde and others) appear as names in her code, not as characters.
 
 ## Cameroon (added 2026-10-14, founder)
@@ -86,6 +88,12 @@ These appear in one Original only and don't join the shared cast.
 |---|---|---|
 | Efua | Study Smarter with AI | Kofi's classmate in Accra. Top of the class, with famous handwritten notes; she doesn't trust AI. |
 | Mrs Asante | Study Smarter with AI | Kofi's Chemistry teacher. Strict and fair, and gives surprise quizzes. |
+| Brian Otieno | Corporate Jargon | Remi's manager at Synergix (Nairobi), Head of Strategy & Operations. Speaks almost entirely in jargon; kind, generous, brilliant at reading people. Was a confused Synergix intern himself 15 years ago and kept a notebook translating it all. |
+| Zanele Dlamini | Corporate Jargon | The other Synergix intern, from Johannesburg. Uses jargon confidently and often wrongly; a genius with spreadsheets. Remi's rival, then his best friend at work. |
+| Mrs Achieng | Corporate Jargon | Executive assistant to the CEO for 25 years. Knows every unwritten rule. Plain-spoken and very dry. |
+| Mr Kamau | Corporate Jargon | Synergix's CEO. The plainest speaker in the building. |
+| Felix | Corporate Jargon | Synergix IT. Caused the Great Reply-All; fixes everything instantly without explaining how. |
+| Pauline Wairimu | Corporate Jargon | Synergix marketing lead. Had Remi's idea first; they pitch it together. |
 
 ## Decisions
 
