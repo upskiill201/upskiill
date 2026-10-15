@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './corporate-jargon/beginner/u01';
 import u02 from './corporate-jargon/beginner/u02';
 import u03 from './corporate-jargon/beginner/u03';
+import u04 from './corporate-jargon/beginner/u04';
 
 /**
  * Corporate Jargon: Speak the Language of Business — storyline "Remi's Internship".
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
       skills: ['Business English', 'Workplace communication', 'Meetings', 'Professional writing', 'Office politics', 'Confidence at work'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/corporate-jargon-beginner.jpg',
-      upcomingUnits: 9,
-      units: [u01, u02, u03],
+      upcomingUnits: 8,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
