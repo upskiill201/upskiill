@@ -108,7 +108,7 @@ export function LeagueClimb({ climb }: { climb: Climb }) {
                 style={{
                   zIndex: r.isMe ? 2 : 1,
                   borderColor: r.isMe ? 'var(--color-brand)' : 'var(--border)',
-                  backgroundColor: r.isMe ? 'var(--light-blue-bg)' : 'white',
+                  backgroundColor: r.isMe ? 'var(--light-blue-bg)' : 'var(--bg-card)',
                   boxShadow: r.isMe ? '0 4px 0 var(--color-brand)' : '0 3px 0 var(--border)',
                 }}
                 data-index={i}

@@ -8,7 +8,7 @@
 .label {
   font-size: 13px;
   font-weight: 600;
-  color: #1F2A44;
+  color: var(--text-primary);
 }
 
 .triggerBtn {
@@ -19,17 +19,17 @@
   height: 48px;
   padding: 0 16px;
   background-color: transparent;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
   border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
-  color: #1F2A44;
+  color: var(--text-primary);
   transition: all 0.2s ease;
 }
 
 .triggerBtn:hover {
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
 }
 
 .triggerBtn:focus {
@@ -39,16 +39,16 @@
 }
 
 .placeholder {
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .selectedText {
-  color: #1F2A44;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .icon {
-  color: #64748B;
+  color: var(--text-secondary);
   transition: transform 0.2s ease;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .panel {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   margin: 0;
@@ -81,13 +81,13 @@
   padding: 10px 12px;
   border-radius: 8px;
   font-size: 14px;
-  color: #1F2A44;
+  color: var(--text-primary);
   cursor: pointer;
   transition: background-color 0.1s ease;
 }
 
 .option:hover {
-  background-color: #F5F7FB;
+  background-color: var(--bg-section);
 }
 
 .option.active {

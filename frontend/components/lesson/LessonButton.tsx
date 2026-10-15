@@ -15,7 +15,7 @@ const FACE: Record<LessonButtonVariant, { bg: string; lip: string; fg: string; b
   primary: { bg: 'var(--color-brand)', lip: 'var(--color-brand-dark)', fg: 'white' },
   correct: { bg: 'var(--lesson-correct)', lip: 'var(--lesson-correct-dark)', fg: 'white' },
   wrong: { bg: 'var(--lesson-wrong)', lip: 'var(--lesson-wrong-dark)', fg: 'white' },
-  ghost: { bg: 'white', lip: 'var(--border)', fg: 'var(--text-secondary)', border: 'var(--border)' },
+  ghost: { bg: 'var(--bg-card)', lip: 'var(--border)', fg: 'var(--text-secondary)', border: 'var(--border)' },
 };
 
 export function LessonButton({

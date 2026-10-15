@@ -199,7 +199,7 @@ export function LearnStep({
           className="rounded-[24px] border-2 p-5 md:p-6 flex gap-4 items-start"
           style={{
             borderColor: `color-mix(in srgb, ${CALLOUT[card.tone].tone} 45%, var(--border))`,
-            backgroundColor: `color-mix(in srgb, ${CALLOUT[card.tone].tone} 9%, white)`,
+            backgroundColor: `color-mix(in srgb, ${CALLOUT[card.tone].tone} 9%, var(--bg-card))`,
             boxShadow: `0 4px 0 color-mix(in srgb, ${CALLOUT[card.tone].tone} 45%, var(--border))`,
           }}
         >
@@ -246,7 +246,7 @@ export function LearnStep({
                     style={{
                       borderColor: tone,
                       boxShadow: `0 3px 0 ${tone}`,
-                      backgroundColor: answered && (right || picked) ? `color-mix(in srgb, ${tone} 9%, white)` : 'white',
+                      backgroundColor: answered && (right || picked) ? `color-mix(in srgb, ${tone} 9%, var(--bg-card))` : 'var(--bg-card)',
                     }}
                   >
                     {o}

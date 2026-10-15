@@ -77,7 +77,7 @@
 
 /* ─── VARIANT: SECONDARY ───────────────────────────────────── */
 .secondary {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   color: var(--brand-blue);
   border: 1.5px solid var(--brand-blue);
 }
@@ -96,7 +96,7 @@
 .secondary:disabled {
   border-color: var(--border-strong);
   color: var(--text-muted);
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 /* ─── VARIANT: OUTLINE ─────────────────────────────────────── */

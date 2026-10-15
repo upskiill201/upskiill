@@ -33,6 +33,7 @@ describe('LessonContentGenerationProcessorService', () => {
       count: jest.Mock;
       findFirst: jest.Mock;
     };
+    courseImportModule: { count: jest.Mock };
     courseImportFile: { findMany: jest.Mock };
     courseImport: { findUnique: jest.Mock; update: jest.Mock };
   };
@@ -49,6 +50,8 @@ describe('LessonContentGenerationProcessorService', () => {
         count: jest.fn().mockResolvedValue(1),
         findFirst: jest.fn().mockResolvedValue(null),
       },
+      // Sections before this one: 1 = not the course's first lesson.
+      courseImportModule: { count: jest.fn().mockResolvedValue(1) },
       courseImportFile: { findMany: jest.fn().mockResolvedValue([]) },
       courseImport: { findUnique: jest.fn(), update: jest.fn() },
     };
@@ -170,6 +173,16 @@ describe('LessonContentGenerationProcessorService', () => {
       description: 'desc',
     });
     expect(summary).toEqual({ claimed: 1, generated: 1, failed: 0 });
+
+    // The first lesson of the first section is the course's welcome.
+    prisma.courseImportModule.count.mockResolvedValue(0);
+    (service as unknown as { lastAiCallAt: number }).lastAiCallAt = 0;
+    await service.tick();
+    expect(generation.generate).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        design: expect.objectContaining({ flavor: 'welcome' }),
+      }),
+    );
   });
 
   it('isolates a generation failure, recording the real error, without crashing the batch', async () => {

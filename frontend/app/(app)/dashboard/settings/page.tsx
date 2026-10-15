@@ -36,11 +36,15 @@ import {
   Music,
   Vibrate,
   KeyRound,
+  Moon,
+  Sun,
+  SunMoon,
 } from 'lucide-react';
 import { fetcher } from '@/lib/swr';
 import { playHaptic, isHapticsEnabled, setHapticsEnabled } from '@/lib/haptics';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { useAudioContext } from '@/context/AudioContext';
+import { setThemePref, useThemePref, type ThemePref } from '@/lib/theme/theme';
 import { clearClientSession, setCachedUser } from '@/lib/user-cache';
 import { Modal } from '@/components/ui/Modal';
 import {
@@ -115,6 +119,18 @@ const PLAN_LABEL: Record<Subscription['plan'], string> = {
 
 const noopSubscribe = () => () => {};
 
+const APPEARANCE_OPTIONS: { value: ThemePref; label: string; icon: React.ElementType }[] = [
+  { value: 'auto', label: 'Auto', icon: SunMoon },
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'dark', label: 'Dark', icon: Moon },
+];
+
+const APPEARANCE_SUB: Record<ThemePref, string> = {
+  auto: 'Light by day, dark from 7 pm to 6 am',
+  light: 'Always light',
+  dark: 'Always dark',
+};
+
 // ─── Page ─────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -171,6 +187,7 @@ function PreferencesSection() {
     () => isHapticsEnabled() && hapticsTick >= 0,
     () => true,
   );
+  const theme = useThemePref();
   const saved = useSavedFlash();
 
   return (
@@ -180,6 +197,29 @@ function PreferencesSection() {
         <SavedTick show={saved.shown} />
       </div>
       <div className={styles.card}>
+        <Row icon={SunMoon} title="Appearance" sub={APPEARANCE_SUB[theme]}>
+          <div className={styles.segment} role="radiogroup" aria-label="Appearance">
+            {APPEARANCE_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                role="radio"
+                aria-checked={theme === o.value}
+                className={`${styles.segmentBtn} ${theme === o.value ? styles.segmentOn : ''}`}
+                onClick={() => {
+                  if (theme === o.value) return;
+                  playSound('toggleOn');
+                  playHaptic('selection', false);
+                  setThemePref(o.value);
+                  saved.flash();
+                }}
+              >
+                <o.icon size={16} strokeWidth={2.5} aria-hidden="true" />
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </Row>
         <Row icon={Volume2} title="Sound effects" sub="Taps, right answers, rewards and celebrations">
           <Switch
             checked={isSfxEnabled}

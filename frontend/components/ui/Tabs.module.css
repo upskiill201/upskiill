@@ -6,7 +6,7 @@
 /* Underline variant container gap */
 .underlineContainer {
   gap: 24px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--border);
   width: 100%;
 }
 
@@ -26,12 +26,12 @@
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   padding: 8px 0px;
 }
 
 .tabBtn:hover:not(.active) {
-  color: #1F2A44;
+  color: var(--text-primary);
 }
 
 /* Underline variant */

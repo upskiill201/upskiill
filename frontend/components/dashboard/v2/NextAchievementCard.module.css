@@ -1,6 +1,6 @@
 .card {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
   padding: 1.15rem 1.25rem;
   display: flex;
@@ -15,7 +15,7 @@
   font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0F172A;
+  color: var(--text-primary);
   margin-bottom: 0.65rem;
 }
 
@@ -56,14 +56,14 @@
 .title {
   font-size: 0.9rem;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .levelPill {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #64748B;
-  background: #F1F5F9;
+  color: var(--text-secondary);
+  background: var(--bg-section);
   border-radius: 9999px;
   padding: 0.1rem 0.45rem;
   text-transform: uppercase;
@@ -73,14 +73,14 @@
 .desc {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   line-height: 1.25;
 }
 
 .progressTrack {
   width: 100%;
   height: 6px;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   border-radius: 9999px;
   overflow: hidden;
   margin-top: 0.3rem;
@@ -95,7 +95,7 @@
 .progressText {
   font-size: 0.68rem;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   text-align: right;
   margin-top: 0.15rem;
 }

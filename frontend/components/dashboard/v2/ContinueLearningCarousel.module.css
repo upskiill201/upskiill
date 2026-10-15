@@ -19,7 +19,7 @@
 .title {
   font-size: 11.5px;
   font-weight: 900;
-  color: #0F172A;
+  color: var(--text-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -46,20 +46,20 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748B;
+  color: var(--text-secondary);
   cursor: pointer;
   box-shadow: 0 1.5px 0 0 #CBD5E1;
   transition: all 0.15s ease;
 }
 
 .arrowBtn:hover {
-  background: #F8FAFC;
-  color: #0F172A;
+  background: var(--bg-section);
+  color: var(--text-primary);
 }
 
 .carouselTrack {
@@ -78,8 +78,8 @@
 .courseCard {
   min-width: 190px;
   max-width: 190px;
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 14px 12px;
   display: flex;
@@ -128,7 +128,7 @@
 .courseTitle {
   font-size: 12px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.25;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -152,7 +152,7 @@
   justify-content: space-between;
   font-size: 10px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .courseCardActive .progressLabelRow {
@@ -162,7 +162,7 @@
 .progressTrack {
   width: 100%;
   height: 6px;
-  background: #F1F5F9;
+  background: var(--bg-section);
   border-radius: 9999px;
   overflow: hidden;
 }
@@ -178,7 +178,7 @@
 }
 
 .courseCardActive .progressFill {
-  background: #FFFFFF;
+  background: var(--bg-card);
 }
 
 @media (max-width: 640px) {

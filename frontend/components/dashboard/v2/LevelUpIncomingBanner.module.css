@@ -23,7 +23,7 @@
   height: 46px;
   min-width: 46px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border: 2.5px solid #F59E0B;
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@
 .mainTitle {
   font-size: 15px;
   font-weight: 900;
-  color: #0F172A;
+  color: var(--text-primary);
   font-family: var(--font-jakarta), sans-serif;
   line-height: 1.15;
 }

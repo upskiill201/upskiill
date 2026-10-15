@@ -6,7 +6,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 100000;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -86,7 +86,7 @@
 .title {
   font-size: clamp(28px, 6vw, 42px);
   font-weight: 900;
-  color: #0F172A;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin-bottom: 12px;
@@ -115,13 +115,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #F8FAFC;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-section);
+  border: 2px solid var(--border);
   border-radius: 9999px;
   padding: 8px 18px;
   font-size: clamp(15px, 2.5vw, 17px);
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
   box-shadow: 0 3px 0 #CBD5E1;
 }
 
@@ -181,7 +181,7 @@
 .secondaryDismissBtn {
   background: transparent;
   border: none;
-  color: #64748B;
+  color: var(--text-secondary);
   font-size: clamp(14px, 2vw, 16px);
   font-weight: 800;
   text-transform: uppercase;
@@ -193,7 +193,7 @@
 }
 
 .secondaryDismissBtn:hover {
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 /* Narrow screens < 320px */

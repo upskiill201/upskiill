@@ -14,7 +14,7 @@
   align-self: flex-start;
   font-size: 12.5px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   text-decoration: none;
   border-radius: 8px;
   padding: 4px 8px 4px 4px;
@@ -22,8 +22,8 @@
 }
 
 .backLink:hover {
-  color: #0F172A;
-  background: #F1F5F9;
+  color: var(--text-primary);
+  background: var(--bg-section);
 }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
@@ -48,7 +48,7 @@
   margin: 0;
   font-size: 13.5px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .sectionTitle {
@@ -60,7 +60,7 @@
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 /* ── Hero card — celebration-scene navy, ambient brand glow ───────────────── */
@@ -441,13 +441,13 @@
 }
 
 .milestoneCard {
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: #0F172A;
+  color: var(--text-primary);
   box-shadow: 0 4px 0 rgba(11, 23, 42, 0.35);
 }
 
@@ -496,7 +496,7 @@
   margin: 0;
   font-size: 10.5px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   line-height: 1.4;
   min-height: 29px;
 }
@@ -531,7 +531,7 @@
 .milestoneCount {
   font-size: 10px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
@@ -582,8 +582,8 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94A3B8;
-  background: #F1F5F9;
+  color: var(--text-muted);
+  background: var(--bg-section);
   border-radius: 999px;
   padding: 4px 10px;
 }
@@ -595,8 +595,8 @@
 }
 
 .calendarCard {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px;
   display: flex;
@@ -616,7 +616,7 @@
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 16px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .calLegend {
@@ -633,7 +633,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .legendDot {
@@ -648,12 +648,12 @@
 
 .legendDotMiss {
   background: #E2E8F0;
-  border: 1px solid #CBD5E1;
+  border: 1px solid var(--border-strong);
 }
 
 .legendDotFuture {
-  background: #FFFFFF;
-  border: 1.5px dashed #CBD5E1;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--border-strong);
 }
 
 .calWeekdayRow {
@@ -668,7 +668,7 @@
   font-size: 9.5px;
   font-weight: 800;
   letter-spacing: 0.05em;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .calGrid {
@@ -712,9 +712,9 @@
 }
 
 .calCellToday {
-  background: #FFFFFF;
-  color: #94A3B8;
-  border: 2px dashed #CBD5E1;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 2px dashed var(--border-strong);
   box-shadow: none;
 }
 
@@ -727,16 +727,16 @@
 }
 
 .calCellPastMiss {
-  background: #F1F5F9;
+  background: var(--bg-section);
   color: #CBD5E1;
   border: none;
   box-shadow: inset 0 1.5px 3px rgba(15, 23, 42, 0.08);
 }
 
 .calCellFuture {
-  background: #FFFFFF;
+  background: var(--bg-card);
   color: #CBD5E1;
-  border: 1.5px dashed #E2E8F0;
+  border: 1.5px dashed var(--border);
   box-shadow: none;
 }
 
@@ -769,8 +769,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px 14px;
   box-shadow: 0 2px 0 rgba(15, 23, 42, 0.04);
@@ -791,13 +791,13 @@
   font-size: 13.5px;
   font-weight: 800;
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .historySub {
   font-size: 11px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .historySide {
@@ -826,8 +826,8 @@
   gap: 4px;
   font-size: 11px;
   font-weight: 800;
-  color: #334155;
-  background: #F1F5F9;
+  color: var(--text-primary);
+  background: var(--bg-section);
   border-radius: 999px;
   padding: 4px 10px;
 }
@@ -836,14 +836,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #F8FAFC;
-  border: 1px dashed #CBD5E1;
+  background: var(--bg-section);
+  border: 1px dashed var(--border-strong);
   border-radius: 14px;
   padding: 16px 14px;
 }
 
 .historyEmptyIcon {
-  color: #94A3B8;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -851,7 +851,7 @@
   margin: 0;
   font-size: 12px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -893,7 +893,7 @@
 }
 
 .errorCard {
-  background: #FFFFFF;
+  background: var(--bg-card);
   border: 1px solid #FECACA;
   border-radius: 16px;
   padding: 28px 22px;
@@ -909,14 +909,14 @@
   font-family: var(--font-celebration), var(--font-jakarta), sans-serif;
   font-size: 17px;
   font-weight: 800;
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 .errorText {
   margin: 0 0 8px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .retryBtn {

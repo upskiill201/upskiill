@@ -358,9 +358,11 @@ export default function ImportCoursePage() {
                 )}
                 {preview.videos + preview.audio + preview.documents > 0 && (
                   <p className={m.note}>
-                    Each lesson gets Tey-written Learn cards (key ideas, a tip, a quick check, code when the video shows code, the images
-                    handed out with it) and 5–12 hands-on exercises of different kinds. Audio files become audio lessons, and a folder with
-                    only documents becomes reading lessons. Project files, PDFs and slides become Deepen downloads.
+                    Each lesson is shaped by what it teaches: Tey-written Learn cards (key ideas, plus a tip, a quick check, code and
+                    images only where the lesson has them) and as many exercises as it deserves, up to 12. Intro lessons get none, and the
+                    course&apos;s first lesson is a gentle welcome. Every answer is checked against the transcript before it goes live. Audio
+                    files become audio lessons, and a folder with only documents becomes reading lessons. Project files, PDFs and slides
+                    become Deepen downloads.
                   </p>
                 )}
                 {preview.videosOverLimit > 0 && (

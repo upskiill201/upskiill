@@ -1,0 +1,61 @@
+/* ── Dark mode ───────────────────────────────────────────────────────────────
+   Keyed on <html data-theme="dark">, set by lib/theme/theme.ts (boot script +
+   ThemeSync) and only inside the student app. Almost everything in the app
+   reads the palette through var(--…), so remapping the tokens re-skins it; the
+   few Tailwind literals (bg-white, slate-*) are mapped below.
+
+   --color-ink doubles as "text" in the light theme, so it flips to a light
+   colour here. Where ink was a dark scrim/shadow, the stylesheets use
+   --ink-fixed (never flips). Brand blue, success, error and the dark
+   --bg-dark-* hero tokens are unchanged. */
+
+:root[data-theme="dark"] {
+  --bg-page:        #0B1020;
+  --bg-section:     #111833;
+  --bg-card:        #151C38;
+  --bg-nav:         #0E1429;
+
+  --light-blue-bg:  #16224A;
+  --color-band:     #121B3A;
+
+  --text-primary:   #E6EAF5;
+  --text-secondary: #A3AECB;
+  --text-muted:     #6F7B9E;
+
+  --color-ink:      #EEF2FF;
+  --color-ink-soft: #AEB9D8;
+
+  --border:         #26315A;
+  --border-strong:  #36447A;
+  --border-indigo:  #2A2F66;
+
+  --shadow-lift:    0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Tailwind literals used across the student app. */
+:root[data-theme="dark"] .bg-white { background-color: var(--bg-card); }
+:root[data-theme="dark"] .bg-slate-50,
+:root[data-theme="dark"] .bg-slate-100 { background-color: var(--bg-section); }
+:root[data-theme="dark"] .bg-slate-200 { background-color: var(--border); }
+:root[data-theme="dark"] .hover\:bg-slate-100:hover,
+:root[data-theme="dark"] .hover\:bg-slate-50:hover { background-color: var(--bg-section); }
+:root[data-theme="dark"] .text-slate-900,
+:root[data-theme="dark"] .text-slate-800,
+:root[data-theme="dark"] .text-slate-700 { color: var(--text-primary); }
+:root[data-theme="dark"] .text-slate-600,
+:root[data-theme="dark"] .text-slate-500 { color: var(--text-secondary); }
+:root[data-theme="dark"] .text-slate-400 { color: var(--text-muted); }
+:root[data-theme="dark"] .border-slate-100,
+:root[data-theme="dark"] .border-slate-200,
+:root[data-theme="dark"] .border-slate-300 { border-color: var(--border); }
+
+/* A gentle cross-fade when the theme flips (not on first paint, not for
+   people who ask for less motion). */
+:root[data-theme-fade] body,
+:root[data-theme-fade] body * {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme-fade] body,
+  :root[data-theme-fade] body * { transition: none !important; }
+}

@@ -774,7 +774,7 @@ button.row:hover {
   height: 100%;
   border-radius: 999px;
   background: var(--tone, var(--color-brand));
-  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--color-ink) 12%, transparent);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--ink-fixed) 12%, transparent);
   transition: width 0.4s ease;
 }
 
@@ -875,7 +875,7 @@ button.row:hover {
   font-weight: 700;
   line-height: 1.3;
   white-space: nowrap;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-ink) 20%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--ink-fixed) 20%, transparent);
 }
 
 .tip strong {
@@ -1018,7 +1018,7 @@ button.row:hover {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 45%, transparent);
 }
 
 @media (min-width: 768px) {
@@ -1172,7 +1172,7 @@ button.row:hover {
   color: var(--bg-card);
   font-size: 14.5px;
   font-weight: 700;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-ink) 25%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink-fixed) 25%, transparent);
 }
 
 .fill {

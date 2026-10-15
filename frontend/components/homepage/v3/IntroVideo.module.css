@@ -61,7 +61,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 22%, transparent);
 }
 
 .play {

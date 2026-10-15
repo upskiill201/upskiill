@@ -1,6 +1,6 @@
 .wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px 20px;
   display: flex;
@@ -107,9 +107,9 @@
 }
 
 .nodeLocked {
-  background: #F8FAFC;
-  border: 1px dashed #CBD5E1;
-  color: #64748B;
+  background: var(--bg-section);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-secondary);
 }
 
 .nodeReward {
@@ -128,7 +128,7 @@
   position: absolute;
   bottom: -20px;
   background: #FBBF24;
-  color: #0F172A;
+  color: var(--text-primary);
   font-size: 9.5px;
   font-weight: 900;
   padding: 2px 7px;

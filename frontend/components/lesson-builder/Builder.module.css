@@ -223,7 +223,7 @@
     inset: 0;
     z-index: 60;
     padding: 16px;
-    background: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    background: color-mix(in srgb, var(--ink-fixed) 55%, transparent);
     overflow-y: auto;
   }
 }
@@ -849,7 +849,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 45%, transparent);
 }
 
 @media (min-width: 768px) {

@@ -1,6 +1,6 @@
 .card {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -35,7 +35,7 @@
   font-weight: 900;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #0F172A;
+  color: var(--text-primary);
   margin: 0;
   font-family: var(--font-jakarta), sans-serif;
 }
@@ -43,10 +43,10 @@
 /* 3D Segmented Filter Tabs */
 .segmentedSwitch {
   display: flex;
-  background: #F1F5F9;
+  background: var(--bg-section);
   padding: 3px;
   border-radius: 10px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
 }
 
 .switchTab {
@@ -54,7 +54,7 @@
   border: none;
   font-size: 11px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   padding: 4px 10px;
   border-radius: 7px;
   cursor: pointer;
@@ -63,15 +63,15 @@
 }
 
 .switchTabActive {
-  background: #FFFFFF;
+  background: var(--bg-card);
   color: #0172FD;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 /* 7-Day Activity Histogram */
 .activitySection {
-  background: #F8FAFC;
-  border: 1.5px solid #E2E8F0;
+  background: var(--bg-section);
+  border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 14px 12px 10px;
   display: flex;
@@ -85,7 +85,7 @@
   justify-content: space-between;
   font-size: 11px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -152,7 +152,7 @@
 .dayLabel {
   font-size: 11px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .dayLabelToday {
@@ -186,8 +186,8 @@
 }
 
 .statTile {
-  background: #F8FAFC;
-  border: 1.5px solid #E2E8F0;
+  background: var(--bg-section);
+  border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 12px;
   display: flex;
@@ -198,7 +198,7 @@
 
 .statTile:hover {
   transform: translateY(-2px);
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
 }
 
 .tileIcon {
@@ -221,7 +221,7 @@
 .tileLabel {
   font-size: 11px;
   font-weight: 800;
-  color: #64748B;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -229,7 +229,7 @@
 .tileValue {
   font-size: 16px;
   font-weight: 900;
-  color: #0F172A;
+  color: var(--text-primary);
   line-height: 1.2;
   font-family: var(--font-jakarta), sans-serif;
 }
@@ -237,7 +237,7 @@
 .tileSub {
   font-size: 10.5px;
   font-weight: 700;
-  color: #94A3B8;
+  color: var(--text-muted);
   margin-top: 1px;
 }
 
@@ -312,8 +312,8 @@
 }
 
 .modalCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 24px;
   padding: 26px;
   width: 100%;
@@ -329,7 +329,7 @@
   position: absolute;
   top: 18px;
   right: 18px;
-  background: #F1F5F9;
+  background: var(--bg-section);
   border: none;
   width: 32px;
   height: 32px;
@@ -337,7 +337,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748B;
+  color: var(--text-secondary);
   cursor: pointer;
   font-weight: 900;
 }
@@ -397,7 +397,7 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border: 1.5px solid #FECACA;
   color: #DC2626;
   font-size: 11px;
@@ -433,7 +433,7 @@
   text-align: center;
   font-size: 9.5px;
   font-weight: 800;
-  color: #94A3B8;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
@@ -450,7 +450,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 800;
-  color: #94A3B8;
+  color: var(--text-muted);
   background: #EEF2F7;
   border-radius: 8px;
   cursor: default;
@@ -490,7 +490,7 @@
   gap: 5px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #64748B;
+  color: var(--text-secondary);
 }
 
 .calLegendDot {
@@ -545,12 +545,12 @@
 .insightValue {
   font-size: 13px;
   font-weight: 900;
-  color: #0F172A;
+  color: var(--text-primary);
   font-family: var(--font-jakarta), sans-serif;
 }
 
 .insightSub {
   font-size: 11px;
   font-weight: 600;
-  color: #94A3B8;
+  color: var(--text-muted);
 }

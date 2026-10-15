@@ -91,7 +91,7 @@ export function UnitComplete({ unit, line }: { unit: UnitSummary; line: string }
           {unit.bonusXp > 0 && (
             <motion.span
               className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-extrabold"
-              style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 22%, white)', color: 'var(--lesson-gold-dark)' }}
+              style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 22%, var(--bg-card))', color: 'var(--lesson-gold-dark)' }}
               initial={reducedMotion ? false : { scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1.1, type: 'spring', stiffness: 520, damping: 14 }}

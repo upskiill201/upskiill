@@ -33,7 +33,7 @@ export function LessonFooter({
 }) {
   const reducedMotion = useReducedMotion();
   const tone = verdict?.kind;
-  const bg = tone === 'correct' ? 'var(--lesson-correct-bg)' : tone === 'wrong' ? 'var(--lesson-wrong-bg)' : 'white';
+  const bg = tone === 'correct' ? 'var(--lesson-correct-bg)' : tone === 'wrong' ? 'var(--lesson-wrong-bg)' : 'var(--bg-card)';
   const ink = tone === 'correct' ? 'var(--lesson-correct-ink)' : 'var(--lesson-wrong-ink)';
 
   return (

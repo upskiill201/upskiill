@@ -91,7 +91,7 @@ function ChoiceButton({
         ? 'var(--lesson-wrong-bg)'
         : tone === 'picked'
           ? 'var(--lesson-select-bg)'
-          : 'white';
+          : 'var(--bg-card)';
   return (
     <motion.button
       type="button"
@@ -436,8 +436,8 @@ function Explore({
                   // Keep the highlight on every line when the phrase wraps.
                   boxDecorationBreak: 'clone',
                   WebkitBoxDecorationBreak: 'clone',
-                  backgroundColor: seen.has(p.hotspot) ? 'var(--lesson-select-bg)' : 'color-mix(in srgb, var(--warning) 22%, white)',
-                  color: open === p.hotspot ? 'var(--color-brand-deep)' : 'inherit',
+                  backgroundColor: seen.has(p.hotspot) ? 'var(--lesson-select-bg)' : 'color-mix(in srgb, var(--warning) 22%, var(--bg-card))',
+                  color: open === p.hotspot ? 'var(--lesson-picked-ink)' : 'inherit',
                 }}
                 aria-expanded={open === p.hotspot}
               >

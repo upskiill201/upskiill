@@ -120,7 +120,7 @@
 .btnWhite {
   border: none;
   background: var(--bg-card);
-  box-shadow: 0 5px 0 color-mix(in srgb, var(--color-ink) 25%, transparent);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--ink-fixed) 25%, transparent);
   color: var(--color-brand);
 }
 
@@ -225,7 +225,7 @@
   border-bottom-width: 4px;
   border-radius: 18px;
   background: var(--bg-card);
-  box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--color-ink) 45%, transparent);
+  box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--ink-fixed) 45%, transparent);
   white-space: nowrap;
 }
 
@@ -258,7 +258,7 @@
   bottom: -4%;
   width: 150px;
   height: auto;
-  filter: drop-shadow(0 12px 18px color-mix(in srgb, var(--color-ink) 18%, transparent));
+  filter: drop-shadow(0 12px 18px color-mix(in srgb, var(--ink-fixed) 18%, transparent));
 }
 
 /* ─── Phone frame ──────────────────────────────────────────────────────── */
@@ -270,7 +270,7 @@
   padding: 12px;
   border-radius: 46px;
   background: var(--color-ink);
-  box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--color-ink) 70%, transparent),
+  box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--ink-fixed) 70%, transparent),
     0 0 0 2px color-mix(in srgb, var(--color-ink) 70%, var(--bg-card));
 }
 
@@ -643,7 +643,7 @@
   border-bottom-width: 6px;
   border-radius: 28px;
   background: var(--bg-card);
-  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--color-ink) 50%, transparent);
+  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--ink-fixed) 50%, transparent);
 }
 
 /* ─── Audience ─────────────────────────────────────────────────────────── */

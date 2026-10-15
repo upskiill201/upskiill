@@ -17,7 +17,7 @@ import {
   APPLY_QUESTIONS_MAX,
   APPLY_QUESTIONS_MIN,
 } from './lesson-content-generation.types';
-import { RICH_EXERCISES_KEEP_MIN } from './rich-lesson';
+import { RICH_EXERCISES_MAX } from './rich-lesson';
 
 export interface ReadinessLesson {
   status: string;
@@ -111,14 +111,17 @@ export function isLessonPublishable(
   const apply = lesson.applyBlocks as unknown[] | null;
   const reflect = lesson.reflectBlocks as unknown[] | null;
   const deepen = lesson.deepenBlocks as unknown[] | null;
-  if (!learn?.length || !apply?.length || !reflect?.length || !deepen?.length) {
+  if (!learn?.length || !apply || !reflect?.length || !deepen?.length) {
     return false;
   }
+  // An intro lesson (welcome, course tour) has nothing to practise: the
+  // writer gave it no exercises, so no Apply step (rich-lesson.ts).
+  const noApply = Array.isArray(apply) && apply.length === 0;
 
   // Rich (v2) lessons: the exact checks publish runs, plus the lesson's
   // source — its video or audio card, or two explanation cards to read.
   const state = phaseStateFromBlocks({ learn, apply });
-  if (state.learn || state.apply) {
+  if (state.learn || state.apply || noApply) {
     const cards = (
       learn.find((b) => (b as { type?: string }).type === 'learnCards') as
         | { value?: { kind?: string }[] }
@@ -140,12 +143,13 @@ export function isLessonPublishable(
         | undefined
     )?.value?.items;
     const count = Array.isArray(items) ? items.length : 0;
+    if (noApply) return hasSource && (state.learn?.complete ?? true);
     return (
       hasSource &&
       (state.learn?.complete ?? true) &&
       (state.apply?.complete ?? false) &&
-      count >= RICH_EXERCISES_KEEP_MIN &&
-      count <= 20
+      count >= 1 &&
+      count <= RICH_EXERCISES_MAX
     );
   }
 

@@ -26,6 +26,7 @@ import {
   Clapperboard,
   Loader2,
   Presentation,
+  Map,
   SquareTerminal,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -40,6 +41,7 @@ import { getCachedUser, setCachedUser, clearClientSession } from '@/lib/user-cac
 import { useMe } from '@/hooks/useMe';
 import { NavBadge } from '@/components/awareness/NavBadge';
 import { useNavBadges } from '@/hooks/useNavBadges';
+import { startTour } from '@/lib/tour/store';
 import { TeyMark } from '@/components/brand/TeyMark';
 import { NavTile, type NavTone } from '@/components/nav/NavTile';
 import styles from './StudentShell.module.css';
@@ -122,8 +124,8 @@ const NAV_TABS: NavTab[] = [
   { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: UserRound, tone: 'indigo', image: '/Icons/user-profile.png' },
 ];
 
-/** Phone bottom bar — the same five Duolingo keeps one thumb away. */
-const BOTTOM_TABS = ['home', 'leaderboards', 'quests', 'shop', 'profile'];
+/** Phone bottom bar — six tabs one thumb away; My Learning, Explore and More live in the drawer. */
+const BOTTOM_TABS = ['home', 'community', 'leaderboards', 'quests', 'shop', 'profile'];
 
 /** Where the community tab counts as "active" besides its own href. */
 const COMMUNITY_PATHS = ['/dashboard/feed', '/dashboard/communities', '/dashboard/community'];
@@ -243,6 +245,13 @@ export default function StudentShell({
     };
   }, [isMoreOpen]);
 
+  // The app tour opens and closes the phone drawer to point at its tabs.
+  useEffect(() => {
+    const onTour = (e: Event) => setIsMobileMenuOpen(Boolean((e as CustomEvent<boolean>).detail));
+    window.addEventListener('tour:drawer', onTour);
+    return () => window.removeEventListener('tour:drawer', onTour);
+  }, []);
+
   // A route change always lands with the drawer and menu closed.
   const [routeSeen, setRouteSeen] = useState(pathname);
   if (routeSeen !== pathname) {
@@ -333,6 +342,19 @@ export default function StudentShell({
         <NavTile icon={LifeBuoy} tone="blue" size="sm" />
         <span>Help & feedback</span>
       </Link>
+      <button
+        type="button"
+        className={styles.moreItem}
+        onClick={() => {
+          playSound('navTap', 5);
+          setIsMoreOpen(false);
+          setIsMobileMenuOpen(false);
+          startTour();
+        }}
+      >
+        <NavTile icon={Map} tone="green" size="sm" />
+        <span>Take the tour</span>
+      </button>
       {hasStudentAccess && hasCreatorAccess && (
         <button type="button" className={styles.moreItem} onClick={() => void switchToCreator()} disabled={switching}>
           {switching ? (
@@ -389,6 +411,7 @@ export default function StudentShell({
                 <Link
                   key={tab.id}
                   href={tab.href}
+                  data-tour={`nav-${tab.id}`}
                   onClick={(e) => onTabTap(e, tab, i)}
                   className={`${styles.navItem} ${active ? styles.active : ''}`}
                   aria-current={active ? 'page' : undefined}
@@ -411,6 +434,7 @@ export default function StudentShell({
             <button
               type="button"
               className={`${styles.navItem} ${isMoreOpen ? styles.moreOpen : ''}`}
+              data-tour="nav-more"
               onClick={toggleMore}
               aria-expanded={isMoreOpen}
               aria-haspopup="menu"
@@ -438,7 +462,7 @@ export default function StudentShell({
           </div>
 
           <div className={styles.sidebarFooter}>
-            <div className={styles.sidebarBellSlot}>
+            <div className={styles.sidebarBellSlot} data-tour="bell">
               <NotificationBell panelAlign="left" />
             </div>
             <button
@@ -479,13 +503,21 @@ export default function StudentShell({
                 <Link
                   key={id}
                   href={tab.href}
+                  data-tour={`nav-${id}`}
                   aria-label={tab.label}
                   aria-current={active ? 'page' : undefined}
                   onClick={(e) => onTabTap(e, tab, index)}
                   className={`${styles.bottomNavItem} ${active ? styles.activeBottomItem : ''}`}
                 >
                   <span className={styles.bottomNavIconWrap}>
-                    <NavTile icon={tab.icon} image={tab.image} tone={tab.tone} active={active} size="lg" />
+                    {/* A glyph tab (no PNG) is sized to the bar and leaves the ring to the wrap. */}
+                    <NavTile
+                      icon={tab.icon}
+                      image={tab.image}
+                      tone={tab.tone}
+                      active={active && Boolean(tab.image)}
+                      size={tab.image ? 'lg' : 'md'}
+                    />
                     {badgeFor(id)}
                   </span>
                 </Link>
@@ -505,7 +537,7 @@ export default function StudentShell({
                 <Menu size={24} strokeWidth={2.5} />
               </button>
               <StatsBar compact show={['streak', 'coin', 'gem', 'lives']} className={styles.mobileStats} />
-              <div className={styles.mobileBell}>
+              <div className={styles.mobileBell} data-tour="bell">
                 <NotificationBell panelAlign="right" />
               </div>
             </header>

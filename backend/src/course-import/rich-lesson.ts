@@ -4,9 +4,13 @@
  *
  *   Learn    the video card, then key-idea cards, code cards (only when the
  *            transcript actually shows code), a tip, and a quick check
- *   Apply    5–12 exercises across five kinds: multiple choice (incl.
- *            predict-the-output / pick-the-better-prompt), fill in the
- *            blanks, spot the mistake, put in order, match the pairs
+ *   Apply    as many exercises as the lesson deserves, up to 12, across five
+ *            kinds: multiple choice (incl. predict-the-output /
+ *            pick-the-better-prompt), fill in the blanks, spot the mistake,
+ *            put in order, match the pairs. The writer first lists what the
+ *            lesson really teaches ("practicePoints") and writes one exercise
+ *            per point; an intro lesson (welcome, course tour, the author's
+ *            story) can have none, and then has no Apply step at all.
  *   Reflect  a prompt that ties the lesson to the learner, with starters
  *   Deepen   what to explore next
  *
@@ -71,12 +75,29 @@ function arrangeCards(cards: any[], layout: LearnLayout): any[] {
   }
 }
 
-export const RICH_EXERCISES_MIN = 5;
 export const RICH_EXERCISES_MAX = 12;
-/** Fewer valid exercises than this after checking = not a real lesson. */
+/** The most a lesson ever needs to keep of what it planned: with this many
+ *  sound exercises, dropping the rest beats rewriting the whole lesson. */
 export const RICH_EXERCISES_KEEP_MIN = 4;
-export const KEY_IDEAS_MIN = 2;
+/** A video or audio card carries the teaching, so one key idea can be
+ *  enough; a reading lesson's ideas ARE the lesson. */
+export const KEY_IDEAS_MIN = 1;
+export const KEY_IDEAS_MIN_READING = 2;
 export const KEY_IDEAS_MAX = 5;
+
+/** What the writer says the lesson is; only an intro may skip Apply. */
+export type LessonKind = 'intro' | 'concept' | 'handsOn' | 'recap';
+const LESSON_KINDS: LessonKind[] = ['intro', 'concept', 'handsOn', 'recap'];
+
+/**
+ * How many of the exercises a lesson planned must survive checking for the
+ * lesson to stand: a lesson that planned 2 can live with 1, one that
+ * planned 8 needs 4. Fewer = the writer misread the lesson; write it again.
+ */
+export function exercisesNeeded(planned: number): number {
+  if (planned <= 0) return 0;
+  return Math.min(RICH_EXERCISES_KEEP_MIN, Math.ceil(planned / 2));
+}
 
 const CODE_LANGUAGES = [
   'javascript',
@@ -176,7 +197,7 @@ export function richSystemPrompt(
     ? `
 This lesson's design (follow it — it's what makes this lesson feel different from the one before):
 - ${design.brief}
-- Difficulty: ${design.difficulty.toUpperCase()}.${design.difficulty === 'easy' ? ' Keep every exercise gentle and confidence-building.' : design.difficulty === 'hard' ? ' Ask the learner to apply and combine ideas, not just recall them; plausible wrong answers.' : ' A step up from recall: some application, still fair.'}
+- Difficulty: ${design.difficulty.toUpperCase()}.${design.difficulty === 'easy' ? ' Keep every exercise gentle and confidence-building: recall the main points, nothing tricky.' : design.difficulty === 'hard' ? ' Ask the learner to apply and combine ideas, not just recall them. Hard means more thinking, never confusing wording.' : ' A step up from recall: some application, still fair.'}
 - Prefer a "${design.tipTone}" tip.
 - Vary your openings and phrasing: don't start the summary, headings or prompts the way a typical lesson does ("In this lesson…", "Which of the following…").
 `
@@ -200,30 +221,43 @@ This lesson's design (follow it — it's what makes this lesson feel different f
 - orderLines: "lines" 3-8 steps of a process in the CORRECT order
 - matchPairs: "pairs" 3-6 of {"left","right"} (term ↔ meaning)`;
 
-  return `You are Teyro's lesson writer. Turn ONE ${w.one}'s ${w.text} into a rich, hands-on Teyro lesson.
+  return `You are Teyro's lesson writer. Turn ONE ${w.one}'s ${w.text} into a Teyro lesson shaped by what it ACTUALLY teaches. Not every lesson needs every card, and not every lesson needs exercises: a light lesson gets a light lesson.
 
 Rules:
 - The ${w.text} is the only source. Never invent facts, code, tools or numbers it doesn't support.
 - Keep the author's voice ("I'll show you…" stays first person). Never write "the instructor says".${source === 'document' ? '\n- This is a reading lesson: the key ideas ARE the lesson, so make them complete and clear on their own (aim for 4-5).' : ''}
 - Short and punchy: learners do this in a few minutes on a phone.
 - Code only if the ${w.text} really shows or describes code. Otherwise return "codeSamples": [] and write NO code or pseudo-code anywhere, including exercises.
-- Every exercise must be answerable using ONLY what this lesson teaches, by someone who just went through it. Never ask about people, brands, shows or examples beyond exactly what the ${w.text} says about them, and never ask the learner to guess.
-- Every exercise must have exactly one defensible answer. In "findBug", exactly ONE line is wrong and every other line must be correct according to the ${w.text}.
-- Never number or bullet the "lines" of findBug/orderLines ("1.", "-"): they are shuffled, and numbers would give the answer away.
 ${designBlock}
-Return ONE JSON object with exactly these fields:
+Decide the practice FIRST, from the ${w.text}:
+- "lessonKind": "intro" (welcome, overview, the author's story, setup, a goodbye: nothing to practise), "concept" (explains ideas), "handsOn" (shows how to do something) or "recap".
+- "practicePoints": short phrases, most important first: what a learner can now KNOW or DO that is worth practising. Never greetings, logistics, the author's background or later lessons. An intro: none; a light lesson 1-3; a dense one more. Never more than ${plan.length}. Never pad.
+- "exercises": ONE per practice point, same order, same count. None means "exercises": []. Kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}.
+
+Exercises a learner understands on the first read:
+- The answer must be stated or directly shown in the ${w.text}. If you aren't certain, test a different point or drop it.
+- Plain everyday words, one idea per item, prompts under 25 words where you can. Never use a term the lesson didn't explain.
+- Every prompt stands alone: never "in the video", "as mentioned", "the example above". Put any context it needs in the prompt.
+- Never negative questions ("Which is NOT…", "EXCEPT"), double negatives, "all/none of the above", or half-true options.
+- Exactly one defensible answer. Wrong options: clearly wrong if you understood the lesson, believable if not. The right one never stands out by being longer.
+- In "findBug", exactly ONE line is wrong and every other line is correct according to the ${w.text}.
+- Never number or bullet the "lines" of findBug/orderLines ("1.", "-"): they are shuffled, and numbers would give the answer away.
+- Never ask beyond what the ${w.text} says about people, brands or examples; never make the learner guess.
+
+Return ONE JSON object with these fields, in this order:
+- "lessonKind", "practicePoints" (as above).
 - "summary": 1-3 sentences (20-500 chars), what this lesson gives the learner.
-- "whatYouWillLearn": ${2}-${5} short outcomes (each under 120 chars).
-- "keyIdeas": ${ideas.min}-${ideas.max} items {"heading" (under 70 chars), "body" (40-600 chars, one idea, plain text)} in teaching order.
+- "whatYouWillLearn": 1-4 short outcomes (each under 120 chars).
+- "keyIdeas": ${ideas.min}-${ideas.max} items {"heading" (under 70 chars), "body" (40-600 chars, one idea, plain text)} in teaching order. Only as many as the lesson really has.
 - "codeSamples": 0-3 items {"language" (one of ${CODE_LANGUAGES.join(', ')}), "code" (under 1500 chars), "caption"}.
-- "tip": {"tone": "tip" | "warning" | "remember", "text" (under 280 chars)} — the gotcha or shortcut worth remembering.
-- "quickCheck": {"question", "options" (3 short answers), "correctIndex" (0-based), "explanation"} — checks the main idea.
+- "tip": {"tone": "tip" | "warning" | "remember", "text" (under 280 chars)} ONLY when the ${w.text} gives a real gotcha, shortcut or warning; otherwise null.
+- "quickCheck": {"question", "options" (3 short answers), "correctIndex" (0-based), "answer" (its exact text), "explanation"}: one easy question on the main idea; null for an intro.
 - "scenario": one sentence setting up the practice (under 240 chars), or "".
-- "exercises": EXACTLY ${plan.length} items, with these kinds in this order: ${plan.map((k, i) => `${i + 1}) ${k}`).join(', ')}. Each tests a different point from the lesson; if the ${w.text} is short, test the same idea from a new angle rather than skipping one. ONLY practice items go here: the reflection is its own field below, never an exercise. That's AT LEAST 3 different kinds, in the order given. EVERY item, whatever its kind, has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the answer is right, under 280 chars). Kinds:
+- "exercises": as decided (never the reflection). EVERY item has "kind", "prompt" (the instruction, under 240 chars) and "explanation" (why the right answer is right, under 280 chars). Kinds:
 ${kinds}
-  mcq items also have "options" (3-4 short answers) and "correctIndex" (0-based). Exactly one right answer; wrong ones plausible, never "all of the above".
-  Blanks are written EXACTLY as [[1]], [[2]] — never ___ or [blank] — and each one REPLACES its answer: the answer words never appear in the template. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","faster"],"explanation":"Movement hides the cut."}
-- "reflectPrompt": asks the learner to apply the lesson to their own work or plan an action (under 300 chars). Never "what did you learn?".
+  mcq items also have "options" (3-4 short answers), "correctIndex" (0-based) and "answer" (the right option's exact text).
+  Blanks are written EXACTLY as [[1]], [[2]] (never ___ or [blank]) and each one REPLACES its answer: the answer words never appear in the template, and no distractor may also fit a blank. Example: {"kind":"fillBlank","prompt":"Fill in the blanks.","template":"Cut on [[1]] so the edit feels [[2]].","answers":["movement","invisible"],"distractors":["silence","louder"],"explanation":"Movement hides the cut."}
+- "reflectPrompt": asks the learner to apply the lesson to their own work or plan an action (under 300 chars). Never "what did you learn?". For an intro: what they want to be able to do by the end.
 - "reflectStarters": 2-3 sentence starters (under 60 chars each).
 - "deepenTitle" (under 80 chars) and "deepenSummary" (under 300 chars): a concrete next step or deeper technique.
 
@@ -234,6 +268,8 @@ Return ONLY the JSON object. No markdown.`;
 export const RICH_LESSON_JSON_SCHEMA = {
   type: 'object',
   properties: {
+    lessonKind: { type: 'string' },
+    practicePoints: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     whatYouWillLearn: { type: 'array', items: { type: 'string' } },
     keyIdeas: {
@@ -267,6 +303,7 @@ export const RICH_LESSON_JSON_SCHEMA = {
         question: { type: 'string' },
         options: { type: 'array', items: { type: 'string' } },
         correctIndex: { type: 'integer' },
+        answer: { type: 'string' },
         explanation: { type: 'string' },
       },
       required: ['question', 'options', 'correctIndex'],
@@ -285,6 +322,7 @@ export const RICH_LESSON_JSON_SCHEMA = {
           language: { type: 'string' },
           options: { type: 'array', items: { type: 'string' } },
           correctIndex: { type: 'integer' },
+          answer: { type: 'string' },
           template: { type: 'string' },
           answers: { type: 'array', items: { type: 'string' } },
           distractors: { type: 'array', items: { type: 'string' } },
@@ -337,6 +375,9 @@ export interface RichBuildResult extends GeneratedLessonBlocks {
     kinds: string[];
     dropped: string[];
     classicLearn: boolean;
+    lessonKind: LessonKind;
+    /** Exercises the writer planned, before any were dropped. */
+    planned: number;
   };
 }
 
@@ -389,6 +430,47 @@ const lang = (v: unknown, fallback: CodeLanguage): CodeLanguage => {
 };
 const uniq = (xs: string[]) =>
   new Set(xs.map((x) => x.toLowerCase())).size === xs.length;
+
+const normAnswer = (t: string) =>
+  t
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/^["'`]|["'`.!?]+$/g, '')
+    .trim();
+
+/**
+ * The right option, cross-checked. Imported lessons shipped with the wrong
+ * option marked right: small models slip on the index (often counting from
+ * 1) while knowing the answer. So the writer names the right option's text
+ * too ("answer"), and the text wins over the index. A bare letter ("B") is
+ * read as one. Without a usable "answer" the index stands; the answer
+ * checker (exercise-review.ts) is the backstop for both.
+ */
+export function resolveCorrectIndex(
+  options: string[],
+  correctIndex: unknown,
+  answer: unknown,
+): number {
+  const idx =
+    Number.isInteger(correctIndex) && options[correctIndex as number]
+      ? (correctIndex as number)
+      : -1;
+  const raw = typeof answer === 'string' ? answer.trim() : '';
+  if (!raw) return idx;
+  const a = normAnswer(raw);
+  const exact = options.findIndex((o) => normAnswer(o) === a);
+  if (exact >= 0) return exact;
+  const letter = /^\(?([a-f])\)?[).:]?$/i.exec(raw);
+  if (letter) {
+    const li = letter[1].toLowerCase().charCodeAt(0) - 97;
+    if (options[li]) return li;
+  }
+  // "On a third line, which feels natural" for the option "On a third line".
+  const contained = options
+    .map((o, i) => ({ o: normAnswer(o), i }))
+    .filter(({ o }) => o.length >= 3 && (a.includes(o) || o.includes(a)));
+  return contained.length === 1 ? contained[0].i : idx;
+}
 
 /**
  * Blank styles models write instead of [[1]], [[2]]… (live runs: "______",
@@ -471,9 +553,11 @@ function buildExercise(
   switch (kind) {
     case 'mcq': {
       const options = list(raw.options, 6, 300);
-      const correct = Number.isInteger(raw.correctIndex)
-        ? raw.correctIndex
-        : -1;
+      const correct = resolveCorrectIndex(
+        options,
+        raw.correctIndex,
+        raw.answer,
+      );
       if (!uniq(options)) return { bad: 'duplicate answers' };
       let variant =
         raw.variant === 'predictOutput' || raw.variant === 'pickPrompt'
@@ -628,9 +712,10 @@ export function buildRichLesson(
     .slice(0, KEY_IDEAS_MAX);
   if (summary.length < 20)
     throw new RichLessonError('The lesson summary is missing.');
-  if (ideas.length < KEY_IDEAS_MIN)
+  const ideasMin = mediaKind === 'none' ? KEY_IDEAS_MIN_READING : KEY_IDEAS_MIN;
+  if (ideas.length < ideasMin)
     throw new RichLessonError(
-      `Only ${ideas.length} key ideas (need ${KEY_IDEAS_MIN}).`,
+      `Only ${ideas.length} key ideas (need ${ideasMin}).`,
     );
 
   const codeLang: CodeLanguage = 'plaintext';
@@ -649,7 +734,7 @@ export function buildRichLesson(
     : 'tip';
   const qc = content.quickCheck;
   const qcOptions = list(qc?.options, 4, 250);
-  const qcIndex = Number.isInteger(qc?.correctIndex) ? qc.correctIndex : -1;
+  const qcIndex = resolveCorrectIndex(qcOptions, qc?.correctIndex, qc?.answer);
 
   /* Learn */
   const clipLength = clip ? clip.endSec - clip.startSec : null;
@@ -803,14 +888,34 @@ export function buildRichLesson(
       dropped.push(`Exercise ${i + 1} (${s(raw?.kind, 20) || '?'}): ${r.bad}`);
   });
   const items = exercises.slice(0, RICH_EXERCISES_MAX);
-  if (items.length < RICH_EXERCISES_KEEP_MIN) {
+  const lessonKind: LessonKind = LESSON_KINDS.includes(content.lessonKind)
+    ? content.lessonKind
+    : 'concept';
+  const planned = Math.min(rawExercises.length, RICH_EXERCISES_MAX);
+  // How much practice is the writer's call, made from the transcript. Only
+  // an intro may have none: a lesson that teaches something and comes back
+  // without practice is a lazy answer, not a light lesson.
+  if (planned === 0 && lessonKind !== 'intro') {
     throw new RichLessonError(
-      `Only ${items.length} usable exercises (need ${RICH_EXERCISES_KEEP_MIN}). Dropped: ${dropped.slice(0, 4).join('; ')}`,
+      `No exercises for a "${lessonKind}" lesson. Only an intro lesson may have none; list what it teaches in practicePoints and write one exercise per point.`,
     );
   }
-  const applyBlocks = [
-    { type: 'exercises', value: { scenario: s(content.scenario, 300), items } },
-  ];
+  const needed = exercisesNeeded(planned);
+  if (items.length < needed) {
+    throw new RichLessonError(
+      `Only ${items.length} of ${planned} exercises were usable (need ${needed}). Dropped: ${dropped.slice(0, 4).join('; ')}`,
+    );
+  }
+  // No exercises: no Apply step. The player skips it (lessonPhases), and
+  // publishing marks the phase done on purpose (course-import-publish).
+  const applyBlocks = items.length
+    ? [
+        {
+          type: 'exercises',
+          value: { scenario: s(content.scenario, 300), items },
+        },
+      ]
+    : [];
 
   /* Reflect */
   const reflectPrompt =
@@ -896,6 +1001,8 @@ export function buildRichLesson(
       ),
       dropped,
       classicLearn: !fitsCard,
+      lessonKind,
+      planned,
     },
   };
 }

@@ -13,7 +13,7 @@
   --nav-active-line: color-mix(in srgb, var(--color-brand) 42%, var(--bg-page));
   --nav-active-ink: var(--color-brand);
   --nav-danger: var(--error-red);
-  --nav-shadow: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --nav-shadow: color-mix(in srgb, var(--ink-fixed) 10%, transparent);
   --rail-w: 256px;
   --rail-w-compact: 88px;
 
@@ -306,7 +306,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  background: color-mix(in srgb, var(--ink-fixed) 40%, transparent);
   z-index: 950;
 }
 
@@ -477,7 +477,7 @@
     /* The lip underneath plus a soft shadow — static, so it costs nothing per frame. */
     box-shadow:
       0 4px 0 var(--nav-line),
-      0 10px 24px color-mix(in srgb, var(--color-ink) 12%, transparent);
+      0 10px 24px color-mix(in srgb, var(--ink-fixed) 12%, transparent);
     justify-content: space-around;
     align-items: center;
   }
@@ -497,7 +497,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
+    width: 100%;
+    max-width: 56px;
     height: 46px;
     border-radius: 999px;
     border: 2px solid transparent;
@@ -533,7 +534,7 @@
     padding: 12px 8px calc(100px + env(safe-area-inset-bottom));
   }
   .bottomNavIconWrap {
-    width: 48px;
+    max-width: 46px;
   }
 }
 

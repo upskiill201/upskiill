@@ -11,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   padding: 1.5rem;
   overflow: hidden;
   user-select: none;
@@ -85,6 +85,13 @@
   mix-blend-mode: multiply; /* Blends WebM background 100% seamlessly into pure white #FFFFFF */
 }
 
+/* Dark mode: the mascot video is matted on pure white (multiply, above), so it
+   needs a white tile to sit on or it goes muddy. */
+:global(:root[data-theme="dark"]) .mascotWrapper {
+  background-color: var(--bg-card);
+  border-radius: 40px;
+}
+
 /* Loading Tag Label: LOADING... */
 .label {
   font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
@@ -119,7 +126,7 @@
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  color: #1E293B;
+  color: var(--text-primary);
   max-width: 360px;
   margin: 0 auto;
   min-height: 3.2rem;

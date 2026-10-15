@@ -24,7 +24,7 @@
   width: min(34vw, 128px);
   height: auto;
   border-radius: 24%;
-  box-shadow: 0 8px 0 color-mix(in srgb, var(--color-ink) 30%, transparent);
+  box-shadow: 0 8px 0 color-mix(in srgb, var(--ink-fixed) 30%, transparent);
 }
 
 @keyframes pop {

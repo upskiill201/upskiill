@@ -48,7 +48,7 @@
 
 /* Grey — neutral, on light grey backgrounds */
 .grey {
-  border-color: #E2E8F0;
+  border-color: var(--border);
   border-top-color: #64748B;
 }
 

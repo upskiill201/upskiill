@@ -106,7 +106,7 @@ function StreakChest({ days }: { days: number }) {
       className="mt-5 w-full max-w-[400px] flex items-center gap-3 rounded-[20px] border-2 px-4 py-3 text-left cursor-pointer disabled:cursor-default"
       style={{
         borderColor: state === 'open' ? 'var(--border)' : 'var(--warning)',
-        backgroundColor: state === 'open' ? 'white' : 'color-mix(in srgb, var(--warning) 10%, white)',
+        backgroundColor: state === 'open' ? 'var(--bg-card)' : 'color-mix(in srgb, var(--warning) 10%, var(--bg-card))',
       }}
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.9 }}
       animate={state === 'ready' && !reducedMotion ? { opacity: 1, y: 0, scale: [1, 1.03, 1] } : { opacity: 1, y: 0, scale: 1 }}
@@ -216,8 +216,8 @@ export function StreakDay({
             className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
             style={
               kind === 'thaw'
-                ? { backgroundColor: 'color-mix(in srgb, var(--color-brand) 12%, white)', color: 'var(--color-brand)' }
-                : { backgroundColor: 'color-mix(in srgb, var(--warning) 16%, white)', color: 'color-mix(in srgb, var(--warning) 70%, black)' }
+                ? { backgroundColor: 'color-mix(in srgb, var(--color-brand) 12%, var(--bg-card))', color: 'var(--color-brand)' }
+                : { backgroundColor: 'color-mix(in srgb, var(--warning) 16%, var(--bg-card))', color: 'color-mix(in srgb, var(--warning) 70%, black)' }
             }
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -237,7 +237,7 @@ export function StreakDay({
         {moment.personalBest && kind !== 'start' && (
           <motion.span
             className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13.5px] font-extrabold"
-            style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, white)', color: 'var(--lesson-gold-dark)' }}
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lesson-gold) 20%, var(--bg-card))', color: 'var(--lesson-gold-dark)' }}
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: reducedMotion ? 0 : t.big / 1000, type: 'spring', stiffness: 560, damping: 12 }}

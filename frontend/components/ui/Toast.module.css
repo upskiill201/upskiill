@@ -5,7 +5,7 @@
   z-index: 9999;
   display: flex;
   align-items: center;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
   padding: 16px;
@@ -40,7 +40,7 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #1F2A44;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
@@ -48,7 +48,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #94A3B8;
+  color: var(--text-muted);
   padding: 4px;
   border-radius: 6px;
   display: flex;
@@ -59,8 +59,8 @@
 }
 
 .closeBtn:hover {
-  background-color: #F1F5F9;
-  color: #1F2A44;
+  background-color: var(--bg-section);
+  color: var(--text-primary);
 }
 
 @keyframes slideIn {

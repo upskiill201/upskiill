@@ -63,8 +63,8 @@ export function ApplyStep({
                     ? 'picked'
                     : 'idle';
           const colors = {
-            idle: { border: 'var(--border)', bg: 'white', ink: 'var(--color-ink)', key: 'var(--text-muted)' },
-            picked: { border: 'var(--color-brand)', bg: 'var(--lesson-select-bg)', ink: 'var(--color-brand-deep)', key: 'var(--color-brand)' },
+            idle: { border: 'var(--border)', bg: 'var(--bg-card)', ink: 'var(--color-ink)', key: 'var(--text-muted)' },
+            picked: { border: 'var(--color-brand)', bg: 'var(--lesson-select-bg)', ink: 'var(--lesson-picked-ink)', key: 'var(--color-brand)' },
             correct: { border: 'var(--lesson-correct)', bg: 'var(--lesson-correct-bg)', ink: 'var(--lesson-correct-ink)', key: 'var(--lesson-correct)' },
             wrong: { border: 'var(--lesson-wrong)', bg: 'var(--lesson-wrong-bg)', ink: 'var(--lesson-wrong-ink)', key: 'var(--lesson-wrong)' },
           }[tone];

@@ -11,9 +11,22 @@ describe('lessonDesign', () => {
   it('opens every section with an easy warm-up and closes it with a finale', () => {
     const s = section(8);
     expect(s[0]).toMatchObject({ flavor: 'warmup', difficulty: 'easy' });
-    expect(s[0].exercisePlan).toHaveLength(5);
+    expect(s[0].exercisePlan).toHaveLength(4);
+    expect(s[0].exercisePlan.join()).not.toMatch(/findBug|orderLines/);
     expect(s[7]).toMatchObject({ flavor: 'boss', difficulty: 'hard' });
     expect(s[7].exercisePlan).toHaveLength(8);
+  });
+
+  it("makes the course's very first lesson a gentle welcome", () => {
+    const d = lessonDesign(0, 6, 0, 'Coding', { courseOpener: true });
+    expect(d).toMatchObject({ flavor: 'welcome', difficulty: 'easy' });
+    expect(d.exercisePlan).toHaveLength(3);
+    expect(d.exercisePlan.join()).not.toMatch(
+      /findBug|orderLines|predictOutput/,
+    );
+    expect(d.keyIdeas.max).toBeLessThanOrEqual(2);
+    // Only the course's first lesson: later sections open with a warm-up.
+    expect(lessonDesign(0, 6, 1, 'Coding').flavor).toBe('warmup');
   });
 
   it('asks a little more as the section goes on, never less', () => {
@@ -65,7 +78,7 @@ describe('lessonDesign', () => {
     const d = lessonDesign(2, 6, 0, 'Coding');
     const prompt = richSystemPrompt('Coding', 'video', d);
     expect(prompt).toContain(d.brief);
-    expect(prompt).toContain(`EXACTLY ${d.exercisePlan.length} items`);
+    expect(prompt).toContain(`Never more than ${d.exercisePlan.length}.`);
     expect(prompt).toContain(`${d.keyIdeas.min}-${d.keyIdeas.max} items`);
   });
 });

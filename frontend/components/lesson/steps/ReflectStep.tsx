@@ -102,13 +102,13 @@ export function ReflectStep({
                 className="rounded-[20px] border-2 p-4 md:p-5 flex flex-col items-center gap-2.5 text-center cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--brand-purple)]/25"
                 style={{
                   borderColor: picked ? o.color : 'var(--border)',
-                  backgroundColor: picked ? `color-mix(in srgb, ${o.color} 12%, white)` : 'white',
+                  backgroundColor: picked ? `color-mix(in srgb, ${o.color} 12%, var(--bg-card))` : 'var(--bg-card)',
                   boxShadow: `0 4px 0 ${picked ? o.color : 'var(--border)'}`,
                 }}
               >
                 <span
                   className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: `color-mix(in srgb, ${o.color} 16%, white)` }}
+                  style={{ backgroundColor: `color-mix(in srgb, ${o.color} 16%, var(--bg-card))` }}
                 >
                   <Icon className="w-7 h-7 stroke-[2.4]" style={{ color: o.color }} aria-hidden="true" />
                 </span>

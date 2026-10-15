@@ -49,5 +49,5 @@
 .toastDesc {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #94A3B8;
+  color: var(--text-muted);
 }

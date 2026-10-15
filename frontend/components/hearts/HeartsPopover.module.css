@@ -6,8 +6,8 @@
   right: 0;
   margin-top: 8px;
   width: 340px;
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 20px;
   box-shadow:
     0 16px 40px rgba(7, 18, 51, 0.16),
@@ -131,13 +131,13 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #F8FAFC;
+  background: var(--bg-section);
 }
 
 /* Perfect Shield Card */
 .shieldCard {
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 14px;
   display: flex;
@@ -174,14 +174,14 @@
 .shieldTitle {
   font-size: 0.88rem;
   font-weight: 900;
-  color: #1E293B;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .shieldSubtitle {
   font-size: 0.76rem;
   font-weight: 600;
-  color: #64748B;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.35;
 }
@@ -189,9 +189,9 @@
 .viewListBtn {
   height: 32px;
   padding: 0 12px;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border: none;
-  border-bottom: 3px solid #E2E8F0;
+  border-bottom: 3px solid var(--border);
   border-radius: 10px;
   color: #E11D48;
   font-size: 0.74rem;
@@ -250,7 +250,7 @@
 .affordHint {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #94A3B8;
+  color: var(--text-muted);
   text-align: center;
   margin: -4px 0 0 0;
 }

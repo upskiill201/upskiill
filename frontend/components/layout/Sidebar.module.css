@@ -2,8 +2,8 @@
   width: 280px;
   height: 100%;
   min-height: 600px;
-  background-color: #ffffff;
-  border-right: 1px solid #E2E8F0;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -27,7 +27,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #1F2A44;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -36,7 +36,7 @@
   display: none;
   background: none;
   border: none;
-  color: #64748B;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 4px;
 }
@@ -58,7 +58,7 @@
   align-items: center;
   padding: 12px 24px;
   text-decoration: none;
-  color: #64748B;
+  color: var(--text-secondary);
   font-size: 15px;
   font-weight: 500;
   transition: all 0.2s;
@@ -73,8 +73,8 @@
 }
 
 .navItem:hover {
-  background-color: #F8FAFC;
-  color: #1F2A44;
+  background-color: var(--bg-section);
+  color: var(--text-primary);
 }
 
 .navItem.active {
@@ -96,7 +96,7 @@
 
 .divider {
   height: 1px;
-  background-color: #F1F5F9;
+  background-color: var(--bg-section);
   margin: 16px 24px;
 }
 
@@ -124,7 +124,7 @@
   margin: 0 0 12px;
   font-size: 15px;
   font-weight: 600;
-  color: #1F2A44;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
@@ -143,10 +143,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background-color: #F8FAFC;
+  background-color: var(--bg-section);
   border: none;
   cursor: pointer;
-  color: #1F2A44;
+  color: var(--text-primary);
 }
 
 .sectionTitle {
@@ -157,7 +157,7 @@
 .sectionBody {
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
 }
 
 .lessonItem {
@@ -174,7 +174,7 @@
 }
 
 .lessonItem:hover:not(.lessonLocked) {
-  background-color: #F8FAFC;
+  background-color: var(--bg-section);
 }
 
 .lessonActive {
@@ -210,7 +210,7 @@
 .lessonTitle {
   font-size: 13px;
   font-weight: 500;
-  color: #1F2A44;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
@@ -221,7 +221,7 @@
 
 .lessonTime {
   font-size: 11px;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 /* Mobile responsive */

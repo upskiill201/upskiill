@@ -23,7 +23,7 @@
 }
 
 .heroBadge {
-  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--color-ink) 22%, transparent));
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--ink-fixed) 22%, transparent));
   animation: heroRise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -234,7 +234,7 @@
   background: var(--bg-card);
   border: 2px solid color-mix(in srgb, var(--color-brand) 35%, var(--border));
   border-bottom-width: 4px;
-  box-shadow: 0 -6px 24px color-mix(in srgb, var(--color-ink) 12%, transparent);
+  box-shadow: 0 -6px 24px color-mix(in srgb, var(--ink-fixed) 12%, transparent);
   z-index: 30;
 }
 
