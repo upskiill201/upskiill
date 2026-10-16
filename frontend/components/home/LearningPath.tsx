@@ -477,6 +477,18 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 520, damping: 12 }}
                     >
+                      {pop && isCurrent && reveal === 'unlock' && (
+                        <motion.span
+                          aria-hidden="true"
+                          className="absolute left-1/2 -translate-x-1/2 -top-[64px] z-20 whitespace-nowrap rounded-full px-3 py-1 text-[13px] font-extrabold uppercase tracking-[0.08em] text-white pointer-events-none"
+                          style={{ backgroundColor: unit.color, boxShadow: `0 3px 0 ${shade(unit.color)}` }}
+                          initial={{ opacity: 0, y: 10, scale: 0.6 }}
+                          animate={reducedMotion ? { opacity: [0, 1, 1, 0] } : { opacity: [0, 1, 1, 0], y: [10, 0, -4, -14], scale: [0.6, 1.1, 1, 1] }}
+                          transition={{ duration: 1.8, times: [0, 0.18, 0.8, 1], ease: 'easeOut' }}
+                        >
+                          Unlocked!
+                        </motion.span>
+                      )}
                       {pop && !reducedMotion && (
                         <motion.span
                           aria-hidden="true"
@@ -718,6 +730,14 @@ function NodeButton({
               style={{ color: node.state === 'paywalled' ? 'var(--text-secondary)' : unit.color }}
             >
               {node.state === 'paywalled' ? 'Unlock' : 'Start'}
+              {node.state !== 'paywalled' && (node.lesson.xpReward ?? 0) > 0 && (
+                <span
+                  className="ml-1.5 inline-block rounded-full px-1.5 py-[1px] align-middle text-[11.5px] tracking-normal text-white"
+                  style={{ backgroundColor: 'var(--lesson-gold-dark)' }}
+                >
+                  +{node.lesson.xpReward} XP
+                </span>
+              )}
             </span>
             {nudge && (
               <span className="block mt-0.5 text-[12.5px] font-bold normal-case tracking-normal text-[var(--text-secondary)] leading-tight">
@@ -732,13 +752,41 @@ function NodeButton({
         </motion.div>
       )}
 
-      {/* Progress ring around the current node. */}
-      {isCurrent && (
-        <span
+      {/* The current node: a halo that breathes, and a ring that fills with
+          the chapter's progress, so the next lesson reads as a step toward it. */}
+      {isCurrent && node.state !== 'paywalled' && !reducedMotion && (
+        <motion.span
           aria-hidden="true"
-          className="absolute -inset-[9px] rounded-full border-[6px]"
-          style={{ borderColor: node.state === 'paywalled' ? 'var(--border)' : `color-mix(in srgb, ${unit.color} 28%, white)` }}
+          className="absolute -inset-[18px] rounded-full pointer-events-none"
+          style={{ backgroundColor: `color-mix(in srgb, ${unit.color} 30%, transparent)` }}
+          animate={{ scale: [0.85, 1.12, 0.85], opacity: [0.55, 0, 0.55] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
         />
+      )}
+      {isCurrent && (
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 100 100"
+          className="absolute -inset-[11px] -rotate-90 pointer-events-none"
+          style={{ width: 'calc(100% + 22px)', height: 'calc(100% + 22px)' }}
+        >
+          <circle cx="50" cy="50" r="46" fill="none" strokeWidth="6" style={{ stroke: node.state === 'paywalled' ? 'var(--border)' : `color-mix(in srgb, ${unit.color} 22%, white)` }} />
+          {node.state !== 'paywalled' && unit.nodes.length > 0 && (
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              strokeWidth="6"
+              strokeLinecap="round"
+              style={{ stroke: unit.color }}
+              strokeDasharray={2 * Math.PI * 46}
+              initial={{ strokeDashoffset: 2 * Math.PI * 46 }}
+              animate={{ strokeDashoffset: 2 * Math.PI * 46 * (1 - Math.max(0.04, unit.doneCount / unit.nodes.length)) }}
+              transition={{ duration: reducedMotion ? 0 : 1.1, ease: 'easeOut', delay: 0.3 }}
+            />
+          )}
+        </svg>
       )}
 
       <motion.button
@@ -756,6 +804,17 @@ function NodeButton({
           boxShadow: `0 7px 0 ${lip}`,
         }}
       >
+        {isCurrent && node.state === 'current' && !reducedMotion && (
+          <span aria-hidden="true" className="absolute inset-0 rounded-[50%] overflow-hidden pointer-events-none">
+            <motion.span
+              className="absolute top-0 bottom-0 w-[40%]"
+              style={{ background: 'linear-gradient(100deg, transparent, color-mix(in srgb, white 55%, transparent), transparent)' }}
+              initial={{ left: '-50%' }}
+              animate={{ left: ['-50%', '120%'] }}
+              transition={{ duration: 0.9, repeat: Infinity, repeatDelay: 2.6, ease: 'easeInOut' }}
+            />
+          </span>
+        )}
         {/* Gloss — what makes a flat circle read as a pressable game piece. */}
         {lit && (
           <span
@@ -904,12 +963,31 @@ function NodePopover({
   }
 
   const done = node.state === 'done';
+  const toChest = unit.nodes.length - unit.doneCount;
   return (
     <PopoverShell arrowX={arrowX} color={unit.color}>
-      <p className="text-[17px] font-extrabold text-white leading-snug">{node.lesson.title}</p>
-      <p className="mt-1 text-[14.5px] font-bold text-white/85">
+      <p className="text-[12.5px] font-extrabold uppercase tracking-[0.1em] text-white/80">
         {done ? `${of} · Done! Review it anytime.` : of}
       </p>
+      <p className="mt-1 text-[18px] font-extrabold text-white leading-snug">{node.lesson.title}</p>
+      {!done && node.lesson.shortDescription && (
+        <p className="mt-1 text-[14px] font-semibold text-white/90 leading-snug line-clamp-3">{node.lesson.shortDescription}</p>
+      )}
+      {!done && (
+        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+          {xp > 0 && (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">+{xp} XP</span>
+          )}
+          {node.lesson.durationMinutes ? (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">{node.lesson.durationMinutes} min</span>
+          ) : null}
+          {toChest > 0 && (
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[12.5px] font-extrabold text-white">
+              {toChest === 1 ? 'Last one before the chest' : `${toChest} lessons to the chest`}
+            </span>
+          )}
+        </div>
+      )}
       <PopoverButton
         label={starting ? 'Starting…' : done ? 'Review' : xp > 0 ? `Start +${xp} XP` : 'Start'}
         color={unit.color}

@@ -3,18 +3,32 @@
 /**
  * LessonPlayer — a Teyro lesson, full screen, Duolingo-style.
  *
- *   ┌ X ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ♥ 5 ┐   one bar, grows every step
- *   │                                       │
- *   │   LEARN → APPLY → REFLECT → DEEPEN    │   one screen at a time
- *   │                                       │
- *   └──────────── [ CONTINUE ] ─────────────┘   one button, always here
+ *   START ─▶ LEARN ─▶ (gate) ─▶ APPLY ─▶ (gate) ─▶ REFLECT ─▶ DEEPEN ─▶ FINISH
+ *     │                          │                                       │
+ *     │  where you are, what's   │  combo ladder, hints, skip,           │  a finish that grows
+ *     │  at stake today          │  music that builds with the run       │  across the day, then
+ *     ▼                          ▼                                       ▼  the next lesson, one tap
+ *   ┌ X ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ♪  ♥ 5 ┐
+ *   │                 one screen at a time                │
+ *   └────────────────── [ CONTINUE ] ─────────────────────┘
  *
  * Nothing else is on screen while it runs: no sidebar, no floating buttons,
  * and every banner or celebration waits (lib/lesson/lessonFocus.ts) until
  * the lesson ends, then the lesson's own payoff plays first.
  *
+ * What keeps a learner in (and the research it leans on, see lib/lesson):
+ *  - journey.ts   the lesson knows its chapter: progress you can see and a
+ *                 goal getting closer pull people on (goal-gradient).
+ *  - hype.ts      a combo ladder with real bonus XP, and a finish that grows
+ *                 with every lesson today, so no two finishes feel the same.
+ *  - hints.ts     a real step toward the answer when someone is stuck, and
+ *                 Skip, so one hard question never ends a lesson.
+ *  - The quit sheet shows what's at stake, and the last screen opens the
+ *    next lesson in one tap instead of sending everyone home.
+ *
  * The server stays the authority for everything that counts: completion,
- * XP, coins, hearts. This component only asks, and shows what it's told.
+ * XP (including the performance bonus), coins, hearts. This component only
+ * asks, and shows what it's told.
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -24,6 +38,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCelebration } from '@/context/CelebrationContext';
 import { useGamification } from '@/context/GamificationContext';
 import { playSound } from '@/lib/audio/lessonSounds';
+import {
+  duckMusic,
+  musicLevelForRun,
+  musicStumble,
+  setMusicIntensity,
+  setMusicMood,
+  startLessonMusic,
+  stopLessonMusic,
+} from '@/lib/audio/lessonMusic';
+import soundManager, { AUDIO_SETTINGS_STORAGE_KEY } from '@/lib/audio/soundManager';
 import { fireConfetti } from '@/lib/confetti';
 import { playHaptic } from '@/lib/haptics';
 import { communityScene, stashSectionChest, unitSummary } from '@/lib/lesson/completion';
@@ -42,18 +66,27 @@ import {
 } from '@/lib/lesson/outro';
 import { markLessonFinished } from '@/lib/path/arrival';
 import { monthlyQuestKey } from '@/lib/monthlyQuest';
-import { enrollmentsKey, learningPathKey, useLearningPath, type LearningPath } from '@/hooks/useCourse';
-import { setHomeCourse } from '@/lib/homeCourse';
+import {
+  enrollmentsKey,
+  learningPathKey,
+  lessonHref,
+  useLearningPath,
+  type LearningPath,
+} from '@/hooks/useCourse';
+import { courseHomeHref, setHomeCourse } from '@/lib/homeCourse';
+import { buildUnlockHref } from '@/lib/return-to';
 import { monthOf, shiftMonth, useStreakCalendar } from '@/hooks/useStreak';
 import type { CalendarDay } from '@/context/StreakContext';
 import { yesterdayWasFrozen } from '@/lib/streak/week';
 import { useSWRConfig } from 'swr';
-import { getComboTier, isComboMilestone } from '@/lib/lesson/comboTier';
+import { getComboTier } from '@/lib/lesson/comboTier';
 import {
   countWords,
   lessonPhases,
   lessonProgress,
   nextPhase,
+  PHASE_LABEL,
+  PHASE_ORDER,
   readLessonContent,
   type LessonPhase,
 } from '@/lib/lesson/content';
@@ -62,6 +95,10 @@ import { pingLessonOpen, pingLessonQuit, quitStep } from '@/lib/lesson/lessonPin
 import { clearSpot, readSpot, saveSpot } from '@/lib/lesson/resume';
 import { setLessonFocus } from '@/lib/lesson/lessonFocus';
 import { readHistory, recordLesson } from '@/lib/lesson/history';
+import { lessonJourney, type NextLesson } from '@/lib/lesson/journey';
+import { HINT_NUDGE_SECONDS, HINTS_PER_LESSON, nextHint, NO_HINTS, type HintMemory } from '@/lib/lesson/hints';
+import { comboRung, finishTier, isRungStart, PERFECT_BONUS_XP, sessionName, type FinishTier } from '@/lib/lesson/hype';
+import { introLine } from '@/lib/lesson/introLines';
 import {
   isFast,
   lessonBadges,
@@ -103,6 +140,10 @@ import { LessonFooter, type FooterVerdict } from './LessonFooter';
 import { OutOfHeartsSheet, QuitSheet } from './LessonSheets';
 import { LessonTopBar } from './LessonTopBar';
 import { ComboBurst, type ComboBurstEvent } from './ComboBurst';
+import { ComboAura, ComboBreak, type ComboBreakEvent } from './ComboHud';
+import { ApplyTools } from './ApplyTools';
+import { LessonIntro } from './LessonIntro';
+import { PhaseGate } from './PhaseGate';
 import { TeyPreload } from './TeyPreload';
 import type { TeyPose } from './TeySays';
 import type { AnswerState } from './steps/ApplyStep';
@@ -111,6 +152,7 @@ import {
   gradeExercise,
   isResponseComplete,
   RICH_LEARN_KINDS,
+  type Exercise,
   type ExerciseResponse,
   type RichLearnCard,
 } from '@/lib/lesson/blocks';
@@ -121,6 +163,7 @@ import { LessonComplete } from './outro/LessonComplete';
 import { StreakDay, type StreakDayKind } from './outro/StreakDay';
 import { UnitComplete } from './outro/UnitComplete';
 import { LevelComplete } from './outro/LevelComplete';
+import { ChapterJourney } from './outro/ChapterJourney';
 import type { LevelCompletion } from '@/lib/originals';
 import { LeagueClimb } from './outro/LeagueClimb';
 import { computeClimb, type Board, type Climb } from '@/lib/leaderboard/leagueClimb';
@@ -135,6 +178,12 @@ import styles from './Lesson.module.css';
 const CORRECT_TITLES = ['Nice!', 'Correct!', 'Great job!', 'You got it!', 'Nailed it!', 'Spot on!'];
 const RUN_TITLES = ['Unstoppable!', 'On fire!', 'Brilliant!'];
 const FIXED_TITLES = ['Fixed it!', 'Got it now!', "That's the one!"];
+const SKIP_LINES = [
+  "No problem. Here's the answer, take a look and we'll keep going.",
+  'Skipped. Read the answer, it might pop up again later.',
+  "That's fine. Here's how it works.",
+];
+const NUDGE_LINES = ['Stuck? Tap the bulb for a hint.', 'Need a nudge? The bulb has one.', 'A hint might help here. Tap the bulb.'];
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
 /** First-ever lesson: mistakes are free, and Tey makes sure they know it. */
@@ -144,19 +193,38 @@ const FREE_MISTAKE_LINES = [
   "That one's free. First lessons don't cost hearts. The rest? We'll see.",
 ];
 
-/** Back in a lesson they left part-way. */
-const RESUME_LINES = [
-  'Welcome back. I saved your spot. You’re welcome.',
-  'Oh, you came back! Right where you left off.',
-  'I kept your place warm. Let’s finish this one.',
-];
-
 /** How long a video card holds Continue before letting the learner skip ahead. */
 const VIDEO_GRACE_MS = 20_000;
 
 /** When to look for the lesson's XP on the league board (ms after saving). */
 const LEAGUE_READS = [1200, 2600, 4200];
 const missionsUrl = () => `/api/v2/missions/today?timezoneOffset=${new Date().getTimezoneOffset()}`;
+
+/** Simulated lessons finished in this page session (learner preview only). */
+let simulatedToday = 0;
+
+type OutroStep = 'complete' | 'streak' | 'quests' | 'league' | 'unit' | 'level' | 'journey';
+
+interface Gate {
+  from: LessonPhase;
+  to: LessonPhase;
+  result: string | null;
+  ahead: string | null;
+  hot: string | null;
+}
+
+const sameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+/** Music on/off, saved where the settings page keeps it. */
+function saveMusicSetting(on: boolean) {
+  soundManager.setMusicEnabled(on);
+  try {
+    localStorage.setItem(AUDIO_SETTINGS_STORAGE_KEY, soundManager.exportConfigJson());
+  } catch {
+    // Storage blocked: the switch still works for this visit.
+  }
+}
 
 export interface LessonPlayerProps {
   /** The full lesson from the guarded lesson endpoint. */
@@ -166,6 +234,15 @@ export interface LessonPlayerProps {
   isReview: boolean;
   /** Admin reading content: no writes, no hearts, no celebrations. */
   adminReviewMode?: boolean;
+  /**
+   * Learner preview (dev): everything a learner sees, the start screen to the
+   * last screen, with nothing saved and no hearts spent.
+   */
+  simulate?: boolean;
+  /** The course path, when it can't be fetched (previews). */
+  pathOverride?: LearningPath | null;
+  /** Open the next lesson (previews); default: navigate to its lesson route. */
+  onNextLesson?: (next: NextLesson) => void;
   /** Leaving without finishing (quit, out of hearts). */
   onExit: () => void;
   /** The server confirmed completion — mark it done locally. */
@@ -179,6 +256,9 @@ export function LessonPlayer({
   courseId,
   isReview: isReviewAtOpen,
   adminReviewMode = false,
+  simulate = false,
+  pathOverride = null,
+  onNextLesson,
   onExit,
   onCompleted,
   onFinished,
@@ -203,11 +283,22 @@ export function LessonPlayer({
   } = useGamification();
   // Read once, as the lesson opens — finishing it changes all three, and the
   // finish screen is about how things stood before this lesson.
-  const [atOpen] = useState(() => ({
-    daysAway: daysSinceLastLesson,
-    lastAt: lastLessonCompletedAt,
-    longest: longestStreak > 0 ? longestStreak : null,
-  }));
+  const [atOpen] = useState(() => {
+    const history = readHistory();
+    const now = new Date();
+    const lastAt = lastLessonCompletedAt;
+    const doneToday = simulate ? simulatedToday : history.filter((r) => sameDay(new Date(r.at), now)).length;
+    const practicedToday = lastAt ? sameDay(new Date(lastAt), now) : false;
+    return {
+      daysAway: daysSinceLastLesson,
+      lastAt,
+      longest: longestStreak > 0 ? longestStreak : null,
+      lessonsToday: doneToday,
+      streakAtStake: streakDays > 0 && !practicedToday && !isReviewAtOpen ? streakDays : null,
+      bestRunBefore: history.reduce((m, r) => Math.max(m, r.bestCombo ?? 0), 0),
+      enoughHistory: history.length >= 3,
+    };
+  });
   // The streak calendar as it stood when the lesson opened: the week row on
   // the streak screen, and whether a freeze held yesterday (an "unfreeze").
   // Last month too in the first week, so the week and yesterday are whole.
@@ -237,8 +328,15 @@ export function LessonPlayer({
   // A learner's very first lesson costs no hearts: the worst first
   // impression Teyro can make is "out of hearts" before you've finished
   // anything. (Decided at open, like isReview.)
-  const [firstEverLesson] = useState(() => lastLessonCompletedAt == null);
-  const heartsAtRisk = !isReview && !adminReviewMode && !firstEverLesson;
+  const [firstEverLesson] = useState(() => lastLessonCompletedAt == null && !(simulate && simulatedToday > 0));
+  const heartsAtRisk = !isReview && !adminReviewMode && !firstEverLesson && !simulate;
+  /** Real writes: progress, pings, history. Not for admins or previews. */
+  const writes = !adminReviewMode && !simulate;
+
+  // ── Where this lesson sits: its chapter, what's next ────────────────────
+  const { path: fetchedPath } = useLearningPath(pathOverride || simulate ? null : courseId);
+  const coursePath = pathOverride ?? fetchedPath;
+  const journey = useMemo(() => lessonJourney(coursePath, lesson.id), [coursePath, lesson.id]);
 
   // ── Focus: the lesson owns the screen while it's open ───────────────────
   useEffect(() => {
@@ -248,26 +346,87 @@ export function LessonPlayer({
     return () => {
       setLessonFocus(false);
       document.body.style.overflow = overflow;
+      stopLessonMusic(0.3);
     };
   }, []);
 
   const startedAt = useRef(Date.now());
   // Left part-way last time? Pick up at the same card (or the questions).
-  const [spot] = useState(() => (isReviewAtOpen || adminReviewMode ? null : readSpot(lesson.id)));
+  const [spot] = useState(() => (isReviewAtOpen || !writes ? null : readSpot(lesson.id)));
   const [phase, setPhase] = useState<LessonPhase>(() =>
     spot?.phase === 'apply' && phases.includes('apply') ? 'apply' : phases[0],
   );
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // ── Music: a groove under the lesson that builds with the run ───────────
+  const [musicOn, setMusicOn] = useState(() => soundManager.getMusicEnabled());
+  const toggleMusic = () => {
+    const on = !musicOn;
+    setMusicOn(on);
+    saveMusicSetting(on);
+    playHaptic('light', false);
+    if (on) startLessonMusic(phase === 'apply' ? 'apply' : phase === 'learn' ? 'learn' : 'reflect');
+    else stopLessonMusic(0.4);
+  };
+  useEffect(() => {
+    setMusicMood(phase === 'apply' ? 'apply' : phase === 'learn' ? 'learn' : 'reflect');
+  }, [phase]);
+
+  // ── Start: the lesson's start screen (not for an admin read) ────────────
+  const [started, setStarted] = useState(adminReviewMode);
+  // Tey's opening line: picked once (a stable seed), re-read when the
+  // chapter arrives so a Checkpoint or a chapter's last lesson is named.
+  const [introSeed] = useState(() => Math.random());
+  const introText = useMemo(
+    () =>
+      introLine(
+        {
+          resuming: Boolean(spot),
+          firstEver: firstEverLesson,
+          isReview,
+          lessonsToday: atOpen.lessonsToday,
+          streakAtStake: atOpen.streakAtStake,
+          milestone: journey?.milestone ?? null,
+          endsChapter: Boolean(journey?.endsChapter),
+        },
+        <T,>(list: T[]) => list[Math.floor(introSeed * list.length)],
+      ),
+    [spot, firstEverLesson, isReview, atOpen, journey, introSeed],
+  );
+  const start = () => {
+    if (started) return;
+    playSound('lessonStart');
+    playHaptic('heavy', false);
+    setStarted(true);
+    startedAt.current = Date.now();
+    if (musicOn && !adminReviewMode) startLessonMusic(phase === 'apply' ? 'apply' : 'learn');
+  };
 
   const goTo = useCallback((next: LessonPhase) => {
     setPhase(next);
     scrollRef.current?.scrollTo({ top: 0 });
   }, []);
 
+  // ── Gates: a step finished feels finished ───────────────────────────────
+  const [gate, setGate] = useState<Gate | null>(null);
+  const passGate = () => {
+    if (!gate) return;
+    const to = gate.to;
+    setGate(null);
+    playHaptic('medium', false);
+    goTo(to);
+  };
+
   // ── Learn: one card at a time ───────────────────────────────────────────
   // A video card asks to be watched to the end; a broken video never traps
   // anyone (onError counts as ended). Every other card is just CONTINUE.
-  const cards = useMemo(() => learnCards(content.learn), [content]);
+  // The lesson's "you'll learn" card moved to the start screen.
+  const cards = useMemo(() => {
+    const all = learnCards(content.learn);
+    if (adminReviewMode) return all;
+    const rest = all.filter((c) => c.kind !== 'intro');
+    return rest.length > 0 ? rest : all;
+  }, [content, adminReviewMode]);
   const [cardIndex, setCardIndex] = useState(() =>
     spot?.phase === 'learn' ? Math.max(0, Math.min(spot.card, cards.length - 1)) : 0,
   );
@@ -323,7 +482,23 @@ export function LessonPlayer({
     }
     const next = nextPhase(content, 'learn') ?? 'reflect';
     if (next === 'apply') say('pointing', pickPhaseUnlockLine('apply', { watchedVideo: mediaEnded }));
-    goTo(next);
+    if (adminReviewMode) {
+      goTo(next);
+      return;
+    }
+    setGate({
+      from: 'learn',
+      to: next,
+      result: `${cards.length} ${cards.length === 1 ? 'card' : 'cards'} read`,
+      ahead:
+        next === 'apply'
+          ? `${exercises.length} ${exercises.length === 1 ? 'question' : 'questions'} · combo bonus up to +5 XP · ${HINTS_PER_LESSON} hints ready`
+          : next === 'reflect'
+            ? 'A quick check-in, in your own words'
+            : null,
+      hot: null,
+    });
+    scrollRef.current?.scrollTo({ top: 0 });
   };
   const prevCard = () => {
     if (cardIndex === 0) return;
@@ -344,9 +519,22 @@ export function LessonPlayer({
   const [bestCombo, setBestCombo] = useState(0);
   const [comboBurst, setComboBurst] = useState<ComboBurstEvent | null>(null);
   const clearComboBurst = useCallback(() => setComboBurst(null), []);
+  const [comboBreak, setComboBreak] = useState<ComboBreakEvent | null>(null);
+  useEffect(() => {
+    if (!comboBreak) return;
+    const t = setTimeout(() => setComboBreak(null), 2200);
+    return () => clearTimeout(t);
+  }, [comboBreak]);
+  const bestAnnounced = useRef(false);
   const wrongCount = useRef(0);
-  /** Questions answered wrong at least once — the accuracy on the finish screen. */
+  /** Questions answered wrong at least once, or skipped — the accuracy on the finish screen. */
   const missed = useRef(new Set<string>());
+  const skipped = useRef(0);
+  // Hints: a small budget per lesson; memory per question.
+  const [hintsLeft, setHintsLeft] = useState(HINTS_PER_LESSON);
+  const [hintMemory, setHintMemory] = useState<HintMemory>(NO_HINTS);
+  const hintsUsed = useRef(0);
+  const [stalled, setStalled] = useState(false);
   const [tey, setTey] = useState<{ pose: TeyPose; line: string; key: number }>(() => ({
     pose: 'pointing',
     line: '',
@@ -354,8 +542,54 @@ export function LessonPlayer({
   }));
   const say = (pose: TeyPose, line: string) => setTey((t) => ({ pose, line, key: t.key + 1 }));
   const qi = currentQuestion(quiz);
-  const exercise = qi !== null ? exercises[qi] : undefined;
+  const exercise: Exercise | undefined = qi !== null ? exercises[qi] : undefined;
   const fixing = isFixing(quiz);
+
+  // The music follows the run.
+  useEffect(() => {
+    setMusicIntensity(musicLevelForRun(combo));
+  }, [combo]);
+
+  // A question sat on for a while: the bulb offers itself (once per question).
+  const questionKey = `${exercise?.id ?? ''}-${quiz.pos}`;
+  useEffect(() => {
+    setStalled(false);
+    if (!started || phase !== 'apply' || fixIntro || answer !== 'idle' || adminReviewMode) return;
+    const t = setTimeout(() => setStalled(true), (fixing ? 8 : HINT_NUDGE_SECONDS) * 1000);
+    return () => clearTimeout(t);
+  }, [questionKey, started, phase, fixIntro, answer, adminReviewMode, fixing, response]);
+  const canHint = useMemo(
+    () => Boolean(exercise && answer === 'idle' && nextHint(exercise, response, hintMemory)),
+    [exercise, answer, response, hintMemory],
+  );
+  const nudgedFor = useRef('');
+  useEffect(() => {
+    if (!stalled || !canHint || hintsLeft === 0 || nudgedFor.current === questionKey) return;
+    nudgedFor.current = questionKey;
+    say('thinking', pick(NUDGE_LINES));
+  }, [stalled, canHint, hintsLeft, questionKey]);
+
+  const takeHint = () => {
+    if (!exercise || answer !== 'idle' || hintsLeft <= 0) return;
+    const h = nextHint(exercise, response, hintMemory);
+    if (!h) return;
+    setHintMemory(h.memory);
+    if (h.response !== undefined) setResponse(h.response);
+    setHintsLeft((n) => n - 1);
+    hintsUsed.current += 1;
+    setStalled(false);
+    say('pointing', h.line);
+    playSound('hint');
+    playHaptic('light', false);
+  };
+
+  const breakRun = (run: number) => {
+    if (run >= 3) {
+      setComboBreak((b) => ({ run, key: (b?.key ?? 0) + 1 }));
+      setTimeout(() => playSound('comboBreak'), 260);
+    }
+    musicStumble();
+  };
 
   const [shieldAbsorbed, setShieldAbsorbed] = useState(false);
   useEffect(() => {
@@ -384,8 +618,15 @@ export function LessonPlayer({
           ? ['Read it line by line until each line makes sense. The next one is yours.', exercise.explanation].filter(Boolean).join('\n')
           : (exercise.explanation ?? null),
       });
-      say('cheering', run >= 3 ? pickComboLine(run) : tey.line);
-      if (isComboMilestone(run)) setComboBurst((b) => ({ run, key: (b?.key ?? 0) + run }));
+      // A hint's line doesn't linger past the answer it helped with.
+      say('cheering', run >= 3 ? pickComboLine(run) : '');
+      // A personal best (beats every recent lesson), once; else the rungs.
+      const best =
+        !bestAnnounced.current && atOpen.enoughHistory && run >= 3 && run > atOpen.bestRunBefore && !isReview;
+      if (best) bestAnnounced.current = true;
+      if (best || isRungStart(run) || (run > 15 && run % 5 === 0)) {
+        setComboBurst((b) => ({ run, key: (b?.key ?? 0) + run + 1, best }));
+      }
       if (getComboTier(run) === 5 && !reducedMotion) {
         fireConfetti({ particleCount: 26, spread: 60, origin: { y: 0.7 } });
       }
@@ -393,6 +634,7 @@ export function LessonPlayer({
       missed.current.add(exercise.id);
       const broken = combo;
       setCombo(0);
+      breakRun(broken);
       setAnswer('wrong');
       playHaptic('error', false);
       playSound('wrong');
@@ -420,17 +662,39 @@ export function LessonPlayer({
     }
   };
 
+  /** Skip: see the answer, lose nothing but the point. It doesn't come back. */
+  const skip = () => {
+    if (!exercise || answer !== 'idle') return;
+    missed.current.add(exercise.id);
+    skipped.current += 1;
+    setQuiz((q) => answerQuestion(q, true));
+    const broken = combo;
+    setCombo(0);
+    breakRun(broken);
+    setAnswer('wrong');
+    playSound('skip');
+    playHaptic('light', false);
+    let body: string | null = exercise.explanation ?? null;
+    if (exercise.kind === 'mcq') {
+      const right = exercise.options.find((o) => o.id === exercise.correctOptionId)?.text;
+      body = [right ? `Answer: ${right}` : null, exercise.explanation].filter(Boolean).join('\n');
+    }
+    setVerdict({ kind: 'skip', title: 'Skipped', body });
+    say('pointing', pick(SKIP_LINES));
+  };
+
   const afterAnswer = () => {
     playHaptic('medium', false);
     setAnswer('idle');
     setResponse(null);
     setVerdict(null);
+    setHintMemory(NO_HINTS);
     const next = nextQuestion(quiz);
     setQuiz(next);
     if (!quizDone(next) && !reachedMistakes(next)) playSound('next');
     scrollRef.current?.scrollTo({ top: 0 });
     if (quizDone(next)) {
-      goTo(nextPhase(content, 'apply') ?? 'reflect');
+      endPractice();
     } else if (reachedMistakes(next)) {
       setFixIntro(true);
       playSound('fixMistakes');
@@ -439,11 +703,49 @@ export function LessonPlayer({
     }
   };
 
+  /** Practice over: the gate shows how it went, then on to the next step. */
+  const endPractice = () => {
+    const to = nextPhase(content, 'apply') ?? 'reflect';
+    if (adminReviewMode) {
+      goTo(to);
+      return;
+    }
+    const right = Math.max(0, exercises.length - missed.current.size);
+    duckMusic(1.6);
+    setGate({
+      from: 'apply',
+      to,
+      result: `${right} of ${exercises.length} right first time${bestCombo >= 3 ? ` · best run ${bestCombo}` : ''}`,
+      ahead: to === 'reflect' ? 'A quick check-in, in your own words' : to === 'deepen' ? 'Go further, if you like' : null,
+      hot: comboRung(bestCombo) ? `+${comboRung(bestCombo)!.bonusXp} XP combo bonus earned` : null,
+    });
+  };
+
+  /** From the quit sheet: skip the rest of the questions, finish the lesson. */
+  const skipPractice = () => {
+    const unsolved = quiz.order.slice(quiz.pos).filter((i, n, all) => !quiz.solved.includes(i) && all.indexOf(i) === n);
+    for (const i of unsolved) {
+      const ex = exercises[i];
+      if (ex && !missed.current.has(ex.id)) {
+        missed.current.add(ex.id);
+        skipped.current += 1;
+      }
+    }
+    setQuiz((q) => ({ ...q, pos: q.order.length }));
+    setAnswer('idle');
+    setResponse(null);
+    setVerdict(null);
+    setFixIntro(false);
+    setCombo(0);
+    setQuitOpen(false);
+    playSound('skip');
+    goTo(nextPhase(content, 'apply') ?? 'reflect');
+  };
+
   // Out of hearts: only asked for when it matters. Beginner Teyro Originals
   // are forgiving (docs/ORIGINALS_PLAYBOOK.md §14): mistakes still cost
   // hearts, but running out never stops the learner. Read from the map's
   // cached path; until it loads, the normal rule applies.
-  const { path: coursePath } = useLearningPath(courseId);
   const forgivingHearts = !!coursePath?.original?.forgivingHearts;
   const outOfHearts = heartsAtRisk && !forgivingHearts && phase === 'apply' && lives === 0;
   useEffect(() => {
@@ -472,11 +774,13 @@ export function LessonPlayer({
   // FINISH goes straight to "Lesson complete!" and saves underneath, so the
   // payoff never waits on the network. The screens after it (streak, daily
   // quests) appear only when there's something true to show; the rarer
-  // milestones (unit, course, community) follow as full celebrations.
-  const [outro, setOutro] = useState<'complete' | 'streak' | 'quests' | 'league' | 'unit' | 'level' | null>(null);
+  // milestones (unit, course, community) follow as full celebrations, and the
+  // chapter map with the next lesson closes it.
+  const [outro, setOutro] = useState<OutroStep | null>(null);
   const [climb, setClimb] = useState<Climb | null>(null);
   const [stats, setStats] = useState<LessonStats | null>(null);
   const [moment, setMoment] = useState<{ look: Moment; badges: Badge[]; line: string } | null>(null);
+  const [tier, setTier] = useState<FinishTier>(1);
   const [streakLine, setStreakLine] = useState('');
   const [streakBeat, setStreakBeat] = useState<StreakMoment | null>(null);
   const [streakKind, setStreakKind] = useState<StreakDayKind>('extend');
@@ -495,14 +799,14 @@ export function LessonPlayer({
   // measured from (lib/leaderboard/leagueClimb.ts).
   const leagueBefore = useRef<Board | null>(null);
   useEffect(() => {
-    if (isReview || adminReviewMode) return;
+    if (isReview || !writes) return;
     fetch('/api/leagues/me', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         leagueBefore.current = d;
       })
       .catch(() => {});
-  }, [isReview, adminReviewMode]);
+  }, [isReview, writes]);
 
   /**
    * The lesson's XP reaches the league through a background listener, so
@@ -534,7 +838,7 @@ export function LessonPlayer({
   // Today's quests as they stood before this lesson — the start of each bar.
   const questsBefore = useRef<Mission[] | null>(null);
   useEffect(() => {
-    if (isReview || adminReviewMode) return;
+    if (isReview || !writes) return;
     fetch(missionsUrl(), { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
@@ -548,9 +852,8 @@ export function LessonPlayer({
         monthlyBefore.current = d;
       })
       .catch(() => {});
-  }, [isReview, adminReviewMode]);
+  }, [isReview, writes]);
 
-  /** Quests update in the background after a save — look twice at most. */
   /** Goal days are written by the same background listener — look twice. */
   const readMonthlyBeat = () => {
     const attempt = (delay: number, last: boolean) =>
@@ -567,6 +870,7 @@ export function LessonPlayer({
     attempt(1100, false);
   };
 
+  /** Quests update in the background after a save — look twice at most. */
   const readQuestProgress = () => {
     const attempt = (delay: number, last: boolean) =>
       setTimeout(async () => {
@@ -583,11 +887,44 @@ export function LessonPlayer({
     attempt(900, false);
   };
 
+  const firstTryRight = () => Math.max(0, exercises.length - missed.current.size);
+
+  /** Learner preview: what the server would say, without asking it. */
+  const simulatedResult = () => {
+    const right = firstTryRight();
+    const run = Math.min(bestCombo, right);
+    const comboXp = comboRung(run)?.bonusXp ?? 0;
+    const perfectXp =
+      exercises.length > 0 && missed.current.size === 0 && right >= 3 && hintsUsed.current === 0 && skipped.current === 0
+        ? PERFECT_BONUS_XP
+        : 0;
+    const base = typeof lesson.xpReward === 'number' ? lesson.xpReward : 10;
+    simulatedToday += 1;
+    return {
+      success: true,
+      isNewCompletion: !isReview,
+      xpEarned: isReview ? 0 : base + comboXp + perfectXp,
+      xpBreakdown: isReview ? undefined : { lesson: base, section: 0, combo: comboXp, perfect: perfectXp, boost: 1 },
+      coinsEarned: 5,
+      isFirstStreakOfDay: !isReview && !atOpen.lastAt,
+      newStreakDays: Math.max(1, streakDays + (atOpen.streakAtStake ? 1 : 0)),
+    };
+  };
+
   const save = async () => {
     if (saving) return;
     setSaving(true);
     setFinishError(null);
+    if (simulate) {
+      setTimeout(() => {
+        setResult(simulatedResult());
+        onCompleted(lesson.id);
+        setSaving(false);
+      }, 500);
+      return;
+    }
     try {
+      const n = exercises.length;
       const res = await fetch(`/api/courses/${courseId}/complete-lesson`, {
         method: 'POST',
         credentials: 'include',
@@ -596,14 +933,16 @@ export function LessonPlayer({
           lessonId: lesson.id,
           timezoneOffset: new Date().getTimezoneOffset(),
           timeSpentSeconds: secondsRef.current,
-          ...(exercises.length > 0 && {
-            correctAnswers: Math.max(0, exercises.length - missed.current.size),
+          ...(n > 0 && {
+            correctAnswers: firstTryRight(),
             attemptsCount: wrongCount.current + 1,
-            quizScorePct: Math.round(
-              ((exercises.length - Math.min(wrongCount.current, exercises.length)) / exercises.length) * 100,
-            ),
+            quizScorePct: Math.round((firstTryRight() / n) * 100),
             // First-try misses, for the creator's "hardest exercises".
             missedBlockIds: Array.from(missed.current),
+            // The performance bonus (backend lesson-bonus.util.ts).
+            bestCombo,
+            hintsUsed: hintsUsed.current,
+            skipped: skipped.current,
           }),
         }),
       });
@@ -654,6 +993,7 @@ export function LessonPlayer({
 
   const finish = () => {
     if (outro) return;
+    stopLessonMusic(0.5);
     if (adminReviewMode) {
       playHaptic('success', false);
       onFinished();
@@ -697,7 +1037,18 @@ export function LessonPlayer({
         isReview,
       }),
     });
-    if (!isReview) {
+    // How big this finish is: it grows with every lesson today.
+    setTier(
+      finishTier({
+        isReview,
+        lessonsToday: atOpen.lessonsToday + 1,
+        perfect: isPerfect(s) && hintsUsed.current === 0 && skipped.current === 0,
+        bestCombo,
+        endsChapter: Boolean(journey?.endsChapter),
+        milestone: Boolean(journey?.milestone),
+      }),
+    );
+    if (!isReview && writes) {
       recordLesson({ at: Date.now(), lessonId: lesson.id, accuracy: accuracyPct(s), seconds, bestCombo });
     }
     setOutro('complete');
@@ -708,13 +1059,22 @@ export function LessonPlayer({
   const unit = unitSummary(result);
   // Finished a whole Teyro Original level (server: levelComplete).
   const levelDone: LevelCompletion | null = result?.levelComplete ?? null;
+  // The next lesson, opened from the last screen (not across an Original level).
+  const nextUp = journey?.next && !levelDone ? journey.next : null;
 
   /** After the in-lesson screens: the community welcome if earned, then out. */
-  const endOutro = () => {
-    // Always home: the path there shows what's next (there is no unit map).
-    const leave = () => onFinished();
+  const endOutro = (dest: 'home' | 'next' = 'home') => {
+    const leave = () => {
+      if (dest === 'next' && nextUp) {
+        if (onNextLesson) onNextLesson(nextUp);
+        else router.replace(lessonHref(courseId, nextUp.sectionIndex, nextUp.id));
+        return;
+      }
+      // Home: the path there shows what's next.
+      onFinished();
+    };
     const welcome =
-      result?.isNewCompletion === false
+      result?.isNewCompletion === false || simulate
         ? null
         : communityScene(result, (id) => {
             navigatedRef.current = true;
@@ -734,18 +1094,34 @@ export function LessonPlayer({
     setLessonFocus(false);
   };
 
+  const startNext = () => {
+    if (!nextUp) {
+      endOutro('home');
+      return;
+    }
+    playHaptic('heavy', false);
+    if (nextUp.locked) {
+      playSound('start');
+      router.push(buildUnlockHref(courseId, courseHomeHref(courseId)));
+      return;
+    }
+    playSound('start');
+    endOutro('next');
+  };
+
   const nextOutro = () => {
     playHaptic('medium', false);
     const fresh = result?.isNewCompletion !== false;
-    const order: ('complete' | 'streak' | 'quests' | 'league' | 'unit' | 'level')[] = ['complete'];
+    const order: OutroStep[] = ['complete'];
     if (fresh && result?.isFirstStreakOfDay) order.push('streak');
     if (fresh && (questRows.length > 0 || monthly)) order.push('quests');
     if (fresh && climb) order.push('league');
     if (fresh && unit) order.push('unit');
     if (fresh && levelDone) order.push('level');
+    if (journey && !levelDone) order.push('journey');
     const next = order[order.indexOf(outro ?? 'complete') + 1];
     if (!next) {
-      endOutro();
+      endOutro('home');
       return;
     }
     if (next === 'streak') {
@@ -777,8 +1153,8 @@ export function LessonPlayer({
   };
 
   // ── Creator analytics: opened, and where a learner left part-way ────────
-  // Only real attempts count: no replays, no admin reads.
-  const tracked = !isReview && !adminReviewMode;
+  // Only real attempts count: no replays, no admin reads, no previews.
+  const tracked = !isReview && writes;
   const leftRef = useRef(false);
   const whereRef = useRef(() => quitStep(phase, { index: cardIndex, total: cards.length }, exercise?.id));
   whereRef.current = () => quitStep(phase, { index: cardIndex, total: cards.length }, exercise?.id);
@@ -791,13 +1167,6 @@ export function LessonPlayer({
     if (outro !== null) clearSpot(lesson.id);
     else saveSpot(lesson.id, phase, cardIndex);
   }, [tracked, outro, phase, cardIndex, lesson.id]);
-  // Say so, once, when they come back mid-lesson.
-  const greetedSpot = useRef(false);
-  useEffect(() => {
-    if (!spot || greetedSpot.current) return;
-    greetedSpot.current = true;
-    say('pointing', pick(RESUME_LINES));
-  }, [spot]);
   const progressRef = useRef(0);
   const reportLeft = useCallback(() => {
     if (!tracked || leftRef.current || finishedRef.current) return;
@@ -822,8 +1191,8 @@ export function LessonPlayer({
   const [quitOpen, setQuitOpen] = useState(false);
   const requestQuit = () => {
     playHaptic('light', false);
-    // Nothing to lose in a replay or an admin read — just leave.
-    if (isReview || adminReviewMode) onExit();
+    // Nothing to lose in a replay, an admin read, or before it started.
+    if (isReview || adminReviewMode || !started) onExit();
     else {
       setQuitOpen(true);
       playSound('quitOpen');
@@ -841,6 +1210,17 @@ export function LessonPlayer({
   });
   progressRef.current = progress;
 
+  // What's left, for the quit sheet.
+  const questionsLeft = Math.max(0, exercises.length - quiz.solved.length);
+  const leftLine =
+    phase === 'learn'
+      ? `${cards.length - cardIndex} ${cards.length - cardIndex === 1 ? 'card' : 'cards'}${exercises.length ? ` and ${exercises.length} questions` : ''} left`
+      : phase === 'apply'
+        ? `${questionsLeft} ${questionsLeft === 1 ? 'question' : 'questions'} left`
+        : phase === 'reflect'
+          ? 'a quick reflection left'
+          : 'one tap left';
+
   let footer: {
     label: string;
     onAction: () => void;
@@ -848,7 +1228,11 @@ export function LessonPlayer({
     hint?: string;
     variant?: 'primary' | 'correct' | 'wrong' | 'ghost';
   } = { label: 'Continue', onAction: () => {} };
-  if (phase === 'learn') {
+  if (!started) {
+    footer = { label: 'Start', onAction: start };
+  } else if (gate) {
+    footer = { label: "Let's go", onAction: passGate, variant: 'primary' };
+  } else if (phase === 'learn') {
     footer = {
       label: 'Continue',
       disabled: learnGated,
@@ -883,7 +1267,11 @@ export function LessonPlayer({
                 : undefined,
             onAction: check,
           }
-        : { label: answer === 'correct' ? 'Continue' : 'Got it', onAction: afterAnswer };
+        : {
+            label: answer === 'correct' || verdict?.kind === 'skip' ? 'Continue' : 'Got it',
+            onAction: afterAnswer,
+            variant: verdict?.kind === 'skip' ? 'primary' : undefined,
+          };
   } else if (phase === 'reflect') {
     footer =
       reflectSub === 'confidence'
@@ -914,7 +1302,18 @@ export function LessonPlayer({
     footer =
       finishError && !result
         ? { label: 'Try again', disabled: saving, onAction: () => void save() }
-        : { label: 'Continue', disabled: !result, onAction: nextOutro };
+        : outro === 'journey'
+          ? {
+              label: nextUp
+                ? nextUp.locked
+                  ? 'Unlock the full course'
+                  : nextUp.newChapter
+                    ? 'Start the next chapter'
+                    : `Start lesson ${(journey?.lessonNumber ?? 0) + 1}`
+                : 'Continue',
+              onAction: startNext,
+            }
+          : { label: 'Continue', disabled: !result, onAction: nextOutro };
   }
 
   // Keyboard: Enter presses the button, 1–9 pick an answer, Esc asks to quit.
@@ -922,7 +1321,7 @@ export function LessonPlayer({
   footerRef.current = footer;
   const selectRef = useRef<(i: number) => void>(() => {});
   selectRef.current = (i: number) => {
-    if (outro) return;
+    if (outro || !started || gate) return;
     if (phase === 'reflect' && reflectSub === 'confidence') {
       const o = CONFIDENCE_OPTIONS[i];
       if (!o) return;
@@ -937,8 +1336,10 @@ export function LessonPlayer({
     }
     if (phase !== 'apply' || fixIntro || answer !== 'idle' || !exercise) return;
     if (exercise.kind === 'mcq' && i < exercise.options.length) {
+      if (hintMemory.eliminated.includes(exercise.options[i].id)) return;
       setResponse({ kind: 'mcq', optionId: exercise.options[i].id });
     } else if (exercise.kind === 'findBug' && i < exercise.lines.length) {
+      if (hintMemory.eliminatedLines.includes(i)) return;
       setResponse({ kind: 'findBug', line: i });
     } else {
       return;
@@ -948,7 +1349,7 @@ export function LessonPlayer({
   };
   // Learn cards: arrow keys and swipes move between them.
   const cardNavRef = useRef({ next: nextCard, prev: prevCard, active: false });
-  cardNavRef.current = { next: nextCard, prev: prevCard, active: phase === 'learn' && !outro };
+  cardNavRef.current = { next: nextCard, prev: prevCard, active: phase === 'learn' && !outro && started && !gate };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -975,17 +1376,25 @@ export function LessonPlayer({
 
   const stepKey =
     outro ??
-    (phase === 'learn'
-      ? `learn-${cardIndex}`
-      : phase === 'apply'
-        ? fixIntro
-          ? 'fix-intro'
-          : `apply-${quiz.pos}`
-        : phase === 'reflect'
-          ? `reflect-${reflectSub}`
-          : phase);
-  const slideFrom = phase === 'learn' && !outro ? cardDir * 48 : 48;
+    (gate
+      ? `gate-${gate.from}`
+      : phase === 'learn'
+        ? `learn-${cardIndex}`
+        : phase === 'apply'
+          ? fixIntro
+            ? 'fix-intro'
+            : `apply-${quiz.pos}`
+          : phase === 'reflect'
+            ? `reflect-${reflectSub}`
+            : phase);
+  const slideFrom = phase === 'learn' && !outro && !gate ? cardDir * 48 : 48;
   const replay = isReview || result?.isNewCompletion === false;
+  const fullBleed = Boolean(outro || fixIntro || gate);
+  const lessonsTodayNow = atOpen.lessonsToday + 1;
+  const sessionChain = !replay && outro ? { count: lessonsTodayNow, name: sessionName(lessonsTodayNow) } : null;
+  const bonus = result?.xpBreakdown
+    ? { combo: result.xpBreakdown.combo ?? 0, perfect: result.xpBreakdown.perfect ?? 0, section: result.xpBreakdown.section ?? 0 }
+    : null;
 
   return (
     <div
@@ -996,6 +1405,25 @@ export function LessonPlayer({
     >
       <TeyPreload />
 
+      {!started && (
+        <LessonIntro
+          title={lesson.title ?? 'Lesson'}
+          journey={journey}
+          phases={phases}
+          outcomes={content.learn.whatYouWillLearn ?? []}
+          xp={typeof lesson.xpReward === 'number' ? lesson.xpReward : null}
+          minutes={typeof lesson.durationMinutes === 'number' ? lesson.durationMinutes : null}
+          questions={exercises.length}
+          lessonsToday={atOpen.lessonsToday}
+          streakAtStake={atOpen.streakAtStake}
+          resuming={Boolean(spot)}
+          isReview={isReview}
+          teyLine={introText}
+          onStart={start}
+          onClose={onExit}
+        />
+      )}
+
       {/* The finish screens have no chrome — the lesson is over. */}
       {outro ? (
         <div className="shrink-0 h-[calc(env(safe-area-inset-top)+16px)]" />
@@ -1003,13 +1431,18 @@ export function LessonPlayer({
         <LessonTopBar
           progress={progress}
           phase={phase}
-          combo={phase === 'apply' ? combo : 0}
-          hearts={adminReviewMode || firstEverLesson ? null : lives}
+          combo={phase === 'apply' && !gate ? combo : 0}
+          hearts={adminReviewMode || firstEverLesson ? null : simulate ? 5 : lives}
           onClose={requestQuit}
+          musicOn={adminReviewMode ? null : musicOn}
+          onToggleMusic={toggleMusic}
+          stampPhases={adminReviewMode ? PHASE_ORDER : ['deepen']}
         />
       )}
 
+      {!outro && phase === 'apply' && <ComboAura run={combo} />}
       {!outro && <ComboBurst burst={comboBurst} onDone={clearComboBurst} />}
+      {!outro && <ComboBreak event={comboBreak} />}
 
       <AnimatePresence>
         {shieldAbsorbed && (
@@ -1029,7 +1462,7 @@ export function LessonPlayer({
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div
-          className={`mx-auto w-full max-w-[640px] px-4 md:px-6 ${outro ? 'min-h-full flex flex-col' : 'pt-4 md:pt-10 pb-10'}`}
+          className={`mx-auto w-full max-w-[640px] px-4 md:px-6 ${fullBleed ? 'min-h-full flex flex-col' : 'pt-4 md:pt-10 pb-10'}`}
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -1044,14 +1477,14 @@ export function LessonPlayer({
               animate="center"
               exit="exit"
               transition={{ type: 'spring', stiffness: 460, damping: 38 }}
-              className={outro || fixIntro ? 'flex-1 flex flex-col' : undefined}
+              className={fullBleed ? 'flex-1 flex flex-col' : undefined}
               // Swipe between Learn cards, like turning a page.
-              drag={phase === 'learn' && !outro && !reducedMotion ? 'x' : false}
+              drag={phase === 'learn' && !outro && !gate && !reducedMotion ? 'x' : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.25}
               dragSnapToOrigin
               onDragEnd={(_, info) => {
-                if (phase !== 'learn' || outro) return;
+                if (phase !== 'learn' || outro || gate) return;
                 if (info.offset.x < -80) nextCard();
                 else if (info.offset.x > 80) prevCard();
               }}
@@ -1062,10 +1495,13 @@ export function LessonPlayer({
                   line={moment?.line ?? ''}
                   confetti={moment?.look.confetti ?? 'burst'}
                   entrance={moment?.look.entrance ?? 'bounce'}
-                  badges={replay ? [] : (moment?.badges ?? [])}
+                  badges={replay ? [] : (moment?.badges ?? []).filter((b) => b.id !== 'lessonsToday')}
                   pose={moment?.look.pose ?? 'cheering'}
                   cards={statCards(stats, result ? (result.xpEarned ?? 0) : null, { isReview: replay, pick: labelPick })}
                   error={finishError}
+                  tier={tier}
+                  bonus={bonus}
+                  session={sessionChain}
                 />
               )}
               {outro === 'streak' && streakBeat && (
@@ -1081,7 +1517,11 @@ export function LessonPlayer({
               {outro === 'league' && climb && <LeagueClimb climb={climb} />}
               {outro === 'unit' && unit && <UnitComplete unit={unit} line={unitLine} />}
               {outro === 'level' && levelDone && <LevelComplete level={levelDone} line={levelLine} />}
-              {!outro && phase === 'learn' && (
+              {outro === 'journey' && journey && <ChapterJourney journey={journey} onHome={() => endOutro('home')} />}
+              {!outro && gate && (
+                <PhaseGate from={gate.from} to={gate.to} result={gate.result} ahead={gate.ahead} hot={gate.hot} onGo={passGate} />
+              )}
+              {!outro && !gate && phase === 'learn' && (
                 <LearnStep
                   title={lesson.title ?? 'Lesson'}
                   card={card}
@@ -1095,15 +1535,15 @@ export function LessonPlayer({
                   onRichDone={() => richCard && markRichDone(richCard.id)}
                 />
               )}
-              {!outro && phase === 'apply' && fixIntro && <FixMistakes count={mistakesLeft(quiz)} />}
-              {!outro && phase === 'apply' && !fixIntro && exercise && (
+              {!outro && !gate && phase === 'apply' && fixIntro && <FixMistakes count={mistakesLeft(quiz)} />}
+              {!outro && !gate && phase === 'apply' && !fixIntro && exercise && (
                 <ExerciseStep
                   key={`${exercise.id}-${quiz.pos}`}
                   exercise={exercise}
                   eyebrow={
                     fixing
                       ? `Fix a mistake${mistakesLeft(quiz) > 1 ? ` · ${mistakesLeft(quiz)} left` : ''}`
-                      : `Apply · ${quiz.pos + 1} of ${quiz.firstPass}`
+                      : `${PHASE_LABEL.apply} · ${quiz.pos + 1} of ${quiz.firstPass}`
                   }
                   scenario={content.apply.scenario}
                   response={response}
@@ -1112,9 +1552,24 @@ export function LessonPlayer({
                   }}
                   answer={answer}
                   tey={tey}
+                  eliminated={hintMemory.eliminated}
+                  eliminatedLines={hintMemory.eliminatedLines}
+                  tools={
+                    adminReviewMode ? undefined : (
+                      <ApplyTools
+                        hintsLeft={hintsLeft}
+                        hintsTotal={HINTS_PER_LESSON}
+                        canHint={canHint}
+                        nudge={stalled}
+                        onHint={takeHint}
+                        onSkip={skip}
+                        locked={answer !== 'idle'}
+                      />
+                    )
+                  }
                 />
               )}
-              {!outro && phase === 'reflect' && (
+              {!outro && !gate && phase === 'reflect' && (
                 <ReflectStep
                   sub={reflectSub}
                   reflect={reflect}
@@ -1137,7 +1592,7 @@ export function LessonPlayer({
                   }
                 />
               )}
-              {!outro && phase === 'deepen' && (
+              {!outro && !gate && phase === 'deepen' && (
                 <DeepenStep title={content.deepen.title} description={content.deepen.description} resources={content.resources} />
               )}
             </motion.div>
@@ -1150,13 +1605,25 @@ export function LessonPlayer({
         onAction={footer.onAction}
         disabled={footer.disabled}
         hint={footer.hint}
-        verdict={!outro && phase === 'apply' ? verdict : null}
+        verdict={!outro && !gate && phase === 'apply' ? verdict : null}
         variant={outro ? (finishError && !result ? 'primary' : 'correct') : footer.variant}
       />
 
       <QuitSheet
         open={quitOpen}
         progressPct={Math.round(progress * 100)}
+        left={leftLine}
+        xp={!isReview && typeof lesson.xpReward === 'number' ? lesson.xpReward : null}
+        combo={phase === 'apply' ? combo : 0}
+        streakAtStake={atOpen.streakAtStake}
+        unlocks={
+          journey?.next && !journey.next.locked
+            ? journey.next.newChapter
+              ? `the next chapter: ${journey.next.chapterTitle}`
+              : `Lesson ${journey.lessonNumber + 1}: ${journey.next.title}`
+            : null
+        }
+        onSkipPractice={phase === 'apply' && exercises.length > 0 && !gate ? skipPractice : undefined}
         onKeepGoing={() => {
           playSound('keepGoing');
           playHaptic('medium', false);

@@ -26,6 +26,7 @@ import { assessCourseReadiness } from './course-readiness.util';
 import { CourseReviewService } from '../course-review/course-review.service';
 import * as crypto from 'crypto';
 import { slugUpdateFor, uniqueCourseSlug } from './course-slug.util';
+import { lessonPerformanceBonus, type LessonPerformance } from './lesson-bonus.util';
 
 const ALLOWED_LESSON_TYPES = ['video', 'text', 'quiz', 'assignment', 'project', 'audio', 'download', 'link', 'live', 'reflection'];
 
@@ -898,6 +899,7 @@ export class CourseService {
     quizScorePct?: number,
     correctAnswers?: number,
     missedBlockIds?: string[],
+    performance?: Pick<LessonPerformance, 'bestCombo' | 'hintsUsed' | 'skipped'>,
   ) {
     if (!lessonId) {
       throw new BadRequestException('lessonId is required');
@@ -1056,8 +1058,18 @@ export class CourseService {
         // Honour the creator-configured reward (fallback 10) — previously a
         // flat 10 was paid no matter what the lesson promised.
         const baseLessonXp = Math.max(1, Math.min(500, lesson.xpReward ?? 10));
+        // How they did: a run and a flawless lesson add a little
+        // (lesson-bonus.util.ts — clamped and capped).
+        const bonus = lessonPerformanceBonus({
+          correctAnswers,
+          quizScorePct,
+          bestCombo: performance?.bestCombo,
+          hintsUsed: performance?.hintsUsed,
+          skipped: performance?.skipped,
+        });
+        const sectionBonusXp = sectionCompleted ? SECTION_BONUS_XP : 0;
         const baseXpEarned =
-          baseLessonXp + (sectionCompleted ? SECTION_BONUS_XP : 0);
+          baseLessonXp + sectionBonusXp + bonus.combo + bonus.perfect;
         // A purchased XP Boost multiplies the whole award, section bonus
         // included — the learner bought a window, not a per-lesson coupon.
         const xpEarned = Math.round(baseXpEarned * boost.xp);
@@ -1162,6 +1174,13 @@ export class CourseService {
           // Needed by the celebration payload builder after the tx commits.
           sectionId: lessonSectionId,
           xpEarned,
+          xpBreakdown: {
+            lesson: baseLessonXp,
+            section: sectionBonusXp,
+            combo: bonus.combo,
+            perfect: bonus.perfect,
+            boost: boost.xp,
+          },
           newXpTotal: updatedProfile.xp,
           newStreakDaysTotal: updatedProfile.streakDays,
           newCoinsTotal: updatedProfile.coins,
@@ -1330,6 +1349,7 @@ export class CourseService {
         isNewCompletion: true,
         completedLessons: txResult.completed,
         xpEarned: txResult.xpEarned,
+        ...(txResult.xpBreakdown ? { xpBreakdown: txResult.xpBreakdown } : {}),
         coinsEarned: 5,
         newXp: txResult.newXpTotal,
         newStreakDays: txResult.newStreakDaysTotal,

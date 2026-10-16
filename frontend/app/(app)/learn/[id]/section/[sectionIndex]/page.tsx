@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { mutate } from 'swr';
 import { LessonHost, LessonLoading } from '@/components/lesson/LessonHost';
@@ -25,8 +25,9 @@ export default function LessonRoute() {
   const searchParams = useSearchParams();
   const courseId = String(params.id);
   const sectionIndex = parseInt(String(params.sectionIndex), 10);
-  // Captured once: the lesson this visit is for.
-  const [lessonId] = useState(() => searchParams.get('lesson'));
+  // The lesson this visit is for. It changes when the last screen of a
+  // lesson opens the next one, and the host below remounts for it.
+  const lessonId = searchParams.get('lesson');
 
   // Arriving cold (a push, a fresh tab): fetch the lesson NOW, alongside the
   // path, not after it. A no-op when home already prefetched it.
@@ -64,6 +65,7 @@ export default function LessonRoute() {
 
   return (
     <LessonHost
+      key={`${sectionIndex}-${lessonId}`}
       courseId={courseId}
       sectionIndex={sectionIndex}
       lessons={lessons}

@@ -123,6 +123,9 @@ export class CourseController {
     @Body('quizScorePct') quizScorePct?: number,
     @Body('correctAnswers') correctAnswers?: number,
     @Body('missedBlockIds') missedBlockIds?: unknown,
+    @Body('bestCombo') bestCombo?: number,
+    @Body('hintsUsed') hintsUsed?: number,
+    @Body('skipped') skipped?: number,
   ) {
     return await this.courseService.markLessonComplete(
       req.user.id as string,
@@ -135,6 +138,11 @@ export class CourseController {
       typeof quizScorePct === 'number' ? quizScorePct : undefined,
       typeof correctAnswers === 'number' ? correctAnswers : undefined,
       Array.isArray(missedBlockIds) ? (missedBlockIds as string[]) : undefined,
+      {
+        bestCombo: typeof bestCombo === 'number' ? bestCombo : undefined,
+        hintsUsed: typeof hintsUsed === 'number' ? hintsUsed : undefined,
+        skipped: typeof skipped === 'number' ? skipped : undefined,
+      },
     );
   }
 
