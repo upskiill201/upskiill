@@ -25,7 +25,7 @@ export type CodeLanguage =
 
 /** The shared cast (docs/originals/CAST.md). */
 /** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen';
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen' | 'njeri';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────

@@ -132,7 +132,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -162,6 +162,7 @@ export const CAST_NAMES: Record<CastId, string> = {
   sofia: 'Sofía',
   tomas: 'Tomás',
   carmen: 'Carmen',
+  njeri: 'Njeri',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
