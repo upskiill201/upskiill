@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Present a clear, honest data story',
       ],
       skills: ['Python', 'pandas', 'Data cleaning', 'Data analysis', 'Statistics', 'Data storytelling'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/data-science-for-beginners.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },
