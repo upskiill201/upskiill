@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Fix a missed expectation without blame',
       ],
       skills: ['Expectations', 'Delegation', 'Leadership', 'Briefing', 'Project management', 'Communication'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/how-to-set-clear-expectations.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },

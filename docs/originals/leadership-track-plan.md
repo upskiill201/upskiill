@@ -26,7 +26,7 @@
 | 8 | How to Build Trust in a Team | Planned | Planned |
 | 9 | How to Coach and Mentor Others | Planned | Planned |
 | 10 | How to Manage Remote Teams | Planned | Planned |
-| 11 | How to Set Clear Expectations | Planned | Planned |
+| 11 | How to Set Clear Expectations | **Arjun's 30-Day Build**: two new juniors, a picky client and Diwali | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 12 | How to Think Strategically | Planned | Planned |
 
 Each course's storyline is chosen when it's built, so every course feels different while staying in one shared world.
