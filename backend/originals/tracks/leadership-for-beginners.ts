@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './leadership-for-beginners/beginner/u01';
 import u02 from './leadership-for-beginners/beginner/u02';
 import u03 from './leadership-for-beginners/beginner/u03';
+import u04 from './leadership-for-beginners/beginner/u04';
 
 /**
  * Leadership for Beginners — storyline "Lucía's First 90 Days". The first
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Lead calmly through a crisis and manage up to your boss',
       ],
       skills: ['Leadership', 'Management', 'One-on-ones', 'Delegation', 'Feedback', 'Psychological safety'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
