@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: How to Motivate a Team. A still frame of
+     Miracle's rollout: the team survey jumping from 2.1 to 4.6, the
+     clinics-live counter at 300, and the bell. No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --pink: #EC4899;
+    --pink-dark: #9D174D;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --green: #22C55E;
+    --green-dark: #15803D;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 130px; width: 760px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--brand);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 104px; line-height: 1.02; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--white); background: var(--pink); padding: 0 20px 8px; border-radius: 26px; box-shadow: 0 8px 0 var(--pink-dark); display: inline-block; margin: 10px 0 6px; }
+  .sub { margin-top: 36px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 640px; }
+
+  .stage { position: absolute; left: 900px; top: 60px; width: 660px; height: 900px; }
+
+  /* Survey card: 2.1 -> 4.6 */
+  .survey { position: absolute; left: 40px; top: 40px; width: 560px; padding: 28px 34px 30px; background: var(--white); border-radius: 36px; box-shadow: 0 12px 0 var(--brand-deep); transform: rotate(-3deg); }
+  .survey .label { font-weight: 800; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); }
+  .survey .q { margin-top: 6px; font-weight: 700; font-size: 24px; color: rgba(7,18,51,.65); }
+  .bars { margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .bar { display: flex; align-items: center; gap: 16px; }
+  .bar .wk { width: 92px; font-weight: 800; font-size: 22px; color: var(--ink); }
+  .bar .track { flex: 1; height: 34px; background: var(--mist); border-radius: 999px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 999px; }
+  .bar .val { width: 70px; text-align: right; font-weight: 800; font-size: 34px; color: var(--ink); }
+
+  /* Clinics counter */
+  .counter { position: absolute; left: 120px; top: 440px; width: 420px; padding: 26px 30px; background: var(--ink); border-radius: 32px; box-shadow: 0 12px 0 #030919; transform: rotate(2deg); text-align: center; }
+  .counter .label { font-weight: 800; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .counter .num { font-weight: 800; font-size: 150px; letter-spacing: -0.05em; line-height: 1; color: var(--white); margin-top: 6px; }
+  .counter .of { font-weight: 800; font-size: 28px; color: var(--green); margin-top: 4px; }
+
+  /* The bell */
+  .bell { position: absolute; left: 500px; top: 700px; width: 150px; height: 150px; border-radius: 50%; background: var(--amber); box-shadow: 0 10px 0 var(--amber-dark); display: flex; align-items: center; justify-content: center; transform: rotate(12deg); }
+  .bell svg { width: 82px; height: 82px; }
+  .ding { position: absolute; font-weight: 800; font-size: 34px; color: var(--white); }
+
+  .chip { position: absolute; padding: 12px 22px; border-radius: 18px; font-weight: 800; font-size: 26px; color: var(--ink); white-space: nowrap; background: var(--white); box-shadow: 0 6px 0 var(--brand-deep); }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-240px;top:-320px;opacity:.55"></div>
+  <div class="blob" style="width:560px;height:560px;left:-240px;bottom:-290px;opacity:.45"></div>
+  <div class="ring" style="width:150px;height:150px;left:780px;top:830px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:36px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Short course</span>
+    <h1>How to<br/>Motivate<br/><em>a Team</em></h1>
+    <p class="sub">The least motivated team in the company. Eight weeks to launch.</p>
+  </div>
+
+  <div class="stage">
+    <div class="survey">
+      <div class="label">Team survey</div>
+      <div class="q">"I feel motivated at work"</div>
+      <div class="bars">
+        <div class="bar"><span class="wk">Week 1</span><span class="track"><span class="fill" style="display:block;width:42%;background:#94A3B8"></span></span><span class="val">2.1</span></div>
+        <div class="bar"><span class="wk">Week 8</span><span class="track"><span class="fill" style="display:block;width:92%;background:var(--green)"></span></span><span class="val">4.6</span></div>
+      </div>
+    </div>
+
+    <div class="counter">
+      <div class="label">Clinics live</div>
+      <div class="num">300</div>
+      <div class="of">of 300</div>
+    </div>
+
+    <div class="chip" style="left:10px;top:700px;transform:rotate(-6deg)">MY CLINICS</div>
+
+    <div class="bell">
+      <svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6z" fill="#fff"/><circle cx="12" cy="19.5" r="2" fill="#fff"/></svg>
+    </div>
+    <span class="ding" style="left:556px;top:640px;transform:rotate(-14deg)">ding!</span>
+  </div>
+</body>
+</html>

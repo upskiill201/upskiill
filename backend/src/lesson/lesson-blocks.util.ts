@@ -19,7 +19,7 @@ export const MAX_VIDEO_SECONDS = 15 * 60;
 // exercises: 30 so a Teyro Originals Checkpoint (25–30 exercises) fits.
 const LIMITS = { learnCards: 30, exercises: 30, options: 6, lines: 30, pairs: 8, blanks: 6, bank: 12 };
 const RICH = { beats: 14, choiceOptions: 4, turns: 10, replies: 3, steps: 8, notes: 6, hotspots: 8, statements: 6, stdin: 10, checks: 8 };
-const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri'];
+const CAST = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri', 'kavya', 'joel', 'bisi', 'chidi', 'halima', 'folake', 'emmanuel'];
 const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const blank = (s: unknown) => typeof s !== 'string' || !s.trim();

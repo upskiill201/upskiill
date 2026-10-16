@@ -4,6 +4,7 @@
 > 12 short courses, each **5 chapters × 10 lessons** (`format: 'short'`: Checkpoint at lesson 5, Chapter Challenge at lesson 10).
 > Built one at a time. After each course: checker, type-checks, preview, local commit, and a report. Pushed to staging only after the founder's go-ahead.
 > The founder trimmed the list from 16 to 12 on 2026-10-16. Dropped: Resolve Team Conflict, Hold People Accountable, Handle Difficult Employees, Manage Organizational Change.
+> **Paused after course 4 (Motivate a Team), 2026-10-16:** the founder moved on to another track. Next here, when resumed: How to Delegate Effectively.
 
 ## How every course in this track works
 
@@ -19,14 +20,14 @@
 | 1 | Leadership for Beginners | **Lucía's First 90 Days**: promoted over her best work friend, leading the team she used to sit in | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 2 | How to Lead Without Being the Boss | **Remi's Six-Week Fix**: refunds from 21 days to 5 through five teams who don't report to him | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 3 | How to Delegate Effectively | Planned | Planned |
-| 4 | How to Motivate a Team | Planned | Planned |
+| 4 | How to Motivate a Team | **Miracle's Rollout**: the least motivated team at Afiya, eight weeks to 300 clinics | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 5 | How to Give Feedback That Helps People Improve | Planned | Planned |
 | 6 | How to Manage Underperforming Team Members | Planned | Planned |
 | 7 | How to Make Decisions as a Leader | Planned | Planned |
 | 8 | How to Build Trust in a Team | Planned | Planned |
 | 9 | How to Coach and Mentor Others | Planned | Planned |
 | 10 | How to Manage Remote Teams | Planned | Planned |
-| 11 | How to Set Clear Expectations | Planned | Planned |
+| 11 | How to Set Clear Expectations | **Arjun's 30-Day Build**: two new juniors, a picky client and Diwali | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 12 | How to Think Strategically | Planned | Planned |
 
 Each course's storyline is chosen when it's built, so every course feels different while staying in one shared world.
