@@ -118,6 +118,7 @@ These appear in one Original only and don't join the shared cast.
 | Chidi | How to Motivate a Team | Clinic Success's top performer at Afiya. Sharp, fast, bored; has a job offer from a bank in his inbox. |
 | Halima | How to Motivate a Team | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. |
 | Folake | How to Motivate a Team | Afiya's COO, Miracle's boss. Fast, demanding, fair; thinks motivation is "a pizza problem" until shown otherwise. |
+| Emmanuel | How to Motivate a Team | Clinic Success agent at Afiya. The funniest person on the team, does the minimum, always eating chin chin. Not lazy: bored, and quietly brilliant at fixing the same bug twice. |
 
 ## Decisions
 

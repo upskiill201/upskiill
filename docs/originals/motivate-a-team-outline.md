@@ -10,7 +10,7 @@ Eighteen months ago Miracle (24, from Buea) chose the Lagos health-tech startup,
 - **Bisi**: first support hire, 4 years in. Warm, very funny, quietly cynical after three managers in two years.
 - **Chidi**: top performer, bored, has a bank job offer in his inbox.
 - **Halima**: newest, a former nurse from Kano. Brilliant with clinics, unsure she belongs in tech.
-- **Emmanuel** (narrated): does the minimum, jokes the most.
+- **Emmanuel**: does the minimum, jokes the most. Bored, not lazy.
 - **Folake** (COO): fast, demanding, fair; thinks motivation is "a pizza problem".
 
 Miracle's arc: from "how do I get them to work harder?" to "what's getting in their way, and what makes this work worth doing?"
