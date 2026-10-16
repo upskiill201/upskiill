@@ -608,7 +608,7 @@ export class CourseService {
     const [enrollment, entitlement, original] = await Promise.all([
       this.prisma.enrollment.findUnique({
         where: { userId_courseId: { userId, courseId: course.id } },
-        select: { completedLessons: true },
+        select: { completedLessons: true, testedOutLessons: true },
       }),
       findActiveEntitlement(this.prisma, userId, course),
       this.originalsService.describe(course),
@@ -617,6 +617,10 @@ export class CourseService {
     const orderedLessons = course.sections.flatMap((s) => s.lessons);
     const completedLessons = Array.isArray(enrollment?.completedLessons)
       ? (enrollment.completedLessons as unknown[]).filter((id): id is string => typeof id === 'string')
+      : [];
+    // Skipped by Jump ahead / placement (Originals): open on the map, never "done".
+    const testedOutLessons = Array.isArray(enrollment?.testedOutLessons)
+      ? (enrollment.testedOutLessons as unknown[]).filter((id): id is string => typeof id === 'string')
       : [];
 
     const {
@@ -634,6 +638,7 @@ export class CourseService {
       sections,
       enrolled: !!enrollment,
       completedLessons,
+      testedOutLessons,
       access: {
         hasAccess: isInstructor || !!entitlement || isFreeCourse({ ...course, price }),
         freePreviewLessonIds: this.freePreviewIdsFor(course, orderedLessons),

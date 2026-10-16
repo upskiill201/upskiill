@@ -99,3 +99,21 @@ export function levelLabel(level: number | null | undefined): string {
 export function isMilestone(value: unknown): value is LessonMilestone {
   return typeof value === 'string' && (MILESTONES as readonly string[]).includes(value);
 }
+
+// ─── Jump ahead and placement (test-out.service.ts) ────────────────────────
+
+/** Questions in a Jump ahead test, spread across the chapters it skips. */
+export const JUMP_QUESTIONS = 12;
+/** A test with fewer questions than this can't be offered or passed. */
+export const JUMP_MIN_QUESTIONS = 5;
+/** Share right to pass a Jump ahead test (founder, 2026-10-16). */
+export const JUMP_PASS_MARK = 0.8;
+/** Placement: questions per chapter; one miss is allowed before the walk stops. */
+export const PLACEMENT_PER_UNIT = 3;
+
+/** Tracks that offer "I already know some of this" placement on enrolment. */
+export const PLACEMENT_TRACKS = ['python-for-beginners'] as const;
+
+export function hasPlacementTest(trackSlug: string | null | undefined): boolean {
+  return !!trackSlug && (PLACEMENT_TRACKS as readonly string[]).includes(trackSlug);
+}
