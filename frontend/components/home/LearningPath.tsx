@@ -404,7 +404,9 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
 
   return (
     <div ref={rootRef} className="relative w-full pb-10">
+      {/* Placement needs a chapter to place into: shown once the course has two or more. */}
       {hasPlacementTest(path.original?.trackSlug) &&
+        model.units.length >= 2 &&
         path.completedLessons.length === 0 &&
         (path.testedOutLessons ?? []).length === 0 && (
           <PlacementCard
