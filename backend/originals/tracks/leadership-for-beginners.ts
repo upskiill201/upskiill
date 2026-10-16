@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Lead calmly through a crisis and manage up to your boss',
       ],
       skills: ['Leadership', 'Management', 'One-on-ones', 'Delegation', 'Feedback', 'Psychological safety'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/leadership-for-beginners.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },

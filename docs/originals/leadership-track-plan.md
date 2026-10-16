@@ -16,7 +16,7 @@
 
 | # | Course | Storyline (lead) | Status |
 |---|---|---|---|
-| 1 | Leadership for Beginners | **Lucía's First 90 Days**: promoted over her best work friend, leading the team she used to sit in | Built 2026-10-16 |
+| 1 | Leadership for Beginners | **Lucía's First 90 Days**: promoted over her best work friend, leading the team she used to sit in | Built 2026-10-16 (5 chapters, 50 lessons) |
 | 2 | How to Lead Without Being the Boss | Remi, no title, has to rally five strangers | Planned |
 | 3 | How to Delegate Effectively | Planned | Planned |
 | 4 | How to Motivate a Team | Planned | Planned |
