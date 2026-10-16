@@ -24,8 +24,8 @@ export type CodeLanguage =
   | 'plaintext';
 
 /** The shared cast (docs/originals/CAST.md). */
-/** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego) are listed in CAST.md too. */
-export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego';
+/** Course-only characters (efua, asante; brian, zanele, achieng, kamau, felix, pauline, emeka, wanjiku; jayden, priya, femi; diego; marta, sofia, tomas, carmen) are listed in CAST.md too. */
+export type CastId = 'ada' | 'remi' | 'lucia' | 'arjun' | 'grace' | 'kofi' | 'miracle' | 'clinton' | 'david' | 'efua' | 'asante' | 'brian' | 'zanele' | 'achieng' | 'kamau' | 'felix' | 'pauline' | 'emeka' | 'wanjiku' | 'jayden' | 'priya' | 'femi' | 'diego' | 'marta' | 'sofia' | 'tomas' | 'carmen';
 export type Speaker = 'narrator' | 'tey' | CastId;
 
 // ─── Learn cards ───────────────────────────────────────────────────────────
@@ -200,7 +200,7 @@ export interface OriginalTrackDef {
   /** Stable, e.g. "ai-at-work". */
   slug: string;
   title: string;
-  category: 'AI' | 'Coding' | 'Career' | 'Communication';
+  category: 'AI' | 'Coding' | 'Career' | 'Communication' | 'Leadership & Management';
   description: string;
   /** A sample for /dev/originals only: checked and exported, never written to a database. */
   devOnly?: boolean;

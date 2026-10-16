@@ -104,6 +104,10 @@ These appear in one Original only and don't join the shared cast.
 | Femi | The Art of Small Talk | Kinwell developer, Lagos-born and Manchester-raised. Talks to everyone; Grace's unofficial small-talk coach; overdoes it sometimes. |
 | Diego | How to Make People Listen to You | Lucía's senior colleague in Mexico City. Experienced, funny, well liked, and interrupts constantly without noticing. Not a villain: he changes once Lucía holds the floor kindly and clearly. |
 | Mr Rao | How to Make People Listen to You | Arjun's client, a busy online-shop founder in Pune who reads only the first line of every email. Named extra (narrated). |
+| Marta | Leadership for Beginners (and the Leadership track) | Lucía's desk-mate and best work friend for six years at Nopal (Mexico City snack brand). Applied for the same promotion. Dependable, says yes to everything, quietly overloaded. |
+| Sofía | Leadership track | Newest hire on Lucía's team at Nopal. Brilliant, quiet, rarely speaks first (also in How to Make People Listen to You, ch4). |
+| Tomás | Leadership track | Junior marketer on Lucía's team. Eager, fast, makes mistakes fast and sometimes hides them. |
+| Carmen | Leadership track | Nopal's marketing director, Lucía's boss. Direct, busy, fair; wants no surprises. |
 
 ## Decisions
 
