@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 import type {
   AuthoredCodeCheck,
   OriginalTrackDef,
@@ -50,6 +52,10 @@ def __teyro_run(src, stdin_lines, exprs):
 
     # import this prints the Zen only on first import: forget it so every run shows it.
     sys.modules.pop('this', None)
+    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV.
+    _write = globals().get('__teyro_write_datasets')
+    if _write is not None and '.csv' in src:
+        _write()
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
     sys.stdout = out
@@ -86,15 +92,41 @@ type Runner = (code: string, stdin: string[], exprs: string[]) => RunOut;
 /* eslint-disable @typescript-eslint/no-explicit-any -- the bits of Pyodide's API used here */
 interface PyodideLike {
   runPython(code: string): unknown;
+  loadPackage(names: string[]): Promise<unknown>;
   toPy(value: unknown): any;
   globals: { get(name: string): any };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-let runnerPromise: Promise<Runner> | null = null;
+/**
+ * The practice datasets the browser loads (frontend/public/python), found
+ * from wherever the checker runs: the repo root or backend/.
+ */
+function readDatasets(): string | null {
+  const candidates = [
+    join(process.cwd(), '..', 'frontend', 'public', 'python', 'teyro_datasets.py'),
+    join(process.cwd(), 'frontend', 'public', 'python', 'teyro_datasets.py'),
+    join(__dirname, '..', '..', '..', 'frontend', 'public', 'python', 'teyro_datasets.py'),
+  ];
+  const found = candidates.find((p) => existsSync(p));
+  return found ? readFileSync(found, 'utf8') : null;
+}
 
-async function getRunner(): Promise<Runner> {
-  runnerPromise ??= (async () => {
+/** Packages a program imports. Mirrors packagesFor in frontend/lib/code/pythonRunner.ts. */
+const PACKAGE_IMPORTS: Record<string, RegExp> = {
+  pandas: /^\s*(import\s+pandas\b|from\s+pandas\b)/m,
+  numpy: /^\s*(import\s+numpy\b|from\s+numpy\b)/m,
+};
+export function packagesFor(code: string): string[] {
+  return Object.keys(PACKAGE_IMPORTS).filter((p) => PACKAGE_IMPORTS[p].test(code));
+}
+
+let pyPromise: Promise<PyodideLike> | null = null;
+let runnerPromise: Promise<Runner> | null = null;
+const loadedPackages = new Set<string>();
+
+async function getPython(): Promise<PyodideLike> {
+  pyPromise ??= (async () => {
     // The CommonJS build: the ESM one can't find its own files under ts-node.
     // Typed locally because pyodide is a dev-only dependency (authoring tool),
     // and this file is compiled with the app.
@@ -104,6 +136,31 @@ async function getRunner(): Promise<Runner> {
     };
     const py = await loadPyodide();
     py.runPython(HARNESS);
+    const datasets = readDatasets();
+    if (datasets) py.runPython(datasets);
+    return py;
+  })();
+  return pyPromise;
+}
+
+/** Load pandas/numpy once, the same way the browser worker does (warnings off on first import). */
+async function ensurePackages(packages: string[]): Promise<void> {
+  const missing = packages.filter((p) => !loadedPackages.has(p));
+  if (missing.length === 0) return;
+  const py = await getPython();
+  await py.loadPackage(missing);
+  py.runPython(
+    'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
+      missing.map((p) => '    import ' + p).join('\n') +
+      // Copy-on-write, as in runner.worker.js: no SettingWithCopyWarning in the output.
+      (missing.includes('pandas') ? '\nimport pandas\npandas.set_option("mode.copy_on_write", True)\n' : ''),
+  );
+  missing.forEach((p) => loadedPackages.add(p));
+}
+
+async function getRunner(): Promise<Runner> {
+  runnerPromise ??= (async () => {
+    const py = await getPython();
     const run = py.globals.get('__teyro_run');
     return (code: string, stdin: string[], exprs: string[]) => {
       const result = run(code, py.toPy(stdin), py.toPy(exprs));
@@ -118,6 +175,9 @@ async function getRunner(): Promise<Runner> {
   })();
   return runnerPromise;
 }
+
+/** A Python warning (pandas' SettingWithCopyWarning, a DeprecationWarning...) that learners would see in the output. */
+const PY_WARNING = /\b[A-Z]\w*Warning: /;
 
 const loose = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
 const exact = (s: string) =>
@@ -176,6 +236,14 @@ export async function verifyTrackCode(
   track: OriginalTrackDef,
 ): Promise<LintIssue[]> {
   if (!hasCode(track)) return [];
+  const allCode: string[] = [];
+  for (const level of track.levels)
+    for (const unit of level.units)
+      for (const lesson of unit.lessons) {
+        lesson.learn.forEach((c) => c.kind === 'tryIt' && allCode.push(c.code));
+        lesson.apply.items.forEach((e) => e.kind === 'writeCode' && allCode.push(e.solution, e.starter ?? ''));
+      }
+  await ensurePackages([...new Set(allCode.flatMap(packagesFor))]);
   const run = await getRunner();
   const issues: LintIssue[] = [];
   for (const level of track.levels) {
@@ -185,6 +253,9 @@ export async function verifyTrackCode(
         lesson.learn.forEach((card, i) => {
           if (card.kind !== 'tryIt') return;
           const out = run(card.code, card.stdin ?? [], []);
+          if (PY_WARNING.test(out.stdout)) {
+            issues.push({ level: 'warning', where, message: `Try it live card ${i + 1} prints a Python warning: ${out.stdout.match(PY_WARNING)?.[0].trim()}` });
+          }
           if (card.expectError && !out.error) {
             issues.push({ level: 'warning', where, message: `Try it live card ${i + 1} is marked expectError but runs without one.` });
           }
@@ -199,6 +270,9 @@ export async function verifyTrackCode(
         lesson.apply.items.forEach((ex, i) => {
           if (ex.kind !== 'writeCode') return;
           const sol = grade(run, ex.solution, ex.checks, ex.stdin);
+          if (PY_WARNING.test(sol.out.stdout)) {
+            issues.push({ level: 'warning', where, message: `Exercise ${i + 1}: the solution prints a Python warning: ${sol.out.stdout.match(PY_WARNING)?.[0].trim()}` });
+          }
           if (sol.out.error) {
             issues.push({
               level: 'error',

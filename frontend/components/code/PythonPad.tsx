@@ -328,7 +328,8 @@ export function PythonPad({
   const inputId = useId();
 
   // Start loading Python as soon as a pad is on screen.
-  useEffect(() => warmPython(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- warm once, for the code first shown
+  useEffect(() => warmPython(value), []);
 
   const needsInputBox = !stdin && usesInput(value);
 
