@@ -44,6 +44,20 @@ const LOAD_TIMEOUT_MS = 90_000;
 let worker: Worker | null = null;
 let status: PythonStatus = 'idle';
 let readyPromise: Promise<void> | null = null;
+/** Extra packages the current worker already has (a new worker starts empty). */
+let loadedPackages = new Set<string>();
+const packageLoads = new Map<string, Promise<void>>();
+
+/** Packages Python can load on request, and the import that needs each one. */
+const PACKAGE_IMPORTS: Record<string, RegExp> = {
+  pandas: /^\s*(import\s+pandas\b|from\s+pandas\b)/m,
+  numpy: /^\s*(import\s+numpy\b|from\s+numpy\b)/m,
+};
+
+/** Which extra packages a program imports (pandas, numpy). */
+export function packagesFor(code: string): string[] {
+  return Object.keys(PACKAGE_IMPORTS).filter((p) => PACKAGE_IMPORTS[p].test(code));
+}
 let nextId = 1;
 let queue: Promise<unknown> = Promise.resolve();
 const listeners = new Set<(s: PythonStatus) => void>();
@@ -79,6 +93,8 @@ function startWorker(): Promise<void> {
         w.terminate();
         worker = null;
         readyPromise = null;
+        loadedPackages = new Set();
+        packageLoads.clear();
       }
       setStatus('error');
       reject(err);
@@ -99,11 +115,60 @@ function startWorker(): Promise<void> {
   return readyPromise;
 }
 
-/** Start loading Python in the background. Safe to call many times. */
-export function warmPython(): void {
+/**
+ * Load extra packages into the current worker, once each. Shows as
+ * "loading" while it downloads; runs only start their timer after this.
+ */
+async function ensurePackages(packages: string[]): Promise<void> {
+  await startWorker();
+  const w = worker!;
+  const missing = packages.filter((p) => !loadedPackages.has(p));
+  if (missing.length === 0) return;
+  const key = missing.slice().sort().join(',');
+  let pending = packageLoads.get(key);
+  if (!pending) {
+    setStatus('loading');
+    const id = nextId++;
+    pending = new Promise<void>((resolve, reject) => {
+      const timer = window.setTimeout(() => {
+        w.removeEventListener('message', onMessage);
+        packageLoads.delete(key);
+        setStatus('error');
+        reject(new Error('The data tools took too long to load. Check your connection and try again.'));
+      }, LOAD_TIMEOUT_MS);
+      const onMessage = (e: MessageEvent) => {
+        if (e.data?.id !== id) return;
+        if (e.data.type !== 'packagesLoaded' && e.data.type !== 'packagesError') return;
+        window.clearTimeout(timer);
+        w.removeEventListener('message', onMessage);
+        packageLoads.delete(key);
+        if (e.data.type === 'packagesLoaded') {
+          setStatus('ready');
+          if (worker === w) missing.forEach((p) => loadedPackages.add(p));
+          resolve();
+        } else {
+          setStatus('error');
+          reject(new Error("The data tools couldn't load. Check your connection and try again."));
+        }
+      };
+      w.addEventListener('message', onMessage);
+      w.postMessage({ type: 'loadPackages', id, packages: missing });
+    });
+    packageLoads.set(key, pending);
+  }
+  return pending;
+}
+
+/**
+ * Start loading Python in the background. Safe to call many times. Pass the
+ * code on screen to also fetch the packages it imports (pandas takes a while).
+ */
+export function warmPython(code?: string): void {
   if (typeof window === 'undefined' || typeof Worker === 'undefined') return;
-  startWorker().catch(() => {
-    /* reported through the status */
+  const packages = code ? packagesFor(code) : [];
+  const warm = packages.length ? ensurePackages(packages) : startWorker();
+  warm.catch(() => {
+    /* reported through the status, and again on the next run */
   });
 }
 
@@ -112,11 +177,15 @@ function resetWorker() {
   worker?.terminate();
   worker = null;
   readyPromise = null;
+  loadedPackages = new Set();
+  packageLoads.clear();
   setStatus('idle');
 }
 
 async function runNow(code: string, opts: RunOptions): Promise<RawRunResult> {
   await startWorker();
+  const packages = packagesFor(code);
+  if (packages.length) await ensurePackages(packages);
   const w = worker!;
   const id = nextId++;
   const started = performance.now();

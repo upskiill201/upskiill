@@ -8,7 +8,9 @@
  * worker, so an infinite loop can never freeze the lesson.
  *
  *   in   { id, code, stdin: string[], exprs: string[] }
+ *        { type: 'loadPackages', id, packages: string[] }   (pandas, numpy)
  *   out  { type: 'ready' } once Python has loaded
+ *        { type: 'packagesLoaded', id } | { type: 'packagesError', id, message }
  *        { type: 'loadError', message }
  *        { type: 'result', id, stdout, error: { type, message, line } | null, checks: boolean[] }
  */
@@ -51,6 +53,10 @@ def __teyro_run(src, stdin_lines, exprs):
 
     # import this prints the Zen only on first import: forget it so every run shows it.
     sys.modules.pop('this', None)
+    # Fresh copies of the practice datasets (teyro_datasets.py) for any program that reads a CSV.
+    _write = globals().get('__teyro_write_datasets')
+    if _write is not None and '.csv' in src:
+        _write()
     ns = {'__name__': '__main__', '__builtins__': builtins}
     saved = (sys.stdout, sys.stderr, builtins.input)
     sys.stdout = out
@@ -80,6 +86,12 @@ def __teyro_run(src, stdin_lines, exprs):
     return {'stdout': text, 'error': error, 'checks': checks}
 `;
 
+// Extra packages a lesson can use, loaded on request (the page asks before it
+// starts a run's timer, because the first download takes a while). Importing
+// once here, with warnings off, keeps pandas' pyarrow notice out of the
+// learner's output.
+const ALLOWED_PACKAGES = ['pandas', 'numpy'];
+
 let pyodide = null;
 
 const ready = (async () => {
@@ -88,6 +100,12 @@ const ready = (async () => {
     // eslint-disable-next-line no-undef
     pyodide = await loadPyodide({ indexURL: INDEX_URL });
     pyodide.runPython(HARNESS);
+    try {
+      const res = await fetch('/python/teyro_datasets.py');
+      if (res.ok) pyodide.runPython(await res.text());
+    } catch {
+      /* no practice datasets: programs that read them will say the file is missing */
+    }
     self.postMessage({ type: 'ready' });
   } catch (err) {
     self.postMessage({ type: 'loadError', message: String((err && err.message) || err) });
@@ -95,11 +113,29 @@ const ready = (async () => {
   }
 })();
 
+async function loadPackages(id, packages) {
+  const wanted = (packages || []).filter((p) => ALLOWED_PACKAGES.includes(p));
+  try {
+    await pyodide.loadPackage(wanted);
+    pyodide.runPython(
+      'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
+        wanted.map((p) => '    import ' + p).join('\n'),
+    );
+    self.postMessage({ type: 'packagesLoaded', id });
+  } catch (err) {
+    self.postMessage({ type: 'packagesError', id, message: String((err && err.message) || err) });
+  }
+}
+
 self.onmessage = async (event) => {
-  const { id, code, stdin, exprs } = event.data || {};
+  const { id, code, stdin, exprs, type, packages } = event.data || {};
   try {
     await ready;
   } catch {
+    return;
+  }
+  if (type === 'loadPackages') {
+    await loadPackages(id, packages);
     return;
   }
   const run = pyodide.globals.get('__teyro_run');
