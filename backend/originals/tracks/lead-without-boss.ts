@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Present results so the whole team shines',
       ],
       skills: ['Influence', 'Leadership', 'Stakeholder management', 'Collaboration', 'Persuasion', 'Project leadership'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/how-to-lead-without-being-the-boss.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },
