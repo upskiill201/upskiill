@@ -151,7 +151,9 @@ async function ensurePackages(packages: string[]): Promise<void> {
   await py.loadPackage(missing);
   py.runPython(
     'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
-      missing.map((p) => '    import ' + p).join('\n'),
+      missing.map((p) => '    import ' + p).join('\n') +
+      // Copy-on-write, as in runner.worker.js: no SettingWithCopyWarning in the output.
+      (missing.includes('pandas') ? '\nimport pandas\npandas.set_option("mode.copy_on_write", True)\n' : ''),
   );
   missing.forEach((p) => loadedPackages.add(p));
 }
@@ -173,6 +175,9 @@ async function getRunner(): Promise<Runner> {
   })();
   return runnerPromise;
 }
+
+/** A Python warning (pandas' SettingWithCopyWarning, a DeprecationWarning...) that learners would see in the output. */
+const PY_WARNING = /\b[A-Z]\w*Warning: /;
 
 const loose = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
 const exact = (s: string) =>
@@ -248,6 +253,9 @@ export async function verifyTrackCode(
         lesson.learn.forEach((card, i) => {
           if (card.kind !== 'tryIt') return;
           const out = run(card.code, card.stdin ?? [], []);
+          if (PY_WARNING.test(out.stdout)) {
+            issues.push({ level: 'warning', where, message: `Try it live card ${i + 1} prints a Python warning: ${out.stdout.match(PY_WARNING)?.[0].trim()}` });
+          }
           if (card.expectError && !out.error) {
             issues.push({ level: 'warning', where, message: `Try it live card ${i + 1} is marked expectError but runs without one.` });
           }
@@ -262,6 +270,9 @@ export async function verifyTrackCode(
         lesson.apply.items.forEach((ex, i) => {
           if (ex.kind !== 'writeCode') return;
           const sol = grade(run, ex.solution, ex.checks, ex.stdin);
+          if (PY_WARNING.test(sol.out.stdout)) {
+            issues.push({ level: 'warning', where, message: `Exercise ${i + 1}: the solution prints a Python warning: ${sol.out.stdout.match(PY_WARNING)?.[0].trim()}` });
+          }
           if (sol.out.error) {
             issues.push({
               level: 'error',

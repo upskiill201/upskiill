@@ -92,6 +92,11 @@ def __teyro_run(src, stdin_lines, exprs):
 // learner's output.
 const ALLOWED_PACKAGES = ['pandas', 'numpy'];
 
+// Copy-on-write (the pandas 3 default): cleaning a copy with
+// df["col"] = ... never prints a SettingWithCopyWarning into the output.
+// Mirrored in backend/src/originals/originals-code-verify.ts.
+const PANDAS_SETUP = '\nimport pandas\npandas.set_option("mode.copy_on_write", True)\n';
+
 let pyodide = null;
 
 const ready = (async () => {
@@ -119,7 +124,8 @@ async function loadPackages(id, packages) {
     await pyodide.loadPackage(wanted);
     pyodide.runPython(
       'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
-        wanted.map((p) => '    import ' + p).join('\n'),
+        wanted.map((p) => '    import ' + p).join('\n') +
+        (wanted.includes('pandas') ? PANDAS_SETUP : ''),
     );
     self.postMessage({ type: 'packagesLoaded', id });
   } catch (err) {
