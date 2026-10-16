@@ -19,7 +19,7 @@ const unit: OriginalUnit = {
   key: 'u03',
   title: 'What good looks like',
   marker: 'Day 12',
-  story: 'Joel\'s "ready for review" has no tests and no Hindi. Kavya ships fast and stops at 80%. Arjun\'s idea of good was, once again, only in his head.',
+  story: 'Joel\'s "ready for review" has no tests and no Hindi. Arjun\'s idea of good was, once again, only in his head.',
   goal: 'Make "good" visible: a bar people can check, early looks, honest priorities and realistic dates.',
   lessons: [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10],
 };
