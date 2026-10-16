@@ -15,7 +15,7 @@ const lesson: OriginalLesson = {
     {
       kind: 'explore',
       title: 'Miracle to Clinic Success, Saturday 9:30 a.m.',
-      text: 'Eight weeks ago our motivation score was 2.1 and we had six broken headsets. This morning, 300 clinics are live. Nurse Adaeze says Ikorodu sent 400 results this week. Chidi kept 40 northern clinics online through power cuts nobody else could beat. Halima trained Kano in Hausa. Bisi\'s script took 7 clinics live in one day. Emmanuel went from 4 clinics a week to 16 in a day. You did this in normal hours. Monday morning is off. Thank you.',
+      text: 'Eight weeks ago our motivation score was 2.1 and we had six broken headsets. This morning, 300 clinics are live. Nurse Adaeze says Ikorodu sent 400 results this week. Chidi kept 40 northern clinics online through power cuts nobody else could beat. Halima trained Kano in Hausa. Bisi\'s script took 7 clinics live in one day. Emmanuel went from 4 clinics a week to 16 in a day. You did this in normal hours. Monday morning is off. Friday\'s survey said 4.6 out of 5. Thank you.',
       hotspots: [
         { phrase: 'our motivation score was 2.1 and we had six broken headsets', note: 'Telling the story back: the ending means more when you remember the start.' },
         { phrase: 'This morning, 300 clinics are live.', note: 'The outcome goal, met. Clinics, not tickets.' },

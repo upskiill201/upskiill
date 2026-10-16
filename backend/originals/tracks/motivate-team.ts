@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Keep a team going through its hardest week',
       ],
       skills: ['Motivation', 'Leadership', 'Engagement', 'Recognition', 'Team building', 'Retention'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/how-to-motivate-a-team.jpg',
       upcomingUnits: 0,
       units: [u01, u02, u03, u04, u05],
     },
