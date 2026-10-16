@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './lead-without-boss/beginner/u01';
 import u02 from './lead-without-boss/beginner/u02';
 import u03 from './lead-without-boss/beginner/u03';
+import u04 from './lead-without-boss/beginner/u04';
 
 /**
  * How to Lead Without Being the Boss — storyline "Remi's Six-Week Fix".
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Present results so the whole team shines',
       ],
       skills: ['Influence', 'Leadership', 'Stakeholder management', 'Collaboration', 'Persuasion', 'Project leadership'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
