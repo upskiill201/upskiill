@@ -13,12 +13,12 @@
 #
 #   deliveries_clean.csv  400 Synergix deliveries, March 2026, tidy
 #   deliveries.csv        the same data as it arrives: messy city names,
-#                         blanks, duplicate rows, "412 km" text, a typo
+#                         blanks, duplicate rows, "161 km" text, a typo
 #
 # The story inside the data: orders placed on Friday afternoon (from 2 p.m.)
 # or on Saturday wait over the weekend, so most of them arrive late. Driver
-# Otieno looks like the worst driver, but only because he gets the longest
-# routes.
+# Baraka looks like by far the worst driver, mostly because he gets the
+# longest routes: compare like with like and the gap shrinks to a little.
 
 import random as __teyro_random
 
@@ -47,7 +47,7 @@ def __teyro_build_deliveries():
         km = km + rng.randrange(0, 11)
         long_route = km > 250
         if long_route and rng.random() < 0.7:
-            driver = 'Otieno'
+            driver = 'Baraka'
         else:
             driver = rng.choice(drivers)
         vehicle = 'Motorbike' if km < 60 and rng.random() < 0.5 else ('Truck' if km > 250 else 'Van')
