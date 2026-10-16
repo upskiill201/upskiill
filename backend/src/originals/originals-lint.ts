@@ -74,6 +74,13 @@ function lintLesson(
     if ((ex.kind === 'mcq' || ex.kind === 'chatReply') && !ex.options[ex.answer]) push('error', `"${ex.prompt}": answer index ${ex.answer} has no option.`);
     if (ex.kind === 'findBug' && !ex.lines[ex.bug]) push('error', `"${ex.prompt}": bug index ${ex.bug} has no line.`);
     if (ex.kind === 'sortGroups' && ex.items.some((it) => !ex.groups[it.group])) push('error', `"${ex.prompt}": an item points at a group that doesn't exist.`);
+    // Two cards with the same text look identical, so the matching is ambiguous.
+    if (ex.kind === 'matchPairs') {
+      for (const side of [0, 1] as const) {
+        const texts = ex.pairs.map((p) => p[side].trim().toLowerCase());
+        if (new Set(texts).size !== texts.length) push('error', `"${ex.prompt}": two ${side ? 'right' : 'left'}-hand cards say the same thing.`);
+      }
+    }
     // The player ignores case and punctuation (blocks.ts normalizeTyped), so
     // an answer made only of symbols, like "[?]", can never be typed right.
     if (ex.kind === 'typeAnswer' && ex.answers.some((a) => !/[\p{L}\p{N}]/u.test(a))) {

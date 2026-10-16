@@ -81,6 +81,21 @@ describe('grading', () => {
     expect(gradeExercise(dup, { kind: 'orderLines', order: [0, 2, 1] })).toBe(true);
   });
 
+  it('accepts either of two right cards that read the same', () => {
+    const dup: Exercise = {
+      id: 'm',
+      kind: 'matchPairs',
+      prompt: 'Who does it?',
+      pairs: [
+        { id: 'a', left: 'Draft', right: 'You' },
+        { id: 'b', left: 'Check', right: 'The AI' },
+        { id: 'c', left: 'Fix', right: 'you ' },
+      ],
+    };
+    expect(gradeExercise(dup, { kind: 'matchPairs', matches: { a: 'c', b: 'b', c: 'a' } })).toBe(true);
+    expect(gradeExercise(dup, { kind: 'matchPairs', matches: { a: 'b', b: 'a', c: 'c' } })).toBe(false);
+  });
+
   it('treats a response of the wrong kind as wrong, never a crash', () => {
     expect(gradeExercise(mcq, { kind: 'findBug', line: 0 })).toBe(false);
     expect(gradeExercise(mcq, null)).toBe(false);
