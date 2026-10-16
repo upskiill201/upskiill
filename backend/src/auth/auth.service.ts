@@ -1080,6 +1080,8 @@ export class AuthService {
         courseId: true,
         progress: true,
         completedLessons: true,
+        // Skipped by Jump ahead / placement: not done, but not next either.
+        testedOutLessons: true,
         // When they enrolled: home's first-lesson card counts the wait.
         createdAt: true,
         course: {
@@ -1163,6 +1165,12 @@ export class AuthService {
           : [],
       );
 
+      const testedOut = new Set(
+        Array.isArray(enrollment.testedOutLessons)
+          ? (enrollment.testedOutLessons as unknown[]).filter((id): id is string => typeof id === 'string')
+          : [],
+      );
+
       let totalLessons = 0;
       // Counted against PUBLISHED lessons, from the same `completedLessons`
       // the map reads — not from the stored `progress` %, which can drift
@@ -1182,7 +1190,7 @@ export class AuthService {
         for (const lesson of section.lessons) {
           totalLessons += 1;
           if (done.has(lesson.id)) completedCount += 1;
-          if (!nextLesson && !done.has(lesson.id)) {
+          if (!nextLesson && !done.has(lesson.id) && !testedOut.has(lesson.id)) {
             nextLesson = {
               id: lesson.id,
               title: lesson.title,

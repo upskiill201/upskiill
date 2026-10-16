@@ -557,6 +557,10 @@ model Enrollment {
   courseId         String
   progress         Int      @default(0)
   completedLessons Json?    @default("[]")
+  /// Lessons skipped by passing a Jump ahead or placement test (Originals). Never
+  /// counted as completed: no XP, chests, streaks or completion stats.
+  testedOutLessons Json?    @default("[]")
+  placedAt         DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   course           Course   @relation(fields: [courseId], references: [id])

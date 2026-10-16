@@ -1197,6 +1197,7 @@ describe('AuthService', () => {
           courseId: true,
           progress: true,
           completedLessons: true,
+          testedOutLessons: true,
           createdAt: true,
           course: {
             select: {
@@ -1281,6 +1282,27 @@ describe('AuthService', () => {
         sectionTitle: 'Basics',
         number: 3,
       });
+    });
+
+    it('skips tested-out lessons (Jump ahead) for nextLesson but never counts them as completed', async () => {
+      (prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+        {
+          id: '1',
+          courseId: '100',
+          completedLessons: [],
+          testedOutLessons: ['a-1', 'a-2'],
+          course: { id: '100', title: 'Course A' },
+        },
+      ]);
+      (prisma.section.findMany as jest.Mock).mockResolvedValue([
+        { courseId: '100', title: 'Intro', lessons: [{ id: 'a-1', title: 'One' }, { id: 'a-2', title: 'Two' }] },
+        { courseId: '100', title: 'Basics', lessons: [{ id: 'b-1', title: 'Three' }] },
+      ]);
+
+      const [result] = await service.getMyEnrollments('1');
+
+      expect(result.completedCount).toBe(0);
+      expect(result.nextLesson).toMatchObject({ id: 'b-1', sectionIndex: 1 });
     });
 
     it('returns a null nextLesson when every published lesson is done', async () => {
