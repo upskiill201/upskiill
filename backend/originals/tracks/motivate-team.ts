@@ -2,6 +2,7 @@ import type { OriginalTrackDef } from '../../src/originals/originals-authoring.t
 import u01 from './motivate-team/beginner/u01';
 import u02 from './motivate-team/beginner/u02';
 import u03 from './motivate-team/beginner/u03';
+import u04 from './motivate-team/beginner/u04';
 
 /**
  * How to Motivate a Team — storyline "Miracle's Rollout". Leadership &
@@ -40,8 +41,8 @@ const track: OriginalTrackDef = {
         'Keep a team going through its hardest week',
       ],
       skills: ['Motivation', 'Leadership', 'Engagement', 'Recognition', 'Team building', 'Retention'],
-      upcomingUnits: 2,
-      units: [u01, u02, u03],
+      upcomingUnits: 1,
+      units: [u01, u02, u03, u04],
     },
   ],
 };
