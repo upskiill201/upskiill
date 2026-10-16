@@ -1,5 +1,7 @@
 import type { OriginalTrackDef } from '../../src/originals/originals-authoring.types';
 import u01 from './python/beginner/u01';
+import u02 from './python/beginner/u02';
+import u03 from './python/beginner/u03';
 
 /**
  * Python for Beginners — storyline "Ada's First Program".
@@ -38,8 +40,8 @@ const track: OriginalTrackDef = {
       skills: ['Python', 'Programming basics', 'Problem solving', 'Debugging'],
       // Cover: frontend/public/originals, designed in originals/covers.
       thumbnailUrl: '/originals/python-for-beginners.jpg',
-      upcomingUnits: 12,
-      units: [u01],
+      upcomingUnits: 10,
+      units: [u01, u02, u03],
     },
   ],
 };
