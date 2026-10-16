@@ -33,6 +33,8 @@ export interface LessonHostProps {
   /** Lesson ids of the section, in order — sequencing is checked against it. */
   lessons: { id: string }[];
   completedLessons: string[];
+  /** Skipped by Jump ahead / placement: passed for sequencing, not done. */
+  testedOutLessons?: string[];
   onCompleted: (lessonId: string) => void;
   /** The lesson to open (from ?lesson=). */
   lessonId: string | null;
@@ -65,6 +67,7 @@ export function LessonHost({
   sectionIndex,
   lessons,
   completedLessons,
+  testedOutLessons,
   onCompleted,
   lessonId,
   adminReviewMode = false,
@@ -142,14 +145,14 @@ export function LessonHost({
     // Sequencing: a link can't skip ahead. First unfinished lesson of the
     // section is the furthest one may open (all of them once it's done).
     const idx = lessons.findIndex((l) => l.id === lessonId);
-    const firstOpen = lessons.findIndex((l) => !completedLessons.includes(l.id));
+    const firstOpen = lessons.findIndex((l) => !completedLessons.includes(l.id) && !testedOutLessons?.includes(l.id));
     const furthest = firstOpen === -1 ? lessons.length - 1 : firstOpen;
     if (idx === -1 || idx > furthest) {
       goHome();
       return;
     }
     void open(lessonId);
-  }, [lessonId, lessons, completedLessons, adminReviewMode, goHome, open]);
+  }, [lessonId, lessons, completedLessons, testedOutLessons, adminReviewMode, goHome, open]);
 
   if (state.kind === 'open') {
     return (

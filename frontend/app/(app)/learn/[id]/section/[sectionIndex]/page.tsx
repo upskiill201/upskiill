@@ -70,6 +70,7 @@ export default function LessonRoute() {
       sectionIndex={sectionIndex}
       lessons={lessons}
       completedLessons={path.completedLessons ?? []}
+      testedOutLessons={path.testedOutLessons}
       onCompleted={onCompleted}
       lessonId={lessonId}
     />

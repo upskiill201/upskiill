@@ -30,7 +30,9 @@ import {
   ArrowUp,
   BookOpen,
   Check,
+  ChevronsUp,
   CodeXml,
+  Compass,
   Dumbbell,
   Flag,
   Headphones,
@@ -75,6 +77,7 @@ import { useHydrated } from '@/components/studio/useHydrated';
 import { buildUnlockHref } from '@/lib/return-to';
 import { courseHomeHref } from '@/lib/homeCourse';
 import { prefetchLesson } from '@/lib/path/lessonPrefetch';
+import { hasPlacementTest, jumpHref, placementHref } from '@/lib/path/testOut';
 import { lessonHref, preloadCourse, type LearningPath as LearningPathData } from '@/hooks/useCourse';
 
 /** How far the road swings left/right, in px, at full amplitude. */
@@ -401,6 +404,16 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
 
   return (
     <div ref={rootRef} className="relative w-full pb-10">
+      {hasPlacementTest(path.original?.trackSlug) &&
+        path.completedLessons.length === 0 &&
+        (path.testedOutLessons ?? []).length === 0 && (
+          <PlacementCard
+            onStart={() => {
+              playHaptic('medium', false);
+              router.push(placementHref(courseId));
+            }}
+          />
+        )}
       <div className={styles.board}>
       {lands.map(({ unit, land, prevLand, layout, walked, tey, keepouts, reached }, unitIdx) => (
         <section
@@ -416,7 +429,22 @@ export function LearningPath({ path, stickyTop = '0px', beforeStart, footer, onO
               style={{ background: 'linear-gradient(180deg, var(--jm-ground), transparent)' }}
             />
           )}
-          <UnitBanner unit={unit} land={land} reached={reached} stickyTop={stickyTop} chapter={!!path.original} />
+          <UnitBanner
+            unit={unit}
+            land={land}
+            reached={reached}
+            stickyTop={stickyTop}
+            chapter={!!path.original}
+            // Originals: a chapter not reached yet can be unlocked by passing a test on the ones before it.
+            onJump={
+              path.original && !reached && unit.nodes.every((n) => n.state === 'locked')
+                ? () => {
+                    playHaptic('medium', false);
+                    router.push(jumpHref(courseId, unit.sectionId));
+                  }
+                : undefined
+            }
+          />
 
           <ol className="relative list-none" style={{ height: layout.height }}>
             <LandScene
@@ -628,12 +656,44 @@ const LAND_ICON: Record<LandId, LucideIcon> = {
   summit: Flag,
 };
 
+/** Python and other placement courses: "already know some of this?" before the first lesson. */
+function PlacementCard({ onStart }: { onStart: () => void }) {
+  return (
+    <div className="px-3 pt-3">
+      <div
+        className="rounded-[18px] border-2 px-4 py-3.5 md:px-5 md:py-4 flex items-center gap-3"
+        style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-card)' }}
+      >
+        <span
+          className="shrink-0 w-11 h-11 rounded-[14px] flex items-center justify-center"
+          style={{ backgroundColor: 'var(--lesson-select-bg)' }}
+        >
+          <Compass className="w-6 h-6 stroke-[2.5]" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-[16px] md:text-[17px] font-extrabold text-ink leading-tight">Already know some of this?</p>
+          <p className="text-[14px] font-semibold text-ink-soft leading-snug">Take a short test and start at your level.</p>
+        </div>
+        <button
+          type="button"
+          onClick={onStart}
+          className="shrink-0 rounded-xl px-3.5 py-2 text-[13px] md:text-[14px] font-extrabold uppercase tracking-wide text-white transition-transform active:scale-[0.98]"
+          style={{ backgroundColor: 'var(--color-brand)', boxShadow: '0 3px 0 var(--color-brand-dark)' }}
+        >
+          Find my level
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function UnitBanner({
   unit,
   land,
   reached,
   stickyTop,
   chapter = false,
+  onJump,
 }: {
   unit: PathUnit;
   land: LandId;
@@ -641,6 +701,8 @@ function UnitBanner({
   stickyTop: string;
   /** Teyro Originals: each unit is a story chapter (playbook §8a) with a marker and a story line. */
   chapter?: boolean;
+  /** Jump ahead: shown on a chapter the learner hasn't reached. */
+  onJump?: () => void;
 }) {
   const complete = unit.doneCount === unit.nodes.length;
   const LandIcon = reached ? LAND_ICON[land] : Lock;
@@ -667,6 +729,25 @@ function UnitBanner({
         <span aria-hidden="true" className="absolute left-0 right-0 bottom-0 h-[5px]" style={{ backgroundColor: shade(unit.color, 86) }}>
           <span className="block h-full bg-white/70 transition-[width] duration-700" style={{ width: `${pct}%` }} />
         </span>
+        {onJump && (
+          <button
+            type="button"
+            onClick={onJump}
+            className="relative shrink-0 rounded-xl px-3 py-1.5 text-[13px] md:text-[14px] font-extrabold uppercase tracking-wide flex items-center gap-1.5 text-white bg-white/20 border-2 border-white/70 hover:bg-white/30 transition-transform active:scale-[0.98]"
+            aria-label={`Jump to chapter ${unit.unitNumber}: take a test to unlock it`}
+          >
+            <ChevronsUp className="w-4 h-4 stroke-[3]" aria-hidden="true" />
+            Jump here
+          </button>
+        )}
+        {unit.testedOutCount > 0 && unit.doneCount < unit.nodes.length && (
+          <span
+            className="shrink-0 rounded-xl px-2.5 py-1.5 text-[12px] md:text-[13px] font-extrabold uppercase tracking-wide"
+            style={{ backgroundColor: shade(unit.color, 88) }}
+          >
+            Tested out
+          </span>
+        )}
         <span
           className="shrink-0 rounded-xl px-3 py-1.5 text-[13px] md:text-[14px] font-extrabold flex items-center gap-1"
           style={{ backgroundColor: shade(unit.color, 88) }}

@@ -94,7 +94,8 @@ export function lessonJourney(path: LearningPath | null | undefined, lessonId: s
   if (sectionIndex < 0) return null;
   const section = path.sections[sectionIndex];
   const index = section.lessons.findIndex((l) => l.id === lessonId);
-  const done = new Set(path.completedLessons ?? []);
+  // Tested-out lessons (Jump ahead / placement) are passed on the journey too.
+  const done = new Set([...(path.completedLessons ?? []), ...(path.testedOutLessons ?? [])]);
   done.delete(lessonId);
 
   const nodes: JourneyNode[] = section.lessons.map((l, i) => ({
