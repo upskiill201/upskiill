@@ -8,6 +8,7 @@ import {
   CoursePulseService,
   NUDGE_COOLDOWN_HOURS,
 } from '../analytics/course-pulse.service';
+import { passedLessons } from '../common/passed-lessons.util';
 
 export type NudgeKind = 'NUDGE' | 'CHEER';
 
@@ -66,6 +67,7 @@ export class NudgesService {
         select: {
           userId: true,
           completedLessons: true,
+          testedOutLessons: true,
           user: { select: { fullName: true, timezone: true, timezoneOffsetMinutes: true } },
         },
       }),
@@ -98,7 +100,7 @@ export class NudgesService {
       return {
         learnerId: t.userId,
         message: note.replace(/\{first\}/g, first).slice(0, 280),
-        deepLink: this.nextLessonLink(course, t.completedLessons),
+        deepLink: this.nextLessonLink(course, t.completedLessons, t.testedOutLessons),
         user: t.user,
       };
     });
@@ -166,12 +168,16 @@ export class NudgesService {
     }));
   }
 
-  /** The learner's next lesson (the path's section index + lesson), else the course. */
+  /**
+   * The learner's next lesson (the path's section index + lesson), else the
+   * course. Skips lessons they tested out of, like the map does.
+   */
   private nextLessonLink(
     course: { id: string; sections: { lessons: { id: string }[] }[] },
     completedLessons: unknown,
+    testedOutLessons?: unknown,
   ): string {
-    const done = new Set(Array.isArray(completedLessons) ? (completedLessons as string[]) : []);
+    const done = passedLessons(completedLessons, testedOutLessons);
     for (let s = 0; s < course.sections.length; s++) {
       const next = course.sections[s].lessons.find((l) => !done.has(l.id));
       if (next) return `/learn/${course.id}/section/${s}?lesson=${encodeURIComponent(next.id)}`;

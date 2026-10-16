@@ -1,6 +1,7 @@
 import type { PrismaService } from '../prisma/prisma.service';
 import { isFreeCourse, isFreeLessonAt } from '../originals/originals.policy';
 import { findActiveEntitlement } from '../originals/originals-access';
+import { passedLessons } from './passed-lessons.util';
 
 /**
  * Who is standing at a course's paywall right now — the one definition shared
@@ -71,7 +72,7 @@ export async function courseUnlockState(
     }),
     prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
-      select: { completedLessons: true },
+      select: { completedLessons: true, testedOutLessons: true },
     }),
     prisma.section.findMany({
       where: { courseId },
@@ -103,10 +104,13 @@ export async function courseUnlockState(
   const locked = ordered.filter((l, i) => !isFreeLessonAt(course, i, l.isFreePreview));
   if (locked.length === 0) return { eligible: false, reason: 'NOTHING_LOCKED' };
 
-  // At the wall = every free lesson before the first locked one is done.
+  // At the wall = every free lesson before the first locked one is passed:
+  // done, or skipped by a Jump ahead / placement test (they are still not
+  // counted in completedLessons below).
+  const passed = passedLessons(enrollment.completedLessons, enrollment.testedOutLessons);
   const firstLockedIdx = ordered.indexOf(locked[0]);
   const freeBefore = ordered.slice(0, firstLockedIdx);
-  if (!freeBefore.every((l) => done.has(l.id))) {
+  if (!freeBefore.every((l) => passed.has(l.id))) {
     return { eligible: false, reason: 'NOT_AT_PAYWALL' };
   }
 

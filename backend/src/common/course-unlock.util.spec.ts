@@ -63,6 +63,12 @@ describe('courseUnlockState', () => {
     });
   });
 
+  it('counts free lessons skipped by a placement test as passed, but not as done', async () => {
+    prisma.enrollment.findUnique.mockResolvedValue({ completedLessons: [], testedOutLessons: ['l1', 'l2'] });
+    const s = await courseUnlockState(prisma, 'u1', 'c1');
+    expect(s).toEqual(expect.objectContaining({ eligible: true, completedLessons: 0 }));
+  });
+
   it('is not eligible before the free lessons are done', async () => {
     prisma.enrollment.findUnique.mockResolvedValue({ completedLessons: ['l1'] });
     expect(await courseUnlockState(prisma, 'u1', 'c1')).toEqual({ eligible: false, reason: 'NOT_AT_PAYWALL' });

@@ -36,6 +36,8 @@ describe('LearnerStateService', () => {
         }),
       },
       studentProfile: {
+        // resolveFocusCourseIds (common/focus-course.util.ts): no chosen focus course.
+        findMany: jest.fn().mockResolvedValue([]),
         findUnique: jest.fn().mockResolvedValue({
           dailyGoalXp: 20,
           lastLessonCompletedAt: new Date('2026-09-03T18:00:00Z'),
@@ -53,7 +55,10 @@ describe('LearnerStateService', () => {
         findUnique: jest.fn().mockResolvedValue(null),
         upsert: jest.fn().mockResolvedValue({}),
       },
-      enrollment: { findFirst: jest.fn().mockResolvedValue(null) },
+      enrollment: {
+        findFirst: jest.fn().mockResolvedValue(null),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
       section: { findMany: jest.fn().mockResolvedValue([]) },
       teyNotificationPrefs: { findUnique: jest.fn().mockResolvedValue(null) },
     };
@@ -166,6 +171,24 @@ describe('LearnerStateService', () => {
       });
       expect(s.courseProgressPct).toBe(45);
       expect(s.currentCourseTitle).toBe('Digital Marketing');
+    });
+
+    it('skips lessons the learner tested out of (Jump ahead / placement)', async () => {
+      prisma.enrollment.findFirst.mockResolvedValue({
+        courseId: 'c1',
+        progress: 0,
+        completedLessons: [],
+        testedOutLessons: ['l1', 'l2'],
+        updatedAt: new Date(),
+        course: { id: 'c1', title: 'Python for Beginners' },
+      });
+      prisma.section.findMany.mockResolvedValue([
+        { id: 's1', lessons: [{ id: 'l1' }, { id: 'l2' }] },
+        { id: 's2', lessons: [{ id: 'l3' }] },
+      ]);
+
+      const s = await service.project('u1');
+      expect(s.target).toEqual({ type: 'LESSON', courseId: 'c1', sectionIndex: 1, lessonId: 'l3' });
     });
 
     it('only considers published lessons', async () => {
