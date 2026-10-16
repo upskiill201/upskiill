@@ -3,6 +3,7 @@ import u01 from './data-science/beginner/u01';
 import u02 from './data-science/beginner/u02';
 import u03 from './data-science/beginner/u03';
 import u04 from './data-science/beginner/u04';
+import u05 from './data-science/beginner/u05';
 
 /**
  * Data Science for Beginners — storyline "Zanele's First Dataset". A SHORT
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
         'Present a clear, honest data story',
       ],
       skills: ['Python', 'pandas', 'Data cleaning', 'Data analysis', 'Statistics', 'Data storytelling'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };

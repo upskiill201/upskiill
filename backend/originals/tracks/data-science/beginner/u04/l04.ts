@@ -24,7 +24,7 @@ const lesson: OriginalLesson = {
         text: 'Baraka: 60% late (73 trips). Everyone else on long routes: 49% (35 trips). Short routes: 25%, whoever drives. The gap between drivers is much smaller than it looked.',
       },
       notes: [
-        'Baraka gets nearly every long route: Mombasa to Nairobi, Nairobi to Eldoret and Kisumu. Long routes are late far more often, whoever drives them.',
+        'Baraka gets most of the long routes (73 of 108): Mombasa to Nairobi, Nairobi to Eldoret and Kisumu. Long routes are late far more often, whoever drives them.',
         'When two groups differ in something else that matters (here, distance), compare inside matching slices.',
         'Honest finding: Baraka may be a bit slower on long routes, and 35 trips for everyone else is not much. That\'s a conversation about long routes, not an HR email.',
       ],
@@ -125,7 +125,7 @@ const lesson: OriginalLesson = {
       {
         kind: 'findBug',
         prompt: 'Which conclusion goes too far?',
-        lines: ['Baraka drives almost all the long routes.', 'Long routes are late more often.', 'So long routes are late because Baraka drives them.'],
+        lines: ['Baraka drives most of the long routes.', 'Long routes are late more often.', 'So long routes are late because Baraka drives them.'],
         bug: 2,
         fix: 'Other drivers\' long routes are late often too: 49%.',
         explanation: 'The others are late on long routes too. The route length matters whoever drives.',
