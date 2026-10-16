@@ -3,6 +3,7 @@ import u01 from './set-clear-expectations/beginner/u01';
 import u02 from './set-clear-expectations/beginner/u02';
 import u03 from './set-clear-expectations/beginner/u03';
 import u04 from './set-clear-expectations/beginner/u04';
+import u05 from './set-clear-expectations/beginner/u05';
 
 /**
  * How to Set Clear Expectations — storyline "Arjun's 30-Day Build".
@@ -41,8 +42,8 @@ const track: OriginalTrackDef = {
         'Fix a missed expectation without blame',
       ],
       skills: ['Expectations', 'Delegation', 'Leadership', 'Briefing', 'Project management', 'Communication'],
-      upcomingUnits: 1,
-      units: [u01, u02, u03, u04],
+      upcomingUnits: 0,
+      units: [u01, u02, u03, u04, u05],
     },
   ],
 };
