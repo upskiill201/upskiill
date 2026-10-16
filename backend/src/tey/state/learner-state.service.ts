@@ -26,6 +26,7 @@ import {
   resolveLocalNow,
   TeyLocalNow,
 } from './local-time.util';
+import { passedLessons } from '../../common/passed-lessons.util';
 
 interface LearnerStateRow {
   userId: string;
@@ -324,6 +325,7 @@ export class LearnerStateService {
         courseId: true,
         progress: true,
         completedLessons: true,
+        testedOutLessons: true,
         updatedAt: true,
         course: { select: { id: true, title: true } },
       },
@@ -356,11 +358,9 @@ export class LearnerStateService {
       },
     });
 
-    const completed = new Set(
-      Array.isArray(enrollment.completedLessons)
-        ? (enrollment.completedLessons as unknown[]).map(String)
-        : [],
-    );
+    // Next lesson = first one not passed: tested-out lessons (Jump ahead /
+    // placement) are skipped, exactly as the map skips them.
+    const completed = passedLessons(enrollment.completedLessons, enrollment.testedOutLessons);
 
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const next = sections[sIdx].lessons.find((l) => !completed.has(l.id));

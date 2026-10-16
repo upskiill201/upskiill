@@ -76,6 +76,18 @@ describe('NudgesService.send', () => {
     expect(pulse.forgetBadges).toHaveBeenCalledWith('creator-1');
   });
 
+  it('links past lessons the learner tested out of (Jump ahead / placement)', async () => {
+    const { service, notifications } = build({
+      enrollment: {
+        findMany: jest.fn().mockResolvedValue([
+          { userId: 'ada', completedLessons: [], testedOutLessons: ['l1', 'l2'], user: { fullName: 'Ada', timezone: null, timezoneOffsetMinutes: null } },
+        ]),
+      },
+    } as any);
+    await service.send('creator-1', { courseId: 'course-1', learnerIds: ['ada'], kind: 'NUDGE', message: 'Hi' });
+    expect(notifications.createMany.mock.calls[0][0][0].deepLink).toBe('/learn/course-1/section/1?lesson=l3');
+  });
+
   it('skips learners nudged inside the cooldown and anyone not enrolled', async () => {
     const { service, prisma } = build({
       enrollment: {
