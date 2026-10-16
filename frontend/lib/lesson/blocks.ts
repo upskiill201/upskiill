@@ -132,7 +132,7 @@ export type LearnCard =
 // to be finished before Continue.
 
 /** The shared Originals cast (docs/originals/CAST.md). */
-export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen'] as const;
+export const CAST_IDS = ['ada', 'remi', 'lucia', 'arjun', 'grace', 'kofi', 'miracle', 'clinton', 'david', 'efua', 'asante', 'brian', 'zanele', 'achieng', 'kamau', 'felix', 'pauline', 'emeka', 'wanjiku', 'jayden', 'priya', 'femi', 'diego', 'marta', 'sofia', 'tomas', 'carmen', 'njeri'] as const;
 export type CastId = (typeof CAST_IDS)[number];
 export const CAST_NAMES: Record<CastId, string> = {
   ada: 'Ada',
@@ -162,6 +162,7 @@ export const CAST_NAMES: Record<CastId, string> = {
   sofia: 'Sofía',
   tomas: 'Tomás',
   carmen: 'Carmen',
+  njeri: 'Njeri',
 };
 
 /** Who says a story line: the narrator (Tey's voice-over), Tey, or a cast member. */
@@ -420,6 +421,19 @@ export const BLANK_RE = /\[\[(\d+)\]\]/g;
 
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ');
 
+/**
+ * Is the right-hand card `rightId` a correct match for `leftId`? Compares
+ * text, not ids: two right cards that read the same ("You", "Chapter 1")
+ * look identical to the learner, so either one counts.
+ */
+export function pairMatchIsRight(ex: MatchPairsExercise, leftId: string, rightId: string | undefined): boolean {
+  if (!rightId) return false;
+  if (rightId === leftId) return true;
+  const want = ex.pairs.find((p) => p.id === leftId);
+  const got = ex.pairs.find((p) => p.id === rightId);
+  return Boolean(want && got && norm(want.right).toLowerCase() === norm(got.right).toLowerCase());
+}
+
 /** Has the learner answered enough for CHECK to light up? */
 export function isResponseComplete(ex: Exercise, r: ExerciseResponse | null): boolean {
   if (!r || r.kind !== ex.kind) return false;
@@ -517,7 +531,7 @@ export function gradeExercise(ex: Exercise, r: ExerciseResponse | null): boolean
     }
     case 'matchPairs': {
       const matches = (r as { matches: Record<string, string> }).matches;
-      return ex.pairs.every((p) => matches[p.id] === p.id);
+      return ex.pairs.every((p) => pairMatchIsRight(ex, p.id, matches[p.id]));
     }
     case 'tapBuild': {
       // Compare text, not tile positions: the same word can appear twice.

@@ -24,6 +24,7 @@ import { Check, X } from 'lucide-react';
 import {
   BLANK_RE,
   fillBlankBank,
+  pairMatchIsRight,
   seededShuffle,
   type Exercise,
   type ExerciseResponse,
@@ -509,7 +510,7 @@ function MatchPairsView({ exercise, response, onResponse, answer }: ViewProps<Ma
     emit({ ...matches, [pending]: id }, null);
   };
 
-  const resultTone = (leftId: string): Tone => (matches[leftId] === leftId ? 'correct' : 'wrong');
+  const resultTone = (leftId: string): Tone => (pairMatchIsRight(exercise, leftId, matches[leftId]) ? 'correct' : 'wrong');
 
   return (
     <>

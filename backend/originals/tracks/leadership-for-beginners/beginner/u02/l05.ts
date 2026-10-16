@@ -90,11 +90,11 @@ const lesson: OriginalLesson = {
       },
       {
         kind: 'matchPairs',
-        prompt: 'Chapter 1 or Chapter 2?',
+        prompt: 'Match the tool to what it means.',
         pairs: [
-          ['Early wins', 'Chapter 1'],
-          ['One-on-ones', 'Chapter 2'],
-          ['Leading your friend', 'Chapter 1'],
+          ['Early wins', 'Small, visible, theirs'],
+          ['One-on-ones', 'Weekly, their agenda'],
+          ['Leading your friend', 'Name the change'],
         ],
       },
       {

@@ -21,6 +21,7 @@
 
 import {
   fillBlankBank,
+  pairMatchIsRight,
   tapBuildBank,
   type Exercise,
   type ExerciseResponse,
@@ -159,13 +160,16 @@ function tapBuildHint(ex: TapBuildExercise, r: ExerciseResponse | null, m: HintM
 
 function matchHint(ex: MatchPairsExercise, r: ExerciseResponse | null, m: HintMemory): Hint | null {
   const matches = r?.kind === 'matchPairs' ? { ...r.matches } : {};
-  // Wrong matches come apart first.
-  for (const k of Object.keys(matches)) if (matches[k] !== k) delete matches[k];
-  const right = ex.pairs.filter((p) => matches[p.id] === p.id).length;
+  // Wrong matches come apart first. Right cards that read the same count as one.
+  for (const k of Object.keys(matches)) if (!pairMatchIsRight(ex, k, matches[k])) delete matches[k];
+  const right = ex.pairs.filter((p) => pairMatchIsRight(ex, p.id, matches[p.id])).length;
   if (right + 1 > ex.pairs.length - 2) return null;
-  const pair = ex.pairs.find((p) => matches[p.id] !== p.id);
+  const pair = ex.pairs.find((p) => !pairMatchIsRight(ex, p.id, matches[p.id]));
   if (!pair) return null;
-  matches[pair.id] = pair.id;
+  const taken = new Set(Object.values(matches));
+  const card = ex.pairs.find((p) => !taken.has(p.id) && pairMatchIsRight(ex, pair.id, p.id));
+  if (!card) return null;
+  matches[pair.id] = card.id;
   return {
     response: { kind: 'matchPairs', matches },
     memory: m,

@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=block" rel="stylesheet" />
+<style>
+  /* Teyro Originals cover: How to Lead Without Being the Boss. A still frame
+     of Remi's six weeks: a refund chart falling from 21 days to 4, five
+     teams wired to one person with no title, and the line that won them.
+     No Tey. */
+  :root {
+    --brand: #0172FD;
+    --brand-dark: #0060D9;
+    --brand-deep: #0050B3;
+    --ink: #071233;
+    --amber: #F59E0B;
+    --amber-dark: #B45309;
+    --green: #22C55E;
+    --green-dark: #15803D;
+    --pink: #EC4899;
+    --violet: #8B5CF6;
+    --teal: #14B8A6;
+    --coral: #FB7185;
+    --white: #FFFFFF;
+    --mist: #E8F1FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--brand); overflow: hidden; position: relative; }
+
+  .blob { position: absolute; border-radius: 50%; background: var(--brand-dark); }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--white); }
+
+  .copy { position: absolute; left: 100px; top: 120px; width: 760px; z-index: 5; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--white); color: var(--brand);
+    font-weight: 800; font-size: 26px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 26px; border-radius: 999px; box-shadow: 0 6px 0 var(--brand-deep);
+  }
+  .pill i { width: 14px; height: 14px; border-radius: 50%; background: var(--amber); display: inline-block; }
+  h1 { margin-top: 38px; color: var(--white); font-weight: 800; font-size: 94px; line-height: 1.02; letter-spacing: -0.035em; }
+  h1 em { font-style: normal; color: var(--ink); background: var(--amber); padding: 0 20px 8px; border-radius: 26px; box-shadow: 0 8px 0 var(--amber-dark); display: inline-block; margin: 10px 0 6px; }
+  .sub { margin-top: 36px; color: var(--mist); font-weight: 700; font-size: 32px; line-height: 1.3; width: 640px; }
+
+  .stage { position: absolute; left: 900px; top: 70px; width: 660px; height: 880px; }
+
+  /* Refund chart card */
+  .chart { position: absolute; left: 60px; top: 30px; width: 560px; height: 340px; background: var(--white); border-radius: 36px; box-shadow: 0 12px 0 var(--brand-deep); padding: 28px 32px; transform: rotate(-3deg); }
+  .chart .label { font-weight: 800; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); }
+  .chart .big { display: flex; align-items: baseline; gap: 18px; margin-top: 6px; color: var(--ink); font-weight: 800; }
+  .chart .big .from { font-size: 64px; color: rgba(7,18,51,.35); text-decoration: line-through; text-decoration-thickness: 6px; }
+  .chart .big .arrow { font-size: 54px; color: var(--ink); }
+  .chart .big .to { font-size: 104px; letter-spacing: -0.04em; line-height: 1; }
+  .chart .big .unit { font-size: 34px; }
+  .chart svg { position: absolute; left: 32px; bottom: 26px; }
+
+  /* The network */
+  .net { position: absolute; left: 20px; top: 430px; width: 640px; height: 380px; }
+  .net svg.lines { position: absolute; inset: 0; }
+  .node { position: absolute; width: 112px; height: 112px; border-radius: 50%; border: 7px solid var(--white); display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 800; font-size: 46px; }
+  .node span { position: absolute; bottom: -38px; left: 50%; transform: translateX(-50%); font-size: 21px; color: var(--white); white-space: nowrap; letter-spacing: .03em; }
+  .hub { width: 156px; height: 156px; font-size: 66px; background: var(--coral); box-shadow: 0 10px 0 #BE123C; }
+  .tag { position: absolute; padding: 11px 20px; border-radius: 16px; font-weight: 800; font-size: 24px; color: var(--ink); background: var(--white); box-shadow: 0 6px 0 var(--brand-deep); white-space: nowrap; }
+  .tag s { text-decoration-thickness: 4px; color: rgba(7,18,51,.45); }
+  .spark { position: absolute; }
+</style>
+</head>
+<body>
+  <div class="blob" style="width:820px;height:820px;right:-240px;top:-320px;opacity:.55"></div>
+  <div class="blob" style="width:560px;height:560px;left:-240px;bottom:-290px;opacity:.45"></div>
+  <div class="ring" style="width:150px;height:150px;left:780px;top:830px;opacity:.12"></div>
+  <div class="ring" style="width:60px;height:60px;left:1520px;top:36px;opacity:.25"></div>
+
+  <div class="copy">
+    <span class="pill"><i></i>Teyro Original · Short course</span>
+    <h1>How to Lead<br/>Without Being<br/><em>the Boss</em></h1>
+    <p class="sub">Five teams, six weeks, and nobody reports to Remi. Lead anyway.</p>
+  </div>
+
+  <div class="stage">
+    <div class="chart">
+      <div class="label">Refund wait</div>
+      <div class="big"><span class="from">21</span><span class="arrow">→</span><span class="to">4</span><span class="unit">days</span></div>
+      <svg width="496" height="110" viewBox="0 0 496 110">
+        <polyline points="0,10 90,22 180,48 270,62 360,74 496,98" fill="none" stroke="#22C55E" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="496" cy="98" r="0" fill="#22C55E" />
+      </svg>
+    </div>
+
+    <div class="net">
+      <svg class="lines" width="640" height="380" viewBox="0 0 640 380">
+        <g stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 16" opacity=".75">
+          <line x1="320" y1="200" x2="70" y2="96" />
+          <line x1="320" y1="200" x2="200" y2="40" />
+          <line x1="320" y1="200" x2="440" y2="40" />
+          <line x1="320" y1="200" x2="570" y2="96" />
+          <line x1="320" y1="200" x2="320" y2="366" />
+        </g>
+      </svg>
+      <div class="node" style="left:14px;top:40px;background:var(--pink)">W<span>Finance</span></div>
+      <div class="node" style="left:144px;top:-16px;background:var(--violet)">F<span>IT</span></div>
+      <div class="node" style="left:384px;top:-16px;background:var(--teal)">E<span>Lagos</span></div>
+      <div class="node" style="left:514px;top:40px;background:var(--amber)">P<span>Marketing</span></div>
+      <div class="node" style="left:272px;top:318px;width:96px;height:96px;font-size:40px;background:var(--green)">N<span>Warehouse</span></div>
+      <div class="node hub" style="left:242px;top:122px">R</div>
+      <div class="tag" style="left:400px;top:206px;transform:rotate(5deg)"><s>Manager</s> No title</div>
+    </div>
+
+    <svg class="spark" style="left:20px;top:10px" width="48" height="48" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#fff"/></svg>
+    <svg class="spark" style="left:600px;top:400px" width="40" height="40" viewBox="0 0 24 24"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F59E0B"/></svg>
+  </div>
+</body>
+</html>

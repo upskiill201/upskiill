@@ -117,9 +117,9 @@ const lesson: OriginalLesson = {
         kind: 'matchPairs',
         prompt: 'Match the step to who does it.',
         pairs: [
-          ['Writing the first draft', 'You'],
-          ['Listing what is missing', 'The AI'],
-          ['Adding the fixes', 'You'],
+          ['Writing the first draft', 'You, in your own words'],
+          ['Listing what is missing', 'The AI, as a checker'],
+          ['Adding the fixes', 'You, after checking'],
         ],
       },
       {
