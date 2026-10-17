@@ -67,6 +67,9 @@
   color: var(--error-red);
   font-weight: 500;
   margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .hintText {
