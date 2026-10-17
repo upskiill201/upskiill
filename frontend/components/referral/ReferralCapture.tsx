@@ -34,18 +34,22 @@ export function clearStoredReferral() {
   }
 }
 
+/** Remember an invite code for the claim after sign-up. First invite wins. */
+export function rememberReferral(code: string | null | undefined) {
+  if (!code || !/^[A-Za-z0-9]{6,12}$/.test(code)) return;
+  try {
+    // First invite wins — a later link shouldn't steal the credit.
+    if (!readStoredReferral()) {
+      window.localStorage.setItem(REFERRAL_STORAGE_KEY, JSON.stringify({ code: code.toUpperCase(), at: Date.now() }));
+    }
+  } catch {
+    // Private mode — the invite just won't be remembered.
+  }
+}
+
 export default function ReferralCapture() {
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get('ref');
-    if (!code || !/^[A-Za-z0-9]{6,12}$/.test(code)) return;
-    try {
-      // First invite wins — a later link shouldn't steal the credit.
-      if (!readStoredReferral()) {
-        window.localStorage.setItem(REFERRAL_STORAGE_KEY, JSON.stringify({ code: code.toUpperCase(), at: Date.now() }));
-      }
-    } catch {
-      // Private mode — the invite just won't be remembered.
-    }
+    rememberReferral(new URLSearchParams(window.location.search).get('ref'));
   }, []);
   return null;
 }

@@ -35,6 +35,8 @@ model User {
   referralCode        ReferralCode?
   referralsMade       Referral[]                @relation("ReferralReferrer")
   referredBy          Referral?                 @relation("ReferralReferred")
+  // Shareable milestone cards (see ShareCard)
+  shareCards          ShareCard[]
   // Creator → learner nudges and cheers (see CreatorNudge)
   nudgesSent          CreatorNudge[]            @relation("NudgeCreator")
   nudgesReceived      CreatorNudge[]            @relation("NudgeLearner")
@@ -3007,6 +3009,29 @@ model CheckoutIntent {
 
 /// A learner's stable invite code (the ?ref= in their invite link). Kept apart
 /// from the username so an invite link never breaks when a handle changes.
+/// A milestone the learner chose to share (streak, chapter, league podium...).
+/// `data` is a server-computed snapshot rendered into the share image, so no
+/// number on a card ever comes from the client. One row per milestone: sharing
+/// the same 7-day streak twice reuses the same public link (`slug`).
+model ShareCard {
+  id           String    @id @default(uuid())
+  slug         String    @unique
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind         String // STREAK | LESSONS | COURSE_STARTED | CHAPTER_COMPLETE | COURSE_COMPLETE | LEAGUE | ACHIEVEMENT
+  milestoneKey String // e.g. "STREAK:7", "CHAPTER:<sectionId>"
+  data         Json
+  shareCount   Int       @default(0)
+  sharedAt     DateTime?
+  /// When the one-time sharing Coins were paid (null = never paid for this card).
+  rewardedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([userId, milestoneKey])
+  @@index([userId, createdAt])
+  @@map("share_cards")
+}
+
 model ReferralCode {
   userId    String   @id
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -28,6 +28,7 @@ import { ChestModule } from './chest/chest.module';
 import { SpinModule } from './spin/spin.module';
 import { StreakModule } from './streak/streak.module';
 import { ReferralModule } from './referral/referral.module';
+import { ShareCardModule } from './share-card/share-card.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { EarningsModule } from './earnings/earnings.module';
 import { SiteModule } from './site/site.module';
@@ -74,6 +75,7 @@ import { EmailModule } from './email/email.module';
     SpinModule,
     StreakModule,
     ReferralModule,
+    ShareCardModule,
     AnalyticsModule,
     EarningsModule,
     SiteModule,
