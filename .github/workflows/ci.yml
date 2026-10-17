@@ -32,11 +32,17 @@ jobs:
 
       - name: Generate Prisma client
         working-directory: backend
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          DIRECT_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
         run: npx prisma generate
 
       - name: Build backend
         working-directory: backend
-        run: npm run build
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          DIRECT_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+        run: npx nest build
 
       # ─── FRONTEND ───────────────────────────────────────────────────────────
 
