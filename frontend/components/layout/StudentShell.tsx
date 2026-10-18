@@ -117,7 +117,7 @@ const NAV_TABS: NavTab[] = [
   { id: 'learning', label: 'My Learning', href: '/dashboard/my-learning', icon: BookOpen, tone: 'green', image: '/Icons/my-learning.png' },
   { id: 'explore', label: 'Explore', href: '/dashboard/explore', icon: Compass, tone: 'purple', image: '/Icons/explore.png' },
   { id: 'code', label: 'Code', href: '/dashboard/code', icon: SquareTerminal, tone: 'ink' },
-  { id: 'community', label: 'Community', href: '/dashboard/feed', icon: UsersRound, tone: 'teal' },
+  { id: 'community', label: 'Community', href: '/dashboard/feed', icon: UsersRound, tone: 'teal', image: '/Icons/community.png' },
   { id: 'leaderboards', label: 'Leaderboards', href: '/dashboard/leaderboards', icon: Trophy, tone: 'amber', image: '/Icons/Leaderboard.png' },
   { id: 'quests', label: 'Quests', href: '/dashboard/quests', icon: Target, tone: 'orange', image: '/Icons/Quests.png' },
   { id: 'shop', label: 'Shop', href: '/dashboard/shop', icon: Store, tone: 'pink', image: '/Icons/store.png' },

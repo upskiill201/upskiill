@@ -24,9 +24,7 @@ import {
   FinalCta,
   Hero,
   LaunchBadges,
-  StayRelevant,
   Tracks,
-  WhyItWorks,
 } from '@/components/homepage/v3/Sections';
 import { LaunchSection } from '@/components/launch/LaunchSections';
 import IntroVideo from '@/components/homepage/v3/IntroVideo';
@@ -68,8 +66,9 @@ export default function Home() {
       <LaunchSection />
       <Tracks />
       <HomeCourses />
-      <StayRelevant />
-      <WhyItWorks />
+      {/* StayRelevant ("Learn for the job market") and WhyItWorks ("Why Teyro works")
+          are hidden for now (founder, 2026-10-18). The components stay in
+          Sections.tsx; add them back here to bring them back. */}
       <Features />
       <Audience />
       <Creators />
