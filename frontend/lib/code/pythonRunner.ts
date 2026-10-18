@@ -52,9 +52,10 @@ const packageLoads = new Map<string, Promise<void>>();
 const PACKAGE_IMPORTS: Record<string, RegExp> = {
   pandas: /^\s*(import\s+pandas\b|from\s+pandas\b)/m,
   numpy: /^\s*(import\s+numpy\b|from\s+numpy\b)/m,
+  'scikit-learn': /^\s*(import\s+sklearn\b|from\s+sklearn\b)/m,
 };
 
-/** Which extra packages a program imports (pandas, numpy). */
+/** Which extra packages a program imports (pandas, numpy, scikit-learn). */
 export function packagesFor(code: string): string[] {
   return Object.keys(PACKAGE_IMPORTS).filter((p) => PACKAGE_IMPORTS[p].test(code));
 }

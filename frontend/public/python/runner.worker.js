@@ -8,7 +8,7 @@
  * worker, so an infinite loop can never freeze the lesson.
  *
  *   in   { id, code, stdin: string[], exprs: string[] }
- *        { type: 'loadPackages', id, packages: string[] }   (pandas, numpy)
+ *        { type: 'loadPackages', id, packages: string[] }   (pandas, numpy, scikit-learn)
  *   out  { type: 'ready' } once Python has loaded
  *        { type: 'packagesLoaded', id } | { type: 'packagesError', id, message }
  *        { type: 'loadError', message }
@@ -90,7 +90,9 @@ def __teyro_run(src, stdin_lines, exprs):
 // starts a run's timer, because the first download takes a while). Importing
 // once here, with warnings off, keeps pandas' pyarrow notice out of the
 // learner's output.
-const ALLOWED_PACKAGES = ['pandas', 'numpy'];
+const ALLOWED_PACKAGES = ['pandas', 'numpy', 'scikit-learn'];
+// The name you import when it differs from the package name.
+const IMPORT_NAMES = { 'scikit-learn': 'sklearn' };
 
 // Copy-on-write (the pandas 3 default): cleaning a copy with
 // df["col"] = ... never prints a SettingWithCopyWarning into the output.
@@ -124,7 +126,7 @@ async function loadPackages(id, packages) {
     await pyodide.loadPackage(wanted);
     pyodide.runPython(
       'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
-        wanted.map((p) => '    import ' + p).join('\n') +
+        wanted.map((p) => '    import ' + (IMPORT_NAMES[p] || p)).join('\n') +
         (wanted.includes('pandas') ? PANDAS_SETUP : ''),
     );
     self.postMessage({ type: 'packagesLoaded', id });
