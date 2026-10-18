@@ -189,7 +189,6 @@ export const COMPETITORS: Competitor[] = [
     ],
     stayIf: [
       'You already pay for Mimo and are finishing a path',
-      'You need a certificate at the end',
     ],
     vsAnswer:
       'Mimo and Teyro both teach coding in short daily lessons on your phone. Mimo has a longer-established catalogue, an in-app editor and certificates, but most of it needs a subscription. Teyro is free to start with many free courses, adds AI skills, and puts more weight on streaks, weekly leagues and daily quests to keep you going.',
@@ -242,7 +241,7 @@ export const COMPETITORS: Competitor[] = [
       'You want no ads',
       'You want AI skills alongside coding',
     ],
-    stayIf: ['You need a language Teyro does not teach, such as C++ or Java', 'You want a certificate'],
+    stayIf: ['You need a language Teyro does not teach, such as C++ or Java'],
     vsAnswer:
       'Sololearn covers more programming languages and gives certificates; Teyro focuses on coding and AI with a four-step lesson that makes you apply each idea, no ads, and a stronger habit loop — streak freezes, weekly leagues and three daily quests. Both limit mistakes with hearts; Teyro’s refill over time or with coins you earn.',
     altAnswer:
@@ -337,7 +336,7 @@ export const COMPETITORS: Competitor[] = [
       'You keep abandoning long paths and need streaks and leagues to stay consistent',
       'You want to start free',
     ],
-    stayIf: ['You study at a desk and want long, deep paths', 'You want a certificate'],
+    stayIf: ['You study at a desk and want long, deep paths'],
     vsAnswer:
       'Codecademy is the deeper desk-based option: long career paths with real code in the browser, most of them on a paid plan. Teyro is built for the phone and for consistency: 5 to 20 minute lessons, streaks with freezes, weekly leagues and daily quests. Many learners who stall on long paths finish more on Teyro.',
     altAnswer:
@@ -465,7 +464,7 @@ export const COMPETITORS: Competitor[] = [
     switchIf: ['You need to learn in minutes a day, not hours a week', 'You want to start free', 'You want more motivation than deadlines'],
     stayIf: ['You need a recognised certificate or a degree', 'Your employer pays for Coursera'],
     vsAnswer:
-      'Coursera is the pick when the certificate matters: university and company courses with graded work and deadlines. Teyro is the pick when finishing matters: coding and AI in lessons of a few minutes, free to start, with streaks and leagues that keep you consistent. Teyro does not issue certificates yet.',
+      'Coursera is the pick when the certificate matters: university and company courses with graded work and deadlines. Teyro is the pick when finishing matters: coding and AI in lessons of a few minutes, free to start, with streaks and leagues that keep you consistent. Teyro gives its own verifiable certificate for every course, not a university or company credential.',
     altAnswer:
       'The best Coursera alternatives are edX for other university courses; Teyro for coding and AI in short daily lessons you actually keep up; Udemy for cheap, one-off courses on almost any topic; and LinkedIn Learning for business skills with profile certificates.',
     alternatives: [

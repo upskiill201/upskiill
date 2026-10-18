@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     '/teach': ['./app/blog/_fonts/**'],
     '/': ['./app/blog/_fonts/**', './app/_og-assets/**'],
     '/s/[slug]/image': ['./app/blog/_fonts/**', './app/_og-assets/share/**', './public/Icons/**', './public/Leagues/league-tournament.png', './public/Tey Logo and icons/png-512.png'],
+    '/c/[code]/image': ['./app/blog/_fonts/**', './app/_og-assets/fonts/**', './app/_og-assets/share/tey-cheering.png', './public/Tey Logo and icons/png-512.png'],
   },
   // Tree-shakes per-icon imports from these packages instead of pulling the
   // whole barrel file into every route's bundle. lucide-react (218 import

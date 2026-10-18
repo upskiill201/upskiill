@@ -20,6 +20,7 @@ import { lessonHref, pickCurrentEnrollment, preloadCourse, useEnrollments, type 
 import { getHomeCourse, setHomeCourse } from '@/lib/homeCourse';
 import { playSound } from '@/lib/audio/lessonSounds';
 import { playHaptic } from '@/lib/haptics';
+import CertificatesShelf from '@/components/certificates/CertificatesShelf';
 import styles from './MyLearning.module.css';
 import { courseHomeHref } from '@/lib/homeCourse';
 
@@ -196,6 +197,8 @@ export default function MyLearningPage() {
                 </ul>
               </section>
             )}
+
+            <CertificatesShelf />
 
             <button
               type="button"

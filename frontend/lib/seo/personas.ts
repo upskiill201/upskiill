@@ -68,7 +68,7 @@ export const PERSONAS: Persona[] = [
       'Day 7 — A full week. Set a weekly goal for the rest of term',
     ],
     startWith: 'Programming fundamentals, then web development',
-    honest: 'Teyro does not issue certificates yet, and it does not replace a university module. Use it to practise what you are taught — and to learn what your course skips.',
+    honest: 'Teyro’s certificates are its own, not academic credit, and it does not replace a university module. Use it to practise what you are taught — and to learn what your course skips.',
     faq: [
       { question: 'Is Teyro free for students?', answer: 'Teyro is free to start, with many courses free end to end and no ads. Paid courses let you try the first two lessons free.' },
       { question: 'Can I learn to code on my phone as a student?', answer: 'Yes. Teyro installs to your Home Screen on iPhone and Android in one tap, opens instantly, and works offline once installed.' },
@@ -104,7 +104,7 @@ export const PERSONAS: Persona[] = [
       'Day 7 — Review your week and decide on a streak target for the month',
     ],
     startWith: 'Programming fundamentals, then web development or AI automations',
-    honest: 'Teyro builds the habit and the fundamentals; you will still want portfolio projects before job applications, and Teyro does not offer certificates yet.',
+    honest: 'Teyro builds the habit and the fundamentals; you will still want portfolio projects before job applications: a Teyro certificate shows you finished a course, not that you have job experience.',
     faq: [
       { question: 'Can I change careers into tech with 15 minutes a day?', answer: 'Fifteen focused minutes every day adds up to more practice than occasional long weekends, and it is sustainable around a job. Most people add weekend projects once the daily habit is in place.' },
       { question: 'Coding or AI — which should a career changer learn first?', answer: 'Programming fundamentals help with both. If you want to automate work in your current field quickly, Teyro’s AI courses on tools, agents and automations pay off sooner.' },
