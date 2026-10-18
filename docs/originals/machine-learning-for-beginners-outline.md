@@ -1,6 +1,6 @@
 # Machine Learning for Beginners — Course Outline
 
-> Coding category. **Status: APPROVED (2026-10-18).** Runner (scikit-learn), dataset, placement and Chapter 1 are built on `feat/ml-original`.
+> Coding category. **Status: APPROVED (2026-10-18).** Runner (scikit-learn), dataset, placement, cover and Chapters 1–3 are built on `feat/ml-original`.
 > Rules: docs/ORIGINALS_PLAYBOOK.md (§7 coding Originals, §8a storylines). Cast: docs/originals/CAST.md.
 > Sits after Python for Beginners and Data Science for Beginners, but doesn't require them: Chapter 2 teaches the Python and pandas this course needs.
 

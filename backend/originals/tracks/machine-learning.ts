@@ -42,6 +42,8 @@ const track: OriginalTrackDef = {
         'Spot leakage, overfitting and unfairness before they ship',
       ],
       skills: ['Machine learning', 'Python', 'pandas', 'scikit-learn', 'Model evaluation', 'Responsible AI'],
+      // Cover: frontend/public/originals, designed in originals/covers.
+      thumbnailUrl: '/originals/machine-learning-for-beginners.jpg',
       upcomingUnits: 10,
       units: [u01, u02, u03],
     },
