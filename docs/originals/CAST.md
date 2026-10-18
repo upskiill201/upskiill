@@ -70,6 +70,7 @@ Four more, so every Original has someone who fits. Each needs a look drawn befor
 - **Remi's job (Leadership track):** Synergix offers Remi a job at the end of his internship; as a junior analyst he leads the refund fix across five teams (How to Lead Without Being the Boss), and is then asked to lead the delivery-times project.
 - **Arjun's first team (How to Set Clear Expectations):** Arjun takes on two junior subcontractors, Kavya (Pune) and Joel (Kochi), to build Mr Rao's online shop before the Diwali sale. Mr Rao is the same client who reads only the first line of every email (How to Make People Listen to You).
 - **Miracle in Lagos (How to Motivate a Team):** Miracle chose the Lagos health-tech startup, Afiya. Eighteen months later she is asked to lead Afiya's Clinic Success team (Bisi, Chidi, Halima, Emmanuel) before 300 clinics go live; her boss is Folake, the COO.
+- **Halima's Empty Chairs (Machine Learning for Beginners):** after the 300-clinic rollout, and with Chidi staying, Folake wants "AI to fix no-shows" (about 1 in 5 bookings). Halima builds the predictor on 12 weeks of bookings from 8 pilot clinics, including Gumel, a small rural clinic. Miracle mentors her; Chidi is the sceptic; Emmanuel owns the booking export; Bisi makes the reminder calls.
 
 ## Cameroon (added 2026-10-14, founder)
 
@@ -77,7 +78,7 @@ These three join the shared cast. They first appear in Study Smarter with AI and
 
 | Name | Age | Home | Life stage | Personality | Best for |
 |---|---|---|---|---|---|
-| **Miracle** | 22 | Buea, Cameroon | Final-year Software Engineering student at the University of Buea. She volunteers as an online mentor for final-year school students. | Warm, organised, very direct ("show me your notes first"). She made every study mistake once and keeps a list of them. Her own final-year project and job hunt run in the background. | Study Smarter with AI (mentor), Acing Job Interviews, Python for Beginners |
+| **Miracle** | 22 | Buea, Cameroon | Final-year Software Engineering student at the University of Buea. She volunteers as an online mentor for final-year school students. | Warm, organised, very direct ("show me your notes first"). She made every study mistake once and keeps a list of them. Her own final-year project and job hunt run in the background. | Study Smarter with AI (mentor), Acing Job Interviews, Python for Beginners, Machine Learning for Beginners (mentor) |
 | **Clinton** | 17 | Bamenda, Cameroon | Final year of secondary school; wants to study Computer Science | Loud, funny, runs every group chat, and is brilliant at organising people. He is tempted by shortcuts, but he keeps his drafts, and that saves him. | Study Smarter with AI, Speak Like a CEO |
 | **David** | 17 | Buea, Cameroon | Final year of secondary school; wants to study Medicine | Quiet and the best at Maths in the group. He explains numbers beautifully but freezes when he has to write an essay. | Study Smarter with AI, Clear Writing at Work |
 
@@ -114,11 +115,11 @@ These appear in one Original only and don't join the shared cast.
 | Njeri | How to Lead Without Being the Boss | Synergix warehouse supervisor in Nairobi. 20 years on the floor; has seen five head-office projects come and go. Blunt, funny, knows exactly why things really break. Becomes Remi's strongest ally once he listens. |
 | Kavya | How to Set Clear Expectations | Junior developer in Pune, 23, one of Arjun's first two subcontractors. Fast, ambitious, funny; says "done" when things are 80% done. |
 | Joel | How to Set Clear Expectations | Junior developer in Kochi, 26, Arjun's other subcontractor. Careful and thorough; waits to be told everything, and goes quiet when unsure. |
-| Bisi | How to Motivate a Team | Afiya's first support hire in Lagos, 4 years on the Clinic Success team. Warm, very funny, quietly cynical after three managers in two years. |
-| Chidi | How to Motivate a Team | Clinic Success's top performer at Afiya. Sharp, fast, bored; has a job offer from a bank in his inbox. |
-| Halima | How to Motivate a Team | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. |
-| Folake | How to Motivate a Team | Afiya's COO, Miracle's boss. Fast, demanding, fair; thinks motivation is "a pizza problem" until shown otherwise. |
-| Emmanuel | How to Motivate a Team | Clinic Success agent at Afiya. The funniest person on the team, does the minimum, always eating chin chin. Not lazy: bored, and quietly brilliant at fixing the same bug twice. |
+| Bisi | How to Motivate a Team (and Machine Learning for Beginners) | Afiya's first support hire in Lagos, 4 years on the Clinic Success team. Warm, very funny, quietly cynical after three managers in two years. |
+| Chidi | How to Motivate a Team (and Machine Learning for Beginners) | Clinic Success's top performer at Afiya. Sharp, fast, bored; has a job offer from a bank in his inbox. |
+| Halima | How to Motivate a Team (and Machine Learning for Beginners) | Newest on Clinic Success at Afiya, a former nurse from Kano. Quiet, brilliant with clinics, unsure she belongs in tech. Leads Machine Learning for Beginners: she builds a no-show predictor for Afiya's clinics, with Miracle as her mentor. |
+| Folake | How to Motivate a Team (and Machine Learning for Beginners) | Afiya's COO, Miracle's boss. Fast, demanding, fair; thinks motivation is "a pizza problem" until shown otherwise. |
+| Emmanuel | How to Motivate a Team (and Machine Learning for Beginners) | Clinic Success agent at Afiya. The funniest person on the team, does the minimum, always eating chin chin. Not lazy: bored, and quietly brilliant at fixing the same bug twice. |
 
 ## Decisions
 

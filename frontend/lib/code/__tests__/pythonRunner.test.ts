@@ -7,6 +7,12 @@ describe('packagesFor', () => {
     expect(packagesFor('import numpy as np\nimport pandas as pd')).toEqual(['pandas', 'numpy']);
   });
 
+  it('maps sklearn imports to the scikit-learn package', () => {
+    expect(packagesFor('from sklearn.linear_model import LinearRegression')).toEqual(['scikit-learn']);
+    expect(packagesFor('import pandas as pd\nimport sklearn')).toEqual(['pandas', 'scikit-learn']);
+    expect(packagesFor('# sklearn comes in Chapter 5\nprint(1)')).toEqual([]);
+  });
+
   it('ignores programs that only mention them', () => {
     expect(packagesFor('print("I love pandas")')).toEqual([]);
     expect(packagesFor('# import pandas later\nprint(1)')).toEqual([]);

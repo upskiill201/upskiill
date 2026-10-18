@@ -116,7 +116,10 @@ function readDatasets(): string | null {
 const PACKAGE_IMPORTS: Record<string, RegExp> = {
   pandas: /^\s*(import\s+pandas\b|from\s+pandas\b)/m,
   numpy: /^\s*(import\s+numpy\b|from\s+numpy\b)/m,
+  'scikit-learn': /^\s*(import\s+sklearn\b|from\s+sklearn\b)/m,
 };
+/** The name you import when it differs from the package name. */
+const IMPORT_NAMES: Record<string, string> = { 'scikit-learn': 'sklearn' };
 export function packagesFor(code: string): string[] {
   return Object.keys(PACKAGE_IMPORTS).filter((p) => PACKAGE_IMPORTS[p].test(code));
 }
@@ -143,7 +146,7 @@ async function getPython(): Promise<PyodideLike> {
   return pyPromise;
 }
 
-/** Load pandas/numpy once, the same way the browser worker does (warnings off on first import). */
+/** Load pandas/numpy/scikit-learn once, the same way the browser worker does (warnings off on first import). */
 async function ensurePackages(packages: string[]): Promise<void> {
   const missing = packages.filter((p) => !loadedPackages.has(p));
   if (missing.length === 0) return;
@@ -151,7 +154,7 @@ async function ensurePackages(packages: string[]): Promise<void> {
   await py.loadPackage(missing);
   py.runPython(
     'import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter("ignore")\n' +
-      missing.map((p) => '    import ' + p).join('\n') +
+      missing.map((p) => '    import ' + (IMPORT_NAMES[p] ?? p)).join('\n') +
       // Copy-on-write, as in runner.worker.js: no SettingWithCopyWarning in the output.
       (missing.includes('pandas') ? '\nimport pandas\npandas.set_option("mode.copy_on_write", True)\n' : ''),
   );
